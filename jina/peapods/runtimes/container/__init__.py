@@ -18,9 +18,11 @@ __all__ = ['ContainerRuntime']
 
 
 class ContainerRuntime(BaseRuntime):
-    """A ContainerRuntime that will spawn a dockerized `BasePea`
+    """A ContainerRuntime that will spawn a dockerized `BasePea`. It requires a docker-corresponding valid ``args.uses``
 
-    It requires a docker-corresponding valid ``args.uses``.
+    Inside the run method, a docker container is started in the same host where this instance lives, and its logs and lifetime
+    is controlled.
+
     """
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):

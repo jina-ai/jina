@@ -28,14 +28,13 @@ __all__ = ['BasePea']
 
 class BasePea(ExitStack):
     """BasePea is an unary service unit which provides network interface and
-    communicates with others via protobuf and ZeroMQ
+    communicates with others via protobuf and ZeroMQ. It also is a context manager of an Executor .
     """
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
-        :param pea_id: the id used to separate the storage of each pea, only used when ``args.separate_storage=True``
         """
         super().__init__()
         self.args = args
@@ -115,6 +114,7 @@ class BasePea(ExitStack):
 
     @property
     def request_type(self) -> str:
+        """Get the type of message being processed"""
         return self._message.envelope.request_type
 
     def load_executor(self):
@@ -137,9 +137,7 @@ class BasePea(ExitStack):
             ' '.join(f'{k}: {v / self._timer.accum_time["loop"]:.2f}' for k, v in self._timer.accum_time.items()))
 
     def save_executor(self):
-        """Save the contained executor
-
-        :param dump_interval: the time interval for saving
+        """Save the contained executor according to the `dump_interval` parameter
         """
         if (time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0:
             self.executor.save()
@@ -181,7 +179,6 @@ class BasePea(ExitStack):
 
     def post_hook(self, msg: 'Message') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
-        # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor()
         self.check_memory_watermark()
@@ -202,10 +199,10 @@ class BasePea(ExitStack):
     def _teardown(self):
         self.close_zmqlet()
 
-    def msg_callback(self, msg: 'Message') -> Optional['Message']:
+    def msg_callback(self, msg: 'Message') -> None:
         """Callback function after receiving the message
 
-        When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.
+        When nothing is returned then nothing is send out via :attr:`zmqlet.sock_out`.
         """
         try:
             # notice how executor related exceptions are handled here
@@ -251,6 +248,8 @@ class BasePea(ExitStack):
         self.zmqlet.start(self.msg_callback)
 
     def load_plugins(self):
+        """Loads the plugins if needed necessary to load executors
+        """
         if self.args.py_modules:
             from ...importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
@@ -315,8 +314,6 @@ def Pea(args: Optional['argparse.Namespace'] = None,
     """Initialize a :class:`BasePea`, :class:`HeadPea`, :class:`TailPea`, or :class:`GatewayPea` or :class: `RESTGatewayPea`
 
     :param args: arguments from CLI
-    :param ctrl_addr: control address where runtime will send terminate signals to GatewayPea
-    :param ctrl_with_ipc: parameter to set ipc protocol
     :param gateway: true if gateway pea to be instantiated
     :param rest_api: true if gateway pea to be instantiated with REST (only considered if gateway is True)
 

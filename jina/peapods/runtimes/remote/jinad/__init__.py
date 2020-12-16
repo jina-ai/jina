@@ -8,7 +8,7 @@ from .api import get_jinad_api
 
 
 class RemoteJinaDRuntime(RemoteRuntime):
-    """REST based Pea for remote Pea management
+    """A RemoteJinaDRuntime that will spawn a remote `BasePea` or `BasePod` via REST communication with a jinad instance
     """
     def __init__(self, args: Union['Namespace', Dict], kind: str):
         super().__init__(args, kind=kind)

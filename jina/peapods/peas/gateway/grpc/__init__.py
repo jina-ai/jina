@@ -28,7 +28,7 @@ class GatewayPea(BasePea):
         self.ctrl_with_ipc = ctrl_with_ipc
 
     def run(self, is_ready_event: 'Event'):
-        """Do not overridden this method when inheriting from :class:`GatewayPea`"""
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         try:
             asyncio.run(self._loop_body(is_ready_event))
         except KeyboardInterrupt:

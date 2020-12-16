@@ -84,6 +84,13 @@ class RuntimeMeta(type):
 
 
 class BaseRuntime(metaclass=RuntimeMeta):
+
+    """BaseRuntime is a process or thread providing the support to run different :class:`BasePea` in different environments.
+    It manages the lifetime of these `BasePea` objects living in `Local`, `Remote`, or `Container` environment.
+
+    Inherited classes must define their own `run` method that is the one that will be run in a separate process or thread than the main process
+    """
+
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__()
         self.args = args
@@ -144,19 +151,23 @@ class BaseRuntime(metaclass=RuntimeMeta):
                 f'{typename(self)} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
 
     def set_ready(self):
-        """Set the status of the pea to ready """
+        """Set the `is_ready_event` to indicate that the `BasePea` managed by the Runtime is ready to start
+         receiving messages"""
         self.is_ready_event.set()
 
     def unset_ready(self):
-        """Set the status of the pea to shutdown """
+        """Clear the `is_ready_event` to indicate that the `BasePea` managed by the Runtime is not anymore ready to start
+         receiving messages"""
         self.is_ready_event.clear()
 
     def set_shutdown(self):
+        """Set the `is_shutdown` event to indicate that the `BasePea` managed by the Runtime is closed and the parallel process
+        can be shutdown"""
         self.is_shutdown.set()
 
     @property
     def status(self):
-        """Send the control signal ``STATUS`` to itself and return the status """
+        """Send the control signal ``STATUS`` to the manages `BasePea` and return the status """
         return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
 
     @property
@@ -169,10 +180,12 @@ class BaseRuntime(metaclass=RuntimeMeta):
         raise NotImplementedError
 
     def send_terminate_signal(self):
-        """Send a terminate signal to the Pea supported by this LocalRuntime """
+        """Send a terminate signal to the `BasePea` supported by this `Runtime` """
         return send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
 
     def close(self) -> None:
+        """Close this `Runtime` by sending a `terminate signal` to the managed `BasePea`. Wait to
+         be sure that the `BasePea` is properly closed to join the parallel process """
         self.send_terminate_signal()
         self.is_shutdown.wait()
         self.logger.close()

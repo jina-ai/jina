@@ -9,6 +9,13 @@ __all__ = ['RemoteRuntime']
 
 
 class RemoteRuntime(BaseRuntime):
+    """A RemoteRuntime that will spawn a remote `BasePea` or `BasePod`.
+
+    Inside the run method, a remote container is started and its lifetime monitored and managed.
+
+    Classes inheriting from it must inherit :meth:`_monitor_remote`
+
+    """
 
     def __init__(self, args: Union['argparse.Namespace', Dict], kind: str):
         super().__init__(args)
@@ -59,6 +66,13 @@ class RemoteRuntime(BaseRuntime):
                                   timeout=self.ctrl_timeout)
 
     def close(self) -> None:
+        """Close this `Runtime` by sending a `terminate signal` to the managed `BasePea`.
+         Instead of waiting for BasePea to be closed, force shutdown to be set so that monitoring
+         ends.
+
+        :note: In this case, there is no risk at killing this `Process` without waiting for `BasePea` to properly
+        close since the `LocalRuntime` in the remote machine will ensure that the `BasePea` is properly closed.
+         """
         # Needed to override from Runtime because this forces shutdown event to end monitoring remote
         self.send_terminate_signal()
         self.unset_ready()

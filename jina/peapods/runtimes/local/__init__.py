@@ -11,6 +11,10 @@ __all__ = ['LocalRuntime']
 
 class LocalRuntime(BaseRuntime):
 
+    """LocalRuntime is a process or thread providing the support to run different :class:`BasePea` locally.
+
+        Inside the run method, the :class:`BasePea` is context managed to guarantee a robust closing of the Pea context
+    """
     def __init__(self,
                  args: Union['argparse.Namespace', Dict],
                  gateway: bool = False,

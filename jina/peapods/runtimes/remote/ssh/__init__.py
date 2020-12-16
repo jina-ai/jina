@@ -9,7 +9,7 @@ from jina.logging import JinaLogger
 
 
 class RemoteSSHRuntime(RemoteRuntime):
-    """Simple SSH based RemoteSSHPea for remote Pea management
+    """Simple SSH based RemoteSSHRuntime for remote Pea management
 
     .. note::
         It requires one to upload host public key to the remote
