@@ -9,6 +9,7 @@ import numpy as np
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
 from ...helper import call_obj_fn, cached_property, get_readable_size
+from jina.drivers.index import KVIndexDriver, VectorIndexDriver
 
 
 class BaseIndexer(BaseExecutor):
@@ -171,6 +172,8 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
+    test_drivers = (VectorIndexDriver, )
+
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
         """ Get the vectors by id, return a subset of indexed vectors
 
@@ -213,6 +216,8 @@ class BaseKVIndexer(BaseIndexer):
 
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
+
+    test_drivers = (KVIndexDriver, )
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError

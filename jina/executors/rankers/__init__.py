@@ -6,6 +6,7 @@ from typing import Dict
 import numpy as np
 
 from .. import BaseExecutor
+from jina.drivers.rank import Chunk2DocRankDriver, Matches2DocRankDriver, CollectMatches2DocRankDriver
 
 
 class BaseRanker(BaseExecutor):
@@ -29,6 +30,8 @@ class Chunk2DocRanker(BaseRanker):
         :mod:`jina.drivers.handlers.score`
 
     """
+
+    test_drivers = (Chunk2DocRankDriver, CollectMatches2DocRankDriver)
 
     required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
     COL_MATCH_PARENT_HASH = 'match_parent_hash'
@@ -104,6 +107,8 @@ class Match2DocRanker(BaseRanker):
         - ReverseRanker (reverse scores of all matches)
         - BucketShuffleRanker (first buckets matches and then sort each bucket)
     """
+
+    test_drivers = (Matches2DocRankDriver, )
 
     COL_MATCH_HASH = 'match_hash'
     COL_SCORE = 'score'

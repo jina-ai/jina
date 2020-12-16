@@ -6,6 +6,7 @@ from typing import Sequence
 import numpy as np
 
 from ... import BaseExecutor
+from jina.drivers.multimodal import MultiModalDriver
 
 
 class BaseMultiModalEncoder(BaseExecutor):
@@ -13,6 +14,8 @@ class BaseMultiModalEncoder(BaseExecutor):
     :class:`BaseMultiModalEncoder` encodes data from multiple inputs (``text``, ``buffer``, ``blob`` or other ``embeddings``)
     into a single ``embedding``
     """
+
+    test_drivers = (MultiModalDriver, )
 
     def __init__(self,
                  positional_modality: Sequence[str],

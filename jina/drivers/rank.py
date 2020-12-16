@@ -6,7 +6,6 @@ from typing import Dict, List, Tuple
 import numpy as np
 
 from . import BaseExecutableDriver
-from ..executors.rankers import Chunk2DocRanker
 from ..types.document import uid, Document
 
 if False:
@@ -76,10 +75,10 @@ class Chunk2DocRankDriver(BaseRankDriver):
             match_idx = np.array(
                 match_idx,
                 dtype=[
-                    (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
-                    (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
-                    (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
-                    (Chunk2DocRanker.COL_SCORE, np.float64)
+                    (self.exec.COL_MATCH_PARENT_HASH, np.int64),
+                    (self.exec.COL_MATCH_HASH, np.int64),
+                    (self.exec.COL_DOC_CHUNK_HASH, np.int64),
+                    (self.exec.COL_SCORE, np.float64)
                 ]
             )
 
@@ -153,10 +152,10 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         if match_idx:
             match_idx = np.array(match_idx,
                                  dtype=[
-                                     (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
-                                     (Chunk2DocRanker.COL_MATCH_HASH, np.int64),
-                                     (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.int64),
-                                     (Chunk2DocRanker.COL_SCORE, np.float64)
+                                     (self.exec.COL_MATCH_PARENT_HASH, np.int64),
+                                     (self.exec.COL_MATCH_HASH, np.int64),
+                                     (self.exec.COL_DOC_CHUNK_HASH, np.int64),
+                                     (self.exec.COL_SCORE, np.float64)
                                  ]
                                  )
 

@@ -4,11 +4,14 @@ __license__ = "Apache-2.0"
 from typing import Any
 
 from .. import BaseEvaluator
+from jina.drivers.evaluate import TextEvaluateDriver
 
 
 class BaseTextEvaluator(BaseEvaluator):
     """A :class:`BaseTextEvaluator` evaluates the difference between actual and desired text
     """
+
+    test_drivers = (TextEvaluateDriver, )
 
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
         """"

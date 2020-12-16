@@ -424,6 +424,19 @@ class BaseExecutor(metaclass=ExecutorType):
             tmp_s = stream.getvalue().strip().replace('__tag: ', '!')
             return yaml.load(tmp_s)
 
+    @classmethod
+    def get_executor_cls(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
+                            pea_id: int = 0, read_only: bool = False) -> AnyExecutor:
+        """Build an executor from a YAML file.
+
+        :param source: the file path of the YAML file or a ``TextIO`` stream to be loaded from
+        :param separated_workspace: the dump and data files associated to this executor will be stored separately for
+                each parallel pea, which will be indexed by the ``pea_id``
+        :param pea_id: the id of the storage of this parallel pea, only effective when ``separated_workspace=True``
+        :return: an executor object
+        """
+        return cls.load_config(source, separated_workspace, pea_id, read_only)
+
     @staticmethod
     def load(filename: str = None) -> AnyExecutor:
         """Build an executor from a binary file

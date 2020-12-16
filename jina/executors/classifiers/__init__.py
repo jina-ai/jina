@@ -1,4 +1,5 @@
 from .. import BaseExecutor
+from jina.drivers.predict import BinaryPredictDriver
 
 if False:
     import numpy as np
@@ -12,6 +13,8 @@ class BaseClassifier(BaseExecutor):
 
     This class should not be used directly. Subclasses should be used.
     """
+
+    test_drivers = (BinaryPredictDriver, )
 
     def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """ Perform hard/soft classification on ``data``, the predicted value for each sample in X is returned.

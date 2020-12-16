@@ -4,12 +4,15 @@ __license__ = "Apache-2.0"
 from typing import Sequence, Any
 
 from .. import BaseEvaluator
+from jina.drivers.evaluate import RankEvaluateDriver
 
 
 class BaseRankingEvaluator(BaseEvaluator):
     """A :class:`BaseRankingEvaluator` evaluates the content of matches against the expected GroundTruth.
     It is used to evaluate messages coming out from Indexers and Rankers and compares matches with groundtruths
     """
+
+    test_drivers = (RankEvaluateDriver, )
 
     def __init__(self, eval_at: int, *args, **kwargs):
         """"

@@ -5,6 +5,7 @@ from typing import Any
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
+from jina.drivers.encode import EncodeDriver
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -19,6 +20,8 @@ class BaseEncoder(BaseExecutor):
     .. seealso::
         :mod:`jina.drivers.handlers.encode`
     """
+
+    test_drivers = (EncodeDriver, )
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
         raise NotImplementedError

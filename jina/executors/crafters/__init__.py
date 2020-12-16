@@ -6,6 +6,7 @@ from typing import Dict, List
 
 from .. import BaseExecutor
 from ...helper import typename
+from jina.drivers.craft import CraftDriver, SegmentDriver
 
 
 class BaseCrafter(BaseExecutor):
@@ -14,6 +15,8 @@ class BaseCrafter(BaseExecutor):
     transformations to single documents.
     The apply function is :func:`craft`, where the name of the arguments will be used as keys of the content.
     """
+
+    test_drivers = (CraftDriver, )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,6 +36,8 @@ class BaseCrafter(BaseExecutor):
 class BaseSegmenter(BaseCrafter):
     """:class:`BaseSegmenter` works on doc-level,
         it receives value on the doc-level and returns new value on the chunk-level """
+
+    test_drivers = (SegmentDriver, )
 
     def craft(self, *args, **kwargs) -> List[Dict]:
         """The apply function of this executor.

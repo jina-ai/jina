@@ -4,11 +4,14 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 from .. import BaseEvaluator
+from jina.drivers.evaluate import NDArrayEvaluateDriver
 
 
 class BaseEmbeddingEvaluator(BaseEvaluator):
     """A :class:`BaseEmbeddingEvaluator` evaluates the difference between actual and desired embeddings
     """
+
+    test_drivers = (NDArrayEvaluateDriver, )
 
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
