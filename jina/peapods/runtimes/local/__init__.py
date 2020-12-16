@@ -4,7 +4,7 @@ from typing import Dict, Union
 
 from jina import __stop_msg__
 from jina.peapods.runtimes import RunTime
-from jina.peapods import Pea
+from jina.peapods.peas import Pea
 
 __all__ = ['LocalRunTime']
 
@@ -22,10 +22,10 @@ class LocalRunTime(RunTime):
         if 'env' in self.args and self.args.env:
             self._envs.update(self.args.env)
         self.pea = Pea(self.args,
-                       ctrl_addr=self.ctrl_addr,
-                       ctrl_with_ipc=self.ctrl_with_ipc,
                        gateway=gateway,
-                       rest_api=rest_api)
+                       rest_api=rest_api,
+                       ctrl_addr=self.ctrl_addr,
+                       ctrl_with_ipc=self.ctrl_with_ipc)
 
     def set_environment_vars(self):
         """Set environment variable to this pea

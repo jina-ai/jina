@@ -306,3 +306,29 @@ class BasePea(ExitStack):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self._teardown()
+
+
+def Pea(args: Optional['argparse.Namespace'] = None,
+        gateway: bool = False,
+        rest_api: bool = False,
+        **kwargs):
+    """Initialize a :class:`BasePea`, :class:`HeadPea`, :class:`TailPea`, or :class:`GatewayPea` or :class: `RESTGatewayPea`
+
+    :param args: arguments from CLI
+    :param ctrl_addr: control address where runtime will send terminate signals to GatewayPea
+    :param ctrl_with_ipc: parameter to set ipc protocol
+    :param gateway: true if gateway pea to be instantiated
+    :param rest_api: true if gateway pea to be instantiated with REST (only considered if gateway is True)
+
+    """
+    if gateway:
+        from .gateway import GatewayPea, RESTGatewayPea
+        return RESTGatewayPea(args, **kwargs) if rest_api else GatewayPea(args, **kwargs)
+    elif args.role == PeaRoleType.HEAD:
+        from .headtail import HeadPea
+        return HeadPea(args)
+    elif args.role == PeaRoleType.TAIL:
+        from .headtail import TailPea
+        return TailPea(args)
+    else:
+        return BasePea(args)

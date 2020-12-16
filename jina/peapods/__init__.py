@@ -4,10 +4,9 @@ __license__ = "Apache-2.0"
 from typing import Optional
 
 from .. import __default_host__
-from ..enums import PeaRoleType, RemoteAccessType
+from ..enums import RemoteAccessType
 from ..helper import is_valid_local_config_source
 from ..logging import default_logger
-from jina.peapods.peas.gateway import GatewayPea, RESTGatewayPea
 
 if False:
     import argparse
@@ -91,32 +90,3 @@ def Pod(args: Optional['argparse.Namespace'] = None,
     else:
         from .pods import BasePod
         return BasePod(args)
-
-
-def Pea(args: Optional['argparse.Namespace'] = None,
-        ctrl_addr: Optional[str] = None,
-        ctrl_with_ipc: Optional[bool] = None,
-        gateway: bool = False,
-        rest_api: bool = False):
-    """Initialize a :class:`BasePea`, :class:`HeadPea`, :class:`TailPea`, or :class:`GatewayPea` or :class: `RESTGatewayPea`
-
-    :param args: arguments from CLI
-    :param ctrl_addr: control address where runtime will send terminate signals to GatewayPea
-    :param ctrl_with_ipc: parameter to set ipc protocol
-    :param gateway: true if gateway pea to be instantiated
-    :param rest_api: true if gateway pea to be instantiated with REST (only considered if gateway is True)
-
-    """
-    if gateway:
-        from .peas.gateway import GatewayPea
-        return RESTGatewayPea(args, ctrl_addr, ctrl_with_ipc) if rest_api else GatewayPea(args, ctrl_addr,
-                                                                                          ctrl_with_ipc)
-    elif args.role == PeaRoleType.HEAD:
-        from .peas.headtail import HeadPea
-        return HeadPea(args)
-    elif args.role == PeaRoleType.TAIL:
-        from .peas.headtail import TailPea
-        return TailPea(args)
-    else:
-        from .peas import BasePea
-        return BasePea(args)
