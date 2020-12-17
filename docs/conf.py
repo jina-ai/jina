@@ -97,7 +97,7 @@ apidoc_excluded_paths = ['tests', 'legacy']
 apidoc_separate_modules = True
 apidoc_extra_args = ['-t', 'template/']
 autodoc_member_order = 'bysource'
-autodoc_mock_imports = ['argparse', 'numpy', 'np']
+autodoc_mock_imports = ['argparse', 'numpy', 'np', 'tensorflow', 'torch']
 autoclass_content = 'both'
 set_type_checking_flag = False
 
