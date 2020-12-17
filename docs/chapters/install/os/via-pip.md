@@ -102,3 +102,17 @@ If you are a Windows user, one workaround is to [run Jina on Windows Subsystem f
 
 ## Other OSes
 Please refer to [run Jina in a Docker container](via-docker.md). If you manage to run Jina on other OSes after some tweaks, please submit your changes [here](https://github.com/jina-ai/jina/issues/new).
+
+# Upgrade Jina
+
+If you have a previously installed version of Jina, you can upgrade it by running:
+
+```bash
+pip install -U jina
+```
+
+For Docker users: 
+
+```bash
+docker pull jinaai/jina
+```

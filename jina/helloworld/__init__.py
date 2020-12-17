@@ -74,7 +74,7 @@ def hello_world(args):
     # run it!
     with f:
         f.search(input_fn=query_generator(num_docs=args.num_query, target=targets), shuffle=True,
-                 output_fn=print_result,
+                 on_done=print_result,
                  batch_size=args.query_batch_size,
                  top_k=args.top_k)
 
@@ -87,7 +87,7 @@ def hello_world(args):
     # run it!
     with f:
         f.search(evaluate_generator(num_docs=args.num_query, target=targets), shuffle=True, size=args.num_query,
-                 output_fn=compute_mean_evaluation, batch_size=args.query_batch_size,
+                 on_done=compute_mean_evaluation, batch_size=args.query_batch_size,
                  top_k=args.top_k)
 
     # write result to html

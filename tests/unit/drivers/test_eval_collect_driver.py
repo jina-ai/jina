@@ -29,6 +29,6 @@ def test_collect_evals_driver(mocker):
             .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
 
     with flow:
-        flow.index(input_fn=input_fn, output_fn=response_mock, callback_on='body')
+        flow.index(input_fn=input_fn, on_done=response_mock, callback_on='body')
 
     response_mock.assert_called()
