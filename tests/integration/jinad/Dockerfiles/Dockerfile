@@ -18,7 +18,7 @@ RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
 WORKDIR /
 
 RUN apt-get update && \
-      apt-get install -y git ruby-dev build-essential && \
-      gem install fluentd --no-doc
+    apt-get install -y git ruby-dev build-essential && \
+    gem install fluentd --no-doc
 
 ENTRYPOINT ["jina"]

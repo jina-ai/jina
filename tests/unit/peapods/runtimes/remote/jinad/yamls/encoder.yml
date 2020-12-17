@@ -1,7 +1,7 @@
 !DummyExecutor
 metas:
   name: myenc
-  py_modules: tests/unit/peapods/remote/yamls/dummy.py
+  py_modules: tests/unit/peapods/runtimes/remote/jinad/yamls/dummy.py
 requests:
   on:
     [IndexRequest, SearchRequest]:
