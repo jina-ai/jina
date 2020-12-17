@@ -9,7 +9,7 @@ from typing import List, Union, Iterator, Any
 import numpy as np
 
 
-def input_lines(
+def _input_lines(
         lines: Iterator[str] = None,
         filepath: str = None,
         size: int = None,
@@ -24,6 +24,9 @@ def input_lines(
     :param sampling_rate: the sampling rate between [0, 1]
     :param read_mode: specifies the mode in which the file
             is opened. 'r' for reading in text mode, 'rb' for reading in binary
+
+    .. note::
+        This function should not be directly used, use :meth:`Flow.index_lines`, :meth:`Flow.search_lines` instead
     """
 
     def sample(iterable):
@@ -42,7 +45,7 @@ def input_lines(
         raise ValueError('"filepath" and "lines" can not be both empty')
 
 
-def input_files(
+def _input_files(
         patterns: Union[str, List[str]],
         recursive: bool = True,
         size: int = None,
@@ -59,6 +62,9 @@ def input_files(
     :param read_mode: specifies the mode in which the file
             is opened. 'r' for reading in text mode, 'rb' for reading in binary mode.
             If `read_mode` is None, will iterate over filenames
+
+    .. note::
+        This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
     """
     if read_mode not in {'r', 'rb', None}:
         raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
@@ -81,7 +87,7 @@ def input_files(
             break
 
 
-def input_numpy(
+def _input_ndarray(
         array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
 ) -> Iterator[Any]:
     """Input function that iterates over a numpy array, it can be used in the Flow API
@@ -90,6 +96,9 @@ def input_numpy(
     :param axis: iterate over that axis
     :param size: the maximum number of the sub arrays
     :param shuffle: shuffle the numpy data source beforehand
+
+    .. note::
+        This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead
     """
     if shuffle:
         # shuffle for random query
@@ -100,3 +109,7 @@ def input_numpy(
         d += 1
         if size is not None and d >= size:
             break
+
+
+# for back-compatibility
+_input_numpy = _input_ndarray

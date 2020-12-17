@@ -19,7 +19,7 @@ from ruamel.yaml import StringIO
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
 from ..clients import InputFnType, Client
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, DataInputType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import yaml, get_non_defaults_args, deprecated_alias, complete_path, colored, \
     get_public_ip, get_internal_ip, typename, get_parsed_args
@@ -601,9 +601,9 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.sugary_io import input_numpy
-        self._get_client(**kwargs).index(input_numpy(array, axis, size, shuffle),
-                                         output_fn, **kwargs)
+        from ..clients.sugary_io import _input_ndarray
+        self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
+                                         output_fn, data_type=DataInputType.CONTENT, **kwargs)
 
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        output_fn: Callable[['Request'], None] = None,
@@ -617,9 +617,9 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.sugary_io import input_numpy
-        self._get_client(**kwargs).search(input_numpy(array, axis, size, shuffle),
-                                          output_fn, **kwargs)
+        from ..clients.sugary_io import _input_ndarray
+        self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
+                                          output_fn, data_type=DataInputType.CONTENT, **kwargs)
 
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
@@ -636,9 +636,9 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.sugary_io import input_lines
-        self._get_client(**kwargs).index(input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                         output_fn, **kwargs)
+        from ..clients.sugary_io import _input_lines
+        self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
+                                         output_fn, data_type=DataInputType.CONTENT, **kwargs)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -656,9 +656,9 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.sugary_io import input_files
-        self._get_client(**kwargs).index(input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                         output_fn, **kwargs)
+        from ..clients.sugary_io import _input_files
+        self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
+                                         output_fn, data_type=DataInputType.CONTENT, **kwargs)
 
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -676,9 +676,9 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.sugary_io import input_files
-        self._get_client(**kwargs).search(input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                          output_fn, **kwargs)
+        from ..clients.sugary_io import _input_files
+        self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
+                                          output_fn, data_type=DataInputType.CONTENT, **kwargs)
 
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
@@ -695,9 +695,9 @@ class Flow(ExitStack):
         :param output_fn: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        from ..clients.sugary_io import input_lines
-        self._get_client(**kwargs).search(input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                          output_fn, **kwargs)
+        from ..clients.sugary_io import _input_lines
+        self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
+                                          output_fn, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='output_fn')
     def index(self, input_fn: InputFnType = None,
@@ -784,8 +784,7 @@ class Flow(ExitStack):
     def _mermaid_str(self):
         mermaid_graph = ["%%{init: {'theme': 'base', "
                          "'themeVariables': { 'primaryColor': '#32C8CD', "
-                         "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%"]
-        mermaid_graph.append('graph LR')
+                         "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%", 'graph LR']
 
         start_repl = {}
         end_repl = {}
