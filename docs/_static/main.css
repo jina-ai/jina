@@ -1,6 +1,7 @@
 @font-face {
     font-family: titleFont;
-    src: url(Comfortaa-VariableFont_wght.ttf);
+    src: url(OpenSans-Regular.ttf);
+    font-weight: bold;
 }
 
 @font-face {
@@ -259,7 +260,7 @@ body {
 }
 
 .wy-menu-vertical li a {
-    font-size: inherit;
+    font-size: 0.8rem;
     margin: 0;
     line-height: 2.5;
     color: white;
