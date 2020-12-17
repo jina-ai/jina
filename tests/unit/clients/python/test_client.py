@@ -4,7 +4,7 @@ import pytest
 import requests
 
 from jina.clients import Client
-from jina.clients.sugary_io import input_files
+from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
 from jina.helper import random_port
@@ -84,4 +84,4 @@ def test_mime_type():
             assert d.mime_type == 'text/x-python'
 
     with f:
-        f.index(input_files('*.py'), validate_mime_type)
+        f.index(_input_files('*.py'), validate_mime_type)

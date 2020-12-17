@@ -7,7 +7,8 @@ from pathlib import Path
 from pkg_resources import resource_filename
 
 from .components import *
-from .helper import print_result, write_html, download_data
+from .helper import print_result, write_html, download_data, \
+    evaluate_generator, compute_mean_evaluation, index_generator, query_generator
 from ..flow import Flow
 from ..helper import countdown, colored
 
@@ -24,6 +25,14 @@ def hello_world(args):
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
     targets = {
+        'index-labels': {
+            'url': args.index_labels_url,
+            'filename': os.path.join(args.workdir, 'index-labels')
+        },
+        'query-labels': {
+            'url': args.query_labels_url,
+            'filename': os.path.join(args.workdir, 'query-labels')
+        },
         'index': {
             'url': args.index_data_url,
             'filename': os.path.join(args.workdir, 'index-original')
@@ -50,9 +59,11 @@ def hello_world(args):
     # now comes the real work
     # load index flow from a YAML file
     f = Flow.load_config(args.uses_index)
+
     # run it!
     with f:
-        f.index_ndarray(targets['index']['data'], batch_size=args.index_batch_size)
+        f.index(input_fn=index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
+                batch_size=args.index_batch_size)
 
     # wait for couple of seconds
     countdown(8, reason=colored('behold! im going to switch to query mode', 'cyan',
@@ -62,9 +73,22 @@ def hello_world(args):
     f = Flow.load_config(args.uses_query)
     # run it!
     with f:
-        f.search_ndarray(targets['query']['data'], shuffle=True, size=args.num_query,
-                         output_fn=print_result, batch_size=args.query_batch_size,
-                         top_k=args.top_k)
+        f.search(input_fn=query_generator(num_docs=args.num_query, target=targets), shuffle=True,
+                 output_fn=print_result,
+                 batch_size=args.query_batch_size,
+                 top_k=args.top_k)
+
+    # wait for couple of seconds
+    countdown(8, reason=colored('behold! im going to switch to evaluate', 'cyan',
+                                attrs=['underline', 'bold', 'reverse']))
+
+    # now load evaluate flow from another YAML file
+    f = Flow.load_config(args.uses_evaluate)
+    # run it!
+    with f:
+        f.search(evaluate_generator(num_docs=args.num_query, target=targets), shuffle=True, size=args.num_query,
+                 output_fn=compute_mean_evaluation, batch_size=args.query_batch_size,
+                 top_k=args.top_k)
 
     # write result to html
     write_html(os.path.join(args.workdir, 'hello-world.html'))

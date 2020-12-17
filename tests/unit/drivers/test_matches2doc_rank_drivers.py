@@ -1,8 +1,8 @@
 import numpy as np
 
+from jina import Document
 from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker
-from jina.proto import jina_pb2
 from jina.types.sets import DocumentSet
 
 
@@ -41,17 +41,15 @@ def create_document_to_score():
     # |- matches: (id: 3, parent_id: 1, score.value: 3),
     # |- matches: (id: 4, parent_id: 1, score.value: 4),
     # |- matches: (id: 5, parent_id: 1, score.value: 5),
-
-    doc = jina_pb2.DocumentProto()
+    doc = Document()
     doc.id = '1' * 16
     doc.length = 5
     for match_id, match_score in [(2, 3), (3, 6), (4, 1), (5, 8)]:
-        match = doc.matches.add()
-        match.id = str(match_id) * 16
-        match.parent_id = '1' * 16
-        match.length = match_score
-        match.score.ref_id = doc.id
-        match.score.value = match_score
+        with Document() as match:
+            match.id = str(match_id) * 16
+            match.length = match_score
+            match.score.value = match_score
+            doc.matches.append(match)
     return doc
 
 
