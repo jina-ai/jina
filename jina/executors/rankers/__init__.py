@@ -36,6 +36,7 @@ class Chunk2DocRanker(BaseRanker):
     COL_MATCH_HASH = 'match_hash'
     COL_MATCH_ID = 'match_hash'
     COL_DOC_CHUNK_HASH = 'doc_chunk_hash'
+    COL_DOC_CHUNK_ID = 'doc_chunk_hash'
     COL_SCORE = 'score'
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
