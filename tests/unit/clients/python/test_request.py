@@ -4,13 +4,20 @@ import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
-from jina import Document
+from jina import Document, Flow
 from jina.clients.request import _generate, _build_doc
 from jina.enums import DataInputType
 from jina.excepts import BadDocType
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
+
+
+def test_on_bad_iterator():
+    # this should not stuck the server as request_generator's error is handled on the client side
+    f = Flow().add()
+    with f:
+        f.index([1, 2, 3])
 
 
 @pytest.mark.parametrize('builder', [lambda x: x.SerializeToString(),

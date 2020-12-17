@@ -6,7 +6,7 @@ import pytest
 
 from cli import _is_latest_version
 from jina import NdArray, Request
-from jina.clients.helper import safe_callback, pprint_routes
+from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
 from jina.helper import cached_property, convert_tuple_to_list, complete_path
@@ -168,10 +168,10 @@ def test_safe_callback():
     def t1():
         raise NotImplementedError
 
-    st1 = safe_callback(t1, continue_on_error=True, logger=default_logger)
+    st1 = _safe_callback(t1, continue_on_error=True, logger=default_logger)
     st1()
 
-    st1 = safe_callback(t1, continue_on_error=False, logger=default_logger)
+    st1 = _safe_callback(t1, continue_on_error=False, logger=default_logger)
     with pytest.raises(BadClientCallback):
         st1()
 
