@@ -183,5 +183,9 @@ class BadFlowYAMLVersion(Exception):
     """ Exception when Flow YAML config specifies a wrong version number"""
 
 
+class LookupyError(Exception):
+    """Base exception class for all exceptions raised by lookupy"""
+
+
 class EventLoopError(Exception):
     """ Exception when a running event loop is found but not under jupyter or ipython """
