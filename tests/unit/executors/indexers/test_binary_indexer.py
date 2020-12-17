@@ -31,7 +31,7 @@ def test_binarypb_in_flow(test_metas, mocker):
         d.ClearField('embedding')
 
     with f:
-        f.search(docs_no_embedding, output_fn=response_mock, override_doc_id=False)
+        f.search(docs_no_embedding, on_done=response_mock, override_doc_id=False)
 
     response_mock.assert_called()
 

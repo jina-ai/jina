@@ -1,11 +1,8 @@
-from typing import Callable, Optional
-
-from . import Client, InputFnType
+from .base import InputFnType, BaseClient, CallbackFnType
 from ..enums import RequestType
-from ..types.request import Request
 
 
-class AsyncClient(Client):
+class AsyncClient(BaseClient):
     """
     :class:`AsyncClient` is the asynchronous version of the :class:`Client`. They share the same interface, except
     in :class:`AsyncClient` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
@@ -46,17 +43,26 @@ class AsyncClient(Client):
     One can think of :class:`Client` as Jina-managed eventloop, whereas :class:`AsyncClient` is self-managed eventloop.
     """
 
-    async def train(self, input_fn: Optional[InputFnType] = None,
-                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def train(self, input_fn: InputFnType = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
+                    **kwargs) -> None:
         self.mode = RequestType.TRAIN
-        await self._get_results(input_fn, output_fn, **kwargs)
+        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
-    async def search(self, input_fn: Optional[InputFnType] = None,
-                     output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def search(self, input_fn: InputFnType = None,
+                     on_done: CallbackFnType = None,
+                     on_error: CallbackFnType = None,
+                     on_always: CallbackFnType = None,
+                     **kwargs) -> None:
         self.mode = RequestType.SEARCH
-        await self._get_results(input_fn, output_fn, **kwargs)
+        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
-    async def index(self, input_fn: Optional[InputFnType] = None,
-                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    async def index(self, input_fn: InputFnType = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
+                    **kwargs) -> None:
         self.mode = RequestType.INDEX
-        await self._get_results(input_fn, output_fn, **kwargs)
+        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)

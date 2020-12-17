@@ -85,7 +85,7 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
     with Flow.load_config(search_yaml) as evaluate_flow:
         evaluate_flow.search(
             input_fn=evaluate_docs,
-            output_fn=response_mock,
+            on_done=response_mock,
             callback_on='body',
             override_doc_id=False,
         )

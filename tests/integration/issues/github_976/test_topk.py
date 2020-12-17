@@ -44,7 +44,7 @@ def test_topk(config, mocker):
 
     with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(NDOCS),
-                           output_fn=response_mock)
+                           on_done=response_mock)
 
     response_mock.assert_called()
 
@@ -68,6 +68,6 @@ def test_topk_override(config, mocker):
 
     with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(NDOCS),
-                           output_fn=response_mock, queryset=[top_k_queryset])
+                           on_done=response_mock, queryset=[top_k_queryset])
 
     response_mock.assert_called()

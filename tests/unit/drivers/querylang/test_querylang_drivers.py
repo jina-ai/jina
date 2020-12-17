@@ -72,7 +72,7 @@ def test_select_ql(mocker):
     response_mock = mocker.Mock(wrap=validate)
 
     with f:
-        f.index(random_docs(10), output_fn=response_mock, callback_on='body')
+        f.index(random_docs(10), on_done=response_mock, callback_on='body')
 
     f = (Flow().add(uses='DummySegmenter')
          .add(uses='- !ExcludeQL | {fields: [text], traversal_paths: [r, c, m]}'))
@@ -82,7 +82,7 @@ def test_select_ql(mocker):
     response_mock_2 = mocker.Mock(wrap=validate)
 
     with f:
-        f.index(random_docs(10), output_fn=response_mock_2, callback_on='body')
+        f.index(random_docs(10), on_done=response_mock_2, callback_on='body')
 
     response_mock_2.assert_called()
 
@@ -100,7 +100,7 @@ def test_sort_ql(mocker):
         uses='- !SortQL | {field: tags__id, reverse: true, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=response_mock, callback_on='body')
+        f.index(random_docs(10), on_done=response_mock, callback_on='body')
 
     response_mock.assert_called()
 
@@ -111,7 +111,7 @@ def test_sort_ql(mocker):
          .add(uses='- !ReverseQL | {traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=response_mock_2, callback_on='body')
+        f.index(random_docs(10), on_done=response_mock_2, callback_on='body')
 
     response_mock_2.assert_called()
 
@@ -130,7 +130,7 @@ def test_filter_ql(mocker):
         uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=response_mock, callback_on='body')
+        f.index(random_docs(10), on_done=response_mock, callback_on='body')
 
     response_mock.assert_called()
 
@@ -147,7 +147,7 @@ def test_filter_ql_in_tags(mocker):
         uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs_with_tags(), output_fn=response_mock, callback_on='body')
+        f.index(random_docs_with_tags(), on_done=response_mock, callback_on='body')
 
     response_mock.assert_called()
 
@@ -164,7 +164,7 @@ def test_filter_ql_modality_wrong_depth(mocker):
         uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs_to_chunk(), output_fn=response_mock, callback_on='body')
+        f.index(random_docs_to_chunk(), on_done=response_mock, callback_on='body')
 
     response_mock.assert_called()
 
@@ -183,7 +183,7 @@ def test_filter_ql_modality(mocker):
         uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [c]}'))
 
     with f:
-        f.index(random_docs_to_chunk(), output_fn=response_mock, callback_on='body')
+        f.index(random_docs_to_chunk(), on_done=response_mock, callback_on='body')
 
     response_mock.assert_called()
 
@@ -201,6 +201,6 @@ def test_filter_compose_ql(mocker):
         uses='- !FilterQL | {lookups: {tags__id: 2, text__contains: hello}, traversal_paths: [r, c, m]}'))
 
     with f:
-        f.index(random_docs(10), output_fn=response_mock, callback_on='body')
+        f.index(random_docs(10), on_done=response_mock, callback_on='body')
 
     response_mock.assert_called()

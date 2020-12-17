@@ -1,16 +1,15 @@
-from typing import Union, List, Iterator, Callable
-from urllib.request import Request
+from typing import Union, List, Iterator
 
-from . import Flow
-from ..clients import InputFnType
+from .base import BaseFlow
 from ..clients.asyncio import AsyncClient
+from ..clients.base import InputFnType, CallbackFnType
 from ..enums import DataInputType
 
 if False:
     import numpy as np
 
 
-class AsyncFlow(Flow):
+class AsyncFlow(BaseFlow):
     """
     :class:`AsyncFlow` is the asynchronous version of the :class:`Flow`. They share the same interface, except
     in :class:`AsyncFlow` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
@@ -34,7 +33,7 @@ class AsyncFlow(Flow):
         import numpy as np
 
         with AsyncFlow().add() as f:
-            await f.index_ndarray(np.random.random([5, 4]), output_fn=print)
+            await f.index_ndarray(np.random.random([5, 4]), on_done=print)
 
     Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements "autoawait".
 
@@ -52,7 +51,7 @@ class AsyncFlow(Flow):
         async def run_async_flow_5s():
             # WaitDriver pause 5s makes total roundtrip ~5s
             with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-                await f.index_ndarray(np.random.random([5, 4]), output_fn=validate)
+                await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
 
 
         async def heavylifting():
@@ -72,7 +71,9 @@ class AsyncFlow(Flow):
     _cls_client = AsyncClient  #: the type of the Client, can be changed to other class
 
     async def train(self, input_fn: InputFnType = None,
-                    output_fn: Callable[['Request'], None] = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
                     **kwargs):
         """Do training on the current flow
 
@@ -105,13 +106,15 @@ class AsyncFlow(Flow):
                 flow.train(bytes_gen=my_reader())
 
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
-        :param output_fn: the callback function to invoke after training
+        :param on_done: the callback function to invoke after training
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        await self._get_client(**kwargs).train(input_fn, output_fn, **kwargs)
+        await self._get_client(**kwargs).train(input_fn, on_done, **kwargs)
 
     async def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                            output_fn: Callable[['Request'], None] = None,
+                            on_done: CallbackFnType = None,
+                            on_error: CallbackFnType = None,
+                            on_always: CallbackFnType = None,
                             **kwargs):
         """Using numpy ndarray as the index source for the current flow
 
@@ -119,15 +122,17 @@ class AsyncFlow(Flow):
         :param axis: iterate over that axis
         :param size: the maximum number of the sub arrays
         :param shuffle: shuffle the the numpy data source beforehand
-        :param output_fn: the callback function to invoke after indexing
+        :param on_done: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_ndarray
         await self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
-                                               output_fn, data_type=DataInputType.CONTENT, **kwargs)
+                                               on_done, data_type=DataInputType.CONTENT, **kwargs)
 
     async def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
-                             output_fn: Callable[['Request'], None] = None,
+                             on_done: CallbackFnType = None,
+                             on_error: CallbackFnType = None,
+                             on_always: CallbackFnType = None,
                              **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow
 
@@ -135,16 +140,18 @@ class AsyncFlow(Flow):
         :param axis: iterate over that axis
         :param size: the maximum number of the sub arrays
         :param shuffle: shuffle the the numpy data source beforehand
-        :param output_fn: the callback function to invoke after indexing
+        :param on_done: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_ndarray
         await self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
-                                                output_fn, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, data_type=DataInputType.CONTENT, **kwargs)
 
     async def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                           sampling_rate: float = None, read_mode='r',
-                          output_fn: Callable[['Request'], None] = None,
+                          on_done: CallbackFnType = None,
+                          on_error: CallbackFnType = None,
+                          on_always: CallbackFnType = None,
                           **kwargs):
         """ Use a list of lines as the index source for indexing on the current flow
 
@@ -154,16 +161,18 @@ class AsyncFlow(Flow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param output_fn: the callback function to invoke after indexing
+        :param on_done: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
         await self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                               output_fn, data_type=DataInputType.CONTENT, **kwargs)
+                                               on_done, data_type=DataInputType.CONTENT, **kwargs)
 
     async def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                           size: int = None, sampling_rate: float = None, read_mode: str = None,
-                          output_fn: Callable[['Request'], None] = None,
+                          on_done: CallbackFnType = None,
+                          on_error: CallbackFnType = None,
+                          on_always: CallbackFnType = None,
                           **kwargs):
         """ Use a set of files as the index source for indexing on the current flow
 
@@ -174,16 +183,18 @@ class AsyncFlow(Flow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary mode
-        :param output_fn: the callback function to invoke after indexing
+        :param on_done: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
         await self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                               output_fn, data_type=DataInputType.CONTENT, **kwargs)
+                                               on_done, data_type=DataInputType.CONTENT, **kwargs)
 
     async def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                            size: int = None, sampling_rate: float = None, read_mode: str = None,
-                           output_fn: Callable[['Request'], None] = None,
+                           on_done: CallbackFnType = None,
+                           on_error: CallbackFnType = None,
+                           on_always: CallbackFnType = None,
                            **kwargs):
         """ Use a set of files as the query source for searching on the current flow
 
@@ -194,16 +205,18 @@ class AsyncFlow(Flow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in
-        :param output_fn: the callback function to invoke after indexing
+        :param on_done: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
         await self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                                output_fn, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, data_type=DataInputType.CONTENT, **kwargs)
 
     async def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                            sampling_rate: float = None, read_mode='r',
-                           output_fn: Callable[['Request'], None] = None,
+                           on_done: CallbackFnType = None,
+                           on_error: CallbackFnType = None,
+                           on_always: CallbackFnType = None,
                            **kwargs):
         """ Use a list of files as the query source for searching on the current flow
 
@@ -213,15 +226,17 @@ class AsyncFlow(Flow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param output_fn: the callback function to invoke after indexing
+        :param on_done: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
         await self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                                output_fn, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, data_type=DataInputType.CONTENT, **kwargs)
 
     async def index(self, input_fn: InputFnType = None,
-                    output_fn: Callable[['Request'], None] = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
                     **kwargs):
         """Do indexing on the current flow
 
@@ -254,13 +269,15 @@ class AsyncFlow(Flow):
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
-        :param output_fn: the callback function to invoke after indexing
+        :param on_done: the callback function to invoke after indexing
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        await self._get_client(**kwargs).index(input_fn, output_fn, **kwargs)
+        await self._get_client(**kwargs).index(input_fn, on_done, **kwargs)
 
     async def search(self, input_fn: InputFnType = None,
-                     output_fn: Callable[['Request'], None] = None,
+                     on_done: CallbackFnType = None,
+                     on_error: CallbackFnType = None,
+                     on_always: CallbackFnType = None,
                      **kwargs):
         """Do searching on the current flow
 
@@ -294,7 +311,7 @@ class AsyncFlow(Flow):
                 flow.search(bytes_gen=my_reader())
 
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
-        :param output_fn: the callback function to invoke after searching
+        :param on_done: the callback function to invoke after searching
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        await self._get_client(**kwargs).search(input_fn, output_fn, **kwargs)
+        await self._get_client(**kwargs).search(input_fn, on_done, **kwargs)
