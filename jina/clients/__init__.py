@@ -19,6 +19,15 @@ class Client(BaseClient):
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
               **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
         self.mode = RequestType.TRAIN
         run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
@@ -27,6 +36,15 @@ class Client(BaseClient):
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
                **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
         self.mode = RequestType.SEARCH
         run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
@@ -35,5 +53,14 @@ class Client(BaseClient):
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
               **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
         self.mode = RequestType.INDEX
         run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)

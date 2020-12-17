@@ -10,7 +10,7 @@ import threading
 import time
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
+from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
 from urllib.request import Request, urlopen
 
 import ruamel.yaml
@@ -32,10 +32,17 @@ from ..peapods.pods.gateway import GatewayFlowPod
 if False:
     import argparse
 
-FlowLike = TypeVar('FlowLike', bound='BaseFlow')
+FlowLike = TypeVar('FlowLike', bound=BaseFlow)
 
 
 class BaseFlow(ExitStack):
+    """An abstract flow object in Jina.
+
+    .. note::
+        :class:`BaseFlow` does not provide `train`, `index`, `search` interfaces.
+        Please use :class:`Flow` or :class:`AsyncFlow`.
+    """
+
     _cls_pod = FlowPod  #: the type of the Pod, can be changed to other class
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
@@ -794,6 +801,30 @@ class BaseFlow(ExitStack):
             return list(self._pod_nodes.values())[item]
         else:
             raise TypeError(f'{typename(item)} is not supported')
+
+    def index(self):
+        raise NotImplementedError
+
+    def search(self):
+        raise NotImplementedError
+
+    def index_ndarray(self):
+        raise NotImplementedError
+
+    def index_lines(self):
+        raise NotImplementedError
+
+    def index_files(self):
+        raise NotImplementedError
+
+    def search_ndarray(self):
+        raise NotImplementedError
+
+    def search_lines(self):
+        raise NotImplementedError
+
+    def search_files(self):
+        raise NotImplementedError
 
     # for backward support
     join = needs

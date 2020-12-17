@@ -35,8 +35,11 @@ class Flow(BaseFlow):
                     yield b'abcdfeg'   # each yield generates a document for training
             with f.build(runtime='thread') as flow:
                 flow.train(bytes_gen=my_reader())
+
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
-        :param on_done: the callback function to invoke after training
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
@@ -48,6 +51,7 @@ class Flow(BaseFlow):
                       on_always: CallbackFnType = None,
                       **kwargs):
         """Using numpy ndarray as the index source for the current flow
+
         :param array: the numpy ndarray data source
         :param axis: iterate over that axis
         :param size: the maximum number of the sub arrays
@@ -66,11 +70,14 @@ class Flow(BaseFlow):
                        on_always: CallbackFnType = None,
                        **kwargs):
         """Use a numpy ndarray as the query source for searching on the current flow
+
         :param array: the numpy ndarray data source
         :param axis: iterate over that axis
         :param size: the maximum number of the sub arrays
         :param shuffle: shuffle the the numpy data source beforehand
-        :param on_done: the callback function to invoke after indexing
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_ndarray
@@ -91,7 +98,9 @@ class Flow(BaseFlow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param on_done: the callback function to invoke after indexing
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
@@ -113,7 +122,9 @@ class Flow(BaseFlow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary mode
-        :param on_done: the callback function to invoke after indexing
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
@@ -135,7 +146,9 @@ class Flow(BaseFlow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in
-        :param on_done: the callback function to invoke after indexing
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
@@ -156,7 +169,9 @@ class Flow(BaseFlow):
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param on_done: the callback function to invoke after indexing
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
@@ -188,7 +203,9 @@ class Flow(BaseFlow):
                 flow.index(bytes_gen=my_reader())
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
-        :param on_done: the callback function to invoke after indexing
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
@@ -218,7 +235,9 @@ class Flow(BaseFlow):
             with f.build(runtime='thread') as flow:
                 flow.search(bytes_gen=my_reader())
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
-        :param on_done: the callback function to invoke after searching
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs)

@@ -19,13 +19,15 @@ from ..proto import jina_pb2_grpc
 from ..types.request import Request
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
-CallbackFnType = Optional[Callable[['Request', ...], None]]
+CallbackFnType = Optional[Callable[..., None]]
 
 
 class BaseClient:
-    """A simple Python client for connecting to the gateway. This class is for internal only.
+    """A base client for connecting to the gateway.
 
-    Please use :class:`Client` or :class:`AsyncClient`
+    .. note::
+        :class:`BaseClient` does not provide `train`, `index`, `search` interfaces.
+        Please use :class:`Client` or :class:`AsyncClient`.
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -149,3 +151,12 @@ class BaseClient:
                                      'please double check your input iterator') from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
+
+    def index(self):
+        raise NotImplementedError
+
+    def search(self):
+        raise NotImplementedError
+
+    def train(self):
+        raise NotImplementedError
