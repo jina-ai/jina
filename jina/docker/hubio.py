@@ -184,7 +184,7 @@ class HubIO:
             docker_creds = _docker_auth(logger=self.logger)
             if docker_creds['docker_username'] and docker_creds['docker_password']:
                 self.logger.info(f'Fetched docker credentials successfully. Pushing now...')
-                self._push_docker_hub(name, readme_path)
+                self._push_docker_hub(name, readme_path, docker_creds['docker_username'], docker_creds['docker_password'])
             else:
                 self.logger.error(f'Failed to fetch docker login creds. Aborting push.')
 
@@ -208,11 +208,11 @@ class HubIO:
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
-    def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
+    def _push_docker_hub(self, name: str = None, readme_path: str = None, docker_username: str = None, docker_password: str = None) -> None:
         """ Helper push function """
         check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
-        self._docker_login()
+        self._docker_login(docker_username, docker_password)
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
             for line in self._client.images.push(name, stream=True, decode=True):
                 t.update(1)
@@ -280,12 +280,17 @@ class HubIO:
 
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
 
-    def _docker_login(self) -> None:
+    def _docker_login(self, docker_username: str = None, docker_password: str = None) -> None:
         """A wrapper of docker login """
         from docker.errors import APIError
+        login_username = docker_username
+        login_password = docker_password
         if self.args.username and self.args.password:
+            login_username = self.args.username
+            login_password = self.args.password           
+        if login_username and login_password:
             try:
-                self._client.login(username=self.args.username, password=self.args.password,
+                self._client.login(username=login_username, password=login_password,
                                    registry=self.args.registry)
                 self.logger.debug(f'successfully logged in to docker hub')
             except APIError:

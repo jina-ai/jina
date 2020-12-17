@@ -135,11 +135,16 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
         import requests
         response = requests.post(url=f'{hubapi_url}',
                                  headers=headers)
-        if response.status_code == requests.codes.ok:
-            logger.info(response.text)
-            docker_creds = response['body']
-            docker_username = docker_creds['docker_username']
-            logger.info(f'Successfully fetched docker creds for user {docker_username}')
+        if response.status_code == requests.codes.ok:            
+            import json
+            import base64
+            json_response = json.loads(response.text)
+            encoded_username = json_response['docker_username']
+            encoded_password = json_response['docker_password']
+            decoded_username = base64.b64decode(encoded_username).decode('ascii')
+            decoded_password = base64.b64decode(encoded_password).decode('ascii')
+            docker_creds = {'docker_username': decoded_username, 'docker_password': decoded_username} 
+            logger.info(f'Successfully fetched docker creds for user')
             return docker_creds
         else:
             logger.error(f'failed to fetch docker credentials')
