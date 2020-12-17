@@ -473,7 +473,7 @@ def test_index_text_files(mocker):
     f = (Flow(read_only=True).add(uses=str(cur_dir.parent / 'yaml' / 'datauriindex.yml'), timeout_ready=-1))
 
     with f:
-        f.index_files('*.py', output_fn=response_mock, callback_on='body')
+        f.index_files('*.py', on_done=response_mock, callback_on='body')
 
     rm_files(['doc.gzip'])
     response_mock.assert_called()
@@ -492,7 +492,7 @@ def test_flow_with_publish_driver(mocker):
          .join(needs=['r2', 'r3']))
 
     with f:
-        f.index_lines(lines=['text_1', 'text_2'], output_fn=response_mock)
+        f.index_lines(lines=['text_1', 'text_2'], on_done=response_mock)
 
     response_mock.assert_called()
 
@@ -517,7 +517,7 @@ def test_flow_with_modalitys_simple(mocker):
         add(name='encoder12', parallel=2,
             uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
     with flow:
-        flow.index(input_fn=input_fn, output_fn=response_mock)
+        flow.index(input_fn=input_fn, on_done=response_mock)
 
     response_mock.assert_called()
 

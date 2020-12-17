@@ -28,10 +28,21 @@ __all__ = ['batch_iterator', 'yaml',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
            'cached_property', 'is_url', 'complete_path',
-           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list']
+           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
+           'run_async', 'deprecated_alias']
 
 
 def deprecated_alias(**aliases):
+    def rename_kwargs(func_name: str, kwargs, aliases):
+        for alias, new in aliases.items():
+            if alias in kwargs:
+                if new in kwargs:
+                    raise TypeError(f'{func_name} received both {alias} and {new}')
+                warnings.warn(
+                    f'"{alias}" is renamed to {new}" in "{func_name}()" '
+                    f'and "{alias}" will be removed in the next version', DeprecationWarning)
+                kwargs[new] = kwargs.pop(alias)
+
     def deco(f):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
@@ -41,17 +52,6 @@ def deprecated_alias(**aliases):
         return wrapper
 
     return deco
-
-
-def rename_kwargs(func_name: str, kwargs, aliases):
-    for alias, new in aliases.items():
-        if alias in kwargs:
-            if new in kwargs:
-                raise TypeError(f'{func_name} received both {alias} and {new}')
-            warnings.warn(
-                f'"{alias}" is deprecated in "{func_name}()" '
-                f'and will be removed in the next version; please use "{new}" instead', DeprecationWarning)
-            kwargs[new] = kwargs.pop(alias)
 
 
 def get_readable_size(num_bytes: Union[int, float]) -> str:

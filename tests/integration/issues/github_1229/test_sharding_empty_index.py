@@ -68,6 +68,6 @@ def test_sharding_empty_index(tmpdir, execution_number, mocker):
 
     response_mock = mocker.Mock(wraps=callback)
     with f:
-        f.search(query, output_fn=response_mock)
+        f.search(query, on_done=response_mock)
 
     response_mock.assert_called()

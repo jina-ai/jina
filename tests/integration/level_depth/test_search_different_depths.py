@@ -49,7 +49,7 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker):
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
             input_fn=search_data,
-            output_fn=response_mock,
+            on_done=response_mock,
             callback_on='body',
         )
 

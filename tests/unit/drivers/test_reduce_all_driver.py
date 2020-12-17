@@ -59,6 +59,6 @@ def test_merge_chunks_with_different_modality(mocker):
             needs=['encoder1', 'encoder2'])
 
     with flow:
-        flow.index(input_fn=input_fn, output_fn=response_mock)
+        flow.index(input_fn=input_fn, on_done=response_mock)
 
     response_mock.assert_called()
