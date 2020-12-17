@@ -28,7 +28,8 @@ __all__ = ['batch_iterator', 'yaml',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
            'cached_property', 'is_url', 'complete_path',
-           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list', 'run_async']
+           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
+           'run_async', 'deprecated_alias']
 
 
 def deprecated_alias(**aliases):

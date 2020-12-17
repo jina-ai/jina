@@ -4,6 +4,7 @@ from .base import BaseFlow
 from ..clients.asyncio import AsyncClient
 from ..clients.base import InputFnType, CallbackFnType
 from ..enums import DataInputType
+from ..helper import deprecated_alias
 
 if False:
     import numpy as np
@@ -70,6 +71,7 @@ class AsyncFlow(BaseFlow):
     """
     _cls_client = AsyncClient  #: the type of the Client, can be changed to other class
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def train(self, input_fn: InputFnType = None,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
@@ -111,8 +113,9 @@ class AsyncFlow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        await self._get_client(**kwargs).train(input_fn, on_done, **kwargs)
+        await self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                             on_done: CallbackFnType = None,
                             on_error: CallbackFnType = None,
@@ -131,8 +134,9 @@ class AsyncFlow(BaseFlow):
         """
         from ..clients.sugary_io import _input_ndarray
         await self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
-                                               on_done, data_type=DataInputType.CONTENT, **kwargs)
+                                               on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                              on_done: CallbackFnType = None,
                              on_error: CallbackFnType = None,
@@ -151,8 +155,9 @@ class AsyncFlow(BaseFlow):
         """
         from ..clients.sugary_io import _input_ndarray
         await self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
-                                                on_done, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                           sampling_rate: float = None, read_mode='r',
                           on_done: CallbackFnType = None,
@@ -174,8 +179,9 @@ class AsyncFlow(BaseFlow):
         """
         from ..clients.sugary_io import _input_lines
         await self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                               on_done, data_type=DataInputType.CONTENT, **kwargs)
+                                               on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                           size: int = None, sampling_rate: float = None, read_mode: str = None,
                           on_done: CallbackFnType = None,
@@ -198,8 +204,9 @@ class AsyncFlow(BaseFlow):
         """
         from ..clients.sugary_io import _input_files
         await self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                               on_done, data_type=DataInputType.CONTENT, **kwargs)
+                                               on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                            size: int = None, sampling_rate: float = None, read_mode: str = None,
                            on_done: CallbackFnType = None,
@@ -222,8 +229,9 @@ class AsyncFlow(BaseFlow):
         """
         from ..clients.sugary_io import _input_files
         await self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                                on_done, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                            sampling_rate: float = None, read_mode='r',
                            on_done: CallbackFnType = None,
@@ -245,8 +253,9 @@ class AsyncFlow(BaseFlow):
         """
         from ..clients.sugary_io import _input_lines
         await self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                                on_done, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def index(self, input_fn: InputFnType = None,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
@@ -288,8 +297,9 @@ class AsyncFlow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        await self._get_client(**kwargs).index(input_fn, on_done, **kwargs)
+        await self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def search(self, input_fn: InputFnType = None,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
@@ -332,4 +342,4 @@ class AsyncFlow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        await self._get_client(**kwargs).search(input_fn, on_done, **kwargs)
+        await self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs)
