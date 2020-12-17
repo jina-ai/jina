@@ -35,4 +35,4 @@ def test_on_bad_iterator():
     # this should not stuck the server as request_generator's error is handled on the client side
     f = Flow().add()
     with f:
-        f.index([1, 2, 3])
+        f.index([1, 2, 3], continue_on_error=True)
