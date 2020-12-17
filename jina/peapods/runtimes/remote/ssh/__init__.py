@@ -1,13 +1,15 @@
+import argparse
 from subprocess import Popen, PIPE
 
-from .. import BasePea
-from .... import __ready_msg__, __stop_msg__
-from ....helper import get_non_defaults_args, kwargs2list
-from ....logging import JinaLogger
+from typing import Union, Dict
+from jina.peapods.runtimes.remote import BaseRemoteRuntime
+from jina import __ready_msg__, __stop_msg__
+from jina.helper import get_non_defaults_args, kwargs2list
+from jina.logging import JinaLogger
 
 
-class RemoteSSHPea(BasePea):
-    """Simple SSH based RemoteSSHPea for remote Pea management
+class SSHRuntime(BaseRemoteRuntime):
+    """Simple SSH based SSHRuntime for remote Pea management
 
     .. note::
         It requires one to upload host public key to the remote
@@ -21,16 +23,39 @@ class RemoteSSHPea(BasePea):
     """
 
     @property
-    def remote_command(self) -> str:
-        from ....parser import set_pea_parser
+    def is_idle(self) -> bool:
+        raise NotImplementedError
+
+    def __init__(self, args: Union['argparse.Namespace', Dict], kind: str):
+        super().__init__(args, kind=kind)
+
+    @property
+    def pea_command(self) -> str:
+        from jina.parser import set_pea_parser
         non_defaults = get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
         _args = kwargs2list(non_defaults)
         return f'jina pea {" ".join(_args)}'
 
+    @property
+    def pod_command(self) -> str:
+        from jina.parser import set_pod_parser
+        non_defaults = get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
+        _args = kwargs2list(non_defaults)
+        return f'jina pod {" ".join(_args)}'
+
+    @property
+    def remote_command(self) -> str:
+        if self.kind == 'pea':
+            return self.pea_command
+        elif self.kind == 'pod':
+            return self.pod_command
+        else:
+            raise ValueError(f'kind must be pea/pod but it is {self.kind}')
+
     def spawn_remote(self, ssh_proc: 'Popen') -> None:
         ssh_proc.stdin.write(self.remote_command + '\n')
 
-    def loop_body(self):
+    def _monitor_remote(self):
         logger = JinaLogger('🌏', **vars(self.args))
         with Popen(['ssh', self.args.host], stdout=PIPE, stdin=PIPE, bufsize=0, universal_newlines=True) as p:
             self.spawn_remote(p)
@@ -48,25 +73,3 @@ class RemoteSSHPea(BasePea):
             p.stdin.close()
             p.stdout.close()
         self.is_shutdown.set()
-
-
-class RemoteSSHPod(RemoteSSHPea):
-    """SSH based pod to be used while invoking remote Pod
-    """
-
-    @property
-    def remote_command(self) -> str:
-        from ....parser import set_pod_parser
-        non_defaults = get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
-        _args = kwargs2list(non_defaults)
-        return f'jina pod {" ".join(_args)}'
-
-
-class RemoteSSHMutablePod(RemoteSSHPod):
-    """
-    SSH based mutable pod, internally it has to maintain the context of multiple separated peas.
-    Subprocess-based simple ssh session is probably no good for that, but simple ssh remotepod is
-    """
-
-    def spawn_remote(self, ssh_proc: 'Popen') -> None:
-        raise NotImplementedError

@@ -2,120 +2,43 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
-import multiprocessing
 import os
-import threading
 import time
 from collections import defaultdict
-from multiprocessing.synchronize import Event
+from contextlib import ExitStack
 from typing import Dict, Optional, Union, List
+from multiprocessing.synchronize import Event
 
 import zmq
 
-from ..zmq import send_ctrl_message, Zmqlet, ZmqStreamlet
+from ..zmq import ZmqStreamlet
 from ... import Message
-from ... import __ready_msg__, __stop_msg__, Request
+from ... import Request
 from ...enums import PeaRoleType, SkipOnErrorType
 from ...excepts import RequestLoopEnd, NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, \
-    PeaFailToStart, \
     ChainedPodException
 from ...executors import BaseExecutor
-from ...helper import is_valid_local_config_source, typename
+from ...helper import is_valid_local_config_source
 from ...logging import JinaLogger
 from ...logging.profile import used_memory, TimeDict
 from ...proto import jina_pb2
 
-__all__ = ['PeaMeta', 'BasePea']
+__all__ = ['BasePea']
 
 
-class PeaMeta(type):
-    """Meta class of :class:`BasePea` to enable switching between ``thread`` and ``process`` backend. """
-    _dct = {}
-
-    def __new__(cls, name, bases, dct):
-        _cls = super().__new__(cls, name, bases, dct)
-        PeaMeta._dct.update({name: {'cls': cls,
-                                    'name': name,
-                                    'bases': bases,
-                                    'dct': dct}})
-        return _cls
-
-    def __call__(cls, *args, **kwargs) -> 'PeaMeta':
-        # switch to the new backend
-        _cls = {
-            'thread': threading.Thread,
-            'process': multiprocessing.Process,
-        }.get(getattr(args[0], 'runtime', 'thread'))
-
-        # rebuild the class according to mro
-        for c in cls.mro()[-2::-1]:
-            arg_cls = PeaMeta._dct[c.__name__]['cls']
-            arg_name = PeaMeta._dct[c.__name__]['name']
-            arg_dct = PeaMeta._dct[c.__name__]['dct']
-            _cls = super().__new__(arg_cls, arg_name, (_cls,), arg_dct)
-
-        return type.__call__(_cls, *args, **kwargs)
-
-
-def _get_event(obj: 'BasePea') -> Event:
-    if isinstance(obj, threading.Thread):
-        return threading.Event()
-    elif isinstance(obj, multiprocessing.Process):
-        return multiprocessing.Event()
-    else:
-        raise NotImplementedError
-
-
-def _make_or_event(obj: 'BasePea', *events) -> Event:
-    or_event = _get_event(obj)
-
-    def or_set(self):
-        self._set()
-        self.changed()
-
-    def or_clear(self):
-        self._clear()
-        self.changed()
-
-    def orify(e, changed_callback):
-        e._set = e.set
-        e._clear = e.clear
-        e.changed = changed_callback
-        e.set = lambda: or_set(e)
-        e.clear = lambda: or_clear(e)
-
-    def changed():
-        bools = [e.is_set() for e in events]
-        if any(bools):
-            or_event.set()
-        else:
-            or_event.clear()
-
-    for e in events:
-        orify(e, changed)
-    changed()
-    return or_event
-
-
-class BasePea(metaclass=PeaMeta):
+class BasePea(ExitStack):
     """BasePea is an unary service unit which provides network interface and
-    communicates with others via protobuf and ZeroMQ
+    communicates with others via protobuf and ZeroMQ. It also is a context manager of an Executor .
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['argparse.Namespace', Dict], **kwargs):
         """ Create a new :class:`BasePea` object
 
         :param args: the arguments received from the CLI
-        :param pea_id: the id used to separate the storage of each pea, only used when ``args.separate_storage=True``
         """
         super().__init__()
         self.args = args
         self.name = self.__class__.__name__  #: this is the process name
-
-        self.is_ready_event = _get_event(self)
-        self.is_shutdown = _get_event(self)
-        self.ready_or_shutdown = _make_or_event(self, self.is_ready_event, self.is_shutdown)
-        self.is_shutdown.clear()
 
         self.last_active_time = time.perf_counter()
         self.last_dump_time = time.perf_counter()
@@ -142,19 +65,10 @@ class BasePea(metaclass=PeaMeta):
             self.name = self.args.name
         if 'role' in self.args and self.args.role == PeaRoleType.PARALLEL:
             self.name = f'{self.name}-{self.args.pea_id}'
-        if 'host' in self.args and 'port_ctrl' in self.args and 'ctrl_with_ipc' in self.args:
-            self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl,
-                                                                         self.args.ctrl_with_ipc)
-        self._envs = {'JINA_POD_NAME': self.name}
-
-        if 'env' in self.args and self.args.env:
-            self._envs.update(self.args.env)
-
         if 'log_id' in self.args and 'log_config' in self.args:
             self.logger = JinaLogger(self.name,
                                      log_id=self.args.log_id,
                                      log_config=self.args.log_config)
-            self._envs['JINA_LOG_ID'] = self.args.log_id
         else:
             self.logger = JinaLogger(self.name)
 
@@ -200,6 +114,7 @@ class BasePea(metaclass=PeaMeta):
 
     @property
     def request_type(self) -> str:
+        """Get the type of message being processed"""
         return self._message.envelope.request_type
 
     def load_executor(self):
@@ -222,9 +137,7 @@ class BasePea(metaclass=PeaMeta):
             ' '.join(f'{k}: {v / self._timer.accum_time["loop"]:.2f}' for k, v in self._timer.accum_time.items()))
 
     def save_executor(self):
-        """Save the contained executor
-
-        :param dump_interval: the time interval for saving
+        """Save the contained executor according to the `dump_interval` parameter
         """
         if (time.perf_counter() - self.last_dump_time) > self.args.dump_interval > 0:
             self.executor.save()
@@ -266,7 +179,6 @@ class BasePea(metaclass=PeaMeta):
 
     def post_hook(self, msg: 'Message') -> 'BasePea':
         """Post-hook function, what to do before handing out the message """
-        # self.logger.critical(f'is message used: {msg.request.is_used}')
         self.last_active_time = time.perf_counter()
         self.save_executor()
         self.check_memory_watermark()
@@ -278,16 +190,6 @@ class BasePea(metaclass=PeaMeta):
         msg.update_timestamp()
         return self
 
-    def set_ready(self, *args, **kwargs):
-        """Set the status of the pea to ready """
-        self.is_ready_event.set()
-        self.logger.success(__ready_msg__)
-
-    def unset_ready(self, *args, **kwargs):
-        """Set the status of the pea to shutdown """
-        self.is_ready_event.clear()
-        self.logger.success(__stop_msg__)
-
     def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
         self.pre_hook(msg).handle(msg).post_hook(msg)
@@ -297,17 +199,18 @@ class BasePea(metaclass=PeaMeta):
     def _teardown(self):
         self.close_zmqlet()
 
-    def msg_callback(self, msg: 'Message') -> Optional['Message']:
+    def msg_callback(self, msg: 'Message') -> None:
         """Callback function after receiving the message
 
-        When nothing is returned then the nothing is send out via :attr:`zmqlet.sock_out`.
+        When nothing is returned then nothing is send out via :attr:`zmqlet.sock_out`.
         """
         try:
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self.zmqlet.send_message(self._callback(msg))
-        except RequestLoopEnd:
+        except RequestLoopEnd as ex:
             # this is the proper way to end when a terminate signal is sent
+            self.logger.info(f'Terminating loop requested by terminate signal {repr(ex)}')
             self.zmqlet.send_message(msg)
             self._teardown()
         except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
@@ -337,41 +240,16 @@ class BasePea(metaclass=PeaMeta):
                 raise
             self.zmqlet.send_message(msg)
 
-    def loop_body(self):
+    def request_loop(self, is_ready_event: 'Event'):
         """The body of the request loop
-        .. note::
-            Class inherited from :class:`BasePea` must override this function. And add
-            :meth:`set_ready` when your loop body is started
         """
         self.zmqlet = ZmqStreamlet(self.args, logger=self.logger)
-        self.set_ready()
+        is_ready_event.set()
         self.zmqlet.start(self.msg_callback)
 
-    def set_environment_vars(self):
-        """Set environment variable to this pea
-
-        .. note::
-            Please note that env variables are process-specific. Subprocess inherits envs from
-            the main process. But Subprocess's envs do NOT affect the main process. It does NOT
-            mess up user local system envs.
-
-        .. warning::
-            If you are using ``thread`` as backend, envs setting will likely be overidden by others
-        """
-        if self._envs:
-            if self.args.runtime == 'thread':
-                self.logger.warning('environment variables should not be set when runtime="thread". '
-                                    f'ignoring all environment variables: {self._envs}')
-            else:
-                for k, v in self._envs.items():
-                    os.environ[k] = v
-
-    def unset_environment_vars(self):
-        if self._envs and self.args.runtime != 'thread':
-            for k in self._envs.keys():
-                os.unsetenv(k)
-
     def load_plugins(self):
+        """Loads the plugins if needed necessary to load executors
+        """
         if self.args.py_modules:
             from ...importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
@@ -383,94 +261,71 @@ class BasePea(metaclass=PeaMeta):
 
     def _initialize_executor(self):
         try:
-            self.set_environment_vars()
             self.load_plugins()
             self.load_executor()
             return self.executor
-        except ExecutorFailToLoad:
+        except Exception as ex:
             self.logger.critical(f'can not start a executor from {self.args.uses}', exc_info=True)
+            raise ex
 
-    def run(self):
+    def run(self, is_ready_event: 'Event'):
         """Start the request loop of this BasePea. It will listen to the network protobuf message via ZeroMQ. """
         try:
-            # eventually we could have `executor dump logic` inside executor itself
-            with self._initialize_executor():
-                try:
-                    # Every logger created in this process will be identified by the `Pod Id` and use the same name
-                    self.loop_body()
-                except KeyboardInterrupt:
-                    self.logger.info('Loop interrupted by user')
-                except SystemError as ex:
-                    self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
-                except DriverError as ex:
-                    self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
-                except zmq.error.ZMQError:
-                    self.logger.critical('zmqlet can not be initiated')
-                except Exception as ex:
-                    # this captures the general exception from the following places:
-                    # - self.zmqlet.recv_message
-                    # - self.zmqlet.send_message
-                    self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
-        except Exception as exc:
-            # this exception handling is important to guarantee that finally is called if exception is raised
-            # from _initialize_executor
-            self.logger.critical(f' Exception when loading the executor {repr(exc)}', exc_info=True)
+            # Every logger created in this process will be identified by the `Pod Id` and use the same name
+            self.request_loop(is_ready_event)
+        except KeyboardInterrupt:
+            self.logger.info('Loop interrupted by user')
+        except SystemError as ex:
+            self.logger.error(f'SystemError interrupted pea loop {repr(ex)}')
+        except DriverError as ex:
+            self.logger.critical(f'driver error: {repr(ex)}', exc_info=True)
+        except zmq.error.ZMQError:
+            self.logger.critical('zmqlet can not be initiated')
+        except Exception as ex:
+            # this captures the general exception from the following places:
+            # - self.zmqlet.recv_message
+            # - self.zmqlet.send_message
+            self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
-            # if an exception occurs this unsets ready and shutting down
-            self.close_zmqlet()
-            self.unset_ready()
-            self.unset_environment_vars()
-            self.is_shutdown.set()
+            self.logger.info(f'request loop ended, tearing down ...')
+            self._teardown()
 
     def check_memory_watermark(self):
         """Check the memory watermark """
         if used_memory() > self.args.memory_hwm > 0:
             raise MemoryOverHighWatermark
 
-    def send_terminate_signal(self) -> None:
-        """Gracefully close this pea and release all resources """
-        if self.is_ready_event.is_set() and hasattr(self, 'ctrl_addr'):
-            send_ctrl_message(self.ctrl_addr, 'TERMINATE',
-                              timeout=self.args.timeout_ctrl)
-
-    @property
-    def status(self):
-        """Send the control signal ``STATUS`` to itself and return the status """
-        if self.is_ready_event.is_set() and getattr(self, 'ctrl_addr'):
-            return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
-
-    def start(self) -> 'BasePea':
-        super().start()
-        if isinstance(self.args, dict):
-            _timeout = getattr(self.args['peas'][0], 'timeout_ready', -1)
-        else:
-            _timeout = getattr(self.args, 'timeout_ready', -1)
-
-        if _timeout <= 0:
-            _timeout = None
-        else:
-            _timeout /= 1e3
-
-        if self.ready_or_shutdown.wait(_timeout):
-            if self.is_shutdown.is_set():
-                # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {typename(self)} with name {self.name}, '
-                                     f'this often means the executor used in the pod is not valid')
-                raise PeaFailToStart
-            return self
-        else:
-            raise TimeoutError(
-                f'{typename(self)} with name {self.name} can not be initialized after {_timeout * 1e3}ms')
-
     def __enter__(self) -> 'BasePea':
-        return self.start()
+        executor = self._initialize_executor()
 
-    def close(self) -> None:
-        self.send_terminate_signal()
-        self.is_shutdown.wait()
-        if not self.daemon:
-            self.logger.close()
-            self.join()
+        if executor:
+            self.enter_context(executor)
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self.close()
+        super().__exit__(exc_type, exc_val, exc_tb)
+        self._teardown()
+
+
+def Pea(args: Optional['argparse.Namespace'] = None,
+        gateway: bool = False,
+        rest_api: bool = False,
+        **kwargs):
+    """Initialize a :class:`BasePea`, :class:`HeadPea`, :class:`TailPea`, or :class:`GatewayPea` or :class: `RESTGatewayPea`
+
+    :param args: arguments from CLI
+    :param gateway: true if gateway pea to be instantiated
+    :param rest_api: true if gateway pea to be instantiated with REST (only considered if gateway is True)
+
+    """
+    if gateway:
+        from .gateway import GatewayPea, RESTGatewayPea
+        return RESTGatewayPea(args, **kwargs) if rest_api else GatewayPea(args, **kwargs)
+    elif args.role == PeaRoleType.HEAD:
+        from .headtail import HeadPea
+        return HeadPea(args)
+    elif args.role == PeaRoleType.TAIL:
+        from .headtail import TailPea
+        return TailPea(args)
+    else:
+        return BasePea(args)

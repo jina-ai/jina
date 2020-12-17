@@ -7,9 +7,9 @@ from typing import Dict, Tuple, Set, List, Optional
 
 import ruamel.yaml
 
-from ....excepts import RemotePodClosed
-from ....importer import ImportExtensions
-from ....logging import JinaLogger
+from jina.excepts import RemotePodClosed
+from jina.importer import ImportExtensions
+from jina.logging import JinaLogger
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
@@ -245,11 +245,20 @@ class JinadAPI:
             return False
 
 
-class PeaAPI(JinadAPI):
+class PeaJinadAPI(JinadAPI):
     """Pea API, we might have different endpoints for peas & pods later"""
     kind = 'pea'
 
 
-class PodAPI(JinadAPI):
+class PodJinadAPI(JinadAPI):
     """Pod API, we might have different endpoints for peas & pods later"""
     kind = 'pod'
+
+
+def get_jinad_api(kind: str, host: str, port: int, logger: JinaLogger, **kwargs):
+    if kind == 'pea':
+        return PeaJinadAPI(host=host, port=port, logger=logger, **kwargs)
+    elif kind == 'pod':
+        return PodJinadAPI(host=host, port=port, logger=logger, **kwargs)
+    else:
+        raise ValueError(f'kind must be pea/pod but it is {kind}')
