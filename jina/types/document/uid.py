@@ -42,7 +42,10 @@ def get_content_hash(doc: 'DocumentProto') -> str:
     :return: the hexdigest based on :meth:`blake2b`
     """
     # TODO: once `new_doc_id` is removed, the content of this function can directly move to the `Document`.
-    return blake2b(doc.SerializeToString(), digest_size=_digest_size).hexdigest()
+    doc_without_id = DocumentProto()
+    doc_without_id.CopyFrom(doc)
+    doc_without_id.id = ""
+    return blake2b(doc_without_id.SerializeToString(), digest_size=_digest_size).hexdigest()
 
 
 def new_doc_id(doc: 'DocumentProto') -> str:
