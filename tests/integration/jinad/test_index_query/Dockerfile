@@ -7,7 +7,7 @@ RUN apt-get update && \
                                                curl
 
 RUN python -m pip install --no-cache-dir --upgrade pip && \
-    git clone https://github.com/jina-ai/jinad.git -b adapt-to-runtime && \
+    git clone https://github.com/jina-ai/jinad.git && \
     pip install $(grep -ivE "jina" jinad/requirements.txt)
 
 COPY . /
