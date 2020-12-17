@@ -125,24 +125,26 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
         hubapi_yml = yaml.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
 
-    request = Request(f'{hubapi_url}')
-    with TimeContext('searching', logger):
-        try:
-            with urlopen(request) as resp:
-                response = json.load(resp)
-        except HTTPError as err:
-            if err.code == 400:
-                logger.warning('no docker credentials found.')
-            elif err.code == 500:
-                logger.error(f'server is down: {err.reason}')
-            else:
-                logger.error(f'unknown error: {err.reason}')
-            return
+    headers = _fetch_github_access_token(logger)
 
-        docker_creds = response['body']
-        docker_username = docker_creds['docker_username']
-        logger.info(f'Successfully fetched docker creds for user {docker_username}')
-        return docker_creds
+    if not headers:
+        logger.error(f'aborting push to docker hub. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        return
+
+    try:
+        import requests
+        response = requests.post(url=f'{hubapi_url}',
+                                 headers=headers)
+        if response.status_code == requests.codes.ok:
+            logger.info(response.text)
+            docker_creds = response['body']
+            docker_username = docker_creds['docker_username']
+            logger.info(f'Successfully fetched docker creds for user {docker_username}')
+            return docker_creds
+        else:
+            logger.error(f'failed to fetch docker credentials')
+    except Exception as exp:
+        logger.error(f'got an exception while fetching docker credentials {repr(exp)}')
 
 
 def _make_hub_table_with_local(manifests, local_manifests):
@@ -198,23 +200,12 @@ def _register_to_mongodb(logger, summary: Dict = None):
         hubapi_yml = yaml.load(fp)
 
     hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
+    headers = _fetch_github_access_token(logger)
 
-    if not credentials_file().is_file():
-        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+    if not headers:
+        logger.error(f'aborting push to mongodb. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
 
-    with open(credentials_file(), 'r') as cf:
-        cred_yml = yaml.load(cf)
-    access_token = cred_yml['access_token']
-
-    if not access_token:
-        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
-        return
-
-    headers = {
-        'Accept': 'application/json',
-        'authorizationToken': access_token
-    }
     try:
         import requests
         response = requests.post(url=f'{hubapi_url}',
@@ -232,3 +223,27 @@ def _register_to_mongodb(logger, summary: Dict = None):
             logger.error(f'got an error from the API: {response.text}')
     except Exception as exp:
         logger.error(f'got an exception while invoking hubapi for push {repr(exp)}')
+
+
+
+def _fetch_github_access_token(logger):
+    """ Fetch github access token from credentials file, return as a request header """
+    logger.info('fetching github access token...')
+
+    if not credentials_file().is_file():
+        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        return
+
+    with open(credentials_file(), 'r') as cf:
+        cred_yml = yaml.load(cf)
+    access_token = cred_yml['access_token']
+
+    if not access_token:
+        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        return
+
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': access_token
+    }
+    return headers

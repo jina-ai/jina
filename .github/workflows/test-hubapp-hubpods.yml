@@ -1,21 +1,15 @@
-name: Test hubapp with hubpods
+name: CI
 
 on:
   pull_request:
-    branches:
-      - master
 
 jobs:
   hubapp-hubpod-test:
-    if: |
-      !startsWith(github.event.head_commit.message, 'chore') &&
-      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
-      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.7, 3.8]
 
     steps:
       - uses: actions/checkout@v2

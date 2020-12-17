@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from jina.docker.hubio import HubIO
+from jina.excepts import ImageAlreadyExists
 from jina.helper import yaml
 from jina.parser import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
 
@@ -92,7 +93,7 @@ def test_hub_build_push_push_again():
     assert len(manifests) >= 1
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
-    with pytest.raises(Exception):
+    with pytest.raises(ImageAlreadyExists):
         # try and push same version again should fail with `--no-overwrite`
         args = set_hub_build_parser().parse_args([str(cur_dir / 'hub-mwu'), '--push', '--host-info', '--no-overwrite'])
         HubIO(args).build()

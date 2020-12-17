@@ -1,11 +1,11 @@
 import time
+
 import pytest
 import requests
 
-from jina.clients import py_client_old
-from jina.clients.python import PyClient
-from jina.clients.python.io import input_files
-from jina.enums import RequestType
+from jina.clients import Client
+from jina.clients.sugary_io import _input_files
+from jina.excepts import BadClientInput
 from jina.flow import Flow
 from jina.helper import random_port
 from jina.parser import set_gateway_parser
@@ -33,42 +33,15 @@ def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
 
 
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_client_call_unary(flow):
-    with flow:
-        client = py_client_old(port_expose=flow.port_expose)
-        await client.configure_client()
-        await client.call_unary(
-            [b'a1234', b'b4567'], mode=RequestType.INDEX,
-        )
-
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_client_index(flow):
-    with flow:
-        client = py_client_old(port_expose=flow.port_expose)
-        await client.configure_client()
-        await client.index(['a1234', 'b4567'])
-
-@pytest.mark.asyncio
-@pytest.mark.skip('this causes segmentation faults intermittently')
-async def test_client_search(flow):
-    with flow:
-        client = py_client_old(port_expose=flow.port_expose)
-        await client.configure_client()
-        await client.search(['a1234', 'b4567'])
-
-
 @pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
 def test_check_input_success(input_fn):
-    PyClient.check_input(input_fn)
+    Client.check_input(input_fn)
 
 
 @pytest.mark.parametrize('input_fn', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])])
 def test_check_input_fail(input_fn):
-    with pytest.raises(TypeError):
-        PyClient.check_input(input_fn)
+    with pytest.raises(BadClientInput):
+        Client.check_input(input_fn)
 
 
 @pytest.mark.parametrize(
@@ -110,4 +83,4 @@ def test_mime_type():
             assert d.mime_type == 'text/x-python'
 
     with f:
-        f.index(input_files('*.py'), validate_mime_type)
+        f.index(_input_files('*.py'), validate_mime_type)

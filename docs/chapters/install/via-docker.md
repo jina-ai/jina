@@ -17,7 +17,6 @@ This Docker image is based on `python:3.7.6-slim` and can be run on the followin
 - amd64
 - arm64
 - ppc64le
-- s390x
 - 386
 - arm/v7
 - arm/v6

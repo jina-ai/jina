@@ -39,7 +39,7 @@ class Request:
 
     """
 
-    def __init__(self, request: Union[bytes, 'jina_pb2.RequestProto', None] = None,
+    def __init__(self, request: Union[bytes, dict, str, 'jina_pb2.RequestProto', None] = None,
                  envelope: Optional['jina_pb2.EnvelopeProto'] = None,
                  copy: bool = False):
 

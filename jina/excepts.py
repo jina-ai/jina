@@ -88,7 +88,7 @@ class BadClientCallback(BadClient):
     """Error in the callback function on the client side"""
 
 
-class BadClientRequestGenerator(BadClient):
+class BadClientInput(BadClient):
     """Error in the request generator function on the client side"""
 
 
@@ -177,3 +177,15 @@ class LengthMismatchException(Exception):
 
 class ImageAlreadyExists(Exception):
     """ Exception when an image with the name, module version, and Jina version already exists on the Hub"""
+
+
+class BadFlowYAMLVersion(Exception):
+    """ Exception when Flow YAML config specifies a wrong version number"""
+
+
+class LookupyError(Exception):
+    """Base exception class for all exceptions raised by lookupy"""
+
+
+class EventLoopError(Exception):
+    """ Exception when a running event loop is found but not under jupyter or ipython """

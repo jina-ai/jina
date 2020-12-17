@@ -37,7 +37,7 @@ __license__ = "Apache-2.0"
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '0.8.4'
+__version__ = '0.8.8'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -154,6 +154,11 @@ from jina.types.sets import DocumentSet, QueryLangSet
 
 # Flow
 from jina.flow import Flow
+from jina.flow.asyncio import AsyncFlow
+
+# Client
+from jina.clients import Client
+from jina.clients.asyncio import AsyncClient
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])

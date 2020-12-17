@@ -1,12 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import asyncio
 import functools
+import json
 import math
 import os
 import random
 import re
 import sys
+import threading
 import time
 import uuid
 import warnings
@@ -391,6 +394,8 @@ def kwargs2list(kwargs: Dict) -> List[str]:
                     args.append(f'--{k}')
             elif isinstance(v, list):  # for nargs
                 args.extend([f'--{k}', *(str(vv) for vv in v)])
+            elif isinstance(v, dict):
+                args.extend([f'--{k}', json.dumps(v)])
             else:
                 args.extend([f'--{k}', str(v)])
     return args
@@ -438,15 +443,14 @@ def is_valid_local_config_source(path: str) -> bool:
 
 
 def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
-                    parser: ArgumentParser, parser_name: str = None
-                    ) -> Tuple[List[str], Namespace, List[Any]]:
+                    parser: ArgumentParser) -> Tuple[List[str], Namespace, List[Any]]:
     args = kwargs2list(kwargs)
     try:
         p_args, unknown_args = parser.parse_known_args(args)
         if unknown_args:
             from .logging import default_logger
             default_logger.debug(
-                f'parser {parser_name} can not '
+                f'parser {typename(parser)} can not '
                 f'recognize the following args: {unknown_args}, '
                 f'they are ignored. if you are using them from a global args (e.g. Flow), '
                 f'then please ignore this message')
@@ -509,23 +513,29 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
     return version_info + '\n' + env_info
 
 
-def use_uvloop():
-    if 'JINA_DISABLE_UVLOOP' not in os.environ:
-        from .importer import ImportExtensions
-        with ImportExtensions(required=False,
-                              help_text='Jina uses uvloop to manage events and sockets, '
-                                        'it often yields better performance than builtin asyncio'):
-            import asyncio
-            import uvloop
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+def _use_uvloop():
+    from .importer import ImportExtensions
+    with ImportExtensions(required=False,
+                          help_text='Jina uses uvloop to manage events and sockets, '
+                                    'it often yields better performance than builtin asyncio'):
+        import uvloop
+        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
-def configure_event_loop():
-    # This should be set in loop_body of every process that needs an event loop as the 1st step
-    # This helps getting rid of `event loop already running` error while executing `run_until_complete`
-    use_uvloop()
-    import asyncio
-    asyncio.set_event_loop(asyncio.new_event_loop())
+def get_or_reuse_loop():
+    """Get a new eventloop or reuse the current opened eventloop"""
+    try:
+        loop = asyncio.get_running_loop()
+        if loop.is_closed():
+            raise RuntimeError
+    except RuntimeError:
+        if 'JINA_DISABLE_UVLOOP' not in os.environ:
+            _use_uvloop()
+        # no running event loop
+        # create a new loop
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop
 
 
 def typename(obj):
@@ -673,3 +683,65 @@ def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[
             else:
                 pea_args[k] = v
         return pea_args
+
+
+def is_jupyter() -> bool:  # pragma: no cover
+    """Check if we're running in a Jupyter notebook,
+    using magic command `get_ipython` that only available in Jupyter"""
+    try:
+        get_ipython  # noqa: F821
+    except NameError:
+        return False
+    shell = get_ipython().__class__.__name__  # noqa: F821
+    if shell == 'ZMQInteractiveShell':
+        return True  # Jupyter notebook or qtconsole
+    elif shell == 'TerminalInteractiveShell':
+        return False  # Terminal running IPython
+    else:
+        return False  # Other type (?)
+
+
+def run_async(func, *args, **kwargs):
+    """Generalized asyncio.run for jupyter notebook.
+
+    When running inside jupyter, an eventloop is already exist, can't be stopped, can't be killed.
+    Directly calling asyncio.run will fail, as This function cannot be called when another asyncio event loop
+    is running in the same thread.
+
+    .. see_also:
+        https://stackoverflow.com/questions/55409641/asyncio-run-cannot-be-called-from-a-running-event-loop
+
+    :param func: function to run
+    :param args: parameters
+    :param kwargs: key-value parameters
+    :return:
+    """
+
+    class RunThread(threading.Thread):
+        def run(self):
+            self.result = asyncio.run(func(*args, **kwargs))
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # eventloop already exist
+        # running inside Jupyter
+        if is_jupyter():
+            thread = RunThread()
+            thread.start()
+            thread.join()
+            try:
+                return thread.result
+            except AttributeError:
+                from .excepts import BadClient
+                raise BadClient('something wrong when running the eventloop, result can not be retrieved')
+        else:
+            raise RuntimeError('you have an eventloop running but not using Jupyter/ipython, '
+                               'this may mean you are using Jina with other integration? if so, then you '
+                               'may want to use AsyncClient/AsyncFlow instead of Client/Flow. If not, then '
+                               'please report this issue here: https://github.com/jina-ai/jina')
+    else:
+        return asyncio.run(func(*args, **kwargs))

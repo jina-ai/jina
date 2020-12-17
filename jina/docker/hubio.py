@@ -10,11 +10,10 @@ from typing import Dict, Any
 
 from docker import DockerClient
 
-from .. import __version__ as jina_version
 from .checker import *
 from .helper import credentials_file
 from .hubapi import _list, _register_to_mongodb, _list_local, _docker_auth
-from ..clients.python import ProgressBar
+from .. import __version__ as jina_version
 from ..enums import BuildTestLevel
 from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
 from ..executors import BaseExecutor
@@ -23,7 +22,7 @@ from ..helper import colored, get_readable_size, get_now_timestamp, get_full_ver
     countdown
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
-from ..logging.profile import TimeContext
+from ..logging.profile import TimeContext, ProgressBar
 from ..parser import set_pod_parser
 from ..peapods import Pod
 
@@ -364,7 +363,8 @@ class HubIO:
                         is_build_success = False
                         p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
                                                                         self.config_yaml_path, self.args.daemon)
-                        if any(test_level in failed_test_levels for test_level in [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
+                        if any(test_level in failed_test_levels for test_level in
+                               [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
                             is_build_success = False
                             self.logger.error(f'build unsuccessful, failed at {str(failed_test_levels)} level')
                         else:

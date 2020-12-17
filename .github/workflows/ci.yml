@@ -37,9 +37,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            sudo apt-get install libsndfile1
-          fi
           python -m pip install --upgrade pip
           pip install .[cicd] --no-cache-dir
       - name: Lint with flake8
@@ -78,7 +75,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.7, 3.8]
 
     steps:
       - uses: actions/checkout@v2
