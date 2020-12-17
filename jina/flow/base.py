@@ -32,7 +32,7 @@ from ..peapods.pods.gateway import GatewayFlowPod
 if False:
     import argparse
 
-FlowLike = TypeVar('FlowLike', bound=BaseFlow)
+FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
 
 class BaseFlow(ExitStack):
