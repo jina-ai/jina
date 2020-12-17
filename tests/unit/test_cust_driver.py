@@ -20,6 +20,11 @@ def test_load_pod_with_custom_driver():
         pass
 
 
+def validate(req):
+    assert len(req.docs) == 1
+    assert req.docs[0].text == 'hello from DummyEncodeDriver'
+
+
 def test_load_flow_with_custom_driver():
     with Flow().add(uses=str(cur_dir / 'yaml/test-executor-with-custom-driver.yml')) as f:
-        f.index([Document()])
+        f.index([Document()], output_fn=validate)
