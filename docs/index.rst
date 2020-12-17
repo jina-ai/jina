@@ -1,27 +1,16 @@
-.. raw:: html
-   :file: work_logo_BG_80.html
-
-
-|
-
 Welcome to Jina Documentation!
 ===============================
 
 .. toctree::
    :maxdepth: 1
-   :caption: Install
+   :caption: Installing
 
-   chapters/install/via-pip
-   chapters/install/via-docker
-   chapters/install/on-rasp-linux
-   chapters/install/on-x
-   chapters/install/on-wsl
-   chapters/install/upgrade
+   chapters/install/os/index
    chapters/install/autocomplete
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Getting Started
 
    chapters/helloworld/index
@@ -35,31 +24,32 @@ Welcome to Jina Documentation!
    chapters/dashboard/index
    chapters/cli/exit
 
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Developer Reference
 
    chapters/cli/index
    api/jina
    chapters/yaml/yaml
-   chapters/simple_exec
    chapters/proto/index
+   chapters/simple_exec
    chapters/restapi/index
    chapters/envs
-   chapters/api_schema
    chapters/prevent_duplicate_indexing/index
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Extending Jina
 
    chapters/extend/mwu
    chapters/extend/executor
    chapters/extend/driver
    chapters/hub/publish-your-pod-image
+   chapters/api_schema
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contributing
 
    chapters/CONTRIBUTING
@@ -84,7 +74,7 @@ Welcome to Jina Documentation!
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Indices and Tables
 
    chapters/all_exec

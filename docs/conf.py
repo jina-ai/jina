@@ -45,9 +45,8 @@ html_theme_options = {
     'collapse_navigation': True,
     # 'sticky_navigation': True,
     # 'navigation_depth': 4,
-    'includehidden': True,
+    # 'includehidden': True,
     'titles_only': True,
-    'show_sphinx': False
 }
 
 html_static_path = ['_static']
@@ -97,7 +96,7 @@ apidoc_excluded_paths = ['tests', 'legacy']
 apidoc_separate_modules = True
 apidoc_extra_args = ['-t', 'template/']
 autodoc_member_order = 'bysource'
-autodoc_mock_imports = ['argparse', 'numpy', 'np', 'tensorflow', 'torch']
+autodoc_mock_imports = ['argparse', 'numpy', 'np', 'tensorflow', 'torch', 'scipy']
 autoclass_content = 'both'
 set_type_checking_flag = False
 
