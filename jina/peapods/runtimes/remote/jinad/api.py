@@ -245,20 +245,20 @@ class JinadAPI:
             return False
 
 
-class PeaAPI(JinadAPI):
+class PeaJinadAPI(JinadAPI):
     """Pea API, we might have different endpoints for peas & pods later"""
     kind = 'pea'
 
 
-class PodAPI(JinadAPI):
+class PodJinadAPI(JinadAPI):
     """Pod API, we might have different endpoints for peas & pods later"""
     kind = 'pod'
 
 
 def get_jinad_api(kind: str, host: str, port: int, logger: JinaLogger, **kwargs):
     if kind == 'pea':
-        return PeaAPI(host=host, port=port, logger=logger, **kwargs)
+        return PeaJinadAPI(host=host, port=port, logger=logger, **kwargs)
     elif kind == 'pod':
-        return PodAPI(host=host, port=port, logger=logger, **kwargs)
+        return PodJinadAPI(host=host, port=port, logger=logger, **kwargs)
     else:
         raise ValueError(f'kind must be pea/pod but it is {kind}')

@@ -5,10 +5,10 @@ from jina.peapods.peas import PeaRoleType
 from jina.peapods.zmq import Zmqlet, send_ctrl_message
 from jina.peapods.runtimes import BaseRuntime
 
-__all__ = ['RemoteRuntime']
+__all__ = ['BaseRemoteRuntime']
 
 
-class RemoteRuntime(BaseRuntime):
+class BaseRemoteRuntime(BaseRuntime):
     """A RemoteRuntime that will spawn a remote `BasePea` or `BasePod`.
 
     Inside the run method, a remote container is started and its lifetime monitored and managed.
@@ -44,9 +44,9 @@ class RemoteRuntime(BaseRuntime):
         raise NotImplementedError
 
     def run(self):
-        """Start the container loop. Will spawn a docker container with a BasePea running inside.
-         It will communicate with the container to see when it is ready to receive messages from the rest
-         of the flow and stream the logs from the pea in the container"""
+        """Start the remote monitoring loop. Will spawn a BasePea in a remote machine.
+         It will communicate with the remote to see when it is ready to receive messages from the rest
+         of the flow and stream the logs from the remote BasePea"""
         try:
             self._monitor_remote()
         except KeyboardInterrupt:

@@ -156,11 +156,11 @@ class ContainerRuntime(BaseRuntime):
         except Exception as ex:
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
-            import docker
+            from docker.errors import NotFound
             try:
                 if getattr(self, '_container'):
                     self._container.stop()
-            except docker.errors.NotFound:
+            except NotFound:
                 self.logger.warning(
                     'the container is already shutdown (mostly because of some error inside the container)')
             self.unset_ready()
