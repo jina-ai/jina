@@ -1,7 +1,7 @@
 from pathlib import Path
 from ruamel.yaml import YAML
 
-from .new_flow_runner import MultiFlowRunner
+from .flow_runner import MultiFlowRunner
 from jina.helper import colored
 from jina.logging import default_logger as logger
 from .parameters import load_optimization_parameters

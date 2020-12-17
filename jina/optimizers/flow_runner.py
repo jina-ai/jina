@@ -20,6 +20,7 @@ class FlowRunner:
         overwrite_workspace=False,
     ):
         self.flow_yaml = Path(flow_yaml)
+        # Todo: Make changes for working with doc generator
         self.documents = documents if type(documents) == list else list(documents)
         self.batch_size = batch_size
         self.pod_dir = Path(pod_dir)
