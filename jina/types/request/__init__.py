@@ -184,7 +184,7 @@ class Request:
     def aliases(self) -> List[str]:
         """
         Aliases are used for the yaml configuration.
-        :return: Returns a list of aliases depending on the request type and it's attributes.
+        :return: Returns a list of aliases depending on the request type and its attributes.
         Returns None if there are no aliases defined.
         """
         if self._request_type is jina_pb2.RequestProto.IndexRequestProto:

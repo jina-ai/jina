@@ -90,11 +90,11 @@ def index(*args, **kwargs):
     yield from _generate(*args, **kwargs)
 
 def update(*args, **kwargs):
-    """Delegates the generator"""
+    """Generate a update request"""
     yield from _generate(*args, **kwargs)
 
 def delete(*args, **kwargs):
-    """Delegates the generator"""
+    """Generate a delete request"""
     yield from _generate(*args, **kwargs)
 
 
