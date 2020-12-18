@@ -1,11 +1,11 @@
 import argparse
 from subprocess import Popen, PIPE
-
 from typing import Union, Dict
-from jina.peapods.runtimes.remote import BaseRemoteRuntime
-from jina import __ready_msg__, __stop_msg__
-from jina.helper import get_non_defaults_args, kwargs2list
-from jina.logging import JinaLogger
+
+from .. import BaseRemoteRuntime
+from ..... import __ready_msg__, __stop_msg__
+from .....helper import get_non_defaults_args, kwargs2list
+from .....logging import JinaLogger
 
 
 class SSHRuntime(BaseRemoteRuntime):
