@@ -267,6 +267,8 @@ message RequestProto {
         IndexRequestProto index = 3; // an index request
         SearchRequestProto search = 4; // a search request
         ControlRequestProto control = 5; // a control request
+        DeleteRequestProto delete = 9; // a control request
+        UpdateRequestProto update = 10; // a control request
     }
 
     /**
@@ -287,13 +289,24 @@ message RequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to index
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+    }
 
-        enum Method {
-            ADD = 0; // add a document to the index
-            UPDATE = 1; // update a document contained in the index
-            DELETE = 2; // delete a document from the index
-        }
-        Method method = 3;
+     /**
+     * Represents an index request
+     */
+    message UpdateRequestProto {
+        repeated DocumentProto docs = 1; // a list of Documents to index
+
+        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+    }
+
+     /**
+     * Represents an index request
+     */
+    message DeleteRequestProto {
+        repeated DocumentProto docs = 1; // a list of Documents to index
+
+        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
     }
 
     /**
