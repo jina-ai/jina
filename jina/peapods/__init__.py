@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Optional, TypeVar
 
+from .peas import BasePea
 from .. import __default_host__
 from ..enums import RemoteAccessType
 from ..helper import is_valid_local_config_source
@@ -10,7 +11,6 @@ from ..logging import default_logger
 
 if False:
     import argparse
-    from .peas import BasePea
 
 PeaLike = TypeVar('PeaLike', bound='BasePea')
 
