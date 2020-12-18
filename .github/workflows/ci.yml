@@ -18,6 +18,21 @@ jobs:
       - uses: wagoid/commitlint-github-action@v1
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: if lint failed
+        if: ${{ failure() }}
+      - name: Create comment
+        if: ${{ steps.fc.outputs.comment-id == 0 }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Thanks for your contribution :heart:
+            Unforunately, this PR has a bad commit message, please refer to:
+            - [Commit Message Guideline for the First Time Contributor](https://github.com/jina-ai/jina/issues/553)
+            - [Contributing Guideline](https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md)
+
+            Further CI tests are *cancelled* until the commit message gets fixed.
+          reaction-type: "eyes"
 
   unit-test:
     needs: commit-lint
