@@ -10,6 +10,7 @@ from ..logging import default_logger
 
 if False:
     import argparse
+    from .peas import BasePea
 
 PeaLike = TypeVar('PeaLike', bound='BasePea')
 
