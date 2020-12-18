@@ -179,18 +179,3 @@ class Request:
     def command(self) -> str:
         self.is_used = True
         return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.as_pb_object.control.command)
-
-    @property
-    def aliases(self) -> List[str]:
-        """
-        Aliases are used for the yaml configuration.
-        :return: Returns a list of aliases depending on the request type and its attributes.
-        Returns None if there are no aliases defined.
-        """
-        if self._request_type is jina_pb2.RequestProto.IndexRequestProto:
-            if self.method == 'add':
-                return ['IndexRequest', 'Index', 'index', 'Add', 'add', 'Insert', 'insert']
-            elif self.method == 'delete':
-                return ['DeleteRequest', 'Delete', 'delete', 'Remove', 'remove', 'Drop', 'drop']
-            elif self.method == 'update':
-                return ['UpdateRequest', 'Update', 'update']
