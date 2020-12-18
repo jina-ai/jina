@@ -1,6 +1,7 @@
 @font-face {
     font-family: titleFont;
-    src: url(Comfortaa-VariableFont_wght.ttf);
+    src: url(OpenSans-Regular.ttf);
+    font-weight: bold;
 }
 
 @font-face {
@@ -259,9 +260,9 @@ body {
 }
 
 .wy-menu-vertical li a {
-    font-size: inherit;
-    margin: 0;
-    line-height: 2.5;
+    font-size: 0.8rem;
+    margin: 10px;
+    line-height: inherit;
     color: white;
     transition: all .1s linear;
     transition-property: all;
@@ -405,7 +406,7 @@ a:hover {
 }
 
 .wy-nav-side {
-    background: #009999;
+    background: #006b6b;
     width: 23rem;
 }
 

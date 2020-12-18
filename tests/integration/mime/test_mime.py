@@ -34,13 +34,13 @@ def test_dummy_seg(mocker):
     response_mock = mocker.Mock()
     f = Flow().add(uses='- !Buffer2URI | {mimetype: png}')
     with f:
-        f.index(input_fn=input_fn, output_fn=response_mock)
+        f.index(input_fn=input_fn, on_done=response_mock)
 
     response_mock.assert_called()
     response_mock_2 = mocker.Mock()
     f = Flow().add(uses='- !Buffer2URI | {mimetype: png, base64: true}')
     with f:
-        f.index(input_fn=input_fn, output_fn=response_mock_2)
+        f.index(input_fn=input_fn, on_done=response_mock_2)
     response_mock_2.assert_called()
 
 
@@ -48,7 +48,7 @@ def test_any_file(mocker):
     response_mock = mocker.Mock()
     f = Flow().add(uses='- !URI2DataURI | {base64: true}')
     with f:
-        f.index(input_fn=input_fn2, output_fn=response_mock)
+        f.index(input_fn=input_fn2, on_done=response_mock)
     response_mock.assert_called()
 
 
@@ -59,7 +59,7 @@ def test_aba(mocker):
          .add(uses='- !Buffer2URI | {mimetype: png}'))
 
     with f:
-        f.index(input_fn=input_fn, output_fn=response_mock)
+        f.index(input_fn=input_fn, on_done=response_mock)
     response_mock.assert_called()
 
 
@@ -69,7 +69,7 @@ def test_pathURI2Buffer(mocker):
          .add(uses='- !Buffer2URI {}'))
 
     with f:
-        f.index(input_fn=input_fn3, output_fn=response_mock)
+        f.index(input_fn=input_fn3, on_done=response_mock)
     response_mock.assert_called()
 
 
@@ -78,7 +78,7 @@ def test_text2datauri(mocker):
     f = (Flow().add(uses='- !Text2URI {}'))
 
     with f:
-        f.index_lines(lines=['abc', '123', 'hello, world'], output_fn=response_mock)
+        f.index_lines(lines=['abc', '123', 'hello, world'], on_done=response_mock)
     response_mock.assert_called()
 
 
@@ -87,5 +87,5 @@ def test_gateway_dataui(mocker):
     f = (Flow().add())
 
     with f:
-        f.index_lines(lines=['abc', '123', 'hello, world'], output_fn=response_mock)
+        f.index_lines(lines=['abc', '123', 'hello, world'], on_done=response_mock)
     response_mock.assert_called()

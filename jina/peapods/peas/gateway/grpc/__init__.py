@@ -1,5 +1,8 @@
 import asyncio
+import argparse
 import os
+from multiprocessing.synchronize import Event
+from typing import Union, Dict
 
 import grpc
 import zmq.asyncio
@@ -15,10 +18,20 @@ __all__ = ['GatewayPea']
 
 
 class GatewayPea(BasePea):
-    def run(self):
-        """Do not overridden this method when inheriting from :class:`GatewayPea`"""
+
+    def __init__(self,
+                 args: Union['argparse.Namespace', Dict],
+                 ctrl_addr: str,
+                 ctrl_with_ipc: bool,
+                 **kwargs):
+        super().__init__(args, **kwargs)
+        self.ctrl_addr = ctrl_addr
+        self.ctrl_with_ipc = ctrl_with_ipc
+
+    def run(self, is_ready_event: 'Event'):
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         try:
-            asyncio.run(self._loop_body())
+            asyncio.run(self._loop_body(is_ready_event))
         except KeyboardInterrupt:
             self.logger.info('Loop interrupted by user')
         except SystemError as ex:
@@ -27,8 +40,6 @@ class GatewayPea(BasePea):
             self.logger.critical(f'unknown exception: {repr(ex)}', exc_info=True)
         finally:
             self._teardown()
-            self.unset_ready()
-            self.is_shutdown.set()
 
     async def _wait_for_shutdown(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
@@ -47,7 +58,7 @@ class GatewayPea(BasePea):
         """
         await self.server.stop(0)
 
-    async def serve_forever(self):
+    async def serve_forever(self, is_ready_event: 'Event'):
         """Serve an async service forever
 
         This method needs to be overridden when inherited from :class:`GatewayPea`
@@ -63,13 +74,17 @@ class GatewayPea(BasePea):
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
         self.logger.success(f'{self.__class__.__name__} is listening at: {bind_addr}')
-        self.set_ready()
+        # TODO: proper handling of set_ready
+        is_ready_event.set()
         await self.server.wait_for_termination()
 
-    async def _loop_body(self):
+    async def _loop_body(self, is_ready_event: 'Event'):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         try:
-            await asyncio.gather(self.serve_forever(), self._wait_for_shutdown())
+            await asyncio.gather(self.serve_forever(is_ready_event), self._wait_for_shutdown())
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
-            await self.serve_terminate()
+        await self.serve_terminate()
+
+    def __enter__(self):
+        return self

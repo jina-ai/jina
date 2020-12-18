@@ -1,6 +1,6 @@
 ---
-name: "\U0001F31F New Feature & Discussion Needed"
-about: I’d like add a new feature to Jina, before that I need some discussion.
+name: "\U0001F31F Feature Request?"
+about: I’d like add/request a new feature to Jina, before that I need some discussion.
 title: ''
 labels: kind/feature
 assignees: ''

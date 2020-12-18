@@ -1,13 +1,20 @@
 import pytest
 
 from jina.drivers.querylang.queryset.dunderkey import (
+    dunderkey,
+    dunder_init,
     dunder_get,
     dunder_partition,
     undunder_keys,
     dunder_truncate,
 )
-from jina.proto.jina_pb2 import DocumentProto
+from jina import Document
 
+def test_dunderkey():
+    assert dunderkey('a', 'b', 'c') == 'a__b__c'
+
+def test_dunder_init():
+    assert dunder_init('a__b__c') == 'a__b'
 
 def test_dunder_get():
     assert dunder_get({'a': {'b': 5}}, 'a__b') == 5
@@ -22,9 +29,9 @@ def test_dunder_get():
 
     assert dunder_get(A, 'b__c') == 5
 
-    d = DocumentProto()
-    d.tags['a'] = 'hello'
-    assert dunder_get(d, 'tags__a') == 'hello'
+    with Document() as d:
+        d.tags['a'] = 'hello'
+        assert dunder_get(d, 'tags__a') == 'hello'
 
     # Error on invalid key
 

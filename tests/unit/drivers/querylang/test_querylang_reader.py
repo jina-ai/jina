@@ -57,19 +57,19 @@ def test_read_from_req(mocker):
 
     # without queryset
     with f:
-        f.index(random_docs(10), output_fn=response_mock)
+        f.index(random_docs(10), on_done=response_mock)
 
     response_mock.assert_called()
     # with queryset
     with f:
-        f.index(random_docs(10), queryset=qs, output_fn=response_mock_2)
+        f.index(random_docs(10), queryset=qs, on_done=response_mock_2)
 
     response_mock_2.assert_called()
 
     qs.priority = -1
     # with queryset, but priority is no larger than driver's default
     with f:
-        f.index(random_docs(10), queryset=qs, output_fn=response_mock_3)
+        f.index(random_docs(10), queryset=qs, on_done=response_mock_3)
 
     response_mock_3.assert_called()
 
