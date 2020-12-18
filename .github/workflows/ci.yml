@@ -25,7 +25,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             Thanks for your contribution :heart:
-            Unforunately, this PR has a bad commit message, please refer to:
+            Unforunately, this PR has a **bad commit message**, please refer to:
             - [Commit Message Guideline for the First Time Contributor](https://github.com/jina-ai/jina/issues/553)
             - [Contributing Guideline](https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md)
 
