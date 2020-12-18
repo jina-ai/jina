@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 
 from .components import *
 from .helper import print_result, write_html, download_data, \
-    evaluate_generator, compute_mean_evaluation, index_generator, query_generator
+    evaluate_generator, compute_mean_evaluation, index_generator, query_generator, group_index_docs_by_label
 from ..flow import Flow
 from ..helper import countdown, colored
 
@@ -45,6 +45,7 @@ def hello_world(args):
 
     # download the data
     download_data(targets, args.download_proxy)
+    targets_by_label = group_index_docs_by_label(targets)
 
     # this envs are referred in index and query flow YAMLs
     os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
@@ -86,7 +87,7 @@ def hello_world(args):
     f = Flow.load_config(args.uses_evaluate)
     # run it!
     with f:
-        f.search(evaluate_generator(num_docs=args.num_query, target=targets), shuffle=True, size=args.num_query,
+        f.search(evaluate_generator(num_docs=args.num_query, target=targets, targets_by_label=targets_by_label), shuffle=True, size=args.num_query,
                  on_done=compute_mean_evaluation, batch_size=args.query_batch_size,
                  top_k=args.top_k)
 
