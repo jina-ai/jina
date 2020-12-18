@@ -10,8 +10,6 @@ class MockMatches2DocRankDriver(Matches2DocRankDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.hash2id = lambda x: str(int(x))
-        self.id2hash = lambda x: int(x)
 
     @property
     def exec_fn(self):

@@ -6,7 +6,6 @@ import pytest
 from jina.drivers.craft import SegmentDriver
 from jina.executors.crafters import BaseSegmenter
 from jina import Document
-from jina.types.document import uid
 from jina.types.sets import DocumentSet
 
 
@@ -34,7 +33,6 @@ class SimpleSegmentDriver(SegmentDriver):
 
 def test_segment_driver():
     valid_doc = Document()
-    valid_doc.update_id()
     valid_doc.text = 'valid'
     valid_doc.length = 2
     valid_doc.mime_type = 'image/png'
@@ -74,8 +72,7 @@ def test_broken_document():
     driver.attach(executor=executor, pea=None)
 
     invalid_doc = Document()
-    invalid_doc.update_id()
-    invalid_doc.id = uid.new_doc_id(invalid_doc)
+    invalid_doc.id = 1
     invalid_doc.text = 'invalid'
     invalid_doc.length = 2
 
