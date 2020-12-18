@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 
 from .components import *
 from .helper import print_result, write_html, download_data, \
-    evaluate_generator, compute_mean_evaluation, index_generator, query_generator
+    evaluate_generator, compute_mean_evaluation, index_generator, query_generator, group_index_docs_by_label
 from ..flow import Flow
 from ..helper import countdown, colored
 
@@ -45,6 +45,7 @@ def hello_world(args):
 
     # download the data
     download_data(targets, args.download_proxy)
+    targets_by_label = group_index_docs_by_label(targets)
 
     # this envs are referred in index and query flow YAMLs
     os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
