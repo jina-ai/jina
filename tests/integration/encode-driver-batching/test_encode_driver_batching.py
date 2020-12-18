@@ -76,28 +76,31 @@ def document_generator(num_docs, num_chunks, num_chunks_chunks):
 
 
 @pytest.mark.parametrize('request_batch_size', [100, 200, 500])
-@pytest.mark.parametrize('driver_batch_size', [8, 64, 128])
-# @pytest.mark.parametrize('num_chunks', [0, 8, 64, 64, 128])
-@pytest.mark.parametrize('traversal_paths', [('r',)])
-def test_encode_driver_batching(request_batch_size, driver_batch_size, traversal_paths, tmpdir, mocker):
+@pytest.mark.parametrize('driver_batch_size', [8, 16, 64])
+def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
     num_docs = 1315
     num_chunks = 0
     num_chunks_chunks = 0
 
+    num_requests = int(num_docs / request_batch_size)
+    num_docs_last_req_batch = num_docs % (num_requests * request_batch_size)
+
     def validate_response(resp):
-        assert len(resp.search.docs) == request_batch_size
+        valid_resp_length = (len(resp.search.docs) == request_batch_size) or (
+                    len(resp.search.docs) == num_docs_last_req_batch)
+        assert valid_resp_length
         for doc in resp.search.docs:
             assert doc.embedding is not None
 
-    def error_response(resp):
-        assert False  # no error should happen
+    def fail_if_error(resp):
+        assert False
 
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
                           num_docs_in_same_request=request_batch_size,
                           total_num_docs=num_docs)
 
     driver = EncodeDriver(batch_size=driver_batch_size,
-                          traversal_paths=traversal_paths)
+                          traversal_paths=('r',))
 
     encoder._drivers.clear()
     encoder._drivers['SearchRequest'] = [driver]
@@ -105,14 +108,52 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, traversal
     executor_yml_file = os.path.join(tmpdir, 'executor.yml')
     encoder.save_config(executor_yml_file)
 
-    response_mock = mocker.Mock(wrap=validate_response)
-    error_mock = mocker.Mock(wrap=error_response)
+    with Flow().add(uses=executor_yml_file) as f:
+        f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
+                 batch_size=request_batch_size,
+                 on_done=validate_response,
+                 on_error=fail_if_error)
+
+
+@pytest.mark.parametrize('request_batch_size', [100, 200, 500])
+@pytest.mark.parametrize('driver_batch_size', [8, 64, 128])
+@pytest.mark.parametrize('num_chunks', [1, 8])
+@pytest.mark.parametrize('num_chunks_chunks', [1, 8])
+def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_size, num_chunks, num_chunks_chunks,
+                                            tmpdir, mocker):
+    num_docs = 1315
+    num_requests = int(num_docs / request_batch_size)
+    num_docs_last_req_batch = num_docs % (num_requests * request_batch_size)
+
+    def validate_response(resp):
+        valid_resp_length = (len(resp.search.docs) == request_batch_size) or (
+                    len(resp.search.docs) == num_docs_last_req_batch)
+        assert valid_resp_length
+        for doc in resp.search.docs:
+            assert doc.embedding is not None
+            for chunk in doc.chunks:
+                assert chunk.embedding is not None
+                for chunk_chunk in chunk.chunks:
+                    assert chunk_chunk.embedding is not None
+
+    def fail_if_error(resp):
+        assert False
+
+    encoder = MockEncoder(driver_batch_size=driver_batch_size,
+                          num_docs_in_same_request=request_batch_size,
+                          total_num_docs=num_docs * num_chunks * num_chunks_chunks)
+
+    driver = EncodeDriver(batch_size=driver_batch_size,
+                          traversal_paths=('rcc',))
+
+    encoder._drivers.clear()
+    encoder._drivers['SearchRequest'] = [driver]
+
+    executor_yml_file = os.path.join(tmpdir, 'executor.yml')
+    encoder.save_config(executor_yml_file)
 
     with Flow().add(uses=executor_yml_file) as f:
         f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  batch_size=request_batch_size,
-                 output_fn=response_mock,
-                 on_error=error_mock)
-
-    response_mock.assert_called()
-    error_mock.assert_not_called()
+                 on_done=validate_response,
+                 on_error=fail_if_error)
