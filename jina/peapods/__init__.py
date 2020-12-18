@@ -1,21 +1,23 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional
+from typing import Optional, TypeVar
 
+from .peas import BasePea
 from .. import __default_host__
 from ..enums import RemoteAccessType
 from ..helper import is_valid_local_config_source
 from ..logging import default_logger
-from .peas import BasePea
 
 if False:
     import argparse
 
+PeaLike = TypeVar('PeaLike', bound='BasePea')
+
 
 def Runtime(args: Optional['argparse.Namespace'] = None,
             allow_remote: bool = True,
-            pea_cls: BasePea = BasePea, **kwargs):
+            pea_cls: PeaLike = BasePea, **kwargs):
     """Initialize a :class:`LocalRuntime`, :class:`ContainerRuntime` or :class:`RemoteRuntime`
 
     :param args: arguments from CLI

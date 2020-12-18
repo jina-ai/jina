@@ -8,11 +8,11 @@ import time
 from pathlib import Path
 from typing import Dict, Union
 
-from jina.peapods.zmq import Zmqlet
-from jina import __ready_msg__, __stop_msg__
-from jina.helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
-from jina.logging import JinaLogger
-from jina.peapods.runtimes import BaseRuntime
+from .. import BaseRuntime
+from ...zmq import Zmqlet
+from .... import __ready_msg__, __stop_msg__
+from ....helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
+from ....logging import JinaLogger
 
 __all__ = ['ContainerRuntime']
 
