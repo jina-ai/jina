@@ -21,8 +21,8 @@ from .. import JINA_GLOBAL
 from ..clients import Client
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
-from ..helper import yaml, get_non_defaults_args, complete_path, colored, \
-    get_public_ip, get_internal_ip, typename, get_parsed_args
+from ..helper import yaml, complete_path, colored, \
+    get_public_ip, get_internal_ip, typename, ArgNamespace
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..parser import set_client_cli_parser
@@ -81,14 +81,14 @@ class BaseFlow(ExitStack):
 
     def _update_args(self, args, **kwargs):
         from ..parser import set_flow_parser
+        from ..helper import ArgNamespace
+
         _flow_parser = set_flow_parser()
         if args is None:
-            from ..helper import get_parsed_args
-            _, args, _ = get_parsed_args(kwargs, _flow_parser)
-
+            args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser)
         self.args = args
         self._common_kwargs = kwargs
-        self._kwargs = get_non_defaults_args(args, _flow_parser)  #: for yaml dump
+        self._kwargs = ArgNamespace.get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 
     @classmethod
     def to_yaml(cls, representer, data):
@@ -554,7 +554,7 @@ class BaseFlow(ExitStack):
         if 'host' not in kwargs:
             kwargs['host'] = self.host
 
-        _, args, _ = get_parsed_args(kwargs, set_client_cli_parser())
+        args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
         return self._cls_client(args)
 
     @property

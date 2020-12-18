@@ -11,7 +11,7 @@ from typing import Dict, Union
 from .. import BaseRuntime
 from ...zmq import Zmqlet
 from .... import __ready_msg__, __stop_msg__
-from ....helper import is_valid_local_config_source, kwargs2list, get_non_defaults_args
+from ....helper import is_valid_local_config_source, ArgNamespace
 from ....logging import JinaLogger
 
 __all__ = ['ContainerRuntime']
@@ -64,8 +64,8 @@ class ContainerRuntime(BaseRuntime):
         # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
         from jina.parser import set_pea_parser
-        non_defaults = get_non_defaults_args(self.args, set_pea_parser(),
-                                             taboo={'uses', 'entrypoint', 'volumes', 'pull_latest'})
+        non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(),
+                                                          taboo={'uses', 'entrypoint', 'volumes', 'pull_latest'})
 
         if self.args.pull_latest:
             self.logger.warning(f'pulling {self.args.uses}, this could take a while. if you encounter '
@@ -101,7 +101,7 @@ class ContainerRuntime(BaseRuntime):
         else:
             net_mode = None
 
-        _args = kwargs2list(non_defaults)
+        _args = ArgNamespace.kwargs2list(non_defaults)
         ports = {f'{v}/tcp': v for v in _expose_port} if not net_mode else None
         self._container = client.containers.run(self.args.uses, _args,
                                                 detach=True,

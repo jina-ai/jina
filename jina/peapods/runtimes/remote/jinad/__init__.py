@@ -3,7 +3,7 @@ from typing import Union, Dict, Optional
 
 from .api import PeaJinadAPI, get_jinad_api
 from .. import BaseRemoteRuntime
-from .....helper import cached_property, namespace_to_dict, colored, typename
+from .....helper import cached_property, ArgNamespace, colored, typename
 
 
 class JinadRemoteRuntime(BaseRemoteRuntime):
@@ -27,7 +27,7 @@ class JinadRemoteRuntime(BaseRemoteRuntime):
 
     def spawn_remote(self, **kwargs) -> Optional[str]:
         if self.api.is_alive:
-            args = namespace_to_dict(self.args)
+            args = ArgNamespace.flatten_to_dict(self.args)
             if self.api.upload(args, **kwargs):
                 return self.api.create(args, **kwargs)
 
