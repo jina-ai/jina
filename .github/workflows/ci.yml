@@ -43,7 +43,7 @@ jobs:
         if: ${{ steps.fc.outputs.comment-id != 0 }}
         uses: actions/github-script@v3
         with:
-          github-token: ${{ secrets.PAT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.issues.deleteComment({
               owner: context.repo.owner,
