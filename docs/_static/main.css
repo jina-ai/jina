@@ -261,8 +261,8 @@ body {
 
 .wy-menu-vertical li a {
     font-size: 0.8rem;
-    margin: 0;
-    line-height: 2.5;
+    margin: 10px;
+    line-height: inherit;
     color: white;
     transition: all .1s linear;
     transition-property: all;
@@ -406,7 +406,7 @@ a:hover {
 }
 
 .wy-nav-side {
-    background: #009999;
+    background: #006b6b;
     width: 23rem;
 }
 

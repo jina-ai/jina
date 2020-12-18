@@ -1,5 +1,5 @@
-Welcome to Jina Documentation!
-===============================
+Welcome to Jina!
+================
 
 .. toctree::
    :maxdepth: 1
