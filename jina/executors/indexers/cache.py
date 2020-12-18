@@ -1,11 +1,12 @@
 import tempfile
-from typing import Optional
+from typing import Optional, Iterator
 
-import numpy as np
+from jina.executors.indexers import BaseKVIndexer
+from jina.helper import deprecated_alias, check_keys_exist
 
-from . import BaseKVIndexer
-from ...helper import cached_property
-from ...types.document.uid import UniqueId
+DATA_FIELD = 'data'
+ID_KEY = 'id'
+CONTENT_HASH_KEY = 'content_hash'
 
 
 class BaseCache(BaseKVIndexer):
@@ -22,35 +23,79 @@ class BaseCache(BaseKVIndexer):
 
 
 class DocIDCache(BaseCache):
-    """Store doc ids in a int64 set and persistent it to a numpy array """
+    """..."""
+    # TODO docs
+
+    # TODO temp data structure
+    store = {}
+    supported_fields = [ID_KEY, CONTENT_HASH_KEY]
+    default_field = ID_KEY
 
     def __init__(self, index_filename: str = None, *args, **kwargs):
         if not index_filename:
             # create a new temp file if not exist
             index_filename = tempfile.NamedTemporaryFile(delete=False).name
         super().__init__(index_filename, *args, **kwargs)
+        self.store = {}
+        self.field = kwargs.get('field', self.default_field)
+        # TODO optimization in case it's just id
+        if self.field not in self.supported_fields:
+            raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
-    def add(self, doc_id: UniqueId, *args, **kwargs):
-        d_id = int(doc_id)
-        self.query_handler.add(d_id)
+    @deprecated_alias(doc_id='doc')
+    def add(self, doc: 'Document', *args, **kwargs):
+        cached_field = doc.id
+        if self.field == CONTENT_HASH_KEY:
+            cached_field = doc.content_hash
         self._size += 1
-        self.write_handler.write(np.int64(d_id).tobytes())
+        self.store[doc.id] = cached_field
 
-    def query(self, doc_id: UniqueId, *args, **kwargs) -> Optional[bool]:
-        d_id = int(doc_id)
-        return (d_id in self.query_handler) or None
+    @deprecated_alias(doc_id='doc')
+    def query(self, doc: 'Document', *args, **kwargs) -> Optional[bool]:
+        """
+        Check whether the given doc's cached field exists in the index
 
-    def get_query_handler(self):
-        with open(self.index_abspath, 'rb') as fp:
-            return set(np.frombuffer(fp.read(), dtype=np.int64))
+        @param doc: the 'Document' you want to query for
+        """
+        cached_field = doc.id
+        if self.field == CONTENT_HASH_KEY:
+            cached_field = doc.content_hash
+        status = (cached_field in self.store.values()) or None
+        # FIXME cleanup
+        print(f'query = {cached_field}. status = {status}')
+        return status
 
-    @cached_property
-    def null_query_handler(self):
-        """The empty query handler when :meth:`get_query_handler` fails"""
-        return set()
+    def update(self, keys: Iterator[int], values: Iterator['Document'], *args, **kwargs):
+        """
+        :param keys: list of 'Document'.id
+        :param values: list of either `id` or `content_hash` of :class:`'Document'"""
+        missed = check_keys_exist(keys, self.store.keys())
+        if missed:
+            raise KeyError(f'Keys {missed} were not found. No operation performed...')
+
+        for key, doc in zip(keys, values):
+            cached_field = doc.id
+            if self.field == CONTENT_HASH_KEY:
+                cached_field = doc.content_hash
+            self.store[key] = cached_field
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        """
+        :param keys: list of 'Document'.id
+        """
+        missed = check_keys_exist(keys, self.store.keys())
+        if missed:
+            raise KeyError(f'Keys {missed} were not found. No operation performed...')
+
+        for key in keys:
+            del self.store[key]
+            self._size -= 1
 
     def get_add_handler(self):
-        return open(self.index_abspath, 'ab')
+        pass
+
+    def get_query_handler(self):
+        pass
 
     def get_create_handler(self):
-        return open(self.index_abspath, 'wb')
+        pass

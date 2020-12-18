@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from .index import BaseIndexDriver
+from ..executors.indexers.cache import DATA_FIELD
 
 if False:
     from .. import Document
@@ -10,12 +11,10 @@ if False:
 class BaseCacheDriver(BaseIndexDriver):
     """
     The driver related to :class:`BaseCache`
-
     """
 
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
         """
-
         :param with_serialization: feed serialized doc to the CacheIndexer
         :param args:
         :param kwargs:
@@ -25,7 +24,7 @@ class BaseCacheDriver(BaseIndexDriver):
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for d in docs:
-            result = self.exec[d.id]
+            result = self.exec[d]
             if result is None:
                 self.on_miss(d)
             else:
@@ -33,17 +32,15 @@ class BaseCacheDriver(BaseIndexDriver):
 
     def on_miss(self, doc: 'Document') -> None:
         """Function to call when doc is missing, the default behavior is add to cache when miss
-
         :param doc: the document in the request but missed in the cache
         """
         if self.with_serialization:
-            self.exec_fn(doc.id, doc.SerializeToString())
+            self.exec_fn(doc, doc.SerializeToString())
         else:
-            self.exec_fn(doc.id)
+            self.exec_fn(doc)
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         """ Function to call when doc is hit
-
         :param req_doc: the document in the request and hitted in the cache
         :param hit_result: the hit result returned by the cache
         :return:

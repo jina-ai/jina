@@ -754,3 +754,11 @@ def run_async(func, *args, **kwargs):
                                'please report this issue here: https://github.com/jina-ai/jina')
     else:
         return asyncio.run(func(*args, **kwargs))
+
+
+def check_keys_exist(keys_to_check, existing_keys):
+    missed = []
+    for k in keys_to_check:
+        if k not in existing_keys:
+            missed.append(k)
+    return missed
