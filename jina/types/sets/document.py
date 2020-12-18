@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Callable, Optional
+from typing import Callable
 from typing import Union, Sequence, Iterable, Tuple
 
 import numpy as np
@@ -19,7 +19,7 @@ class DocumentSet(MutableSequence):
     a generator but ALSO modify it, count it, get item.
     """
 
-    def __init__(self, docs_proto: Optional[Union['RepeatedCompositeContainer', Sequence['Document']]] = None):
+    def __init__(self, docs_proto: Union['RepeatedCompositeContainer', Sequence['Document']]):
         super().__init__()
         self._docs_proto = docs_proto
         self._docs_map = {}

@@ -40,8 +40,11 @@ class BaseEncodeDriver(BaseExecutableDriver):
     def _batching_doc_set(func: Callable) -> Callable:
         @wraps(func)
         def arg_wrapper(self, *args, **kwargs):
+            force_flush = True if 'force_flush' in kwargs and kwargs['force_flush'] else False
             docs = args[0]
-            if self.cache_set is not None and self.cache_set.available_capacity > 0:
+            if not force_flush and \
+                    self.cache_set is not None and \
+                    self.cache_set.available_capacity > 0:
                 left_docs = self.cache_set.cache(docs)
                 while len(left_docs) > 0:
                     self._apply_cache()
@@ -65,13 +68,14 @@ class BaseEncodeDriver(BaseExecutableDriver):
 
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)
-        self._apply_cache(**kwargs)
+        self._apply_cache(force_flush=True, **kwargs)
 
-    def _apply_cache(self, **kwargs):
-        cached_docs = self.cache_set.get()
-        if len(cached_docs) > 0:
-            self._apply_all(cached_docs, **kwargs)
-        self.cache_set = BaseEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
+    def _apply_cache(self, force_flush=False, **kwargs):
+        if self.batch_size:
+            cached_docs = self.cache_set.get()
+            if len(cached_docs) > 0:
+                self._apply_all(cached_docs, force_flush=force_flush, **kwargs)
+            self.cache_set = BaseEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
 
 
 class EncodeDriver(BaseEncodeDriver):

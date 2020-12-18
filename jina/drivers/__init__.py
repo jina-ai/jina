@@ -282,7 +282,6 @@ class BaseRecursiveDriver(BaseDriver):
 
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)
-        self._flush_cache()
 
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
