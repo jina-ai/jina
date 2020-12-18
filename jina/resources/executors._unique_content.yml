@@ -1,9 +1,7 @@
 !DocIDCache
 with:
   index_path: cache.tmp
-  # TODO Should we rename _unique to _unique_id ?
-  # that would mean replacing the name wherever it is used
-  field: 'id' # explicit default param.
+  field: 'content'
 metas:
   name: cache
 requests:

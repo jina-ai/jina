@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"
-      - uses: wagoid/commitlint-github-action@v1
+      - uses: wagoid/commitlint-github-action@v2
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 

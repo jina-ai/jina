@@ -13,20 +13,22 @@ file_dir = Path(__file__).parent
 sys.path.append(str(file_dir.parent))
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1) -> Iterator['Document']:
+def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1, start_id=0, embedding=True) -> Iterator['Document']:
     c_id = 3 * num_docs  # avoid collision with docs
     for j in range(num_docs):
-        with Document() as d:
-            d.tags['id'] = j
-            d.text = b'hello world'
+        d = Document(id=start_id+j)
+        d.text = b'hello world'
+        if embedding:
             d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
+        d.update_content_hash()
         for k in range(chunks_per_doc):
-            with Document() as c:
-                c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+            c = Document(id=start_id+c_id)
+            c.text = 'i\'m chunk %d from doc %d' % (c_id, j)
+            if embedding:
                 c.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
-                c.tags['id'] = c_id
-                c.tags['parent_id'] = j
-                c_id += 1
+            c.tags['parent_id'] = j
+            c_id += 1
+            c.update_content_hash()
             d.chunks.append(c)
         yield d
 
