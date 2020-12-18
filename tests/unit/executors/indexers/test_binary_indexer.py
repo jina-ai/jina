@@ -24,14 +24,14 @@ def test_binarypb_in_flow(test_metas, mocker):
 
     response_mock = mocker.Mock(wrap=validate)
     with f:
-        f.index(docs, override_doc_id=False)
+        f.index(docs)
 
     docs_no_embedding = copy.deepcopy(docs)
     for d in docs_no_embedding:
         d.ClearField('embedding')
 
     with f:
-        f.search(docs_no_embedding, on_done=response_mock, override_doc_id=False)
+        f.search(docs_no_embedding, on_done=response_mock)
 
     response_mock.assert_called()
 

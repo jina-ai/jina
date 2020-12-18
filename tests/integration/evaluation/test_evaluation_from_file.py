@@ -69,7 +69,7 @@ def random_workspace(tmpdir):
                           ])
 def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs, index_yaml, search_yaml, mocker):
     with Flow.load_config(index_yaml) as index_gt_flow:
-        index_gt_flow.index(input_fn=index_groundtruth, override_doc_id=False, batch_size=10)
+        index_gt_flow.index(input_fn=index_groundtruth, batch_size=10)
 
     def validate_evaluation_response(resp):
         assert len(resp.docs) == 97
@@ -87,7 +87,6 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
             input_fn=evaluate_docs,
             on_done=response_mock,
             callback_on='body',
-            override_doc_id=False,
         )
 
     response_mock.assert_called()

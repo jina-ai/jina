@@ -30,7 +30,7 @@ def test_on_bad_iterator():
 def test_data_type_builder_doc(builder):
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
-    d, t = _build_doc(builder(a), DataInputType.DOCUMENT, override_doc_id=False)
+    d, t = _build_doc(builder(a), DataInputType.DOCUMENT)
     assert d.id == a.id
     assert t == DataInputType.DOCUMENT
 
@@ -39,13 +39,13 @@ def test_data_type_builder_doc_bad():
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
     with pytest.raises(BadDocType):
-        _build_doc(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT, override_doc_id=False)
+        _build_doc(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT)
 
     with pytest.raises(BadDocType):
-        _build_doc(MessageToJson(a) + '🍔', DataInputType.DOCUMENT, override_doc_id=False)
+        _build_doc(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
 
     with pytest.raises(BadDocType):
-        _build_doc({'🍔': '🍔'}, DataInputType.DOCUMENT, override_doc_id=False)
+        _build_doc({'🍔': '🍔'}, DataInputType.DOCUMENT)
 
 
 @pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
@@ -54,20 +54,20 @@ def test_data_type_builder_auto(input_type):
         print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
         del os.environ['JINA_ARRAY_QUANT']
 
-    d, t = _build_doc('123', input_type, override_doc_id=True)
+    d, t = _build_doc('123', input_type)
     assert d.text == '123'
     assert t == DataInputType.CONTENT
 
-    d, t = _build_doc(b'45678', input_type, override_doc_id=True)
+    d, t = _build_doc(b'45678', input_type)
     assert t == DataInputType.CONTENT
     assert d.buffer == b'45678'
 
-    d, t = _build_doc(b'123', input_type, override_doc_id=True)
+    d, t = _build_doc(b'123', input_type)
     assert t == DataInputType.CONTENT
     assert d.buffer == b'123'
 
     c = np.random.random([10, 10])
-    d, t = _build_doc(c, input_type, override_doc_id=True)
+    d, t = _build_doc(c, input_type)
     np.testing.assert_equal(d.blob, c)
     assert t == DataInputType.CONTENT
 
