@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import argparse
 import os
 
-
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
