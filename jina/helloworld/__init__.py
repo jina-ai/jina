@@ -87,7 +87,7 @@ def hello_world(args):
     f = Flow.load_config(args.uses_evaluate)
     # run it!
     with f:
-        f.search(evaluate_generator(num_docs=args.num_query, target=targets), shuffle=True, size=args.num_query,
+        f.search(evaluate_generator(num_docs=args.num_query, target=targets, targets_by_label=targets_by_label), shuffle=True, size=args.num_query,
                  on_done=compute_mean_evaluation, batch_size=args.query_batch_size,
                  top_k=args.top_k)
 

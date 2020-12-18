@@ -18,10 +18,7 @@ from .. import Document
 
 result_html = []
 num_docs_evaluated = 0
-evaluation_value = {
-    'precision': 0.0,
-    'recall': 0.0
-}
+evaluation_value = defaultdict(float)
 
 
 def compute_mean_evaluation(resp):
@@ -36,7 +33,7 @@ def compute_mean_evaluation(resp):
 def group_index_docs_by_label(targets: dict):
     targets_by_label = defaultdict(list)
     for internal_doc_id in range(len(targets['index']['data'])):
-        label_int = targets['query-labels']['data'][internal_doc_id][0]
+        label_int = targets['index-labels']['data'][internal_doc_id][0]
         targets_by_label[label_int].append(internal_doc_id)
     return targets_by_label
 
@@ -85,8 +82,8 @@ def write_html(html_path):
             open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
-        precision_evaluation_percentage = evaluation_value['precision'] / num_docs_evaluated * 100.0
-        recall_evaluation_percentage = evaluation_value['recall'] / num_docs_evaluated * 100.0
+        precision_evaluation_percentage = evaluation_value['evaluate-Precision@5'] / num_docs_evaluated * 100.0
+        recall_evaluation_percentage = evaluation_value['evaluate-Recall@5'] / num_docs_evaluated * 100.0
         t = t.replace('{% PRECISION_EVALUATION %}', '{:.2f}%'.format(precision_evaluation_percentage))
         t = t.replace('{% RECALL_EVALUATION %}', '{:.2f}%'.format(recall_evaluation_percentage))
 
