@@ -280,8 +280,12 @@ class BaseRecursiveDriver(BaseDriver):
         else:
             return self.req.docs
 
+    def _flush_cache(self, **kwargs):
+        pass
+
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)
+        self._flush_cache()
 
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
@@ -310,7 +314,14 @@ class BaseRecursiveDriver(BaseDriver):
                         doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
                     )
         else:
-            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
+            if getattr(self, 'cache_set', None):
+                if self.cache_set.left_capacity >= len(docs):
+                    self.cache_set.append(docs)
+                else:
+                    self._flush_cache(context_doc=parent_doc)
+                    self.cache_set.append(docs)
+            else:
+                self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

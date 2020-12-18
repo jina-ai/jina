@@ -1,6 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Optional
+
+from ..types.sets.cache import CacheDocumentSet
 from . import BaseExecutableDriver
 
 if False:
@@ -10,8 +13,21 @@ if False:
 class BaseEncodeDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
-    def __init__(self, executor: str = None, method: str = 'encode', *args, **kwargs):
+    def __init__(self,
+                 executor: str = None,
+                 method: str = 'encode',
+                 batch_size: Optional[int] = None,
+                 *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
+        self.batch_size = batch_size
+        if self.batch_size:
+            self.cache_set = CacheDocumentSet(capacity=self.batch_size)
+        else:
+            self.cache_set = None
+
+    def _flush_cache(self, **kwargs):
+        self._apply_all(docs=self.cache_set.get(), **kwargs)
+        self.cache_set = CacheDocumentSet(capacity=self.batch_size)
 
 
 class EncodeDriver(BaseEncodeDriver):
