@@ -1,14 +1,14 @@
 blank_issues_enabled: false
 contact_links:
-  - name: "📚 Read Jina Docs"
+  - name: "📚 Read docs"
     url: https://docs.jina.ai/
     about: Find your solution from our documenations
-  - name: "🐣 Learn by Examples"
+  - name: "🐣 Learn examples"
     url: https://github.com/jina-ai/examples
     about: Learn from real-world examples
-  - name: "🚏 Contributing Guideline"
-    url: https://github.com/jina-ai/jina/blob/master/CONTRIBUTING.md
-    about: Follow the guideline to make a good pull request
+  - name: "😊 Join us"
+    url: https://career.jina.ai
+    about: Shape the neural search ecosystem in open-source!
 #  - name: "🔎 Search on Existing Issues"
 #    url: https://github.com/jina-ai/jina/search?q=&type=Issues
 #    about: Someone else may already post this issue and got solved
