@@ -20,8 +20,6 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: if lint failed
         if: ${{ failure() }}
-      - name: Create comment
-        if: ${{ steps.fc.outputs.comment-id == 0 }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.pull_request.number }}
