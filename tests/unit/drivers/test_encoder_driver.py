@@ -50,7 +50,6 @@ def create_documents_to_encode(num_docs):
     docs = []
     for idx in range(num_docs):
         doc = Document(content=np.array([idx]))
-
         docs.append(doc)
     return DocumentSet(docs)
 
