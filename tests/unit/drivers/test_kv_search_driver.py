@@ -6,7 +6,6 @@ from jina import Document
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.types.document.uid import id2hash
 from jina.types.ndarray.generic import NdArray
 
 
@@ -45,10 +44,10 @@ class MockIndexer(BaseKVIndexer):
         doc4.id = str(4) * 16
         doc4.embedding = np.array([int(doc4.id)])
         self.db = {
-            id2hash(doc1.id): doc1.SerializeToString(),
-            id2hash(doc2.id): doc2.SerializeToString(),
-            id2hash(doc3.id): doc3.SerializeToString(),
-            id2hash(doc4.id): doc4.SerializeToString()
+            int(doc1.id): doc1.SerializeToString(),
+            int(doc2.id): doc2.SerializeToString(),
+            int(doc3.id): doc3.SerializeToString(),
+            int(doc4.id): doc4.SerializeToString()
         }
 
 
@@ -56,9 +55,6 @@ class SimpleKVSearchDriver(KVSearchDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.hash2id = lambda x: str(int(x))
-        self.id2hash = lambda x: int(x)
 
     @property
     def exec_fn(self):

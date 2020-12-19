@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 from jina.flow import Flow
-from jina.types.document import uid
+from jina.types.document.uid import UniqueId
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
@@ -18,11 +18,11 @@ def input_fn():
     NdArray(doc1.embedding).value = e1
     c = doc1.chunks.add()
     NdArray(c.embedding).value = e2
-    c.id = uid.new_doc_id(c)
+    c.id = UniqueId(1)
     doc2 = DocumentProto()
     NdArray(doc2.embedding).value = e3
     d = doc2.chunks.add()
-    d.id = uid.new_doc_id(d)
+    d.id = UniqueId(2)
     NdArray(d.embedding).value = e4
     return [doc1, doc2]
 

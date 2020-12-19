@@ -11,7 +11,7 @@ from jina.excepts import PeaFailToStart
 from jina.helper import typename
 from jina.logging import JinaLogger
 
-__all__ = ['RuntimeMeta', 'BaseRuntime']
+__all__ = ['BaseRuntime']
 
 
 def _get_event(obj: 'BaseRuntime') -> Event:
