@@ -56,7 +56,7 @@ def fetch_files_from_yaml(pea_args: Dict, logger: 'JinaLogger') -> Tuple[Set[str
     if uses_files:
         for current_file in uses_files:
             with open(current_file) as f:
-                result = JAML.load(f)
+                result = JAML.load_no_tags(f)
 
             if 'metas' in result and 'py_modules' in result['metas']:
                 _add_file_to_list(_file=result['metas']['py_modules'],

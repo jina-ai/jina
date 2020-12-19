@@ -1,4 +1,8 @@
 import collections
+import os
+import re
+from types import SimpleNamespace
+from typing import Dict, Any
 
 import yaml
 from yaml import MappingNode
@@ -29,18 +33,120 @@ class JAML:
             pass
 
         JAML.register(DummyClass)
+
+    You can use expressions to programmatically set variables in YAML files and access contexts.
+    An expression can be any combination of literal values, references to a context, or functions.
+    You can combine literals, context references, and functions using operators.
+
+    You need to use specific syntax to tell Jina to evaluate an expression rather than treat it as a string.
+
+    .. highlight:: yaml
+    .. code-block:: yaml
+
+        ${{ <expression> }}
+
+    To evaluate (i.e. substitute the value to the real value) the expression when loading, use :meth:`load(substitute=True)`.
+
+    To substitute the value based on a dict,
+
+    .. highlight:: python
+    .. code-block:: python
+
+        obk = JAML.load(fp, substitute=True,
+                              context={'context_var': 3.14,
+                                       'context_var2': 'hello-world'})
     """
 
     @staticmethod
-    def load(stream, substitute: bool = False):
-        """Parse the first YAML document in a stream
-            and produce the corresponding Python object.
+    def load(stream,
+             substitute: bool = False,
+             context: Dict[str, Any] = None):
+        """Parse the first YAML document in a stream and produce the corresponding Python object.
+
+        :param substitute: substitute environment, internal reference and context variables.
+        :param context: context replacement variables in a dict, the value of the dict is the replacement.
         """
         r = yaml.load(stream, Loader=JinaLoader)
         if substitute:
-            from .helper import expand_dict
-            r = expand_dict(r)
+            r = JAML.expand_dict(r, context)
         return r
+
+    @staticmethod
+    def load_no_tags(stream, **kwargs):
+        """Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow
+        """
+        safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in stream)
+        return JAML.load(safe_yml, **kwargs)
+
+    @staticmethod
+    def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True) -> Dict[str, Any]:
+        from .helper import parse_arg
+        expand_map = SimpleNamespace()
+        context_map = SimpleNamespace()
+        env_map = SimpleNamespace()
+        pat = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')
+
+        def _scan(sub_d, p):
+            if isinstance(sub_d, dict):
+                for k, v in sub_d.items():
+                    if isinstance(v, dict):
+                        p.__dict__[k] = SimpleNamespace()
+                        _scan(v, p.__dict__[k])
+                    elif isinstance(v, list):
+                        p.__dict__[k] = list()
+                        _scan(v, p.__dict__[k])
+                    else:
+                        p.__dict__[k] = v
+            elif isinstance(sub_d, list):
+                for idx, v in enumerate(sub_d):
+                    if isinstance(v, dict):
+                        p.append(SimpleNamespace())
+                        _scan(v, p[idx])
+                    elif isinstance(v, list):
+                        p.append(list())
+                        _scan(v, p[idx])
+                    else:
+                        p.append(v)
+
+        def _replace(sub_d, p):
+            if isinstance(sub_d, dict):
+                for k, v in sub_d.items():
+                    if isinstance(v, dict) or isinstance(v, list):
+                        _replace(v, p.__dict__[k])
+                    else:
+                        if isinstance(v, str) and pat.findall(v):
+                            sub_d[k] = _sub(v, p)
+            elif isinstance(sub_d, list):
+                for idx, v in enumerate(sub_d):
+                    if isinstance(v, dict) or isinstance(v, list):
+                        _replace(v, p[idx])
+                    else:
+                        if isinstance(v, str) and pat.findall(v):
+                            sub_d[idx] = _sub(v, p)
+
+        def _sub(v, p):
+            v = re.sub(pat, '{\\1}', v)
+
+            if resolve_cycle_ref:
+                try:
+                    # "root" context is now the global namespace
+                    # "this" context is now the current node namespace
+                    v = v.format(root=expand_map, this=p, ENV=env_map)
+                except KeyError:
+                    pass
+                try:
+                    v = v.format_map(context)
+                except KeyError:
+                    pass
+            if isinstance(v, str):
+                v = parse_arg(v)
+            return v
+
+        _scan(d, expand_map)
+        _scan(dict(os.environ), env_map)
+
+        _replace(d, expand_map)
+        return d
 
     @staticmethod
     def dump(data, stream=None, **kwargs):

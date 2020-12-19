@@ -61,6 +61,22 @@ def test_yaml_expand3():
     assert b['pea_workspace'] != '{root.workspace}/{root.name}-{this.pea_id}'
 
 
+def test_yaml_expand4():
+    os.environ['ENV1'] = 'a'
+    with open(cur_dir / 'yaml/test-expand4.yml') as fp:
+        b = JAML.load(fp, substitute=True,
+                      context={'context_var': 3.14,
+                               'context_var2': 'hello-world'})
+
+    assert b['components'][0]['metas']['bad_var'] == 'real-compound'
+    assert b['components'][1]['metas']['bad_var'] == 2
+    assert b['components'][1]['metas']['float_var'] == 0.232
+    assert b['components'][1]['metas']['mixed'] == '0.232-2-real-compound'
+    assert b['components'][1]['metas']['name_shortcut'] == 'test_numpy'
+    assert b['components'][1]['metas']['mixed_env'] == '0.232-a'
+    assert b['components'][1]['metas']['random_id'] == 3.14
+    assert b['components'][1]['metas']['config_str'] == 'hello-world'
+
 
 def test_attr_dict():
     class AttrDict:
