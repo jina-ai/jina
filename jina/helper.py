@@ -355,25 +355,6 @@ def colored(text: str, color: Optional[str] = None,
     return text
 
 
-def get_tags_from_node(node) -> List[str]:
-    """Traverse the YAML by node and return all tags
-
-    :param node: the YAML node to be traversed
-    """
-
-    def node_recurse_generator(n):
-        if n.tag.startswith('!'):
-            yield n.tag.lstrip('!')
-        for nn in n.value:
-            if isinstance(nn, tuple):
-                for k in nn:
-                    yield from node_recurse_generator(k)
-            elif isinstance(nn, nodes.Node):
-                yield from node_recurse_generator(nn)
-
-    return list(set(list(node_recurse_generator(node))))
-
-
 class ArgNamespace:
     """Helper function for argparse.Namespace object"""
 
