@@ -8,10 +8,52 @@ from . import BaseExecutableDriver
 from ..types.sets import DocumentSet
 
 
+def encode_driver_batching_doc_set(func: Callable) -> Callable:
+    """
+    Decorator that tries to seamlessly guarantee that `_apply_all` is `EncodeDriver` is processed in batches of the desired
+    size.
+
+    """
+
+    @wraps(func)
+    def arg_wrapper(self, *args, **kwargs):
+        force_flush = True if 'force_flush' in kwargs and kwargs['force_flush'] else False
+        docs = args[0]
+        if not force_flush and \
+                self.cache_set is not None and \
+                self.cache_set.available_capacity > 0:
+            left_docs = self.cache_set.cache(docs)
+            while len(left_docs) > 0:
+                self._apply_cache()
+                left_docs = self.cache_set.cache(left_docs)
+            if self.cache_set.available_capacity == 0:
+                self._apply_cache()
+        else:
+            func(self, *args, **kwargs)
+
+    return arg_wrapper
+
+
 class BaseEncodeDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`encode` by default """
 
+    def __init__(self,
+                 executor: str = None,
+                 method: str = 'encode',
+                 *args, **kwargs):
+        super().__init__(executor, method, *args, **kwargs)
+
+
+class EncodeDriver(BaseEncodeDriver):
+    """Extract the content from documents and call executor and do encoding
+    """
+
     class CacheDocumentSet:
+        """Helper class to accumulate documents from differents document Set in a single DocumentSet
+         to help guarantee that the encoder driver can consume documents in fixed batch sizes to allow
+         the EncoderExecutors to leverage its batching abilities.
+
+         It is useful to have batching even when chunks are involved"""
 
         def __init__(self,
                      capacity: Optional[int] = None,
@@ -36,35 +78,25 @@ class BaseEncodeDriver(BaseExecutableDriver):
         def get(self):
             return self._doc_set
 
-    @staticmethod
-    def _batching_doc_set(func: Callable) -> Callable:
-        @wraps(func)
-        def arg_wrapper(self, *args, **kwargs):
-            force_flush = True if 'force_flush' in kwargs and kwargs['force_flush'] else False
-            docs = args[0]
-            if not force_flush and \
-                    self.cache_set is not None and \
-                    self.cache_set.available_capacity > 0:
-                left_docs = self.cache_set.cache(docs)
-                while len(left_docs) > 0:
-                    self._apply_cache()
-                    left_docs = self.cache_set.cache(left_docs)
-                if self.cache_set.available_capacity == 0:
-                    self._apply_cache()
-            else:
-                func(self, *args, **kwargs)
-
-        return arg_wrapper
-
     def __init__(self,
-                 executor: str = None,
-                 method: str = 'encode',
                  batch_size: Optional[int] = None,
                  *args, **kwargs):
-        super().__init__(executor, method, *args, **kwargs)
+        """
+        Extract from different documents.
+        :param batch_size: number of documents to be used simultaniously in the encoder :meth:apply_all.
+        It is specially useful when the same EncoderExecutor can be used for documents of different granularities
+         (chunks, chunks of chunks ...)
+
+    .. warning::
+        - This parameter was added to cover the case where root documents had very few chunks, and the encoder executor could
+        then only process them in batches of the chunk size of each document, which did not lead to the full use of batching capabilities
+        of the powerful Executors
+
+        """
+        super().__init__(*args, **kwargs)
         self.batch_size = batch_size
         if self.batch_size:
-            self.cache_set = BaseEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = EncodeDriver.CacheDocumentSet(capacity=self.batch_size)
         else:
             self.cache_set = None
 
@@ -77,14 +109,9 @@ class BaseEncodeDriver(BaseExecutableDriver):
             cached_docs = self.cache_set.get()
             if len(cached_docs) > 0:
                 self._apply_all(cached_docs, force_flush=force_flush, **kwargs)
-            self.cache_set = BaseEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = EncodeDriver.CacheDocumentSet(capacity=self.batch_size)
 
-
-class EncodeDriver(BaseEncodeDriver):
-    """Extract the content from documents and call executor and do encoding
-    """
-
-    @BaseEncodeDriver._batching_doc_set
+    @encode_driver_batching_doc_set
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         contents, docs_pts, bad_docs = docs.all_contents
 

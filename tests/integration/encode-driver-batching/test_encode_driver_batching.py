@@ -17,11 +17,18 @@ class MockEncoder(BaseEncoder):
                  total_num_docs: int,
                  *args, **kwargs):
         """
+        This MockEncoder is used to test in very detail that the `batch_size` parameter of the driver works perfectly in detail.
+
+        It takes into account the 'batch_size' provided to the driver, the number of 'documents' (counting also chunks and chunks of chunks)
+        expected to happen in a single request, and the total number of documents expected to process.
+
+        In general, it is expected that `data` will arrive in batches of `driver_batch_size` except at the end of a request (where
+        some document "leftovers" are left to batch or at the end of the total process
+
         :param driver_batch_size: the batch_size at which to accumulate for encode driver
         :param num_docs_in_same_request: batch size of the request
         :param total_num_docs: the total_num_docs that will be sent in the test, important to know how large
         the last batches should be
-        :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         super().__init__(*args, **kwargs)
         self.driver_batch_size = driver_batch_size
