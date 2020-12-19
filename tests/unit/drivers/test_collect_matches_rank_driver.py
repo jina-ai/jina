@@ -1,7 +1,7 @@
 import pytest
 
 from jina import Document
-from jina.drivers.rank import CollectMatches2DocRankDriver
+from jina.drivers.rank.aggregate import CollectMatches2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
 from jina.proto import jina_pb2
 from jina.types.sets import DocumentSet
