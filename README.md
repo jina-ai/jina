@@ -193,7 +193,7 @@ doc_img.tags['date'] = '10/08/2019'
 document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
 ```
 
-#### Fusion Embeddings from Different Modalities
+##### Fusion Embeddings from Different Modalities
 
 To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
 
@@ -215,8 +215,6 @@ requests:
 ```
 
 Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
-
-
 
 
 #### Add Logic
