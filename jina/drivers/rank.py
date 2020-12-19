@@ -2,12 +2,13 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from typing import Dict, List, Tuple
+from collections import defaultdict
 
 import numpy as np
 
 from . import BaseExecutableDriver
 from ..executors.rankers import Chunk2DocRanker
-from ..types.document import Document, uid
+from ..types.document import Document
 from ..types.document.uid import UniqueId
 
 if False:
@@ -141,6 +142,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         match_idx = []
         query_chunk_meta = {}
         match_chunk_meta = {}
+        parentd_id_chunk_id_map = defaultdict(list)
+        matches_by_id = defaultdict(Document)
         for match in docs:
             query_chunk_meta[int(context_doc.id)] = context_doc.get_attrs(*self.exec.required_keys)
             match_idx.append((
@@ -150,6 +153,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
                 match.score.value
             ))
             match_chunk_meta[int(match.id)] = match.get_attrs(*self.exec.required_keys)
+            parentd_id_chunk_id_map[int(match.parent_id)].append(int(match.id))
+            matches_by_id[int(match.id)] = match
 
         if match_idx:
             match_idx = np.array(match_idx,
@@ -169,6 +174,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
                 m = Document(id=int_doc_id)
                 m.score.value = score
                 m.score.op_name = op_name
+                for match_chunk_id in parentd_id_chunk_id_map[int_doc_id]:
+                    m.chunks.append(matches_by_id[match_chunk_id])
                 context_doc.matches.append(m)
 
 
