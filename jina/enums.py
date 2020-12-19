@@ -50,8 +50,8 @@ class EnumType(EnumMeta):
         if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        from .helper import yaml
-        yaml.register_class(cls)
+        from .jaml import JAML
+        JAML.register(cls)
         return cls
 
 
@@ -69,12 +69,12 @@ class BetterEnum(IntEnum, metaclass=EnumType):
 
     @classmethod
     def to_yaml(cls, representer, data):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         return representer.represent_scalar('!' + cls.__name__, str(data))
 
     @classmethod
     def from_yaml(cls, constructor, node):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         return cls.from_string(node.value)
 
 

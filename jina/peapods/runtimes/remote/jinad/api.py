@@ -7,6 +7,7 @@ from typing import Dict, Tuple, Set, List, Optional
 
 from .....excepts import RemotePodClosed
 from .....importer import ImportExtensions
+from .....jaml import JAML
 from .....logging import JinaLogger
 
 
@@ -55,8 +56,7 @@ def fetch_files_from_yaml(pea_args: Dict, logger: 'JinaLogger') -> Tuple[Set[str
     if uses_files:
         for current_file in uses_files:
             with open(current_file) as f:
-                import ruamel.yaml
-                result = ruamel.yaml.round_trip_load(f)
+                result = JAML.load(f)
 
             if 'metas' in result and 'py_modules' in result['metas']:
                 _add_file_to_list(_file=result['metas']['py_modules'],

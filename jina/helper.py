@@ -21,9 +21,8 @@ from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
 
 import numpy as np
-from ruamel.yaml import YAML, nodes
 
-__all__ = ['batch_iterator', 'yaml',
+__all__ = ['batch_iterator',
            'parse_arg',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'ArgNamespace', 'get_local_config_source', 'is_valid_local_config_source',
@@ -117,10 +116,7 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
         raise TypeError(f'unsupported type: {type(data)}')
 
 
-def _get_yaml():
-    y = YAML(typ='safe')
-    y.default_flow_style = False
-    return y
+
 
 
 def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
@@ -207,9 +203,6 @@ def random_port() -> Optional[int]:
 
 def get_random_identity() -> str:
     return str(uuid.uuid1())
-
-
-yaml = _get_yaml()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
@@ -528,7 +521,7 @@ def is_valid_local_config_source(path: str) -> bool:
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
-    import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
+    import os, zmq, numpy, google.protobuf, grpc, yaml
     from grpc import _grpcio_metadata
     from pkg_resources import resource_filename
     import platform
@@ -543,7 +536,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
                 'protobuf': google.protobuf.__version__,
                 'proto-backend': api_implementation._default_implementation_type,
                 'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
-                'ruamel.yaml': ruamel.yaml.__version__,
+                'pyyaml': yaml.__version__,
                 'python': platform.python_version(),
                 'platform': platform.system(),
                 'platform-release': platform.release(),
