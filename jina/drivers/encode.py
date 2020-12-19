@@ -25,7 +25,7 @@ class BaseEncodeDriver(BaseExecutableDriver):
             return self.capacity - len(self._doc_set)
 
         def cache(self, docs: DocumentSet):
-            docs_to_append = self.available_capacity
+            docs_to_append = min(len(docs), self.available_capacity)
             for doc in docs[: docs_to_append]:
                 self._doc_set.append(doc)
             return DocumentSet(docs[docs_to_append:])
@@ -49,6 +49,8 @@ class BaseEncodeDriver(BaseExecutableDriver):
                 while len(left_docs) > 0:
                     self._apply_cache()
                     left_docs = self.cache_set.cache(left_docs)
+                if self.cache_set.available_capacity == 0:
+                    self._apply_cache()
             else:
                 func(self, *args, **kwargs)
 

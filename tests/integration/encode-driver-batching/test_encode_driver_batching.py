@@ -140,8 +140,8 @@ def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_siz
         assert False
 
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
-                          num_docs_in_same_request=request_batch_size,
-                          total_num_docs=num_docs)
+                          num_docs_in_same_request=request_batch_size + request_batch_size*num_chunks + request_batch_size*num_chunks*num_chunks_chunks,
+                          total_num_docs=num_docs + num_docs*num_chunks + num_docs*num_chunks*num_chunks_chunks)
 
     driver = EncodeDriver(batch_size=driver_batch_size,
                           traversal_paths=('r', 'c', 'cc'))
