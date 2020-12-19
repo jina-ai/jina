@@ -154,6 +154,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
             on_error=beep, on_always=fp.write)
 ```
 
+
 #### Construct Document
 
 `Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. It can be recurred both vertically and horizontally to have nested documents and matched documents. To construct a Document, one can use:
@@ -165,7 +166,11 @@ doc2 = Document(content=np.random.random([10, 10]))  # a ndarray document
 doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
 ```
 
-##### MultimodalDocument
+<details>
+  <summary>Click here to see more about MultimodalDocument</summary>
+  
+
+#### MultimodalDocument
   
 A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
  
@@ -216,7 +221,8 @@ requests:
 
 Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
 
-
+</details>
+  
 #### Add Logic
 
 To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#executors). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
