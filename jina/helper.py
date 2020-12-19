@@ -21,9 +21,8 @@ from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
 
 import numpy as np
-from ruamel.yaml import YAML, nodes
 
-__all__ = ['batch_iterator', 'yaml',
+__all__ = ['batch_iterator',
            'parse_arg',
            'random_port', 'get_random_identity', 'expand_env_var',
            'colored', 'ArgNamespace', 'get_local_config_source', 'is_valid_local_config_source',
@@ -117,12 +116,6 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
         raise TypeError(f'unsupported type: {type(data)}')
 
 
-def _get_yaml():
-    y = YAML(typ='safe')
-    y.default_flow_style = False
-    return y
-
-
 def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
@@ -209,9 +202,6 @@ def get_random_identity() -> str:
     return str(uuid.uuid1())
 
 
-yaml = _get_yaml()
-
-
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
     if isinstance(v, str):
         return parse_arg(os.path.expandvars(v))
@@ -224,7 +214,7 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
     pat = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
     def _scan(sub_d: Union[Dict, List], p):
-        if isinstance(sub_d, Dict):
+        if isinstance(sub_d, dict):
             for k, v in sub_d.items():
                 if isinstance(v, dict):
                     p.__dict__[k] = SimpleNamespace()
@@ -234,7 +224,7 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
                     _scan(v, p.__dict__[k])
                 else:
                     p.__dict__[k] = v
-        elif isinstance(sub_d, List):
+        elif isinstance(sub_d, list):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict):
                     p.append(SimpleNamespace())
@@ -363,25 +353,6 @@ def colored(text: str, color: Optional[str] = None,
                     text = fmt_str % (_ATTRIBUTES[attr], text)
         text += _RESET
     return text
-
-
-def get_tags_from_node(node) -> List[str]:
-    """Traverse the YAML by node and return all tags
-
-    :param node: the YAML node to be traversed
-    """
-
-    def node_recurse_generator(n):
-        if n.tag.startswith('!'):
-            yield n.tag.lstrip('!')
-        for nn in n.value:
-            if isinstance(nn, tuple):
-                for k in nn:
-                    yield from node_recurse_generator(k)
-            elif isinstance(nn, nodes.Node):
-                yield from node_recurse_generator(nn)
-
-    return list(set(list(node_recurse_generator(node))))
 
 
 class ArgNamespace:
@@ -528,7 +499,7 @@ def is_valid_local_config_source(path: str) -> bool:
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
-    import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
+    import os, zmq, numpy, google.protobuf, grpc, yaml
     from grpc import _grpcio_metadata
     from pkg_resources import resource_filename
     import platform
@@ -543,7 +514,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
                 'protobuf': google.protobuf.__version__,
                 'proto-backend': api_implementation._default_implementation_type,
                 'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
-                'ruamel.yaml': ruamel.yaml.__version__,
+                'pyyaml': yaml.__version__,
                 'python': platform.python_version(),
                 'platform': platform.system(),
                 'platform-release': platform.release(),

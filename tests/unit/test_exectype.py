@@ -4,7 +4,7 @@ import pytest
 
 from jina.executors import BaseExecutor
 # BaseIndexer is already registered
-from jina.helper import yaml
+from jina.jaml import JAML
 
 
 def test_exec_type(tmpdir):
@@ -17,13 +17,13 @@ def test_exec_type(tmpdir):
 
     BaseIndexer().save_config(str(tmpdir / 'tmp.yml'))
     with open(tmpdir / 'tmp.yml') as fp:
-        s = yaml.load(fp)
+        s = JAML.load(fp)
 
     def assert_bi():
         b = BaseIndexer(1)
         b.save_config(str(tmpdir / 'tmp.yml'))
         with open(tmpdir / 'tmp.yml') as fp:
-            b = yaml.load(fp)
+            b = JAML.load(fp)
             assert b.a == 1
 
     # we override BaseIndexer now, without force it shall not store all init values

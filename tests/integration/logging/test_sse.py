@@ -2,7 +2,8 @@ import os
 import time
 import threading
 
-from jina.helper import yaml, random_port
+from jina.helper import random_port
+from jina.jaml import JAML
 from jina.logging.sse import start_sse_logger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -59,7 +60,7 @@ def test_sse_client(tmpdir):
                                    kwargs={'path': path, 'threading_event': event})
 
     with open(os.path.join(cur_dir, 'logserver_config.yml')) as fp:
-        log_config = yaml.load(fp)
+        log_config = JAML.load(fp)
         log_config['files']['log'] = conf_path
         log_config['port'] = RANDOM_PORT
 

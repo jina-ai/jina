@@ -1,0 +1,25 @@
+components:
+  - with:
+      index_filename: metaproto
+    metas:
+      name: test_meta
+      good_var:
+        - 1
+        - 2
+      bad_var: ${{root.metas.name}}
+  - with:
+      index_filename: npidx
+    metas:
+      name: test_numpy
+      bad_var: ${{root.components[0].metas.good_var[1]}}
+      float_var: ${{root.float.val}}
+      mixed: ${{root.float.val}}-${{root.components[0].metas.good_var[1]}}-${{root.metas.name}}
+      mixed_env: ${{root.float.val}}-${{ ENV.ENV1 }}
+      name_shortcut: ${{this.name}}
+      random_id: ${{ context_var }}
+      config_str: ${{ context_var2 }}
+metas:
+  name: real-compound
+rootvar: 123
+float:
+  val: 0.232

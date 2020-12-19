@@ -6,7 +6,7 @@ from typing import Iterator
 
 import numpy as np
 
-from jina.types.document import Document
+from jina import Document
 
 
 file_dir = Path(__file__).parent
