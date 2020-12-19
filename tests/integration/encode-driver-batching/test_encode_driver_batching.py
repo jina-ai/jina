@@ -7,7 +7,7 @@ import numpy as np
 from jina.executors.encoders import BaseEncoder
 from jina.drivers.encode import EncodeDriver
 from jina.flow import Flow
-from jina import Document
+from jina import Document, NdArray
 
 
 class MockEncoder(BaseEncoder):
@@ -90,7 +90,7 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
                     len(resp.search.docs) == num_docs_last_req_batch)
         assert valid_resp_length
         for doc in resp.search.docs:
-            assert doc.embedding is not None
+            assert NdArray(doc.embedding).value is not None
 
     def fail_if_error(resp):
         assert False
@@ -117,10 +117,10 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
 
 @pytest.mark.parametrize('request_batch_size', [100, 200, 500])
 @pytest.mark.parametrize('driver_batch_size', [8, 64, 128])
-@pytest.mark.parametrize('num_chunks', [1, 8])
-@pytest.mark.parametrize('num_chunks_chunks', [1, 8])
+@pytest.mark.parametrize('num_chunks', [2, 8])
+@pytest.mark.parametrize('num_chunks_chunks', [2, 8])
 def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_size, num_chunks, num_chunks_chunks,
-                                            tmpdir, mocker):
+                                            tmpdir):
     num_docs = 1315
     num_requests = int(num_docs / request_batch_size)
     num_docs_last_req_batch = num_docs % (num_requests * request_batch_size)
@@ -130,21 +130,21 @@ def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_siz
                     len(resp.search.docs) == num_docs_last_req_batch)
         assert valid_resp_length
         for doc in resp.search.docs:
-            assert doc.embedding is not None
+            assert NdArray(doc.embedding).value is not None
             for chunk in doc.chunks:
-                assert chunk.embedding is not None
+                assert NdArray(chunk.embedding).value is not None
                 for chunk_chunk in chunk.chunks:
-                    assert chunk_chunk.embedding is not None
+                    assert NdArray(chunk_chunk.embedding).value is not None
 
     def fail_if_error(resp):
         assert False
 
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
                           num_docs_in_same_request=request_batch_size,
-                          total_num_docs=num_docs * num_chunks * num_chunks_chunks)
+                          total_num_docs=num_docs)
 
     driver = EncodeDriver(batch_size=driver_batch_size,
-                          traversal_paths=('rcc',))
+                          traversal_paths=('r', 'c', 'cc'))
 
     encoder._drivers.clear()
     encoder._drivers['SearchRequest'] = [driver]
