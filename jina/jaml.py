@@ -32,11 +32,15 @@ class JAML:
     """
 
     @staticmethod
-    def load(stream):
+    def load(stream, substitute: bool = False):
         """Parse the first YAML document in a stream
             and produce the corresponding Python object.
         """
-        return yaml.load(stream, Loader=JinaLoader)
+        r = yaml.load(stream, Loader=JinaLoader)
+        if substitute:
+            from .helper import expand_dict
+            r = expand_dict(r)
+        return r
 
     @staticmethod
     def dump(data, stream=None, **kwargs):

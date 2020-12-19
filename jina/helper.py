@@ -116,9 +116,6 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
         raise TypeError(f'unsupported type: {type(data)}')
 
 
-
-
-
 def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
@@ -217,7 +214,7 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
     pat = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
     def _scan(sub_d: Union[Dict, List], p):
-        if isinstance(sub_d, Dict):
+        if isinstance(sub_d, dict):
             for k, v in sub_d.items():
                 if isinstance(v, dict):
                     p.__dict__[k] = SimpleNamespace()
@@ -227,7 +224,7 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
                     _scan(v, p.__dict__[k])
                 else:
                     p.__dict__[k] = v
-        elif isinstance(sub_d, List):
+        elif isinstance(sub_d, list):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict):
                     p.append(SimpleNamespace())
