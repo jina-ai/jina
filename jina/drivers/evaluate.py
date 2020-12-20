@@ -15,9 +15,19 @@ from ..types.document.helper import DocGroundtruthPair
 class BaseEvaluateDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None,
                  method: str = 'evaluate',
+                 running_avg: bool = False,
                  *args,
                  **kwargs):
+        """
+
+        :param executor:
+        :param method:
+        :param running_avg: return running average instead of value on the current run
+        :param args:
+        :param kwargs:
+        """
         super().__init__(executor, method, *args, **kwargs)
+        self._running_avg = running_avg
 
     def __call__(self, *args, **kwargs):
         docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
@@ -37,6 +47,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             groundtruth = doc_groundtruth.groundtruth
             evaluation = doc.evaluations.add()
             evaluation.value = self.exec_fn(self.extract(doc), self.extract(groundtruth))
+            if self._running_avg:
+                evaluation.value = self.exec.mean
             evaluation.op_name = self.exec.metric
             evaluation.ref_id = groundtruth.id
 

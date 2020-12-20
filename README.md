@@ -430,8 +430,34 @@ Querying a Flow is similar to what we did with indexing. Simply load the query F
 ```python
 f = Flow.load_config('flows/query.yml')
 with f:
-    f.search_ndarray(shuffle=True, size=128, output_fn=plot_in_html, top_k=50)
+    f.search_ndarray(np.random.random([10, 28, 28]), shuffle=True, output_fn=plot_in_html, top_k=50)
 ```
+
+#### Evaluating the Search Result
+
+To compute precision recall on the retrieved result, you can add `_eval_pr`, a built-in evaluator for computing precision & recall.
+
+```python
+f = (Flow().add(...)
+           .add(uses='_eval_pr'))
+```
+
+You can construct an iterator of query and groundtruth pairs and feed to the flow `f`, via:
+
+```python
+from jina import Document
+
+def query_generator():
+    for _ in range(10):
+        q = Document()
+        # now construct expect matches as groundtruth
+        gt = Document(q, copy=True)  # make sure 'gt' is identical to 'q'
+        gt.matches.append(...)
+        yield q, gt
+        
+f.search(query_iterator, ...)
+```
+
 
 #### REST Interface of Query Flow
 
