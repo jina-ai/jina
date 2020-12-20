@@ -1,0 +1,11 @@
+!DummyEncoder
+metas:
+  py_modules:
+    - dummy_encode.py
+    - dummy_encode_driver.py # driver file
+requests:
+  on:
+    IndexRequest:
+      - !DummyEncodeDriver {} # cannot be found in dummy_encode_driver.py
+    SearchRequest:
+      - !EncodeDriver {}

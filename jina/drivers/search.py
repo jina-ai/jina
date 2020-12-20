@@ -58,7 +58,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            serialized_doc = self.exec_fn(hash(retrieved_doc.id))
+            serialized_doc = self.exec_fn(int(retrieved_doc.id))
             if serialized_doc:
                 r = Document(serialized_doc)
 
@@ -83,7 +83,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embeds = self.exec_fn([hash(d.id) for d in docs])
+        embeds = self.exec_fn([int(d.id) for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding = embedding
 
@@ -123,8 +123,8 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         for doc, topks, scores in zip(doc_pts, idx, dist):
 
             topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
-            for match_hash, score, vec in zip(topks, scores, topk_embed):
-                m = Document(id=int(match_hash))
+            for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
+                m = Document(id=int(numpy_match_id))
                 m.score.value = score
                 m.score.op_name = op_name
                 r = doc.matches.append(m)

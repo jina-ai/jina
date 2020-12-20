@@ -114,14 +114,13 @@ jobs:
   codecov:
     needs: [unit-test, integration-test]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.7]
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: false
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
       - name: Download coverage result from unit-test
         uses: actions/download-artifact@v1
         with:

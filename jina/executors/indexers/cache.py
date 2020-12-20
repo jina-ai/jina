@@ -5,7 +5,7 @@ import numpy as np
 
 from . import BaseKVIndexer
 from ...helper import cached_property
-from ...types.document import uid
+from ...types.document.uid import UniqueId
 
 
 class BaseCache(BaseKVIndexer):
@@ -30,14 +30,14 @@ class DocIDCache(BaseCache):
             index_filename = tempfile.NamedTemporaryFile(delete=False).name
         super().__init__(index_filename, *args, **kwargs)
 
-    def add(self, doc_id: str, *args, **kwargs):
-        d_id = uid.id2hash(doc_id)
+    def add(self, doc_id: UniqueId, *args, **kwargs):
+        d_id = int(doc_id)
         self.query_handler.add(d_id)
         self._size += 1
         self.write_handler.write(np.int64(d_id).tobytes())
 
-    def query(self, doc_id: str, *args, **kwargs) -> Optional[bool]:
-        d_id = uid.id2hash(doc_id)
+    def query(self, doc_id: UniqueId, *args, **kwargs) -> Optional[bool]:
+        d_id = int(doc_id)
         return (d_id in self.query_handler) or None
 
     def get_query_handler(self):

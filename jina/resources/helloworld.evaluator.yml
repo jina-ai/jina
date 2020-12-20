@@ -1,6 +1,11 @@
-!MyEvaluator
-with:
-  eval_at: 5
+!CompoundExecutor
+components:
+  - !PrecisionEvaluator
+    metas:
+      name: precision  # a customized name
+  - !RecallEvaluator
+    metas:
+      name: recall  # a customized name
 metas:
   name: evaluator  # a customized name
 requests:
@@ -8,5 +13,11 @@ requests:
     SearchRequest:
       - !RankEvaluateDriver
         with:
-          field: tags__label_id
+          field: tags__id
+          executor: precision
+          traversal_paths: [ 'r' ]
+      - !RankEvaluateDriver
+        with:
+          field: tags__id
+          executor: recall
           traversal_paths: [ 'r' ]

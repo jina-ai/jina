@@ -1,6 +1,6 @@
 ---
-name: "\U0001F41E Found a Bug & I Solved It"
-about: I met a problem & solved it! It is Jina’s bug and I’d like raise others attention.
+name: "\U0001F41E Found a Bug!"
+about: I met a problem! It is Jina’s bug and I’d like raise others attention.
 title: ''
 labels: kind/bug
 assignees: ''

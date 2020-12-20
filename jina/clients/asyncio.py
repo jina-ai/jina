@@ -1,11 +1,9 @@
-from typing import Callable, Optional
-
-from . import Client, InputFnType
+from .base import InputFnType, BaseClient, CallbackFnType
 from ..enums import RequestType
-from ..types.request import Request
+from ..helper import deprecated_alias
 
 
-class AsyncClient(Client):
+class AsyncClient(BaseClient):
     """
     :class:`AsyncClient` is the asynchronous version of the :class:`Client`. They share the same interface, except
     in :class:`AsyncClient` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
@@ -46,17 +44,56 @@ class AsyncClient(Client):
     One can think of :class:`Client` as Jina-managed eventloop, whereas :class:`AsyncClient` is self-managed eventloop.
     """
 
-    async def train(self, input_fn: Optional[InputFnType] = None,
-                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    async def train(self, input_fn: InputFnType = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
+                    **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
         self.mode = RequestType.TRAIN
-        await self._get_results(input_fn, output_fn, **kwargs)
+        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
-    async def search(self, input_fn: Optional[InputFnType] = None,
-                     output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    async def search(self, input_fn: InputFnType = None,
+                     on_done: CallbackFnType = None,
+                     on_error: CallbackFnType = None,
+                     on_always: CallbackFnType = None,
+                     **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
         self.mode = RequestType.SEARCH
-        await self._get_results(input_fn, output_fn, **kwargs)
+        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
-    async def index(self, input_fn: Optional[InputFnType] = None,
-                    output_fn: Callable[['Request'], None] = None, **kwargs) -> None:
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    async def index(self, input_fn: InputFnType = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
+                    **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
         self.mode = RequestType.INDEX
-        await self._get_results(input_fn, output_fn, **kwargs)
+        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)

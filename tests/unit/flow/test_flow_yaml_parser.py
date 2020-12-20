@@ -26,12 +26,12 @@ def test_load_legacy_and_v1():
 def test_add_needs_inspect(tmpdir):
     f1 = (Flow().add(name='pod0', needs='gateway').add(name='pod1', needs='gateway').inspect().needs(['pod0', 'pod1']))
     with f1:
-        f1.index_ndarray(np.random.random([5, 5]), output_fn=print)
+        f1.index_ndarray(np.random.random([5, 5]), on_done=print)
 
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
 
     with f2:
-        f2.index_ndarray(np.random.random([5, 5]), output_fn=print)
+        f2.index_ndarray(np.random.random([5, 5]), on_done=print)
 
     assert f1 == f2
 

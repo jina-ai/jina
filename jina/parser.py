@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import argparse
 import os
 
-
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
@@ -229,10 +228,6 @@ def set_hw_parser(parser=None):
                     help='number of queries to visualize')
     gp.add_argument('--top-k', type=int, default=50,
                     help='top-k results to retrieve and visualize')
-    gp.add_argument('--uses-evaluate', type=str,
-                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.evaluate.yml'))),
-                    help='the yaml path of the evaluate flow')
-
     return parser
 
 

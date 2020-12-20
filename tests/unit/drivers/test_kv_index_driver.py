@@ -71,4 +71,4 @@ def test_kv_index_driver(mock_groundtruth_indexer, simple_kv_indexer_driver, doc
 
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        assert mock_groundtruth_indexer.docs[uid.id2hash(doc.id)] == doc.SerializeToString()
+        assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()

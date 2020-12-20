@@ -6,7 +6,7 @@ import pytest
 
 from cli import _is_latest_version
 from jina import NdArray, Request
-from jina.clients.helper import safe_callback, pprint_routes
+from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
 from jina.helper import cached_property, convert_tuple_to_list, complete_path
@@ -61,22 +61,7 @@ def test_time_context():
 
 def test_np_int():
     a = random.randint(0, 100000)
-    assert hash2bytes(np.int64(a)) == hash2bytes(a)
-
-
-def test_hash():
-    ds = random_docs(10)
-    tmp = []
-    for d in ds:
-        h = new_doc_hash(d)
-        id = new_doc_id(d)
-        print(f'{id}: {h}')
-        assert id2hash(id) == h
-        assert hash2id(h) == id
-        tmp.append(h)
-
-    tmp = np.array(tmp)
-    assert tmp.dtype == np.int64
+    assert int2bytes(np.int64(a)) == int2bytes(a)
 
 
 def test_dunder_get():
@@ -168,10 +153,10 @@ def test_safe_callback():
     def t1():
         raise NotImplementedError
 
-    st1 = safe_callback(t1, continue_on_error=True, logger=default_logger)
+    st1 = _safe_callback(t1, continue_on_error=True, logger=default_logger)
     st1()
 
-    st1 = safe_callback(t1, continue_on_error=False, logger=default_logger)
+    st1 = _safe_callback(t1, continue_on_error=False, logger=default_logger)
     with pytest.raises(BadClientCallback):
         st1()
 

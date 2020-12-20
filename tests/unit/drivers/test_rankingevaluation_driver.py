@@ -53,7 +53,7 @@ def test_ranking_evaluate_driver(simple_rank_evaluate_driver,
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'SimpleRankEvaluateDriver-Precision@2'
+        assert doc.evaluations[0].op_name == 'Precision@N'
         assert doc.evaluations[0].value == 1.0
 
 
@@ -121,7 +121,7 @@ def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_dr
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].op_name == 'SimpleChunkRankEvaluateDriver-Precision@2'
+        assert chunk.evaluations[0].op_name == 'Precision@N'
         assert chunk.evaluations[0].value == 1.0
 
 

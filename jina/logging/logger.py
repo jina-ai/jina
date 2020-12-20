@@ -13,7 +13,8 @@ from pkg_resources import resource_filename
 
 from . import formatter
 from ..enums import LogVerbosity
-from ..helper import yaml, complete_path
+from ..helper import complete_path
+from ..jaml import JAML
 
 
 class NTLogger:
@@ -158,7 +159,7 @@ class JinaLogger:
         self.logger.handlers = []
 
         with open(config_path) as fp:
-            config = yaml.load(fp)
+            config = JAML.load(fp)
 
         for h in config['handlers']:
             cfg = config['configs'].get(h, None)

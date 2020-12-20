@@ -7,7 +7,8 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from ..executors.rankers import Chunk2DocRanker
-from ..types.document import uid, Document
+from ..types.document import Document, uid
+from ..types.document.uid import UniqueId
 
 if False:
     from ..types.sets import DocumentSet
@@ -62,15 +63,15 @@ class Chunk2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}  # type: Dict[int, Dict]
         match_chunk_meta = {}  # type: Dict[int, Dict]
         for chunk in docs:
-            query_chunk_meta[hash(chunk.id)] = chunk.get_attrs(*self.exec.required_keys)
+            query_chunk_meta[int(chunk.id)] = chunk.get_attrs(*self.exec.required_keys)
             for match in chunk.matches:
                 match_idx.append(
-                    (hash(match.parent_id),
-                     hash(match.id),
-                     hash(chunk.id),
+                    (int(match.parent_id),
+                     int(match.id),
+                     int(chunk.id),
                      match.score.value)
                 )
-                match_chunk_meta[hash(match.id)] = match.get_attrs(*self.exec.required_keys)
+                match_chunk_meta[int(match.id)] = match.get_attrs(*self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(
@@ -85,8 +86,8 @@ class Chunk2DocRankDriver(BaseRankDriver):
 
             docs_scores = self.exec_fn(match_idx, query_chunk_meta, match_chunk_meta)
             op_name = exec.__class__.__name__
-            for doc_hash, score in docs_scores:
-                m = Document(id=doc_hash)
+            for int_doc_id, score in docs_scores:
+                m = Document(id=int_doc_id)
                 m.score.value = score
                 m.score.op_name = op_name
                 context_doc.matches.append(m)
@@ -141,14 +142,14 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
         query_chunk_meta = {}
         match_chunk_meta = {}
         for match in docs:
-            query_chunk_meta[hash(context_doc.id)] = context_doc.get_attrs(*self.exec.required_keys)
+            query_chunk_meta[int(context_doc.id)] = context_doc.get_attrs(*self.exec.required_keys)
             match_idx.append((
-                hash(match.parent_id),
-                hash(match.id),
-                hash(context_doc.id),
+                int(match.parent_id),
+                int(match.id),
+                int(context_doc.id),
                 match.score.value
             ))
-            match_chunk_meta[hash(match.id)] = match.get_attrs(*self.exec.required_keys)
+            match_chunk_meta[int(match.id)] = match.get_attrs(*self.exec.required_keys)
 
         if match_idx:
             match_idx = np.array(match_idx,
@@ -164,8 +165,8 @@ class CollectMatches2DocRankDriver(BaseRankDriver):
             # These ranker will change the current matches
             context_doc.ClearField('matches')
             op_name = exec.__class__.__name__
-            for doc_hash, score in docs_scores:
-                m = Document(id=doc_hash)
+            for int_doc_id, score in docs_scores:
+                m = Document(id=int_doc_id)
                 m.score.value = score
                 m.score.op_name = op_name
                 context_doc.matches.append(m)
@@ -204,8 +205,8 @@ class Matches2DocRankDriver(BaseRankDriver):
         # if at the top-level already, no need to aggregate further
         query_meta = context_doc.get_attrs(*self.exec.required_keys)
 
-        old_match_scores = {hash(match.id): match.score.value for match in docs}
-        match_meta = {hash(match.id): match.get_attrs(*self.exec.required_keys) for match in docs}
+        old_match_scores = {int(match.id): match.score.value for match in docs}
+        match_meta = {int(match.id): match.get_attrs(*self.exec.required_keys) for match in docs}
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return
@@ -217,8 +218,9 @@ class Matches2DocRankDriver(BaseRankDriver):
         op_name = self.exec.__class__.__name__
         cm = context_doc.matches
         cm.build()
-        for match_hash, score in match_scores:
-            cm[uid.hash2id(match_hash)].score.value = score
-            cm[uid.hash2id(match_hash)].score.op_name = op_name
+        for int_match_id, score in match_scores:
+            match_id = UniqueId(int_match_id)
+            cm[match_id].score.value = score
+            cm[match_id].score.op_name = op_name
 
         cm.sort(key=lambda x: x.score.value, reverse=True)
