@@ -41,8 +41,10 @@ class Document:
             d = Document()
             d.text = 'abc'
 
-    Jina requires each Document to have a string id. You can use :meth:`update_id` or simply
-    use :class:`Document` as a context manager:
+    Jina requires each Document to have a string id. You can set a custom one,
+    or if non has been set a random one will be assigned.
+
+    Or you can use :class:`Document` as a context manager:
 
         .. highlight:: python
         .. code-block:: python
@@ -136,6 +138,10 @@ class Document:
                              f'if you are trying to set the content '
                              f'you may use "Document(content=your_content)"') from ex
 
+        if self._document.id is None or not self._document.id:
+            import random
+            self.id = random.randint(0, np.iinfo(np.int64).max)
+
         self.set_attrs(**kwargs)
 
     def __getattr__(self, name: str):
@@ -177,6 +183,14 @@ class Document:
         self._document.modality = value
 
     @property
+    def content_hash(self):
+        return self._document.content_hash
+
+    def update_content_hash(self):
+        """Update the document hash according to its content."""
+        self._document.content_hash = get_content_hash(self._document)
+
+    @property
     def id(self) -> 'UniqueId':
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
@@ -189,21 +203,6 @@ class Document:
         it will be used as the major view.
         """
         return UniqueId(self._document.parent_id)
-
-    def update_id(self):
-        """Update the document id according to its content.
-        .. warning::
-            To fully consider the content in this document, please use this function after
-            you have fully modified the Document, not right way after create the Document.
-            If you are using Document as context manager, then no need to call this function manually.
-            Simply
-            .. highlight:: python
-            .. code-block:: python
-                with Document() as d:
-                    d.text = 'hello'
-                assert d.id  # now `id` has value
-        """
-        self._document.id = new_doc_id(self._document)
 
     @id.setter
     def id(self, value: Union[bytes, str, int]):
@@ -403,7 +402,7 @@ class Document:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.update_id()
+        self.update_content_hash()
 
     @property
     def content_type(self) -> str:

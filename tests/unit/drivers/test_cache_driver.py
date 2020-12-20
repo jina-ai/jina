@@ -72,7 +72,7 @@ def test_cache_driver_from_file(tmp_path):
     filename = tmp_path / 'test-tmp.bin'
     docs = list(random_docs(10))
     with open(filename, 'wb') as fp:
-        fp.write(np.array([uid.id2hash(d.id) for d in docs], dtype=np.int64).tobytes())
+        fp.write(np.array([int(d.id) for d in docs], dtype=np.int64).tobytes())
 
     driver = MockCacheDriver()
     with DocIDCache(filename) as executor:

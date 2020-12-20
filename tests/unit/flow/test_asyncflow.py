@@ -15,13 +15,13 @@ def validate(req):
 @pytest.mark.asyncio
 async def test_run_async_flow():
     with AsyncFlow().add() as f:
-        await f.index_ndarray(np.random.random([5, 4]), output_fn=validate)
+        await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
 
 
 async def run_async_flow_5s():
     # WaitDriver pause 5s makes total roundtrip ~5s
     with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-        await f.index_ndarray(np.random.random([5, 4]), output_fn=validate)
+        await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
 
 
 async def sleep_print():

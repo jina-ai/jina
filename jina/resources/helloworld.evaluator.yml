@@ -1,0 +1,27 @@
+!CompoundExecutor
+components:
+  - !PrecisionEvaluator
+    with:
+      eval_at: 5
+    metas:
+      name: precision  # a customized name
+  - !RecallEvaluator
+    with:
+      eval_at: 5
+    metas:
+      name: recall  # a customized name
+metas:
+  name: evaluator  # a customized name
+requests:
+  on:
+    SearchRequest:
+      - !RankEvaluateDriver
+        with:
+          field: tags__id
+          executor: precision
+          traversal_paths: [ 'r' ]
+      - !RankEvaluateDriver
+        with:
+          field: tags__id
+          executor: recall
+          traversal_paths: [ 'r' ]

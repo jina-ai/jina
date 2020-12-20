@@ -10,14 +10,11 @@ from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
-
-import ruamel.yaml.constructor
-from ruamel.yaml import StringIO
-
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import yaml, expand_dict, expand_env_var, get_local_config_source, typename, get_random_identity
+from ..helper import expand_dict, expand_env_var, get_local_config_source, typename, get_random_identity
+from ..jaml import JAML
 from ..importer import PathImporter
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -75,7 +72,7 @@ class ExecutorType(type):
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        yaml.register_class(cls)
+        JAML.register(cls)
         return cls
 
 
@@ -370,7 +367,7 @@ class BaseExecutor(metaclass=ExecutorType):
         if not f:
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
         with open(f, 'w', encoding='utf8') as fp:
-            yaml.dump(self, fp)
+            JAML.dump(self, fp)
         self.logger.info(f'executor\'s yaml config is save to {f}')
 
         self.is_updated = _updated
@@ -393,7 +390,7 @@ class BaseExecutor(metaclass=ExecutorType):
         with (open(source, encoding='utf8') if isinstance(source, str) else source) as fp:
             # ignore all lines start with ! because they could trigger the deserialization of that class
             safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
-            tmp = yaml.load(safe_yml)
+            tmp = JAML.load(safe_yml)
             if tmp:
                 if 'metas' not in tmp:
                     tmp['metas'] = {}
@@ -419,10 +416,7 @@ class BaseExecutor(metaclass=ExecutorType):
                 raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')
 
             tmp = expand_dict(tmp)
-            stream = StringIO()
-            yaml.dump(tmp, stream)
-            tmp_s = stream.getvalue().strip().replace('__tag: ', '!')
-            return yaml.load(tmp_s)
+            return JAML.load(JAML.dump(tmp).replace('__tag: ', '!'))
 
     @staticmethod
     def load(filename: str = None) -> AnyExecutor:
@@ -455,7 +449,7 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def to_yaml(cls, representer, data):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         tmp = data._dump_instance_to_yaml(data)
         if getattr(data, '_drivers'):
             tmp['requests'] = {'on': data._drivers}
@@ -463,13 +457,12 @@ class BaseExecutor(metaclass=ExecutorType):
 
     @classmethod
     def from_yaml(cls, constructor, node):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         return cls._get_instance_from_yaml(constructor, node)[0]
 
     @classmethod
     def _get_instance_from_yaml(cls, constructor, node):
-        data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
-            constructor, node, deep=True)
+        data = constructor.construct_mapping(node, deep=True)
 
         _meta_config = get_default_metas()
         _meta_config.update(data.get('metas', {}))
@@ -498,7 +491,6 @@ class BaseExecutor(metaclass=ExecutorType):
             else:
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
-
             obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
             cls.init_from_yaml = False
 

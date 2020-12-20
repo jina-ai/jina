@@ -12,14 +12,14 @@ from typing import (
     Sequence,
 )
 
-import ruamel.yaml.constructor
 from google.protobuf.struct_pb2 import Struct
 
 from ..enums import SkipOnErrorType
 from ..executors import BaseExecutor
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
-from ..helper import yaml, convert_tuple_to_list
+from ..helper import convert_tuple_to_list
+from ..jaml import JAML
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -131,7 +131,7 @@ class DriverType(type):
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        yaml.register_class(cls)
+        JAML.register(cls)
         return cls
 
 
@@ -217,20 +217,18 @@ class BaseDriver(metaclass=DriverType):
 
     @classmethod
     def to_yaml(cls, representer, data):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         tmp = data._dump_instance_to_yaml(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
     def from_yaml(cls, constructor, node):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         return cls._get_instance_from_yaml(constructor, node)
 
     @classmethod
     def _get_instance_from_yaml(cls, constructor, node):
-        data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
-            constructor, node, deep=True
-        )
+        data = constructor.construct_mapping(node, deep=True)
 
         obj = cls(**data.get('with', {}))
         return obj

@@ -105,7 +105,6 @@ def test_bad_good_doc_id():
 
 def test_id_context():
     with Document() as d:
-        assert not d.id
         d.buffer = b'123'
     assert d.id
 

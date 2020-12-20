@@ -97,8 +97,6 @@ def eval_request():
     for idx in range(num_docs):
         doc = Document(req.index.docs.add())
         gt = Document(req.index.groundtruths.add())
-        doc.update_id()
-        gt.update_id()
         chunk_doc = doc.chunks.new()
         chunk_gt = gt.chunks.new()
         chunk_doc.embedding = np.array([1, 1])

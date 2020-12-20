@@ -6,7 +6,7 @@ import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.types.document import uid
+from jina.types.document.uid import UniqueId
 from tests import random_docs, rm_files
 
 cur_dir = Path(__file__).parent
@@ -15,11 +15,10 @@ cur_dir = Path(__file__).parent
 def random_queries(num_docs, chunks_per_doc=5):
     for j in range(num_docs):
         d = jina_pb2.DocumentProto()
-        d.id = uid.new_doc_id(d)
+        d.id = UniqueId(j)
         for k in range(chunks_per_doc):
             dd = d.chunks.add()
-            dd.id = uid.new_doc_id(dd)
-            # dd.id = k + 1  # 1-indexed
+            dd.id = UniqueId(num_docs + j * chunks_per_doc + k)
         yield d
 
 
@@ -46,7 +45,7 @@ def test_shards_insufficient_data():
                    parallel=parallel,
                    separated_workspace=True)
     with f:
-        f.index(input_fn=random_docs(index_docs), override_doc_id=False)
+        f.index(input_fn=random_docs(index_docs))
 
     time.sleep(2)
     with f:
@@ -58,7 +57,6 @@ def test_shards_insufficient_data():
                    separated_workspace=True, polling='all', uses_after='_merge_chunks')
     with f:
         f.search(input_fn=random_queries(1, index_docs),
-                 override_doc_id=False,
                  callback_on='body')
     time.sleep(2)
     rm_files(['test-docshard-tmp'])
