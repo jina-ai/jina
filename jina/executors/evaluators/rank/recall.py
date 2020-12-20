@@ -18,13 +18,5 @@ class RecallEvaluator(BaseRankingEvaluator):
         :param desired: the expected documents matches ids sorted as they are expected
         :return the evaluation metric value for the request document
         """
-        if not desired:
-            """TODO: Agree on a behavior"""
-            return 0.0
-
-        ret = 0.0
-        for doc_id in actual[:self.eval_at]:
-            if doc_id in desired:
-                ret += 1.0
-
+        ret = len(set(actual[:self.eval_at]).intersection(set(desired)))
         return ret / len(desired)
