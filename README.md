@@ -105,7 +105,7 @@ jina hello-world --help
 
 |     |   |
 | --- |---|
-| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [MultimodalDocument](#multimodaldocument) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
 | 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### Create
@@ -145,7 +145,7 @@ To use a Flow, open it using the `with` context manager, like you would a file i
 
 #### Fetch Result
 
-Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_error`, `on_always` to hook different event. In the example below, our Flow passes the message then prints the result when success. If something wrong, it beeps. Finally, the result is written to `output.txt`.
+Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_done`, `on_error`, `on_always` to hook different event. In the example below, our Flow passes the message then prints the result when success. If something wrong, it beeps. Finally, the result is written to `output.txt`.
 
 ```python
 def beep(*args):
@@ -155,8 +155,7 @@ def beep(*args):
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
     f.index(numpy.random.random([4,5,2]),
-            on_done=print,
-            on_error=beep, on_always=fp.write)
+            on_done=print, on_error=beep, on_always=fp.write)
 ```
 
 
@@ -167,7 +166,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 ```python
 from jina import Document
 doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
-doc2 = Document(content=np.random.random([10, 10]))  # a ndarray document
+doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
 doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
 ```
 
@@ -208,7 +207,7 @@ document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
 To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
 
 ```python
-def encode(self, *data: 'np.ndarray', **kwargs) -> 'np.ndarray':
+def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
     ...
 ```
 
@@ -276,7 +275,7 @@ from jina import AsyncFlow
 
 async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
     with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-        await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
+        await f.index_ndarray(numpy.random.random([5, 4]), on_done=validate)
 
 async def heavylifting():  # total roundtrip takes ~5s
     print('heavylifting other io-bound jobs, e.g. download, upload, file io')
@@ -296,7 +295,7 @@ if __name__ == '__main__':
 from jina import AsyncFlow
 
 with AsyncFlow().add() as f:
-    await f.index_ndarray(np.random.random([5, 4]), on_done=print)
+    await f.index_ndarray(numpy.random.random([5, 4]), on_done=print)
 ```
 
 
@@ -306,7 +305,7 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 |     |   |
 | --- |---|
-| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [MultimodalDocument](#multimodaldocument) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
 | 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 
@@ -345,14 +344,14 @@ Let's test our encoder in the Flow with some synthetic data:
 
 
 ```python
-def validate(docs):
-    assert len(docs) == 100
-    assert NdArray(docs[0].embedding).value.shape == (64,)
+def validate(req):
+    assert len(req.docs) == 100
+    assert NdArray(req.docs[0].embedding).value.shape == (64,)
 
 f = Flow().add(uses='MyEncoder')
 
 with f:
-    f.index_ndarray(np.random.random([100, 28, 28]), on_done=validate, callback_on='docs')
+    f.index_ndarray(numpy.random.random([100, 28, 28]), on_done=validate)
 ```
 
 
@@ -367,7 +366,7 @@ By setting a larger input, you can play with `batch_size` and `parallel`:
 f = Flow().add(uses='MyEncoder', parallel=10)
 
 with f:
-    f.index_ndarray(np.random.random([60000, 28, 28]), batch_size=1024)
+    f.index_ndarray(numpy.random.random([60000, 28, 28]), batch_size=1024)
 ```
 
 #### Add Data Indexer
@@ -442,7 +441,7 @@ Querying a Flow is similar to what we did with indexing. Simply load the query F
 ```python
 f = Flow.load_config('flows/query.yml')
 with f:
-    f.search_ndarray(np.random.random([10, 28, 28]), shuffle=True, on_done=plot_in_html, top_k=50)
+    f.search_ndarray(numpy.random.random([10, 28, 28]), shuffle=True, on_done=plot_in_html, top_k=50)
 ```
 
 #### Evaluation
