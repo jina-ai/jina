@@ -1,4 +1,5 @@
 from pathlib import Path
+from collections import defaultdict
 from ruamel.yaml import YAML
 
 from .flow_runner import MultiFlowRunner
@@ -10,11 +11,7 @@ from .parameters import load_optimization_parameters
 class EvaluationCallback:
     def __init__(self, eval_name=None):
         self.op_name = eval_name
-        self.evaluation_values = {}
-        self.n_docs = 0
-
-    def flush(self):
-        self.evaluation_values = {}
+        self.evaluation_values = defaultdict(float)
         self.n_docs = 0
 
     def get_mean_evaluation(self):
@@ -30,22 +27,32 @@ class EvaluationCallback:
         for doc in response.search.docs:
             for evaluation in doc.evaluations:
                 self.evaluation_values[evaluation.op_name] = (
-                    self.evaluation_values.get(evaluation.op_name, 0.0)
-                    + evaluation.value
+                        self.evaluation_values.get(evaluation.op_name, 0.0)
+                        + evaluation.value
                 )
+
+
+class OptimizationResults:
+
+    def __init__(self,
+                 params: dict):
+        self.params = params
+
+    def _dump_results(self, filepath: Path):
+        filepath.parent.mkdir(exist_ok=True)
+        yaml = YAML(typ="rt")
+        yaml.dump(self.params, open(filepath, 'w'))
 
 
 class OptunaOptimizer:
     def __init__(
-        self,
-        index_flow_runner,
-        eval_flow_runner,
-        parameter_yaml,
-        best_config_filepath="config/best_config.yml",
-        workspace_env="JINA_WORKSPACE",
+            self,
+            flow_runner,
+            parameter_yaml,
+            best_config_filepath="config/best_config.yml",
+            workspace_env="JINA_WORKSPACE",
     ):
-        self.index_flow_runner = index_flow_runner
-        self.eval_flow_runner = eval_flow_runner
+        self.flow_runner = flow_runner
         self.parameter_yaml = parameter_yaml
         self.best_config_filepath = Path(best_config_filepath)
         self.workspace_env = workspace_env.lstrip("$")
@@ -68,33 +75,25 @@ class OptunaOptimizer:
         return trial_parameters
 
     def _objective(self, trial):
-        self.eval_flow_runner.callback.flush()
         trial_parameters = self._trial_parameter_sampler(trial)
 
-        MultiFlowRunner(
-            [self.index_flow_runner, self.eval_flow_runner], workspace=trial.workspace
-        ).run(trial_parameters)
+        self.flow_runner.run(trial_parameters)
 
-        evaluation_values = self.eval_flow_runner.callback.get_mean_evaluation()
+        evaluation_values = self.flow_runner.callback.get_mean_evaluation()
         op_name = list(evaluation_values)[0]
         mean_eval = evaluation_values[op_name]
         logger.info(colored(f"Avg {op_name}: {mean_eval}", "green"))
         return mean_eval
 
-    def _export_params(self, study):
-        self.best_config_filepath.parent.mkdir(exist_ok=True)
-        yaml = YAML(typ="rt")
-        yaml.dump(study.best_trial.params, open(self.best_config_filepath, "w"))
-        logger.info(colored(f"Number of finished trials: {len(study.trials)}", "green"))
-        logger.info(colored(f"Best trial: {study.best_trial.params}", "green"))
-        logger.info(colored(f"Time to finish: {study.best_trial.duration}", "green"))
-
     def optimize_flow(
-        self, n_trials, sampler="TPESampler", direction="maximize", seed=42
+            self, n_trials, sampler="TPESampler", direction="maximize", seed=42
     ):
         import optuna
 
         sampler = getattr(optuna.samplers, sampler)(seed=seed)
         study = optuna.create_study(direction=direction, sampler=sampler)
         study.optimize(self._objective, n_trials=n_trials)
-        self._export_params(study)
+        logger.info(colored(f'Number of finished trials: {len(study.trials)}', "green"))
+        logger.info(colored(f"Best trial: {study.best_trial.params}", "green"))
+        logger.info(colored(f"Time to finish: {study.best_trial.duration}", "green"))
+        return OptimizationResults(study.best_trial.params)

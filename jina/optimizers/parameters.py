@@ -8,12 +8,12 @@ from jina.helper import yaml
 
 class OptimizationParameter:
     def __init__(
-        self,
-        parameter_name: str,
-        executor_name: str = None,
-        prefix: str = "JINA",
-        env_var: str = None,
-        method:str = None
+            self,
+            parameter_name: str,
+            executor_name: str = None,
+            prefix: str = "JINA",
+            env_var: str = None,
+            method: str = None
     ):
         if env_var is None:
             self.env_var = f"{prefix}_{executor_name}_{parameter_name}".upper()
@@ -53,13 +53,13 @@ class OptimizationParameter:
 
 class IntegerParameter(OptimizationParameter):
     def __init__(
-        self,
-        low: int,
-        high: int,
-        step_size: int = 1,
-        log: bool = False,
-        *args,
-        **kwargs,
+            self,
+            low: int,
+            high: int,
+            step_size: int = 1,
+            log: bool = False,
+            *args,
+            **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.low = low
@@ -77,17 +77,19 @@ class IntegerParameter(OptimizationParameter):
             "log": self.log,
         }
 
+
 yaml.register_class(IntegerParameter)
+
 
 class FloatParameter(OptimizationParameter):
     def __init__(
-        self,
-        low: float,
-        high: float,
-        step_size: Optional[float] = None,
-        log: bool = False,
-        *args,
-        **kwargs,
+            self,
+            low: float,
+            high: float,
+            step_size: Optional[float] = None,
+            log: bool = False,
+            *args,
+            **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.low = low
@@ -105,7 +107,9 @@ class FloatParameter(OptimizationParameter):
             "log": self.log,
         }
 
+
 yaml.register_class(FloatParameter)
+
 
 class UniformParameter(OptimizationParameter):
     def __init__(self, low: float, high: float, *args, **kwargs):
@@ -121,7 +125,9 @@ class UniformParameter(OptimizationParameter):
             "high": self.high,
         }
 
+
 yaml.register_class(UniformParameter)
+
 
 class LogUniformParameter(OptimizationParameter):
     def __init__(self, low: float, high: float, *args, **kwargs):
@@ -137,11 +143,13 @@ class LogUniformParameter(OptimizationParameter):
             "high": self.high,
         }
 
+
 yaml.register_class(LogUniformParameter)
+
 
 class CategoricalParameter(OptimizationParameter):
     def __init__(
-        self, choices: Sequence[Union[None, bool, int, float, str]], *args, **kwargs
+            self, choices: Sequence[Union[None, bool, int, float, str]], *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.choices = choices
@@ -150,7 +158,9 @@ class CategoricalParameter(OptimizationParameter):
     def to_optuna_args(self):
         return {"name": self.env_var, "choices": self.choices}
 
+
 yaml.register_class(CategoricalParameter)
+
 
 class DiscreteUniformParameter(OptimizationParameter):
     def __init__(self, low: float, high: float, q: float, *args, **kwargs):
@@ -168,7 +178,9 @@ class DiscreteUniformParameter(OptimizationParameter):
             "q": self.q,
         }
 
+
 yaml.register_class(DiscreteUniformParameter)
+
 
 def load_optimization_parameters(filename):
     yaml.register_class(IntegerParameter)
