@@ -79,7 +79,7 @@ def hello_world(args):
                  top_k=args.top_k)
 
     # wait for couple of seconds
-    countdown(8, reason=colored('behold! im going to switch to evaluate', 'cyan',
+    countdown(8, reason=colored('behold! im going to switch to evaluate mode', 'cyan',
                                 attrs=['underline', 'bold', 'reverse']))
 
     # now load evaluate flow from another YAML file
@@ -88,7 +88,8 @@ def hello_world(args):
     with f:
         f.search(evaluate_generator(num_docs=args.num_query, target=targets),
                  shuffle=True, size=args.num_query,
-                 on_done=compute_mean_evaluation, batch_size=args.query_batch_size,
+                 on_done=compute_mean_evaluation,
+                 batch_size=args.query_batch_size,
                  top_k=args.top_k)
 
     # write result to html
