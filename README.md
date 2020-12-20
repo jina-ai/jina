@@ -383,7 +383,8 @@ Essentially, the above YAML config is equivalent to the following Python code:
 
 ```python
 from jina.executors.indexers.vector import NumpyIndexer
-from jina.exeuctors.indexers.keyvalue import BinaryPbIndexer
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
+from jina.executors.indexers import CompoundIndexer
 
 a = NumpyIndexer(index_filename='vec.gz')
 b = BinaryPbIndexer(index_filename='vec.gz')
