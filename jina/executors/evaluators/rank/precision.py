@@ -8,9 +8,7 @@ class PrecisionEvaluator(BaseRankingEvaluator):
        It computes how many of the first given `eval_at` matches are found in the groundtruth
     """
 
-    @property
-    def metric(self):
-        return f'Precision@{self.eval_at}'
+    metric = 'Precision@N'
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
@@ -18,6 +16,5 @@ class PrecisionEvaluator(BaseRankingEvaluator):
         :param desired: the expected documents matches ids sorted as they are expected
         :return the evaluation metric value for the request document
         """
-        ret = len(set(actual[:self.eval_at]).intersection(set(desired)))
-        divisor = min(self.eval_at, len(desired))
-        return ret / divisor if divisor != 0.0 else 0.0
+        ret = len(set(actual).intersection(set(desired)))
+        return ret / len(actual)

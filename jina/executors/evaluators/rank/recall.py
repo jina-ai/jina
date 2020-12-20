@@ -8,9 +8,7 @@ class RecallEvaluator(BaseRankingEvaluator):
        It computes how many of the first given `eval_at` groundtruth are found in the matches
     """
 
-    @property
-    def metric(self):
-        return f'Recall@{self.eval_at}'
+    metric = 'Recall@N'
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
@@ -18,5 +16,5 @@ class RecallEvaluator(BaseRankingEvaluator):
         :param desired: the expected documents matches ids sorted as they are expected
         :return the evaluation metric value for the request document
         """
-        ret = len(set(actual[:self.eval_at]).intersection(set(desired)))
+        ret = len(set(actual).intersection(set(desired)))
         return ret / len(desired)

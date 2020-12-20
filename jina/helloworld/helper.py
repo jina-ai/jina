@@ -3,34 +3,26 @@ __license__ = "Apache-2.0"
 
 import gzip
 import os
+import random
 import urllib.request
 import webbrowser
-import random
 from collections import defaultdict
 
 import numpy as np
 from pkg_resources import resource_filename
 
+from .. import Document
 from ..helper import colored
 from ..logging import default_logger
 from ..logging.profile import ProgressBar
-from .. import Document
 
 result_html = []
 num_docs_evaluated = 0
 evaluation_value = defaultdict(float)
+top_k = 0
 
 
-def compute_mean_evaluation(resp):
-    global num_docs_evaluated
-    global evaluation_value
-    for d in resp.search.docs:
-        num_docs_evaluated += 1
-        for evaluation in d.evaluations:
-            evaluation_value[evaluation.op_name] += evaluation.value
-
-
-def evaluate_generator(num_docs: int, target: dict):
+def _get_groundtruths(target, pseudo_match=True):
     # group doc_ids by their labels
     a = np.squeeze(target['index-labels']['data'])
     a = np.stack([a, np.arange(len(a))], axis=1)
@@ -40,18 +32,28 @@ def evaluate_generator(num_docs: int, target: dict):
     # each label has one groundtruth, i.e. all docs have the same label are considered as matches
     groundtruths = {lbl: Document() for lbl in range(10)}
     for lbl, doc_ids in enumerate(lbl_group):
-        for doc_id in doc_ids:
+        if not pseudo_match:
+            # full-match, each doc has 6K matches
+            for doc_id in doc_ids:
+                match = Document()
+                match.tags['id'] = int(doc_id)
+                groundtruths[lbl].matches.append(match)
+        else:
+            # pseudo-match, each doc has only one match, but this match's id is a list of 6k elements
             match = Document()
-            match.tags['id'] = int(doc_id)
+            match.tags['id'] = doc_ids.tolist()
             groundtruths[lbl].matches.append(match)
 
-    # generate doc, groundtruth pair
-    for j in range(num_docs):
-        num_data = len(target['query-labels']['data'])
-        n = random.randint(0, num_data)
-        label_int = target['query-labels']['data'][n][0]
-        document = Document(content=(target['query']['data'][n]))
-        yield document, groundtruths[label_int]
+    return groundtruths
+
+
+def _compute_mean_evaluation(resp):
+    global num_docs_evaluated
+    global evaluation_value
+    for d in resp.search.docs:
+        num_docs_evaluated += 1
+        for evaluation in d.evaluations:
+            evaluation_value[evaluation.op_name] += evaluation.value
 
 
 def index_generator(num_docs: int, target: dict):
@@ -61,18 +63,25 @@ def index_generator(num_docs: int, target: dict):
         yield d
 
 
-def query_generator(num_docs: int, target: dict):
-    for n in range(num_docs):
+def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
+    gts = _get_groundtruths(target)
+    for _ in range(num_docs):
         num_data = len(target['query-labels']['data'])
-        n = random.randint(0, num_data)
-        d = Document(content=(target['query']['data'][n]))
-        yield d
+        idx = random.randint(0, num_data - 1)
+        d = Document(content=(target['query']['data'][idx]))
+        if with_groundtruth:
+            yield d, gts[target['query-labels']['data'][idx][0]]
+        else:
+            yield d
 
 
 def print_result(resp):
+    _compute_mean_evaluation(resp)
+    global top_k
     for d in resp.search.docs:
         vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
+        top_k = len(d.matches)
         for kk in d.matches:
             kmi = kk.uri
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
@@ -88,6 +97,7 @@ def write_html(html_path):
         recall_evaluation_percentage = evaluation_value['evaluate-Recall@5'] / num_docs_evaluated * 100.0
         t = t.replace('{% PRECISION_EVALUATION %}', '{:.2f}%'.format(precision_evaluation_percentage))
         t = t.replace('{% RECALL_EVALUATION %}', '{:.2f}%'.format(recall_evaluation_percentage))
+        t = t.replace('{% TOP_K %}', str(top_k))
 
         fw.write(t)
 
