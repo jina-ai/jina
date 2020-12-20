@@ -30,26 +30,28 @@ def compute_mean_evaluation(resp):
             evaluation_value[evaluation.op_name] += evaluation.value
 
 
-def group_index_docs_by_label(targets: dict):
-    targets_by_label = defaultdict(list)
-    for internal_doc_id in range(len(targets['index']['data'])):
-        label_int = targets['index-labels']['data'][internal_doc_id][0]
-        targets_by_label[label_int].append(internal_doc_id)
-    return targets_by_label
+def evaluate_generator(num_docs: int, target: dict):
+    # group doc_ids by their labels
+    a = np.squeeze(target['index-labels']['data'])
+    a = np.stack([a, np.arange(len(a))], axis=1)
+    a = a[a[:, 0].argsort()]
+    lbl_group = np.split(a[:, 1], np.unique(a[:, 0], return_index=True)[1][1:])
 
+    # each label has one groundtruth, i.e. all docs have the same label are considered as matches
+    groundtruths = {lbl: Document() for lbl in range(10)}
+    for lbl, doc_ids in enumerate(lbl_group):
+        for doc_id in doc_ids:
+            match = Document()
+            match.tags['id'] = int(doc_id)
+            groundtruths[lbl].matches.append(match)
 
-def evaluate_generator(num_docs: int, target: dict, targets_by_label: dict):
+    # generate doc, groundtruth pair
     for j in range(num_docs):
         num_data = len(target['query-labels']['data'])
         n = random.randint(0, num_data)
         label_int = target['query-labels']['data'][n][0]
         document = Document(content=(target['query']['data'][n]))
-        ground_truth = Document()
-        for doc_id in targets_by_label[label_int]:
-            match = Document()
-            match.tags['id'] = doc_id
-            ground_truth.matches.append(match)
-        yield document, ground_truth
+        yield document, groundtruths[label_int]
 
 
 def index_generator(num_docs: int, target: dict):
