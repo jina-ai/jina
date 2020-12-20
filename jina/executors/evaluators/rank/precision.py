@@ -17,4 +17,5 @@ class PrecisionEvaluator(BaseRankingEvaluator):
         :return the evaluation metric value for the request document
         """
         ret = len(set(actual).intersection(set(desired)))
-        return ret / len(actual)
+        sub = len(actual)
+        return ret / sub if sub !=0 else 0.
