@@ -15,9 +15,24 @@ from ..types.document.helper import DocGroundtruthPair
 class BaseEvaluateDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None,
                  method: str = 'evaluate',
+                 running_avg: bool = False,
                  *args,
                  **kwargs):
+        """
+        :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+        :param method: the function name of the executor that the driver feeds to
+        :param running_avg: always return running average instead of value of the current run
+        :param args:
+        :param kwargs:
+
+        .. warning::
+
+            When ``running_avg=True``, then the running mean is returned. So far at Jina 0.8.10,
+             there is no way to reset the running statistics. If you have a query Flow running multiple queries,
+             you may want to make sure the running statistics is meaningful across multiple runs.
+        """
         super().__init__(executor, method, *args, **kwargs)
+        self._running_avg = running_avg
 
     def __call__(self, *args, **kwargs):
         docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
@@ -37,6 +52,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             groundtruth = doc_groundtruth.groundtruth
             evaluation = doc.evaluations.add()
             evaluation.value = self.exec_fn(self.extract(doc), self.extract(groundtruth))
+            if self._running_avg:
+                evaluation.value = self.exec.mean
             evaluation.op_name = self.exec.metric
             evaluation.ref_id = groundtruth.id
 

@@ -20,9 +20,28 @@ class SimpleRankEvaluateDriver(RankEvaluateDriver):
         return 1
 
 
+class RunningAvgRankEvaluateDriver(RankEvaluateDriver):
+
+    def __init__(self, field: str, *args, **kwargs):
+        super().__init__(field, running_avg=True, *args, **kwargs)
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+    @property
+    def expect_parts(self) -> int:
+        return 1
+
+
 @pytest.fixture
 def simple_rank_evaluate_driver(field):
     return SimpleRankEvaluateDriver(field)
+
+
+@pytest.fixture
+def ruuningavg_rank_evaluate_driver(field):
+    return RunningAvgRankEvaluateDriver(field)
 
 
 @pytest.fixture
@@ -50,6 +69,18 @@ def test_ranking_evaluate_driver(simple_rank_evaluate_driver,
                                  ground_truth_pairs):
     simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
+    for pair in ground_truth_pairs:
+        doc = pair.doc
+        assert len(doc.evaluations) == 1
+        assert doc.evaluations[0].op_name == 'Precision@N'
+        assert doc.evaluations[0].value == 1.0
+
+
+@pytest.mark.parametrize('field', ['tags__id', 'score__value'])
+def test_ranking_evaluate_driver(ruuningavg_rank_evaluate_driver,
+                                 ground_truth_pairs):
+    ruuningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
+    ruuningavg_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1

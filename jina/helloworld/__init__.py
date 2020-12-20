@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 
 from .components import *
 from .helper import print_result, write_html, download_data, \
-    _compute_mean_evaluation, index_generator, query_generator
+     index_generator, query_generator
 from ..flow import Flow
 from ..helper import countdown, colored
 
