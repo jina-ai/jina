@@ -3,6 +3,8 @@ __license__ = "Apache-2.0"
 
 from typing import Any, Iterator
 
+import numpy
+
 from . import BaseExecutableDriver
 from .querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
@@ -22,13 +24,6 @@ class BaseEvaluateDriver(BaseExecutableDriver):
                              zip(self.docs, self.req.groundtruths)]
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
 
-    @property
-    def metric(self):
-        if self.pea:
-            return self.pea.name
-        else:
-            return self.__class__.__name__
-
     def _apply_all(
             self,
             docs: Iterator['DocGroundtruthPair'],
@@ -42,7 +37,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             groundtruth = doc_groundtruth.groundtruth
             evaluation = doc.evaluations.add()
             evaluation.value = self.exec_fn(self.extract(doc), self.extract(groundtruth))
-            evaluation.op_name = f'{self.metric}-{self.exec.metric}'
+            evaluation.op_name = self.exec.metric
             evaluation.ref_id = groundtruth.id
 
     def extract(self, doc: 'Document') -> Any:
@@ -94,7 +89,9 @@ class RankEvaluateDriver(FieldEvaluateDriver):
         super().__init__(field, *args, **kwargs)
 
     def extract(self, doc: 'Document'):
-        return [dunder_get(x, self.field) for x in doc.matches]
+        r = [dunder_get(x, self.field) for x in doc.matches]
+        # flatten nested list but useless depth, e.g. [[1,2,3,4]]
+        return list(numpy.array(r).flat)
 
 
 class NDArrayEvaluateDriver(FieldEvaluateDriver):

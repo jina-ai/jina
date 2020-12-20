@@ -8,9 +8,7 @@ class EuclideanEvaluator(BaseEmbeddingEvaluator):
     the euclidean distance between them
     """
 
-    @property
-    def metric(self):
-        return 'EuclideanDistance'
+    metric = 'EuclideanDistance'
 
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"

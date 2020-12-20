@@ -60,9 +60,9 @@ def export_api(args):
     if args.yaml_path:
         for yp in args.yaml_path:
             f_name = (yp % __version__) if '%s' in yp else yp
-            from jina.helper import yaml
+            from jina.jaml import JAML
             with open(f_name, 'w', encoding='utf8') as fp:
-                yaml.dump(api_to_dict(), fp)
+                JAML.dump(api_to_dict(), fp)
             default_logger.info(f'API is exported to {f_name}')
 
     if args.json_path:

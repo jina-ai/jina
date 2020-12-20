@@ -142,10 +142,10 @@ def get_default_metas() -> Dict:
     global _defaults
 
     if _defaults is None:
-        from ..helper import yaml
+        from ..jaml import JAML
         from pkg_resources import resource_stream
         with resource_stream('jina', '/'.join(('resources', 'executors.metas.default.yml'))) as fp:
-            _defaults = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
+            _defaults = JAML.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
     return copy.deepcopy(_defaults)
 

@@ -86,7 +86,7 @@ class HubIO:
         import requests
 
         with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
-            hubapi_yml = yaml.load(fp)
+            hubapi_yml = JAML.load(fp)
 
         client_id = hubapi_yml['github']['client_id']
         scope = hubapi_yml['github']['scope']
@@ -143,7 +143,7 @@ class HubIO:
                         'access_token': access_token_response['access_token']
                     }
                     with open(credentials_file(), 'w') as cf:
-                        yaml.dump(token, cf)
+                        JAML.dump(token, cf)
                     self.logger.success(f'successfully logged in!')
                     break
             else:
@@ -533,10 +533,10 @@ class HubIO:
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:
         with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
-            tmp = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
+            tmp = JAML.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
         with open(path) as fp:
-            tmp.update(yaml.load(fp))
+            tmp.update(JAML.load(fp))
 
         if validate:
             self._validate_manifest(tmp)

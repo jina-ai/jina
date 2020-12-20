@@ -4,7 +4,7 @@ import pytest
 
 from jina.docker.hubio import HubIO
 from jina.excepts import ImageAlreadyExists
-from jina.helper import yaml
+from jina.jaml import JAML
 from jina.parser import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
 
 cur_dir = Path(__file__).parent
@@ -43,7 +43,7 @@ def test_hub_build_push():
     summary = HubIO(args).build()
 
     with open(cur_dir / 'hub-mwu' / 'manifest.yml') as fp:
-        manifest = yaml.load(fp)
+        manifest = JAML.load(fp)
 
     assert summary['is_build_success']
     assert manifest['version'] == summary['version']
@@ -72,7 +72,7 @@ def test_hub_build_push_push_again():
     summary = HubIO(args).build()
 
     with open(cur_dir / 'hub-mwu' / 'manifest.yml') as fp:
-        manifest = yaml.load(fp)
+        manifest = JAML.load(fp)
 
     assert summary['is_build_success']
     assert manifest['version'] == summary['version']
