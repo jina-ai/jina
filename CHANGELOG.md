@@ -108,6 +108,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6028,4 +6029,35 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```0a31cee6```](https://github.com/jina-ai/jina/commit/0a31cee687d7263f2e607be254ee3a717ee93eec)] __-__ remove cla folder from master branch (*Han Xiao*)
  - [[```148fa52b```](https://github.com/jina-ai/jina/commit/148fa52b171e92eb84727b2ff5959399648e3fbc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9b4d9c2b```](https://github.com/jina-ai/jina/commit/9b4d9c2b7ceb0a7d2176c550765aecb0637d14a7)] __-__ __version__: the next version will be 0.8.9 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-10></a>
+## Release Note (`0.8.10`)
+
+> Release time: 2020-12-20 18:26:39
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Hidan,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```ceff8efc```](https://github.com/jina-ai/jina/commit/ceff8efc501b28b29e36af3e2bcdd2444cb18a9c)] __-__ __helloworld__: hello-world evaluator use running avg directly (#1508) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```1645a190```](https://github.com/jina-ai/jina/commit/1645a190b4d1ed5c11547d95af0ac25b075a4f43)] __-__ hello-world, evaluator, top_k, eval_at (#1501) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```b91f1b74```](https://github.com/jina-ai/jina/commit/b91f1b74065929bb7aca72795778e6bf9086b03f)] __-__ __readme__: fix some typos in readme (#1500) (*Hidan*)
+
+### 🍹 Other Improvements
+
+ - [[```71d3c69a```](https://github.com/jina-ai/jina/commit/71d3c69af8c383cd43168b97f208567e4ea6cb2e)] __-__ hotfix release (*Han Xiao*)
+ - [[```47caec24```](https://github.com/jina-ai/jina/commit/47caec24291469f02b0c8d9d2ffe05e04b9cdf3a)] __-__ __docs__: update readme (*Jina Dev Bot*)
+ - [[```41dee6f5```](https://github.com/jina-ai/jina/commit/41dee6f5d387932a2b5b23e65f74461597f37855)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```c792c244```](https://github.com/jina-ai/jina/commit/c792c24486736467682ea0f266e287c71c7a924b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```6934f65c```](https://github.com/jina-ai/jina/commit/6934f65ca264774580a74262fcd61ff5ca38b43a)] __-__ __version__: the next version will be 0.8.10 (*Jina Dev Bot*)
 
