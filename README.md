@@ -103,6 +103,11 @@ jina hello-world --help
 
 ## Get Started
 
+|     |   |
+| --- |---|
+| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [MultimodalDocument](#multimodaldocument) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow in Python/YAML](#compose-flow-in-pythonyaml) • [Search via Query Flow](#search-via-query-flow) • [Evaluating Search Result](#evaluating-search-result) • [REST Interface of Query Flow](#rest-interface-of-query-flow) |
+
 #### Create
 
 Jina provides a high-level [Flow API](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) to simplify building search/index workflows. To create a new Flow:
@@ -299,6 +304,12 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 ### Breakdown of `hello-world`
 
+
+|     |   |
+| --- |---|
+| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [MultimodalDocument](#multimodaldocument) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow in Python/YAML](#compose-flow-in-pythonyaml) • [Search via Query Flow](#search-via-query-flow) • [Evaluating Search Result](#evaluating-search-result) • [REST Interface of Query Flow](#rest-interface-of-query-flow) |
+
 #### Customize Encoder
 
 Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do this, we simply inherit from `BaseImageEncoder`: a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
@@ -433,7 +444,7 @@ with f:
     f.search_ndarray(np.random.random([10, 28, 28]), shuffle=True, output_fn=plot_in_html, top_k=50)
 ```
 
-#### Evaluating the Search Result
+#### Evaluating Search Result
 
 To compute precision recall on the retrieved result, you can add `_eval_pr`, a built-in evaluator for computing precision & recall.
 
