@@ -89,12 +89,15 @@ def print_result(resp):
 
 
 def write_html(html_path):
+    global num_docs_evaluated
+    global evaluation_value
+
     with open(resource_filename('jina', '/'.join(('resources', 'helloworld.html'))), 'r') as fp, \
             open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
-        precision_evaluation_percentage = evaluation_value['evaluate-Precision@5'] / num_docs_evaluated * 100.0
-        recall_evaluation_percentage = evaluation_value['evaluate-Recall@5'] / num_docs_evaluated * 100.0
+        precision_evaluation_percentage = evaluation_value['Precision@N'] / num_docs_evaluated * 100.0
+        recall_evaluation_percentage = evaluation_value['Recall@N'] / num_docs_evaluated * 100.0
         t = t.replace('{% PRECISION_EVALUATION %}', '{:.2f}%'.format(precision_evaluation_percentage))
         t = t.replace('{% RECALL_EVALUATION %}', '{:.2f}%'.format(recall_evaluation_percentage))
         t = t.replace('{% TOP_K %}', str(top_k))
