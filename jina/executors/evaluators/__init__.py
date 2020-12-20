@@ -12,14 +12,11 @@ class BaseEvaluator(BaseExecutor):
     """A :class:`BaseEvaluator` is used to evaluate different messages coming from any kind of executor
     """
 
+    metric = ''  #: Get the name of the evaluation metric
+
     def post_init(self):
         super().post_init()
         self._running_stats = RunningStats()
-
-    @property
-    def metric(self) -> str:
-        """Get the name of the evaluation metric """
-        raise NotImplementedError
 
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
         raise NotImplementedError

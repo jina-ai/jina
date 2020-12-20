@@ -1,13 +1,9 @@
 !CompoundExecutor
 components:
   - !PrecisionEvaluator
-    with:
-      eval_at: 5
     metas:
       name: precision  # a customized name
   - !RecallEvaluator
-    with:
-      eval_at: 5
     metas:
       name: recall  # a customized name
 metas:

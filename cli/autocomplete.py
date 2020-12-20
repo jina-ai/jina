@@ -35,8 +35,9 @@ ac_table = {
     'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check',
                  'hub', 'pea', 'log', 'client', 'export-api'], 'completions': {
         'hello-world': ['--help', '--workdir', '--logserver', '--logserver-config', '--download-proxy', '--shards',
-                        '--parallel', '--uses-index', '--index-data-url', '--index-batch-size', '--uses-query',
-                        '--query-data-url', '--query-batch-size', '--num-query', '--top-k'],
+                        '--parallel', '--uses-index', '--index-data-url', '--index-labels-url', '--index-batch-size',
+                        '--uses-query', '--query-data-url', '--query-labels-url', '--query-batch-size', '--num-query',
+                        '--top-k'],
         'pod': ['--help', '--name', '--identity', '--uses', '--py-modules', '--env', '--uses-internal', '--entrypoint',
                 '--pull-latest', '--volumes', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in',
                 '--socket-out', '--port-ctrl', '--ctrl-with-ipc', '--timeout', '--timeout-ctrl', '--timeout-ready',

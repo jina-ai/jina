@@ -8,9 +8,7 @@ class TextLengthEvaluator(BaseTextEvaluator):
     """A :class:`TextLengthEvaluator` evaluates the different lengths between actual and desired text
     """
 
-    @property
-    def metric(self):
-        return 'Length'
+    metric = 'LengthDiff'
 
     def evaluate(self, actual: str, desired: str, *args, **kwargs) -> float:
         """"
