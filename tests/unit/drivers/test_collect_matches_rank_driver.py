@@ -92,9 +92,10 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
         assert match.score.ref_id == doc.id
 
 
-def test_collect_matches2doc_ranker_driver_min_ranker():
+@pytest.mark.parametrize('keep_old_matches_as_chunks', [False, True])
+def test_collect_matches2doc_ranker_driver_min_ranker(keep_old_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver()
+    driver = SimpleCollectMatchesRankDriver(keep_old_matches_as_chunks=keep_old_matches_as_chunks)
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
     import sys
@@ -119,11 +120,14 @@ def test_collect_matches2doc_ranker_driver_min_ranker():
     for match in dm:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
+        expected_chunk_matches_length = 2 if keep_old_matches_as_chunks else 0
+        assert len(match.chunks) == expected_chunk_matches_length
 
 
-def test_collect_matches2doc_ranker_driver_max_ranker():
+@pytest.mark.parametrize('keep_old_matches_as_chunks', [False, True])
+def test_collect_matches2doc_ranker_driver_max_ranker(keep_old_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver()
+    driver = SimpleCollectMatchesRankDriver(keep_old_matches_as_chunks=keep_old_matches_as_chunks)
     executor = MockMaxRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -136,3 +140,5 @@ def test_collect_matches2doc_ranker_driver_max_ranker():
     for match in dm:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
+        expected_chunk_matches_length = 2 if keep_old_matches_as_chunks else 0
+        assert len(match.chunks) == expected_chunk_matches_length

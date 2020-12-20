@@ -51,6 +51,7 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
         :param docs_scores: An `np.ndarray` resulting from the ranker executor with the `scores` of the new matches
         :return:
         """
+
         op_name = self.exec.__class__.__name__
         for int_doc_id, score in docs_scores:
             m = Document(id=int_doc_id)
