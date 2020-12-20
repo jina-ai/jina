@@ -136,7 +136,7 @@ from jina import Document
 
 with Flow().add() as f:
     f.index((Document() for _ in range(10)))  # index raw Jina Documents
-    f.index_ndarray(numpy.random.random([4,2]), output_fn=print)  # index ndarray data, document sliced on first dimension
+    f.index_ndarray(numpy.random.random([4,2]), on_done=print)  # index ndarray data, document sliced on first dimension
     f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
     f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])  # index files and wildcard globs, each file is a document
 ```
@@ -155,7 +155,7 @@ def beep(*args):
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
     f.index(numpy.random.random([4,5,2]),
-            output_fn=print,
+            on_done=print,
             on_error=beep, on_always=fp.write)
 ```
 
@@ -276,7 +276,7 @@ from jina import AsyncFlow
 
 async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
     with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-        await f.index_ndarray(np.random.random([5, 4]), output_fn=validate)
+        await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
 
 async def heavylifting():  # total roundtrip takes ~5s
     print('heavylifting other io-bound jobs, e.g. download, upload, file io')
@@ -296,7 +296,7 @@ if __name__ == '__main__':
 from jina import AsyncFlow
 
 with AsyncFlow().add() as f:
-    await f.index_ndarray(np.random.random([5, 4]), output_fn=print)
+    await f.index_ndarray(np.random.random([5, 4]), on_done=print)
 ```
 
 
@@ -352,7 +352,7 @@ def validate(docs):
 f = Flow().add(uses='MyEncoder')
 
 with f:
-    f.index_ndarray(np.random.random([100, 28, 28]), output_fn=validate, callback_on='docs')
+    f.index_ndarray(np.random.random([100, 28, 28]), on_done=validate, callback_on='docs')
 ```
 
 
@@ -442,7 +442,7 @@ Querying a Flow is similar to what we did with indexing. Simply load the query F
 ```python
 f = Flow.load_config('flows/query.yml')
 with f:
-    f.search_ndarray(np.random.random([10, 28, 28]), shuffle=True, output_fn=plot_in_html, top_k=50)
+    f.search_ndarray(np.random.random([10, 28, 28]), shuffle=True, on_done=plot_in_html, top_k=50)
 ```
 
 #### Evaluation
