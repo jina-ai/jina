@@ -106,7 +106,7 @@ jina hello-world --help
 |     |   |
 | --- |---|
 | 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [MultimodalDocument](#multimodaldocument) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
-| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow in Python/YAML](#compose-flow-in-pythonyaml) • [Search via Query Flow](#search-via-query-flow) • [Evaluating Search Result](#evaluating-search-result) • [REST Interface of Query Flow](#rest-interface-of-query-flow) |
+| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### Create
 
@@ -304,11 +304,11 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 ### Breakdown of `hello-world`
 
-
 |     |   |
 | --- |---|
 | 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [MultimodalDocument](#multimodaldocument) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
-| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow in Python/YAML](#compose-flow-in-pythonyaml) • [Search via Query Flow](#search-via-query-flow) • [Evaluating Search Result](#evaluating-search-result) • [REST Interface of Query Flow](#rest-interface-of-query-flow) |
+| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+
 
 #### Customize Encoder
 
@@ -403,7 +403,7 @@ c = CompoundIndexer()
 c.components = lambda: [a, b]
 ```
 
-#### Compose Flow in Python/YAML
+#### Compose Flow from YAML
 
 Now let's add our indexer YAML file to the Flow with `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
 
@@ -417,11 +417,12 @@ When you have many arguments, constructing a Flow in Python can get cumbersome. 
 
 ```yaml
 !Flow
+version: '1.0'
 pods:
-  encode:
+  - name: encode
     uses: MyEncoder
     parallel: 2
-  index:
+  - name:index
     uses: myindexer.yml
     shards: 2
     separated_workspace: true
@@ -433,7 +434,7 @@ And then load it in Python:
 f = Flow.load_config('flow.yml')
 ```
 
-#### Search via Query Flow
+#### Search
 
 Querying a Flow is similar to what we did with indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top 50 documents that are similar to your query and then plot them in HTML:
 
@@ -444,7 +445,7 @@ with f:
     f.search_ndarray(np.random.random([10, 28, 28]), shuffle=True, output_fn=plot_in_html, top_k=50)
 ```
 
-#### Evaluating Search Result
+#### Evaluation
 
 To compute precision recall on the retrieved result, you can add `_eval_pr`, a built-in evaluator for computing precision & recall.
 
@@ -470,7 +471,7 @@ f.search(query_iterator, ...)
 ```
 
 
-#### REST Interface of Query Flow
+#### REST Interface
 
 In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `rest_api=True`:
 
