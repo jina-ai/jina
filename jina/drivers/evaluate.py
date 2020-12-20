@@ -19,12 +19,17 @@ class BaseEvaluateDriver(BaseExecutableDriver):
                  *args,
                  **kwargs):
         """
-
-        :param executor:
-        :param method:
-        :param running_avg: return running average instead of value on the current run
+        :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+        :param method: the function name of the executor that the driver feeds to
+        :param running_avg: always return running average instead of value of the current run
         :param args:
         :param kwargs:
+
+        .. warning::
+
+            When ``running_avg=True``, then the running mean is returned. So far at Jina 0.8.10,
+             there is no way to reset the running statistics. If you have a query Flow running multiple queries,
+             you may want to make sure the running statistics is meaningful across multiple runs.
         """
         super().__init__(executor, method, *args, **kwargs)
         self._running_avg = running_avg
