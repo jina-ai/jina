@@ -5,8 +5,6 @@ set -ex
 DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
 
-
-
 cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
@@ -22,12 +20,15 @@ if [[ $1 == "commit" ]]; then
   cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
+  rsync -avr . master  # sync to master/
+  rsync -avr --exclude=master . ${JINA_VERSION}  # sync to master/
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
   touch .nojekyll
-  git add .
+  git add master  # only comit master/
+  git add ${JINA_VERSION}  # only comit master/
   git commit -m "$2" -a
   git status
   cd -
@@ -36,6 +37,7 @@ elif [[ $1 == "release" ]]; then
   cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
+  rsync -avr . ${JINA_VERSION}  # sync to versions
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"

@@ -140,9 +140,15 @@
               {%- set nav_version = current_version %}
             {% endif %}
             {% if nav_version %}
-              <div class="version">
-                {{ nav_version }}
-              </div>
+
+          <div class="dropdown">
+            Version: <button class="dropbtn version">{{ nav_version }}</button>
+            <div class="dropdown-content">
+              {% for version in theme_version_switcher %}
+                        <a class="dropdown-item" href="{{ version[0] }}">{{ version[1] }}</a>
+                        {% endfor %}
+            </div>
+          </div>
             {% endif %}
           {% endif %}
 
@@ -185,7 +191,7 @@
         {% endblock %}
       </nav>
 
-   
+
       <div class="wy-nav-content">
       {%- block content %}
         {% if theme_style_external_links|tobool %}
