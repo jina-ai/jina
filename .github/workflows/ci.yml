@@ -52,7 +52,7 @@ jobs:
             This message will be deleted automatically when the commit messages get fixed.
           reaction-type: "eyes"
 
-  lint_flake_8:
+  lint-flake-8:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
