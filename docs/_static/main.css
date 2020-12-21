@@ -31,7 +31,7 @@
 }
 
 #showhide-navbar-btn {
-    left: 23rem;
+    left: 300px;
     position: fixed;
     display: inline;
     background: #099;
@@ -57,7 +57,7 @@
     /* top: 50%; */
     /* vertical-align: middle; */
     /* vertical-align: -50%; */
-    padding-top: .8em;
+    /*padding-top: .8em;*/
     /* padding-right: 1em; */
     /* margin-left: -1em; */
 }
@@ -169,8 +169,6 @@ body {
 
 .wy-nav-content-wrap {
     background: none;
-    margin-left: auto;
-
 }
 
 .wy-nav-top a {
@@ -387,10 +385,10 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
 }
 
 .wy-breadcrumbs {
-    flex-basis: 500px;
     font-size: 1.3rem;
     vertical-align: middle;
 }
@@ -406,8 +404,7 @@ a:hover {
 }
 
 .wy-nav-side {
-    background: #006b6b;
-    width: 23rem;
+    background: #009999;
 }
 
 .wy-menu-vertical a:hover {

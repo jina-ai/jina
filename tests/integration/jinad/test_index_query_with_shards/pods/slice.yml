@@ -11,5 +11,6 @@ requests:
         with:
           start: 0
           end: 10
+          traversal_paths: ['m']
     ControlRequest:
       - !ControlReqDriver {}
