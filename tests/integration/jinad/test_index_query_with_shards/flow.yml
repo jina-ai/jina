@@ -17,3 +17,7 @@ pods:
     separated_workspace: True
     host: $JINA_INDEXER_HOST
     port_expose: 8000
+  slice:
+    # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
+    uses: '- !SliceQL | {start: 0, end: 10}'
+    host: $JINA_INDEXER_HOST
