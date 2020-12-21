@@ -1,7 +1,6 @@
 name: CI
 
 on:
-  pull_request:
   pull_request_target:
 #    paths-ignore:
 #      - 'README.md'
