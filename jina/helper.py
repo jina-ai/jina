@@ -21,19 +21,27 @@ from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
 
 import numpy as np
-from ruamel.yaml import YAML, nodes
 
-__all__ = ['batch_iterator', 'yaml',
+__all__ = ['batch_iterator',
            'parse_arg',
            'random_port', 'get_random_identity', 'expand_env_var',
-           'colored', 'kwargs2list', 'get_local_config_source', 'is_valid_local_config_source',
+           'colored', 'ArgNamespace', 'get_local_config_source', 'is_valid_local_config_source',
            'cached_property', 'is_url', 'complete_path',
-           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list']
-
-from jina.excepts import EventLoopError
+           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
+           'run_async', 'deprecated_alias']
 
 
 def deprecated_alias(**aliases):
+    def rename_kwargs(func_name: str, kwargs, aliases):
+        for alias, new in aliases.items():
+            if alias in kwargs:
+                if new in kwargs:
+                    raise TypeError(f'{func_name} received both {alias} and {new}')
+                warnings.warn(
+                    f'"{alias}" is renamed to {new}" in "{func_name}()" '
+                    f'and "{alias}" will be removed in the next version', DeprecationWarning)
+                kwargs[new] = kwargs.pop(alias)
+
     def deco(f):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
@@ -43,17 +51,6 @@ def deprecated_alias(**aliases):
         return wrapper
 
     return deco
-
-
-def rename_kwargs(func_name: str, kwargs, aliases):
-    for alias, new in aliases.items():
-        if alias in kwargs:
-            if new in kwargs:
-                raise TypeError(f'{func_name} received both {alias} and {new}')
-            warnings.warn(
-                f'"{alias}" is deprecated in "{func_name}()" '
-                f'and will be removed in the next version; please use "{new}" instead', DeprecationWarning)
-            kwargs[new] = kwargs.pop(alias)
 
 
 def get_readable_size(num_bytes: Union[int, float]) -> str:
@@ -117,12 +114,6 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
             yield chunk
     else:
         raise TypeError(f'unsupported type: {type(data)}')
-
-
-def _get_yaml():
-    y = YAML(typ='safe')
-    y.default_flow_style = False
-    return y
 
 
 def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
@@ -211,9 +202,6 @@ def get_random_identity() -> str:
     return str(uuid.uuid1())
 
 
-yaml = _get_yaml()
-
-
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
     if isinstance(v, str):
         return parse_arg(os.path.expandvars(v))
@@ -226,7 +214,7 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
     pat = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
     def _scan(sub_d: Union[Dict, List], p):
-        if isinstance(sub_d, Dict):
+        if isinstance(sub_d, dict):
             for k, v in sub_d.items():
                 if isinstance(v, dict):
                     p.__dict__[k] = SimpleNamespace()
@@ -236,7 +224,7 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
                     _scan(v, p.__dict__[k])
                 else:
                     p.__dict__[k] = v
-        elif isinstance(sub_d, List):
+        elif isinstance(sub_d, list):
             for idx, v in enumerate(sub_d):
                 if isinstance(v, dict):
                     p.append(SimpleNamespace())
@@ -367,40 +355,104 @@ def colored(text: str, color: Optional[str] = None,
     return text
 
 
-def get_tags_from_node(node) -> List[str]:
-    """Traverse the YAML by node and return all tags
+class ArgNamespace:
+    """Helper function for argparse.Namespace object"""
 
-    :param node: the YAML node to be traversed
-    """
+    @staticmethod
+    def kwargs2list(kwargs: Dict) -> List[str]:
+        """Convert dict to an argparse-friendly list
 
-    def node_recurse_generator(n):
-        if n.tag.startswith('!'):
-            yield n.tag.lstrip('!')
-        for nn in n.value:
-            if isinstance(nn, tuple):
-                for k in nn:
-                    yield from node_recurse_generator(k)
-            elif isinstance(nn, nodes.Node):
-                yield from node_recurse_generator(nn)
+        :param kwargs: dictionary of key-values to be converted
+        """
+        args = []
+        for k, v in kwargs.items():
+            k = k.replace('_', '-')
+            if v is not None:
+                if isinstance(v, bool):
+                    if v:
+                        args.append(f'--{k}')
+                elif isinstance(v, list):  # for nargs
+                    args.extend([f'--{k}', *(str(vv) for vv in v)])
+                elif isinstance(v, dict):
+                    args.extend([f'--{k}', json.dumps(v)])
+                else:
+                    args.extend([f'--{k}', str(v)])
+        return args
 
-    return list(set(list(node_recurse_generator(node))))
+    @staticmethod
+    def kwargs2namespace(kwargs: Dict[str, Union[str, int, bool]],
+                         parser: ArgumentParser) -> Namespace:
+        """Convert dict to a namespace
 
+        :param kwargs: dictionary of key-values to be converted
+        :param parser: the parser for building kwargs into a namespace
+        """
+        args = ArgNamespace.kwargs2list(kwargs)
+        try:
+            p_args, unknown_args = parser.parse_known_args(args)
+        except SystemExit:
+            raise ValueError(f'bad arguments "{args}" with parser {parser}, '
+                             'you may want to double check your args ')
+        return p_args
 
-def kwargs2list(kwargs: Dict) -> List[str]:
-    args = []
-    for k, v in kwargs.items():
-        k = k.replace('_', '-')
-        if v is not None:
-            if isinstance(v, bool):
-                if v:
-                    args.append(f'--{k}')
-            elif isinstance(v, list):  # for nargs
-                args.extend([f'--{k}', *(str(vv) for vv in v)])
-            elif isinstance(v, dict):
-                args.extend([f'--{k}', json.dumps(v)])
-            else:
-                args.extend([f'--{k}', str(v)])
-    return args
+    @staticmethod
+    def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
+                        parser: ArgumentParser) -> Tuple[List[str], Namespace, List[Any]]:
+        """Get all parsed args info in a dict
+
+        :param kwargs: dictionary of key-values to be converted
+        :param parser: the parser for building kwargs into a namespace
+        """
+        args = ArgNamespace.kwargs2list(kwargs)
+        try:
+            p_args, unknown_args = parser.parse_known_args(args)
+            if unknown_args:
+                from .logging import default_logger
+                default_logger.debug(
+                    f'parser {typename(parser)} can not '
+                    f'recognize the following args: {unknown_args}, '
+                    f'they are ignored. if you are using them from a global args (e.g. Flow), '
+                    f'then please ignore this message')
+        except SystemExit:
+            raise ValueError(f'bad arguments "{args}" with parser {parser}, '
+                             'you may want to double check your args ')
+        return args, p_args, unknown_args
+
+    @staticmethod
+    def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = None) -> Dict:
+        """Get non-default args in a dict
+
+        :param args: the namespace to parse
+        :param parser: the parser for referring the default values
+        :param taboo: exclude keys in the final result
+        """
+        if taboo is None:
+            taboo = set()
+        non_defaults = {}
+        _defaults = vars(parser.parse_args([]))
+        for k, v in vars(args).items():
+            if k in _defaults and k not in taboo and _defaults[k] != v:
+                non_defaults[k] = v
+        return non_defaults
+
+    @staticmethod
+    def flatten_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
+        """A helper function to convert argparse.Namespace to dict to be uploaded via REST
+
+        :param args: namespace or dict or namespace to dict.
+        """
+        if isinstance(args, Namespace):
+            return vars(args)
+        elif isinstance(args, dict):
+            pea_args = {}
+            for k, v in args.items():
+                if isinstance(v, Namespace):
+                    pea_args[k] = vars(v)
+                elif isinstance(v, list):
+                    pea_args[k] = [vars(_) for _ in v]
+                else:
+                    pea_args[k] = v
+            return pea_args
 
 
 def get_local_config_source(path: str, to_stream: bool = False) -> Union[StringIO, TextIO, str]:
@@ -444,39 +496,10 @@ def is_valid_local_config_source(path: str) -> bool:
         return False
 
 
-def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
-                    parser: ArgumentParser) -> Tuple[List[str], Namespace, List[Any]]:
-    args = kwargs2list(kwargs)
-    try:
-        p_args, unknown_args = parser.parse_known_args(args)
-        if unknown_args:
-            from .logging import default_logger
-            default_logger.debug(
-                f'parser {typename(parser)} can not '
-                f'recognize the following args: {unknown_args}, '
-                f'they are ignored. if you are using them from a global args (e.g. Flow), '
-                f'then please ignore this message')
-    except SystemExit:
-        raise ValueError(f'bad arguments "{args}" with parser {parser}, '
-                         'you may want to double check your args ')
-    return args, p_args, unknown_args
-
-
-def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = None) -> Dict:
-    if taboo is None:
-        taboo = set()
-    non_defaults = {}
-    _defaults = vars(parser.parse_args([]))
-    for k, v in vars(args).items():
-        if k in _defaults and k not in taboo and _defaults[k] != v:
-            non_defaults[k] = v
-    return non_defaults
-
-
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
-    import os, zmq, numpy, google.protobuf, grpc, ruamel.yaml
+    import os, zmq, numpy, google.protobuf, grpc, yaml
     from grpc import _grpcio_metadata
     from pkg_resources import resource_filename
     import platform
@@ -491,7 +514,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
                 'protobuf': google.protobuf.__version__,
                 'proto-backend': api_implementation._default_implementation_type,
                 'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
-                'ruamel.yaml': ruamel.yaml.__version__,
+                'pyyaml': yaml.__version__,
                 'python': platform.python_version(),
                 'platform': platform.system(),
                 'platform-release': platform.release(),
@@ -671,20 +694,20 @@ def convert_tuple_to_list(d: Dict):
             convert_tuple_to_list(v)
 
 
-def namespace_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
-    """ helper function to convert argparse.Namespace to json to be uploaded via REST """
-    if isinstance(args, Namespace):
-        return vars(args)
-    elif isinstance(args, dict):
-        pea_args = {}
-        for k, v in args.items():
-            if isinstance(v, Namespace):
-                pea_args[k] = vars(v)
-            elif isinstance(v, list):
-                pea_args[k] = [vars(_) for _ in v]
-            else:
-                pea_args[k] = v
-        return pea_args
+def is_jupyter() -> bool:  # pragma: no cover
+    """Check if we're running in a Jupyter notebook,
+    using magic command `get_ipython` that only available in Jupyter"""
+    try:
+        get_ipython  # noqa: F821
+    except NameError:
+        return False
+    shell = get_ipython().__class__.__name__  # noqa: F821
+    if shell == 'ZMQInteractiveShell':
+        return True  # Jupyter notebook or qtconsole
+    elif shell == 'TerminalInteractiveShell':
+        return False  # Terminal running IPython
+    else:
+        return False  # Other type (?)
 
 
 def run_async(func, *args, **kwargs):
@@ -702,6 +725,7 @@ def run_async(func, *args, **kwargs):
     :param kwargs: key-value parameters
     :return:
     """
+
     class RunThread(threading.Thread):
         def run(self):
             self.result = asyncio.run(func(*args, **kwargs))
@@ -714,9 +738,19 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        thread = RunThread()
-        thread.start()
-        thread.join()
-        return thread.result
+        if is_jupyter():
+            thread = RunThread()
+            thread.start()
+            thread.join()
+            try:
+                return thread.result
+            except AttributeError:
+                from .excepts import BadClient
+                raise BadClient('something wrong when running the eventloop, result can not be retrieved')
+        else:
+            raise RuntimeError('you have an eventloop running but not using Jupyter/ipython, '
+                               'this may mean you are using Jina with other integration? if so, then you '
+                               'may want to use AsyncClient/AsyncFlow instead of Client/Flow. If not, then '
+                               'please report this issue here: https://github.com/jina-ai/jina')
     else:
         return asyncio.run(func(*args, **kwargs))

@@ -35,7 +35,7 @@ def test_this_will_fail(mocker):
     response_mock = mocker.Mock(wrap=validate)
 
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
     response_mock.assert_called()
 
@@ -56,7 +56,7 @@ def test_this_should_work(mocker):
     response_mock = mocker.Mock(wrap=validate)
 
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+        f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
     response_mock.assert_called()
 

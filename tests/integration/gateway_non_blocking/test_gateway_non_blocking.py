@@ -21,7 +21,7 @@ def test_non_blocking_gateway(parallel, expected_response, mocker):
 
     with Flow().load_config(os.path.join(cur_dir, 'flow.yml')) as f:
         f.search(input_fn=data,
-                 output_fn=fill_responses,
+                 on_done=fill_responses,
                  batch_size=1,
                  callback_on='body')
 

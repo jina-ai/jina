@@ -1,4 +1,6 @@
-FROM python:3.7.6-slim
+ARG PY_VERSION=3.7
+
+FROM python:${PY_VERSION}-slim
 
 ARG VCS_REF
 ARG BUILD_DATE
@@ -17,14 +19,14 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.title="Jina" \
       org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology"
 
-ENV JINA_BUILD_BASE_DEP="python3-numpy python3-zmq python3-tornado python3-uvloop python3-grpcio python3-lz4" \
-    JINA_BUILD_DEVEL_DEP="gcc libc-dev python3-gevent libmagic1"
+ENV JINA_BUILD_BASE_DEP="python3-grpcio" \
+    JINA_BUILD_DEVEL_DEP="build-essential gcc libc-dev python3-gevent libmagic1"
 
 RUN apt-get update && apt-get install --no-install-recommends -y $JINA_BUILD_BASE_DEP && \
     if [ -n "$INSTALL_DEV" ]; then apt-get install --no-install-recommends -y $JINA_BUILD_DEVEL_DEP; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3.7/dist-packages:/usr/local/lib/python3.7/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages \
+ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python${PY_VERSION}/dist-packages:/usr/local/lib/python${PY_VERSION}/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages \
     JINA_VERSION=$JINA_VERSION \
     JINA_VCS_VERSION=$VCS_REF \
     JINA_BUILD_DATE=$BUILD_DATE \

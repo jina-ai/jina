@@ -4,13 +4,23 @@ import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
-from jina import Document
+from jina import Document, Flow
 from jina.clients.request import _generate, _build_doc
 from jina.enums import DataInputType
 from jina.excepts import BadDocType
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
+
+import sys
+
+@pytest.mark.skipif(sys.version_info < (3, 8, 0), reason='somehow this does not work on Github workflow with Py3.7, '
+                                                         'but Py 3.8 is fine, local Py3.7 is fine')
+def test_on_bad_iterator():
+    # this should not stuck the server as request_generator's error is handled on the client side
+    f = Flow().add()
+    with f:
+        f.index([1, 2, 3])
 
 
 @pytest.mark.parametrize('builder', [lambda x: x.SerializeToString(),
@@ -20,7 +30,7 @@ from jina.types.ndarray.generic import NdArray
 def test_data_type_builder_doc(builder):
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
-    d, t = _build_doc(builder(a), DataInputType.DOCUMENT, override_doc_id=False)
+    d, t = _build_doc(builder(a), DataInputType.DOCUMENT)
     assert d.id == a.id
     assert t == DataInputType.DOCUMENT
 
@@ -29,13 +39,13 @@ def test_data_type_builder_doc_bad():
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
     with pytest.raises(BadDocType):
-        _build_doc(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT, override_doc_id=False)
+        _build_doc(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT)
 
     with pytest.raises(BadDocType):
-        _build_doc(MessageToJson(a) + '🍔', DataInputType.DOCUMENT, override_doc_id=False)
+        _build_doc(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
 
     with pytest.raises(BadDocType):
-        _build_doc({'🍔': '🍔'}, DataInputType.DOCUMENT, override_doc_id=False)
+        _build_doc({'🍔': '🍔'}, DataInputType.DOCUMENT)
 
 
 @pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
@@ -44,20 +54,20 @@ def test_data_type_builder_auto(input_type):
         print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
         del os.environ['JINA_ARRAY_QUANT']
 
-    d, t = _build_doc('123', input_type, override_doc_id=True)
+    d, t = _build_doc('123', input_type)
     assert d.text == '123'
     assert t == DataInputType.CONTENT
 
-    d, t = _build_doc(b'45678', input_type, override_doc_id=True)
+    d, t = _build_doc(b'45678', input_type)
     assert t == DataInputType.CONTENT
     assert d.buffer == b'45678'
 
-    d, t = _build_doc(b'123', input_type, override_doc_id=True)
+    d, t = _build_doc(b'123', input_type)
     assert t == DataInputType.CONTENT
     assert d.buffer == b'123'
 
     c = np.random.random([10, 10])
-    d, t = _build_doc(c, input_type, override_doc_id=True)
+    d, t = _build_doc(c, input_type)
     np.testing.assert_equal(d.blob, c)
     assert t == DataInputType.CONTENT
 

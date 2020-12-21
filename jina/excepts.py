@@ -88,7 +88,7 @@ class BadClientCallback(BadClient):
     """Error in the callback function on the client side"""
 
 
-class BadClientRequestGenerator(BadClient):
+class BadClientInput(BadClient):
     """Error in the request generator function on the client side"""
 
 
@@ -151,10 +151,6 @@ class DryRunException(Exception):
     """Dryrun is not successful on the given flow"""
 
 
-class BadInputFunction(Exception):
-    """Exception when the input function throws an error """
-
-
 class BadDocID(Exception):
     """ Exception when user give a non-hex string as the doc id """
 
@@ -185,6 +181,10 @@ class ImageAlreadyExists(Exception):
 
 class BadFlowYAMLVersion(Exception):
     """ Exception when Flow YAML config specifies a wrong version number"""
+
+
+class LookupyError(Exception):
+    """Base exception class for all exceptions raised by lookupy"""
 
 
 class EventLoopError(Exception):

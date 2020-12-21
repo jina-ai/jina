@@ -47,7 +47,7 @@ def test_multimodal_embedding_parallel(multimodal_documents, mocker):
     response_mock = mocker.Mock(wraps=validate_response)
     with Flow.load_config(os.path.join(cur_dir, 'flow-embedding-multimodal-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_documents,
-                            output_fn=response_mock)
+                            on_done=response_mock)
     response_mock.assert_called()
 
 
@@ -94,6 +94,6 @@ def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker):
 
     with Flow.load_config(os.path.join(cur_dir, 'flow-multimodal-all-types-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_all_types_documents,
-                            output_fn=response_mock)
+                            on_done=response_mock)
 
     response_mock.assert_called()

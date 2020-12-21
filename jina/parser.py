@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import argparse
 import os
 
-
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
@@ -206,6 +205,9 @@ def set_hw_parser(parser=None):
     gp.add_argument('--index-data-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
                     help='the url of index data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--index-labels-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz',
+                    help='the url of index labels data (should be in idx3-ubyte.gz format)')
     gp.add_argument('--index-batch-size', type=int,
                     default=1024,
                     help='the batch size in indexing')
@@ -216,6 +218,9 @@ def set_hw_parser(parser=None):
     gp.add_argument('--query-data-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
                     help='the url of query data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--query-labels-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz',
+                    help='the url of query labels data (should be in idx3-ubyte.gz format)')
     gp.add_argument('--query-batch-size', type=int,
                     default=32,
                     help='the batch size in searching')
@@ -223,7 +228,6 @@ def set_hw_parser(parser=None):
                     help='number of queries to visualize')
     gp.add_argument('--top-k', type=int, default=50,
                     help='top-k results to retrieve and visualize')
-
     return parser
 
 
@@ -579,7 +583,7 @@ def set_client_cli_parser(parser=None):
     gp1.add_argument('--skip-dry-run', action='store_true', default=False,
                      help='skip dry run (connectivity test) before sending every request')
     gp1.add_argument('--continue-on-error', action='store_true', default=False,
-                     help='if to continue when callback function throws an error')
+                     help='if to continue on all requests when callback function throws an error')
     return parser
 
 

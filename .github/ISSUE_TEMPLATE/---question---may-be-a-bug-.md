@@ -1,17 +1,14 @@
 ---
-name: "\U0001F914 Maybe a Bug? I'm not sure"
-about: I met a problem and I don’t know how to solve it, maybe a misunderstanding?
+name: "\U0001F914 Food for thought?"
+about: Question, proposal, suggestion?
 title: ''
-labels: kind/problem
+labels: kind/food-for-thought
 assignees: ''
 
 ---
 
-**Describe your problem**
-<!-- A clear and concise description of what the bug is. -->
-
-**What is your guess?**
-<!-- Do you have a guess where the problem could be? -->
+**Describe your proposal/problem**
+<!-- A clear and concise description of what the proposal is. -->
 
 ---
 

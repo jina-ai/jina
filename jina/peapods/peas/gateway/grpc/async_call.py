@@ -61,7 +61,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                 if is_req_empty and not prefetch_task:
                     self.logger.error('receive an empty stream from the client! '
                                       'please check your client\'s input_fn, '
-                                      'you can use "Client.check_input(input_fn())"')
+                                      'you can use "Client.check_input(input_fn)"')
                     return
 
             while not (zmqlet.msg_sent == zmqlet.msg_recv != 0 and is_req_empty):

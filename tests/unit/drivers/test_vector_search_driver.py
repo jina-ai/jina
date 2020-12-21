@@ -36,7 +36,6 @@ def create_document_to_search():
     #        - chunk: 5 - embedding(5.0)
     # ....
     doc = Document()
-    doc.update_id()
     for c in range(10):
         chunk = Document()
         chunk.id = str(c) * 16

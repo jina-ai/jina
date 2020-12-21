@@ -174,6 +174,6 @@ def test_compound_idx(test_workspace_joint, mocker):
 
     response_mock = mocker.Mock(wrap=validate)
     with Flow().add(uses=str(cur_dir / 'yaml' / 'test-joint.yml')) as g:
-        g.search(random_docs(10, chunks_per_doc=0), output_fn=response_mock)
+        g.search(random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
     response_mock.assert_called()

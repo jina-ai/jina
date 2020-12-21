@@ -1,4 +1,6 @@
-FROM python:3.7.6-slim
+ARG PY_VERSION=3.7
+
+FROM python:${PY_VERSION}-slim
 
 RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev
 
