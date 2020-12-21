@@ -27,8 +27,7 @@ if [[ $1 == "commit" ]]; then
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
   touch .nojekyll
-  git add master  # only comit master/
-  git add ${JINA_VERSION}  # only comit master/
+  git add .
   git commit -m "$2" -a
   git status
   cd -
