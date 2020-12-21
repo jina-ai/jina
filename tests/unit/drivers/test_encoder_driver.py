@@ -61,7 +61,7 @@ def test_encode_driver(batch_size):
     driver = SimpleEncoderDriver(batch_size=batch_size)
     executor = MockEncoder(driver_batch_size=batch_size, total_num_docs=num_docs)
     driver.attach(executor=executor, pea=None)
-    assert len(docs) == 10
+    assert len(docs) == num_docs
     for doc in docs:
         assert doc.embedding is None
     driver._apply_all(docs)
