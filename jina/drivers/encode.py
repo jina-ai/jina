@@ -1,37 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, Callable
-from functools import wraps
+from typing import Optional
 
 from . import BaseExecutableDriver
 from ..types.sets import DocumentSet
-
-
-def encode_driver_batching_doc_set(func: Callable) -> Callable:
-    """
-    Decorator that tries to seamlessly guarantee that `_apply_all` is `EncodeDriver` is processed in batches of the desired
-    size.
-
-    """
-
-    @wraps(func)
-    def arg_wrapper(self, *args, **kwargs):
-        force_flush = True if 'force_flush' in kwargs and kwargs['force_flush'] else False
-        docs = args[0]
-        if not force_flush and \
-                self.cache_set is not None and \
-                self.cache_set.available_capacity > 0:
-            left_docs = self.cache_set.cache(docs)
-            while len(left_docs) > 0:
-                self._apply_cache()
-                left_docs = self.cache_set.cache(left_docs)
-            if self.cache_set.available_capacity == 0:
-                self._apply_cache()
-        else:
-            func(self, *args, **kwargs)
-
-    return arg_wrapper
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
@@ -111,19 +84,30 @@ class EncodeDriver(BaseEncodeDriver):
                 self._apply_all(cached_docs, force_flush=force_flush, **kwargs)
             self.cache_set = EncodeDriver.CacheDocumentSet(capacity=self.batch_size)
 
-    @encode_driver_batching_doc_set
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        contents, docs_pts, bad_docs = docs.all_contents
 
-        if bad_docs:
-            self.logger.warning(f'these bad docs can not be added: {bad_docs} '
-                                f'from level depth {docs_pts[0].granularity}')
+        force_flush = True if 'force_flush' in kwargs and kwargs['force_flush'] else False
+        if not force_flush and \
+                self.cache_set is not None and \
+                self.cache_set.available_capacity > 0:
+            left_docs = self.cache_set.cache(docs)
+            while len(left_docs) > 0:
+                self._apply_cache()
+                left_docs = self.cache_set.cache(left_docs)
+            if self.cache_set.available_capacity == 0:
+                self._apply_cache()
+        else:
+            contents, docs_pts, bad_docs = docs.all_contents
 
-        if docs_pts:
-            embeds = self.exec_fn(contents)
-            if len(docs_pts) != embeds.shape[0]:
-                self.logger.error(
-                    f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
-                    f'and a {embeds.shape} shape embedding, the first dimension must be the same')
-            for doc, embedding in zip(docs_pts, embeds):
-                doc.embedding = embedding
+            if bad_docs:
+                self.logger.warning(f'these bad docs can not be added: {bad_docs} '
+                                    f'from level depth {docs_pts[0].granularity}')
+
+            if docs_pts:
+                embeds = self.exec_fn(contents)
+                if len(docs_pts) != embeds.shape[0]:
+                    self.logger.error(
+                        f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
+                        f'and a {embeds.shape} shape embedding, the first dimension must be the same')
+                for doc, embedding in zip(docs_pts, embeds):
+                    doc.embedding = embedding
