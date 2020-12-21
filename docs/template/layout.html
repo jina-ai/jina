@@ -110,7 +110,7 @@
 </head>
 
 <body class="wy-body-for-nav">
-  <div id="showhide-navbar-btn"></div>
+  <div id="showhide-navbar-btn" onclick="showhide_navbar();"></div>
 
   {% block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -234,11 +234,6 @@
         y.style.marginLeft = "0";
         z.style.left = "0px";
       }
-
-      document.getElementById('showhide-navbar-btn')
-        .addEventListener('click', function (event) {
-            showhide_navbar();
-        });
     }
 
   </script>
