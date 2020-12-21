@@ -92,7 +92,7 @@ notfound_no_urls_prefix = True
 
 apidoc_module_dir = '../jina/'
 apidoc_output_dir = 'api'
-apidoc_excluded_paths = ['tests', 'legacy']
+apidoc_excluded_paths = ['tests', 'legacy', 'hub']
 apidoc_separate_modules = True
 apidoc_extra_args = ['-t', 'template/']
 autodoc_member_order = 'bysource'

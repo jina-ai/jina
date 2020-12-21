@@ -6,7 +6,6 @@ Welcome to Jina!
    :caption: Getting Started
 
    chapters/install/os/index
-   chapters/install/autocomplete
    chapters/helloworld/index
    chapters/101/index
    chapters/flow/index

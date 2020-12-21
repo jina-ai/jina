@@ -277,7 +277,6 @@ body {
 @media screen and (min-width: 1100px) {
     .wy-nav-content-wrap {
         background: white;
-        margin-left: 23rem;
     }
 
     .wy-nav-content {
@@ -314,11 +313,11 @@ a:visited {
 }
 
 a {
-    color: #009999
+    color: #009999;
 }
 
 a:hover {
-    color: #32C8CD
+    color: #32C8CD;
 }
 
 .wy-side-nav-search > a img.logo, .wy-side-nav-search .wy-dropdown > a img.logo {
@@ -369,6 +368,22 @@ a:hover {
 
 }
 
+.wy-menu-vertical li.toctree-l1.current > a:hover {
+    background: #32C8CD;
+}
+
+.wy-menu-vertical li.toctree-l2.current > a:hover {
+    background: #32C8CD;
+}
+
+.wy-menu-vertical li.toctree-l3.current > a:hover {
+    background: #32C8CD;
+}
+
+.wy-menu-vertical li.toctree-l4.current > a:hover {
+    background: #32C8CD;
+}
+
 .wy-menu-vertical li.toctree-l5.current > a {
     border: none;
     background-color: #1E6E73;
@@ -379,28 +394,26 @@ a:hover {
 
 .wy-menu-vertical li.toctree-l1.current li.toctree-l2 > a {
     border: none;
-    background-color: #1E6E73;
     color: white;
-
+    background-color: inherit;
 }
 
 
 .wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a {
     border: none;
-    background-color: #1E6E73;
     color: white;
-
+    background-color: inherit;
 }
 
 .wy-menu-vertical li.toctree-l3.current li.toctree-l4 > a {
     border: none;
-    background-color: #1E6E73;
+    background-color: inherit;
 
 }
 
 .wy-menu-vertical li.toctree-l4.current li.toctree-l5 > a {
     border: none;
-    background-color: #1E6E73;
+    background-color: inherit;
 
 }
 
@@ -431,6 +444,7 @@ a:hover {
 .wy-breadcrumbs {
     font-size: 1.3rem;
     vertical-align: middle;
+    display: flex;
 }
 
 .nav-bar-search {
@@ -452,6 +466,20 @@ a:hover {
     color: white;
 }
 
+.toctree-l2 a:hover {
+    background-color: #32C8CD;
+    color: white;
+}
+
+.toctree-l1 a:hover {
+    background-color: #32C8CD;
+    color: white;
+}
+
+.toctree-l3 a:hover {
+    background-color: #32C8CD;
+    color: white;
+}
 
 input {
     font-size: 100% !important;
@@ -594,6 +622,23 @@ input {
     margin: 1px 0 24px 0;
     border-radius: 5px;
     background: rgba(50, 200, 205, 0.01);
+}
+
+.wy-breadcrumbs li {
+    /* display: inline-block; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wy-breadcrumbs li a {
+    display: inline-block;
+    padding: 5px;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 10px;
 }
 
 /*.wy-dropdown-menu > dd > a:hover {*/
