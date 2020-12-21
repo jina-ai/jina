@@ -15,7 +15,7 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
     """Drivers inherited from this Driver will focus on aggregating scores from `chunks` to its `parents`."""
 
     def __init__(self,
-                 keep_old_matches_as_chunks: bool = False,
+                 keep_source_matches_as_chunks: bool = False,
                  *args,
                  **kwargs):
         """
@@ -77,13 +77,13 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
                     |- matches: {granularity: k}
         Output:
         document: {granularity: k-1}
-            |- chunks: {granularity: k}
-            |    |- matches: {granularity: k}
-            |
-            |- chunks: {granularity: k}
-            |    |- matches: {granularity: k}
-            |
-            |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
+                |- chunks: {granularity: k}
+                |    |- matches: {granularity: k}
+                |
+                |- chunks: {granularity: k}
+                |    |- matches: {granularity: k}
+                |
+                |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
 
         .. note::
             - It traverses on ``chunks`` not on ``matches``. This is because ranker needs context information
@@ -134,15 +134,16 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
                                        docs_scores=docs_scores)
 
 
-class CollectMatches2DocRankDriver(BaseAggregateMatchesRanker):
+class AggregateMatches2DocRankDriver(BaseAggregateMatchesRanker):
     """This Driver is intended to take a `document` with matches at a `given granularity > 0`, clear those matches and substitute
     these matches by the documents at a lower granularity level.
     Input-Output ::
         Input:
-        query document: {granularity: k}
+        document: {granularity: k}
             |- matches: {granularity: k}
+            
         Output:
-        query document: {granularity: k}
+        document: {granularity: k}
             |- matches: {granularity: k-1} (Sorted according to Ranker Executor)
 
     Imagine a case where we are querying a system with text documents chunked by sentences. When we query the system,
