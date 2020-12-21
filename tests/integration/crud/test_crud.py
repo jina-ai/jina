@@ -33,21 +33,29 @@ def random_docs(num_docs, embed_dim=10, jitter=1, has_content=True):
 def test_delete(config, mocker):
     NUMBER_OF_SEARCHES = 3
 
-    def validate_results(resp):
-        assert len(resp.search.docs) == NUMBER_OF_SEARCHES
-        for doc in resp.search.docs:
-            assert len(doc.matches) == 0
+    def validate_result_factory(num_matches):
+        def validate_results(resp):
+            assert len(resp.search.docs) == NUMBER_OF_SEARCHES
+            for doc in resp.search.docs:
+                assert len(doc.matches) == num_matches
+        return validate_results
 
-    response_mock = mocker.Mock(wraps=validate_results)
+
     docs_before = list(random_docs(10))
     docs_deleted = list(random_docs(10, has_content=False))
 
-    for method, docs in [
-        ['index', docs_before],
-        ['delete', docs_deleted]
-    ]:
-        with Flow.load_config('flow.yml') as index_flow:
-            getattr(index_flow, method)(input_fn=(d for d in docs))
+    with Flow.load_config('flow.yml') as index_flow:
+        index_flow.index(input_fn=docs_before)
+
+    response_mock = mocker.Mock(wraps=validate_result_factory(9))
+    with Flow.load_config('flow.yml') as search_flow:
+        search_flow.search(input_fn=random_docs(NUMBER_OF_SEARCHES),
+                           output_fn=response_mock)
+
+    with Flow.load_config('flow.yml') as index_flow:
+        index_flow.delete(input_fn=docs_deleted)
+
+    response_mock = mocker.Mock(wraps=validate_result_factory(0))
     with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(NUMBER_OF_SEARCHES),
                            output_fn=response_mock)
@@ -59,25 +67,36 @@ def test_update(config, mocker):
     docs_before = list(random_docs(10))
     docs_updated = list(random_docs(10))
 
-    def validate_results(resp):
-        print('start validation')
-        assert len(resp.search.docs) == NUMBER_OF_SEARCHES
-        hash_set_before = {hash(str(d.embedding)) for d in docs_before}
-        hash_set_updated = {hash(str(d.embedding)) for d in docs_updated}
-        for doc in resp.search.docs:
-            assert len(doc.matches) == 9
-            for match in doc.matches:
-                assert hash(str(match.embedding)) not in hash_set_before
-                assert hash(str(match.embedding)) in hash_set_updated
+    def validate_result_factory(has_changed):
+        def validate_results(resp):
+            print('start validation')
+            assert len(resp.search.docs) == NUMBER_OF_SEARCHES
+            hash_set_before = {hash(str(d.embedding)) for d in docs_before}
+            hash_set_updated = {hash(str(d.embedding)) for d in docs_updated}
+            for doc in resp.search.docs:
+                assert len(doc.matches) == 9
+                for match in doc.matches:
+                    if has_changed:
+                        assert hash(str(match.embedding)) not in hash_set_before
+                        assert hash(str(match.embedding)) in hash_set_updated
+                    else:
+                        assert hash(str(match.embedding)) in hash_set_before
+                        assert hash(str(match.embedding)) not in hash_set_updated
+        return validate_results
 
-    response_mock = mocker.Mock(wraps=validate_results)
-    for method, docs in [
-        ['index', docs_before],
-        ['update', docs_updated]
-    ]:
-        with Flow.load_config('flow.yml') as index_flow:
-            getattr(index_flow, method)(input_fn=(d for d in docs))
 
+    with Flow.load_config('flow.yml') as index_flow:
+        index_flow.index(input_fn=docs_before)
+    response_mock = mocker.Mock(wraps=validate_result_factory(has_changed=False))
+
+    with Flow.load_config('flow.yml') as search_flow:
+        search_flow.search(input_fn=random_docs(NUMBER_OF_SEARCHES),
+                           output_fn=response_mock)
+
+    with Flow.load_config('flow.yml') as index_flow:
+        index_flow.update(input_fn=docs_updated)
+
+    response_mock = mocker.Mock(wraps=validate_result_factory(has_changed=True))
     with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(NUMBER_OF_SEARCHES),
                            output_fn=response_mock)
