@@ -101,8 +101,7 @@ class EncodeDriver(BaseEncodeDriver):
             self.cache_set = EncodeDriver.CacheDocumentSet(capacity=self.batch_size)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        if self.cache_set is not None and \
-                self.cache_set.available_capacity > 0:
+        if self.cache_set is not None:
             left_docs = self.cache_set.cache(docs)
             while len(left_docs) > 0:
                 self._empty_cache()
