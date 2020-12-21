@@ -1,5 +1,5 @@
 from pathlib import Path
-from ruamel.yaml import YAML
+from ..jaml import JAML
 
 from .flow_runner import MultiFlowRunner
 from jina.helper import colored
@@ -78,8 +78,7 @@ class OptunaOptimizer:
 
     def _export_params(self, study):
         self.best_config_filepath.parent.mkdir(exist_ok=True)
-        yaml = YAML(typ="rt")
-        yaml.dump(study.best_trial.params, open(self.best_config_filepath, "w"))
+        JAML.dump(study.best_trial.params, open(self.best_config_filepath, "w"))
         logger.info(colored(f"Number of finished trials: {len(study.trials)}", "green"))
         logger.info(colored(f"Best trial: {study.best_trial.params}", "green"))
         logger.info(colored(f"Time to finish: {study.best_trial.duration}", "green"))
