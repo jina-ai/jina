@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 from . import BaseExecutableDriver
+from ..stack_print import p
 
 if False:
     from ..types.sets import DocumentSet
@@ -22,12 +23,12 @@ class VectorIndexDriver(BaseIndexDriver):
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         embed_vecs, docs_pts, bad_docs = docs.all_embeddings
-
-        if bad_docs:
+        if bad_docs and self._method_name != 'delete':
             self.pea.logger.warning(f'these bad docs can not be added: {bad_docs}')
-
         if docs_pts:
             self.exec_fn(np.array([int(doc.id) for doc in docs_pts]), np.stack(embed_vecs))
+        if self._method_name == 'delete' and bad_docs:
+            self.exec_fn(np.array([int(doc.id) for doc in bad_docs]), None)
 
 
 class KVIndexDriver(BaseIndexDriver):
