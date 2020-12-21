@@ -82,7 +82,7 @@ def document_generator(num_docs, num_chunks, num_chunks_chunks):
         yield doc
 
 
-@pytest.mark.parametrize('request_batch_size', [100, 200, 500])
+@pytest.mark.parametrize('request_batch_size', [5, 100, 500])
 @pytest.mark.parametrize('driver_batch_size', [8, 16, 64])
 def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
     num_docs = 1315
@@ -122,7 +122,7 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
                  on_error=fail_if_error)
 
 
-@pytest.mark.parametrize('request_batch_size', [100, 200, 500])
+@pytest.mark.parametrize('request_batch_size', [5, 100, 500])
 @pytest.mark.parametrize('driver_batch_size', [8, 64, 128])
 @pytest.mark.parametrize('num_chunks', [2, 8])
 @pytest.mark.parametrize('num_chunks_chunks', [2, 8])
