@@ -1,6 +1,7 @@
 !NumpyIndexer
 with:
   index_filename: vec.gz
+  metric: euclidean
 metas:
   workspace: $JINA_TEST_1229_WORKSPACE
   name: vec_idx
