@@ -1,6 +1,10 @@
 from pathlib import Path
+<<<<<<< HEAD
 from collections import defaultdict
 from ruamel.yaml import YAML
+=======
+from ..jaml import JAML
+>>>>>>> 484a2f06853692595b9382d4f33ca63cc08897df
 
 from .flow_runner import MultiFlowRunner
 from jina.helper import colored
@@ -10,13 +14,22 @@ from .parameters import load_optimization_parameters
 
 class EvaluationCallback:
     def __init__(self, eval_name=None):
+<<<<<<< HEAD
         self.op_name = eval_name
         self.evaluation_values = defaultdict(float)
         self.n_docs = 0
+=======
+        self.eval_name = eval_name
+        self.evaluation_values = {}
+        self.n_docs = 0
+
+    def get_fresh_callback(self):
+        return EvaluationCallback(self.eval_name)
+>>>>>>> 484a2f06853692595b9382d4f33ca63cc08897df
 
     def get_mean_evaluation(self):
-        if self.op_name:
-            return self.evaluation_values[self.op_name] / self.n_docs
+        if self.eval_name:
+            return self.evaluation_values[self.eval_name] / self.n_docs
         return {
             metric: val / self.n_docs for metric, val in self.evaluation_values.items()
         }
@@ -46,16 +59,18 @@ class OptimizationResults:
 
 class OptunaOptimizer:
     def __init__(
-            self,
-            flow_runner,
-            parameter_yaml,
-            best_config_filepath="config/best_config.yml",
-            workspace_env="JINA_WORKSPACE",
+        self,
+        multi_flow,
+        parameter_yaml,
+        best_config_filepath="config/best_config.yml",
+        workspace_env="JINA_WORKSPACE",
+        eval_flow_index = -1,
     ):
-        self.flow_runner = flow_runner
+        self.multi_flow = multi_flow
         self.parameter_yaml = parameter_yaml
         self.best_config_filepath = Path(best_config_filepath)
         self.workspace_env = workspace_env.lstrip("$")
+        self.eval_flow_index = eval_flow_index
 
     def _trial_parameter_sampler(self, trial):
         """https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial"""
@@ -75,15 +90,15 @@ class OptunaOptimizer:
         return trial_parameters
 
     def _objective(self, trial):
+        self.multi_flow.flows[self.eval_flow_index].callback = self.multi_flow.flows[self.eval_flow_index].callback.get_fresh_callback()
         trial_parameters = self._trial_parameter_sampler(trial)
-
-        self.flow_runner.run(trial_parameters)
-
-        evaluation_values = self.flow_runner.callback.get_mean_evaluation()
+        self.multi_flow.run(trial_parameters, workspace=trial.workspace)
+        evaluation_values = self.multi_flow.flows[self.eval_flow_index].callback.get_mean_evaluation()
         op_name = list(evaluation_values)[0]
         mean_eval = evaluation_values[op_name]
         logger.info(colored(f"Avg {op_name}: {mean_eval}", "green"))
         return mean_eval
+
 
     def optimize_flow(
             self, n_trials, sampler="TPESampler", direction="maximize", seed=42

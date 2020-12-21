@@ -1,19 +1,27 @@
 from typing import Optional, Sequence, Union
 
 import inspect
-import ruamel.yaml
 
-from jina.helper import yaml
+from ..jaml import JAML
 
 
 class OptimizationParameter:
     def __init__(
+<<<<<<< HEAD
             self,
             parameter_name: str,
             executor_name: str = None,
             prefix: str = "JINA",
             env_var: str = None,
             method: str = None
+=======
+        self,
+        parameter_name: str,
+        executor_name: Optional[str] = None,
+        prefix: str = "JINA",
+        env_var: Optional[str] = None,
+        method:Optional[str] = None
+>>>>>>> 484a2f06853692595b9382d4f33ca63cc08897df
     ):
         if env_var is None:
             self.env_var = f"{prefix}_{executor_name}_{parameter_name}".upper()
@@ -23,7 +31,7 @@ class OptimizationParameter:
 
     @classmethod
     def to_yaml(cls, representer, data):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         tmp = data._dump_instance_to_yaml(data)
         representer.sort_base_mapping_type_on_output = False
         return representer.represent_mapping("!" + cls.__name__, tmp)
@@ -40,14 +48,12 @@ class OptimizationParameter:
 
     @classmethod
     def from_yaml(cls, constructor, node):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         return cls._get_instance_from_yaml(constructor, node)
 
     @classmethod
     def _get_instance_from_yaml(cls, constructor, node):
-        data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
-            constructor, node, deep=True
-        )
+        data = constructor.construct_mapping(node, deep=True)
         return cls(**data)
 
 
@@ -77,8 +83,12 @@ class IntegerParameter(OptimizationParameter):
             "log": self.log,
         }
 
+<<<<<<< HEAD
 
 yaml.register_class(IntegerParameter)
+=======
+JAML.register(IntegerParameter)
+>>>>>>> 484a2f06853692595b9382d4f33ca63cc08897df
 
 
 class FloatParameter(OptimizationParameter):
@@ -107,8 +117,7 @@ class FloatParameter(OptimizationParameter):
             "log": self.log,
         }
 
-
-yaml.register_class(FloatParameter)
+JAML.register(FloatParameter)
 
 
 class UniformParameter(OptimizationParameter):
@@ -125,9 +134,7 @@ class UniformParameter(OptimizationParameter):
             "high": self.high,
         }
 
-
-yaml.register_class(UniformParameter)
-
+JAML.register(UniformParameter)
 
 class LogUniformParameter(OptimizationParameter):
     def __init__(self, low: float, high: float, *args, **kwargs):
@@ -143,9 +150,7 @@ class LogUniformParameter(OptimizationParameter):
             "high": self.high,
         }
 
-
-yaml.register_class(LogUniformParameter)
-
+JAML.register(LogUniformParameter)
 
 class CategoricalParameter(OptimizationParameter):
     def __init__(
@@ -158,8 +163,7 @@ class CategoricalParameter(OptimizationParameter):
     def to_optuna_args(self):
         return {"name": self.env_var, "choices": self.choices}
 
-
-yaml.register_class(CategoricalParameter)
+JAML.register(CategoricalParameter)
 
 
 class DiscreteUniformParameter(OptimizationParameter):
@@ -178,16 +182,15 @@ class DiscreteUniformParameter(OptimizationParameter):
             "q": self.q,
         }
 
-
-yaml.register_class(DiscreteUniformParameter)
+JAML.register(DiscreteUniformParameter)
 
 
 def load_optimization_parameters(filename):
-    yaml.register_class(IntegerParameter)
-    yaml.register_class(FloatParameter)
-    yaml.register_class(UniformParameter)
-    yaml.register_class(LogUniformParameter)
-    yaml.register_class(CategoricalParameter)
-    yaml.register_class(DiscreteUniformParameter)
+    JAML.register(IntegerParameter)
+    JAML.register(FloatParameter)
+    JAML.register(UniformParameter)
+    JAML.register(LogUniformParameter)
+    JAML.register(CategoricalParameter)
+    JAML.register(DiscreteUniformParameter)
     with open(filename, encoding="utf8") as fp:
-        return yaml.load(fp)
+        return JAML.load(fp)

@@ -1,10 +1,10 @@
 from pathlib import Path
 import shutil
-from ruamel.yaml import YAML
 
-from jina.flow import Flow
-from jina.helper import colored
-from jina.logging import default_logger as logger
+from ..flow import Flow
+from ..helper import colored
+from ..jaml import JAML
+from ..logging import default_logger as logger
 
 
 class FlowRunner:
@@ -38,13 +38,12 @@ class FlowRunner:
         flow_workspace = trial_dir / "flows"
         flow_workspace.mkdir(exist_ok=True)
 
-        yaml = YAML(typ="rt")
-        parameters = yaml.load(self.flow_yaml)
+        parameters = JAML.load(self.flow_yaml)
         for env in parameters["env"].keys():
             if env in trial_parameters:
                 parameters["env"][env] = trial_parameters[env]
         trial_flow_file_path = flow_workspace / self.flow_yaml.name
-        yaml.dump(parameters, open(trial_flow_file_path, "w"))
+        JAML.dump(parameters, open(trial_flow_file_path, "w"))
         return trial_flow_file_path
 
     def run(self, trial_parameters=None, workspace="workspace"):
@@ -78,10 +77,9 @@ class FlowRunner:
 
 
 class MultiFlowRunner:
-    def __init__(self, flows, workspace="workspace"):
+    def __init__(self, *flows):
         self.flows = flows
-        self.workspace = workspace
 
-    def run(self, trial_parameters):
+    def run(self, trial_parameters, workspace="workspace"):
         for flow in self.flows:
-            flow.run(trial_parameters, self.workspace)
+            flow.run(trial_parameters, workspace)
