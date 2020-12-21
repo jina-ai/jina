@@ -29,8 +29,8 @@ for i in {1..100};
     echo "Indexed document has the text: ${TEXT_INDEXED}"
   done
 
-curl --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
-curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+curl -s --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+curl -s --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
 #Query part
 FLOW_ID=$(curl -s --request PUT "http://localhost:8000/v1/flow/yaml" \
