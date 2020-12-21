@@ -18,7 +18,7 @@ def test_named_score():
 @pytest.mark.parametrize('copy', [True, False])
 def test_named_score_from_proto(copy):
     from jina.proto.jina_pb2 import NamedScoreProto
-    proto = NamedScoreProto
+    proto = NamedScoreProto()
     proto.op_name = 'operation'
     proto.value = 10.0
     proto.ref_id = '10' * 16

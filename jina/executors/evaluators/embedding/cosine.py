@@ -13,9 +13,7 @@ class CosineEvaluator(BaseEmbeddingEvaluator):
                   {||u||_2 ||v||_2}.
     """
 
-    @property
-    def metric(self):
-        return 'CosineDistance'
+    metric = 'CosineDistance'
 
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
