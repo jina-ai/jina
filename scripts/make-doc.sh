@@ -21,7 +21,7 @@ if [[ $1 == "commit" ]]; then
   cd -
   cd ${HTML_DIR}
   rsync -avr . master  # sync to master/
-  rsync -avr --exclude=master . ${JINA_VERSION}  # sync to master/
+  rsync -avr --exclude=master . ${JINA_VERSION}  # sync to version/
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
@@ -36,7 +36,8 @@ elif [[ $1 == "release" ]]; then
   cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
-  rsync -avr . ${JINA_VERSION}  # sync to versions
+  rsync -avr . latest  # sync to latest/
+  rsync -avr --exclude=latest . ${JINA_VERSION}  # sync to versions
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
