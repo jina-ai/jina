@@ -6,6 +6,17 @@ import pytest
 from jina import Flow
 from jina.excepts import BadFlowYAMLVersion
 from jina.flow.yaml_parser import get_supported_versions
+from jina.jaml import JAML
+
+cur_dir = Path(__file__).parent
+
+
+def test_load_flow_from_empty_yaml():
+    with open(cur_dir / 'yaml' / 'dummy-flow.yml') as fp:
+        JAML.load(fp)
+
+    with open(cur_dir / 'yaml' / 'dummy-flow.yml') as fp:
+        Flow.load_config(fp)
 
 
 def test_support_versions():
