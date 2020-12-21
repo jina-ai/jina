@@ -9,17 +9,16 @@ from .parameters import load_optimization_parameters
 
 class EvaluationCallback:
     def __init__(self, eval_name=None):
-        self.op_name = eval_name
+        self.eval_name = eval_name
         self.evaluation_values = {}
         self.n_docs = 0
 
-    def flush(self):
-        self.evaluation_values = {}
-        self.n_docs = 0
+    def get_fresh_callback(self):
+        return EvaluationCallback(self.eval_name)
 
     def get_mean_evaluation(self):
-        if self.op_name:
-            return self.evaluation_values[self.op_name] / self.n_docs
+        if self.eval_name:
+            return self.evaluation_values[self.eval_name] / self.n_docs
         return {
             metric: val / self.n_docs for metric, val in self.evaluation_values.items()
         }
@@ -38,17 +37,17 @@ class EvaluationCallback:
 class OptunaOptimizer:
     def __init__(
         self,
-        index_flow_runner,
-        eval_flow_runner,
+        multi_flow,
         parameter_yaml,
         best_config_filepath="config/best_config.yml",
         workspace_env="JINA_WORKSPACE",
+        eval_flow_index = -1,
     ):
-        self.index_flow_runner = index_flow_runner
-        self.eval_flow_runner = eval_flow_runner
+        self.multi_flow = multi_flow
         self.parameter_yaml = parameter_yaml
         self.best_config_filepath = Path(best_config_filepath)
         self.workspace_env = workspace_env.lstrip("$")
+        self.eval_flow_index = eval_flow_index
 
     def _trial_parameter_sampler(self, trial):
         """https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial"""
@@ -68,14 +67,10 @@ class OptunaOptimizer:
         return trial_parameters
 
     def _objective(self, trial):
-        self.eval_flow_runner.callback.flush()
+        self.multi_flow.flows[self.eval_flow_index].callback = self.multi_flow.flows[self.eval_flow_index].callback.get_fresh_callback()
         trial_parameters = self._trial_parameter_sampler(trial)
-
-        MultiFlowRunner(
-            [self.index_flow_runner, self.eval_flow_runner], workspace=trial.workspace
-        ).run(trial_parameters)
-
-        evaluation_values = self.eval_flow_runner.callback.get_mean_evaluation()
+        self.multi_flow.run(trial_parameters, workspace=trial.workspace)
+        evaluation_values = self.multi_flow.flows[self.eval_flow_index].callback.get_mean_evaluation()
         op_name = list(evaluation_values)[0]
         mean_eval = evaluation_values[op_name]
         logger.info(colored(f"Avg {op_name}: {mean_eval}", "green"))

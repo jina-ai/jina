@@ -2,7 +2,7 @@ from fashion.data import get_data
 from fashion.evaluation import index_document_generator, evaluation_document_generator
 
 from jina.optimizers import OptunaOptimizer, EvaluationCallback
-from jina.optimizers.flow_runner import FlowRunner
+from jina.optimizers.flow_runner import FlowRunner, MultiFlowRunner
 
 DATA_DIRECTORY = "data"
 
@@ -28,9 +28,10 @@ def main():
         callback=EvaluationCallback(),
     )
 
+    multi_flow = MultiFlowRunner(index_flow_runner, eval_flow_runner)
+
     opt = OptunaOptimizer(
-        index_flow_runner,
-        eval_flow_runner,
+        multi_flow,
         "flows/parameter.yml",
         best_config_filepath="config/best_config.yml",
         workspace_env="JINA_WORKSPACE",

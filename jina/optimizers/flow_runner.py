@@ -79,10 +79,9 @@ class FlowRunner:
 
 
 class MultiFlowRunner:
-    def __init__(self, flows, workspace="workspace"):
+    def __init__(self, *flows):
         self.flows = flows
-        self.workspace = workspace
 
-    def run(self, trial_parameters):
+    def run(self, trial_parameters, workspace="workspace"):
         for flow in self.flows:
-            flow.run(trial_parameters, self.workspace)
+            flow.run(trial_parameters, workspace)
