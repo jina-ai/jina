@@ -1,14 +1,9 @@
-!MyEvaluator
-with:
-  eval_at: 1
+!DummyTextEvaluator
 metas:
-  name: evaluation
-  py_modules: evaluate.py
+  py_modules: 'dummy_evaluate.py'
 requests:
   on:
-    [ SearchRequest ]:
-      - !RankEvaluateDriver
+    SearchRequest:
+      - !TextEvaluateDriver
         with:
-          field: tags__label_id
-          executor: precision
           traversal_paths: [ 'r' ]
