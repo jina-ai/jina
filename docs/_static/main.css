@@ -385,10 +385,10 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
 }
 
 .wy-breadcrumbs {
-    flex-basis: 500px;
     font-size: 1.3rem;
     vertical-align: middle;
 }
