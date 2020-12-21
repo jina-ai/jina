@@ -19,5 +19,5 @@ pods:
     port_expose: 8000
   slice:
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
-    uses: '- !SliceQL | {start: 0, end: 10}'
+    uses: slice.yml
     host: $JINA_INDEXER_HOST

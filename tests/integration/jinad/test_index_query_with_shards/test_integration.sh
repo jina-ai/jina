@@ -16,6 +16,7 @@ FLOW_ID=$(curl -s --request PUT "http://localhost:8000/v1/flow/yaml" \
     -H  "Content-Type: multipart/form-data" \
     -F "uses_files=@tests/integration/jinad/test_index_query_with_shards/pods/index.yml" \
     -F "uses_files=@tests/integration/jinad/test_index_query_with_shards/pods/encode.yml" \
+    -F "uses_files=@tests/integration/jinad/test_index_query_with_shards/pods/slice.yml" \
     -F "pymodules_files=@tests/integration/jinad/test_index_query_with_shards/pods/dummy-encoder.py" \
     -F "yamlspec=@tests/integration/jinad/test_index_query_with_shards/flow.yml"\
     | jq -r .flow_id)
