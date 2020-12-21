@@ -3,15 +3,53 @@ from typing import Optional
 
 from ...excepts import BadNamedScoreType
 from ...proto import jina_pb2
+from ...helper import typename
 
 
 __all__ = ['NamedScore']
 
 
 class NamedScore:
+    """
+     :class:`NamedScore` is one of the **primitive data type** in Jina.
+
+     It offers a Pythonic interface to allow users access and manipulate
+     :class:`jina.jina_pb2.NamedScoreProto` object without working with Protobuf itself.
+
+     To create a :class:`NamedScore` object, simply:
+
+         .. highlight:: python
+         .. code-block:: python
+
+             from jina.types.score import NamedScore
+             score = NamedScore()
+             score.value = 10.0
+
+    :class:`NamedScore` can be built from ``jina_pb2.NamedScoreProto`` (as a weak reference or a deep copy)
+    or from a set of `attributes` from ``jina_pb2.NamedScoreProto`` passed to the constructor.
+         .. highlight:: python
+         .. code-block:: python
+
+             from jina.types.score import NamedScore
+             from jina_pb2 import NamedScoreProto
+             score = NamedScore(value=10.0, op_name='ranker', description='score computed by ranker')
+
+             score_proto = NamedScoreProto()
+             score_proto.value = 10.0
+             score = NamedScore(score_proto)
+
+     """
 
     def __init__(self, score: Optional[jina_pb2.NamedScoreProto] = None,
                  copy: bool = False, **kwargs):
+        """
+
+        :param score: the score to construct from, depending on the ``copy``,
+                it builds a view or a copy from it.
+        :param copy: when ``score`` is given as a :class:`NamedScoreProto` object, build a
+                view (i.e. weak reference) from it or a deep copy from it.
+        :param kwargs: other parameters to be set
+        """
         self._score = jina_pb2.NamedScoreProto()
         try:
             if isinstance(score, jina_pb2.NamedScoreProto):
@@ -19,6 +57,9 @@ class NamedScore:
                     self._score.CopyFrom(score)
                 else:
                     self._score = score
+            elif score is not None:
+                # note ``None`` is not considered as a bad type
+                raise ValueError(f'{typename(score)} is not recognizable')
         except Exception as ex:
             raise BadNamedScoreType(f'fail to construct a NamedScore from {score}') from ex
 
