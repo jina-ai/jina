@@ -9,6 +9,41 @@
     src: url(OpenSans-Regular.ttf);
 }
 
+.devsite-footer-linkboxes-list {
+    border-bottom: 1px solid #dadce0;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.devsite-footer-linkbox {
+    -webkit-box-flex: 1;
+    -webkit-flex-grow: 1;
+    -moz-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+}
+
+.devsite-footer-linkboxes .devsite-footer-linkbox-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.devsite-footer-linkboxes .devsite-footer-linkbox-link {
+    display: block;
+    padding: 8px 0;
+}
+
+
+.devsite-footer-linkboxes .devsite-footer-linkbox-link:hover {
+    text-decoration: underline;
+}
+
 .rst-content dl:not(.docutils) {
     margin-bottom: 3.5em;
 }
