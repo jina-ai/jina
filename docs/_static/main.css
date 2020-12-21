@@ -41,8 +41,9 @@
 
 
 .devsite-footer-linkboxes .devsite-footer-linkbox-link:hover {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    text-decoration: underline;
 }
+
 .rst-content dl:not(.docutils) {
     margin-bottom: 3.5em;
 }
