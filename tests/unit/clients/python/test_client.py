@@ -4,12 +4,13 @@ import pytest
 import requests
 
 from jina.clients import Client
-from jina.clients.sugary_io import input_files
-from jina.excepts import BadInputFunction
+from jina.clients.sugary_io import _input_files
+from jina.excepts import BadClientInput
 from jina.flow import Flow
 from jina.helper import random_port
 from jina.parser import set_gateway_parser
-from jina.peapods.peas.gateway.rest import RESTGatewayPea
+from jina.peapods.runtimes.local import LocalRuntime
+from jina.peapods.peas.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import DocumentProto
 
 
@@ -40,7 +41,7 @@ def test_check_input_success(input_fn):
 
 @pytest.mark.parametrize('input_fn', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])])
 def test_check_input_fail(input_fn):
-    with pytest.raises(BadInputFunction):
+    with pytest.raises(BadClientInput):
         Client.check_input(input_fn)
 
 
@@ -53,7 +54,7 @@ def test_check_input_fail(input_fn):
 )
 def test_gateway_ready(port_expose, route, status_code):
     p = set_gateway_parser().parse_args(['--port-expose', str(port_expose)])
-    with RESTGatewayPea(p):
+    with LocalRuntime(p, pea_cls=RESTGatewayPea):
         time.sleep(0.5)
         a = requests.get(f'http://0.0.0.0:{p.port_expose}{route}')
         assert a.status_code == status_code
@@ -83,4 +84,4 @@ def test_mime_type():
             assert d.mime_type == 'text/x-python'
 
     with f:
-        f.index(input_files('*.py'), validate_mime_type)
+        f.index(_input_files('*.py'), validate_mime_type)

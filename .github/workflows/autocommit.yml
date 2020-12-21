@@ -73,7 +73,7 @@ jobs:
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: ''
           TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md'
-          CHECK_ONLY_DEFAULT_BRANCH: true  ## If you want not to check existing PRs
+          CHECK_ONLY_DEFAULT_BRANCH: true
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}

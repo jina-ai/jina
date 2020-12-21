@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 
 from jina.docker.hubio import HubIO
-from jina.helper import yaml
+from jina.excepts import ImageAlreadyExists
+from jina.jaml import JAML
 from jina.parser import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
 
 cur_dir = Path(__file__).parent
@@ -42,7 +43,7 @@ def test_hub_build_push():
     summary = HubIO(args).build()
 
     with open(cur_dir / 'hub-mwu' / 'manifest.yml') as fp:
-        manifest = yaml.load(fp)
+        manifest = JAML.load(fp)
 
     assert summary['is_build_success']
     assert manifest['version'] == summary['version']
@@ -65,12 +66,13 @@ def test_hub_build_push():
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
 
+@pytest.mark.skip(reason='Non reproducible error and super flaky in github. Please repair it.')
 def test_hub_build_push_push_again():
     args = set_hub_build_parser().parse_args([str(cur_dir / 'hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
 
     with open(cur_dir / 'hub-mwu' / 'manifest.yml') as fp:
-        manifest = yaml.load(fp)
+        manifest = JAML.load(fp)
 
     assert summary['is_build_success']
     assert manifest['version'] == summary['version']
@@ -92,7 +94,7 @@ def test_hub_build_push_push_again():
     assert len(manifests) >= 1
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
-    with pytest.raises(Exception):
+    with pytest.raises(ImageAlreadyExists):
         # try and push same version again should fail with `--no-overwrite`
         args = set_hub_build_parser().parse_args([str(cur_dir / 'hub-mwu'), '--push', '--host-info', '--no-overwrite'])
         HubIO(args).build()

@@ -1,0 +1,10 @@
+!BaseExecutor
+with: {}
+metas:
+  name: merge
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest]:
+      - !CollectEvaluationDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}

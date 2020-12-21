@@ -20,7 +20,7 @@ scipy>=1.4.1:               index, numeric, cicd
 flask:                      devel, cicd, http, sse
 flask_cors:                 devel, cicd, http, sse
 fastapi:                    devel, cicd, http
-uvicorn:                    devel, cicd, http
+uvicorn>=0.12.1:            devel, cicd, http
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, test
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, test
@@ -50,8 +50,8 @@ uvloop:                     devel, cicd, perf
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
-grpcio:                     core
-ruamel.yaml>=0.15.89:       core
+grpcio>=1.33.1:             core
+pyyaml>=5.3.1:              core
 tornado>=5.1.0:             core
 cookiecutter:               hub, devel, cicd
 pytest:                     test

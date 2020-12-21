@@ -51,7 +51,7 @@ class NetworkChecker:
     """Check if a BasePod is running or not """
 
     def __init__(self, args: 'argparse.Namespace'):
-        from .peapods.peas import send_ctrl_message
+        from .peapods.zmq import send_ctrl_message
         from .logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time

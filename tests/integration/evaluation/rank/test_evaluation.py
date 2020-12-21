@@ -140,7 +140,7 @@ def test_evaluation(tmpdir, mocker):
     with Flow.load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs,
-            output_fn=response_mock,
+            on_done=response_mock,
             callback_on='body',
             top_k=2
         )

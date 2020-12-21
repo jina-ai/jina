@@ -12,14 +12,15 @@
 
 We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`.
 
-## Version Explained
+## Docker Image Tag Explained
 
 | Tag | Description |
 | --- | --- |
-| `latest` | the last Friday release, contains the bare minimum of to run Jina framework. |
-| `x.y.z` | (previous) Friday release. |
+| `latest` | the last Sunday release, contains the bare minimum of to run Jina framework. |
+| `x.y.z` | (previous) Sunday release. |
 | `devel` | the development version corresponds to the latest master, it extends `latest` by adding required packages for [Dashboard](https://github.com/jina-ai/dashboard). |
 | `x.y.z-devel` | (previous) `devel` version of `x.y.z` |
+| `x.y` | shortcut alias to the last `x.y.z` release |
 
 ### Which Version to Use?
 
@@ -46,9 +47,9 @@ Note, commits started with `chore` are exceptions and will not trigger the event
 - `chore(docs): update TOC`
 - `chore(version): bumping master version`
 
-## Friday Release
+## Sunday Auto Release
 
-On Friday release, it will:
+On every Sunday 23pm, a patch release is scheduled:
 
 - tag the master as `vx.y.z` and push to the repo;
 - create a new tag `vx.y.z` in [jina-ai/docs](https://github.com/jina-ai/docs);
@@ -60,4 +61,4 @@ The current master version should always be one version ahead of `git tag -l | s
 
 ## Nightly Release
 
-Every midnight at 0:00, the docker image tagged with `x.y.z-devel` will be rebuilt on all platforms, include: linux/amd64, linux/arm64, linux/ppc64le, linux/s390x, linux/386, linux/arm/v7, linux/arm/v6.
+Every midnight at 0:00, the docker image tagged with `x.y.z-devel` will be rebuilt on all platforms, include: linux/amd64, linux/arm64, linux/ppc64le, linux/386, linux/arm/v7, linux/arm/v6.

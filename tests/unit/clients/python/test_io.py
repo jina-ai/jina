@@ -4,8 +4,9 @@ import numpy as np
 import pytest
 
 from jina.clients import Client
-from jina.clients.sugary_io import input_files, input_lines, input_numpy
-from jina.excepts import BadInputFunction
+from jina.clients.sugary_io import _input_files, _input_lines, _input_ndarray
+from jina.enums import DataInputType
+from jina.excepts import BadClientInput
 
 
 @pytest.fixture(scope='function')
@@ -17,7 +18,7 @@ def filepath(tmpdir):
 
 
 def test_input_lines_with_filepath(filepath):
-    result = list(input_lines(filepath=filepath, size=2))
+    result = list(_input_lines(filepath=filepath, size=2))
     assert len(result) == 2
     assert result[0] == "1\n"
     assert result[1] == "2\n"
@@ -25,7 +26,7 @@ def test_input_lines_with_filepath(filepath):
 
 def test_input_lines_with_lines():
     lines = ["1", "2", "3"]
-    result = list(input_lines(lines=lines, size=2))
+    result = list(_input_lines(lines=lines, size=2))
     assert len(result) == 2
     assert result[0] == "1"
     assert result[1] == "2"
@@ -33,7 +34,7 @@ def test_input_lines_with_lines():
 
 def test_input_lines_with_empty_filepath_and_lines():
     with pytest.raises(ValueError):
-        lines = input_lines(lines=None, filepath=None)
+        lines = _input_lines(lines=None, filepath=None)
         for _ in lines:
             pass
 
@@ -50,21 +51,21 @@ def test_input_lines_with_empty_filepath_and_lines():
 )
 def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
     Client.check_input(
-        input_files(
+        _input_files(
             patterns=patterns,
             recursive=recursive,
             size=size,
             sampling_rate=sampling_rate,
             read_mode=read_mode
-        )
+        ), data_type=DataInputType.CONTENT
     )
 
 
 def test_input_files_with_invalid_read_mode():
-    with pytest.raises(BadInputFunction):
-        Client.check_input(input_files(patterns='*.*', read_mode='invalid'))
+    with pytest.raises(BadClientInput):
+        Client.check_input(_input_files(patterns='*.*', read_mode='invalid'))
 
 
 @pytest.mark.parametrize('array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']])
 def test_input_numpy(array):
-    Client.check_input(input_numpy(array))
+    Client.check_input(_input_ndarray(array))
