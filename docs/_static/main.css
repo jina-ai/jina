@@ -10,7 +10,6 @@
 }
 
 .devsite-footer-linkboxes-list {
-    border-bottom: 1px solid #dadce0;
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-box;
@@ -36,7 +35,7 @@
 
 .devsite-footer-linkboxes .devsite-footer-linkbox-link {
     display: block;
-    padding: 8px 0;
+    padding: 3px 0;
 }
 
 
@@ -84,6 +83,12 @@
     vertical-align: middle;
     color: white;
     font-family: FontAwesome;
+}
+
+.fab {
+    font-family: FontAwesome;
+    text-decoration: none;
+    font-style: normal;
 }
 
 .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current > a span.toctree-expand {
