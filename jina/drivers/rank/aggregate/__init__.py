@@ -29,7 +29,7 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
             - The chunks of the matches will only contain the chunks that lead to the document matching, not all the chunks of the match.
         """
         super().__init__(*args, **kwargs)
-        self.keep_old_matches_as_chunks = keep_old_matches_as_chunks
+        self.keep_source_matches_as_chunks = keep_source_matches_as_chunks
 
     QueryMatchInfo = namedtuple('QueryMatchInfo', 'match_parent_id match_id query_id score')
 
@@ -57,7 +57,7 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
             m = Document(id=int_doc_id)
             m.score.value = score
             m.score.op_name = op_name
-            if self.keep_old_matches_as_chunks:
+            if self.keep_source_matches_as_chunks:
                 for match_chunk_id in parent_id_chunk_id_map[int_doc_id]:
                     m.chunks.append(chunk_matches_by_id[match_chunk_id])
             query.matches.append(m)

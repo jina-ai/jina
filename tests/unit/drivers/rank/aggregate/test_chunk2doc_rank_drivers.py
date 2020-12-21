@@ -127,10 +127,10 @@ def create_chunk_chunk_matches_to_score():
     return Document(doc)
 
 
-@pytest.mark.parametrize('keep_old_matches_as_chunks', [False, True])
-def test_chunk2doc_ranker_driver_mock_exec(keep_old_matches_as_chunks):
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_mock_exec(keep_source_matches_as_chunks):
     doc = create_document_to_score()
-    driver = SimpleChunk2DocRankDriver(keep_old_matches_as_chunks=keep_old_matches_as_chunks)
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockLengthRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -146,14 +146,14 @@ def test_chunk2doc_ranker_driver_mock_exec(keep_old_matches_as_chunks):
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
-        expected_chunk_matches_length = 1 if keep_old_matches_as_chunks else 0
+        expected_chunk_matches_length = 1 if keep_source_matches_as_chunks else 0
         assert len(match.chunks) == expected_chunk_matches_length
 
 
-@pytest.mark.parametrize('keep_old_matches_as_chunks', [False, True])
-def test_chunk2doc_ranker_driver_max_ranker(keep_old_matches_as_chunks):
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
-    driver = SimpleChunk2DocRankDriver(keep_old_matches_as_chunks=keep_old_matches_as_chunks)
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMaxRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -169,14 +169,14 @@ def test_chunk2doc_ranker_driver_max_ranker(keep_old_matches_as_chunks):
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
-        expected_chunk_matches_length = 1 if keep_old_matches_as_chunks else 0
+        expected_chunk_matches_length = 1 if keep_source_matches_as_chunks else 0
         assert len(match.chunks) == expected_chunk_matches_length
 
 
-@pytest.mark.parametrize('keep_old_matches_as_chunks', [False, True])
-def test_chunk2doc_ranker_driver_min_ranker(keep_old_matches_as_chunks):
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
-    driver = SimpleChunk2DocRankDriver(keep_old_matches_as_chunks=keep_old_matches_as_chunks)
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -192,14 +192,14 @@ def test_chunk2doc_ranker_driver_min_ranker(keep_old_matches_as_chunks):
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
-        expected_chunk_matches_length = 1 if keep_old_matches_as_chunks else 0
+        expected_chunk_matches_length = 1 if keep_source_matches_as_chunks else 0
         assert len(match.chunks) == expected_chunk_matches_length
 
 
-@pytest.mark.parametrize('keep_old_matches_as_chunks', [False, True])
-def test_chunk2doc_ranker_driver_traverse_apply(keep_old_matches_as_chunks):
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_traverse_apply(keep_source_matches_as_chunks):
     docs = [create_chunk_matches_to_score(), ]
-    driver = SimpleChunk2DocRankDriver(keep_old_matches_as_chunks=keep_old_matches_as_chunks)
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet(docs))
@@ -208,7 +208,7 @@ def test_chunk2doc_ranker_driver_traverse_apply(keep_old_matches_as_chunks):
         for idx, match in enumerate(doc.matches):
             # the score should be 1 / (1 + id * 2)
             assert match.score.value == pytest.approx(1. / (1 + float(match.id[0]) * 2.), 0.0001)
-            expected_chunk_matches_length = 2 if keep_old_matches_as_chunks else 0
+            expected_chunk_matches_length = 2 if keep_source_matches_as_chunks else 0
             assert len(match.chunks) == expected_chunk_matches_length
 
 
