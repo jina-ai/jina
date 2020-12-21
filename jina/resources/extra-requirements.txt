@@ -51,7 +51,7 @@ numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
 grpcio:                     core
-ruamel.yaml>=0.15.89:       core
+pyyaml>=5.3.1:              core
 tornado>=5.1.0:             core
 cookiecutter:               hub, devel, cicd
 pytest:                     test

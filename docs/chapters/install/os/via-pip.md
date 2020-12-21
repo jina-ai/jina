@@ -37,7 +37,7 @@ pip uninstall $(basename $(find . -name '*.egg-info') .egg-info)
 
 ## Cherry-Pick Extra Dependencies
 
-Jina requires only five dependencies `numpy`, `pyzmq`, `protobuf`, `grpcio` and `ruamel.yaml`. No third-party pre-trained models, deep learning/NLP/CV packages will be installed. 
+Jina requires only five dependencies `numpy`, `pyzmq`, `protobuf`, `grpcio` and `pyyaml`. No third-party pre-trained models, deep learning/NLP/CV packages will be installed. 
 
 However, some Executors may require extra dependencies. The full table of these extra dependencies can be found in `extra-requirements.txt`. You can cherry-pick what you want to install, e.g.
 

@@ -13,16 +13,14 @@ from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
 from urllib.request import Request, urlopen
 
-import ruamel.yaml
-from ruamel.yaml import StringIO
-
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
 from ..clients import Client
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
-from ..helper import yaml, get_non_defaults_args, complete_path, colored, \
-    get_public_ip, get_internal_ip, typename, get_parsed_args
+from ..helper import complete_path, colored, \
+    get_public_ip, get_internal_ip, typename, ArgNamespace
+from ..jaml import JAML
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..parser import set_client_cli_parser
@@ -81,18 +79,18 @@ class BaseFlow(ExitStack):
 
     def _update_args(self, args, **kwargs):
         from ..parser import set_flow_parser
+        from ..helper import ArgNamespace
+
         _flow_parser = set_flow_parser()
         if args is None:
-            from ..helper import get_parsed_args
-            _, args, _ = get_parsed_args(kwargs, _flow_parser)
-
+            args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser)
         self.args = args
         self._common_kwargs = kwargs
-        self._kwargs = get_non_defaults_args(args, _flow_parser)  #: for yaml dump
+        self._kwargs = ArgNamespace.get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 
     @classmethod
     def to_yaml(cls, representer, data):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         tmp = data._dump_instance_to_yaml(data)
         representer.sort_base_mapping_type_on_output = False
         return representer.represent_mapping('!' + cls.__name__, tmp)
@@ -105,7 +103,7 @@ class BaseFlow(ExitStack):
 
     @classmethod
     def from_yaml(cls, constructor, node):
-        """Required by :mod:`ruamel.yaml.constructor` """
+        """Required by :mod:`pyyaml` """
         return cls._get_instance_from_yaml(constructor, node)[0]
 
     def save_config(self, filename: str = None) -> bool:
@@ -118,19 +116,17 @@ class BaseFlow(ExitStack):
         f = filename
         if not f:
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
-        yaml.register_class(self.__class__)
+        JAML.register(self.__class__)
 
         with open(f, 'w', encoding='utf8') as fp:
-            yaml.dump(self, fp)
+            JAML.dump(self, fp)
         self.logger.info(f'{self}\'s yaml config is save to {f}')
         return True
 
     @property
     def yaml_spec(self):
-        yaml.register_class(self.__class__)
-        stream = StringIO()
-        yaml.dump(self, stream)
-        return stream.getvalue().strip()
+        JAML.register(self.__class__)
+        return JAML.dump(self)
 
     @classmethod
     def load_config(cls, filename: Union[str, TextIO]) -> FlowLike:
@@ -139,22 +135,21 @@ class BaseFlow(ExitStack):
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
         :return: an executor object
         """
-        yaml.register_class(cls)
+        JAML.register(cls)
         if not filename: raise FileNotFoundError
         if isinstance(filename, str):
             # deserialize from the yaml
             filename = complete_path(filename)
             with open(filename, encoding='utf8') as fp:
-                return yaml.load(fp)
+                return JAML.load(fp)
         else:
             with filename:
-                return yaml.load(filename)
+                return JAML.load(filename)
 
     @classmethod
     def _get_instance_from_yaml(cls, constructor, node):
 
-        data = ruamel.yaml.constructor.SafeConstructor.construct_mapping(
-            constructor, node, deep=True)
+        data = constructor.construct_mapping(node, deep=True)
 
         from .yaml_parser import get_parser
         return get_parser(version=data.get('version', None)).parse(data), data
@@ -466,7 +461,7 @@ class BaseFlow(ExitStack):
             import flask, flask_cors
             try:
                 with open(self.args.logserver_config) as fp:
-                    log_config = yaml.load(fp)
+                    log_config = JAML.load(fp)
                 self._sse_logger = threading.Thread(name='sentinel-sse-logger',
                                                     target=start_sse_logger, daemon=True,
                                                     args=(log_config,
@@ -554,7 +549,7 @@ class BaseFlow(ExitStack):
         if 'host' not in kwargs:
             kwargs['host'] = self.host
 
-        _, args, _ = get_parsed_args(kwargs, set_client_cli_parser())
+        args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
         return self._cls_client(args)
 
     @property
@@ -730,7 +725,7 @@ class BaseFlow(ExitStack):
                 'deploy': {'parallel': 1}
             }
 
-        yaml.dump(swarm_yml, path)
+        JAML.dump(swarm_yml, path)
 
     @property
     @build_required(FlowBuildLevel.GRAPH)

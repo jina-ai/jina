@@ -5,11 +5,10 @@ from multiprocessing.synchronize import Event
 from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
-import ruamel.yaml
-
-from jina.excepts import RemotePodClosed
-from jina.importer import ImportExtensions
-from jina.logging import JinaLogger
+from .....excepts import RemotePodClosed
+from .....importer import ImportExtensions
+from .....jaml import JAML
+from .....logging import JinaLogger
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
@@ -57,7 +56,7 @@ def fetch_files_from_yaml(pea_args: Dict, logger: 'JinaLogger') -> Tuple[Set[str
     if uses_files:
         for current_file in uses_files:
             with open(current_file) as f:
-                result = ruamel.yaml.round_trip_load(f)
+                result = JAML.load_no_tags(f)
 
             if 'metas' in result and 'py_modules' in result['metas']:
                 _add_file_to_list(_file=result['metas']['py_modules'],

@@ -1,7 +1,7 @@
 from argparse import Namespace
 
 from jina.enums import PollingType
-from jina.helper import namespace_to_dict
+from jina.helper import ArgNamespace
 
 
 def test_namespace_to_dict():
@@ -19,7 +19,7 @@ def test_namespace_to_dict():
                       uses_before=None)
         ]
     }
-    _dict_args = namespace_to_dict(args=_namespaces)
+    _dict_args = ArgNamespace.flatten_to_dict(args=_namespaces)
     assert 'head' in _dict_args
     assert 'tail' in _dict_args
     assert 'peas' in _dict_args

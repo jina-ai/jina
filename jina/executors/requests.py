@@ -3,6 +3,8 @@ __license__ = "Apache-2.0"
 
 from typing import Dict, List
 
+from ..jaml import JAML
+
 _defaults = {}
 
 
@@ -14,7 +16,6 @@ def get_default_reqs(cls_mro: List[type]) -> Dict:
     import copy
 
     global _defaults
-    from ..helper import yaml
 
     for cls in cls_mro:
         try:
@@ -23,7 +24,7 @@ def get_default_reqs(cls_mro: List[type]) -> Dict:
                 with resource_stream('jina',
                                      '/'.join(('resources', f'executors.requests.{cls.__name__}.yml'))) as fp:
                     _defaults[cls.__name__] = \
-                        yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
+                        JAML.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
             if cls.__name__ != cls_mro[0].__name__:
                 from ..logging import default_logger

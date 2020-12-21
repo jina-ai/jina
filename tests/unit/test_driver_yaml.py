@@ -7,7 +7,7 @@ from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import KVSearchDriver
 from jina.executors import BaseExecutor
-from jina.helper import yaml
+from jina.jaml import JAML
 from jina.parser import set_pod_parser
 from jina.peapods import Pod
 
@@ -17,17 +17,17 @@ cur_dir = Path(__file__).parent
 def test_load_yaml1(tmpdir):
     tmpdir = Path(tmpdir)
     with open(cur_dir / 'yaml/test-driver.yml', encoding='utf8') as fp:
-        a = yaml.load(fp)
+        a = JAML.load(fp)
 
     assert isinstance(a[0], KVSearchDriver)
     assert isinstance(a[1], ControlReqDriver)
     assert isinstance(a[2], BaseDriver)
 
     with open(tmpdir / 'test_driver.yml', 'w', encoding='utf8') as fp:
-        yaml.dump(a[0], fp)
+        JAML.dump(a[0], fp)
 
     with open(tmpdir / 'test_driver.yml', encoding='utf8') as fp:
-        b = yaml.load(fp)
+        b = JAML.load(fp)
 
     assert isinstance(b, KVSearchDriver)
     assert b._executor_name == a[0]._executor_name
@@ -53,7 +53,7 @@ def test_pod_new_api_from_kwargs():
 
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_EXEC_WITH_DRIVER'])
 def test_load_yaml2(test_metas):
-    a = BaseExecutor.load_config(str(cur_dir /  'yaml/test-exec-with-driver.yml'))
+    a = BaseExecutor.load_config(str(cur_dir / 'yaml/test-exec-with-driver.yml'))
     assert len(a._drivers) == 2
     # should be able to auto fill in ControlRequest
     assert 'ControlRequest' in a._drivers
