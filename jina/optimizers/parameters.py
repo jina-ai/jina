@@ -10,10 +10,10 @@ class OptimizationParameter:
     def __init__(
         self,
         parameter_name: str,
-        executor_name: str = None,
+        executor_name: Optional[str] = None,
         prefix: str = "JINA",
-        env_var: str = None,
-        method:str = None
+        env_var: Optional[str] = None,
+        method:Optional[str] = None
     ):
         if env_var is None:
             self.env_var = f"{prefix}_{executor_name}_{parameter_name}".upper()
