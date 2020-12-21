@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: find the prev warning if exist
-          uses: peter-evans/find-comment@v1
-          id: fc
-          with:
-            issue-number: ${{ github.event.pull_request.number }}
-            comment-author: 'github-actions[bot]'
-            body-includes: 'bad commit message'
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'bad commit message'
       - name: Delete comment if exist
         if: ${{ steps.fc.outputs.comment-id != 0 }}
         uses: actions/github-script@v3
