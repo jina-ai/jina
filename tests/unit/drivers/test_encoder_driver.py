@@ -65,7 +65,7 @@ def test_encode_driver(batch_size):
     for doc in docs:
         assert doc.embedding is None
     driver._apply_all(docs)
-    driver._apply_cache(force_flush=True)
+    driver._empty_cache()
     assert len(docs) == num_docs
     for doc in docs:
         assert doc.embedding == doc.blob
