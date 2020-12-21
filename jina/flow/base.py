@@ -33,7 +33,15 @@ if False:
 FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
 
-class BaseFlow(ExitStack):
+class FlowType(type(ExitStack), type):
+
+    def __new__(cls, *args, **kwargs):
+        _cls = super().__new__(cls, *args, **kwargs)
+        JAML.register(_cls)
+        return _cls
+
+
+class BaseFlow(ExitStack, metaclass=FlowType):
     """An abstract flow object in Jina.
 
     .. note::
@@ -116,7 +124,6 @@ class BaseFlow(ExitStack):
         f = filename
         if not f:
             f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
-        JAML.register(self.__class__)
 
         with open(f, 'w', encoding='utf8') as fp:
             JAML.dump(self, fp)
@@ -125,7 +132,6 @@ class BaseFlow(ExitStack):
 
     @property
     def yaml_spec(self):
-        JAML.register(self.__class__)
         return JAML.dump(self)
 
     @classmethod
@@ -135,7 +141,6 @@ class BaseFlow(ExitStack):
         :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
         :return: an executor object
         """
-        JAML.register(cls)
         if not filename: raise FileNotFoundError
         if isinstance(filename, str):
             # deserialize from the yaml
