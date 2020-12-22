@@ -13,7 +13,7 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
-__all__ = ['JAML']
+__all__ = ['JAML', 'JAMLCompatible']
 
 
 class JAML:
@@ -244,3 +244,39 @@ class JinaLoader(Reader, Scanner, Parser, Composer, JinaConstructor, JinaResolve
         Composer.__init__(self)
         JinaConstructor.__init__(self)
         JinaResolver.__init__(self)
+
+
+class JAMLCompatibleType(type):
+    """Metaclass for :class:`JAMLCompatible`.
+    It enables any class inherit from :class:`JAMLCompatible` to auto-register itself at :class:`JAML`"""
+
+    def __new__(cls, *args, **kwargs):
+        _cls = super().__new__(cls, *args, **kwargs)
+        JAML.register(_cls)
+        return _cls
+
+
+class JAMLCompatible(metaclass=JAMLCompatibleType):
+    """:class:`JAMLCompatible` is a mixin class designed to be used with multiple inheritance.
+    It will add :meth:`to_yaml` and :meth:`from_yaml` to the target class,
+    making that class JAML-friendly.
+
+    .. warning::
+        For the sake of cooperative multiple inheritance, do NOT implement :meth:`__init__` for this class
+    """
+
+    _version = ''  #: YAML version number, this will be later overridden if YAML config says the other way
+
+    @classmethod
+    def to_yaml(cls, representer, data):
+        """Required by :mod:`pyyaml` write interface """
+        from .parsers import get_parser
+        tmp = get_parser(cls, version=data._version).dump(data)
+        return representer.represent_mapping('!' + cls.__name__, tmp)
+
+    @classmethod
+    def from_yaml(cls, constructor, node):
+        """Required by :mod:`pyyaml` load interface """
+        data = constructor.construct_mapping(node, deep=True)
+        from .parsers import get_parser
+        return get_parser(cls, version=data.get('version', None)).parse(cls, data)

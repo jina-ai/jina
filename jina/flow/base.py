@@ -20,28 +20,23 @@ from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import complete_path, colored, \
     get_public_ip, get_internal_ip, typename, ArgNamespace
-from ..jaml import JAML
+from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..parser import set_client_cli_parser
 from ..peapods.pods.flow import FlowPod
 from ..peapods.pods.gateway import GatewayFlowPod
 
-if False:
-    import argparse
+__all__ = ['BaseFlow', 'FlowLike']
 
 FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
 
-class FlowType(type(ExitStack), type):
-
-    def __new__(cls, *args, **kwargs):
-        _cls = super().__new__(cls, *args, **kwargs)
-        JAML.register(_cls)
-        return _cls
+class FlowType(type(ExitStack), type(JAMLCompatible)):
+    pass
 
 
-class BaseFlow(ExitStack, metaclass=FlowType):
+class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     """An abstract flow object in Jina.
 
     .. note::
@@ -95,20 +90,6 @@ class BaseFlow(ExitStack, metaclass=FlowType):
         self.args = args
         self._common_kwargs = kwargs
         self._kwargs = ArgNamespace.get_non_defaults_args(args, _flow_parser)  #: for yaml dump
-
-    @classmethod
-    def to_yaml(cls, representer, data):
-        """Required by :mod:`pyyaml` """
-        from ..jaml.parsers import get_parser
-        tmp = get_parser(cls, version=data._version).dump(data)
-        return representer.represent_mapping('!' + cls.__name__, tmp)
-
-    @classmethod
-    def from_yaml(cls, constructor, node):
-        """Required by :mod:`pyyaml` """
-        data = constructor.construct_mapping(node, deep=True)
-        from ..jaml.parsers import get_parser
-        return get_parser(cls, version=data.get('version', None)).parse(data)
 
     def save_config(self, filename: str = None) -> bool:
         """

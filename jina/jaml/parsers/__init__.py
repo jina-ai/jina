@@ -26,11 +26,13 @@ def _get_flow_parser():
 
 
 def _get_exec_parser():
-    pass
+    from .executor.legacy import LegacyParser
+    return [LegacyParser], LegacyParser
 
 
 def _get_driver_parser():
-    pass
+    from .driver.legacy import LegacyParser
+    return [LegacyParser], LegacyParser
 
 
 def get_parser(cls, version: Optional[str]) -> 'VersionedYAMLParser':
@@ -40,7 +42,6 @@ def get_parser(cls, version: Optional[str]) -> 'VersionedYAMLParser':
     :param version: yaml version number in "MAJOR[.MINOR]" format
     :return:
     """
-
     all_parsers, legacy_parser = _get_all_parser(cls)
     if version:
         if isinstance(version, float) or isinstance(version, int):

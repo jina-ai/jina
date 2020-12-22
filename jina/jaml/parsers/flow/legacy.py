@@ -8,7 +8,7 @@ from ....helper import expand_env_var
 class LegacyParser(VersionedYAMLParser):
     version = 'legacy'  # the version number this parser designed for
 
-    def parse(self, data: Dict) -> 'Flow':
+    def parse(self, cls: type, data: Dict) -> 'Flow':
         """Return the Flow YAML parser given the syntax version number
 
         :param data: flow yaml file loaded as python dict
@@ -19,7 +19,7 @@ class LegacyParser(VersionedYAMLParser):
         # maybe there are some hanging kwargs in "parameters"
         tmp_a = (expand_env_var(v) for v in a)
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-        obj = Flow(*tmp_a, **tmp_p)
+        obj = cls(*tmp_a, **tmp_p)
 
         pp = data.get('pods', {})
         for pod_name, pod_attr in pp.items():
