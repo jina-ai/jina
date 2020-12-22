@@ -101,7 +101,7 @@ def test_crafter_evaluate_driver(mock_diff_evaluator, simple_evaluate_driver, gr
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'SimpleEvaluateDriver-MockDiffEvaluator'
+        assert doc.evaluations[0].op_name == 'MockDiffEvaluator'
         assert doc.evaluations[0].value == 1.0
 
 
@@ -208,5 +208,5 @@ def test_crafter_evaluate_driver_in_chunks(field_type,
         assert len(rdc) == 1
         chunk = rdc[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].op_name == 'SimpleChunkEvaluateDriver-MockDiffEvaluator'
+        assert chunk.evaluations[0].op_name == 'MockDiffEvaluator'
         assert chunk.evaluations[0].value == 1.0

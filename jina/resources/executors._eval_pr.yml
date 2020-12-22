@@ -1,13 +1,9 @@
 !CompoundExecutor
 components:
   - !PrecisionEvaluator
-    with:
-      eval_at: 5
     metas:
       name: precision  # a customized name
   - !RecallEvaluator
-    with:
-      eval_at: 5
     metas:
       name: recall  # a customized name
 metas:
@@ -19,9 +15,11 @@ requests:
         with:
           field: tags__id
           executor: precision
+          running_avg: true
           traversal_paths: [ 'r' ]
       - !RankEvaluateDriver
         with:
           field: tags__id
           executor: recall
+          running_avg: true
           traversal_paths: [ 'r' ]
