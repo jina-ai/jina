@@ -82,7 +82,6 @@ class JAML:
     def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True) -> Dict[str, Any]:
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
-        env_map = SimpleNamespace()
 
         def _scan(sub_d, p):
             if isinstance(sub_d, dict):
@@ -125,24 +124,32 @@ class JAML:
         def _sub(v, p):
             v = re.sub(subvar_regex, '{\\1}', v)
 
+            # 1. resolve internal reference
+            # 2. substitute the envs
+            # 3. substitute the context dict
+            # 4. make string to float/int/list/bool with best effort
             if resolve_cycle_ref:
                 try:
                     # "root" context is now the global namespace
                     # "this" context is now the current node namespace
-                    v = v.format(root=expand_map, this=p, ENV=env_map)
+                    v = v.format(root=expand_map, this=p)
                 except KeyError:
                     pass
-                try:
-                    v = v.format_map(context)
-                except KeyError:
-                    pass
+            try:
+                v = v.format_map(dict(os.environ))
+            except KeyError:
+                pass
+
+            try:
+                v = v.format_map(context)
+            except KeyError:
+                pass
+
             if isinstance(v, str):
                 v = parse_arg(v)
             return v
 
         _scan(d, expand_map)
-        _scan(dict(os.environ), env_map)
-
         _replace(d, expand_map)
         return d
 
