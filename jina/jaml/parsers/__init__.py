@@ -1,11 +1,17 @@
 import warnings
-from typing import List, Optional
+from typing import List, Optional, Type
 
 from .base import VersionedYAMLParser
+from .. import JAMLCompatible
 from ...excepts import BadFlowYAMLVersion
 
 
-def _get_all_parser(cls):
+def _get_all_parser(cls: Type['JAMLCompatible']):
+    """ Get all parsers and legacy parser of a class
+
+    :param cls: target class
+    :return: a tuple of two elements; first is a list of all parsers, second is the legacy parser for default fallback
+    """
     from ...executors import BaseExecutor
     from ...flow import BaseFlow
     from ...drivers import BaseDriver
@@ -35,7 +41,7 @@ def _get_driver_parser():
     return [LegacyParser], LegacyParser
 
 
-def get_parser(cls, version: Optional[str]) -> 'VersionedYAMLParser':
+def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'VersionedYAMLParser':
     """ Get parser given the YAML version
 
     :param cls: the target class to parse

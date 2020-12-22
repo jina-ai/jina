@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Type
 
 from ..base import VersionedYAMLParser
 from ....drivers import BaseDriver
@@ -7,9 +7,10 @@ from ....drivers import BaseDriver
 class LegacyParser(VersionedYAMLParser):
     version = 'legacy'  # the version number this parser designed for
 
-    def parse(self, cls: type, data: Dict) -> 'BaseDriver':
+    def parse(self, cls: Type['BaseDriver'], data: Dict) -> 'BaseDriver':
         """Return the Flow YAML parser given the syntax version number
 
+        :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
         """
 

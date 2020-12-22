@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Type
 
 from ..base import VersionedYAMLParser
 from ....excepts import BadWorkspace
@@ -26,9 +26,10 @@ class LegacyParser(VersionedYAMLParser):
                 if os.path.exists(dump_path):
                     return dump_path
 
-    def parse(self, cls: type, data: Dict) -> 'BaseExecutor':
+    def parse(self, cls: Type['BaseExecutor'], data: Dict) -> 'BaseExecutor':
         """Return the Flow YAML parser given the syntax version number
 
+        :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
         """
 
