@@ -37,8 +37,10 @@ __license__ = "Apache-2.0"
 
 from enum import IntEnum, EnumMeta
 
+from .jaml import JAMLCompatible
 
-class EnumType(EnumMeta):
+
+class EnumType(type(JAMLCompatible), EnumMeta, type):
 
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
@@ -50,12 +52,10 @@ class EnumType(EnumMeta):
         if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        from .jaml import JAML
-        JAML.register(cls)
         return cls
 
 
-class BetterEnum(IntEnum, metaclass=EnumType):
+class BetterEnum(JAMLCompatible, IntEnum, metaclass=EnumType):
     def __str__(self):
         return self.name
 
@@ -68,13 +68,23 @@ class BetterEnum(IntEnum, metaclass=EnumType):
             raise ValueError(f'{s.upper()} is not a valid enum for {cls}')
 
     @classmethod
-    def to_yaml(cls, representer, data):
-        """Required by :mod:`pyyaml` """
+    def _to_yaml(cls, representer, data):
+        """Required by :mod:`pyyaml`
+
+        .. note::
+            In principle, this should inherit from :class:`JAMLCompatible` directly,
+            however, this method is too simple and thus replaced the parent method.
+        """
         return representer.represent_scalar('!' + cls.__name__, str(data))
 
     @classmethod
-    def from_yaml(cls, constructor, node):
-        """Required by :mod:`pyyaml` """
+    def _from_yaml(cls, constructor, node):
+        """Required by :mod:`pyyaml`
+
+        .. note::
+            In principle, this should inherit from :class:`JAMLCompatible` directly,
+            however, this method is too simple and thus replaced the parent method.
+        """
         return cls.from_string(node.value)
 
 
