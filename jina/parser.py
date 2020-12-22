@@ -137,6 +137,8 @@ def set_hub_build_parser(parser=None):
     parser.add_argument('--test-level', type=BuildTestLevel.from_string,
                         choices=list(BuildTestLevel), default=BuildTestLevel.FLOW,
                         help='the test level when "test-uses" is set, "NONE" means no test')
+    parser.add_argument('--timeout-ready', type=int, default=10000,
+                        help='timeout (ms) to give for the Pod to start before considering a test failed')
     parser.add_argument('--host-info', action='store_true', default=False,
                         help='store the host information during bookkeeping')
     parser.add_argument('--daemon', action='store_true', default=False,
