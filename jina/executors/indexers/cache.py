@@ -1,3 +1,4 @@
+import pickle
 import tempfile
 from typing import Optional, Iterator
 
@@ -23,20 +24,38 @@ class BaseCache(BaseKVIndexer):
 
 
 class DocIDCache(BaseCache):
-    """..."""
-    # TODO docs
+    """A key-value indexer that specializes in caching.
+    Serializes the cache to file
+    """
 
-    # TODO temp data structure
-    store = {}
+    class CacheHandler:
+        def __init__(self, path, logger):
+            self.path = path
+            try:
+                # TODO maybe mmap?
+                self.ids = pickle.load(open(path + '.ids', 'rb'))
+                self.cache = pickle.load(open(path + '.cache', 'rb'))
+            except FileNotFoundError as e:
+                logger.warning(f'File path did not exist : {path}.ids or {path}.cache: {repr(e)}. Creating new CacheHandler...')
+                self.ids = []
+                self.cache = []
+
+        def close(self):
+            pickle.dump(self.ids, open(self.path + '.ids', 'wb'))
+            pickle.dump(self.cache, open(self.path + '.cache', 'wb'))
+
     supported_fields = [ID_KEY, CONTENT_HASH_KEY]
     default_field = ID_KEY
 
     def __init__(self, index_filename: str = None, *args, **kwargs):
+        """ creates a new DocIDCache
+
+        :param field: to be passed as kwarg. This dictates by which Document field we cache (either `id` or `content_hash`)
+        """
         if not index_filename:
             # create a new temp file if not exist
             index_filename = tempfile.NamedTemporaryFile(delete=False).name
         super().__init__(index_filename, *args, **kwargs)
-        self.store = {}
         self.field = kwargs.get('field', self.default_field)
         # TODO optimization in case it's just id
         if self.field not in self.supported_fields:
@@ -48,54 +67,59 @@ class DocIDCache(BaseCache):
         if self.field == CONTENT_HASH_KEY:
             cached_field = doc.content_hash
         self._size += 1
-        self.store[doc.id] = cached_field
+        self.query_handler.ids.append(doc.id)
+        self.query_handler.cache.append(cached_field)
 
     @deprecated_alias(doc_id='doc')
     def query(self, doc: 'Document', *args, **kwargs) -> Optional[bool]:
         """
         Check whether the given doc's cached field exists in the index
 
-        @param doc: the 'Document' you want to query for
+        :param doc: the 'Document' you want to query for
         """
+        # FIXME
+        if self.query_handler is None:
+            self.query_handler = self.get_query_handler()
         cached_field = doc.id
         if self.field == CONTENT_HASH_KEY:
             cached_field = doc.content_hash
-        status = (cached_field in self.store.values()) or None
-        # FIXME cleanup
-        print(f'query = {cached_field}. status = {status}')
+        status = (cached_field in self.query_handler.cache) or None
         return status
 
     def update(self, keys: Iterator[int], values: Iterator['Document'], *args, **kwargs):
         """
-        :param keys: list of 'Document'.id
-        :param values: list of either `id` or `content_hash` of :class:`'Document'"""
-        missed = check_keys_exist(keys, self.store.keys())
+        :param keys: list of Document.id
+        :param values: list of either `id` or `content_hash` of :class:`Document"""
+        missed = check_keys_exist(keys, self.query_handler.ids)
         if missed:
-            raise KeyError(f'Keys {missed} were not found. No operation performed...')
+            raise KeyError(f'Keys {missed} were not found in {self.index_abspath}. No operation performed...')
 
         for key, doc in zip(keys, values):
+            key_idx = self.query_handler.ids.index(key)
             cached_field = doc.id
             if self.field == CONTENT_HASH_KEY:
                 cached_field = doc.content_hash
-            self.store[key] = cached_field
+            self.query_handler.cache[key_idx] = cached_field
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
         """
-        :param keys: list of 'Document'.id
+        :param keys: list of Document.id
         """
-        missed = check_keys_exist(keys, self.store.keys())
+        missed = check_keys_exist(keys, self.query_handler.ids)
         if missed:
             raise KeyError(f'Keys {missed} were not found. No operation performed...')
 
         for key in keys:
-            del self.store[key]
+            key_idx = self.query_handler.ids.index(key)
+            self.query_handler.ids = [id for idx, id in enumerate(self.query_handler.ids) if idx != key_idx]
+            self.query_handler.cache = [cache for idx, cache in enumerate(self.query_handler.cache) if idx != key_idx]
             self._size -= 1
 
     def get_add_handler(self):
         pass
 
-    def get_query_handler(self):
-        pass
+    def get_query_handler(self) -> CacheHandler:
+        return self.CacheHandler(self.index_abspath, self.logger)
 
     def get_create_handler(self):
         pass

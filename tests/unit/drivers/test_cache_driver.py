@@ -58,9 +58,6 @@ def test_cache_driver_tmpfile():
         assert not executor.handler_mutex
         driver.attach(executor=executor, pea=None)
 
-        # FIXME seems somehow the executor is loading the store from the previous run
-        executor.store = {}
-        print(executor.store)
         driver._traverse_apply(docs)
 
         with pytest.raises(NotImplementedError):
@@ -77,14 +74,14 @@ def test_cache_driver_tmpfile():
 def test_cache_driver_from_file(tmp_path):
     filename = 'test-tmp.bin'
     docs = list(random_docs(10, embedding=False))
-    pickle.dump({doc.id: doc.content_hash for doc in docs}, open(filename, 'wb'))
+    pickle.dump([doc.id for doc in docs], open(f'{filename}.ids', 'wb'))
+    pickle.dump([doc.content_hash for doc in docs], open(f'{filename}.cache', 'wb'))
 
     driver = MockCacheDriver()
     with DocIDCache(filename, field=CONTENT_HASH_KEY) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, pea=None)
 
-        # TODO DocIDCache isn't reading from filename
         with pytest.raises(NotImplementedError):
             # duplicate docs
             driver._traverse_apply(docs)
@@ -92,8 +89,10 @@ def test_cache_driver_from_file(tmp_path):
         # new docs
         docs = list(random_docs(10, start_id=100))
         driver._traverse_apply(docs)
-        # check persistence
-        assert Path(filename).exists()
+        executor.save()
+
+    # check persistence
+    assert Path(executor.save_abspath).exists()
 
 
 class MockBaseCacheDriver(BaseCacheDriver):
@@ -176,7 +175,3 @@ def test_cache_content_driver_same_id(tmp_path):
         driver._traverse_apply(docs1)
         driver._traverse_apply(docs2)
         assert executor.size == 2
-
-
-if __name__ == '__main__':
-    pytest.console_main()
