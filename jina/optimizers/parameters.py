@@ -12,7 +12,7 @@ class OptimizationParameter:
         executor_name: Optional[str] = None,
         prefix: str = "JINA",
         env_var: Optional[str] = None,
-        method:Optional[str] = None
+        method: Optional[str] = None,
     ):
         if env_var is None:
             self.env_var = f"{prefix}_{executor_name}_{parameter_name}".upper()
@@ -74,7 +74,9 @@ class IntegerParameter(OptimizationParameter):
             "log": self.log,
         }
 
+
 JAML.register(IntegerParameter)
+
 
 class FloatParameter(OptimizationParameter):
     def __init__(
@@ -102,7 +104,9 @@ class FloatParameter(OptimizationParameter):
             "log": self.log,
         }
 
+
 JAML.register(FloatParameter)
+
 
 class UniformParameter(OptimizationParameter):
     def __init__(self, low: float, high: float, *args, **kwargs):
@@ -118,7 +122,9 @@ class UniformParameter(OptimizationParameter):
             "high": self.high,
         }
 
+
 JAML.register(UniformParameter)
+
 
 class LogUniformParameter(OptimizationParameter):
     def __init__(self, low: float, high: float, *args, **kwargs):
@@ -134,7 +140,9 @@ class LogUniformParameter(OptimizationParameter):
             "high": self.high,
         }
 
+
 JAML.register(LogUniformParameter)
+
 
 class CategoricalParameter(OptimizationParameter):
     def __init__(
@@ -147,7 +155,9 @@ class CategoricalParameter(OptimizationParameter):
     def to_optuna_args(self):
         return {"name": self.env_var, "choices": self.choices}
 
+
 JAML.register(CategoricalParameter)
+
 
 class DiscreteUniformParameter(OptimizationParameter):
     def __init__(self, low: float, high: float, q: float, *args, **kwargs):
@@ -165,7 +175,9 @@ class DiscreteUniformParameter(OptimizationParameter):
             "q": self.q,
         }
 
+
 JAML.register(DiscreteUniformParameter)
+
 
 def load_optimization_parameters(filename):
     JAML.register(IntegerParameter)
