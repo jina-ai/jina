@@ -1,13 +1,15 @@
 import os
 import re
 from types import SimpleNamespace
-from typing import Dict, Any
+from typing import Dict, Any, Union, TextIO
 
 import yaml
 
-from .helper import JinaResolver, JinaLoader
+from .helper import JinaResolver, JinaLoader, parse_config_source, _load_py_modules
 
 __all__ = ['JAML', 'JAMLCompatible']
+
+from ..excepts import EmptyConfig
 
 
 class JAML:
@@ -202,14 +204,54 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
     @classmethod
     def to_yaml(cls, representer, data):
-        """Required by :mod:`pyyaml` write interface """
+        """A low-level interface required by :mod:`pyyaml` write interface """
         from .parsers import get_parser
         tmp = get_parser(cls, version=data._version).dump(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
     def from_yaml(cls, constructor, node):
-        """Required by :mod:`pyyaml` load interface """
+        """A low-level interface required by :mod:`pyyaml` load interface """
         data = constructor.construct_mapping(node, deep=True)
         from .parsers import get_parser
         return get_parser(cls, version=data.get('version', None)).parse(cls, data)
+
+    @classmethod
+    def load_config(cls, source: Union[str, TextIO],
+                    allow_pymodule: bool=True,
+                    *args, **kwargs) -> 'JAMLCompatible':
+        """A high-level interface for loading configuration.
+
+        :param raw_config: raw config to work on
+        :param source: the source of the configs (multi-kind)
+        :return: :class:`JAMLCompatible` object
+        """
+        with parse_config_source(source, *args, **kwargs) as fp:
+            # first load yml with no tag
+            no_tag_yml = JAML.load_no_tags(fp)
+            if no_tag_yml:
+                injected_yml = cls.inject_config(*args, **kwargs)
+            else:
+                raise EmptyConfig(f'can not construct {cls} from an empty {source}. nothing to read from there')
+
+            if allow_pymodule:
+                _load_py_modules(no_tag_yml)
+
+            # revert yml's tag and load again, this time with substitution
+            revert_tag_yml = JAML.dump(injected_yml).replace('__tag: ', '!')
+            return JAML.load(revert_tag_yml, *args, **kwargs)
+
+    @classmethod
+    def inject_config(cls, raw_config: Dict, *args, **kwargs) -> Dict:
+        """Inject config into the raw_config before loading into an object.
+
+        :param raw_config: raw config to work on
+
+
+         .. note::
+            This function is most likely to be overridden by its subclass.
+
+        """
+        return raw_config
+
+

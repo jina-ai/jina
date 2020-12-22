@@ -9,20 +9,18 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, Union, TypeVar, Type, TextIO, List
+from typing import Dict, TypeVar, Type, List
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
-from ..excepts import EmptyExecutorYAML, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import expand_dict, expand_env_var, get_local_config_source, typename, get_random_identity
-from ..importer import PathImporter
+from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
+from ..helper import expand_dict, expand_env_var, typename, get_random_identity
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
     from ..peapods.peas import BasePea
-    from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -369,54 +367,32 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         with open(f, 'w', encoding='utf8') as fp:
             JAML.dump(self, fp)
         self.logger.info(f'executor\'s yaml config is save to {f}')
-
         self.is_updated = _updated
         return True
 
     @classmethod
-    def load_config(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
-                    pea_id: int = 0, read_only: bool = False) -> AnyExecutor:
-        """Build an executor from a YAML file.
+    def inject_config(cls: Type[AnyExecutor],
+                      raw_config: Dict,
+                      separated_workspace: bool = False,
+                      pea_id: int = 0,
+                      read_only: bool = False,
+                      *args, **kwargs) -> Dict:
+        """Inject config into the raw_config before loading into an object.
 
-        :param source: the file path of the YAML file or a ``TextIO`` stream to be loaded from
+        :param raw_config: raw config to work on
         :param separated_workspace: the dump and data files associated to this executor will be stored separately for
                 each parallel pea, which will be indexed by the ``pea_id``
         :param pea_id: the id of the storage of this parallel pea, only effective when ``separated_workspace=True``
+        :param read_only: if the executor should be readonly
         :return: an executor object
         """
-        if not source: raise FileNotFoundError
-        source = get_local_config_source(source)
-        # first scan, find if external modules are specified
-        with (open(source, encoding='utf8') if isinstance(source, str) else source) as fp:
-            # ignore all lines start with ! because they could trigger the deserialization of that class
-            safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
-            tmp = JAML.load(safe_yml)
-            if tmp:
-                if 'metas' not in tmp:
-                    tmp['metas'] = {}
-                tmp = fill_metas_with_defaults(tmp)
-
-                if 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
-                    mod = tmp['metas']['py_modules']
-
-                    if isinstance(mod, str):
-                        mod = [mod]
-
-                    if isinstance(mod, list):
-                        mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(source), m) for m in mod]
-                        PathImporter.add_modules(*mod)
-                    else:
-                        raise TypeError(f'{type(mod)!r} is not acceptable, only str or list are acceptable')
-
-                tmp['metas']['separated_workspace'] = separated_workspace
-                tmp['metas']['pea_id'] = pea_id
-                tmp['metas']['read_only'] = read_only
-
-            else:
-                raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')
-
-            tmp = expand_dict(tmp)
-            return JAML.load(JAML.dump(tmp).replace('__tag: ', '!'))
+        if 'metas' not in raw_config:
+            raw_config['metas'] = {}
+        tmp = fill_metas_with_defaults(raw_config)
+        tmp['metas']['separated_workspace'] = separated_workspace
+        tmp['metas']['pea_id'] = pea_id
+        tmp['metas']['read_only'] = read_only
+        return tmp
 
     @staticmethod
     def load(filename: str = None) -> AnyExecutor:

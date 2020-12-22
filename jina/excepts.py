@@ -76,6 +76,10 @@ class EmptyExecutorYAML(Exception):
     """The yaml config file is empty, nothing to read from there."""
 
 
+class EmptyConfig(Exception):
+    """The yaml config file is empty, nothing to read from there."""
+
+
 class BadWorkspace(Exception):
     """Can not determine the separate storage strategy for the executor"""
 
