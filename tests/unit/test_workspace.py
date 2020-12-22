@@ -50,7 +50,7 @@ def test_compound_indexer(tmpdir, pea_id):
         assert executor_dir.exists()
 
 
-def test_compound_indexer_rw():
+def test_compound_indexer_rw(tmpdir):
     all_vecs = np.random.random([6, 5])
     for j in range(3):
         with BaseExecutor.load_config('yaml/test-compound-indexer2.yml', separated_workspace=True, pea_id=j) as a:
