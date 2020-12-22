@@ -155,5 +155,6 @@ def test_load_external_success():
 def test_expand_env():
     assert expand_env_var('$PATH-${AA}') != '$PATH-${AA}'
 
+
 def test_enum_yaml():
     assert JAML.load(JAML.dump(SocketType.PAIR_BIND)) == SocketType.PAIR_BIND
