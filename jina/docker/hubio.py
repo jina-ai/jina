@@ -367,7 +367,7 @@ class HubIO:
                         else:
                             is_build_success = True
                             self.logger.warning(
-                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be do to the fact that executor has non-installed external dependencies')
+                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be due to the fact that executor has non-installed external dependencies')
                     except Exception as ex:
                         self.logger.error(f'something wrong while testing the build: {repr(ex)}')
                         ex = HubBuilderTestError(ex)
