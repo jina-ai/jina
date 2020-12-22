@@ -158,3 +158,9 @@ def test_expand_env():
 
 def test_enum_yaml():
     assert JAML.load(JAML.dump(SocketType.PAIR_BIND)) == SocketType.PAIR_BIND
+
+
+def test_encoder_name_env_replace():
+    os.environ['BE_TEST_NAME'] = 'hello123'
+    with BaseExecutor.load_config('yaml/test-encoder-env.yml') as be:
+        assert be.name == 'hello123'

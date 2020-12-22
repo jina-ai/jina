@@ -135,15 +135,18 @@ class JAML:
                     v = v.format(root=expand_map, this=p)
                 except KeyError:
                     pass
-            try:
-                v = v.format_map(dict(os.environ))
-            except KeyError:
-                pass
 
-            try:
-                v = v.format_map(context)
-            except KeyError:
-                pass
+            if os.environ:
+                try:
+                    v = v.format_map(dict(os.environ))
+                except KeyError:
+                    pass
+
+            if context:
+                try:
+                    v = v.format_map(context)
+                except KeyError:
+                    pass
 
             if isinstance(v, str):
                 v = parse_arg(v)
