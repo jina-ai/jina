@@ -1,6 +1,6 @@
 import collections
 import os
-from typing import Union, TextIO, Dict
+from typing import Union, TextIO, Dict, Tuple, Optional
 
 from yaml import MappingNode
 from yaml.composer import Composer
@@ -84,7 +84,7 @@ def parse_config_source(path: Union[str, TextIO],
                         allow_class_type: bool = True, *args, **kwargs) -> TextIO:
     # priority, filepath > classname > default
     import io
-    from pkg_resources import resource_filename
+    from pkg_resources import resource_filename, resource_stream
     if not path:
         raise BadConfigSource
     elif allow_stream and hasattr(path, 'read'):
@@ -94,7 +94,8 @@ def parse_config_source(path: Union[str, TextIO],
         return open(_complete_path(path), encoding='utf8')
     elif allow_builtin_resource and path.startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
-        return resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
+        # NOTE: this returns a binary stream
+        return open(resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml'))), encoding='utf8')
     elif allow_raw_yaml_content and path.startswith('!'):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
@@ -115,24 +116,27 @@ def parse_config_source(path: Union[str, TextIO],
                               ' or a valid file path, or a supported class name.')
 
 
-def _complete_path(path: str) -> str:
+def _complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
     _p = None
     if os.path.exists(path):
         # this checks both abs and relative paths already
         _p = path
     else:
-        _p = _search_file_in_paths(path)
+        _p = _search_file_in_paths(path, extra_search_paths)
     if _p:
         return _p
     else:
         raise FileNotFoundError(f'can not find {path}')
 
 
-def _search_file_in_paths(path):
+def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None):
     """searches in all dirs of the PATH environment variable and all dirs of files used in the call stack.
     """
     import inspect
     search_paths = []
+    if extra_search_paths:
+        search_paths.extend(extra_search_paths)
+
     frame = inspect.currentframe()
 
     # iterates over the call stack
@@ -148,7 +152,7 @@ def _search_file_in_paths(path):
             return _p
 
 
-def _load_py_modules(d: Dict) -> None:
+def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) -> None:
     """Find 'py_modules' in the dict recursively and then load them """
     mod = []
 
@@ -164,5 +168,5 @@ def _load_py_modules(d: Dict) -> None:
 
     _finditem(d)
     if mod:
-        mod = [_complete_path(m) for m in mod]
+        mod = [_complete_path(m, extra_search_paths) for m in mod]
         PathImporter.add_modules(*mod)

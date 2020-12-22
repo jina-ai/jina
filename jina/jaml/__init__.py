@@ -7,7 +7,7 @@ from typing import Dict, Any, Union, TextIO, Optional
 
 import yaml
 
-from .helper import JinaResolver, JinaLoader, parse_config_source, _load_py_modules
+from .helper import JinaResolver, JinaLoader, parse_config_source, load_py_modules
 
 __all__ = ['JAML', 'JAMLCompatible']
 
@@ -275,7 +275,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
 
             if allow_py_modules:
-                _load_py_modules(no_tag_yml)
+                # also add YAML parent path to the search paths
+                load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(str(source)),))
 
             # revert yaml's tag and load again, this time with substitution
             revert_tag_yml = JAML.dump(injected_yml).replace('__tag: ', '!')

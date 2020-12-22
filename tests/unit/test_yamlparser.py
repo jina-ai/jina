@@ -104,13 +104,14 @@ def test_class_yaml():
     a = JAML.load('!DummyClass {}')
     assert type(a) == DummyClass
 
+
+def test_class_yaml2():
     with open(resource_filename('jina',
                                 '/'.join(('resources', 'executors.requests.BaseExecutor.yml')))) as fp:
-        b = fp.read()
-        print(b)
-        c = JAML.load(b)
-        print(c)
+        JAML.load(fp)
 
+
+def test_class_yaml3():
     args = set_pea_parser().parse_args([])
 
     with BasePea(args):
