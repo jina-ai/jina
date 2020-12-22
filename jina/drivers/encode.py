@@ -41,8 +41,7 @@ class EncodeDriver(BaseEncodeDriver):
 
         def cache(self, docs: DocumentSet):
             docs_to_append = min(len(docs), self.available_capacity)
-            for doc in docs[: docs_to_append]:
-                self._doc_set.append(doc)
+            self._doc_set.extend(docs[: docs_to_append])
             return DocumentSet(docs[docs_to_append:])
 
         def __len__(self):
@@ -60,10 +59,10 @@ class EncodeDriver(BaseEncodeDriver):
         It is specially useful when the same EncoderExecutor can be used for documents of different granularities
          (chunks, chunks of chunks ...)
 
-    .. warning::
-        - This parameter was added to cover the case where root documents had very few chunks, and the encoder executor could
-        then only process them in batches of the chunk size of each document, which did not lead to the full use of batching capabilities
-        of the powerful Executors
+        .. warning::
+            - This parameter was added to cover the case where root documents had very few chunks, and the encoder executor could
+            then only process them in batches of the chunk size of each document, which did not lead to the full use of batching capabilities
+            of the powerful Executors
 
         """
         super().__init__(*args, **kwargs)
