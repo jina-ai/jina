@@ -1,10 +1,10 @@
 import argparse
 from typing import Dict, Any
 
-from .base import VersionedYamlParser
-from .. import Flow
-from ...helper import expand_env_var
-from ...parser import set_pod_parser
+from ..base import VersionedYAMLParser
+from ....flow import Flow
+from ....helper import expand_env_var
+from ....parser import set_pod_parser
 
 
 def _get_taboo():
@@ -12,7 +12,7 @@ def _get_taboo():
     return {k.dest for k in set_pod_parser()._actions if k.help == argparse.SUPPRESS}
 
 
-class V1Parser(VersionedYamlParser):
+class V1Parser(VersionedYAMLParser):
     """V1Parser introduces new syntax and features:
 
         - It has a top-level field ``version``
@@ -46,7 +46,7 @@ class V1Parser(VersionedYamlParser):
     """
     version = '1'  # the version number this parser designed for
 
-    def parse(self, data: Dict) -> 'Flow':
+    def parse(self, cls: type, data: Dict) -> 'Flow':
         """Return the Flow YAML parser given the syntax version number
 
         :param data: flow yaml file loaded as python dict
@@ -58,7 +58,7 @@ class V1Parser(VersionedYamlParser):
         # maybe there are some hanging kwargs in "parameters"
         tmp_a = (expand_env_var(v) for v in a)
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-        obj = Flow(*tmp_a, env=envs, **tmp_p)
+        obj = cls(*tmp_a, env=envs, **tmp_p)
 
         pp = data.get('pods', [])
         for pods in pp:

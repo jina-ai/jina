@@ -53,6 +53,7 @@ jobs:
           reaction-type: "eyes"
 
   lint-flake-8:
+    needs: commit-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -72,7 +73,7 @@ jobs:
 
 
   unit-test:
-    needs: commit-lint
+    needs: lint-flake-8
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
