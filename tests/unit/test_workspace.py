@@ -40,11 +40,9 @@ def test_compound_indexer(tmpdir, pea_id):
             c.touch()
             component_dir = tmpdir / f'{e.name}-{pea_id}-{c.name}.bin'
             c.save(str(component_dir))
-            print(component_dir)
             assert Path(c.index_abspath).exists()
-            print(c.index_abspath)
-            print(e.current_workspace)
-
+            assert c.save_abspath.startswith(e.current_workspace)
+            assert c.index_abspath.startswith(e.current_workspace)
 
         e.touch()
         executor_dir = tmpdir / f'{e.name}-{pea_id}-{e.name}.bin'

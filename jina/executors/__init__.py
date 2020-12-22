@@ -14,8 +14,8 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import expand_dict, expand_env_var, typename, get_random_identity
-from ..jaml import JAMLCompatible
+from ..helper import expand_env_var, typename, get_random_identity
+from ..jaml import JAMLCompatible, JAML
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -198,7 +198,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if unresolved_attr:
             _tmp = vars(self)
             _tmp['metas'] = _metas
-            new_metas = expand_dict(_tmp)['metas']
+            new_metas = JAML.expand_dict(_tmp)['metas']
 
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
@@ -376,6 +376,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         tmp['metas']['separated_workspace'] = separated_workspace
         tmp['metas']['pea_id'] = pea_id
         tmp['metas']['read_only'] = read_only
+
+        JAML.expand_dict(tmp)
         return tmp
 
     @staticmethod
