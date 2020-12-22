@@ -4,12 +4,11 @@ import threading
 from multiprocessing.synchronize import Event
 from typing import Dict, Union
 
-from jina.peapods.zmq import send_ctrl_message, Zmqlet
 from jina.enums import PeaRoleType
 from jina.excepts import PeaFailToStart
-
 from jina.helper import typename
 from jina.logging import JinaLogger
+from jina.peapods.zmq import send_ctrl_message, Zmqlet
 
 __all__ = ['BaseRuntime']
 
@@ -84,12 +83,13 @@ class RuntimeMeta(type):
 
 
 class BaseRuntime(metaclass=RuntimeMeta):
-
     """BaseRuntime is a process or thread providing the support to run different :class:`BasePea` in different environments.
     It manages the lifetime of these `BasePea` objects living in `Local`, `Remote`, or `Container` environment.
 
     Inherited classes must define their own `run` method that is the one that will be run in a separate process or thread than the main process
     """
+
+    _name_decor = 'R[%s]'  #: for decorating names
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__()
@@ -100,17 +100,16 @@ class BaseRuntime(metaclass=RuntimeMeta):
         self.is_shutdown = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready_event, self.is_shutdown)
         self.is_shutdown.clear()
-
         if 'daemon' in args:
             self.daemon = args.daemon
         if 'name' in self.args and self.args.name:
-            self.name = f'runtime-{self.args.name}'
+            self.name = self._name_decor % self.args.name
         if 'role' in self.args and self.args.role == PeaRoleType.PARALLEL:
-            self.name = f'runtime-{self.args.name}-{self.args.pea_id}'
+            self.name = self._name_decor % f'{self.args.name}-{self.args.pea_id}'
         if 'role' in self.args and self.args.role == PeaRoleType.HEAD:
-            self.name = f'runtime-{self.args.name}-head'
+            self.name = self._name_decor % f'{self.args.name}-head'
         if 'role' in self.args and self.args.role == PeaRoleType.TAIL:
-            self.name = f'runtime-{self.args.name}-tail'
+            self.name = self._name_decor % f'{self.args.name}-tail'
         if 'host' in self.args and 'port_ctrl' in self.args and 'ctrl_with_ipc' in self.args:
             self.ctrl_addr, self.ctrl_with_ipc = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl,
                                                                          self.args.ctrl_with_ipc)
@@ -140,7 +139,7 @@ class BaseRuntime(metaclass=RuntimeMeta):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fails to start {typename(self)} with name {self.name}, '	
+                self.logger.critical(f'fails to start {typename(self)} with name {self.name}, '
                                      f'this often means the executor used in the pod is not valid')
                 raise PeaFailToStart
             else:
