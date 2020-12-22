@@ -1,7 +1,7 @@
 import pytest
 
 from jina import Document
-from jina.drivers.rank import Chunk2DocRankDriver
+from jina.drivers.rank.aggregate import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
 from jina.proto import jina_pb2
 from jina.types.sets import DocumentSet
@@ -127,9 +127,10 @@ def create_chunk_chunk_matches_to_score():
     return Document(doc)
 
 
-def test_chunk2doc_ranker_driver_mock_exec():
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_mock_exec(keep_source_matches_as_chunks):
     doc = create_document_to_score()
-    driver = SimpleChunk2DocRankDriver()
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockLengthRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -145,11 +146,14 @@ def test_chunk2doc_ranker_driver_mock_exec():
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
+        expected_chunk_matches_length = 1 if keep_source_matches_as_chunks else 0
+        assert len(match.chunks) == expected_chunk_matches_length
 
 
-def test_chunk2doc_ranker_driver_max_ranker():
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
-    driver = SimpleChunk2DocRankDriver()
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMaxRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -165,11 +169,14 @@ def test_chunk2doc_ranker_driver_max_ranker():
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
+        expected_chunk_matches_length = 1 if keep_source_matches_as_chunks else 0
+        assert len(match.chunks) == expected_chunk_matches_length
 
 
-def test_chunk2doc_ranker_driver_min_ranker():
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
-    driver = SimpleChunk2DocRankDriver()
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -185,19 +192,24 @@ def test_chunk2doc_ranker_driver_min_ranker():
     for match in doc.matches:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
+        expected_chunk_matches_length = 1 if keep_source_matches_as_chunks else 0
+        assert len(match.chunks) == expected_chunk_matches_length
 
 
-def test_chunk2doc_ranker_driver_traverse_apply():
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_chunk2doc_ranker_driver_traverse_apply(keep_source_matches_as_chunks):
     docs = [create_chunk_matches_to_score(), ]
-    driver = SimpleChunk2DocRankDriver()
+    driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet(docs))
     for doc in docs:
         assert len(doc.matches) == 2
-        for idx, m in enumerate(doc.matches):
+        for idx, match in enumerate(doc.matches):
             # the score should be 1 / (1 + id * 2)
-            assert m.score.value == pytest.approx(1. / (1 + float(m.id[0]) * 2.), 0.0001)
+            assert match.score.value == pytest.approx(1. / (1 + float(match.id[0]) * 2.), 0.0001)
+            expected_chunk_matches_length = 2 if keep_source_matches_as_chunks else 0
+            assert len(match.chunks) == expected_chunk_matches_length
 
 
 @pytest.mark.skip('TODO: https://github.com/jina-ai/jina/issues/1014')
