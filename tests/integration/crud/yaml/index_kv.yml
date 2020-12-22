@@ -1,0 +1,35 @@
+!CompoundIndexer
+components:
+  - !BinaryPbIndexer
+    with:
+      index_filename: doc.gz
+    metas:
+      name: docidx
+      workspace: $JINA_TOPK_DIR
+metas:
+  name: chunk_indexer
+  workspace: $JINA_TOPK_DIR
+requests:
+  on:
+    UpdateRequest:
+      - !KVIndexDriver
+        with:
+          method: update
+          executor: docidx
+          traversal_paths: [ 'r' ]
+    DeleteRequest:
+      - !KVIndexDriver
+        with:
+          method: delete
+          executor: docidx
+          traversal_paths: [ 'r' ]
+    IndexRequest:
+      - !KVIndexDriver
+        with:
+          executor: docidx
+          traversal_paths: ['r']
+    [SearchRequest]:
+      - !KVSearchDriver
+        with:
+          executor: docidx
+          traversal_paths: ['m']
