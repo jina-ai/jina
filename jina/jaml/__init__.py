@@ -80,9 +80,8 @@ class JAML:
 
     @staticmethod
     def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True) -> Dict[str, Any]:
-        from .helper import parse_arg
+        from ..helper import parse_arg
         expand_map = SimpleNamespace()
-        context_map = SimpleNamespace()
         env_map = SimpleNamespace()
         pat = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')
 

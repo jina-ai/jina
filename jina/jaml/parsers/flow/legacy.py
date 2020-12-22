@@ -1,11 +1,11 @@
 from typing import Dict, Any
 
-from .base import VersionedYamlParser
-from .. import Flow
-from ...helper import expand_env_var
+from ..base import VersionedYAMLParser
+from ....flow import Flow
+from ....helper import expand_env_var
 
 
-class LegacyParser(VersionedYamlParser):
+class LegacyParser(VersionedYAMLParser):
     version = 'legacy'  # the version number this parser designed for
 
     def parse(self, data: Dict) -> 'Flow':

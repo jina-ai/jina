@@ -99,20 +99,16 @@ class BaseFlow(ExitStack, metaclass=FlowType):
     @classmethod
     def to_yaml(cls, representer, data):
         """Required by :mod:`pyyaml` """
-        tmp = data._dump_instance_to_yaml(data)
-        representer.sort_base_mapping_type_on_output = False
+        from ..jaml.parsers import get_parser
+        tmp = get_parser(cls, version=data._version).dump(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
-
-    @staticmethod
-    def _dump_instance_to_yaml(data):
-        # note: we only save non-default property for the sake of clarity
-        from .yaml_parser import get_parser
-        return get_parser(version=data._version).dump(data)
 
     @classmethod
     def from_yaml(cls, constructor, node):
         """Required by :mod:`pyyaml` """
-        return cls._get_instance_from_yaml(constructor, node)[0]
+        data = constructor.construct_mapping(node, deep=True)
+        from ..jaml.parsers import get_parser
+        return get_parser(cls, version=data.get('version', None)).parse(data)
 
     def save_config(self, filename: str = None) -> bool:
         """
@@ -150,14 +146,6 @@ class BaseFlow(ExitStack, metaclass=FlowType):
         else:
             with filename:
                 return JAML.load(filename)
-
-    @classmethod
-    def _get_instance_from_yaml(cls, constructor, node):
-
-        data = constructor.construct_mapping(node, deep=True)
-
-        from .yaml_parser import get_parser
-        return get_parser(version=data.get('version', None)).parse(data), data
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:

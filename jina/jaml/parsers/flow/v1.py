@@ -1,10 +1,10 @@
 import argparse
 from typing import Dict, Any
 
-from .base import VersionedYamlParser
-from .. import Flow
-from ...helper import expand_env_var
-from ...parser import set_pod_parser
+from ..base import VersionedYAMLParser
+from ....flow import Flow
+from ....helper import expand_env_var
+from ....parser import set_pod_parser
 
 
 def _get_taboo():
@@ -12,7 +12,7 @@ def _get_taboo():
     return {k.dest for k in set_pod_parser()._actions if k.help == argparse.SUPPRESS}
 
 
-class V1Parser(VersionedYamlParser):
+class V1Parser(VersionedYAMLParser):
     """V1Parser introduces new syntax and features:
 
         - It has a top-level field ``version``
