@@ -15,12 +15,13 @@ from .decorators import as_train_method, as_update_method, store_init_kwargs, as
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import expand_dict, expand_env_var, typename, get_random_identity
-from ..jaml import JAML, JAMLCompatible
+from ..jaml import JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
     from ..peapods.peas import BasePea
+    from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
