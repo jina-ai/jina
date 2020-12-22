@@ -9,6 +9,11 @@ DATA_FIELD = 'data'
 ID_KEY = 'id'
 CONTENT_HASH_KEY = 'content_hash'
 
+# noinspection PyUnreachableCode
+if False:
+    from jina.types.document import UniqueId
+    from jina import Document
+
 
 class BaseCache(BaseKVIndexer):
     """Base class of the cache inherited :class:`BaseKVIndexer`
@@ -36,7 +41,8 @@ class DocIDCache(BaseCache):
                 self.ids = pickle.load(open(path + '.ids', 'rb'))
                 self.cache = pickle.load(open(path + '.cache', 'rb'))
             except FileNotFoundError as e:
-                logger.warning(f'File path did not exist : {path}.ids or {path}.cache: {repr(e)}. Creating new CacheHandler...')
+                logger.warning(
+                    f'File path did not exist : {path}.ids or {path}.cache: {repr(e)}. Creating new CacheHandler...')
                 self.ids = []
                 self.cache = []
 
@@ -75,7 +81,7 @@ class DocIDCache(BaseCache):
         """
         Check whether the given doc's cached field exists in the index
 
-        :param doc: the 'Document' you want to query for
+        :param doc: the Document you want to query for
         """
         # FIXME
         if self.query_handler is None:
@@ -86,7 +92,7 @@ class DocIDCache(BaseCache):
         status = (cached_field in self.query_handler.cache) or None
         return status
 
-    def update(self, keys: Iterator[int], values: Iterator['Document'], *args, **kwargs):
+    def update(self, keys: Iterator['UniqueId'], values: Iterator['Document'], *args, **kwargs):
         """
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document"""
@@ -101,13 +107,13 @@ class DocIDCache(BaseCache):
                 cached_field = doc.content_hash
             self.query_handler.cache[key_idx] = cached_field
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator['UniqueId'], *args, **kwargs):
         """
         :param keys: list of Document.id
         """
         missed = check_keys_exist(keys, self.query_handler.ids)
         if missed:
-            raise KeyError(f'Keys {missed} were not found. No operation performed...')
+            raise KeyError(f'Keys {missed} were not found in {self.index_abspath}. No operation performed...')
 
         for key in keys:
             key_idx = self.query_handler.ids.index(key)

@@ -45,9 +45,8 @@ def test_cache_driver_twice(tmpdir):
         driver._traverse_apply(docs)
         filename = executor.save_abspath
 
-        # check persistence
-        executor.save()
-        assert Path(filename).exists()
+    # check persistence
+    assert Path(filename).exists()
 
 
 def test_cache_driver_tmpfile():
@@ -89,7 +88,6 @@ def test_cache_driver_from_file(tmp_path):
         # new docs
         docs = list(random_docs(10, start_id=100))
         driver._traverse_apply(docs)
-        executor.save()
 
     # check persistence
     assert Path(executor.save_abspath).exists()
@@ -128,7 +126,6 @@ def test_cache_content_driver_same_content(tmpdir):
             driver._traverse_apply(docs2)
 
         assert executor.size == 1
-        executor.save()
         filename = executor.save_abspath
 
     # update
@@ -141,7 +138,6 @@ def test_cache_content_driver_same_content(tmpdir):
     doc1.update_content_hash()
     with BaseExecutor.load(filename) as executor:
         executor.update([UniqueId(1)], [doc1])
-        executor.save()
 
     with BaseExecutor.load(filename) as executor:
         assert executor.query(doc1) is True
@@ -150,7 +146,6 @@ def test_cache_content_driver_same_content(tmpdir):
     # delete
     with BaseExecutor.load(filename) as executor:
         executor.delete([UniqueId(doc1.id)])
-        executor.save()
 
     with BaseExecutor.load(filename) as executor:
         assert executor.query(doc1) is None
