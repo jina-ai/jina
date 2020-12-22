@@ -37,14 +37,25 @@ __license__ = "Apache-2.0"
 
 from enum import IntEnum, EnumMeta
 
-from .jaml import JAMLCompatible
+
+class EnumType(EnumMeta):
+
+    def __new__(cls, *args, **kwargs):
+        _cls = super().__new__(cls, *args, **kwargs)
+        return cls.register_class(_cls)
+
+    @staticmethod
+    def register_class(cls):
+        reg_cls_set = getattr(cls, '_registered_class', set())
+        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
+            reg_cls_set.add(cls.__name__)
+            setattr(cls, '_registered_class', reg_cls_set)
+        from .jaml import JAML
+        JAML.register(cls)
+        return cls
 
 
-class EnumType(type(JAMLCompatible), EnumMeta):
-    pass
-
-
-class BetterEnum(JAMLCompatible, IntEnum, metaclass=EnumType):
+class BetterEnum(IntEnum, metaclass=EnumType):
     def __str__(self):
         return self.name
 
