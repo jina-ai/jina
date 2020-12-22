@@ -20,28 +20,23 @@ from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import complete_path, colored, \
     get_public_ip, get_internal_ip, typename, ArgNamespace
-from ..jaml import JAML
+from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..parser import set_client_cli_parser
 from ..peapods.pods.flow import FlowPod
 from ..peapods.pods.gateway import GatewayFlowPod
 
-if False:
-    import argparse
+__all__ = ['BaseFlow', 'FlowLike']
 
 FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
 
-class FlowType(type(ExitStack), type):
-
-    def __new__(cls, *args, **kwargs):
-        _cls = super().__new__(cls, *args, **kwargs)
-        JAML.register(_cls)
-        return _cls
+class FlowType(type(ExitStack), type(JAMLCompatible)):
+    pass
 
 
-class BaseFlow(ExitStack, metaclass=FlowType):
+class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     """An abstract flow object in Jina.
 
     .. note::
@@ -96,24 +91,6 @@ class BaseFlow(ExitStack, metaclass=FlowType):
         self._common_kwargs = kwargs
         self._kwargs = ArgNamespace.get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 
-    @classmethod
-    def to_yaml(cls, representer, data):
-        """Required by :mod:`pyyaml` """
-        tmp = data._dump_instance_to_yaml(data)
-        representer.sort_base_mapping_type_on_output = False
-        return representer.represent_mapping('!' + cls.__name__, tmp)
-
-    @staticmethod
-    def _dump_instance_to_yaml(data):
-        # note: we only save non-default property for the sake of clarity
-        from .yaml_parser import get_parser
-        return get_parser(version=data._version).dump(data)
-
-    @classmethod
-    def from_yaml(cls, constructor, node):
-        """Required by :mod:`pyyaml` """
-        return cls._get_instance_from_yaml(constructor, node)[0]
-
     def save_config(self, filename: str = None) -> bool:
         """
         Serialize the object to a yaml file
@@ -150,14 +127,6 @@ class BaseFlow(ExitStack, metaclass=FlowType):
         else:
             with filename:
                 return JAML.load(filename)
-
-    @classmethod
-    def _get_instance_from_yaml(cls, constructor, node):
-
-        data = constructor.construct_mapping(node, deep=True)
-
-        from .yaml_parser import get_parser
-        return get_parser(version=data.get('version', None)).parse(data), data
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:

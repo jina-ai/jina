@@ -1,16 +1,17 @@
-from typing import Dict, Any
+from typing import Dict, Any, Type
 
-from .base import VersionedYamlParser
-from .. import Flow
-from ...helper import expand_env_var
+from ..base import VersionedYAMLParser
+from ....flow.base import BaseFlow
+from ....helper import expand_env_var
 
 
-class LegacyParser(VersionedYamlParser):
+class LegacyParser(VersionedYAMLParser):
     version = 'legacy'  # the version number this parser designed for
 
-    def parse(self, data: Dict) -> 'Flow':
+    def parse(self, cls: Type['BaseFlow'], data: Dict) -> 'BaseFlow':
         """Return the Flow YAML parser given the syntax version number
 
+        :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
         """
         p = data.get('with', {})  # type: Dict[str, Any]
@@ -19,7 +20,7 @@ class LegacyParser(VersionedYamlParser):
         # maybe there are some hanging kwargs in "parameters"
         tmp_a = (expand_env_var(v) for v in a)
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-        obj = Flow(*tmp_a, **tmp_p)
+        obj = cls(*tmp_a, **tmp_p)
 
         pp = data.get('pods', {})
         for pod_name, pod_attr in pp.items():
@@ -30,7 +31,7 @@ class LegacyParser(VersionedYamlParser):
 
         return obj
 
-    def dump(self, data: 'Flow') -> Dict:
+    def dump(self, data: 'BaseFlow') -> Dict:
         """Return the dictionary given a versioned flow object
 
         :param data: versioned flow object
