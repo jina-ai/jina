@@ -243,11 +243,11 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
     @classmethod
     def load_config(cls,
-                    source: Union[str, TextIO],
+                    source: Union[str, TextIO], *,
                     allow_py_modules: bool = True,
                     substitute: bool = True,
                     context: Dict[str, Any] = None,
-                    *args, **kwargs) -> 'JAMLCompatible':
+                    **kwargs) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
         of loading extra py_modules, substitute env & context variables.
 
@@ -265,12 +265,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             BaseExecutor.load_config('a.yml')
 
         """
-        with parse_config_source(source, *args, **kwargs) as fp:
+        with parse_config_source(source, **kwargs) as fp:
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
                 # extra arguments are parsed to inject_config
-                injected_yml = cls.inject_config(no_tag_yml, *args, **kwargs)
+                injected_yml = cls.inject_config(no_tag_yml, **kwargs)
             else:
                 raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
 
