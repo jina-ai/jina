@@ -101,12 +101,16 @@ def train(*args, **kwargs):
 def search(*args, **kwargs):
     """Generate a searching request """
     if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
+        # associate all VectorSearchDriver and SliceQL driver to use top_k
+        # TODO: not really elegant, to be refactored (Han)
         from ..drivers.querylang.slice import SliceQL
-        topk_ql = QueryLang(SliceQL(start=0, end=kwargs['top_k'], priority=1))
+        from ..drivers.search import VectorSearchDriver
+        topk_ql = [QueryLang(SliceQL(start=0, end=kwargs['top_k'], priority=1)),
+                   QueryLang(VectorSearchDriver(top_k=kwargs['top_k'], priority=1))]
         if 'queryset' not in kwargs:
-            kwargs['queryset'] = [topk_ql]
+            kwargs['queryset'] = topk_ql
         else:
-            kwargs['queryset'].append(topk_ql)
+            kwargs['queryset'].extend(topk_ql)
     yield from _generate(*args, **kwargs)
 
 

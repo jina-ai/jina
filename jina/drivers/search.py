@@ -5,6 +5,7 @@ from typing import Tuple
 
 from . import BaseExecutableDriver, QuerySetReader
 from ..types.document import Document
+from ..types.score import NamedScore
 
 if False:
     from ..types.sets import DocumentSet
@@ -125,8 +126,8 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
             topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
             for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
                 m = Document(id=int(numpy_match_id))
-                m.score.value = score
-                m.score.op_name = op_name
+                m.score = NamedScore(op_name=op_name,
+                                     value=score)
                 r = doc.matches.append(m)
                 if vec is not None:
                     r.embedding = vec

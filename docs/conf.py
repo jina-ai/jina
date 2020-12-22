@@ -32,6 +32,12 @@ templates_path = ['template']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'tests']
 pygments_style = 'rainbow_dash'
 html_theme = 'sphinx_rtd_theme'
+
+base_url = '/'
+version_choices = [('', 'latest'),
+                   ('master', 'master')]
+version_choices = [(base_url + v[0], v[1]) for v in version_choices]
+
 html_theme_options = {
     # 'canonical_url': '',
     'analytics_id': 'UA-164627626-3',  # Provided by Google in your dashboard
@@ -47,6 +53,11 @@ html_theme_options = {
     # 'navigation_depth': 4,
     # 'includehidden': True,
     'titles_only': True,
+
+}
+
+html_context = {
+    'theme_version_switcher': version_choices
 }
 
 html_static_path = ['_static']
@@ -92,13 +103,14 @@ notfound_no_urls_prefix = True
 
 apidoc_module_dir = '../jina/'
 apidoc_output_dir = 'api'
-apidoc_excluded_paths = ['tests', 'legacy']
+apidoc_excluded_paths = ['tests', 'legacy', 'hub']
 apidoc_separate_modules = True
 apidoc_extra_args = ['-t', 'template/']
 autodoc_member_order = 'bysource'
 autodoc_mock_imports = ['argparse', 'numpy', 'np', 'tensorflow', 'torch', 'scipy']
 autoclass_content = 'both'
 set_type_checking_flag = False
+html_last_updated_fmt = ''
 
 
 def setup(app):

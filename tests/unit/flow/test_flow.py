@@ -11,8 +11,8 @@ from jina.enums import FlowOptimizeLevel, SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
-from jina.peapods.runtimes.local import LocalRuntime
 from jina.peapods.pods import BasePod
+from jina.peapods.runtimes.local import LocalRuntime
 from jina.proto.jina_pb2 import DocumentProto
 from tests import random_docs, rm_files
 
