@@ -1,10 +1,10 @@
-from pathlib import Path
-
-from typing import Optional
 from collections import defaultdict
+from pathlib import Path
+from typing import Optional
+
+import yaml
 
 from ..helper import colored
-from ..jaml import JAML
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
 
@@ -53,7 +53,7 @@ class OptimizationResults:
 
     def _dump_results(self, filepath: Path):
         filepath.parent.mkdir(exist_ok=True)
-        JAML.dump(self.params, open(filepath, 'w'))
+        yaml.dump(self.params, open(filepath, 'w'))
 
 
 class OptunaOptimizer:
@@ -112,7 +112,8 @@ class OptunaOptimizer:
 
     def _export_params(self, study):
         self.best_config_filepath.parent.mkdir(exist_ok=True)
-        JAML.dump(study.best_trial.params, open(self.best_config_filepath, 'w'))
+        yaml.dump(study.best_trial.params, open(self.best_config_filepath, 'w'))
+        
 
     def optimize_flow(
         self,
@@ -120,19 +121,25 @@ class OptunaOptimizer:
         sampler: str = 'TPESampler',
         direction: str = 'maximize',
         seed: int = 42,
+        **kwargs
     ):
         """
         :param n_trials: evaluation trials to be run
         :param sampler: optuna sampler
         :param direction: direction of the optimization from either of `maximize` or `minimize`
         :param seed: random seed for reproducibility
+        :param kwargs: extra parameters for optuna sampler
         """
         import optuna
-
-        sampler = getattr(optuna.samplers, sampler)(seed=seed)
+        if sampler == 'GridSampler':
+            sampler = getattr(optuna.samplers, sampler)(**kwargs)
+        else:
+            sampler = getattr(optuna.samplers, sampler)(seed=seed, **kwargs)
         study = optuna.create_study(direction=direction, sampler=sampler)
         study.optimize(self._objective, n_trials=n_trials)
         logger.info(colored(f'Number of finished trials: {len(study.trials)}', 'green'))
         logger.info(colored(f'Best trial: {study.best_trial.params}', 'green'))
         logger.info(colored(f'Time to finish: {study.best_trial.duration}', 'green'))
-        return OptimizationResults(study.best_trial.params)
+        # return OptimizationResults(study.best_trial.params)
+        self._export_params(study)
+        return study.best_trial.params
