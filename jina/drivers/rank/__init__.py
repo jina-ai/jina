@@ -5,6 +5,8 @@ import numpy as np
 from .. import BaseExecutableDriver
 from ...types.document import Document
 from ...types.document.uid import UniqueId
+from ...types.score import NamedScore
+
 
 if False:
     from ...types.sets import DocumentSet
@@ -65,7 +67,6 @@ class Matches2DocRankDriver(BaseRankDriver):
         cm.build()
         for int_match_id, score in match_scores:
             match_id = UniqueId(int_match_id)
-            cm[match_id].score.value = score
-            cm[match_id].score.op_name = op_name
+            cm[match_id].score = NamedScore(value=score, op_name=op_name, ref_id=context_doc.id)
 
         cm.sort(key=lambda x: x.score.value, reverse=True)

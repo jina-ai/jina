@@ -5,6 +5,8 @@ import numpy as np
 
 from ....executors.rankers import Chunk2DocRanker
 from ....types.document import Document
+from ....types.score import NamedScore
+
 from .. import BaseRankDriver
 
 if False:
@@ -55,8 +57,8 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
         op_name = self.exec.__class__.__name__
         for int_doc_id, score in docs_scores:
             m = Document(id=int_doc_id)
-            m.score.value = score
-            m.score.op_name = op_name
+            m.score = NamedScore(op_name=op_name,
+                                 value=score)
             if self.keep_source_matches_as_chunks:
                 for match_chunk_id in parent_id_chunk_id_map[int_doc_id]:
                     m.chunks.append(chunk_matches_by_id[match_chunk_id])

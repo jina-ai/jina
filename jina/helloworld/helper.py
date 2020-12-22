@@ -47,15 +47,6 @@ def _get_groundtruths(target, pseudo_match=True):
     return groundtruths
 
 
-def _compute_mean_evaluation(resp):
-    global num_docs_evaluated
-    global evaluation_value
-    for d in resp.search.docs:
-        num_docs_evaluated += 1
-        for evaluation in d.evaluations:
-            evaluation_value[evaluation.op_name] += evaluation.value
-
-
 def index_generator(num_docs: int, target: dict):
     for internal_doc_id in range(num_docs):
         d = Document(content=target['index']['data'][internal_doc_id])
@@ -76,7 +67,7 @@ def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
 
 
 def print_result(resp):
-    _compute_mean_evaluation(resp)
+    global evaluation_value
     global top_k
     for d in resp.search.docs:
         vi = d.uri
@@ -87,6 +78,11 @@ def print_result(resp):
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
         result_html.append('</td></tr>\n')
 
+        # update evaluation values
+        # as evaluator set to return running avg, here we can simply replace the value
+        for evaluation in d.evaluations:
+            evaluation_value[evaluation.op_name] = evaluation.value
+
 
 def write_html(html_path):
     global num_docs_evaluated
@@ -96,10 +92,10 @@ def write_html(html_path):
             open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
-        precision_evaluation_percentage = evaluation_value['Precision@N'] / num_docs_evaluated * 100.0
-        recall_evaluation_percentage = evaluation_value['Recall@N'] / num_docs_evaluated * 100.0
-        t = t.replace('{% PRECISION_EVALUATION %}', '{:.2f}%'.format(precision_evaluation_percentage))
-        t = t.replace('{% RECALL_EVALUATION %}', '{:.2f}%'.format(recall_evaluation_percentage))
+        t = t.replace('{% PRECISION_EVALUATION %}',
+                      '{:.2f}%'.format(evaluation_value['Precision@N'] * 100.0))
+        t = t.replace('{% RECALL_EVALUATION %}',
+                      '{:.2f}%'.format(evaluation_value['Recall@N'] * 100.0))
         t = t.replace('{% TOP_K %}', str(top_k))
 
         fw.write(t)

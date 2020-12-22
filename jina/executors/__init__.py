@@ -9,13 +9,14 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TypeVar, Type, TextIO, List
+from typing import Dict, Union, TypeVar, Type, TextIO, List
+
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
-from ..excepts import EmptyExecutorYAML, BadWorkspace, BadPersistantFile, NoDriverForRequest, UnattachedDriver
+from ..excepts import EmptyExecutorYAML, BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import expand_dict, expand_env_var, get_local_config_source, typename, get_random_identity
-from ..jaml import JAML
 from ..importer import PathImporter
+from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -34,7 +35,7 @@ _ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
 _ref_desolve_map.__dict__['metas'].__dict__['separated_workspace'] = False
 
 
-class ExecutorType(type):
+class ExecutorType(type(JAMLCompatible), type):
 
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
@@ -64,7 +65,6 @@ class ExecutorType(type):
 
         reg_cls_set = getattr(cls, '_registered_class', set())
         if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
-
             wrap_func(cls, ['__init__'], store_init_kwargs)
             wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
@@ -72,11 +72,10 @@ class ExecutorType(type):
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        JAML.register(cls)
         return cls
 
 
-class BaseExecutor(metaclass=ExecutorType):
+class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
     The base class of the executor, can be used to build encoder, indexer, etc.
 
@@ -335,7 +334,8 @@ class BaseExecutor(metaclass=ExecutorType):
         if not self.read_only and self.is_updated:
             f = filename or self.save_abspath
             if not f:
-                f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
+                f = tempfile.NamedTemporaryFile('w', delete=False,
+                                                dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
 
             if self.max_snapshot > 0 and os.path.exists(f):
                 bak_f = f + f'.snapshot-{self._last_snapshot_ts.strftime("%Y%m%d%H%M%S") or "NA"}'
@@ -353,7 +353,7 @@ class BaseExecutor(metaclass=ExecutorType):
         else:
             if not self.is_updated:
                 self.logger.info(f'no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. '
-                             'If you really want to save it, call "touch()" before "save()" to force saving')
+                                 'If you really want to save it, call "touch()" before "save()" to force saving')
 
     def save_config(self, filename: str = None) -> bool:
         """
@@ -446,94 +446,6 @@ class BaseExecutor(metaclass=ExecutorType):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
-
-    @classmethod
-    def to_yaml(cls, representer, data):
-        """Required by :mod:`pyyaml` """
-        tmp = data._dump_instance_to_yaml(data)
-        if getattr(data, '_drivers'):
-            tmp['requests'] = {'on': data._drivers}
-        return representer.represent_mapping('!' + cls.__name__, tmp)
-
-    @classmethod
-    def from_yaml(cls, constructor, node):
-        """Required by :mod:`pyyaml` """
-        return cls._get_instance_from_yaml(constructor, node)[0]
-
-    @classmethod
-    def _get_instance_from_yaml(cls, constructor, node):
-        data = constructor.construct_mapping(node, deep=True)
-
-        _meta_config = get_default_metas()
-        _meta_config.update(data.get('metas', {}))
-        if _meta_config:
-            data['metas'] = _meta_config
-
-        dump_path = cls._get_dump_path_from_config(data.get('metas', {}))
-        load_from_dump = False
-        if dump_path:
-            obj = cls.load(dump_path)
-            obj.logger.success(f'restore {cls.__name__} from {dump_path}')
-            load_from_dump = True
-        else:
-            cls.init_from_yaml = True
-
-            if cls.store_args_kwargs:
-                p = data.get('with', {})  # type: Dict[str, Any]
-                a = p.pop('args') if 'args' in p else ()
-                k = p.pop('kwargs') if 'kwargs' in p else {}
-                # maybe there are some hanging kwargs in "parameters"
-                # tmp_a = (expand_env_var(v) for v in a)
-                # tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-                tmp_a = a
-                tmp_p = {kk: vv for kk, vv in {**k, **p}.items()}
-                obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}), requests=data.get('requests', {}))
-            else:
-                # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
-                obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
-            obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
-            cls.init_from_yaml = False
-
-        # if node.tag in {'!CompoundExecutor'}:
-        #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
-
-        if not _meta_config:
-            obj.logger.warning(
-                '"metas" config is not found in this yaml file, '
-                'this map is important as it provides an unique identifier when '
-                'persisting the executor on disk.')
-
-        return obj, data, load_from_dump
-
-    @staticmethod
-    def _get_dump_path_from_config(meta_config: Dict):
-        if 'name' in meta_config:
-            if meta_config.get('separated_workspace', False) is True:
-                if 'pea_id' in meta_config and isinstance(meta_config['pea_id'], int):
-                    work_dir = meta_config['pea_workspace']
-                    dump_path = os.path.join(work_dir, f'{meta_config["name"]}.{"bin"}')
-                    if os.path.exists(dump_path):
-                        return dump_path
-                else:
-                    raise BadWorkspace('separated_workspace=True but pea_id is unset or set to a bad value')
-            else:
-                dump_path = os.path.join(meta_config.get('workspace', os.getcwd()),
-                                         f'{meta_config["name"]}.{"bin"}')
-                if os.path.exists(dump_path):
-                    return dump_path
-
-    @staticmethod
-    def _dump_instance_to_yaml(data) -> Dict[str, Dict]:
-        # note: we only save non-default property for the sake of clarity
-        _defaults = get_default_metas()
-        p = {k: getattr(data, k) for k, v in _defaults.items() if getattr(data, k) != v}
-        a = {k: v for k, v in data._init_kwargs_dict.items() if k not in _defaults}
-        r = {}
-        if a:
-            r['with'] = a
-        if p:
-            r['metas'] = p
-        return r
 
     def attach(self, pea: 'BasePea', *args, **kwargs):
         """Attach this executor to a :class:`jina.peapods.pea.BasePea`.

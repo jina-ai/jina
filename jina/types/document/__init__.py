@@ -12,6 +12,7 @@ from .uid import *
 from ..ndarray.generic import NdArray
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
+from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
@@ -451,6 +452,19 @@ class Document:
     @granularity.setter
     def granularity(self, granularity_value: int):
         self._document.granularity = granularity_value
+
+    @property
+    def score(self):
+        return self._document.score
+
+    @score.setter
+    def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
+        if isinstance(value, jina_pb2.NamedScoreProto):
+            self._document.score.CopyFrom(value)
+        elif isinstance(value, NamedScore):
+            self._document.score.CopyFrom(value._score)
+        else:
+            raise TypeError(f'score is in unsupported type {typename(value)}')
 
     def convert_buffer_to_blob(self, **kwargs):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,

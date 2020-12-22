@@ -95,3 +95,6 @@ component/resource:
 
 component/hub:
   - jina/hub/**/*
+
+component/jaml:
+  - jina/jaml/**/*

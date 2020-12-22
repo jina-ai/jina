@@ -12,7 +12,8 @@ IMPORTED.hub = False
 
 
 def import_classes(namespace: str, targets=None,
-                   show_import_table: bool = False, import_once: bool = False):
+                   show_import_table: bool = False,
+                   import_once: bool = False):
     """
     Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML
     constructor beforehand. It can be also used to import third-part or external executors.
@@ -92,8 +93,7 @@ def import_classes(namespace: str, targets=None,
                 if (getattr(mod, k).__class__.__name__ == import_type) and (not targets or k in targets):
                     try:
                         _c = getattr(mod, k)
-                        load_stat[m].append(
-                            (k, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
+
                         d = depend_tree
                         for vvv in _c.mro()[:-1][::-1]:
                             if vvv.__name__ not in d:
@@ -110,6 +110,8 @@ def import_classes(namespace: str, targets=None,
                             get_default_reqs(type.mro(getattr(mod, k)))
                         except ValueError:
                             pass
+                        load_stat[m].append(
+                            (k, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
                     except Exception as ex:
                         load_stat[m].append((k, False, ex))
                         bad_imports.append('.'.join([m, k]))
@@ -124,6 +126,7 @@ def import_classes(namespace: str, targets=None,
 
     if show_import_table:
         _print_load_table(load_stat)
+
     else:
         if bad_imports:
             if namespace != 'jina.hub':

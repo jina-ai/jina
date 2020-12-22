@@ -10,9 +10,9 @@ from jina.checker import NetworkChecker
 from jina.enums import FlowOptimizeLevel, SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
-from jina.peapods.runtimes.local import LocalRuntime
+from jina.parser import set_pea_parser, set_ping_parser, set_pod_parser
 from jina.peapods.pods import BasePod
+from jina.peapods.runtimes.local import LocalRuntime
 from jina.proto.jina_pb2 import DocumentProto
 from tests import random_docs, rm_files
 
@@ -138,14 +138,6 @@ def test_simple_flow():
         assert node.peas_args['peas'][0] == node.tail_args
 
 
-def test_load_flow_from_yaml():
-    with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
-        a = Flow.load_config(fp)
-        with open(cur_dir.parent / 'yaml' / 'swarm-out.yml', 'w') as fp, a:
-            a.to_swarm_yaml(fp)
-        rm_files([str(cur_dir.parent / 'yaml' / 'swarm-out.yml')])
-
-
 def test_flow_identical():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
@@ -212,18 +204,6 @@ def test_flow_no_container():
 
     with f:
         f.index(input_fn=random_docs(10))
-
-
-def test_flow_yaml_dump():
-    f = Flow(logserver_config=str(cur_dir.parent / 'yaml' / 'test-server-config.yml'),
-             optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
-             no_gateway=True)
-    f.save_config('test1.yml')
-
-    fl = Flow.load_config('test1.yml')
-    assert f.args.logserver_config == fl.args.logserver_config
-    assert f.args.optimize_level == fl.args.optimize_level
-    rm_files(['test1.yml'])
 
 
 def test_flow_log_server():
@@ -520,19 +500,6 @@ def test_flow_with_modalitys_simple(mocker):
         flow.index(input_fn=input_fn, on_done=response_mock)
 
     response_mock.assert_called()
-
-
-def test_load_flow_with_port():
-    f = Flow.load_config('yaml/test-flow-port.yml')
-    with f:
-        assert f.port_expose == 12345
-
-
-def test_load_flow_from_cli():
-    a = set_flow_parser().parse_args(['--uses', 'yaml/test-flow-port.yml'])
-    f = Flow.load_config(a.uses)
-    with f:
-        assert f.port_expose == 12345
 
 
 def test_flow_arguments_priorities():
