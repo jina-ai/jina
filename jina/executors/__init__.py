@@ -15,7 +15,7 @@ from .decorators import as_train_method, as_update_method, store_init_kwargs, as
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import expand_env_var, typename, get_random_identity
-from ..jaml import JAMLCompatible, JAML
+from ..jaml import JAMLCompatible, JAML, subvar_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -178,7 +178,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         for k, v in _metas.items():
             if not hasattr(self, k):
                 if isinstance(v, str):
-                    if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                    if not subvar_regex.findall(v):
                         setattr(self, k, v)
                     else:
                         unresolved_attr = True
@@ -203,10 +203,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
                 if not hasattr(self, k):
-                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                    if isinstance(v, str) and subvar_regex.findall(v):
                         v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
                     if isinstance(v, str):
-                        if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                        if not subvar_regex.findall(v):
                             setattr(self, k, v)
                         else:
                             raise ValueError(f'{k}={v} is not expandable or badly referred')

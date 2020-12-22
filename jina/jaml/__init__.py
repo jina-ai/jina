@@ -13,6 +13,8 @@ __all__ = ['JAML', 'JAMLCompatible']
 
 from ..excepts import BadConfigSource
 
+subvar_regex = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')  #: regex for substituting variables
+
 
 class JAML:
     """A Jina style YAML loader and dumper, a wrapper on PyYAML.
@@ -81,7 +83,6 @@ class JAML:
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
-        pat = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')
 
         def _scan(sub_d, p):
             if isinstance(sub_d, dict):
@@ -111,18 +112,18 @@ class JAML:
                     if isinstance(v, dict) or isinstance(v, list):
                         _replace(v, p.__dict__[k])
                     else:
-                        if isinstance(v, str) and pat.findall(v):
+                        if isinstance(v, str) and subvar_regex.findall(v):
                             sub_d[k] = _sub(v, p)
             elif isinstance(sub_d, list):
                 for idx, v in enumerate(sub_d):
                     if isinstance(v, dict) or isinstance(v, list):
                         _replace(v, p[idx])
                     else:
-                        if isinstance(v, str) and pat.findall(v):
+                        if isinstance(v, str) and subvar_regex.findall(v):
                             sub_d[idx] = _sub(v, p)
 
         def _sub(v, p):
-            v = re.sub(pat, '{\\1}', v)
+            v = re.sub(subvar_regex, '{\\1}', v)
 
             if resolve_cycle_ref:
                 try:
