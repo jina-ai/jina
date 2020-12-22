@@ -18,7 +18,7 @@ from .. import JINA_GLOBAL
 from ..clients import Client
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
-from ..helper import complete_path, colored, \
+from ..helper import colored, \
     get_public_ip, get_internal_ip, typename, ArgNamespace
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger

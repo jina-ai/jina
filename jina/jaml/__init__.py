@@ -255,15 +255,22 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
-
         :return: :class:`JAMLCompatible` object
+
+
+        .. highlight:: python
+        .. code-block:: python
+
+            # load Executor from yaml file
+            BaseExecutor.load_config('a.yml')
+
         """
         with parse_config_source(source, *args, **kwargs) as fp:
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
                 # extra arguments are parsed to inject_config
-                injected_yml = cls.inject_config(*args, **kwargs)
+                injected_yml = cls.inject_config(no_tag_yml, *args, **kwargs)
             else:
                 raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
 

@@ -153,15 +153,16 @@ def _load_py_modules(d: Dict) -> None:
     mod = []
 
     def _finditem(obj, key='py_modules'):
-        if key in obj:
-            if isinstance(key, str):
-                mod.append(obj[key])
-            elif isinstance(key, list) or isinstance(key, tuple):
-                mod.extend(obj[key])
+        value = obj.get(key, [])
+        if isinstance(value, str):
+            mod.append(value)
+        elif isinstance(value, list) or isinstance(value, tuple):
+            mod.extend(value)
         for k, v in obj.items():
             if isinstance(v, dict):
                 _finditem(v, key)
 
     _finditem(d)
-    mod = [_complete_path(m) for m in mod]
-    PathImporter.add_modules(*mod)
+    if mod:
+        mod = [_complete_path(m) for m in mod]
+        PathImporter.add_modules(*mod)

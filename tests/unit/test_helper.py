@@ -9,8 +9,8 @@ from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
-from jina.helper import cached_property, convert_tuple_to_list, complete_path
-from jina.logging import default_logger
+from jina.helper import cached_property, convert_tuple_to_list
+from jina.jaml.helper import _complete_path
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.document.uid import *
@@ -177,11 +177,11 @@ def test_random_docs():
 
 
 def test_complete_path_success():
-    assert complete_path('test_helper.py')
-    assert complete_path('helper.py')
-    assert complete_path('bash')
+    assert _complete_path('test_helper.py')
+    assert _complete_path('helper.py')
+    assert _complete_path('bash')
 
 
 def test_complete_path_not_found():
     with pytest.raises(FileNotFoundError):
-        assert complete_path('unknown.yaml')
+        assert _complete_path('unknown.yaml')
