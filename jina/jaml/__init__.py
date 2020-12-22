@@ -1,7 +1,9 @@
 import os
 import re
+import tempfile
+import warnings
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TextIO
+from typing import Dict, Any, Union, TextIO, Optional
 
 import yaml
 
@@ -9,7 +11,7 @@ from .helper import JinaResolver, JinaLoader, parse_config_source, _load_py_modu
 
 __all__ = ['JAML', 'JAMLCompatible']
 
-from ..excepts import EmptyConfig
+from ..excepts import BadConfigSource
 
 
 class JAML:
@@ -162,7 +164,7 @@ class JAML:
         tag = getattr(cls, 'yaml_tag', '!' + cls.__name__)
 
         try:
-            yaml.add_representer(cls, cls.to_yaml)
+            yaml.add_representer(cls, cls._to_yaml)
         except AttributeError:
             def t_y(representer, data):
                 return representer.represent_yaml_object(
@@ -171,7 +173,7 @@ class JAML:
 
             yaml.add_representer(cls, t_y)
         try:
-            yaml.add_constructor(tag, cls.from_yaml, JinaLoader)
+            yaml.add_constructor(tag, cls._from_yaml, JinaLoader)
         except AttributeError:
 
             def f_y(constructor, node):
@@ -203,47 +205,78 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
     _version = ''  #: YAML version number, this will be later overridden if YAML config says the other way
 
     @classmethod
-    def to_yaml(cls, representer, data):
-        """A low-level interface required by :mod:`pyyaml` write interface """
+    def _to_yaml(cls, representer, data):
+        """A low-level interface required by :mod:`pyyaml` write interface
+
+        .. warning::
+            This function should not be used directly, please use :meth:`save_config`.
+
+        """
         from .parsers import get_parser
         tmp = get_parser(cls, version=data._version).dump(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
-    def from_yaml(cls, constructor, node):
-        """A low-level interface required by :mod:`pyyaml` load interface """
+    def _from_yaml(cls, constructor, node):
+        """A low-level interface required by :mod:`pyyaml` load interface
+
+        .. warning::
+            This function should not be used directly, please use :meth:`load_config`.
+
+        """
         data = constructor.construct_mapping(node, deep=True)
         from .parsers import get_parser
         return get_parser(cls, version=data.get('version', None)).parse(cls, data)
 
-    @classmethod
-    def load_config(cls, source: Union[str, TextIO],
-                    allow_pymodule: bool=True,
-                    *args, **kwargs) -> 'JAMLCompatible':
-        """A high-level interface for loading configuration.
+    def save_config(self, filename: Optional[str] = None):
+        """Save the object's config into a YAML file
 
-        :param raw_config: raw config to work on
+        :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used
+        :return: successfully dumped or not
+        """
+        f = filename or getattr(self, 'config_abspath', None)
+        if not f:
+            f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
+            warnings.warn(f'no "filename" is given, {self!r}\'s config will be saved to: {f}')
+        with open(f, 'w', encoding='utf8') as fp:
+            JAML.dump(self, fp)
+
+    @classmethod
+    def load_config(cls,
+                    source: Union[str, TextIO],
+                    allow_py_modules: bool = True,
+                    substitute: bool = True,
+                    context: Dict[str, Any] = None,
+                    *args, **kwargs) -> 'JAMLCompatible':
+        """A high-level interface for loading configuration with features
+        of loading extra py_modules, substitute env & context variables.
+
         :param source: the source of the configs (multi-kind)
+        :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
+        :param substitute: substitute environment, internal reference and context variables.
+        :param context: context replacement variables in a dict, the value of the dict is the replacement.
+
         :return: :class:`JAMLCompatible` object
         """
         with parse_config_source(source, *args, **kwargs) as fp:
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
+                # extra arguments are parsed to inject_config
                 injected_yml = cls.inject_config(*args, **kwargs)
             else:
-                raise EmptyConfig(f'can not construct {cls} from an empty {source}. nothing to read from there')
+                raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
 
-            if allow_pymodule:
+            if allow_py_modules:
                 _load_py_modules(no_tag_yml)
 
-            # revert yml's tag and load again, this time with substitution
+            # revert yaml's tag and load again, this time with substitution
             revert_tag_yml = JAML.dump(injected_yml).replace('__tag: ', '!')
-            return JAML.load(revert_tag_yml, *args, **kwargs)
+            return JAML.load(revert_tag_yml, substitute=substitute, context=context)
 
     @classmethod
     def inject_config(cls, raw_config: Dict, *args, **kwargs) -> Dict:
-        """Inject config into the raw_config before loading into an object.
+        """Inject/modify the config before loading it into an object.
 
         :param raw_config: raw config to work on
 
@@ -253,5 +286,3 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
         """
         return raw_config
-
-

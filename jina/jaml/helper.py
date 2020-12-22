@@ -10,6 +10,7 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
+from jina.excepts import BadConfigSource
 from jina.importer import PathImporter
 
 
@@ -85,7 +86,7 @@ def parse_config_source(path: Union[str, TextIO],
     import io
     from pkg_resources import resource_filename
     if not path:
-        raise FileNotFoundError
+        raise BadConfigSource
     elif allow_stream and hasattr(path, 'read'):
         # already a readable stream
         return path
@@ -110,8 +111,8 @@ def parse_config_source(path: Union[str, TextIO],
         # possible class name
         return io.StringIO(f'!{path}')
     else:
-        raise FileNotFoundError(f'{path} can not be resolved, it should be a readable stream,'
-                                ' or a valid file path, or a supported class name.')
+        raise BadConfigSource(f'{path} can not be resolved, it should be a readable stream,'
+                              ' or a valid file path, or a supported class name.')
 
 
 def _complete_path(path: str) -> str:

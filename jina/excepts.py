@@ -76,8 +76,8 @@ class EmptyExecutorYAML(Exception):
     """The yaml config file is empty, nothing to read from there."""
 
 
-class EmptyConfig(Exception):
-    """The yaml config file is empty, nothing to read from there."""
+class BadConfigSource(FileNotFoundError):
+    """The yaml config file is bad, not loadable or not exist"""
 
 
 class BadWorkspace(Exception):

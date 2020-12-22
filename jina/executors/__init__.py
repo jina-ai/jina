@@ -353,23 +353,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 self.logger.info(f'no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. '
                                  'If you really want to save it, call "touch()" before "save()" to force saving')
 
-    def save_config(self, filename: str = None) -> bool:
-        """
-        Serialize the object to a yaml file
-
-        :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used
-        :return: successfully dumped or not
-        """
-        _updated, self.is_updated = self.is_updated, False
-        f = filename or self.config_abspath
-        if not f:
-            f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
-        with open(f, 'w', encoding='utf8') as fp:
-            JAML.dump(self, fp)
-        self.logger.info(f'executor\'s yaml config is save to {f}')
-        self.is_updated = _updated
-        return True
-
     @classmethod
     def inject_config(cls: Type[AnyExecutor],
                       raw_config: Dict,
