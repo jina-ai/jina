@@ -58,6 +58,8 @@ class DocumentSet(MutableSequence):
             return Document(self._docs_map[str(item)])
         elif isinstance(item, str):
             return Document(self._docs_map[item])
+        elif isinstance(item, slice):
+            return DocumentSet(self._docs_proto[item])
         else:
             raise IndexError(f'do not support this index {item}')
 
