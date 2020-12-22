@@ -151,7 +151,7 @@ class JAML:
         Serialize a Python object into a YAML stream.
         If stream is None, return the produced string instead.
         """
-        return yaml.dump(data, stream=stream, default_flow_style=False, **kwargs)
+        return yaml.dump(data, stream=stream, default_flow_style=False, sort_keys=False, **kwargs)
 
     @staticmethod
     def register(cls):
@@ -270,7 +270,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
                 # extra arguments are parsed to inject_config
-                injected_yml = cls.inject_config(no_tag_yml, **kwargs)
+                no_tag_yml = cls.inject_config(no_tag_yml, **kwargs)
             else:
                 raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
 
@@ -279,7 +279,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(str(source)),))
 
             # revert yaml's tag and load again, this time with substitution
-            revert_tag_yml = JAML.dump(injected_yml).replace('__tag: ', '!')
+            revert_tag_yml = JAML.dump(no_tag_yml).replace('__tag: ', '!')
             return JAML.load(revert_tag_yml, substitute=substitute, context=context)
 
     @classmethod
