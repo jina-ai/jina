@@ -1,5 +1,7 @@
 from pathlib import Path
+
 from typing import Optional
+from collections import defaultdict
 
 from ..helper import colored
 from ..jaml import JAML
@@ -19,7 +21,7 @@ class EvaluationCallback:
         :param eval_name: evaluation name as required by evaluator
         """
         self.eval_name = eval_name
-        self.evaluation_values = {}
+        self.evaluation_values = defaultdict(float)
         self.n_docs = 0
 
     def get_fresh_callback(self):
@@ -36,13 +38,22 @@ class EvaluationCallback:
 
     def __call__(self, response):
         self.n_docs += len(response.search.docs)
-        logger.info(f"Num of docs evaluated: {self.n_docs}")
+        logger.info(f'Num of docs evaluated: {self.n_docs}')
         for doc in response.search.docs:
             for evaluation in doc.evaluations:
                 self.evaluation_values[evaluation.op_name] = (
                     self.evaluation_values.get(evaluation.op_name, 0.0)
                     + evaluation.value
                 )
+
+
+class OptimizationResults:
+    def __init__(self, params: dict):
+        self.params = params
+
+    def _dump_results(self, filepath: Path):
+        filepath.parent.mkdir(exist_ok=True)
+        JAML.dump(self.params, open(filepath, 'w'))
 
 
 class OptunaOptimizer:
@@ -102,9 +113,6 @@ class OptunaOptimizer:
     def _export_params(self, study):
         self.best_config_filepath.parent.mkdir(exist_ok=True)
         JAML.dump(study.best_trial.params, open(self.best_config_filepath, 'w'))
-        logger.info(colored(f'Number of finished trials: {len(study.trials)}', 'green'))
-        logger.info(colored(f'Best trial: {study.best_trial.params}', 'green'))
-        logger.info(colored(f'Time to finish: {study.best_trial.duration}', 'green'))
 
     def optimize_flow(
         self,
@@ -124,4 +132,7 @@ class OptunaOptimizer:
         sampler = getattr(optuna.samplers, sampler)(seed=seed)
         study = optuna.create_study(direction=direction, sampler=sampler)
         study.optimize(self._objective, n_trials=n_trials)
-        self._export_params(study)
+        logger.info(colored(f'Number of finished trials: {len(study.trials)}', 'green'))
+        logger.info(colored(f'Best trial: {study.best_trial.params}', 'green'))
+        logger.info(colored(f'Time to finish: {study.best_trial.duration}', 'green'))
+        return OptimizationResults(study.best_trial.params)
