@@ -36,8 +36,8 @@ def test_yaml_expand():
     assert b['nest']['quote_dict'] == {}
     assert b['nest']['quote_string'].startswith('{')
     assert b['nest']['quote_string'].endswith('}')
-    assert b['exist_env'] != '$PATH'
-    assert b['non_exist_env'] == '$JINA_WHATEVER_ENV'
+    assert b['exist_env'] != '${{PATH}}'
+    assert b['non_exist_env'] == '${{JINA_WHATEVER_ENV}}'
 
 
 def test_yaml_expand2():
