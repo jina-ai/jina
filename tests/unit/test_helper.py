@@ -10,7 +10,6 @@ from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
 from jina.helper import cached_property, convert_tuple_to_list, complete_path
-from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.document.uid import *
@@ -163,17 +162,26 @@ def test_safe_callback():
 
 def test_random_docs():
     np.random.seed(42)
-    docs1 = list(random_docs(10))
+    nr_docs = 10
+    docs1 = list(random_docs(nr_docs))
     np.random.seed(42)
-    docs2 = list(random_docs(10))
+    docs2 = list(random_docs(nr_docs))
+    doc_ids = []
+    chunk_ids = []
     for d2, d1 in zip(docs2, docs1):
         np.testing.assert_almost_equal(d2.embedding, NdArray(d1.embedding).value)
+        doc_ids.append(int(d1.id))
         assert d2.text == d1.text
         assert d2.tags['id'] == d1.tags['id']
         for c2, c1 in zip(d2.chunks, d1.chunks):
             np.testing.assert_almost_equal(c2.embedding, NdArray(c1.embedding).value)
+            chunk_ids.append(int(c1.id))
             assert c2.text == c1.text
             assert c2.tags['id'] == c1.tags['id']
+            assert c2.tags['parent_id'] == c1.tags['parent_id']
+    assert len(set(doc_ids)) == len(doc_ids)
+    assert len(set(chunk_ids)) == len(chunk_ids)
+    assert len(set(doc_ids).intersection(set(chunk_ids))) == 0
 
 
 def test_complete_path_success():

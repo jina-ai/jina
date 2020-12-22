@@ -39,6 +39,62 @@ def test_incremental_indexing_sequential_indexers(random_workspace):
         assert doc_indexer._size == num_uniq_docs
 
 
+def test_incremental_indexing_sequential_indexers_content_hash_same_content(random_workspace):
+    total_docs = 20
+    duplicate_docs, _ = get_duplicate_docs(num_docs=total_docs, same_content=True)
+    # because they all have the same content
+    num_uniq_docs = 1
+
+    f = (Flow()
+         .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer_content_hash.yml'))
+         .add(uses=os.path.join(cur_dir, 'uniq_docindexer_content_hash.yml')))
+
+    Client.check_input(duplicate_docs[:10])
+    Client.check_input(duplicate_docs)
+
+    with f:
+        f.index(duplicate_docs[:10])
+
+    with f:
+        f.index(duplicate_docs)
+
+    with BaseExecutor.load(random_workspace / 'vec_idx.bin') as vector_indexer:
+        assert isinstance(vector_indexer, NumpyIndexer)
+        assert vector_indexer._size == num_uniq_docs
+
+    with BaseExecutor.load(random_workspace / 'doc_idx.bin') as doc_indexer:
+        assert isinstance(doc_indexer, BinaryPbIndexer)
+        assert doc_indexer._size == num_uniq_docs
+
+
+def test_incremental_indexing_sequential_indexers_content_hash(random_workspace):
+    total_docs = 20
+    duplicate_docs, _ = get_duplicate_docs(num_docs=total_docs, same_content=False)
+    # because the content is % 2
+    num_uniq_docs = 10
+
+    f = (Flow()
+         .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer_content_hash.yml'))
+         .add(uses=os.path.join(cur_dir, 'uniq_docindexer_content_hash.yml')))
+
+    Client.check_input(duplicate_docs[:10])
+    Client.check_input(duplicate_docs)
+
+    with f:
+        f.index(duplicate_docs[:10])
+
+    with f:
+        f.index(duplicate_docs)
+
+    with BaseExecutor.load(random_workspace / 'vec_idx.bin') as vector_indexer:
+        assert isinstance(vector_indexer, NumpyIndexer)
+        assert vector_indexer._size == num_uniq_docs
+
+    with BaseExecutor.load(random_workspace / 'doc_idx.bin') as doc_indexer:
+        assert isinstance(doc_indexer, BinaryPbIndexer)
+        assert doc_indexer._size == num_uniq_docs
+
+
 def test_incremental_indexing_parallel_indexers(random_workspace):
     total_docs = 1000
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
