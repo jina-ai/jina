@@ -51,7 +51,6 @@ def test_cache_driver_twice(tmpdir):
 
 def test_cache_driver_tmpfile():
     docs = list(random_docs(10, embedding=False))
-    print(f'test_cache_driver_tmpfile')
     driver = MockCacheDriver()
     with DocIDCache(field=ID_KEY) as executor:
         assert not executor.handler_mutex
@@ -137,18 +136,18 @@ def test_cache_content_driver_same_content(tmpdir):
     doc1.text = new_string
     doc1.update_content_hash()
     with BaseExecutor.load(filename) as executor:
-        executor.update([UniqueId(1)], [doc1])
+        executor.update([UniqueId(1)], [doc1.content_hash])
 
     with BaseExecutor.load(filename) as executor:
-        assert executor.query(doc1) is True
-        assert executor.query(old_doc) is None
+        assert executor.query(doc1.content_hash) is True
+        assert executor.query(old_doc.content_hash) is None
 
     # delete
     with BaseExecutor.load(filename) as executor:
         executor.delete([UniqueId(doc1.id)])
 
     with BaseExecutor.load(filename) as executor:
-        assert executor.query(doc1) is None
+        assert executor.query(doc1.content_hash) is None
 
 
 def test_cache_content_driver_same_id(tmp_path):

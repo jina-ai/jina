@@ -3,7 +3,7 @@ import tempfile
 from typing import Optional, Iterator
 
 from jina.executors.indexers import BaseKVIndexer
-from jina.helper import deprecated_alias, check_keys_exist
+from jina.helper import check_keys_exist
 
 DATA_FIELD = 'data'
 ID_KEY = 'id'
@@ -12,7 +12,6 @@ CONTENT_HASH_KEY = 'content_hash'
 # noinspection PyUnreachableCode
 if False:
     from jina.types.document import UniqueId
-    from jina import Document
 
 
 class BaseCache(BaseKVIndexer):
@@ -30,7 +29,9 @@ class BaseCache(BaseKVIndexer):
 
 class DocIDCache(BaseCache):
     """A key-value indexer that specializes in caching.
-    Serializes the cache to file
+    Serializes the cache to two files, one for ids, one for the actually cached field.
+    If field=`id`, then the second file is redundant. The class optimizes the process
+    so that there are no duplicates.
     """
 
     class CacheHandler:
@@ -39,16 +40,16 @@ class DocIDCache(BaseCache):
             try:
                 # TODO maybe mmap?
                 self.ids = pickle.load(open(path + '.ids', 'rb'))
-                self.cache = pickle.load(open(path + '.cache', 'rb'))
+                self.content_hash = pickle.load(open(path + '.cache', 'rb'))
             except FileNotFoundError as e:
                 logger.warning(
                     f'File path did not exist : {path}.ids or {path}.cache: {repr(e)}. Creating new CacheHandler...')
                 self.ids = []
-                self.cache = []
+                self.content_hash = []
 
         def close(self):
             pickle.dump(self.ids, open(self.path + '.ids', 'wb'))
-            pickle.dump(self.cache, open(self.path + '.cache', 'wb'))
+            pickle.dump(self.content_hash, open(self.path + '.cache', 'wb'))
 
     supported_fields = [ID_KEY, CONTENT_HASH_KEY]
     default_field = ID_KEY
@@ -63,36 +64,38 @@ class DocIDCache(BaseCache):
             index_filename = tempfile.NamedTemporaryFile(delete=False).name
         super().__init__(index_filename, *args, **kwargs)
         self.field = kwargs.get('field', self.default_field)
-        # TODO optimization in case it's just id
         if self.field not in self.supported_fields:
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
-    @deprecated_alias(doc_id='doc')
-    def add(self, doc: 'Document', *args, **kwargs):
-        cached_field = doc.id
-        if self.field == CONTENT_HASH_KEY:
-            cached_field = doc.content_hash
+    def add(self, doc_id: 'UniqueId', *args, **kwargs):
         self._size += 1
-        self.query_handler.ids.append(doc.id)
-        self.query_handler.cache.append(cached_field)
+        self.query_handler.ids.append(doc_id)
 
-    @deprecated_alias(doc_id='doc')
-    def query(self, doc: 'Document', *args, **kwargs) -> Optional[bool]:
-        """
-        Check whether the given doc's cached field exists in the index
+        # optimization. don't duplicate ids
+        if self.field != ID_KEY:
+            data = kwargs.get(DATA_FIELD, None)
+            if data is None:
+                raise ValueError(f'Got None from CacheDriver')
+            self.query_handler.content_hash.append(data)
 
-        :param doc: the Document you want to query for
+    def query(self, data, *args, **kwargs) -> Optional[bool]:
         """
-        # FIXME
+        Check whether the data exists in the cache
+
+        :param data: either the id or the content_hash of a Document
+        """
+        # FIXME this shouldn't happen
         if self.query_handler is None:
             self.query_handler = self.get_query_handler()
-        cached_field = doc.id
-        if self.field == CONTENT_HASH_KEY:
-            cached_field = doc.content_hash
-        status = (cached_field in self.query_handler.cache) or None
+
+        if self.field == ID_KEY:
+            status = (data in self.query_handler.ids) or None
+        else:
+            status = (data in self.query_handler.content_hash) or None
+
         return status
 
-    def update(self, keys: Iterator['UniqueId'], values: Iterator['Document'], *args, **kwargs):
+    def update(self, keys: Iterator['UniqueId'], values: Iterator[any], *args, **kwargs):
         """
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document"""
@@ -100,12 +103,11 @@ class DocIDCache(BaseCache):
         if missed:
             raise KeyError(f'Keys {missed} were not found in {self.index_abspath}. No operation performed...')
 
-        for key, doc in zip(keys, values):
+        for key, cached_field in zip(keys, values):
             key_idx = self.query_handler.ids.index(key)
-            cached_field = doc.id
-            if self.field == CONTENT_HASH_KEY:
-                cached_field = doc.content_hash
-            self.query_handler.cache[key_idx] = cached_field
+            # optimization. don't duplicate ids
+            if self.field != ID_KEY:
+                self.query_handler.content_hash[key_idx] = cached_field
 
     def delete(self, keys: Iterator['UniqueId'], *args, **kwargs):
         """
@@ -118,14 +120,18 @@ class DocIDCache(BaseCache):
         for key in keys:
             key_idx = self.query_handler.ids.index(key)
             self.query_handler.ids = [id for idx, id in enumerate(self.query_handler.ids) if idx != key_idx]
-            self.query_handler.cache = [cache for idx, cache in enumerate(self.query_handler.cache) if idx != key_idx]
+            if self.field != ID_KEY:
+                self.query_handler.content_hash = [cached_field for idx, cached_field in
+                                                   enumerate(self.query_handler.content_hash) if idx != key_idx]
             self._size -= 1
 
     def get_add_handler(self):
+        # not needed, as we use the queryhandler
         pass
 
     def get_query_handler(self) -> CacheHandler:
         return self.CacheHandler(self.index_abspath, self.logger)
 
     def get_create_handler(self):
+        # not needed, as we use the queryhandler
         pass
