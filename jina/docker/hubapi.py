@@ -172,7 +172,7 @@ def _register_to_mongodb(logger, summary: Dict = None):
     hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
 
     if not credentials_file().is_file():
-        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
 
     with open(credentials_file(), 'r') as cf:
