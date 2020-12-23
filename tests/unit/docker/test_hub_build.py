@@ -13,11 +13,6 @@ from jina.parser import set_hub_build_parser, set_hub_list_parser, set_hub_pushp
 
 cur_dir = Path(__file__).parent
 
-@pytest.fixture
-def access_token_github():
-    token = os.environ.get('GITHUB_TOKEN', None)
-    return token
-
 @pytest.mark.timeout(360)
 def test_hub_build_pull():
     args = set_hub_build_parser().parse_args(

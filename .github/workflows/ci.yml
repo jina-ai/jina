@@ -108,7 +108,6 @@ jobs:
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage result from unit-test
         if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
         uses: actions/upload-artifact@v1

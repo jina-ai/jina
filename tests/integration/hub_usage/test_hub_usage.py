@@ -120,6 +120,7 @@ def test_hub_build_push(monkeypatch, access_token_github):
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
 
+@pytest.mark.skipif(condition='os.environ.get(\'GITHUB_TOKEN\')==None', reason='Token not found')
 def test_hub_build_push_push_again(monkeypatch, access_token_github):
     monkeypatch.setattr(Path, 'is_file', True)
     monkeypatch.setattr(hubapi, '_fetch_access_token', access_token_github)
