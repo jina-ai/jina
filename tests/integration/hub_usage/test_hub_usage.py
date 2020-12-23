@@ -92,10 +92,10 @@ def test_build_timeout_ready():
 def test_hub_build_push(monkeypatch, access_token_github):
     monkeypatch.setattr(Path, 'is_file', True)
     monkeypatch.setattr(hubapi, '_fetch_access_token', access_token_github)
-    args = set_hub_build_parser().parse_args([str(cur_dir + 'dummyhub'), '--push', '--host-info'])
+    args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
 
-    with open(cur_dir + 'dummyhub' + 'manifest.yml') as fp:
+    with open(cur_dir + '/hub-mwu' + '/manifest.yml') as fp:
         manifest_jaml = JAML.load(fp, substitute=True)
         manifest = expand_dict(manifest_jaml)
 
@@ -123,10 +123,10 @@ def test_hub_build_push(monkeypatch, access_token_github):
 def test_hub_build_push_push_again(monkeypatch, access_token_github):
     monkeypatch.setattr(Path, 'is_file', True)
     monkeypatch.setattr(hubapi, '_fetch_access_token', access_token_github)
-    args = set_hub_build_parser().parse_args([str(cur_dir) + '/dummyhub', '--push', '--host-info'])
+    args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info'])
     summary = HubIO(args).build()
 
-    with open(str(cur_dir) + '/dummyhub' + '/manifest.yml') as fp:
+    with open(str(cur_dir) + '/hub-mwu' + '/manifest.yml') as fp:
         manifest_jaml = JAML.load(fp, substitute=True)
         manifest = expand_dict(manifest_jaml)
 
@@ -152,5 +152,5 @@ def test_hub_build_push_push_again(monkeypatch, access_token_github):
 
     with pytest.raises(ImageAlreadyExists):
         # try and push same version again should fail with `--no-overwrite`
-        args = set_hub_build_parser().parse_args([str(cur_dir) + '/dummyhub', '--push', '--host-info', '--no-overwrite'])
+        args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info', '--no-overwrite'])
         HubIO(args).build()
