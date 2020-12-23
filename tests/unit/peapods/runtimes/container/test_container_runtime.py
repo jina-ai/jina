@@ -51,8 +51,6 @@ def test_simple_container_with_ext_yaml(docker_image_built):
         time.sleep(2)
 
 
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ,
-                    reason='this test has very high chance on blocking the CI on github?')
 def test_flow_with_one_container_pod(docker_image_built):
     f = (Flow()
          .add(name='dummyEncoder1', uses=img_name))

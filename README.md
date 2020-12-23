@@ -105,8 +105,8 @@ jina hello-world --help
 
 |     |   |
 | --- |---|
-| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
-| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐣  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🚀  | [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### Create
 
@@ -305,8 +305,8 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 |     |   |
 | --- |---|
-| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
-| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐣   | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🚀   | [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 
 #### Customize Encoder
