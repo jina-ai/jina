@@ -125,11 +125,15 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
         hubapi_yml = yaml.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
 
-    headers = _fetch_github_access_token(logger)
-
-    if not headers:
-        logger.error(f'aborting push to docker hub. please login using command: {colored("jina hub login", attrs=["bold"])}')
+    access_token = _fetch_github_access_token(logger)
+    if not access_token:
+        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
+
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': access_token
+    }
 
     try:
         import requests
@@ -205,11 +209,16 @@ def _register_to_mongodb(logger, summary: Dict = None):
         hubapi_yml = yaml.load(fp)
 
     hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
-    headers = _fetch_github_access_token(logger)
 
-    if not headers:
+    access_token = _fetch_github_access_token(logger)
+    if not access_token:
         logger.error(f'aborting push to mongodb. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
+
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': access_token
+    }
 
     try:
         import requests
@@ -243,12 +252,4 @@ def _fetch_github_access_token(logger):
         cred_yml = yaml.load(cf)
     access_token = cred_yml['access_token']
 
-    if not access_token:
-        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
-        return
-
-    headers = {
-        'Accept': 'application/json',
-        'authorizationToken': access_token
-    }
-    return headers
+    return access_token
