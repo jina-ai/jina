@@ -19,7 +19,7 @@ internal_var_regex = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
 
 class JAML:
-    """A Jina style YAML loader and dumper, a wrapper on PyYAML.
+    """A Jina YAML parser supports loading and dumping and substituting variables.
 
     To use it:
 
@@ -47,16 +47,24 @@ class JAML:
 
         ${{ <expression> }}
 
-    To evaluate (i.e. substitute the value to the real value) the expression when loading, use :meth:`load(substitute=True)`.
+    To evaluate (i.e. substitute the value to the real value)
+    the expression when loading, use :meth:`load(substitute=True)`.
 
     To substitute the value based on a dict,
 
     .. highlight:: python
     .. code-block:: python
 
-        obk = JAML.load(fp, substitute=True,
-                              context={'context_var': 3.14,
-                                       'context_var2': 'hello-world'})
+        obj = JAML.load(fp, substitute=True,
+                            context={'context_var': 3.14,
+                                    'context_var2': 'hello-world'})
+
+    .. note::
+        :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`
+        and all their subclasses have already implemented JAML interfaces,
+        to load YAML config into objects, please use :meth:`Flow.load_config`,
+        :meth:`BaseExecutor.load_config`, etc.
+
     """
 
     @staticmethod
@@ -67,6 +75,12 @@ class JAML:
 
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
+
+        .. note::
+            :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`
+            and all their subclasses have already implemented JAML interfaces,
+            to load YAML config into objects, please use :meth:`Flow.load_config`,
+            :meth:`BaseExecutor.load_config`, etc.
         """
         r = yaml.load(stream, Loader=JinaLoader)
         if substitute:
