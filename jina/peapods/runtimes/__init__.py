@@ -89,7 +89,7 @@ class BaseRuntime(metaclass=RuntimeMeta):
     Inherited classes must define their own `run` method that is the one that will be run in a separate process or thread than the main process
     """
 
-    _name_decor = 'R[%s]'  #: for decorating names
+    _name_decor = '%s'  #: for decorating names
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__()
