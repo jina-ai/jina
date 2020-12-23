@@ -12,6 +12,7 @@ from .helper import JinaResolver, JinaLoader, parse_config_source, load_py_modul
 __all__ = ['JAML', 'JAMLCompatible']
 
 from ..excepts import BadConfigSource
+from ..helper import expand_env_var
 
 subvar_regex = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')  #: regex for substituting variables
 
@@ -82,6 +83,7 @@ class JAML:
     def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True) -> Dict[str, Any]:
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
+        env_map = SimpleNamespace()
 
         def _scan(sub_d, p):
             if isinstance(sub_d, dict):
@@ -111,48 +113,54 @@ class JAML:
                     if isinstance(v, dict) or isinstance(v, list):
                         _replace(v, p.__dict__[k])
                     else:
-                        if isinstance(v, str) and subvar_regex.findall(v):
+                        if isinstance(v, str):
                             sub_d[k] = _sub(v, p)
             elif isinstance(sub_d, list):
                 for idx, v in enumerate(sub_d):
                     if isinstance(v, dict) or isinstance(v, list):
                         _replace(v, p[idx])
                     else:
-                        if isinstance(v, str) and subvar_regex.findall(v):
+                        if isinstance(v, str):
                             sub_d[idx] = _sub(v, p)
 
         def _sub(v, p):
+            v = expand_env_var(v)
+
+            if not subvar_regex.findall(v):
+                return v
+
+            # 0. replace ${{var}} to {var} to use .format
             v = re.sub(subvar_regex, '{\\1}', v)
 
             # 1. resolve internal reference
-            # 2. substitute the envs
-            # 3. substitute the context dict
-            # 4. make string to float/int/list/bool with best effort
             if resolve_cycle_ref:
                 try:
                     # "root" context is now the global namespace
                     # "this" context is now the current node namespace
-                    v = v.format(root=expand_map, this=p)
+                    v = v.format(root=expand_map, this=p, ENV=env_map)
                 except KeyError:
                     pass
 
+            # 2. substitute the envs
             if os.environ:
                 try:
                     v = v.format_map(dict(os.environ))
                 except KeyError:
                     pass
 
+            # 3. substitute the context dict
             if context:
                 try:
                     v = v.format_map(context)
                 except KeyError:
                     pass
 
-            if isinstance(v, str):
-                v = parse_arg(v)
+            # 4. make string to float/int/list/bool with best effort
+            v = parse_arg(v)
             return v
 
         _scan(d, expand_map)
+        _scan(dict(os.environ), env_map)
         _replace(d, expand_map)
         return d
 
