@@ -15,7 +15,7 @@ from ..excepts import BadConfigSource
 from ..helper import expand_env_var
 
 subvar_regex = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')  #: regex for substituting variables
-
+internal_var_regex = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
 class JAML:
     """A Jina style YAML loader and dumper, a wrapper on PyYAML.
@@ -107,41 +107,43 @@ class JAML:
                     else:
                         p.append(v)
 
-        def _replace(sub_d, p):
+        def _replace(sub_d, p, resolve_ref=False):
             if isinstance(sub_d, dict):
                 for k, v in sub_d.items():
                     if isinstance(v, dict) or isinstance(v, list):
-                        _replace(v, p.__dict__[k])
+                        _replace(v, p.__dict__[k], resolve_ref)
                     else:
                         if isinstance(v, str):
-                            sub_d[k] = _sub(v, p)
+                            if resolve_ref and internal_var_regex.findall(v):
+                                sub_d[k] = _resolve(v, p)
+                            else:
+                                sub_d[k] = _sub(v)
             elif isinstance(sub_d, list):
                 for idx, v in enumerate(sub_d):
                     if isinstance(v, dict) or isinstance(v, list):
-                        _replace(v, p[idx])
+                        _replace(v, p[idx], resolve_ref)
                     else:
                         if isinstance(v, str):
-                            sub_d[idx] = _sub(v, p)
+                            if resolve_ref and internal_var_regex.findall(v):
+                                sub_d[idx] = _resolve(v, p)
+                            else:
+                                sub_d[idx] = _sub(v)
 
-        def _sub(v, p):
+        def _sub(v):
             v = expand_env_var(v)
-
-            if not subvar_regex.findall(v):
+            if not (isinstance(v, str) and subvar_regex.findall(v)):
                 return v
 
             # 0. replace ${{var}} to {var} to use .format
             v = re.sub(subvar_regex, '{\\1}', v)
 
-            # 1. resolve internal reference
-            if resolve_cycle_ref:
-                try:
-                    # "root" context is now the global namespace
-                    # "this" context is now the current node namespace
-                    v = v.format(root=expand_map, this=p, ENV=env_map)
-                except KeyError:
-                    pass
+            # 1. substitute the envs (new syntax: ${{ENV.VAR_NAME}})
+            try:
+                v = v.format(ENV=env_map)
+            except KeyError:
+                pass
 
-            # 2. substitute the envs
+            # 2. substitute the envs (old syntax: $VAR_NAME)
             if os.environ:
                 try:
                     v = v.format_map(dict(os.environ))
@@ -159,9 +161,33 @@ class JAML:
             v = parse_arg(v)
             return v
 
+        def _resolve(v, p):
+            # resolve internal reference
+            try:
+                # "root" context is now the global namespace
+                # "this" context is now the current node namespace
+                print(f'before: {v}')
+                v = v.format(root=expand_map, this=p)
+                print(f'after: {v}')
+            except KeyError:
+                pass
+            return v
+
         _scan(d, expand_map)
         _scan(dict(os.environ), env_map)
+        # first do var replacement
         _replace(d, expand_map)
+
+        # do three rounds of scan-replace to resolve internal references
+        for _ in range(3):
+            # rebuild expand_map
+            expand_map = SimpleNamespace()
+            _scan(d, expand_map)
+
+            # resolve internal reference
+            if resolve_cycle_ref:
+                _replace(d, expand_map, resolve_ref=True)
+
         return d
 
     @staticmethod
@@ -293,13 +319,19 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             else:
                 raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
 
+            if substitute:
+                # expand variables
+                no_tag_yml = JAML.expand_dict(no_tag_yml, context)
+
             if allow_py_modules:
                 # also add YAML parent path to the search paths
                 load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(str(source)),))
 
             # revert yaml's tag and load again, this time with substitution
             revert_tag_yml = JAML.dump(no_tag_yml).replace('__tag: ', '!')
-            return JAML.load(revert_tag_yml, substitute=substitute, context=context)
+
+            # load into object, no more substitute
+            return JAML.load(revert_tag_yml, substitute=False)
 
     @classmethod
     def inject_config(cls, raw_config: Dict, *args, **kwargs) -> Dict:

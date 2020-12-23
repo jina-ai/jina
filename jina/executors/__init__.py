@@ -377,7 +377,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         tmp['metas']['pea_id'] = pea_id
         tmp['metas']['read_only'] = read_only
 
-        JAML.expand_dict(tmp)
         return tmp
 
     @staticmethod

@@ -162,5 +162,20 @@ def test_enum_yaml():
 
 def test_encoder_name_env_replace():
     os.environ['BE_TEST_NAME'] = 'hello123'
+    os.environ['BATCH_SIZE'] = '256'
     with BaseExecutor.load_config('yaml/test-encoder-env.yml') as be:
         assert be.name == 'hello123'
+        assert be.batch_size == 256
+
+
+def test_encoder_name_dict_replace():
+    d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
+    with BaseExecutor.load_config('yaml/test-encoder-env.yml', context=d) as be:
+        assert be.name == 'hello123'
+        assert be.batch_size == 256
+        assert be.workspace == 'hello123-256'
+
+
+def test_encoder_inject_config_via_kwargs():
+    with BaseExecutor.load_config('yaml/test-encoder-env.yml', pea_id=345) as be:
+        assert be.pea_id == 345
