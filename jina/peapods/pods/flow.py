@@ -4,7 +4,7 @@ from . import BasePod
 from .helper import _fill_in_host, _copy_to_head_args, _set_peas_args, _copy_to_tail_args
 from ... import __default_host__
 from ...enums import PodRoleType, SocketType, RemoteAccessType
-from ...helper import get_parsed_args, get_non_defaults_args
+from ...helper import ArgNamespace
 from ...parser import set_pod_parser
 
 
@@ -29,10 +29,10 @@ class FlowPod(BasePod):
         :param needs: a list of names this BasePod needs to receive message from
         """
         _parser = parser()
-        self.cli_args, self._args, self.unk_args = get_parsed_args(kwargs, _parser)
+        self.cli_args, self._args, self.unk_args = ArgNamespace.get_parsed_args(kwargs, _parser)
         super().__init__(self._args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
-        self._kwargs = get_non_defaults_args(self._args, _parser)
+        self._kwargs = ArgNamespace.get_non_defaults_args(self._args, _parser)
         self.role = pod_role
 
     def to_cli_command(self):

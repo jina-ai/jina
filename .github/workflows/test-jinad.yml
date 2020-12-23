@@ -2,8 +2,8 @@ name: CI
 
 on:
   pull_request:
-    branches-ignore:
-      - '**'
+    # branches-ignore:
+    #   - '**'
 
 jobs:
   jinad-test:
@@ -21,9 +21,9 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build jina test-pip with fluentd
+      - name: Build jina test-pip for hubpod
         run: |
-          docker build --build-arg PIP_TAG="[devel]" -f tests/integration/jinad/Dockerfiles/Dockerfile -t jinaai/jina:test-pip .
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
       - name: Build hub pod image
         run: |
           docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test

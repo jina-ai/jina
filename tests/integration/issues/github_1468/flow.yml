@@ -1,0 +1,17 @@
+!Flow
+with:
+  prefetch: 10
+  read_only: true  # better add this in the query time
+pods:
+  filter_chunk_1:
+    uses: pods/filter_chunk_1.yml
+    read_only: true
+  filter_chunk_2:
+    uses: pods/filter_chunk_1.yml
+    read_only: true
+    needs: [gateway]
+  merge_route_process:
+    uses: _forward
+    parallel: 2
+    uses_before: _merge_chunks
+    needs: [filter_chunk_1, filter_chunk_2]

@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import argparse
 import os
 
-
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
@@ -138,6 +137,8 @@ def set_hub_build_parser(parser=None):
     parser.add_argument('--test-level', type=BuildTestLevel.from_string,
                         choices=list(BuildTestLevel), default=BuildTestLevel.FLOW,
                         help='the test level when "test-uses" is set, "NONE" means no test')
+    parser.add_argument('--timeout-ready', type=int, default=10000,
+                        help='timeout (ms) to give for the Pod to start before considering a test failed')
     parser.add_argument('--host-info', action='store_true', default=False,
                         help='store the host information during bookkeeping')
     parser.add_argument('--daemon', action='store_true', default=False,
@@ -229,10 +230,6 @@ def set_hw_parser(parser=None):
                     help='number of queries to visualize')
     gp.add_argument('--top-k', type=int, default=50,
                     help='top-k results to retrieve and visualize')
-    gp.add_argument('--uses-evaluate', type=str,
-                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.evaluate.yml'))),
-                    help='the yaml path of the evaluate flow')
-
     return parser
 
 

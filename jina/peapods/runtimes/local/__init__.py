@@ -2,22 +2,23 @@ import argparse
 import os
 from typing import Dict, Union
 
-from jina import __stop_msg__
-from jina.peapods.runtimes import BaseRuntime
-from jina.peapods.peas import BasePea
+from .. import BaseRuntime
+from ... import PeaLike
+from ...peas import BasePea
+from .... import __stop_msg__
 
 __all__ = ['LocalRuntime']
 
 
 class LocalRuntime(BaseRuntime):
-
     """LocalRuntime is a process or thread providing the support to run different :class:`BasePea` locally.
 
         Inside the run method, the :class:`BasePea` is context managed to guarantee a robust closing of the Pea context
     """
+
     def __init__(self,
                  args: Union['argparse.Namespace', Dict],
-                 pea_cls: 'BasePea' = BasePea):
+                 pea_cls: PeaLike = BasePea):
         super().__init__(args)
         self._envs = {'JINA_POD_NAME': self.name,
                       'JINA_LOG_ID': self.args.log_id}

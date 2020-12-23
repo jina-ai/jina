@@ -1,11 +1,11 @@
 import argparse
 from subprocess import Popen, PIPE
-
 from typing import Union, Dict
-from jina.peapods.runtimes.remote import BaseRemoteRuntime
-from jina import __ready_msg__, __stop_msg__
-from jina.helper import get_non_defaults_args, kwargs2list
-from jina.logging import JinaLogger
+
+from .. import BaseRemoteRuntime
+from ..... import __ready_msg__, __stop_msg__
+from .....helper import ArgNamespace
+from .....logging import JinaLogger
 
 
 class SSHRuntime(BaseRemoteRuntime):
@@ -32,15 +32,15 @@ class SSHRuntime(BaseRemoteRuntime):
     @property
     def pea_command(self) -> str:
         from jina.parser import set_pea_parser
-        non_defaults = get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
-        _args = kwargs2list(non_defaults)
+        non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
+        _args = ArgNamespace.kwargs2list(non_defaults)
         return f'jina pea {" ".join(_args)}'
 
     @property
     def pod_command(self) -> str:
         from jina.parser import set_pod_parser
-        non_defaults = get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
-        _args = kwargs2list(non_defaults)
+        non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
+        _args = ArgNamespace.kwargs2list(non_defaults)
         return f'jina pod {" ".join(_args)}'
 
     @property

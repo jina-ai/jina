@@ -27,4 +27,4 @@ def validate(req):
 
 def test_load_flow_with_custom_driver():
     with Flow().add(uses=str(cur_dir / 'yaml/test-executor-with-custom-driver.yml')) as f:
-        f.index([Document()], output_fn=validate)
+        f.index([Document()], on_done=validate)

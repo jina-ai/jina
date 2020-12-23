@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 
 from .components import *
 from .helper import print_result, write_html, download_data, \
-    evaluate_generator, compute_mean_evaluation, index_generator, query_generator
+     index_generator, query_generator
 from ..flow import Flow
 from ..helper import countdown, colored
 
@@ -62,7 +62,7 @@ def hello_world(args):
 
     # run it!
     with f:
-        f.index(input_fn=index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
+        f.index(index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
                 batch_size=args.index_batch_size)
 
     # wait for couple of seconds
@@ -73,21 +73,10 @@ def hello_world(args):
     f = Flow.load_config(args.uses_query)
     # run it!
     with f:
-        f.search(input_fn=query_generator(num_docs=args.num_query, target=targets), shuffle=True,
+        f.search(query_generator(num_docs=args.num_query, target=targets, with_groundtruth=True),
+                 shuffle=True,
                  on_done=print_result,
                  batch_size=args.query_batch_size,
-                 top_k=args.top_k)
-
-    # wait for couple of seconds
-    countdown(8, reason=colored('behold! im going to switch to evaluate', 'cyan',
-                                attrs=['underline', 'bold', 'reverse']))
-
-    # now load evaluate flow from another YAML file
-    f = Flow.load_config(args.uses_evaluate)
-    # run it!
-    with f:
-        f.search(evaluate_generator(num_docs=args.num_query, target=targets), shuffle=True, size=args.num_query,
-                 on_done=compute_mean_evaluation, batch_size=args.query_batch_size,
                  top_k=args.top_k)
 
     # write result to html

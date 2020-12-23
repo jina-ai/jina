@@ -107,6 +107,10 @@
 
 
 
+
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -212,6 +216,10 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.8.6`)](#release-note-086)
 - [Release Note (`0.8.7`)](#release-note-087)
 - [Release Note (`0.8.8`)](#release-note-088)
+- [Release Note (`0.8.9`)](#release-note-089)
+- [Release Note (`0.8.10`)](#release-note-0810)
+- [Release Note (`0.8.11`)](#release-note-0811)
+- [Release Note (`0.8.12`)](#release-note-0812)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -5986,4 +5994,133 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```8a450637```](https://github.com/jina-ai/jina/commit/8a450637c41d6b531ac431cfff14cbfd36808aa1)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```6b3896b3```](https://github.com/jina-ai/jina/commit/6b3896b3c48e0657d344a43e405c8964f8e85cef)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```771d9bc8```](https://github.com/jina-ai/jina/commit/771d9bc8acc80ff77d8b1cff5d922d4f8d79965d)] __-__ __version__: the next version will be 0.8.8 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-9></a>
+## Release Note (`0.8.9`)
+
+> Release time: 2020-12-19 21:21:48
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  CatStark,  🙇
+
+
+### 🆕 New Features
+
+ - [[```2569ebac```](https://github.com/jina-ai/jina/commit/2569ebac7ebf6846faca737dc3628741e83fd063)] __-__ document random_id (#1440) (*CatStark*)
+
+### 🚧 Code Refactoring
+
+ - [[```54e1b866```](https://github.com/jina-ai/jina/commit/54e1b866cd8f90c89f78fa2165c00efb8639b7f9)] __-__ add JAML class and use pyyaml as backend (#1495) (*Han Xiao*)
+ - [[```d2bfd6c4```](https://github.com/jina-ai/jina/commit/d2bfd6c496a9da486d231c75f13fa37550c2def5)] __-__ __helper__: move namespace helper into one place (#1489) (*Han Xiao*)
+ - [[```fd8433d1```](https://github.com/jina-ai/jina/commit/fd8433d1e3b6391df8653a7a486b3a0c44d76938)] __-__ update helloworld evaluate (#1488) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```f6dd4d94```](https://github.com/jina-ai/jina/commit/f6dd4d946770f4dbfdd4de0c7a2d21c0c3e804d1)] __-__ fix layout (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```a7f50a9f```](https://github.com/jina-ai/jina/commit/a7f50a9f05d2e21e828e28bdeea73cb72b80a42b)] __-__ add commit lint feedback (#1486) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```d0089bd2```](https://github.com/jina-ai/jina/commit/d0089bd2b429efbd3a4dc5ac6755602718f10c3c)] __-__ hotfix release (*Han Xiao*)
+ - [[```c7b18609```](https://github.com/jina-ai/jina/commit/c7b186092330932bb3333b5ac30b2a9c6bd1c08e)] __-__ update readme (*Han Xiao*)
+ - [[```1ea19ee8```](https://github.com/jina-ai/jina/commit/1ea19ee8bce87c79db5a4662ebebd45466c2939e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```133ab38c```](https://github.com/jina-ai/jina/commit/133ab38cb79f5bf58864c5e6028de487387c025e)] __-__ __runtime__: reformat code style in runtime module (#1487) (*Han Xiao*)
+ - [[```79d1785f```](https://github.com/jina-ai/jina/commit/79d1785f8e489dec3467b9ca90d87143f51cb0a5)] __-__ update issue template (*Han Xiao*)
+ - [[```0a31cee6```](https://github.com/jina-ai/jina/commit/0a31cee687d7263f2e607be254ee3a717ee93eec)] __-__ remove cla folder from master branch (*Han Xiao*)
+ - [[```148fa52b```](https://github.com/jina-ai/jina/commit/148fa52b171e92eb84727b2ff5959399648e3fbc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9b4d9c2b```](https://github.com/jina-ai/jina/commit/9b4d9c2b7ceb0a7d2176c550765aecb0637d14a7)] __-__ __version__: the next version will be 0.8.9 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-10></a>
+## Release Note (`0.8.10`)
+
+> Release time: 2020-12-20 18:26:39
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Hidan,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```ceff8efc```](https://github.com/jina-ai/jina/commit/ceff8efc501b28b29e36af3e2bcdd2444cb18a9c)] __-__ __helloworld__: hello-world evaluator use running avg directly (#1508) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```1645a190```](https://github.com/jina-ai/jina/commit/1645a190b4d1ed5c11547d95af0ac25b075a4f43)] __-__ hello-world, evaluator, top_k, eval_at (#1501) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```b91f1b74```](https://github.com/jina-ai/jina/commit/b91f1b74065929bb7aca72795778e6bf9086b03f)] __-__ __readme__: fix some typos in readme (#1500) (*Hidan*)
+
+### 🍹 Other Improvements
+
+ - [[```71d3c69a```](https://github.com/jina-ai/jina/commit/71d3c69af8c383cd43168b97f208567e4ea6cb2e)] __-__ hotfix release (*Han Xiao*)
+ - [[```47caec24```](https://github.com/jina-ai/jina/commit/47caec24291469f02b0c8d9d2ffe05e04b9cdf3a)] __-__ __docs__: update readme (*Jina Dev Bot*)
+ - [[```41dee6f5```](https://github.com/jina-ai/jina/commit/41dee6f5d387932a2b5b23e65f74461597f37855)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```c792c244```](https://github.com/jina-ai/jina/commit/c792c24486736467682ea0f266e287c71c7a924b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```6934f65c```](https://github.com/jina-ai/jina/commit/6934f65ca264774580a74262fcd61ff5ca38b43a)] __-__ __version__: the next version will be 0.8.10 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-11></a>
+## Release Note (`0.8.11`)
+
+> Release time: 2020-12-20 23:16:13
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```777121a9```](https://github.com/jina-ai/jina/commit/777121a9a5a72df24df68fb8442d03db5935c947)] __-__ update readme output_fn -&gt; on_done (*Han Xiao*)
+ - [[```91427918```](https://github.com/jina-ai/jina/commit/91427918b505e971d0fdc10b1deafb8cf9808a04)] __-__ update readme (*Han Xiao*)
+ - [[```fb556c5a```](https://github.com/jina-ai/jina/commit/fb556c5a3b6440678e920e6bcd2208acd4a119a7)] __-__ __version__: the next version will be 0.8.11 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-12></a>
+## Release Note (`0.8.12`)
+
+> Release time: 2020-12-21 22:43:20
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f39039d4```](https://github.com/jina-ai/jina/commit/f39039d4266dca3f1b50e29f6c2f306130b77f1f)] __-__ add named score type (#1430) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```ede2989c```](https://github.com/jina-ai/jina/commit/ede2989cc199a9f640ebf72bc1718e3169332a80)] __-__ __client__: topk ql apply to sliceql and vector search (#1522) (*Han Xiao*)
+ - [[```52b59001```](https://github.com/jina-ai/jina/commit/52b59001e5378a1b74e48e82ae725f2a2b001ca9)] __-__ __flow__: fix flow cls register (#1516) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```f96cf1e2```](https://github.com/jina-ai/jina/commit/f96cf1e295b66a1bbca5ed58e4713e779773f462)] __-__ fix doc website layout (*Han Xiao*)
+ - [[```d72b73d3```](https://github.com/jina-ai/jina/commit/d72b73d364fd69fecdeb09eab65669dccf3d9736)] __-__ add footer to docs (*Han Xiao*)
+ - [[```822ab8b9```](https://github.com/jina-ai/jina/commit/822ab8b950e1ecd5ffe8883d781d72cb3de1aeca)] __-__ add footer to docs (#1514) (*Han Xiao*)
+ - [[```abac2981```](https://github.com/jina-ai/jina/commit/abac2981b5be4c89c1a4f7d33c227c4f2eaa0312)] __-__ fix docs layout add show/hide btn (#1513) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```c7b50b52```](https://github.com/jina-ai/jina/commit/c7b50b52420d8e204488fb86958492d125d9706e)] __-__ remove commit lint on pull_request_target event (#1519) (*Han Xiao*)
+ - [[```a5ef4f18```](https://github.com/jina-ai/jina/commit/a5ef4f182baa32bde9336842e815f2bbc244a47a)] __-__ add test for issue 1468 (#1469) (*Joan Fontanals*)
+ - [[```f32182bf```](https://github.com/jina-ai/jina/commit/f32182bf8806388b5899d418339e0e81bde7e6e2)] __-__ reenable jinad tests (#1478) (*Joan Fontanals*)
+ - [[```aa879d84```](https://github.com/jina-ai/jina/commit/aa879d841e2e38081947208b525cd68d0f94a847)] __-__ make lint flake8 independent step (#1507) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```4b5fde3f```](https://github.com/jina-ai/jina/commit/4b5fde3fb2688c16441e4b576ea07241dec4b3e5)] __-__ hotfix release (*Han Xiao*)
+ - [[```adf94375```](https://github.com/jina-ai/jina/commit/adf94375149ae014080e62615b5be2a863a681f0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```85b116c3```](https://github.com/jina-ai/jina/commit/85b116c3c88d400c16e276ca78203fa0b96bd8a1)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```4466a16d```](https://github.com/jina-ai/jina/commit/4466a16dbb1edf6e50fb976879e71f73db431c02)] __-__ __version__: the next version will be 0.8.12 (*Jina Dev Bot*)
 

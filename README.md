@@ -103,6 +103,11 @@ jina hello-world --help
 
 ## Get Started
 
+|     |   |
+| --- |---|
+| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+
 #### Create
 
 Jina provides a high-level [Flow API](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) to simplify building search/index workflows. To create a new Flow:
@@ -116,11 +121,7 @@ This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/m
 
 #### Visualize
 
-To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, it's even easier:
-
-```python
-f
-```
+To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be automatically displayed inline *without* `plot`:
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
 
@@ -134,17 +135,17 @@ Let's create some random data and index it:
 from jina import Document
 
 with Flow().add() as f:
-    f.index_ndarray(numpy.random.random([4,2]), output_fn=print)  # index ndarray data, document sliced on first dimension
+    f.index((Document() for _ in range(10)))  # index raw Jina Documents
+    f.index_ndarray(numpy.random.random([4,2]), on_done=print)  # index ndarray data, document sliced on first dimension
     f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
     f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])  # index files and wildcard globs, each file is a document
-    f.index((Document() for _ in range(10)))  # index raw Jina Documents
 ```
 
 To use a Flow, open it using the `with` context manager, like you would a file in Python. You can call `index` and `search` with nearly all types of data. The whole data stream is asynchronous and efficient.
 
 #### Fetch Result
 
-Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_error`, `on_always` to hook different event. In the example below, our Flow passes the message then prints the result when success. If something wrong, it beeps. Finally, the result is written to `output.txt`.
+Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_done`, `on_error`, `on_always` to hook different event. In the example below, our Flow passes the message then prints the result when success. If something wrong, it beeps. Finally, the result is written to `output.txt`.
 
 ```python
 def beep(*args):
@@ -154,10 +155,78 @@ def beep(*args):
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
     f.index(numpy.random.random([4,5,2]),
-            output_fn=print,
-            on_error=beep, on_always=fp.write)
+            on_done=print, on_error=beep, on_always=fp.write)
 ```
 
+
+#### Construct Document
+
+`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. It can be recurred both vertically and horizontally to have nested documents and matched documents. To construct a Document, one can use:
+
+```python
+from jina import Document
+doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
+doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
+doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
+```
+
+<details>
+  <summary>Click here to see more about MultimodalDocument</summary>
+  
+
+#### MultimodalDocument
+  
+A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
+ 
+Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content in a `dict`:
+  
+```python
+from jina import MultimodalDocument
+document = MultimodalDocument(modality_content_map={
+    'title': 'my holiday picture',
+    'description': 'the family having fun on the beach',
+    'image': PIL.Image.open('path/to/image.jpg')
+})
+```
+
+One can also compose a `MultimodalDocument` from multiple `Document` directly:
+  
+```python
+from jina.types import Document, MultimodalDocument
+
+doc_title = Document(content='my holiday picture', modality='title')
+doc_desc = Document(content='the family having fun on the beach', modality='description')
+doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='description')
+doc_img.tags['date'] = '10/08/2019' 
+
+document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
+```
+
+##### Fusion Embeddings from Different Modalities
+
+To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
+
+```python
+def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
+    ...
+```
+
+`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the endoder as the first argument, and `text` as the second.
+
+```yaml
+!MyMultimodalEncoder
+with:
+  positional_modality: ['image', 'text']
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !MultiModalDriver {}
+```
+
+Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
+
+</details>
+  
 #### Add Logic
 
 To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#executors). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
@@ -206,7 +275,7 @@ from jina import AsyncFlow
 
 async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
     with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-        await f.index_ndarray(np.random.random([5, 4]), output_fn=validate)
+        await f.index_ndarray(numpy.random.random([5, 4]), on_done=validate)
 
 async def heavylifting():  # total roundtrip takes ~5s
     print('heavylifting other io-bound jobs, e.g. download, upload, file io')
@@ -226,13 +295,19 @@ if __name__ == '__main__':
 from jina import AsyncFlow
 
 with AsyncFlow().add() as f:
-    await f.index_ndarray(np.random.random([5, 4]), output_fn=print)
+    await f.index_ndarray(numpy.random.random([5, 4]), on_done=print)
 ```
 
 
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it!
 
 ### Breakdown of `hello-world`
+
+|     |   |
+| --- |---|
+| 🐣 Basic  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
+| 🚀 [Hello-world](#breakdown-of-hello-world)| [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+
 
 #### Customize Encoder
 
@@ -269,14 +344,14 @@ Let's test our encoder in the Flow with some synthetic data:
 
 
 ```python
-def validate(docs):
-    assert len(docs) == 100
-    assert NdArray(docs[0].embedding).value.shape == (64,)
+def validate(req):
+    assert len(req.docs) == 100
+    assert NdArray(req.docs[0].embedding).value.shape == (64,)
 
 f = Flow().add(uses='MyEncoder')
 
 with f:
-    f.index_ndarray(np.random.random([100, 28, 28]), output_fn=validate, callback_on='docs')
+    f.index_ndarray(numpy.random.random([100, 28, 28]), on_done=validate)
 ```
 
 
@@ -291,7 +366,7 @@ By setting a larger input, you can play with `batch_size` and `parallel`:
 f = Flow().add(uses='MyEncoder', parallel=10)
 
 with f:
-    f.index_ndarray(np.random.random([60000, 28, 28]), batch_size=1024)
+    f.index_ndarray(numpy.random.random([60000, 28, 28]), batch_size=1024)
 ```
 
 #### Add Data Indexer
@@ -318,7 +393,8 @@ Essentially, the above YAML config is equivalent to the following Python code:
 
 ```python
 from jina.executors.indexers.vector import NumpyIndexer
-from jina.exeuctors.indexers.keyvalue import BinaryPbIndexer
+from jina.executors.indexers.keyvalue import BinaryPbIndexer
+from jina.executors.indexers import CompoundIndexer
 
 a = NumpyIndexer(index_filename='vec.gz')
 b = BinaryPbIndexer(index_filename='vec.gz')
@@ -326,7 +402,7 @@ c = CompoundIndexer()
 c.components = lambda: [a, b]
 ```
 
-#### Compose Flow in Python/YAML
+#### Compose Flow from YAML
 
 Now let's add our indexer YAML file to the Flow with `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
 
@@ -340,11 +416,12 @@ When you have many arguments, constructing a Flow in Python can get cumbersome. 
 
 ```yaml
 !Flow
+version: '1.0'
 pods:
-  encode:
+  - name: encode
     uses: MyEncoder
     parallel: 2
-  index:
+  - name:index
     uses: myindexer.yml
     shards: 2
     separated_workspace: true
@@ -356,7 +433,7 @@ And then load it in Python:
 f = Flow.load_config('flow.yml')
 ```
 
-#### Search via Query Flow
+#### Search
 
 Querying a Flow is similar to what we did with indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top 50 documents that are similar to your query and then plot them in HTML:
 
@@ -364,10 +441,36 @@ Querying a Flow is similar to what we did with indexing. Simply load the query F
 ```python
 f = Flow.load_config('flows/query.yml')
 with f:
-    f.search_ndarray(shuffle=True, size=128, output_fn=plot_in_html, top_k=50)
+    f.search_ndarray(numpy.random.random([10, 28, 28]), shuffle=True, on_done=plot_in_html, top_k=50)
 ```
 
-#### REST Interface of Query Flow
+#### Evaluation
+
+To compute precision recall on the retrieved result, you can add `_eval_pr`, a built-in evaluator for computing precision & recall.
+
+```python
+f = (Flow().add(...)
+           .add(uses='_eval_pr'))
+```
+
+You can construct an iterator of query and groundtruth pairs and feed to the flow `f`, via:
+
+```python
+from jina import Document
+
+def query_generator():
+    for _ in range(10):
+        q = Document()
+        # now construct expect matches as groundtruth
+        gt = Document(q, copy=True)  # make sure 'gt' is identical to 'q'
+        gt.matches.append(...)
+        yield q, gt
+        
+f.search(query_iterator, ...)
+```
+
+
+#### REST Interface
 
 In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `rest_api=True`:
 
@@ -607,7 +710,7 @@ We welcome all kinds of contributions from the open-source community, individual
 ### Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-96-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-97-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -619,12 +722,12 @@ We welcome all kinds of contributions from the open-source community, individual
 <kbd><a href="https://github.com/iego2017"><img src="https://avatars3.githubusercontent.com/u/44792649?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.davidsanwald.net/"><img src="https://avatars1.githubusercontent.com/u/10153003?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://alexcg1.github.io/"><img src="https://avatars2.githubusercontent.com/u/4182659?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/shivam-raj"><img src="https://avatars3.githubusercontent.com/u/43991882?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://dncc.github.io/"><img src="https://avatars1.githubusercontent.com/u/126445?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://johnarevalo.github.io/"><img src="https://avatars3.githubusercontent.com/u/1301626?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/imsergiy"><img src="https://avatars3.githubusercontent.com/u/8855485?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://guiferviz.com/"><img src="https://avatars2.githubusercontent.com/u/11474949?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/rohan1chaudhari"><img src="https://avatars1.githubusercontent.com/u/9986322?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/mohong-pan/"><img src="https://avatars0.githubusercontent.com/u/45755474?v=4" class="avatar-user" width="32px;"/></a></kbd>
 <kbd><a href="https://github.com/anish2197"><img src="https://avatars2.githubusercontent.com/u/16228282?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/joanna350"><img src="https://avatars0.githubusercontent.com/u/19216902?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/madhukar01"><img src="https://avatars0.githubusercontent.com/u/15910378?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/maximilianwerk"><img src="https://avatars0.githubusercontent.com/u/4920275?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/emmaadesile"><img src="https://avatars2.githubusercontent.com/u/26192691?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/YikSanChan"><img src="https://avatars1.githubusercontent.com/u/17229109?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Zenahr"><img src="https://avatars1.githubusercontent.com/u/47085752?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/JoanFM"><img src="https://avatars3.githubusercontent.com/u/19825685?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://yangboz.github.io/"><img src="https://avatars3.githubusercontent.com/u/481954?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/boussoffara"><img src="https://avatars0.githubusercontent.com/u/10478725?v=4" class="avatar-user" width="32px;"/></a></kbd>
 <kbd><a href="https://github.com/fhaase2"><img src="https://avatars2.githubusercontent.com/u/44052928?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Morriaty-The-Murderer"><img src="https://avatars3.githubusercontent.com/u/12904434?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/rutujasurve94"><img src="https://avatars1.githubusercontent.com/u/9448002?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/theUnkownName"><img src="https://avatars0.githubusercontent.com/u/3002344?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/vltmn"><img src="https://avatars3.githubusercontent.com/u/8930322?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Kavan72"><img src="https://avatars3.githubusercontent.com/u/19048640?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/bwanglzu"><img src="https://avatars1.githubusercontent.com/u/9794489?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/antonkurenkov"><img src="https://avatars2.githubusercontent.com/u/52166018?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/redram"><img src="https://avatars3.githubusercontent.com/u/1285370?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/ericsyh"><img src="https://avatars3.githubusercontent.com/u/10498732?v=4" class="avatar-user" width="32px;"/></a></kbd>
-<kbd><a href="https://github.com/festeh"><img src="https://avatars1.githubusercontent.com/u/6877858?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://julielab.de/Staff/Erik+F%C3%A4%C3%9Fler.html"><img src="https://avatars1.githubusercontent.com/u/4648560?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-jinaai"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/coolmian"><img src="https://avatars3.githubusercontent.com/u/36444522?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://www.joaopalotti.com/"><img src="https://avatars2.githubusercontent.com/u/852343?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/averkij"><img src="https://avatars0.githubusercontent.com/u/1473991?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/bio-howard"><img src="https://avatars3.githubusercontent.com/u/74507907?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Yongxuanzhang"><img src="https://avatars2.githubusercontent.com/u/44033547?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Arrrlex"><img src="https://avatars1.githubusercontent.com/u/13290269?v=4" class="avatar-user" width="32px;"/></a></kbd>
-<kbd><a href="https://cristianmtr.github.io/resume/"><img src="https://avatars3.githubusercontent.com/u/8330330?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Showtim3"><img src="https://avatars3.githubusercontent.com/u/30312043?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/deepampatel"><img src="https://avatars3.githubusercontent.com/u/19245659?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/doomdabo"><img src="https://avatars1.githubusercontent.com/u/72394295?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/serge-m"><img src="https://avatars2.githubusercontent.com/u/4344566?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/HelioStrike"><img src="https://avatars1.githubusercontent.com/u/34064492?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-616"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/umbertogriffo"><img src="https://avatars2.githubusercontent.com/u/1609440?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/fsal"><img src="https://avatars2.githubusercontent.com/u/9203508?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/hongchhe"><img src="https://avatars0.githubusercontent.com/u/25891193?v=4" class="avatar-user" width="32px;"/></a></kbd>
-<kbd><a href="https://github.com/florian-hoenicke"><img src="https://avatars2.githubusercontent.com/u/11627845?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/BastinJafari"><img src="https://avatars3.githubusercontent.com/u/25417797?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.imxiqi.com/"><img src="https://avatars2.githubusercontent.com/u/4802250?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/FionnD"><img src="https://avatars0.githubusercontent.com/u/59612379?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/smy0428"><img src="https://avatars3.githubusercontent.com/u/61920576?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/alasdairtran"><img src="https://avatars0.githubusercontent.com/u/10582768?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/prabhupad-pradhan/"><img src="https://avatars3.githubusercontent.com/u/11462012?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/nicholas-cwh/"><img src="https://avatars2.githubusercontent.com/u/25291155?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/YueLiu1415926"><img src="https://avatars1.githubusercontent.com/u/64522311?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/bhavsarpratik"><img src="https://avatars1.githubusercontent.com/u/23080576?v=4" class="avatar-user" width="32px;"/></a></kbd>
-<kbd><a href="https://github.com/pswu11"><img src="https://avatars2.githubusercontent.com/u/48913707?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/jancijen"><img src="https://avatars0.githubusercontent.com/u/28826229?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://sreerag-ibtl.github.io/"><img src="https://avatars2.githubusercontent.com/u/39914922?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/jyothishkjames"><img src="https://avatars0.githubusercontent.com/u/937528?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/clennan"><img src="https://avatars3.githubusercontent.com/u/19587525?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/deepankar-mahapatro/"><img src="https://avatars1.githubusercontent.com/u/9050737?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://kilsenp.github.io/"><img src="https://avatars1.githubusercontent.com/u/5173119?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://bit.ly/2UdLNBf"><img src="https://avatars2.githubusercontent.com/u/13751208?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/fernandakawasaki"><img src="https://avatars2.githubusercontent.com/u/50497814?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/lusloher"><img src="https://avatars2.githubusercontent.com/u/64148900?v=4" class="avatar-user" width="32px;"/></a></kbd>
-<kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/yuanb/"><img src="https://avatars0.githubusercontent.com/u/12972261?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/harry-stark"><img src="https://avatars3.githubusercontent.com/u/43717480?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/rameshwara"><img src="https://avatars1.githubusercontent.com/u/13378629?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/ManudattaG"><img src="https://avatars2.githubusercontent.com/u/8463344?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/RenrakuRunrat"><img src="https://avatars3.githubusercontent.com/u/14925249?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://educatorsrlearners.github.io/portfolio.github.io/"><img src="https://avatars1.githubusercontent.com/u/17770276?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/kaushikb11"><img src="https://avatars1.githubusercontent.com/u/45285388?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/dalekatwork"><img src="https://avatars3.githubusercontent.com/u/40423996?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/seraco"><img src="https://avatars1.githubusercontent.com/u/25517036?v=4" class="avatar-user" width="32px;"/></a></kbd>
-<kbd><a href="https://github.com/tadej-redstone"><img src="https://avatars1.githubusercontent.com/u/69796623?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/amrit3701/"><img src="https://avatars1.githubusercontent.com/u/10414959?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/pgiank28"><img src="https://avatars3.githubusercontent.com/u/17511966?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://blog.lsgrep.com/"><img src="https://avatars3.githubusercontent.com/u/3893940?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/SirsikarAkshay"><img src="https://avatars1.githubusercontent.com/u/19791969?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/anshulwadhawan"><img src="https://avatars2.githubusercontent.com/u/25061477?v=4" class="avatar-user" width="32px;"/></a></kbd>
+<kbd><a href="https://github.com/festeh"><img src="https://avatars1.githubusercontent.com/u/6877858?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://julielab.de/Staff/Erik+F%C3%A4%C3%9Fler.html"><img src="https://avatars1.githubusercontent.com/u/4648560?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-jinaai"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/coolmian"><img src="https://avatars3.githubusercontent.com/u/36444522?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://www.joaopalotti.com/"><img src="https://avatars2.githubusercontent.com/u/852343?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/harry-stark"><img src="https://avatars3.githubusercontent.com/u/43717480?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/fsal"><img src="https://avatars2.githubusercontent.com/u/9203508?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/bio-howard"><img src="https://avatars3.githubusercontent.com/u/74507907?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/FionnD"><img src="https://avatars0.githubusercontent.com/u/59612379?v=4" class="avatar-user" width="32px;"/></a></kbd>
+<kbd><a href="https://www.linkedin.com/in/deepankar-mahapatro/"><img src="https://avatars1.githubusercontent.com/u/9050737?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/alasdairtran"><img src="https://avatars0.githubusercontent.com/u/10582768?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/umbertogriffo"><img src="https://avatars2.githubusercontent.com/u/1609440?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/seraco"><img src="https://avatars1.githubusercontent.com/u/25517036?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/dalekatwork"><img src="https://avatars3.githubusercontent.com/u/40423996?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/tadej-redstone"><img src="https://avatars1.githubusercontent.com/u/69796623?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="http://bit.ly/2UdLNBf"><img src="https://avatars2.githubusercontent.com/u/13751208?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://lsgrep.com/"><img src="https://avatars3.githubusercontent.com/u/3893940?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/fernandakawasaki"><img src="https://avatars2.githubusercontent.com/u/50497814?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/pgiank28"><img src="https://avatars3.githubusercontent.com/u/17511966?v=4" class="avatar-user" width="32px;"/></a></kbd>
+<kbd><a href="https://sreerag-ibtl.github.io/"><img src="https://avatars2.githubusercontent.com/u/39914922?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/smy0428"><img src="https://avatars3.githubusercontent.com/u/61920576?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/SirsikarAkshay"><img src="https://avatars1.githubusercontent.com/u/19791969?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/doomdabo"><img src="https://avatars1.githubusercontent.com/u/72394295?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/kaushikb11"><img src="https://avatars1.githubusercontent.com/u/45285388?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/nicholas-cwh/"><img src="https://avatars2.githubusercontent.com/u/25291155?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/rameshwara"><img src="https://avatars1.githubusercontent.com/u/13378629?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/lusloher"><img src="https://avatars2.githubusercontent.com/u/64148900?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/pswu11"><img src="https://avatars2.githubusercontent.com/u/48913707?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/BastinJafari"><img src="https://avatars3.githubusercontent.com/u/25417797?v=4" class="avatar-user" width="32px;"/></a></kbd>
+<kbd><a href="https://github.com/florian-hoenicke"><img src="https://avatars2.githubusercontent.com/u/11627845?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/prabhupad-pradhan/"><img src="https://avatars3.githubusercontent.com/u/11462012?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/RenrakuRunrat"><img src="https://avatars3.githubusercontent.com/u/14925249?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Arrrlex"><img src="https://avatars1.githubusercontent.com/u/13290269?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/hongchhe"><img src="https://avatars0.githubusercontent.com/u/25891193?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.imxiqi.com/"><img src="https://avatars2.githubusercontent.com/u/4802250?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/yuanb/"><img src="https://avatars0.githubusercontent.com/u/12972261?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/ManudattaG"><img src="https://avatars2.githubusercontent.com/u/8463344?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/JamesTang-616"><img src="https://avatars3.githubusercontent.com/u/69177855?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://cristianmtr.github.io/resume/"><img src="https://avatars3.githubusercontent.com/u/8330330?v=4" class="avatar-user" width="32px;"/></a></kbd>
+<kbd><a href="https://github.com/Yongxuanzhang"><img src="https://avatars2.githubusercontent.com/u/44033547?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/averkij"><img src="https://avatars0.githubusercontent.com/u/1473991?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/deepampatel"><img src="https://avatars3.githubusercontent.com/u/19245659?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/HelioStrike"><img src="https://avatars1.githubusercontent.com/u/34064492?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/bhavsarpratik"><img src="https://avatars1.githubusercontent.com/u/23080576?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/jancijen"><img src="https://avatars0.githubusercontent.com/u/28826229?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/anshulwadhawan"><img src="https://avatars2.githubusercontent.com/u/25061477?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.linkedin.com/in/amrit3701/"><img src="https://avatars1.githubusercontent.com/u/10414959?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/jyothishkjames"><img src="https://avatars0.githubusercontent.com/u/937528?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/Showtim3"><img src="https://avatars3.githubusercontent.com/u/30312043?v=4" class="avatar-user" width="32px;"/></a></kbd>
+<kbd><a href="https://github.com/YueLiu1415926"><img src="https://avatars1.githubusercontent.com/u/64522311?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/janandreschweiger"><img src="https://avatars0.githubusercontent.com/u/44372046?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/serge-m"><img src="https://avatars2.githubusercontent.com/u/4344566?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://kilsenp.github.io/"><img src="https://avatars1.githubusercontent.com/u/5173119?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://educatorsrlearners.github.io/portfolio.github.io/"><img src="https://avatars1.githubusercontent.com/u/17770276?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://github.com/clennan"><img src="https://avatars3.githubusercontent.com/u/19587525?v=4" class="avatar-user" width="32px;"/></a></kbd> <kbd><a href="https://www.cnblogs.com/callyblog/"><img src="https://avatars2.githubusercontent.com/u/30991932?v=4" class="avatar-user" width="32px;"/></a></kbd>
 
 
 <!-- markdownlint-restore -->
