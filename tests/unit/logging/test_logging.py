@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
+
 from jina import __uptime__
 from jina.logging import JinaLogger
 
@@ -49,7 +50,7 @@ def test_logging_file():
     os.remove(fn)
 
 
-@pytest.mark.parametrize('log_config', ['yaml/fluent.yml', None])
+@pytest.mark.parametrize('log_config', [str(cur_dir / 'yaml/fluent.yml'), None])
 def test_logging_fluentd(monkeypatch, log_config):
     from fluent import asynchandler as fluentasynchandler
     with JinaLogger('test_logger', log_config=log_config, log_id='test_log_id') as logger:

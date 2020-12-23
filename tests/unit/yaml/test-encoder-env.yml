@@ -1,0 +1,6 @@
+!BaseEncoder
+metas:
+  name: ${{BE_TEST_NAME}}
+  batch_size: ${{BATCH_SIZE}}
+  pea_id: ${{pea_id}}
+  workspace: ${{this.name}}-${{this.batch_size}}

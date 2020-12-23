@@ -76,6 +76,7 @@ class LegacyParser(VersionedYAMLParser):
         if not load_from_dump and 'components' in data:
             obj.components = lambda: data['components']
 
+        obj.is_updated = False
         return obj
 
     def dump(self, data: 'BaseExecutor') -> Dict:
