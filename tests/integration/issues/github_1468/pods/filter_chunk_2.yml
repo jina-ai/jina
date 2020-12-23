@@ -1,0 +1,8 @@
+!BaseExecutor
+requests:
+  on:
+    SearchRequest:
+      - !FilterQL
+        with:
+          traversal_paths: ['c']
+          lookups: {'modality': '2'}

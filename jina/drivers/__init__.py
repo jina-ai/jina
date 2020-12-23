@@ -19,7 +19,7 @@ from ..executors import BaseExecutor
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import convert_tuple_to_list
-from ..jaml import JAML
+from ..jaml import JAMLCompatible
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -71,8 +71,7 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 class QuerySetReader:
-    """
-    :class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
+    """:class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
     driver to override its behavior based on the message it receives. Extremely useful in production, for example,
     get ``top_k`` results, doing pagination, filtering.
 
@@ -91,6 +90,9 @@ class QuerySetReader:
         - the ``disabled`` field in the proto should not be ``False``
         - the ``priority`` in the proto should be strictly greater than the driver's priority (by default is 0)
         - the field name must exist in proto's ``parameters``
+
+    .. warning::
+        For the sake of cooperative multiple inheritance, do NOT implement :meth:`__init__` for this class
 
     """
 
@@ -117,7 +119,7 @@ class QuerySetReader:
         raise AttributeError
 
 
-class DriverType(type):
+class DriverType(type(JAMLCompatible), type):
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
@@ -131,11 +133,10 @@ class DriverType(type):
 
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
-        JAML.register(cls)
         return cls
 
 
-class BaseDriver(metaclass=DriverType):
+class BaseDriver(JAMLCompatible, metaclass=DriverType):
     """A :class:`BaseDriver` is a logic unit above the :class:`jina.peapods.pea.BasePea`.
     It reads the protobuf message, extracts/modifies the required information and then return
     the message back to :class:`jina.peapods.pea.BasePea`.
@@ -214,24 +215,6 @@ class BaseDriver(metaclass=DriverType):
         if a:
             r['with'] = a
         return r
-
-    @classmethod
-    def to_yaml(cls, representer, data):
-        """Required by :mod:`pyyaml` """
-        tmp = data._dump_instance_to_yaml(data)
-        return representer.represent_mapping('!' + cls.__name__, tmp)
-
-    @classmethod
-    def from_yaml(cls, constructor, node):
-        """Required by :mod:`pyyaml` """
-        return cls._get_instance_from_yaml(constructor, node)
-
-    @classmethod
-    def _get_instance_from_yaml(cls, constructor, node):
-        data = constructor.construct_mapping(node, deep=True)
-
-        obj = cls(**data.get('with', {}))
-        return obj
 
     def __eq__(self, other):
         return self.__class__ == other.__class__

@@ -2,6 +2,6 @@
 requests:
   on:
     SearchRequest:
-      - !CollectMatches2DocRankDriver
+      - !AggregateMatches2DocRankDriver
         with:
           traversal_paths: ['m']

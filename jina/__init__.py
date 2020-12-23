@@ -37,7 +37,7 @@ __license__ = "Apache-2.0"
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '0.8.12'
+__version__ = '0.8.13'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -47,7 +47,7 @@ __uptime__ = _datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
 # update on MacOS
 # 1. clean this tuple,
-# 2. grep -ohE "\'JINA_.*?\'" **/*.py | sort -u | sed "s/$/,/g"
+# 2. grep -rohEI --exclude-dir=jina/hub --exclude-dir=tests --include \*.py "\'JINA_.*?\'" jina  | sort -u | sed "s/$/,/g"
 # 3. copy all lines EXCEPT the first (which is the grep command in the last line)
 __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_BINARY_DELIMITER',
@@ -65,13 +65,14 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_FULL_CLI',
                 'JINA_IPC_SOCK_TMP',
                 'JINA_LOG_CONFIG',
+                'JINA_LOG_ID',
                 'JINA_LOG_NO_COLOR',
                 'JINA_POD_NAME',
-                'JINA_PROFILING',
+                'JINA_RAISE_ERROR_EARLY',
                 'JINA_RANDOM_PORTS',
+                'JINA_RANDOM_PORT_MAX',
+                'JINA_RANDOM_PORT_MIN',
                 'JINA_SOCKET_HWM',
-                'JINA_TEST_GPU',
-                'JINA_TEST_PRETRAINED',
                 'JINA_VCS_VERSION',
                 'JINA_WARN_UNNAMED')
 
@@ -85,6 +86,16 @@ _names_with_underscore = ['__version__', '__copyright__', '__license__',
                           '__proto_version__', '__default_host__', '__ready_msg__',
                           '__stop_msg__', '__binary_delimiter__', '__jina_env__',
                           '__uptime__', '__root_dir__']
+
+# Primitive data type,
+# note, they must be loaded BEFORE all executors/drivers/... to avoid cyclic imports
+from jina.types.ndarray.generic import NdArray
+from jina.types.request import Request
+from jina.types.message import Message
+from jina.types.querylang import QueryLang
+from jina.types.document import Document
+from jina.types.document.multimodal import MultimodalDocument
+from jina.types.sets import DocumentSet, QueryLangSet
 
 # ADD GLOBAL NAMESPACE VARIABLES
 
@@ -142,15 +153,6 @@ def _set_nofile(nofile_atleast=4096):
 
 
 _set_nofile()
-
-# Primitive data type
-from jina.types.ndarray.generic import NdArray
-from jina.types.request import Request
-from jina.types.message import Message
-from jina.types.querylang import QueryLang
-from jina.types.document import Document
-from jina.types.document.multimodal import MultimodalDocument
-from jina.types.sets import DocumentSet, QueryLangSet
 
 # Flow
 from jina.flow import Flow

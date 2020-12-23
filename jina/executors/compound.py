@@ -334,19 +334,6 @@ class CompoundExecutor(BaseExecutor):
                 c.close()
         super().close()
 
-    @classmethod
-    def to_yaml(cls, representer, data):
-        tmp = super()._dump_instance_to_yaml(data)
-        tmp['components'] = data.components
-        return representer.represent_mapping('!' + cls.__name__, tmp)
-
-    @classmethod
-    def from_yaml(cls, constructor, node):
-        obj, data, from_dump = super()._get_instance_from_yaml(constructor, node)
-        if not from_dump and 'components' in data:
-            obj.components = lambda: data['components']
-        return obj
-
     def __contains__(self, item: str):
         if isinstance(item, str):
             for c in self.components:

@@ -68,3 +68,11 @@ def test_use_from_cli_level():
     subprocess.check_call(['jina', 'pod', '--uses',
                            os.path.join(cur_dir, 'dummyhub/config.yml'),
                            '--shutdown-idle', '--max-idle-time', '5'])
+
+
+def test_build_timeout_ready():
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'dummyhub_slow'), '--timeout-ready', '20000', '--test-uses', '--raise-error'])
+    HubIO(args).build()
+    with Flow().add(uses=f'jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}', timeout_ready = 20000):
+        pass

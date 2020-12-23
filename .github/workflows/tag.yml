@@ -46,6 +46,11 @@ jobs:
         run: |
           echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
           echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina-docs
+          path: docs/_build/html
+          token: ${{ secrets.JINA_DEV_BOT }}
       - name: install the release version
         run: |
           pip install .  --no-cache-dir

@@ -133,3 +133,7 @@ shell/jina-wizard.sh
 # IntelliJ IDEA
 *.iml
 .idea
+
+# tests binaries
+/tests/**/*.bin
+*.bin

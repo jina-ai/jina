@@ -19,14 +19,17 @@ jobs:
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: |
+          truncate --size=24KB README.md > README-trunc.md
       - uses: peter-evans/dockerhub-description@v2.3.0
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
           DOCKERHUB_REPOSITORY: jinaai/jina
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+          readme-filepath: ./README-trunc.md
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/api
@@ -41,7 +44,6 @@ jobs:
           echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-devel" >> $GITHUB_ENV
           pip install css-html-js-minify
           css-html-js-minify ./jina/resources/hub-builder-success
-      - run: |
           cp ./jina/resources/hub-builder-success/index.html ./schema/hub
           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
@@ -50,7 +52,12 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
-          cd ..
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina-docs
+          path: docs/_build/html
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
           ./scripts/make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
       - uses: ad-m/github-push-action@master
         with:

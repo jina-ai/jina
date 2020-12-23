@@ -4,6 +4,7 @@ import pytest
 import os
 
 from jina.docker.hubio import HubIO
+from jina.docker import hubapi
 from jina.excepts import ImageAlreadyExists
 from jina.jaml import JAML
 from jina.helper import expand_dict
@@ -15,39 +16,39 @@ cur_dir = Path(__file__).parent
 @pytest.fixture
 def access_token_github():
     token = os.environ.get('GITHUB_TOKEN', None)
-    return {'access_token': token}
+    return token
 
-# @pytest.mark.timeout(360)
-# def test_hub_build_pull():
-#     args = set_hub_build_parser().parse_args(
-#         [str(cur_dir / 'hub-mwu'), '--push', '--test-uses', '--raise-error'])
-#     HubIO(args).build()
+@pytest.mark.timeout(360)
+def test_hub_build_pull():
+    args = set_hub_build_parser().parse_args(
+        [str(cur_dir / 'hub-mwu'), '--push', '--test-uses', '--raise-error'])
+    HubIO(args).build()
 
-#     args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder'])
-#     HubIO(args).pull()
+    args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder'])
+    HubIO(args).pull()
 
-#     args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder:0.0.6'])
-#     HubIO(args).pull()
+    args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder:0.0.6'])
+    HubIO(args).pull()
 
 
-# @pytest.mark.timeout(360)
-# def test_hub_build_uses():
-#     args = set_hub_build_parser().parse_args(
-#         [str(cur_dir / 'hub-mwu'), '--test-uses', '--raise-error'])
-#     HubIO(args).build()
-#     # build again it shall not fail
-#     HubIO(args).build()
+@pytest.mark.timeout(360)
+def test_hub_build_uses():
+    args = set_hub_build_parser().parse_args(
+        [str(cur_dir / 'hub-mwu'), '--test-uses', '--raise-error'])
+    HubIO(args).build()
+    # build again it shall not fail
+    HubIO(args).build()
 
-#     args = set_hub_build_parser().parse_args(
-#         [str(cur_dir / 'hub-mwu'), '--test-uses', '--daemon', '--raise-error'])
-#     HubIO(args).build()
-#     # build again it shall not fail
-#     HubIO(args).build()
+    args = set_hub_build_parser().parse_args(
+        [str(cur_dir / 'hub-mwu'), '--test-uses', '--daemon', '--raise-error'])
+    HubIO(args).build()
+    # build again it shall not fail
+    HubIO(args).build()
 
+@pytest.mark.skipif(condition='os.environ.get(\'GITHUB_TOKEN\')==None', reason='Token not found')
 def test_hub_build_push(monkeypatch, access_token_github):
-
-    monkeypatch.setattr(JAML, 'load', access_token_github)
     monkeypatch.setattr(Path, 'is_file', True)
+    monkeypatch.setattr(hubapi, '_fetch_access_token', access_token_github)
     args = set_hub_build_parser().parse_args([str(cur_dir / 'hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
 
@@ -76,11 +77,9 @@ def test_hub_build_push(monkeypatch, access_token_github):
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
 
-@pytest.mark.skip(reason='Non reproducible error and super flaky in github. Please repair it.')
 def test_hub_build_push_push_again(monkeypatch, access_token_github):
-    monkeypatch.setattr(JAML, 'load', access_token_github)
     monkeypatch.setattr(Path, 'is_file', True)
-    monkeypatch.setattr(credentials_file(), 'is_file', True)
+    monkeypatch.setattr(hubapi, '_fetch_access_token', access_token_github)
     args = set_hub_build_parser().parse_args([str(cur_dir / 'hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
 

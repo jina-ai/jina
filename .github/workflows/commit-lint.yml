@@ -3,8 +3,9 @@
 name: PR
 
 on:
-  pull_request_target:
-  pull_request:
+  push:
+    branches-ignore:
+      - '**'  # temporally ignore all, as https://github.com/wagoid/commitlint-github-action/issues/66
 
 jobs:
   commit-lint-check:

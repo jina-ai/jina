@@ -18,17 +18,17 @@ FLOW_ID=$(curl -s --request PUT "http://localhost:8000/v1/flow/yaml" \
 
 echo "Successfully started the flow: ${FLOW_ID}"
 
-RESPONSE=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search')
+RESPONSE=$(curl -s --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search')
 echo "Response is ${RESPONSE}"
 
-TEXT_BACK=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search' | \
+TEXT_BACK=$(curl -s --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search' | \
     jq -e ".search.docs[] | .text")
 
 echo "Returned document has the text: ${TEXT_BACK}"
 
-curl --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+curl -s --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
-curl --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+curl -s --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
 docker-compose -f tests/integration/jinad/test_simple_hub_pods/docker-compose.yml --project-directory . down
 
