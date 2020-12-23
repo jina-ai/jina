@@ -81,7 +81,7 @@ class JAML:
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
-    def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True, resolve_scans: int = 3) -> Dict[str, Any]:
+    def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True, resolve_passes: int = 3) -> Dict[str, Any]:
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
@@ -178,7 +178,7 @@ class JAML:
         _replace(d, expand_map)
 
         # do three rounds of scan-replace to resolve internal references
-        for _ in range(resolve_scans):
+        for _ in range(resolve_passes):
             # rebuild expand_map
             expand_map = SimpleNamespace()
             _scan(d, expand_map)
@@ -293,20 +293,48 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     context: Dict[str, Any] = None,
                     **kwargs) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
-        of loading extra py_modules, substitute env & context variables.
+        of loading extra py_modules, substitute env & context variables. Any class that
+        implements :class:`JAMLCompatible` mixin can enjoy this feature, e.g. :class:`BaseFlow`,
+        :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.
 
-        :param source: the source of the configs (multi-kind)
+        :param source: the multi-kind source of the configs.
         :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
         :return: :class:`JAMLCompatible` object
 
+        Support substitutions in YAML:
+            - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``, ``$VAR``.
+            - Context dict (``context``): ``${{VAR}}``(recommended), ``$VAR``.
+            - Internal reference via ``this`` and ``root``: ``${{this.same_level_key}}``, ``${{root.root_level_key}}``
+
+        Substitutions are carried in the order and multiple passes to resolve variables with best effort.
+
+        .. highlight:: yaml
+        .. code-block:: yaml
+
+            !BaseEncoder
+            metas:
+                name: ${{VAR_A}}  # env or context variables
+                workspace: my-${{this.name}}  # internal reference
 
         .. highlight:: python
         .. code-block:: python
 
             # load Executor from yaml file
             BaseExecutor.load_config('a.yml')
+
+            # load Executor from yaml file and substitute environment variables
+            os.environ['VAR_A'] = 'hello-world'
+            b = BaseExecutor.load_config('a.yml')
+            assert b.name == hello-world
+
+            # load Executor from yaml file and substitute variables from a dict
+            b = BaseExecutor.load_config('a.yml', context={'VAR_A': 'hello-world'})
+            assert b.name == hello-world
+
+            # disable substitute
+            b = BaseExecutor.load_config('a.yml', substitute=False)
 
         """
         stream, s_path = parse_config_source(source, **kwargs)
