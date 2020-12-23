@@ -167,7 +167,7 @@ class JAML:
             try:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
-                v = v.format(root=expand_map, this=p)
+                v = v.format(root=expand_map, this=p, ENV=env_map)
             except KeyError:
                 pass
             return v
