@@ -81,25 +81,31 @@ def parse_config_source(path: Union[str, TextIO],
                         allow_builtin_resource: bool = True,
                         allow_raw_yaml_content: bool = True,
                         allow_raw_driver_yaml_content: bool = True,
-                        allow_class_type: bool = True, *args, **kwargs) -> TextIO:
-    # priority, filepath > classname > default
+                        allow_class_type: bool = True, *args, **kwargs) -> Tuple[TextIO, Optional[str]]:
+    """ Check if the text or text stream is valid
+
+    :return: a tuple, the first element is the text stream, the second element is the file path associate to it
+            if available.
+    """
     import io
     from pkg_resources import resource_filename, resource_stream
     if not path:
         raise BadConfigSource
     elif allow_stream and hasattr(path, 'read'):
         # already a readable stream
-        return path
+        return path, None
     elif allow_yaml_file and (path.endswith('.yml') or path.endswith('.yaml')):
-        return open(_complete_path(path), encoding='utf8')
+        comp_path = _complete_path(path)
+        return open(comp_path, encoding='utf8'), comp_path
     elif allow_builtin_resource and path.startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
         # NOTE: this returns a binary stream
-        return open(resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml'))), encoding='utf8')
+        comp_path = resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
+        return open(comp_path, encoding='utf8'), comp_path
     elif allow_raw_yaml_content and path.startswith('!'):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
-        return io.StringIO(path)
+        return io.StringIO(path), None
     elif allow_raw_driver_yaml_content and path.startswith('- !'):
         # possible driver YAML content, right now it is only used for debugging
         with open(resource_filename('jina', '/'.join(
@@ -107,10 +113,10 @@ def parse_config_source(path: Union[str, TextIO],
             _defaults = fp.read()
         path = path.replace('- !!', '- !').replace('|', '\n        with: ')  # for indent, I know, its nasty
         path = _defaults.replace('*', path)
-        return io.StringIO(path)
+        return io.StringIO(path), None
     elif allow_class_type and path.isidentifier():
         # possible class name
-        return io.StringIO(f'!{path}')
+        return io.StringIO(f'!{path}'), None
     else:
         raise BadConfigSource(f'{path} can not be resolved, it should be a readable stream,'
                               ' or a valid file path, or a supported class name.')
@@ -124,7 +130,7 @@ def _complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -
     else:
         _p = _search_file_in_paths(path, extra_search_paths)
     if _p:
-        return _p
+        return os.path.abspath(_p)
     else:
         raise FileNotFoundError(f'can not find {path}')
 
@@ -135,7 +141,7 @@ def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None)
     import inspect
     search_paths = []
     if extra_search_paths:
-        search_paths.extend(extra_search_paths)
+        search_paths.extend((v for v in extra_search_paths))
 
     frame = inspect.currentframe()
 

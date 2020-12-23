@@ -17,6 +17,7 @@ from ..helper import expand_env_var
 subvar_regex = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')  #: regex for substituting variables
 internal_var_regex = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
+
 class JAML:
     """A Jina style YAML loader and dumper, a wrapper on PyYAML.
 
@@ -80,7 +81,7 @@ class JAML:
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
-    def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True) -> Dict[str, Any]:
+    def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True, resolve_scans: int = 3) -> Dict[str, Any]:
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
@@ -166,9 +167,7 @@ class JAML:
             try:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
-                print(f'before: {v}')
                 v = v.format(root=expand_map, this=p)
-                print(f'after: {v}')
             except KeyError:
                 pass
             return v
@@ -179,7 +178,7 @@ class JAML:
         _replace(d, expand_map)
 
         # do three rounds of scan-replace to resolve internal references
-        for _ in range(3):
+        for _ in range(resolve_scans):
             # rebuild expand_map
             expand_map = SimpleNamespace()
             _scan(d, expand_map)
@@ -310,7 +309,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             BaseExecutor.load_config('a.yml')
 
         """
-        with parse_config_source(source, **kwargs) as fp:
+        stream, s_path = parse_config_source(source, **kwargs)
+        with stream as fp:
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
@@ -325,7 +325,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
             if allow_py_modules:
                 # also add YAML parent path to the search paths
-                load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(str(source)),))
+                load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(s_path),))
 
             # revert yaml's tag and load again, this time with substitution
             revert_tag_yml = JAML.dump(no_tag_yml).replace('__tag: ', '!')
