@@ -353,7 +353,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
             if allow_py_modules:
                 # also add YAML parent path to the search paths
-                load_py_modules(no_tag_yml, extra_search_paths=os.path.dirname(s_path) if s_path else None)
+                load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(s_path),) if s_path else None)
 
             # revert yaml's tag and load again, this time with substitution
             revert_tag_yml = JAML.dump(no_tag_yml).replace('__tag: ', '!')
