@@ -9,6 +9,8 @@ class BaseRuntime:
      is a subclass of :class:`multiprocessing.Process` or :class:`threading.Thread`, it starts from ``M`` and once the
      ``S`` is spawned, it calls :class:`Runtime` methods in the following order:
 
+        0. :meth:`__init__` in ``M``
+
         1. :meth:`setup` in ``S``
 
         2. :meth:`run_forever` in ``S``. Note that this will block ``S``, step 3 won't be
