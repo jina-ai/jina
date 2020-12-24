@@ -6,7 +6,7 @@ import threading
 from .helper import _get_event, _make_or_event
 from ..runtimes import Runtime
 from ... import __stop_msg__
-from ...excepts import RuntimeFailToStart
+from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
 
@@ -72,8 +72,10 @@ class BasePea(metaclass=PeaType):
             self.is_ready.set()
             try:
                 self.runtime.run_forever()
+            except RuntimeTerminated:
+                self.logger.info(f'{self.runtime!r} is end')
             except KeyboardInterrupt:
-                self.logger.info('interrupted by user')
+                self.logger.info(f'{self.runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}', exc_info=True)
 

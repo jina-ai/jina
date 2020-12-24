@@ -5,7 +5,7 @@ import time
 
 from . import BaseDriver
 from .querylang.queryset.dunderkey import dunder_get
-from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
+from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
 from ..proto import jina_pb2
 
 
@@ -48,7 +48,7 @@ class ControlReqDriver(BaseControlDriver):
     def __call__(self, *args, **kwargs):
         if self.req.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
-            raise RequestLoopEnd
+            raise RuntimeTerminated
         elif self.req.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
             self.req.args = vars(self.pea.args)

@@ -2,7 +2,7 @@ import pytest
 
 from jina.parser import set_pea_parser
 from jina.peapods.peas import BasePea
-from jina.excepts import DriverError, NoDriverForRequest, ExecutorFailToLoad, EventLoopError, RequestLoopEnd
+from jina.excepts import DriverError, NoDriverForRequest, ExecutorFailToLoad, EventLoopError, RuntimeTerminated
 
 
 class MockExceptionRequestLoopPea(BasePea):
@@ -91,7 +91,7 @@ def test_pea_context_load_executor():
 @pytest.mark.parametrize('exception_class', [RuntimeError, SystemError,
                                              KeyboardInterrupt, DriverError, NoDriverForRequest,
                                              NotImplementedError, ExecutorFailToLoad, EventLoopError,
-                                             RequestLoopEnd])
+                                             RuntimeTerminated])
 def test_pea_proper_terminate(factory, exception_class):
     pea = factory().create(exception_class)
     with pea:

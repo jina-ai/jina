@@ -32,7 +32,7 @@ class DriverError(Exception):
     """Driver related exceptions"""
 
 
-class RequestLoopEnd(KeyboardInterrupt):
+class RuntimeTerminated(KeyboardInterrupt):
     """The event loop of BasePea ends"""
 
 
