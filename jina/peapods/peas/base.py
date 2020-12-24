@@ -71,11 +71,11 @@ class BasePea(metaclass=PeaType):
         else:
             self.is_ready.set()
             try:
-                self.runtime.serve_forever()
+                self.runtime.run_forever()
             except KeyboardInterrupt:
                 self.logger.info('interrupted by user')
             except (Exception, SystemError) as ex:
-                self.logger.error(f'{ex!r} during {self.runtime.serve_forever!r}', exc_info=True)
+                self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}', exc_info=True)
 
             try:
                 self.runtime.teardown()
