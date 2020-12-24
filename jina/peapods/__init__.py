@@ -1,50 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, TypeVar
+import argparse
+from typing import Optional
 
-from .peas import BasePea
 from .. import __default_host__
 from ..enums import RemoteAccessType
-from ..helper import is_valid_local_config_source
 from ..logging import default_logger
-
-if False:
-    import argparse
-
-PeaLike = TypeVar('PeaLike', bound='BasePea')
-
-
-def Runtime(args: Optional['argparse.Namespace'] = None,
-            allow_remote: bool = True,
-            pea_cls: PeaLike = BasePea, **kwargs):
-    """Initialize a :class:`LocalRuntime`, :class:`ContainerRuntime` or :class:`RemoteRuntime`
-
-    :param args: arguments from CLI
-    :param allow_remote: allow start a :class:`RemoteRuntime`
-    :param pea_cls: declares the type of `Pea` to be instantiated by `LocalRuntime`
-    :param kwargs: all supported arguments from CLI
-
-    """
-    if args is None:
-        from ..parser import set_pea_parser
-        from ..helper import ArgNamespace
-        args = ArgNamespace.kwargs2namespace(kwargs, set_pea_parser())
-    if not allow_remote:
-        # set the host back to local, as for the remote, it is running "locally"
-        if args.host != __default_host__:
-            args.host = __default_host__
-            default_logger.warning(f'setting host to {__default_host__} as allow_remote set to False')
-
-    if args.host != __default_host__:
-        from .runtimes.remote.jinad import JinadRemoteRuntime
-        return JinadRemoteRuntime(args, kind='pea')
-    elif args.uses and not is_valid_local_config_source(args.uses):
-        from .runtimes.container import ContainerRuntime
-        return ContainerRuntime(args)
-    else:
-        from .runtimes.local import LocalRuntime
-        return LocalRuntime(args, pea_cls=pea_cls)
 
 
 def Pod(args: Optional['argparse.Namespace'] = None,
