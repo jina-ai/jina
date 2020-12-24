@@ -24,13 +24,17 @@ class FlowRunner:
         :param documents: iterator with list or generator for getting the documents
         :param batch_size: batch size used in the flow
         :param task: task of the flow which can be `index` or `search`
+        :param callback: callback to be passed to the flow's `on_done`
         :param overwrite_workspace: overwrite workspace created by the flow
         """
         self.flow_yaml = Path(flow_yaml)
-        # TODO: Make changes for working with doc generator
+        # TODO: Make changes for working with doc generator (Pratik, before v1.0)
         self.documents = documents if type(documents) == list else list(documents)
         self.batch_size = batch_size
-        self.task = task
+        if task in ('index', 'search'): 
+            self.task = task
+        else:
+            raise ValueError('task can be either of index or search')
         self.callback = callback
         self.overwrite_workspace = overwrite_workspace
 
@@ -64,7 +68,13 @@ class FlowRunner:
         yaml.dump(parameters, open(trial_flow_file_path, 'w'))
         return trial_flow_file_path
 
-    def run(self, trial_parameters=None, workspace='workspace'):
+    def run(self, trial_parameters=None, workspace='workspace', **kwargs):
+        """[summary]
+
+        :param trial_parameters: flow env variable values
+        :param workspace: directory to be used for artifacts generated
+        """
+        workspace = Path(workspace)
         if trial_parameters is None:
             trial_parameters = {}
 
@@ -90,7 +100,8 @@ class FlowRunner:
             getattr(f, self.task)(
                 self.documents,
                 batch_size=self.batch_size,
-                output_fn=self.callback,
+                on_done=self.callback,
+                **kwargs
             )
 
 

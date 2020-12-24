@@ -10,12 +10,11 @@ class OptimizationParameter:
         self,
         parameter_name: str,
         executor_name: Optional[str] = None,
-        prefix: str = "JINA",
+        prefix: str = 'JINA',
         env_var: Optional[str] = None,
-        method: Optional[str] = None,
     ):
         if env_var is None:
-            self.env_var = f"{prefix}_{executor_name}_{parameter_name}".upper()
+            self.env_var = f'{prefix}_{executor_name}_{parameter_name}'.upper()
         else:
             self.env_var = env_var
         self.parameter_name = parameter_name
@@ -25,7 +24,7 @@ class OptimizationParameter:
         """Required by :mod:`pyyaml` """
         tmp = data._dump_instance_to_yaml(data)
         representer.sort_base_mapping_type_on_output = False
-        return representer.represent_mapping("!" + cls.__name__, tmp)
+        return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @staticmethod
     def _dump_instance_to_yaml(instance):
@@ -34,7 +33,7 @@ class OptimizationParameter:
         return {
             a[0]: a[1]
             for a in attributes
-            if not (a[0].startswith("__") and a[0].endswith("__"))
+            if not (a[0].startswith('__') and a[0].endswith('__'))
         }
 
     @classmethod
@@ -62,16 +61,18 @@ class IntegerParameter(OptimizationParameter):
         self.low = low
         self.high = high
         self.step_size = step_size
+        # The step != 1 and log arguments cannot be used at the same time.
+        # To set the log argument to True, set the step argument to 1.
         self.log = log
-        self.method = "suggest_int"
+        self.method = 'suggest_int'
 
     def to_optuna_args(self):
         return {
-            "name": self.env_var,
-            "low": self.low,
-            "high": self.high,
-            "step": self.step_size,
-            "log": self.log,
+            'name': self.env_var,
+            'low': self.low,
+            'high': self.high,
+            'step': self.step_size,
+            'log': self.log,
         }
 
 
@@ -93,15 +94,15 @@ class FloatParameter(OptimizationParameter):
         self.high = high
         self.step_size = step_size
         self.log = log
-        self.method = "suggest_float"
+        self.method = 'suggest_float'
 
     def to_optuna_args(self):
         return {
-            "name": self.env_var,
-            "low": self.low,
-            "high": self.high,
-            "step": self.step_size,
-            "log": self.log,
+            'name': self.env_var,
+            'low': self.low,
+            'high': self.high,
+            'step': self.step_size,
+            'log': self.log,
         }
 
 
@@ -113,13 +114,13 @@ class UniformParameter(OptimizationParameter):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
-        self.method = "suggest_uniform"
+        self.method = 'suggest_uniform'
 
     def to_optuna_args(self):
         return {
-            "name": self.env_var,
-            "low": self.low,
-            "high": self.high,
+            'name': self.env_var,
+            'low': self.low,
+            'high': self.high,
         }
 
 
@@ -131,13 +132,13 @@ class LogUniformParameter(OptimizationParameter):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
-        self.method = "suggest_loguniform"
+        self.method = 'suggest_loguniform'
 
     def to_optuna_args(self):
         return {
-            "name": self.env_var,
-            "low": self.low,
-            "high": self.high,
+            'name': self.env_var,
+            'low': self.low,
+            'high': self.high,
         }
 
 
@@ -150,10 +151,10 @@ class CategoricalParameter(OptimizationParameter):
     ):
         super().__init__(*args, **kwargs)
         self.choices = choices
-        self.method = "suggest_categorical"
+        self.method = 'suggest_categorical'
 
     def to_optuna_args(self):
-        return {"name": self.env_var, "choices": self.choices}
+        return {'name': self.env_var, 'choices': self.choices}
 
 
 JAML.register(CategoricalParameter)
@@ -165,14 +166,14 @@ class DiscreteUniformParameter(OptimizationParameter):
         self.low = low
         self.high = high
         self.q = q
-        self.method = "suggest_discrete_uniform"
+        self.method = 'suggest_discrete_uniform'
 
     def to_optuna_args(self):
         return {
-            "name": self.env_var,
-            "low": self.low,
-            "high": self.high,
-            "q": self.q,
+            'name': self.env_var,
+            'low': self.low,
+            'high': self.high,
+            'q': self.q,
         }
 
 
@@ -186,5 +187,5 @@ def load_optimization_parameters(filename):
     JAML.register(LogUniformParameter)
     JAML.register(CategoricalParameter)
     JAML.register(DiscreteUniformParameter)
-    with open(filename, encoding="utf8") as fp:
+    with open(filename, encoding='utf8') as fp:
         return JAML.load(fp)
