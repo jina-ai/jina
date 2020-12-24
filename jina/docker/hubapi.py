@@ -11,7 +11,8 @@ from pkg_resources import resource_stream, parse_version
 from setuptools import find_packages
 
 from .helper import credentials_file
-from ..helper import colored, yaml
+from ..helper import colored
+from ..jaml import JAML
 from ..logging import default_logger
 from ..logging.profile import TimeContext
 
@@ -32,7 +33,7 @@ def _load_local_hub_manifest():
         if info.ispkg and os.path.exists(m_yml):
             try:
                 with open(m_yml) as fp:
-                    m = yaml.load(fp)
+                    m = JAML.load(fp)
                     hub_images[m['name']] = m
             except:
                 pass
@@ -80,7 +81,7 @@ def _list(logger, image_name: str = None, image_kind: str = None,
     """
     # TODO: Shouldn't pass a default argument for keywords. Need to handle after lambda function gets fixed
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
-        hubapi_yml = yaml.load(fp)
+        hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['list']
 
     params = {
@@ -122,10 +123,10 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
     :return: a dict of specifying username and password
     """
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
-        hubapi_yml = yaml.load(fp)
+        hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
 
-    access_token = _fetch_github_access_token(logger)
+    access_token = _fetch_access_token(logger)
     if not access_token:
         logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
@@ -200,17 +201,25 @@ def _make_hub_table(manifests):
                               f'{desc:<30s}')
     return info_table
 
+def _fetch_access_token(logger):
+    if not credentials_file().is_file():
+        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        return
+    with open(credentials_file(), 'r') as cf:
+        cred_yml = JAML.load(cf)
+    access_token = cred_yml['access_token']
+    return access_token
 
 def _register_to_mongodb(logger, summary: Dict = None):
     """ Hub API Invocation to run `hub push` """
     logger.info('registering image to Jina Hub database...')
 
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
-        hubapi_yml = yaml.load(fp)
+        hubapi_yml = JAML.load(fp)
 
     hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
 
-    access_token = _fetch_github_access_token(logger)
+    access_token = _fetch_access_token(logger)
     if not access_token:
         logger.error(f'aborting push to mongodb. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
@@ -240,7 +249,7 @@ def _register_to_mongodb(logger, summary: Dict = None):
 
 
 
-def _fetch_github_access_token(logger):
+def _fetch_access_token(logger):
     """ Fetch github access token from credentials file, return as a request header """
     logger.info('fetching github access token...')
 
@@ -249,7 +258,7 @@ def _fetch_github_access_token(logger):
         return
 
     with open(credentials_file(), 'r') as cf:
-        cred_yml = yaml.load(cf)
+        cred_yml = JAML.load(cf)
     access_token = cred_yml['access_token']
 
     return access_token

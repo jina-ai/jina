@@ -1,0 +1,16 @@
+!BaseExecutor
+with: {}
+metas:
+  name: forward
+requests:
+  on:
+    IndexRequest:
+      - !ForwardDriver {}
+    SearchRequest:
+      - !SliceQL
+        with:
+          start: 0
+          end: 10
+          traversal_paths: ['m']
+    ControlRequest:
+      - !ControlReqDriver {}

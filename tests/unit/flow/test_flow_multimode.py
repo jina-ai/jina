@@ -9,7 +9,7 @@ from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.types.document import uid
+from jina.types.document.uid import UniqueId
 
 # import DocumentProto
 
@@ -44,15 +44,15 @@ def test_flow_with_modalities(tmpdir):
     def input_fn():
         doc1 = jina_pb2.DocumentProto()
         doc1.text = 'title: this is mode1 from doc1, body: this is mode2 from doc1'
-        doc1.id = uid.new_doc_id(doc1)
+        doc1.id = UniqueId(1)
 
         doc2 = jina_pb2.DocumentProto()
         doc2.text = 'title: this is mode1 from doc2, body: this is mode2 from doc2'
-        doc2.id = uid.new_doc_id(doc2)
+        doc2.id = UniqueId(2)
 
         doc3 = jina_pb2.DocumentProto()
         doc3.text = 'title: this is mode1 from doc3, body: this is mode2 from doc3'
-        doc3.id = uid.new_doc_id(doc3)
+        doc3.id = UniqueId(3)
 
         return [doc1, doc2, doc3]
 
@@ -64,7 +64,7 @@ def test_flow_with_modalities(tmpdir):
         join(['indexer1', 'indexer2'])
 
     with flow:
-        flow.index(input_fn=input_fn, override_doc_id=False)
+        flow.index(input_fn=input_fn)
 
     with open(tmpdir.join('vec1.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])

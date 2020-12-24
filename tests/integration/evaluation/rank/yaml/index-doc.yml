@@ -3,7 +3,7 @@ components:
   - !NumpyIndexer
     with:
       index_filename: vec.gz
-      metric: cosine
+      metric: euclidean
     metas:
       name: vecidx
       workspace: $JINA_TEST_RANKING_EVALUATION

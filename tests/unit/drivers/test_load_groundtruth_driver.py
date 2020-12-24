@@ -7,8 +7,7 @@ from jina import Request
 from jina.drivers.evaluate import LoadGroundTruthDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.proto.jina_pb2 import DocumentProto
-from jina.types.document import uid, Document
+from jina.types.document import Document
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):
@@ -16,7 +15,7 @@ class MockGroundTruthIndexer(BaseKVIndexer):
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         pass
 
-    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
+    def query(self, key: int) -> Optional['Document']:
         if key in self.db.keys():
             return self.db[key]
         else:
@@ -33,19 +32,19 @@ class MockGroundTruthIndexer(BaseKVIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        doc1 = jina_pb2.DocumentProto()
+        doc1 = Document()
         doc1.id = '01' * 8
         doc1.tags['groundtruth'] = True
-        doc2 = jina_pb2.DocumentProto()
+        doc2 = Document()
         doc2.id = '02' * 8
         doc2.tags['groundtruth'] = True
-        doc4 = jina_pb2.DocumentProto()
+        doc4 = Document()
         doc4.id = '04' * 8
         doc4.tags['groundtruth'] = True
         self.db = {
-            uid.id2hash(doc1.id): doc1.SerializeToString(),
-            uid.id2hash(doc2.id): doc2.SerializeToString(),
-            uid.id2hash(doc4.id): doc4.SerializeToString()
+            int(doc1.id): doc1.SerializeToString(),
+            int(doc2.id): doc2.SerializeToString(),
+            int(doc4.id): doc4.SerializeToString()
         }
 
 
@@ -88,9 +87,9 @@ def eval_request():
     # doc: 4
     # doc: 5 - will be missing from KV indexer
     for idx in range(5):
-        dp = DocumentProto()
+        dp = Document()
         dp.id = f'0{str(idx + 1)}' * 8
-        req.docs.append(Document(dp))
+        req.docs.append(dp)
     return req
 
 

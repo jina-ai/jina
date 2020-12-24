@@ -1,9 +1,9 @@
 import argparse
 from typing import Union, Dict
 
-from jina.peapods.peas import PeaRoleType
-from jina.peapods.zmq import Zmqlet, send_ctrl_message
-from jina.peapods.runtimes import BaseRuntime
+from .. import BaseRuntime
+from ...peas import PeaRoleType
+from ...zmq import Zmqlet, send_ctrl_message
 
 __all__ = ['BaseRemoteRuntime']
 

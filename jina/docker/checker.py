@@ -8,7 +8,7 @@ import unicodedata
 import tempfile
 from pkg_resources import resource_stream
 
-from ..helper import yaml
+from ..jaml import JAML
 
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
 required = {'name', 'description'}
@@ -42,7 +42,7 @@ def check_image_name(s):
 
 def check_platform(s):
     with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'platforms.yml'))) as fp:
-        platforms = yaml.load(fp)
+        platforms = JAML.load(fp)
 
     for ss in s:
         if ss not in platforms:
@@ -51,7 +51,7 @@ def check_platform(s):
 
 def check_license(s):
     with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'osi-approved.yml'))) as fp:
-        approved = yaml.load(fp)
+        approved = JAML.load(fp)
     if s not in approved:
         raise ValueError(f'license {s} is not an OSI-approved license {approved}')
     return approved[s]

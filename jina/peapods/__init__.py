@@ -1,21 +1,23 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional
+from typing import Optional, TypeVar
 
+from .peas import BasePea
 from .. import __default_host__
 from ..enums import RemoteAccessType
 from ..helper import is_valid_local_config_source
 from ..logging import default_logger
-from .peas import BasePea
 
 if False:
     import argparse
 
+PeaLike = TypeVar('PeaLike', bound='BasePea')
+
 
 def Runtime(args: Optional['argparse.Namespace'] = None,
             allow_remote: bool = True,
-            pea_cls: BasePea = BasePea, **kwargs):
+            pea_cls: PeaLike = BasePea, **kwargs):
     """Initialize a :class:`LocalRuntime`, :class:`ContainerRuntime` or :class:`RemoteRuntime`
 
     :param args: arguments from CLI
@@ -26,8 +28,8 @@ def Runtime(args: Optional['argparse.Namespace'] = None,
     """
     if args is None:
         from ..parser import set_pea_parser
-        from ..helper import get_parsed_args
-        _, args, _ = get_parsed_args(kwargs, set_pea_parser())
+        from ..helper import ArgNamespace
+        args = ArgNamespace.kwargs2namespace(kwargs, set_pea_parser())
     if not allow_remote:
         # set the host back to local, as for the remote, it is running "locally"
         if args.host != __default_host__:
@@ -55,8 +57,8 @@ def Pod(args: Optional['argparse.Namespace'] = None,
     """
     if args is None:
         from ..parser import set_pod_parser
-        from ..helper import get_parsed_args
-        _, args, _ = get_parsed_args(kwargs, set_pod_parser())
+        from ..helper import ArgNamespace
+        args = ArgNamespace.kwargs2namespace(kwargs, set_pod_parser())
     if isinstance(args, dict):
         hosts = set()
         for k in args.values():

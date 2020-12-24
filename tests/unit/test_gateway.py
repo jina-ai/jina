@@ -86,7 +86,7 @@ def test_grpc_gateway_concurrency():
         start = time.time()
         f.index(
             input_fn=_input_fn,
-            output_fn=functools.partial(
+            on_done=functools.partial(
                 _validate,
                 start=start,
                 status_codes=status_codes,

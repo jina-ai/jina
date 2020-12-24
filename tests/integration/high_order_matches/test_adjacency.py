@@ -14,7 +14,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 #         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
 #
 #     with f:
-#         f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), output_fn=validate)
+#         f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), on_done=validate)
 
 
 def test_high_order_matches_integrated(mocker):
@@ -34,7 +34,7 @@ def test_high_order_matches_integrated(mocker):
         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
 
     with f:
-        f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), output_fn=response_mock)
+        f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), on_done=response_mock)
 
     shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
     response_mock.assert_called()

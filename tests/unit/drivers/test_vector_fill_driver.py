@@ -24,7 +24,6 @@ def create_documents_to_encode(num_docs):
     docs = []
     for idx in range(num_docs):
         doc = Document()
-        doc.update_id()
         docs.append(doc)
     return docs
 
