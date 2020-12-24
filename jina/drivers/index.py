@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 import numpy as np
 
 from . import BaseExecutableDriver
-from ..stack_print import p
 
 if False:
     from ..types.sets import DocumentSet

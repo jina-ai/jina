@@ -1,15 +1,11 @@
-!CompoundIndexer
-components:
-  - !NumpyIndexer
-    with:
-      index_filename: vec.gz
-      metric: cosine
-    metas:
-      name: vecidx
-      workspace: $JINA_TOPK_DIR
+!NumpyIndexer
+with:
+  index_filename: vec.gz
+  metric: cosine
 metas:
-  name: chunk_indexer
+  name: vecidx
   workspace: $JINA_TOPK_DIR
+
 requests:
   on:
     UpdateRequest:
