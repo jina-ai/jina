@@ -60,7 +60,7 @@ class MockExceptionLoadExecutorPea(BasePea):
         self.exception = exception_class
         self.properly_closed = False
 
-    def load_executor(self):
+    def _load_executor(self):
         raise self.exception
 
     def _teardown(self):

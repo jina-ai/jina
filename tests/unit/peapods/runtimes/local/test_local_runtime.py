@@ -1,6 +1,6 @@
 import pytest
 
-from jina.excepts import PeaFailToStart
+from jina.excepts import RuntimeFailToStart
 from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
 from jina.peapods.runtimes.local import LocalRuntime
 from jina.peapods.pods import BasePod
@@ -27,13 +27,13 @@ def test_gateway_runtime(runtime, pea_cls):
 
 
 def test_address_in_use():
-    with pytest.raises(PeaFailToStart):
+    with pytest.raises(RuntimeFailToStart):
         args1 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
         args2 = set_pea_parser().parse_args(['--port-ctrl', '55555'])
         with LocalRuntime(args1), LocalRuntime(args2):
             pass
 
-    with pytest.raises(PeaFailToStart):
+    with pytest.raises(RuntimeFailToStart):
         args1 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
         args2 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime', 'thread'])
         with LocalRuntime(args1), LocalRuntime(args2):

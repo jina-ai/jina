@@ -27,7 +27,7 @@ class LocalRuntime(BaseRuntime):
             self._envs.update(self.args.env)
         self.pea = pea_cls(self.args, ctrl_addr=self.ctrl_addr, ctrl_with_ipc=self.ctrl_with_ipc)
 
-    def set_environment_vars(self):
+    def _set_envs(self):
         """Set environment variable to this pea
 
         .. note::
@@ -46,7 +46,7 @@ class LocalRuntime(BaseRuntime):
                 for k, v in self._envs.items():
                     os.environ[k] = v
 
-    def unset_environment_vars(self):
+    def _unset_envs(self):
         if self._envs and self.args.runtime != 'thread':
             for k in self._envs.keys():
                 os.unsetenv(k)
@@ -59,14 +59,14 @@ class LocalRuntime(BaseRuntime):
         """Start the request loop of this Runtime. It will start a BasePea as a context manager and call its
         main run entrypoint """
         try:
-            self.set_environment_vars()
+            self._set_envs()
             with self.pea as pea:
                 pea.run(self.is_ready_event)
         except Exception as ex:
             self.logger.info(f'runtime run caught {repr(ex)}')
         finally:
             # if an exception occurs this unsets ready and shutting down
-            self.unset_environment_vars()
+            self._unset_envs()
             self.unset_ready()
             self.logger.success(__stop_msg__)
             self.set_shutdown()

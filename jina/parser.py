@@ -266,6 +266,33 @@ def set_flow_parser(parser=None):
     return parser
 
 
+def set_runtime_parser(parser=None):
+    from .helper import get_random_identity
+    from pkg_resources import resource_filename
+
+    if not parser:
+        parser = set_base_parser()
+    gp0 = add_arg_group(parser, 'runtime basic arguments')
+    gp0.add_argument('--name', type=str,
+                     help='the name of this runtime, used to identify the pea/pod and its logs.')
+    gp0.add_argument('--timeout-ready', type=int, default=10000,
+                     help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
+    gp0.add_argument('--runtime', type=str, choices=['thread', 'process'], default='process',
+                     help='the parallel runtime of the pod')
+    gp0.add_argument('--daemon', action='store_true', default=False,
+                     help='when a process exits, it attempts to terminate all of its daemonic child processes. '
+                          'setting it to true basically tell the context manager do not wait on this Pea')
+    gp0.add_argument('--env', action=KVAppendAction,
+                     metavar='KEY=VALUE', nargs='*',
+                     help='a map of environment variables that are available inside runtime.')
+    gp0.add_argument('--log-config', type=str,
+                     default=resource_filename('jina',
+                                               '/'.join(('resources', 'logging.default.yml'))),
+                     help='the yaml config of the logger. note the executor inside will inherit this log config')
+    gp0.add_argument('--log-id', type=str, default=get_random_identity(),
+                     help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+
+
 def set_pea_parser(parser=None):
     from .enums import SocketType, PeaRoleType, SkipOnErrorType
     from .helper import random_port, get_random_identity
@@ -273,9 +300,10 @@ def set_pea_parser(parser=None):
 
     if not parser:
         parser = set_base_parser()
+
+    set_runtime_parser(parser)
+
     gp0 = add_arg_group(parser, 'pea basic arguments')
-    gp0.add_argument('--name', type=str,
-                     help='the name of this pea, used to identify the pod and its logs.')
     gp0.add_argument('--identity', type=str, default=get_random_identity(),
                      help='the identity of the sockets, default a random string (Important for load balancing messages'
                      if _SHOW_ALL_ARGS else argparse.SUPPRESS)
@@ -289,9 +317,6 @@ def set_pea_parser(parser=None):
     gp0.add_argument('--py-modules', type=str, nargs='*', metavar='PATH',
                      help='the customized python modules need to be imported before loading the'
                           ' executor')
-    gp0.add_argument('--env', action=KVAppendAction,
-                     metavar='KEY=VALUE', nargs='*',
-                     help='a map of environment variables that are available to all peas in the pod.')
 
     gp1 = add_arg_group(parser, 'pea container arguments')
     gp1.add_argument('--uses-internal', type=str, default='BaseExecutor',
@@ -308,6 +333,9 @@ def set_pea_parser(parser=None):
                           '/my-workspace inside the container. all volumes are mounted with read-write mode.')
 
     gp2 = add_arg_group(parser, 'pea network arguments')
+
+    gp2.add_argument('--host', type=str, default=__default_host__,
+                     help=f'host address of the pea, by default it is {__default_host__}.')
     gp2.add_argument('--port-in', type=int, default=random_port(),
                      help='port for input data, default a random port between [49152, 65535]')
     gp2.add_argument('--port-out', type=int, default=random_port(),
@@ -326,12 +354,10 @@ def set_pea_parser(parser=None):
                      help='port for controlling the pod, default a random port between [49152, 65535]')
     gp2.add_argument('--ctrl-with-ipc', action='store_true', default=False,
                      help='use ipc protocol for control socket')
-    gp2.add_argument('--timeout', type=int, default=-1,
-                     help='timeout (ms) of all requests, -1 for waiting forever')
     gp2.add_argument('--timeout-ctrl', type=int, default=5000,
                      help='timeout (ms) of the control request, -1 for waiting forever')
-    gp2.add_argument('--timeout-ready', type=int, default=10000,
-                     help='timeout (ms) of a pea is ready for request, -1 for waiting forever')
+    gp2.add_argument('--timeout', type=int, default=-1,
+                     help='timeout (ms) of all requests, -1 for waiting forever')
     gp2.add_argument('--expose-public', action='store_true', default=False,
                      help='expose the public IP address to remote when necessary, by default it exposes'
                           'private IP address, which only allows accessing under the same network/subnet')
@@ -364,26 +390,9 @@ def set_pea_parser(parser=None):
     gp6.add_argument('--memory-hwm', type=int, default=-1,
                      help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
                           '-1 means no restriction')
-    gp6.add_argument('--runtime', type=str, choices=['thread', 'process'], default='process',
-                     help='the parallel runtime of the pod')
     gp6.add_argument('--max-idle-time', type=int, default=60,
                      help='label this pea as inactive when it does not '
                           'process any request after certain time (in second)')
-    gp6.add_argument('--daemon', action='store_true', default=False,
-                     help='when a process exits, it attempts to terminate all of its daemonic child processes. '
-                          'setting it to true basically tell the context manager do not wait on this Pea')
-
-    from pkg_resources import resource_filename
-    gp7 = add_arg_group(parser, 'logging arguments')
-    gp7.add_argument('--log-config', type=str,
-                     default=resource_filename('jina',
-                                               '/'.join(('resources', 'logging.default.yml'))),
-                     help='the yaml config of the logger. note the executor inside will inherit this log config')
-    gp7.add_argument('--log-remote', action='store_true', default=False,
-                     help='turn on remote logging, this should not be set manually'
-                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
-    gp7.add_argument('--log-id', type=str, default=get_random_identity(),
-                     help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp8 = add_arg_group(parser, 'ssh tunneling arguments')
     gp8.add_argument('--ssh-server', type=str, default=None,
@@ -394,7 +403,7 @@ def set_pea_parser(parser=None):
                           'regular default ssh keys will be used without specifying this argument.')
     gp8.add_argument('--ssh-password', type=str, default=None,
                      help='ssh password to the ssh server.')
-    _set_grpc_parser(parser)
+
     return parser
 
 
@@ -473,8 +482,7 @@ def _set_grpc_parser(parser=None):
     from . import __default_host__
     from .enums import RemoteAccessType
     gp1 = add_arg_group(parser, 'grpc and remote arguments')
-    gp1.add_argument('--host', type=str, default=__default_host__,
-                     help=f'host address of the pea/gateway, by default it is {__default_host__}.')
+
     gp1.add_argument('--port-expose', '--port-grpc',
                      type=int,
                      default=random_port(),
@@ -522,6 +530,7 @@ def set_gateway_parser(parser=None):
     if not parser:
         parser = set_base_parser()
     set_pea_parser(parser)
+    _set_grpc_parser(parser)
 
     gp1 = add_arg_group(parser, 'gateway arguments')
     gp1.set_defaults(name='gateway',

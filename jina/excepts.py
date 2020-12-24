@@ -20,7 +20,7 @@ class ExecutorFailToLoad(SystemError):
     """When the executor can not be loaded in pea/pod"""
 
 
-class PeaFailToStart(SystemError):
+class RuntimeFailToStart(SystemError):
     """When pea/pod is failed to started"""
 
 

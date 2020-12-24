@@ -8,14 +8,14 @@ from jina.helper import get_random_identity
 
 
 class MockBasePeaNotRead(BasePea):
-    def post_hook(self, msg: 'Message') -> 'BasePea':
-        super().post_hook(msg)
+    def _post_hook(self, msg: 'Message') -> 'BasePea':
+        super()._post_hook(msg)
         assert not msg.request.is_used
 
 
 class MockBasePeaRead(BasePea):
-    def post_hook(self, msg: 'Message') -> 'BasePea':
-        super().post_hook(msg)
+    def _post_hook(self, msg: 'Message') -> 'BasePea':
+        super()._post_hook(msg)
         assert msg.request.is_used
 
 

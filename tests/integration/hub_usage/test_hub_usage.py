@@ -5,7 +5,7 @@ import pytest
 
 from jina import __version__ as jina_version
 from jina.docker.hubio import HubIO
-from jina.excepts import PeaFailToStart, HubBuilderError
+from jina.excepts import RuntimeFailToStart, HubBuilderError
 from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.parser import set_pod_parser, set_hub_build_parser
@@ -19,7 +19,7 @@ def test_simple_use_abs_import_shall_fail():
         from .dummyhub_abs import DummyHubExecutorAbs
         DummyHubExecutorAbs()
 
-    with pytest.raises(PeaFailToStart):
+    with pytest.raises(RuntimeFailToStart):
         with Flow().add(uses='DummyHubExecutorAbs'):
             pass
 
