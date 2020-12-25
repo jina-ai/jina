@@ -14,6 +14,7 @@ from jina.parser import set_pea_parser, set_ping_parser, set_pod_parser
 from jina.peapods.pods import BasePod
 from jina.peapods.runtimes.local import LocalRuntime
 from jina.proto.jina_pb2 import DocumentProto
+from jina.types.request import Response
 from tests import random_docs, rm_files
 
 cur_dir = Path(__file__).parent
@@ -590,7 +591,7 @@ def test_return_results_sync_flow(return_results):
         r = f.index_ndarray(np.random.random([10, 2]))
         if return_results:
             assert isinstance(r, list)
-            assert isinstance(r[0], Request)
+            assert isinstance(r[0], Response)
         else:
             assert r is None
 
@@ -602,6 +603,6 @@ async def test_return_results_async_flow(return_results):
         r = await f.index_ndarray(np.random.random([10, 2]))
         if return_results:
             assert isinstance(r, list)
-            assert isinstance(r[0], Request)
+            assert isinstance(r[0], Response)
         else:
             assert r is None
