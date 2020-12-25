@@ -1,3 +1,8 @@
+import argparse
+
+from jina.logging import JinaLogger
+
+
 class BaseRuntime:
     """A Jina Runtime is a procedure that blocks the main process once running (i.e. :meth:`run_forever`),
     therefore must be put into a separated thread/process. Any program/library/package/module that blocks the main
@@ -73,16 +78,21 @@ class BaseRuntime:
         raise NotImplementedError
 
     def setup(self):
-        """Method called to prepare the runtime. Optional in subclasses. The default implementation does nothing.
+        """ Method called to prepare the runtime inside ``S``. Optional in subclasses.
+        The default implementation does nothing.
 
         .. note::
 
             If this method raises any exception, then :meth:`run_forever` and :meth:`teardown` won't be called.
+
+        .. note::
+
+            Unlike :meth:`__init__` called in ``M``, :meth:`setup` is called inside ``S``.
         """
         pass
 
     def teardown(self):
-        """Method called immediately after :meth:`run_forever` is unblocked.
+        """ Method called immediately after :meth:`run_forever` is unblocked.
         You can tidy up things here.  Optional in subclasses. The default implementation does nothing.
 
         .. note::
@@ -90,3 +100,11 @@ class BaseRuntime:
             This method will only be called if the :meth:`setup` succeeds.
         """
         pass
+
+    def __init__(self, args: 'argparse.Namespace'):
+        super().__init__()
+        self.args = args
+        self.name = args.name or self.__class__.__name__
+        self.logger = JinaLogger(self.name,
+                                 log_id=self.args.log_id,
+                                 log_config=self.args.log_config)
