@@ -114,6 +114,7 @@ class BaseClient:
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
+        result = []
         try:
             self.input_fn = input_fn
             req_iter, tname = self._get_requests(**kwargs)
@@ -124,6 +125,8 @@ class BaseClient:
                 self.logger.success(f'connected to the gateway at {self.args.host}:{self.args.port_expose}!')
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     async for response in stub.Call(req_iter):
+                        if self.args.return_results:
+                            result.append(response)
                         callback_exec(response=response,
                                       on_error=on_error,
                                       on_done=on_done,
@@ -151,6 +154,8 @@ class BaseClient:
                                      'please double check your input iterator') from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
+        if self.args.return_results:
+            return result
 
     def index(self):
         raise NotImplementedError

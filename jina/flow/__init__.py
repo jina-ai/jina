@@ -41,7 +41,7 @@ class Flow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
@@ -59,7 +59,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_ndarray
-        self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
+        return self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -103,7 +103,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
-        self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -127,7 +127,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
-        self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -151,7 +151,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
-        self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -174,7 +174,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
-        self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
@@ -207,7 +207,7 @@ class Flow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def search(self, input_fn: InputFnType = None,
@@ -239,4 +239,4 @@ class Flow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs)

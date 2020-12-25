@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 import requests
 
-from jina import JINA_GLOBAL
+from jina import JINA_GLOBAL, Request, AsyncFlow
 from jina.checker import NetworkChecker
-from jina.enums import FlowOptimizeLevel, SocketType
+from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.parser import set_pea_parser, set_ping_parser, set_pod_parser
@@ -582,3 +582,26 @@ def test_flow_with_pod_envs():
 
     with f:
         pass
+
+
+@pytest.mark.parametrize('return_results', [False, True])
+def test_return_results_sync_flow(return_results):
+    with Flow(return_results=return_results).add() as f:
+        r = f.index_ndarray(np.random.random([10, 2]))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Request)
+        else:
+            assert r is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('return_results', [False, True])
+async def test_return_results_async_flow(return_results):
+    with AsyncFlow(return_results=return_results).add() as f:
+        r = await f.index_ndarray(np.random.random([10, 2]))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Request)
+        else:
+            assert r is None
