@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import argparse
 import os
-from typing import Callable, Union, Optional, Iterator
+from typing import Callable, Union, Optional, Iterator, List
 
 import grpc
 
@@ -16,7 +16,7 @@ from ..helper import typename
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
-from ..types.request import Request
+from ..types.request import Request, Response
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 CallbackFnType = Optional[Callable[..., None]]
@@ -114,6 +114,7 @@ class BaseClient:
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
+        result = []  # type: List['Response']
         try:
             self.input_fn = input_fn
             req_iter, tname = self._get_requests(**kwargs)
@@ -124,7 +125,10 @@ class BaseClient:
                 self.logger.success(f'connected to the gateway at {self.args.host}:{self.args.port_expose}!')
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     async for response in stub.Call(req_iter):
-                        callback_exec(response=response,
+                        resp = response.to_response()
+                        if self.args.return_results:
+                            result.append(resp)
+                        callback_exec(response=resp,
                                       on_error=on_error,
                                       on_done=on_done,
                                       on_always=on_always,
@@ -151,6 +155,8 @@ class BaseClient:
                                      'please double check your input iterator') from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
+        if self.args.return_results:
+            return result
 
     def index(self):
         raise NotImplementedError
