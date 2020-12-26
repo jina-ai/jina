@@ -189,7 +189,7 @@ class Request:
         """Return a weak reference of this object but as :class:`Response` object. It gives a more
         consistent semantics on the client.
         """
-        return Response(self._request)
+        return Response(self._buffer)
 
 
 class Response(Request):
