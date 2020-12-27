@@ -411,19 +411,19 @@ def batching_ranker_input(func: Callable[[Any], np.ndarray] = None,
             
             class MemoruHungryRanker:
                 
-                @batching(batch_size = 64, slice_on=2)
+                @batching_ranker_input(batch_size = 64, slice_on=2)
                 def score(
                     self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
                 ) -> 'np.ndarray': 
                 ...
 
-                @batching(batch_size = 64, slice_on=2, num_data = 1)
+                @batching_ranker_input(batch_size = 64, slice_on=2, num_data = 1)
                 def score(
                     self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
                 ) -> 'np.ndarray': 
                 ...
 
-                @batching(batch_size = 64, slice_on=[2])
+                @batching_ranker_input(batch_size = 64, slice_on=[2])
                 def score(
                     self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
                 ) -> 'np.ndarray': 
