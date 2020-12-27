@@ -270,8 +270,8 @@ message RequestProto {
         IndexRequestProto index = 3; // an index request
         SearchRequestProto search = 4; // a search request
         ControlRequestProto control = 5; // a control request
-        DeleteRequestProto delete = 9; // a control request
-        UpdateRequestProto update = 10; // a control request
+        DeleteRequestProto delete = 9; // a delete request
+        UpdateRequestProto update = 10; // an update request
     }
 
     /**
@@ -295,7 +295,7 @@ message RequestProto {
     }
 
      /**
-     * Represents an index request
+     * Represents an update request
      */
     message UpdateRequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to index
@@ -304,7 +304,7 @@ message RequestProto {
     }
 
      /**
-     * Represents an index request
+     * Represents a delete request
      */
     message DeleteRequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to index

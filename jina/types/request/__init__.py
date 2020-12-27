@@ -1,4 +1,4 @@
-from typing import Union, Optional, TypeVar, Dict, List
+from typing import Union, Optional, TypeVar, Dict
 
 from google.protobuf import json_format
 from google.protobuf.json_format import MessageToJson
