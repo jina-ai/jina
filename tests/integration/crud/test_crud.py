@@ -8,7 +8,9 @@ import pytest
 
 from jina import Document
 from jina.flow import Flow
-from jina.types.ndarray.generic import NdArray
+
+random.seed(0)
+np.random.seed(0)
 
 
 @pytest.fixture
@@ -31,12 +33,12 @@ def random_docs(start, end, embed_dim=10, jitter=1, has_content=True):
         yield d
 
 
-#TODO Test deletion of documents without content
+# TODO Test deletion of documents without content
 @pytest.mark.parametrize('flow_file', [
     'flow.yml',
     'flow_vector.yml'
 ])
-def test_delete(config, mocker, flow_file):
+def test_delete_vector(config, mocker, flow_file):
     NUMBER_OF_SEARCHES = 1
 
     def validate_result_factory(num_matches):
@@ -56,8 +58,10 @@ def test_delete(config, mocker, flow_file):
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
                            output_fn=validate_result_factory(9))
     mock.assert_called_once()
+
     with Flow.load_config(flow_file) as index_flow:
         index_flow.delete(input_fn=random_docs(0, 10))
+
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
@@ -65,15 +69,15 @@ def test_delete(config, mocker, flow_file):
     mock.assert_called_once()
 
 
-#TODO Test deletion of documents without content
-@pytest.mark.parametrize('flow_file', [
-    'flow_kv.yml',
-])
-def test_delete(config, mocker, flow_file):
+# TODO Test deletion of documents without content
+def test_delete_kv(config, mocker):
+    flow_file = 'flow_kv.yml'
+
     def validate_result_factory(num_matches):
         def validate_results(resp):
             mock()
             assert len(resp.docs) == num_matches
+
         return validate_results
 
     with Flow.load_config(flow_file) as index_flow:
@@ -81,24 +85,25 @@ def test_delete(config, mocker, flow_file):
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=chain(random_docs(2,5), random_docs(100,120)),
+        search_flow.search(input_fn=chain(random_docs(2, 5), random_docs(100, 120)),
                            output_fn=validate_result_factory(3))
     mock.assert_called_once()
+
     with Flow.load_config(flow_file) as index_flow:
         index_flow.delete(input_fn=random_docs(0, 10))
+
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=random_docs(2,4),
+        search_flow.search(input_fn=random_docs(2, 4),
                            output_fn=validate_result_factory(0))
     mock.assert_called_once()
 
 
 @pytest.mark.parametrize('flow_file', [
     'flow.yml',
-    'flow_kv.yml', #fails
-    'flow_vector.yml' #fails
+    'flow_vector.yml'
 ])
-def test_update(config, mocker, flow_file):
+def test_update_vector(config, mocker, flow_file):
     NUMBER_OF_SEARCHES = 1
     docs_before = list(random_docs(0, 10))
     docs_updated = list(random_docs(0, 10))
@@ -107,42 +112,70 @@ def test_update(config, mocker, flow_file):
         def validate_results(resp):
             mock()
             assert len(resp.docs) == NUMBER_OF_SEARCHES
-            hash_set_before = {hash(str(d.embedding)) for d in docs_before}
-            hash_set_updated = {hash(str(d.embedding)) for d in docs_updated}
-            print('hash before', hash_set_before)
-            print('hash updated', hash_set_updated)
-            print('resp.docs', len(resp.docs))
+            hash_set_before = [hash(d.embedding.tobytes()) for d in docs_before]
+            hash_set_updated = [hash(d.embedding.tobytes()) for d in docs_updated]
             for doc in resp.docs:
-                print('doc matches ', len(doc.matches))
                 assert len(doc.matches) == 9
                 for match in doc.matches:
-                    h = hash(str(match.embedding))
-                    print('match: ', h)
+                    h = hash(match.embedding.tobytes())
                     if has_changed:
                         assert h not in hash_set_before
                         assert h in hash_set_updated
                     else:
                         assert h in hash_set_before
                         assert h not in hash_set_updated
+
         return validate_results
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.index(input_fn=docs_before)
+        index_flow.index(
+            input_fn=docs_before
+        )
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_docs = list(random_docs(0, NUMBER_OF_SEARCHES))
-        print('search docs', [hash(str(d.embedding)) for d in search_docs])
         search_flow.search(input_fn=search_docs,
                            output_fn=validate_result_factory(has_changed=False))
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.update(input_fn=docs_updated)
+
     mock = mocker.Mock()
-    response_mock = mocker.Mock(wraps=validate_result_factory(has_changed=True))
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
-                           output_fn=response_mock)
+                           output_fn=validate_result_factory(has_changed=True))
+    mock.assert_called_once()
 
+
+def test_update_kv(config, mocker):
+    flow_file = 'flow_kv.yml'
+    NUMBER_OF_SEARCHES = 1
+    docs_before = list(random_docs(0, 10))
+    docs_updated = list(random_docs(0, 10))
+
+    def validate_results(resp):
+        mock()
+        assert len(resp.docs) == NUMBER_OF_SEARCHES
+
+    with Flow.load_config(flow_file) as index_flow:
+        index_flow.index(
+            input_fn=docs_before
+        )
+
+    mock = mocker.Mock()
+    with Flow.load_config(flow_file) as search_flow:
+        search_docs = list(random_docs(0, NUMBER_OF_SEARCHES))
+        search_flow.search(input_fn=search_docs,
+                           output_fn=validate_results)
+    mock.assert_called_once()
+
+    with Flow.load_config(flow_file) as index_flow:
+        index_flow.update(input_fn=docs_updated)
+
+    mock = mocker.Mock()
+    with Flow.load_config(flow_file) as search_flow:
+        search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
+                           output_fn=validate_results)
     mock.assert_called_once()

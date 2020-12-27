@@ -25,9 +25,10 @@ requests:
         with:
           executor: vecidx
           traversal_paths: ['r']
-    [SearchRequest]:
+    SearchRequest:
       - !VectorSearchDriver
         with:
           executor: vecidx
           top_k: $JINA_TOPK
+          fill_embedding: True
           traversal_paths: ['r']

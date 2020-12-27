@@ -12,7 +12,7 @@ requests:
         with:
           executor: docIndexer
           traversal_paths: ['r']
-    [SearchRequest]:
+    SearchRequest:
       - !KVSearchDriver
         with:
           executor: docIndexer
