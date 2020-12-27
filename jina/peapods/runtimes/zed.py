@@ -5,8 +5,8 @@ from typing import Dict, List
 
 import zmq
 
-from jina.peapods.runtimes import BaseRuntime
-from ..zmq import ZmqStreamlet, send_ctrl_message, Zmqlet
+from .zmq import ZMQRuntime
+from ..zmq import ZmqStreamlet
 from ... import Message
 from ... import Request
 from ...enums import SkipOnErrorType
@@ -17,13 +17,9 @@ from ...logging.profile import used_memory, TimeDict
 from ...proto import jina_pb2
 
 
-class ZEDRuntime(BaseRuntime):
+class ZEDRuntime(ZMQRuntime):
     def run_forever(self):
         self._zmqlet.start(self._msg_callback)
-
-    def cancel(self):
-        ctrl_addr, _ = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc)
-        send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
 
     def setup(self):
         self._last_active_time = time.perf_counter()
