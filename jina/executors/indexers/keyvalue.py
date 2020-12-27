@@ -104,7 +104,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             if self.query_handler:
                 self.query_handler.header[key] = None
             self._size -= 1
-        self.touch()
+
 
 class DataURIPbIndexer(BinaryPbIndexer):
     """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,

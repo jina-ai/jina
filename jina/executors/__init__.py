@@ -58,7 +58,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
     @staticmethod
     def register_class(cls):
-        update_funcs = ['train', 'add']
+        update_funcs = ['train', 'add', 'update', 'delete']
         train_funcs = ['train']
         aggregate_funcs = ['evaluate']
 

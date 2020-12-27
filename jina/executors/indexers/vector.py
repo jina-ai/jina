@@ -203,7 +203,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             # mark as `False` in mask
             self.valid_indices[self.ext2int_id[key]] = False
             self._size -= 1
-        self.touch()
 
     def check_keys(self, keys: Sequence[int]) -> None:
         """checks if keys are present in the indexer. raises if any of them are not"""
