@@ -2,9 +2,11 @@ import os
 import random
 import string
 from itertools import chain
+from pathlib import Path
 
 import numpy as np
 import pytest
+from jina.executors.indexers import BaseIndexer
 
 from jina import Document
 from jina.flow import Flow
@@ -33,13 +35,23 @@ def random_docs(start, end, embed_dim=10, jitter=1, has_content=True):
         yield d
 
 
-# TODO Test deletion of documents without content
-@pytest.mark.parametrize('flow_file', [
-    'flow.yml',
-    'flow_vector.yml'
+def validate_index_size(num_indexed_docs):
+    path = Path(os.environ['JINA_TOPK_DIR'])
+    index_files = list(path.glob('*.bin'))
+    assert len(index_files) > 0
+    for index_file in index_files:
+        index = BaseIndexer.load(str(index_file))
+        assert index.size == num_indexed_docs
+
+
+@pytest.mark.parametrize('flow_file, has_content', [
+    ['flow.yml', True],
+    ['flow_vector.yml', True],
+    ['flow.yml', False],
+    ['flow_vector.yml', False]
 ])
-def test_delete_vector(config, mocker, flow_file):
-    NUMBER_OF_SEARCHES = 1
+def test_delete_vector(config, mocker, flow_file, has_content):
+    NUMBER_OF_SEARCHES = 5
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
@@ -52,6 +64,7 @@ def test_delete_vector(config, mocker, flow_file):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(input_fn=random_docs(0, 10))
+    validate_index_size(10)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -60,7 +73,8 @@ def test_delete_vector(config, mocker, flow_file):
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=random_docs(0, 10))
+        index_flow.delete(input_fn=random_docs(0, 10, has_content=has_content))
+    validate_index_size(0)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -69,8 +83,8 @@ def test_delete_vector(config, mocker, flow_file):
     mock.assert_called_once()
 
 
-# TODO Test deletion of documents without content
-def test_delete_kv(config, mocker):
+@pytest.mark.parametrize('has_content', [True, False])
+def test_delete_kv(config, mocker, has_content):
     flow_file = 'flow_kv.yml'
 
     def validate_result_factory(num_matches):
@@ -82,7 +96,7 @@ def test_delete_kv(config, mocker):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(input_fn=random_docs(0, 10))
-
+    validate_index_size(10)
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=chain(random_docs(2, 5), random_docs(100, 120)),
@@ -90,12 +104,13 @@ def test_delete_kv(config, mocker):
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=random_docs(0, 10))
+        index_flow.delete(input_fn=random_docs(0, 3, has_content=has_content))
+    validate_index_size(7)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(2, 4),
-                           output_fn=validate_result_factory(0))
+                           output_fn=validate_result_factory(1))
     mock.assert_called_once()
 
 
@@ -131,6 +146,7 @@ def test_update_vector(config, mocker, flow_file):
         index_flow.index(
             input_fn=docs_before
         )
+    validate_index_size(10)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -141,6 +157,7 @@ def test_update_vector(config, mocker, flow_file):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.update(input_fn=docs_updated)
+    validate_index_size(10)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -163,6 +180,7 @@ def test_update_kv(config, mocker):
         index_flow.index(
             input_fn=docs_before
         )
+    validate_index_size(10)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -173,6 +191,7 @@ def test_update_kv(config, mocker):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.update(input_fn=docs_updated)
+    validate_index_size(10)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
