@@ -34,7 +34,7 @@ def test_shelf_in_flow(uses, mocker):
 
     with f:
         m3 = used_memory()
-        f.search([d], output_fn=response_mock)
+        f.search([d], on_done=response_mock)
 
     shutil.rmtree('test-workspace', ignore_errors=False, onerror=None)
     response_mock.assert_called()

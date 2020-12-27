@@ -26,16 +26,16 @@ class CompoundExecutor(BaseExecutor):
               index_filename: vec.gz
             metas:
               name: vecidx_exec  # a customized name
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
           - !BinaryPbIndexer
             with:
               index_filename: chunk.gz
             metas:
               name: chunkidx_exec
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
         metas:
           name: chunk_compound_indexer
-          workspace: $TEST_WORKDIR
+          workspace: ${{TEST_WORKDIR}}
         requests:
           on:
             SearchRequest:
@@ -59,7 +59,7 @@ class CompoundExecutor(BaseExecutor):
           - !GifNameRawSplit
             metas:
               name: name_split  # a customized name
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
           - !GifPreprocessor
             with:
               every_k_frame: 2
@@ -68,7 +68,7 @@ class CompoundExecutor(BaseExecutor):
               name: gif2chunk_preprocessor  # a customized name
         metas:
           name: compound_crafter
-          workspace: $TEST_WORKDIR
+          workspace: ${{TEST_WORKDIR}}
           py_modules: gif2chunk.py
         requests:
           on:
@@ -333,19 +333,6 @@ class CompoundExecutor(BaseExecutor):
             for c in self.components:
                 c.close()
         super().close()
-
-    @classmethod
-    def to_yaml(cls, representer, data):
-        tmp = super()._dump_instance_to_yaml(data)
-        tmp['components'] = data.components
-        return representer.represent_mapping('!' + cls.__name__, tmp)
-
-    @classmethod
-    def from_yaml(cls, constructor, node):
-        obj, data, from_dump = super()._get_instance_from_yaml(constructor, node)
-        if not from_dump and 'components' in data:
-            obj.components = lambda: data['components']
-        return obj
 
     def __contains__(self, item: str):
         if isinstance(item, str):

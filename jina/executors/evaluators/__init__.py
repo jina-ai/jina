@@ -12,14 +12,11 @@ class BaseEvaluator(BaseExecutor):
     """A :class:`BaseEvaluator` is used to evaluate different messages coming from any kind of executor
     """
 
+    metric = ''  #: Get the name of the evaluation metric
+
     def post_init(self):
         super().post_init()
         self._running_stats = RunningStats()
-
-    @property
-    def metric(self) -> str:
-        """Get the name of the evaluation metric """
-        raise NotImplementedError
 
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
         raise NotImplementedError
@@ -62,7 +59,7 @@ class FileBasedEvaluator(CompoundExecutor):
                index_filename: ground_truth.gz
              metas:
                name: groundtruth_index  # a customized name
-               workspace: $TEST_WORKDIR
+               workspace: ${{TEST_WORKDIR}}
            - !BaseEvaluator
 
      Without defining any ``requests.on`` logic. When load from this YAML, it will be auto equipped with

@@ -3,6 +3,8 @@ __license__ = "Apache-2.0"
 
 from typing import Any, Iterator
 
+import numpy
+
 from . import BaseExecutableDriver
 from .querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
@@ -13,21 +15,29 @@ from ..types.document.helper import DocGroundtruthPair
 class BaseEvaluateDriver(BaseExecutableDriver):
     def __init__(self, executor: str = None,
                  method: str = 'evaluate',
+                 running_avg: bool = False,
                  *args,
                  **kwargs):
+        """
+        :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+        :param method: the function name of the executor that the driver feeds to
+        :param running_avg: always return running average instead of value of the current run
+        :param args:
+        :param kwargs:
+
+        .. warning::
+
+            When ``running_avg=True``, then the running mean is returned. So far at Jina 0.8.10,
+             there is no way to reset the running statistics. If you have a query Flow running multiple queries,
+             you may want to make sure the running statistics is meaningful across multiple runs.
+        """
         super().__init__(executor, method, *args, **kwargs)
+        self._running_avg = running_avg
 
     def __call__(self, *args, **kwargs):
         docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
                              zip(self.docs, self.req.groundtruths)]
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
-
-    @property
-    def metric(self):
-        if self.pea:
-            return self.pea.name
-        else:
-            return self.__class__.__name__
 
     def _apply_all(
             self,
@@ -42,7 +52,9 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             groundtruth = doc_groundtruth.groundtruth
             evaluation = doc.evaluations.add()
             evaluation.value = self.exec_fn(self.extract(doc), self.extract(groundtruth))
-            evaluation.op_name = f'{self.metric}-{self.exec.metric}'
+            if self._running_avg:
+                evaluation.value = self.exec.mean
+            evaluation.op_name = self.exec.metric
             evaluation.ref_id = groundtruth.id
 
     def extract(self, doc: 'Document') -> Any:
@@ -94,7 +106,9 @@ class RankEvaluateDriver(FieldEvaluateDriver):
         super().__init__(field, *args, **kwargs)
 
     def extract(self, doc: 'Document'):
-        return [dunder_get(x, self.field) for x in doc.matches]
+        r = [dunder_get(x, self.field) for x in doc.matches]
+        # flatten nested list but useless depth, e.g. [[1,2,3,4]]
+        return list(numpy.array(r).flat)
 
 
 class NDArrayEvaluateDriver(FieldEvaluateDriver):
@@ -140,7 +154,7 @@ class LoadGroundTruthDriver(KVSearchDriver):
     def __call__(self, *args, **kwargs):
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
         for idx, doc in enumerate(self.docs):
-            serialized_groundtruth = self.exec_fn(hash(doc.id))
+            serialized_groundtruth = self.exec_fn(int(doc.id))
             if serialized_groundtruth:
                 self.req.groundtruths.append(Document(serialized_groundtruth))
             else:

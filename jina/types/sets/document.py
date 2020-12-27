@@ -28,8 +28,11 @@ class DocumentSet(MutableSequence):
         self._docs_proto.insert(index, doc.as_pb_object)
 
     def __setitem__(self, key, value: 'Document'):
+        from ..document.uid import UniqueId
         if isinstance(key, int):
             self._docs_proto[key].CopyFrom(value)
+        elif isinstance(key, UniqueId):
+            self._docs_map[str(key)].CopyFrom(value)
         elif isinstance(key, str):
             self._docs_map[key].CopyFrom(value)
         else:
@@ -48,10 +51,15 @@ class DocumentSet(MutableSequence):
 
     def __getitem__(self, item):
         from ..document import Document
+        from ..document.uid import UniqueId
         if isinstance(item, int):
             return Document(self._docs_proto[item])
+        elif isinstance(item, UniqueId):
+            return Document(self._docs_map[str(item)])
         elif isinstance(item, str):
             return Document(self._docs_map[item])
+        elif isinstance(item, slice):
+            return DocumentSet(self._docs_proto[item])
         else:
             raise IndexError(f'do not support this index {item}')
 
@@ -86,7 +94,7 @@ class DocumentSet(MutableSequence):
         """Build a doc_id to doc mapping so one can later index a Document using
         doc_id as string key
         """
-        self._docs_map = {d.id: d for d in self._docs_proto}
+        self._docs_map = {str(d.id): d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)

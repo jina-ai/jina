@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  pull_request:
+  pull_request_target:
 #    paths-ignore:
 #      - 'README.md'
 #      - '.all-contributorsrc'
@@ -21,7 +21,6 @@ jobs:
         with:
           repository: jina-ai/latency-tracking
           path: latency
-          token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7

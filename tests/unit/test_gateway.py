@@ -21,7 +21,6 @@ class DummyEncoder(BaseEncoder):
 
 @pytest.mark.parametrize('compress_algo', list(CompressAlgo))
 def test_compression(compress_algo):
-    print(str(compress_algo))
     f = Flow(compress=str(compress_algo)).add(name='DummyEncoder', parallel=2)
 
     with f:
@@ -87,7 +86,7 @@ def test_grpc_gateway_concurrency():
         start = time.time()
         f.index(
             input_fn=_input_fn,
-            output_fn=functools.partial(
+            on_done=functools.partial(
                 _validate,
                 start=start,
                 status_codes=status_codes,

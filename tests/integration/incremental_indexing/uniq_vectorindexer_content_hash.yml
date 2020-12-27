@@ -1,0 +1,18 @@
+!UniqueVectorIndexer
+components:
+  - !DocIDCache
+    with:
+      field: content_hash
+    metas:
+      workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+      name: cache
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: euclidean
+    metas:
+      workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
+      name: vec_idx
+metas:
+  name: inc_vecindexer
+  workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE

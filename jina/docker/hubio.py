@@ -86,7 +86,7 @@ class HubIO:
         import requests
 
         with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
-            hubapi_yml = yaml.load(fp)
+            hubapi_yml = JAML.load(fp)
 
         client_id = hubapi_yml['github']['client_id']
         scope = hubapi_yml['github']['scope']
@@ -143,7 +143,7 @@ class HubIO:
                         'access_token': access_token_response['access_token']
                     }
                     with open(credentials_file(), 'w') as cf:
-                        yaml.dump(token, cf)
+                        JAML.dump(token, cf)
                     self.logger.success(f'successfully logged in!')
                     break
             else:
@@ -357,7 +357,9 @@ class HubIO:
                     try:
                         is_build_success = False
                         p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
-                                                                        self.config_yaml_path, self.args.daemon)
+                                                                        self.config_yaml_path,
+                                                                        self.args.timeout_ready,
+                                                                        self.args.daemon)
                         if any(test_level in failed_test_levels for test_level in
                                [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
                             is_build_success = False
@@ -365,7 +367,7 @@ class HubIO:
                         else:
                             is_build_success = True
                             self.logger.warning(
-                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be do to the fact that executor has non-installed external dependencies')
+                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be due to the fact that the executor has non-installed external dependencies')
                     except Exception as ex:
                         self.logger.error(f'something wrong while testing the build: {repr(ex)}')
                         ex = HubBuilderTestError(ex)
@@ -425,7 +427,11 @@ class HubIO:
         return result
 
     @staticmethod
-    def _test_build(image, test_level, config_yaml_path, daemon_arg):
+    def _test_build(image: str,
+                    test_level: 'BuildTestLevel',
+                    config_yaml_path: str,
+                    timeout_ready: int,
+                    daemon_arg: bool):
         p_names = []
         failed_levels = []
 
@@ -440,7 +446,7 @@ class HubIO:
         # test uses at Pod level (no docker)
         if test_level >= BuildTestLevel.POD_NONDOCKER:
             try:
-                with Pod(set_pod_parser().parse_args(['--uses', config_yaml_path])):
+                with Pod(set_pod_parser().parse_args(['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
                     pass
             except:
                 failed_levels.append(BuildTestLevel.POD_NONDOCKER)
@@ -449,7 +455,7 @@ class HubIO:
         if test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
             try:
-                with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name] +
+                with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name, '--timeout-ready', str(timeout_ready)] +
                                                      ['--daemon'] if daemon_arg else [])):
                     pass
                 p_names.append(p_name)
@@ -460,7 +466,7 @@ class HubIO:
         if test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
             try:
-                with Flow().add(name=random_name(), uses=image.tags[0], daemon=daemon_arg):
+                with Flow().add(name=random_name(), uses=image.tags[0], daemon=daemon_arg, timeout_ready=timeout_ready):
                     pass
                 p_names.append(p_name)
             except:
@@ -533,10 +539,10 @@ class HubIO:
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:
         with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
-            tmp = yaml.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
+            tmp = JAML.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
         with open(path) as fp:
-            tmp.update(yaml.load(fp))
+            tmp.update(JAML.load(fp))
 
         if validate:
             self._validate_manifest(tmp)

@@ -1,4 +1,4 @@
-FROM python:3.7.6-slim
+FROM jinaai/jinad
 
 RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev
 
@@ -12,13 +12,6 @@ ARG PIP_TAG
 
 RUN pip install ."$PIP_TAG"
 
-RUN cat $HOME/.bashrc
-RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
-
-WORKDIR /
-
-RUN apt-get update && \
-      apt-get install -y git ruby-dev build-essential && \
-      gem install fluentd --no-doc
-
-ENTRYPOINT ["jina"]
+# This doesn't start fluentd in the background
+# add entrypoint script if fluentd needs to be enabled for tests
+ENTRYPOINT ["jinad"]

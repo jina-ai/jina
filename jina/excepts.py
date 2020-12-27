@@ -76,6 +76,10 @@ class EmptyExecutorYAML(Exception):
     """The yaml config file is empty, nothing to read from there."""
 
 
+class BadConfigSource(FileNotFoundError):
+    """The yaml config file is bad, not loadable or not exist"""
+
+
 class BadWorkspace(Exception):
     """Can not determine the separate storage strategy for the executor"""
 
@@ -167,6 +171,10 @@ class BadRequestType(TypeError):
     """Exception when can not construct a request object from given data"""
 
 
+class BadNamedScoreType(TypeError):
+    """ Exception when can not construct a named score from the given data """
+
+
 class RemotePodClosed(Exception):
     """ Exception when remote pod is closed and log streaming needs to exit """
 
@@ -181,6 +189,10 @@ class ImageAlreadyExists(Exception):
 
 class BadFlowYAMLVersion(Exception):
     """ Exception when Flow YAML config specifies a wrong version number"""
+
+
+class LookupyError(Exception):
+    """Base exception class for all exceptions raised by lookupy"""
 
 
 class EventLoopError(Exception):

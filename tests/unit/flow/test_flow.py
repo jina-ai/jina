@@ -5,15 +5,16 @@ import numpy as np
 import pytest
 import requests
 
-from jina import JINA_GLOBAL
+from jina import JINA_GLOBAL, Request, AsyncFlow
 from jina.checker import NetworkChecker
-from jina.enums import FlowOptimizeLevel, SocketType
+from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-from jina.parser import set_pea_parser, set_ping_parser, set_flow_parser, set_pod_parser
-from jina.peapods.peas import BasePea
+from jina.parser import set_pea_parser, set_ping_parser, set_pod_parser
 from jina.peapods.pods import BasePod
+from jina.peapods.runtimes.local import LocalRuntime
 from jina.proto.jina_pb2 import DocumentProto
+from jina.types.request import Response
 from tests import random_docs, rm_files
 
 cur_dir = Path(__file__).parent
@@ -25,14 +26,14 @@ def test_ping():
     a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
 
     with pytest.raises(SystemExit) as cm:
-        with BasePea(a1):
+        with LocalRuntime(a1):
             NetworkChecker(a2)
 
     assert cm.value.code == 0
 
     # test with bad addresss
     with pytest.raises(SystemExit) as cm:
-        with BasePea(a1):
+        with LocalRuntime(a1):
             NetworkChecker(a3)
 
     assert cm.value.code == 1
@@ -138,14 +139,6 @@ def test_simple_flow():
         assert node.peas_args['peas'][0] == node.tail_args
 
 
-def test_load_flow_from_yaml():
-    with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
-        a = Flow.load_config(fp)
-        with open(cur_dir.parent / 'yaml' / 'swarm-out.yml', 'w') as fp, a:
-            a.to_swarm_yaml(fp)
-        rm_files([str(cur_dir.parent / 'yaml' / 'swarm-out.yml')])
-
-
 def test_flow_identical():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
@@ -212,18 +205,6 @@ def test_flow_no_container():
 
     with f:
         f.index(input_fn=random_docs(10))
-
-
-def test_flow_yaml_dump():
-    f = Flow(logserver_config=str(cur_dir.parent / 'yaml' / 'test-server-config.yml'),
-             optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
-             no_gateway=True)
-    f.save_config('test1.yml')
-
-    fl = Flow.load_config('test1.yml')
-    assert f.args.logserver_config == fl.args.logserver_config
-    assert f.args.optimize_level == fl.args.optimize_level
-    rm_files(['test1.yml'])
 
 
 def test_flow_log_server():
@@ -473,7 +454,7 @@ def test_index_text_files(mocker):
     f = (Flow(read_only=True).add(uses=str(cur_dir.parent / 'yaml' / 'datauriindex.yml'), timeout_ready=-1))
 
     with f:
-        f.index_files('*.py', output_fn=response_mock, callback_on='body')
+        f.index_files('*.py', on_done=response_mock, callback_on='body')
 
     rm_files(['doc.gzip'])
     response_mock.assert_called()
@@ -492,7 +473,7 @@ def test_flow_with_publish_driver(mocker):
          .join(needs=['r2', 'r3']))
 
     with f:
-        f.index_lines(lines=['text_1', 'text_2'], output_fn=response_mock)
+        f.index_lines(lines=['text_1', 'text_2'], on_done=response_mock)
 
     response_mock.assert_called()
 
@@ -517,22 +498,9 @@ def test_flow_with_modalitys_simple(mocker):
         add(name='encoder12', parallel=2,
             uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
     with flow:
-        flow.index(input_fn=input_fn, output_fn=response_mock)
+        flow.index(input_fn=input_fn, on_done=response_mock)
 
     response_mock.assert_called()
-
-
-def test_load_flow_with_port():
-    f = Flow.load_config('yaml/test-flow-port.yml')
-    with f:
-        assert f.port_expose == 12345
-
-
-def test_load_flow_from_cli():
-    a = set_flow_parser().parse_args(['--uses', 'yaml/test-flow-port.yml'])
-    f = Flow.load_config(a.uses)
-    with f:
-        assert f.port_expose == 12345
 
 
 def test_flow_arguments_priorities():
@@ -615,3 +583,26 @@ def test_flow_with_pod_envs():
 
     with f:
         pass
+
+
+@pytest.mark.parametrize('return_results', [False, True])
+def test_return_results_sync_flow(return_results):
+    with Flow(return_results=return_results).add() as f:
+        r = f.index_ndarray(np.random.random([10, 2]))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Response)
+        else:
+            assert r is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('return_results', [False, True])
+async def test_return_results_async_flow(return_results):
+    with AsyncFlow(return_results=return_results).add() as f:
+        r = await f.index_ndarray(np.random.random([10, 2]))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Response)
+        else:
+            assert r is None

@@ -22,17 +22,11 @@ def test_client_on_error():
     with Flow().add() as f:
         t = 0
         try:
-            f.index_ndarray(np.random.random([5, 4]), output_fn=validate, continue_on_error=False)
+            f.index_ndarray(np.random.random([5, 4]), on_done=validate, continue_on_error=False)
         except BadClientCallback:
             # bad client callback will break the `async for req in stub.Call(req_iter)`
             t = 1
         # now query the gateway again, make sure gateway's channel is still usable
-        f.index_ndarray(np.random.random([5, 4]), output_fn=validate, continue_on_error=True)
+        f.index_ndarray(np.random.random([5, 4]), on_done=validate, continue_on_error=True)
         assert t == 1
 
-
-def test_on_bad_iterator():
-    # this should not stuck the server as request_generator's error is handled on the client side
-    f = Flow().add()
-    with f:
-        f.index([1, 2, 3])

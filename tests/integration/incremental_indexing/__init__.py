@@ -13,13 +13,17 @@ def random_workspace(tmp_path):
     del os.environ['JINA_TEST_INCREMENTAL_INDEX_WORKSPACE']
 
 
-def get_duplicate_docs(num_docs=10):
+def get_duplicate_docs(num_docs=10, same_content=False):
     result = []
     for idx in range(num_docs):
         with Document() as doc:
             content = int(idx / 2)
-            doc.embedding = np.array([content])
-            doc.text = f'I am doc{content}'
+            if same_content:
+                doc.embedding = np.array([0])
+                doc.text = f'I am doc'
+            else:
+                doc.embedding = np.array([content])
+                doc.text = f'I am doc{content}'
             result.append(doc)
     num_uniques = len(set(d.id for d in result))
     return result, num_uniques

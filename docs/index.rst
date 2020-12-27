@@ -1,95 +1,72 @@
-.. raw:: html
-   :file: work_logo_BG_80.html
-
-
-|
-
-Welcome to Jina Documentation!
-===============================
+Welcome to Jina!
+================
 
 .. toctree::
    :maxdepth: 1
-   :caption: Install
-
-   chapters/install/via-pip
-   chapters/install/via-docker
-   chapters/install/on-rasp-linux
-   chapters/install/on-x
-   chapters/install/on-wsl
-   chapters/install/upgrade
-   chapters/install/autocomplete
-
-
-.. toctree::
-   :maxdepth: 2
    :caption: Getting Started
 
+   chapters/install/os/index
    chapters/helloworld/index
    chapters/101/index
    chapters/flow/index
-   chapters/traversal/index
    chapters/io/index
-   chapters/hub/index
-   chapters/remote/index
-   chapters/logging/index
-   chapters/dashboard/index
    chapters/cli/exit
 
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Developer Reference
+   :maxdepth: 1
+   :caption: API References
 
    chapters/cli/index
    api/jina
    chapters/yaml/yaml
-   chapters/simple_exec
    chapters/proto/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Advanced Usages
+
+   chapters/traversal/index
+   chapters/flow/pattern
+   chapters/cross-multi-modality/index
+   chapters/hub/index
+   chapters/remote/index
+   chapters/logging/index
+   chapters/dashboard/index
+   chapters/simple_exec
    chapters/restapi/index
    chapters/envs
-   chapters/api_schema
    chapters/prevent_duplicate_indexing/index
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Extending Jina
+   :maxdepth: 1
+   :caption: Extensions
 
-   chapters/extend/mwu
    chapters/extend/executor
+   chapters/extend/mwu
    chapters/extend/driver
    chapters/hub/publish-your-pod-image
+   chapters/api_schema
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contributing
+   :maxdepth: 1
+   :caption: Community
 
    chapters/CONTRIBUTING
-   chapters/jep/index
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Release Notes
-
    chapters/RELEASE
    chapters/CHANGELOG
+   chapters/jep/index
+   chapters/troubleshooting
+   chapters/faq/dev
+   chapters/faq/user
 
 
 .. toctree::
    :maxdepth: 1
-   :caption: Debugging and FAQ
-
-   chapters/troubleshooting
-   chapters/faq/user
-   chapters/faq/dev
-
-
-.. toctree::
-   :maxdepth: 2
    :caption: Indices and Tables
 
    chapters/all_exec
    chapters/all_driver
-
 
 * :ref:`genindex`
 * :ref:`modindex`

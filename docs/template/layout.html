@@ -110,6 +110,7 @@
 </head>
 
 <body class="wy-body-for-nav">
+  <div id="showhide-navbar-btn" onclick="showhide_navbar();"></div>
 
   {% block extrabody %} {% endblock %}
   <div class="wy-grid-for-nav">
@@ -139,9 +140,15 @@
               {%- set nav_version = current_version %}
             {% endif %}
             {% if nav_version %}
-              <div class="version">
-                {{ nav_version }}
-              </div>
+
+          <div class="dropdown">
+            Version: <button class="dropbtn version">{{ nav_version }}</button>
+            <div class="dropdown-content">
+              {% for version in theme_version_switcher %}
+                        <a class="dropdown-item" href="{{ version[0] }}">{{ version[1] }}</a>
+                        {% endfor %}
+            </div>
+          </div>
             {% endif %}
           {% endif %}
 
@@ -184,7 +191,7 @@
         {% endblock %}
       </nav>
 
-   
+
       <div class="wy-nav-content">
       {%- block content %}
         {% if theme_style_external_links|tobool %}
@@ -226,23 +233,15 @@
       var z = document.getElementById("showhide-navbar-btn");
       if (x.style.display === "none") {
         x.style.display = "block";
-        y.style.marginLeft = "23rem";
-        z.style.left = "23rem";
+        y.style.marginLeft = "300px";
+        z.style.left = "300px";
       } else {
         x.style.display = "none";
         y.style.marginLeft = "0";
         z.style.left = "0px";
       }
+    }
 
-    }
-    function showhide_littlenavbar() {
-      var x = document.getElementById("little-navbar");
-      if (x.style.display === "none") {
-        x.style.display = "block";
-      } else {
-        x.style.display = "none";
-      }
-    }
   </script>
 
   <!-- Search box becomes active when you press the slash(/) key anywhere on the page-->

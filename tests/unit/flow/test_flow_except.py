@@ -103,7 +103,7 @@ def test_on_error_callback(mocker):
     on_error_mock = mocker.Mock(wrap=validate2)
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], output_fn=validate1, on_error=on_error_mock)
+        f.index_lines(lines=['abbcs', 'efgh'], on_done=validate1, on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -122,7 +122,7 @@ def test_no_error_callback(mocker):
     on_error_mock = mocker.Mock(wrap=validate2)
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], output_fn=response_mock, on_error=on_error_mock)
+        f.index_lines(lines=['abbcs', 'efgh'], on_done=response_mock, on_error=on_error_mock)
 
     response_mock.assert_called()
     on_error_mock.assert_not_called()
@@ -143,7 +143,7 @@ def test_flow_on_callback():
 
     with f:
         f.index(np.random.random([10, 10]),
-                output_fn=f1, on_error=f2, on_always=f3)
+                on_done=f1, on_error=f2, on_always=f3)
 
     assert hit == ['done', 'always']
 
@@ -170,7 +170,7 @@ def test_flow_on_error_callback():
 
     with f:
         f.index(np.random.random([10, 10]),
-                output_fn=f1, on_error=f2, on_always=f3)
+                on_done=f1, on_error=f2, on_always=f3)
 
     assert hit == ['error', 'always']
 

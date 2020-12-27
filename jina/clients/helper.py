@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from functools import wraps
 from typing import Callable
 
-from .. import Request
+from .. import Response
 from ..enums import CallbackOnType
 from ..excepts import BadClientCallback
 from ..helper import colored
@@ -12,11 +12,10 @@ from ..importer import ImportExtensions
 from ..proto import jina_pb2
 
 
-def pprint_routes(resp: 'Request', stack_limit: int = 3):
+def pprint_routes(resp: 'Response', stack_limit: int = 3):
     """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`
 
-    :param routes: list of :class:`jina_pb2.RouteProto` objects from Envelop
-    :param status: the :class:`jina_pb2.StatusProto` object
+    :param resp: the :class:`Response` object
     :param stack_limit: traceback limit
     :return:
     """
@@ -26,7 +25,7 @@ def pprint_routes(resp: 'Request', stack_limit: int = 3):
 
     header = [colored(v, attrs=['bold']) for v in ('Pod', 'Time', 'Exception')]
 
-    # poorman solution
+    # poor-man solution
     table = []
 
     def add_row(x):
@@ -73,7 +72,7 @@ def extract_field(resp, callback_on: 'CallbackOnType'):
                          f'must be one of {list(CallbackOnType)}')
 
 
-def safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
+def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
         try:
@@ -90,11 +89,8 @@ def safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
 
 def callback_exec(response, on_done, on_error, on_always, continue_on_error, logger):
     if on_error and response.status.code >= jina_pb2.StatusProto.ERROR:
-        safe_on_error = safe_callback(on_error, continue_on_error, logger)
-        safe_on_error(response)
+        _safe_callback(on_error, continue_on_error, logger)(response)
     elif on_done:
-        safe_on_done = safe_callback(on_done, continue_on_error, logger)
-        safe_on_done(response)
+        _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
-        safe_on_always = safe_callback(on_always, continue_on_error, logger)
-        safe_on_always(response)
+        _safe_callback(on_always, continue_on_error, logger)(response)
