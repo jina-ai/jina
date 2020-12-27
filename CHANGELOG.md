@@ -112,6 +112,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6165,4 +6166,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e04fde97```](https://github.com/jina-ai/jina/commit/e04fde97dc760e9282b0117c990ad3af1b11e1e3)] __-__ fix hubio typo (#1531) (*Bithiah Yuan*)
  - [[```09ad248a```](https://github.com/jina-ai/jina/commit/09ad248abf1be4e8d19d7529868976d0c6fd62b2)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```3e0bc904```](https://github.com/jina-ai/jina/commit/3e0bc904726e5b364abc8ef29dba993d13881cdd)] __-__ __version__: the next version will be 0.8.13 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-14></a>
+## Release Note (`0.8.14`)
+
+> Release time: 2020-12-27 23:20:44
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Han Xiao,  Rutuja Surve,  Tadej Svetina,  🙇
+
+
+### 🆕 New Features
+
+ - [[```3f5a5886```](https://github.com/jina-ai/jina/commit/3f5a5886c09d8e65c60a732d90c6e5ca3828ef08)] __-__ return result from flow and client (#1541) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```822d0750```](https://github.com/jina-ai/jina/commit/822d07506b7a1243532e0405d4323c1dc929508f)] __-__ access token cred file for hub push  (#1492) (*Rutuja Surve*)
+
+### 📗 Documentation
+
+ - [[```2cf71aa6```](https://github.com/jina-ai/jina/commit/2cf71aa65302f0a3f1e42de8e4fb87748d504abc)] __-__ __devices__: improve TorchDevice docstring (#1499) (*Tadej Svetina*)
+
+### 🍹 Other Improvements
+
+ - [[```e9a427b2```](https://github.com/jina-ai/jina/commit/e9a427b2d415b30ddc969ab776a246797c020492)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```d5eef99b```](https://github.com/jina-ai/jina/commit/d5eef99b030ac0e62f9b5ca2a9a577b8039a2d83)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f0356caf```](https://github.com/jina-ai/jina/commit/f0356caf0c97860a525e769539c3fae24342f465)] __-__ __version__: the next version will be 0.8.14 (*Jina Dev Bot*)
 
