@@ -175,7 +175,12 @@ class Zmqlet:
         self.close()
 
     def close(self):
-        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
+        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
+
+        .. note::
+            This method is idempotent.
+
+        """
         if not self.is_closed:
             self.is_closed = True
             self.close_sockets()
@@ -299,7 +304,11 @@ class ZmqStreamlet(Zmqlet):
         self.in_sock.stop_on_recv()
 
     def close(self):
-        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
+        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
+
+        .. note::
+            This method is idempotent.
+        """
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(.01)

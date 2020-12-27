@@ -5,7 +5,7 @@ import threading
 
 from .helper import _get_event, _make_or_event
 from ..runtimes import Runtime
-from ... import __stop_msg__
+from ... import __stop_msg__, __ready_msg__
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -43,6 +43,7 @@ class PeaType(type):
 
 class BasePea(metaclass=PeaType):
     def __init__(self, args: 'argparse.Namespace'):
+        super().__init__()  #: required here to call process/thread __init__
         self.args = args
         self.name = self.args.name or self.__class__.__name__
         self.is_ready = _get_event(self)
@@ -101,7 +102,7 @@ class BasePea(metaclass=PeaType):
                                      f'this often means the executor used in the pod is not valid')
                 raise RuntimeFailToStart
             else:
-                self.logger.info(f'ready to listen')
+                self.logger.success(__ready_msg__)
         else:
             raise TimeoutError(
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')

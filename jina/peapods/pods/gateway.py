@@ -2,8 +2,7 @@ from typing import Dict, Set
 
 from . import BasePod, PodRoleType
 from .flow import FlowPod
-from ..runtimes.local import LocalRuntime
-from ..peas.gateway import GatewayPea, RESTGatewayPea
+
 from ...parser import set_gateway_parser
 
 
