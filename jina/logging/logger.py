@@ -13,7 +13,6 @@ from pkg_resources import resource_filename
 
 from . import formatter
 from ..enums import LogVerbosity
-from ..helper import complete_path
 from ..jaml import JAML
 
 
@@ -107,8 +106,6 @@ class JinaLogger:
             log_config = os.getenv('JINA_LOG_CONFIG',
                                    resource_filename('jina', '/'.join(
                                        ('resources', 'logging.default.yml'))))
-        log_config = complete_path(log_config)
-
         if log_id is None:
             log_id = os.getenv('JINA_LOG_ID', None)
 

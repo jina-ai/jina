@@ -11,7 +11,7 @@ from typing import Dict, Union
 from .. import BaseRuntime
 from ...zmq import Zmqlet
 from .... import __ready_msg__, __stop_msg__
-from ....helper import is_valid_local_config_source, ArgNamespace
+from ....helper import ArgNamespace, is_valid_local_config_source
 from ....logging import JinaLogger
 
 __all__ = ['ContainerRuntime']

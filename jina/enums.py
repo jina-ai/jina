@@ -23,7 +23,7 @@ To use these enums in YAML config, following the example below:
 
       chunk_idx:
         uses: index/chunk.yml
-        parallel: $PARALLEL
+        parallel: ${{PARALLEL}}
         separated_workspace: true
         parallel_type: !PollingType ANY
         # or
@@ -68,13 +68,23 @@ class BetterEnum(IntEnum, metaclass=EnumType):
             raise ValueError(f'{s.upper()} is not a valid enum for {cls}')
 
     @classmethod
-    def to_yaml(cls, representer, data):
-        """Required by :mod:`pyyaml` """
+    def _to_yaml(cls, representer, data):
+        """Required by :mod:`pyyaml`
+
+        .. note::
+            In principle, this should inherit from :class:`JAMLCompatible` directly,
+            however, this method is too simple and thus replaced the parent method.
+        """
         return representer.represent_scalar('!' + cls.__name__, str(data))
 
     @classmethod
-    def from_yaml(cls, constructor, node):
-        """Required by :mod:`pyyaml` """
+    def _from_yaml(cls, constructor, node):
+        """Required by :mod:`pyyaml`
+
+        .. note::
+            In principle, this should inherit from :class:`JAMLCompatible` directly,
+            however, this method is too simple and thus replaced the parent method.
+        """
         return cls.from_string(node.value)
 
 

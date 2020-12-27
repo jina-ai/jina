@@ -59,7 +59,7 @@ class FileBasedEvaluator(CompoundExecutor):
                index_filename: ground_truth.gz
              metas:
                name: groundtruth_index  # a customized name
-               workspace: $TEST_WORKDIR
+               workspace: ${{TEST_WORKDIR}}
            - !BaseEvaluator
 
      Without defining any ``requests.on`` logic. When load from this YAML, it will be auto equipped with
