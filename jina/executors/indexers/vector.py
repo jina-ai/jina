@@ -202,7 +202,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         for key in keys:
             # mark as `False` in mask
             self.valid_indices[self.ext2int_id[key]] = False
-        self._size = self.size - len(list(keys))
+            self._size -= 1
         self.touch()
 
     def check_keys(self, keys: Sequence[int]) -> None:
