@@ -76,7 +76,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         the integer index used for distinguish each parallel pea of this executor, useful in :attr:`pea_workspace`
 
         :type: int
-        :default: ``'{root.metas.pea_id}'``
+        :default: ``'${{root.metas.pea_id}}'``
 
     .. confval:: separated_workspace
 
@@ -84,7 +84,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         workspace specified in :attr:`pea_workspace`
 
         :type: bool
-        :default: ``'{root.metas.separated_workspace}'``
+        :default: ``'${{root.metas.separated_workspace}}'``
         
     .. confval:: pea_workspace
 
@@ -92,7 +92,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         related to this parallel pea will be conducted under this workspace. It is often set as the sub-directory of :attr:`workspace`.
 
         :type: str
-        :default: ``'{root.metas.workspace}/{root.metas.name}-{root.metas.pea_id}'``
+        :default: ``'${{root.metas.workspace}}/${{root.metas.name}}-${{root.metas.pea_id}}'``
 
     .. confval:: read_only
 

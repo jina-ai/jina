@@ -14,7 +14,7 @@ from .decorators import as_train_method, as_update_method, store_init_kwargs, as
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import typename, get_random_identity
-from ..jaml import JAMLCompatible, JAML, subvar_regex
+from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -202,7 +202,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             for k, v in new_metas.items():
                 if not hasattr(self, k):
                     if isinstance(v, str):
-                        if not subvar_regex.findall(v):
+                        if not (subvar_regex.findall(v) or internal_var_regex.findall(v)):
                             setattr(self, k, v)
                         else:
                             raise ValueError(f'{k}={v} is not substitutable or badly referred')

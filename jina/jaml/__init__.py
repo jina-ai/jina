@@ -197,6 +197,9 @@ class JAML:
                 v = v.format(root=expand_map, this=p, ENV=env_map)
             except KeyError:
                 pass
+
+            v = parse_arg(v)
+
             if isinstance(v, str) and internal_var_regex.findall(v):
                 # replacement failed, revert back to before
                 v = org_v
