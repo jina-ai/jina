@@ -19,7 +19,7 @@ class EvaluationCallback:
 
     def __init__(self, eval_name: Optional[str] = None):
         """
-        :param eval_name: evaluation name as required by evaluator
+        :param eval_name: evaluation name as required by evaluator. Not needed if only 1 evaluator is used
         """
         self.eval_name = eval_name
         self.evaluation_values = defaultdict(float)
@@ -98,7 +98,7 @@ class OptunaOptimizer:
         trial_parameters = {}
         parameters = load_optimization_parameters(self.parameter_yaml)
         for param in parameters:
-            trial_parameters[param.env_var] = getattr(trial, param.method)(
+            trial_parameters[param.env_var] = getattr(trial, param.optuna_method)(
                 **param.to_optuna_args()
             )
 
@@ -111,14 +111,11 @@ class OptunaOptimizer:
         return trial_parameters
 
     def _objective(self, trial):
-        self.multi_flow.flows[self.eval_flow_index].callback = self.multi_flow.flows[
-            self.eval_flow_index
-        ].callback.get_fresh_callback()
+        eval_flow = self.multi_flow.flows[self.eval_flow_index]
+        eval_flow.callback = eval_flow.callback.get_fresh_callback()
         trial_parameters = self._trial_parameter_sampler(trial)
         self.multi_flow.run(trial_parameters, workspace=trial.workspace)
-        evaluation = self.multi_flow.flows[
-            self.eval_flow_index
-        ].callback.get_mean_evaluation()
+        evaluation = eval_flow.callback.get_mean_evaluation()
         op_name = list(evaluation)[0]
         eval_score = evaluation[op_name]
         logger.info(colored(f'Avg {op_name}: {eval_score}', 'green'))

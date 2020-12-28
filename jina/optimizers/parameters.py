@@ -64,7 +64,7 @@ class IntegerParameter(OptimizationParameter):
         # The step != 1 and log arguments cannot be used at the same time.
         # To set the log argument to True, set the step argument to 1.
         self.log = log
-        self.method = 'suggest_int'
+        self.optuna_method = 'suggest_int'
 
     def to_optuna_args(self):
         return {
@@ -94,7 +94,7 @@ class FloatParameter(OptimizationParameter):
         self.high = high
         self.step_size = step_size
         self.log = log
-        self.method = 'suggest_float'
+        self.optuna_method = 'suggest_float'
 
     def to_optuna_args(self):
         return {
@@ -114,7 +114,7 @@ class UniformParameter(OptimizationParameter):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
-        self.method = 'suggest_uniform'
+        self.optuna_method = 'suggest_uniform'
 
     def to_optuna_args(self):
         return {
@@ -132,7 +132,7 @@ class LogUniformParameter(OptimizationParameter):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
-        self.method = 'suggest_loguniform'
+        self.optuna_method = 'suggest_loguniform'
 
     def to_optuna_args(self):
         return {
@@ -151,7 +151,7 @@ class CategoricalParameter(OptimizationParameter):
     ):
         super().__init__(*args, **kwargs)
         self.choices = choices
-        self.method = 'suggest_categorical'
+        self.optuna_method = 'suggest_categorical'
 
     def to_optuna_args(self):
         return {'name': self.env_var, 'choices': self.choices}
@@ -166,7 +166,7 @@ class DiscreteUniformParameter(OptimizationParameter):
         self.low = low
         self.high = high
         self.q = q
-        self.method = 'suggest_discrete_uniform'
+        self.optuna_method = 'suggest_discrete_uniform'
 
     def to_optuna_args(self):
         return {

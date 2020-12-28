@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from tests import random_docs
 from jina.optimizers.flow_runner import FlowRunner
+from tests import random_docs
 
 import pytest
 
@@ -38,11 +38,12 @@ def test_flow_runner(tmpdir, mocker):
     flow_runner.run(workspace=tmpdir)
     
     m.assert_called()
-
     assert Path(tmpdir/'flows'/'flow.yml').exists()
 
+def test_wrong_task():
+
     with pytest.raises(ValueError) as excinfo:
-        flow_runner = FlowRunner(
+        _ = FlowRunner(
         flow_yaml=cur_dir/'flow.yml',
         documents=random_docs(5),
         batch_size=1,
