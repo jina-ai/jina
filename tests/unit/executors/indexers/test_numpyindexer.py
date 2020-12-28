@@ -30,6 +30,7 @@ def test_numpy_indexer(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
@@ -53,6 +54,7 @@ def test_numpy_update_delete(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         query_results = indexer.query_by_id(vec_idx)
         assert np.array_equal(vec, query_results)
 
@@ -73,6 +75,7 @@ def test_numpy_update_delete(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         query_results = indexer.query_by_id([key_to_update])
         assert np.array_equal(data_to_update, query_results)
 
@@ -82,6 +85,7 @@ def test_numpy_update_delete(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         indexer.delete(vec_idx_to_delete)
         indexer.save()
         assert indexer.size == len(vec_idx) - keys_to_delete
@@ -90,6 +94,7 @@ def test_numpy_update_delete(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         assert indexer.size == len(vec_idx) - keys_to_delete
         # this will fail. key doesn't exist
         with pytest.raises(KeyError):
@@ -120,6 +125,7 @@ def test_numpy_indexer_known(batch_size, compress_level, test_metas):
                         [1000, 1000, 1000]])
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(queries, top_k=2)
         np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
         assert idx.shape == dist.shape
@@ -146,6 +152,7 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
                         [10, 10, 10]])
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(queries, top_k=top_k)
         np.testing.assert_equal(idx, np.array([[4, 5, 6], [5, 4, 6]]))
         assert idx.shape == dist.shape
@@ -158,11 +165,13 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         indexer.update(key_to_update, data_to_update)
         indexer.save()
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(queries, top_k=top_k)
         np.testing.assert_equal(idx, np.array([[5, 6, 4], [5, 6, 4]]))
         assert idx.shape == dist.shape
@@ -179,6 +188,7 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
                         [10, 10, 10]])
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(queries, top_k=2)
         np.testing.assert_equal(idx, np.array([[6, 5], [5, 6]]))
         assert idx.shape == dist.shape
@@ -198,6 +208,7 @@ def test_scipy_indexer(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
@@ -229,6 +240,7 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
             [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
@@ -263,6 +275,7 @@ def test_scipy_indexer_known_big(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
             [[10000], [11000], [12000], [13000], [14000], [15000], [16000], [17000], [18000], [19000]]))
@@ -298,6 +311,7 @@ def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(query, top_k=4)
         assert idx is None
         assert dist is None
@@ -319,8 +333,8 @@ def test_indexer_one_dimensional(metric, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(query_vec, top_k=4)
-        print(f'metric {metric} => dist {dist}')
         assert idx.shape == dist.shape
         assert idx.shape == (1, 1)
         assert not math.isnan(dist[0])
@@ -342,6 +356,7 @@ def test_indexer_zeros(metric, dimension, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
+        assert isinstance(indexer.raw_ndarray, np.memmap)
         idx, dist = indexer.query(query_vec, top_k=4)
 
         assert idx.shape == dist.shape
