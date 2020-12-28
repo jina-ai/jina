@@ -18,7 +18,7 @@ from .. import JINA_GLOBAL
 from ..clients import Client
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
-from ..helper import complete_path, colored, \
+from ..helper import colored, \
     get_public_ip, get_internal_ip, typename, ArgNamespace
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
@@ -91,42 +91,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._common_kwargs = kwargs
         self._kwargs = ArgNamespace.get_non_defaults_args(args, _flow_parser)  #: for yaml dump
 
-    def save_config(self, filename: str = None) -> bool:
-        """
-        Serialize the object to a yaml file
-
-        :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used
-        :return: successfully dumped or not
-        """
-        f = filename
-        if not f:
-            f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
-
-        with open(f, 'w', encoding='utf8') as fp:
-            JAML.dump(self, fp)
-        self.logger.info(f'{self}\'s yaml config is save to {f}')
-        return True
-
     @property
     def yaml_spec(self):
         return JAML.dump(self)
-
-    @classmethod
-    def load_config(cls, filename: Union[str, TextIO]) -> FlowLike:
-        """Build an executor from a YAML file.
-
-        :param filename: the file path of the YAML file or a ``TextIO`` stream to be loaded from
-        :return: an executor object
-        """
-        if not filename: raise FileNotFoundError
-        if isinstance(filename, str):
-            # deserialize from the yaml
-            filename = complete_path(filename)
-            with open(filename, encoding='utf8') as fp:
-                return JAML.load(fp)
-        else:
-            with filename:
-                return JAML.load(filename)
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:

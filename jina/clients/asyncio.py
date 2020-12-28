@@ -60,7 +60,7 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.TRAIN
-        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def search(self, input_fn: InputFnType = None,
@@ -78,7 +78,7 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.SEARCH
-        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def index(self, input_fn: InputFnType = None,
@@ -96,4 +96,4 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.INDEX
-        await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)

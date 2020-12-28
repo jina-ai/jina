@@ -264,16 +264,16 @@ class CompoundIndexer(CompoundExecutor):
               index_filename: vec.gz
             metas:
               name: vecidx  # a customized name
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
           - !BinaryPbIndexer
             with:
               index_filename: chunk.gz
             metas:
               name: chunkidx  # a customized name
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
         metas:
           name: chunk_compound_indexer
-          workspace: $TEST_WORKDIR
+          workspace: ${{TEST_WORKDIR}}
 
     Without defining any ``requests.on`` logic. When load from this YAML, it will be auto equipped with
 

@@ -6,8 +6,8 @@ import os
 import time
 from collections import defaultdict
 from contextlib import ExitStack
-from typing import Dict, Optional, Union, List
 from multiprocessing.synchronize import Event
+from typing import Dict, Optional, Union, List
 
 import zmq
 
@@ -16,9 +16,8 @@ from ... import Message
 from ... import Request
 from ...enums import PeaRoleType, SkipOnErrorType
 from ...excepts import RequestLoopEnd, NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, DriverError, \
-    ChainedPodException
+    ChainedPodException, BadConfigSource
 from ...executors import BaseExecutor
-from ...helper import is_valid_local_config_source
 from ...logging import JinaLogger
 from ...logging.profile import used_memory, TimeDict
 from ...proto import jina_pb2
@@ -122,9 +121,17 @@ class BasePea(ExitStack):
 
         """
         try:
-            self.executor = BaseExecutor.load_config(
-                self.args.uses if is_valid_local_config_source(self.args.uses) else self.args.uses_internal,
-                self.args.separated_workspace, self.args.pea_id, self.args.read_only)
+            try:
+                self.executor = BaseExecutor.load_config(self.args.uses,
+                                                         separated_workspace=self.args.separated_workspace,
+                                                         pea_id=self.args.pea_id,
+                                                         read_only=self.args.read_only)
+            except BadConfigSource:
+                # retry loading but with "uses_internal" as the source
+                self.executor = BaseExecutor.load_config(self.args.uses_internal,
+                                                         separated_workspace=self.args.separated_workspace,
+                                                         pea_id=self.args.pea_id,
+                                                         read_only=self.args.read_only)
             self.executor.attach(pea=self)
         except FileNotFoundError as ex:
             self.logger.error(f'fail to load file dependency: {repr(ex)}')
