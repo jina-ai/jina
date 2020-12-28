@@ -2,9 +2,9 @@ import argparse
 import multiprocessing
 import os
 import threading
+from typing import Type
 
 from .helper import _get_event, _make_or_event
-from ..runtimes import Runtime
 from ... import __stop_msg__, __ready_msg__
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
@@ -42,6 +42,8 @@ class PeaType(type):
 
 
 class BasePea(metaclass=PeaType):
+    runtime_cls = None  # type: Type['BaseRuntime']
+
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()  #: required here to call process/thread __init__
         self.args = args
@@ -52,7 +54,7 @@ class BasePea(metaclass=PeaType):
         self.logger = JinaLogger(self.name,
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)
-        self.runtime = Runtime(args)
+        self.runtime = self.runtime_cls(args)
 
     def run(self):
         """ Method representing the :class:`BaseRuntime` activity.

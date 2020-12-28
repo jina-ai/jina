@@ -12,3 +12,12 @@ class ZMQRuntime(BaseRuntime):
 
     def cancel(self):
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
+
+    @property
+    def status(self):
+        return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
+
+    @property
+    def is_ready(self) -> bool:
+        status = self.status
+        return status and status.is_ready

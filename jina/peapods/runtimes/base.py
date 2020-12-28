@@ -1,6 +1,6 @@
 import argparse
 
-from jina.logging import JinaLogger
+from ...logging import JinaLogger
 
 
 class BaseRuntime:
