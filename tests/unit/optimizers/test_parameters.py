@@ -113,4 +113,15 @@ def test_parameters(paramter_class, inputs, outputs):
 
 
 def test_parameter_file_loading():
-    load_optimization_parameters(cur_dir / 'parameters.yml')
+    params_loaded = load_optimization_parameters(cur_dir / 'parameters.yml')
+    expected = [
+        IntegerParameter,
+        FloatParameter,
+        UniformParameter,
+        UniformParameter,
+        LogUniformParameter,
+        CategoricalParameter,
+        DiscreteUniformParameter,
+    ]
+    for param, param_type in zip(params_loaded, expected):
+        assert type(param) == param_type
