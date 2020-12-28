@@ -47,6 +47,7 @@ class BasePea(metaclass=PeaType):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()  #: required here to call process/thread __init__
         self.args = args
+        self.daemon = args.daemon  #: required here to set process/thread daemon
         self.name = self.args.name or self.__class__.__name__
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
@@ -61,8 +62,8 @@ class BasePea(metaclass=PeaType):
         """
 
         def _finally():
-            self.is_ready.clear()
             self.is_shutdown.set()
+            self.is_ready.clear()
             self._unset_envs()
 
         self._set_envs()
@@ -106,18 +107,25 @@ class BasePea(metaclass=PeaType):
             else:
                 self.logger.success(__ready_msg__)
         else:
+            self.close()
             raise TimeoutError(
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')
 
     def close(self) -> None:
-        try:
-            self.runtime.cancel()
-            self.is_shutdown.wait()
-        except Exception as ex:
-            self.logger.error(f'{ex!r} during {self.runtime.cancel!r}')
+        # wait 1s for the process/thread to end naturally, in this case no "cancel" is required
+        self.join(1)
 
-        if not self.args.daemon:
-            self.join()
+        # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
+        if self.is_ready.is_set() and not self.is_shutdown.is_set():
+            try:
+                self.is_shutdown.wait()
+            except Exception as ex:
+                self.logger.error(f'{ex!r} during {self.runtime.cancel!r}')
+
+            # if it is not daemon, block until the process/thread finish work
+            if not self.args.daemon:
+                self.join()
+
         self.logger.success(__stop_msg__)
         self.logger.close()
 

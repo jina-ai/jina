@@ -19,9 +19,11 @@ class ContainerRuntime(ZMQRuntime):
     def setup(self):
         self._docker_run()
         while not self.is_ready:
+            print('here')
             time.sleep(1)
 
     def teardown(self):
+        print('teardown')
         import docker.errors
         try:
             self._container.stop()
@@ -113,6 +115,5 @@ class ContainerRuntime(ZMQRuntime):
                                                 network_mode=self._net_mode,
                                                 entrypoint=self.args.entrypoint)
 
-        # wait until the container is ready
         self.logger.info('waiting ready signal from the container')
         client.close()
