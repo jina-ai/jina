@@ -144,7 +144,7 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRanker):
         Input:
         document: {granularity: k}
             |- matches: {granularity: k}
-            
+
         Output:
         document: {granularity: k}
             |- matches: {granularity: k-1} (Sorted according to Ranker Executor)
