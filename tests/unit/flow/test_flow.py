@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -17,7 +16,7 @@ from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from tests import random_docs, rm_files
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_ping():
@@ -251,7 +250,7 @@ def test_flow_log_server():
 
 
 def test_shards():
-    f = Flow().add(name='doc_pb', uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'), parallel=3,
+    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3,
                    separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(1000), random_doc_id=False)
@@ -451,7 +450,7 @@ def test_index_text_files(mocker):
 
     response_mock = mocker.Mock(wrap=validate)
 
-    f = (Flow(read_only=True).add(uses=str(cur_dir.parent / 'yaml' / 'datauriindex.yml'), timeout_ready=-1))
+    f = (Flow(read_only=True).add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
 
     with f:
         f.index_files('*.py', on_done=response_mock, callback_on='body')
