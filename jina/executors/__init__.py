@@ -202,12 +202,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             _tmp = vars(self)
             _tmp['metas'] = _metas
             new_metas = JAML.expand_dict(_tmp)['metas']
+            print(f'new_metas: {new_metas}')
 
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
                 if not hasattr(self, k):
                     if isinstance(v, str) and subvar_regex.findall(v):
                         v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
+                    print(f'!!!{k} to {v}')
                     if isinstance(v, str):
                         if not subvar_regex.findall(v):
                             print(f'4set {k} to {v}')
