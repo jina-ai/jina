@@ -67,4 +67,4 @@ requests:                   http
 prettytable:                devel, test
 sseclient-py:               test
 websockets:                 http, devel
-optuna:                     optimizer
+optuna:                     devel, optimizer

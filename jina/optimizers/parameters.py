@@ -180,12 +180,12 @@ class DiscreteUniformParameter(OptimizationParameter):
 JAML.register(DiscreteUniformParameter)
 
 
-def load_optimization_parameters(filename):
+def load_optimization_parameters(filepath: str):
     JAML.register(IntegerParameter)
     JAML.register(FloatParameter)
     JAML.register(UniformParameter)
     JAML.register(LogUniformParameter)
     JAML.register(CategoricalParameter)
     JAML.register(DiscreteUniformParameter)
-    with open(filename, encoding='utf8') as fp:
+    with open(filepath, encoding='utf8') as fp:
         return JAML.load(fp)

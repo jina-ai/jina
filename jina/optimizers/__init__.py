@@ -5,6 +5,7 @@ from typing import Optional
 import yaml
 
 from ..helper import colored
+from ..importer import ImportExtensions
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
 
@@ -137,7 +138,8 @@ class OptunaOptimizer:
         :param seed: random seed for reproducibility
         :param kwargs: extra parameters for optuna sampler
         """
-        import optuna
+        with ImportExtensions(required=True):
+            import optuna
         if sampler == 'GridSampler':
             sampler = getattr(optuna.samplers, sampler)(**kwargs)
         else:
