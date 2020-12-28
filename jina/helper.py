@@ -15,18 +15,17 @@ import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
-from io import StringIO
 from itertools import islice
 from types import SimpleNamespace
-from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, TextIO, Sequence, Iterable
+from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, Sequence, Iterable
 
 import numpy as np
 
 __all__ = ['batch_iterator',
            'parse_arg',
            'random_port', 'get_random_identity', 'expand_env_var',
-           'colored', 'ArgNamespace', 'get_local_config_source', 'is_valid_local_config_source',
-           'cached_property', 'is_url', 'complete_path',
+           'colored', 'ArgNamespace', 'is_valid_local_config_source',
+           'cached_property', 'is_url',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
            'run_async', 'deprecated_alias']
 
@@ -455,42 +454,11 @@ class ArgNamespace:
             return pea_args
 
 
-def get_local_config_source(path: str, to_stream: bool = False) -> Union[StringIO, TextIO, str]:
-    # priority, filepath > classname > default
-    import io
-    from pkg_resources import resource_filename
-    if hasattr(path, 'read'):
-        # already a readable stream
-        return path
-    elif path.endswith('.yml') or path.endswith('.yaml'):
-        _p = complete_path(path)
-        return open(_p, encoding='utf8') if to_stream else _p
-    elif path.startswith('_') and os.path.exists(
-            resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
-        return resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
-    elif path.startswith('!'):
-        # possible YAML content
-        path = path.replace('|', '\n    with: ')
-        return io.StringIO(path)
-    elif path.startswith('- !'):
-        # possible driver YAML content, right now it is only used for debugging
-        with open(resource_filename('jina', '/'.join(
-                ('resources', 'executors.base.all.yml' if path.startswith('- !!') else 'executors.base.yml')))) as fp:
-            _defaults = fp.read()
-        path = path.replace('- !!', '- !').replace('|', '\n        with: ')  # for indent, I know, its nasty
-        path = _defaults.replace('*', path)
-        return io.StringIO(path)
-    elif path.isidentifier():
-        # possible class name
-        return io.StringIO(f'!{path}')
-    else:
-        raise FileNotFoundError(f'{path} can not be resolved, it should be a readable stream,'
-                                ' or a valid file path, or a supported class name.')
-
-
 def is_valid_local_config_source(path: str) -> bool:
+    # TODO: this function must be refactored before 1.0 (Han 12.22)
     try:
-        get_local_config_source(path)
+        from jina.jaml import parse_config_source
+        parse_config_source(path)
         return True
     except FileNotFoundError:
         return False
@@ -603,40 +571,6 @@ class cached_property:
 def get_now_timestamp():
     now = datetime.now()
     return int(datetime.timestamp(now))
-
-
-def search_file_in_paths(path):
-    '''
-        searches in all dirs of the PATH environment variable and all dirs of files used in the call stack.
-    '''
-    import inspect
-    search_paths = []
-    frame = inspect.currentframe()
-
-    # iterates over the call stack
-    while frame:
-        search_paths.append(os.path.dirname(inspect.getfile(frame)))
-        frame = frame.f_back
-    search_paths += os.environ['PATH'].split(os.pathsep)
-
-    # return first occurrence of path. If it does not exist, return None.
-    for p in search_paths:
-        _p = os.path.join(p, path)
-        if os.path.exists(_p):
-            return _p
-
-
-def complete_path(path: str) -> str:
-    _p = None
-    if os.path.exists(path):
-        # this checks both abs and relative paths already
-        _p = path
-    else:
-        _p = search_file_in_paths(path)
-    if _p:
-        return _p
-    else:
-        raise FileNotFoundError(f'can not find {path}')
 
 
 def get_readable_time(*args, **kwargs):
@@ -754,3 +688,11 @@ def run_async(func, *args, **kwargs):
                                'please report this issue here: https://github.com/jina-ai/jina')
     else:
         return asyncio.run(func(*args, **kwargs))
+
+
+def check_keys_exist(keys_to_check, existing_keys):
+    missed = []
+    for k in keys_to_check:
+        if k not in existing_keys:
+            missed.append(k)
+    return missed

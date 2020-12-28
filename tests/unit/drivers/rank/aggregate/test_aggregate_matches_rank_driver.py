@@ -1,7 +1,7 @@
 import pytest
 
 from jina import Document
-from jina.drivers.rank import CollectMatches2DocRankDriver
+from jina.drivers.rank.aggregate import AggregateMatches2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
 from jina.proto import jina_pb2
 from jina.types.sets import DocumentSet
@@ -19,7 +19,7 @@ class MockMinRanker(Chunk2DocRanker):
         return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())
 
 
-class SimpleCollectMatchesRankDriver(CollectMatches2DocRankDriver):
+class SimpleCollectMatchesRankDriver(AggregateMatches2DocRankDriver):
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -92,9 +92,10 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
         assert match.score.ref_id == doc.id
 
 
-def test_collect_matches2doc_ranker_driver_min_ranker():
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver()
+    driver = SimpleCollectMatchesRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
     driver.attach(executor=executor, pea=None)
     import sys
@@ -119,11 +120,14 @@ def test_collect_matches2doc_ranker_driver_min_ranker():
     for match in dm:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
+        expected_chunk_matches_length = 2 if keep_source_matches_as_chunks else 0
+        assert len(match.chunks) == expected_chunk_matches_length
 
 
-def test_collect_matches2doc_ranker_driver_max_ranker():
+@pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
+def test_collect_matches2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver()
+    driver = SimpleCollectMatchesRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMaxRanker()
     driver.attach(executor=executor, pea=None)
     driver._traverse_apply(DocumentSet([doc, ]))
@@ -136,3 +140,5 @@ def test_collect_matches2doc_ranker_driver_max_ranker():
     for match in dm:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
+        expected_chunk_matches_length = 2 if keep_source_matches_as_chunks else 0
+        assert len(match.chunks) == expected_chunk_matches_length

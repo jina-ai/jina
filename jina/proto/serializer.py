@@ -1,9 +1,8 @@
-from .jina_pb2 import RequestProto as rp
 from .. import Request
 
 
 class RequestProto:
-    """This class is a dropin replacement for gRPC default serializer.
+    """This class is a drop-in replacement for gRPC default serializer.
 
     It replace default serializer to make sure we always work with `Request`
 

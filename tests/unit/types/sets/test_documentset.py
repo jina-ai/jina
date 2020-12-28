@@ -88,6 +88,19 @@ def test_set_get_success(docset, document_factory):
     assert docset[doc_0_id].text == 'test 4'
 
 
+def test_set_get_from_slice_success(docs, document_factory):
+    docset = DocumentSet(docs)
+    assert len(docset[:1]) == 1
+    assert len(docset[:2]) == 2
+    assert len(docset[:3]) == 3
+    assert len(docset[:100]) == 3
+
+    assert len(docset[1:]) == 2
+    assert len(docset[2:]) == 1
+    assert len(docset[3:]) == 0
+    assert len(docset[100:]) == 0
+
+
 def test_set_get_fail(docset, document_factory):
     docset.build()
     with pytest.raises(IndexError):

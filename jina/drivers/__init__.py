@@ -100,10 +100,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                        not q.disabled
-                        and self.__class__.__name__ == q.name
-                        and q.priority > self._priority
-                        and key in q.parameters
+                    not q.disabled
+                    and self.__class__.__name__ == q.name
+                    and q.priority > self._priority
+                    and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -240,12 +240,12 @@ class BaseRecursiveDriver(BaseDriver):
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
     def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
-            *args,
-            **kwargs,
+        self,
+        docs: 'DocumentSet',
+        context_doc: 'Document',
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
@@ -324,8 +324,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     def exec_fn(self) -> Callable:
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
-                not self.msg.is_error
-                or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
+            not self.msg.is_error
+            or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
         ):
             return self._exec_fn
         else:
@@ -340,7 +340,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break

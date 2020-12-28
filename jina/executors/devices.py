@@ -48,12 +48,11 @@ class TorchDevice(BaseDevice):
             def encode(self, data, *args, **kwargs):
                 # use your awesome model to encode/craft/score
                 import torch
-                _input = torch.from_numpy(data)
-                if self.on_gpu:
-                    _input = _input.cuda()
-                _output = self.model(_input).detach()
-                if self.on_gpu:
-                    _output = _output.cpu()
+                torch.set_grad_enabled(False)
+                
+                _input = torch.as_tensor(data, device=self.device)
+                _output = self.model(_input).cpu()
+
                 return _output.numpy()
 
     """
