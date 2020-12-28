@@ -86,8 +86,8 @@ class BasePea(metaclass=PeaType):
                 self.runtime.teardown()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.teardown!r}')
-            finally:
-                _finally()
+        finally:
+            _finally()
 
     def start(self):
         super().start()  #: required here to call process/thread method
