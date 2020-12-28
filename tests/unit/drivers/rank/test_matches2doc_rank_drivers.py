@@ -42,7 +42,7 @@ def create_document_to_score():
     doc = Document()
     doc.id = '1' * 16
     doc.length = 5
-    for match_id, match_score, match_length in [(2, 3, 16), (3, 6, 24), (4, 1, 8), (5, 8, 16)]:
+    for match_id, match_score, match_length in [(2, 3, 16), (3, 6, 24), (4, 1, 12), (5, 8, 16)]:
         with Document() as match:
             match.id = str(match_id) * match_length
             match.length = match_score
