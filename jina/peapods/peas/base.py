@@ -55,7 +55,12 @@ class BasePea(metaclass=PeaType):
         self.logger = JinaLogger(self.name,
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)
-        self.runtime = self.runtime_cls(args)
+
+        try:
+            self.runtime = self.runtime_cls(args)
+        except Exception as ex:
+            self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}')
+            raise RuntimeFailToStart from ex
 
     def run(self):
         """ Method representing the :class:`BaseRuntime` activity.
@@ -101,8 +106,8 @@ class BasePea(metaclass=PeaType):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fails to start {typename(self)}:{self.name}, '
-                                     f'this often means the executor used in the pod is not valid')
+                self.logger.critical(f'fails to start {self!r}, '
+                                     f'this often means the runtime {self.runtime!r} has some exception')
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
@@ -112,12 +117,16 @@ class BasePea(metaclass=PeaType):
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')
 
     def close(self) -> None:
-        # wait 1s for the process/thread to end naturally, in this case no "cancel" is required
+        # wait 1s for the process/thread to end naturally, in this case no "cancel" is required this is required for
+        # the is case where in subprocess, runtime.setup() fails and _finally() is not yet executed, BUT close() in the
+        # main process is calling runtime.cancel(), which is completely unnecessary as runtime.run_forever() is not
+        # started yet.
         self.join(1)
 
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                self.runtime.cancel()
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.cancel!r}')

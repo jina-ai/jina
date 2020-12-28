@@ -12,8 +12,31 @@ from jina.peapods.runtimes.container import ContainerRuntime
 from jina.peapods.runtimes.zed import ZEDRuntime
 
 
-def bad_wait_fun(self):
+def bad_func(*args, **kwargs):
     raise Exception('intentional error')
+
+
+def test_base_runtime_bad_init(mocker):
+    class Pea1(BasePea):
+        runtime_cls = BaseRuntime
+
+    arg = set_pea_parser().parse_args(['--runtime', 'thread'])
+    mocker.patch.object(BaseRuntime, '__init__', bad_func)
+    setup_spy = mocker.spy(BaseRuntime, 'setup')
+    teardown_spy = mocker.spy(BaseRuntime, 'teardown')
+    cancel_spy = mocker.spy(BaseRuntime, 'cancel')
+    run_spy = mocker.spy(BaseRuntime, 'run_forever')
+
+    with pytest.raises(RuntimeFailToStart):
+        with Pea1(arg):
+            pass
+
+    # teardown, setup should be called, cancel should not be called
+
+    setup_spy.assert_not_called()
+    teardown_spy.assert_not_called()
+    run_spy.assert_not_called()
+    cancel_spy.assert_not_called()
 
 
 def test_base_runtime_bad_run_forever(mocker):
@@ -21,7 +44,7 @@ def test_base_runtime_bad_run_forever(mocker):
         runtime_cls = BaseRuntime
 
     arg = set_pea_parser().parse_args(['--runtime', 'thread'])
-    mocker.patch.object(BaseRuntime, 'run_forever', bad_wait_fun)
+    mocker.patch.object(BaseRuntime, 'run_forever', bad_func)
     setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
@@ -42,7 +65,7 @@ def test_base_runtime_bad_setup(mocker):
     class Pea1(BasePea):
         runtime_cls = BaseRuntime
 
-    mocker.patch.object(BaseRuntime, 'setup', bad_wait_fun)
+    mocker.patch.object(BaseRuntime, 'setup', bad_func)
     setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
@@ -65,7 +88,7 @@ def test_base_runtime_bad_teardown(mocker):
         runtime_cls = BaseRuntime
 
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
-    mocker.patch.object(BaseRuntime, 'teardown', lambda x: bad_wait_fun)
+    mocker.patch.object(BaseRuntime, 'teardown', lambda x: bad_func)
     setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
@@ -88,7 +111,7 @@ def test_base_runtime_bad_cancel(mocker):
         runtime_cls = BaseRuntime
 
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
-    mocker.patch.object(BaseRuntime, 'cancel', bad_wait_fun)
+    mocker.patch.object(BaseRuntime, 'cancel', bad_func)
 
     setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
@@ -126,11 +149,24 @@ def test_gateway_runtime(cls):
         pass
 
 
-def test_container_runtime():
+def test_container_runtime_bad_entrypoint():
     class Pea1(BasePea):
         runtime_cls = ContainerRuntime
 
+    # without correct entrypoint this will fail
     arg = set_pea_parser().parse_args(['--uses', 'jinaai/jina:test-pip',
                                        ])
+    with pytest.raises(RuntimeFailToStart):
+        with Pea1(arg):
+            pass
+
+
+def test_container_runtime_good_entrypoint():
+    class Pea1(BasePea):
+        runtime_cls = ContainerRuntime
+
+    # without correct entrypoint this will fail
+    arg = set_pea_parser().parse_args(['--uses', 'jinaai/jina:test-pip',
+                                       '--entrypoint', 'jina pod'])
     with Pea1(arg):
         pass

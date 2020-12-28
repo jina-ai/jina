@@ -43,6 +43,12 @@ class BaseRuntime:
      Note, another way to jump out from :meth:`run_forever` is raise exceptions from it. This will immediately move to
      :meth:`teardown`.
 
+     .. note::
+        Rule of thumb on exception handling: if you are not sure if you should handle exception inside
+        :meth:`run_forever`, :meth:`cancel`, :meth:`setup`, :meth:`teardown`, then DO NOT catch exception in them.
+        Exception is MUCH better handled by :class:`BasePea`.
+
+
      .. seealso::
 
         :class:`BasePea` for managing a :class:`Runtime` object's lifecycle.

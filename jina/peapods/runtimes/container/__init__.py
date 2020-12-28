@@ -18,27 +18,19 @@ class ContainerRuntime(ZMQRuntime):
 
     def setup(self):
         self._docker_run()
-        while not self.is_ready:
-            print('here')
+        while self._is_container_alive and not self.is_ready:
             time.sleep(1)
+        # two cases to reach here: 1. is_ready, 2. container is dead
+        if not self._is_container_alive:
+            raise Exception('the container fail to start, check the arguments or entrypoint')
 
     def teardown(self):
-        print('teardown')
-        import docker.errors
-        try:
-            self._container.stop()
-        except docker.errors.NotFound:
-            self.logger.warning(
-                'the container is already shutdown (mostly because of some error inside the container)')
+        self._container.stop()
 
     def run_forever(self):
-        import docker.errors
         with JinaLogger('🐳', **vars(self.args)) as logger:
-            try:
-                for line in self._container.logs(stream=True):
-                    logger.info(line.strip().decode())
-            except docker.errors.NotFound:
-                self.logger.error('the container can not be started, check your arguments, entrypoint')
+            for line in self._container.logs(stream=True):
+                logger.info(line.strip().decode())
 
     def _set_network_for_dind_linux(self):
         import docker
@@ -117,3 +109,12 @@ class ContainerRuntime(ZMQRuntime):
 
         self.logger.info('waiting ready signal from the container')
         client.close()
+
+    @property
+    def _is_container_alive(self) -> bool:
+        import docker.errors
+        try:
+            self._container.reload()
+        except docker.errors.NotFound:
+            return False
+        return True
