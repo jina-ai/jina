@@ -52,8 +52,8 @@ class Matches2DocRankDriver(BaseRankDriver):
         # if at the top-level already, no need to aggregate further
         query_meta = context_doc.get_attrs(*self.exec.required_keys)
 
-        old_match_scores = {int(match.id): match.score.value for match in docs}
-        match_meta = {int(match.id): match.get_attrs(*self.exec.required_keys) for match in docs}
+        old_match_scores = {match.id: match.score.value for match in docs}
+        match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs}
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return
@@ -65,8 +65,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         op_name = self.exec.__class__.__name__
         cm = context_doc.matches
         cm.build()
-        for int_match_id, score in match_scores:
-            match_id = UniqueId(int_match_id)
+        for match_id, score in match_scores:
             cm[match_id].score = NamedScore(value=score, op_name=op_name, ref_id=context_doc.id)
 
         cm.sort(key=lambda x: x.score.value, reverse=True)
