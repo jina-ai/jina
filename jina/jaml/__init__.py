@@ -146,6 +146,7 @@ class JAML:
 
         def _sub(v):
             print(f'sub original: {v}')
+            org_v = v
             v = expand_env_var(v)
             if not (isinstance(v, str) and subvar_regex.findall(v)):
                 return v
@@ -176,20 +177,33 @@ class JAML:
             # 4. make string to float/int/list/bool with best effort
             v = parse_arg(v)
 
+            if internal_var_regex.findall(v):
+                # replacement failed, revert back to before
+                print(f'revert: {v} -> {org_v}')
+                v = org_v
+
             print(f'sub after: {v}')
+
             return v
 
         def _resolve(v, p):
             # resolve internal reference
+            org_v = v
             print(f'resolve original: {v}')
+            v = re.sub(subvar_regex, '{\\1}', v)
+            print(f'resolve sub: {v}')
             try:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
                 v = v.format(root=expand_map, this=p, ENV=env_map)
             except KeyError:
                 pass
-            print(expand_map)
             print(f'resolve after: {v}')
+            if internal_var_regex.findall(v):
+                # replacement failed, revert back to before
+                print(f'resolve revert: {v} -> {org_v}')
+                v = org_v
+
             return v
 
         _scan(d, expand_map)

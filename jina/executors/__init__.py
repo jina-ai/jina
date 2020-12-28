@@ -179,12 +179,15 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if not hasattr(self, k):
                 if isinstance(v, str):
                     if not subvar_regex.findall(v):
+                        print(f'set {k} to {v}')
                         setattr(self, k, v)
                     else:
                         unresolved_attr = True
                 else:
+                    print(f'2set {k} to {v}')
                     setattr(self, k, v)
             elif type(getattr(self, k)) == type(v):
+                print(f'3set {k} to {v}')
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
             _id = get_random_identity().split('-')[0]
@@ -207,10 +210,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                         v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
                     if isinstance(v, str):
                         if not subvar_regex.findall(v):
+                            print(f'4set {k} to {v}')
                             setattr(self, k, v)
                         else:
                             raise ValueError(f'{k}={v} is not expandable or badly referred')
                     else:
+                        print(f'5set {k} to {v}')
                         setattr(self, k, v)
 
     def post_init(self):
