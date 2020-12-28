@@ -139,7 +139,7 @@ def test_simple_flow():
 
 
 def test_flow_identical():
-    with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
+    with open(os.path.join(cur_dir, '../yaml/test-flow.yml')) as fp:
         a = Flow.load_config(fp)
 
     b = (Flow()
@@ -199,15 +199,16 @@ def test_pod_status():
 
 
 def test_flow_no_container():
+
     f = (Flow()
-         .add(name='dummyEncoder', uses=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder.yml')))
+         .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
 
     with f:
         f.index(input_fn=random_docs(10))
 
 
 def test_flow_log_server():
-    f = Flow.load_config(str(cur_dir.parent / 'yaml' / 'test_log_server.yml'))
+    f = Flow.load_config(os.path.join(cur_dir, '../yaml/test_log_server.yml'))
     with f:
         assert hasattr(JINA_GLOBAL.logserver, 'ready')
 

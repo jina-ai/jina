@@ -63,7 +63,7 @@ def test_yaml_expand3():
 
 def test_yaml_expand4():
     os.environ['ENV1'] = 'a'
-    with open(os.path.join(cur_dir / 'yaml/test-expand4.yml')) as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand4.yml')) as fp:
         b = JAML.load(fp, substitute=True,
                       context={'context_var': 3.14,
                                'context_var2': 'hello-world'})

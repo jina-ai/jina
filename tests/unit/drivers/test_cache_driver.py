@@ -89,7 +89,7 @@ def test_cache_driver_from_file(tmp_path):
         driver._traverse_apply(docs)
 
     # check persistence
-    assert Path(executor.save_abspath).exists()
+    assert os.path.exists(executor.save_abspath)
 
 
 class MockBaseCacheDriver(BaseCacheDriver):
