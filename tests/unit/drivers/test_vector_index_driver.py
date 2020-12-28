@@ -1,9 +1,11 @@
+from copy import deepcopy
 from typing import Iterator, Union, List, Tuple
 
 import numpy as np
 import pytest
 
-from jina.drivers.index import KVIndexDriver
+from jina import DocumentSet
+from jina.drivers.index import VectorIndexDriver
 from jina.executors.indexers import BaseVectorIndexer
 from jina.types.document import Document
 
@@ -42,7 +44,7 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
         pass
 
 
-class SimpleVectorIndexDriver(KVIndexDriver):
+class SimpleVectorIndexDriver(VectorIndexDriver):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -79,7 +81,7 @@ def documents():
             d.id = f'{idx:0>16}'
             d.embedding = np.random.random([10])
             docs.append(d)
-    return docs
+    return DocumentSet(docs)
 
 
 @pytest.fixture(scope='function')
@@ -90,7 +92,7 @@ def updated_documents():
             d.id = f'{idx:0>16}'
             d.embedding = np.random.random([10])
             docs.append(d)
-    return docs
+    return DocumentSet(docs)
 
 
 @pytest.fixture(scope='function')
@@ -100,16 +102,47 @@ def deleted_documents():
         with Document() as d:
             d.id = f'{idx:0>16}'
             docs.append(d)
-    return docs
+    return DocumentSet(docs)
+
+
+@pytest.fixture(scope='function')
+def empty_documents():
+    docs = []
+    for idx in range(100, 120):
+        with Document() as d:
+            d.id = f'{idx:0>16}'
+            docs.append(d)
+    return DocumentSet(docs)
 
 
 def test_vector_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_add, documents):
     simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
     simple_kv_indexer_driver_add._apply_all(documents)
-
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[int(doc.id)], doc.embedding)
+
+
+def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simple_kv_indexer_driver_add, documents,
+                                          empty_documents):
+    simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    logger_mock = mocker.Mock()
+    pea_mock = mocker.Mock()
+    pea_mock.logger = logger_mock
+    simple_kv_indexer_driver_add.pea = pea_mock
+    # TODO once https://github.com/jina-ai/jina/pull/1555 is merged union can be declared using '+'
+    union = deepcopy(documents)
+    for d in empty_documents:
+        union.add(d)
+    simple_kv_indexer_driver_add._apply_all(union)
+
+    # make sure the warning for bad docs is triggered
+    assert logger_mock.mock_calls[0][0] == 'warning'
+    assert len(mock_groundtruth_indexer.docs) == 5
+    for idx, doc in enumerate(documents):
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[int(doc.id)], doc.embedding)
+    for idx, doc in enumerate(empty_documents):
+        assert int(doc.id) not in mock_groundtruth_indexer.docs
 
 
 def test_vector_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driver_add,
@@ -122,8 +155,11 @@ def test_vector_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_
     simple_kv_indexer_driver_update._apply_all(updated_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
-    for idx, doc in enumerate(updated_documents[:3] + documents[3:5]):
-        assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
+    for idx, doc in enumerate(updated_documents):
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[int(doc.id)], doc.embedding)
+    for idx in range(3, 5):
+        doc = documents[idx]
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[int(doc.id)], doc.embedding)
 
 
 def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_driver_add,
@@ -136,8 +172,9 @@ def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_
     simple_kv_indexer_driver_delete._apply_all(deleted_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 2
-    for idx, doc in enumerate(documents[3:5]):
-        assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
+    for idx in range(3, 5):
+        doc = documents[idx]
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[int(doc.id)], doc.embedding)
 
-    for idx, doc in enumerate(deleted_documents[:3]):
+    for idx, doc in enumerate(deleted_documents):
         assert int(doc.id) not in mock_groundtruth_indexer.docs
