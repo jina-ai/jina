@@ -114,6 +114,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6219,4 +6220,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e66f14d6```](https://github.com/jina-ai/jina/commit/e66f14d64155cfb7b8f527c31dadcd86fb873b4c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```495946ea```](https://github.com/jina-ai/jina/commit/495946eaa787094b6dfb85f1b84815ff7db95791)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```a49d15aa```](https://github.com/jina-ai/jina/commit/a49d15aa8f3f2f5334760642032cebda02f013b5)] __-__ __version__: the next version will be 0.8.15 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-16></a>
+## Release Note (`0.8.16`)
+
+> Release time: 2020-12-28 17:21:24
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```228d3175```](https://github.com/jina-ai/jina/commit/228d3175dc759b7851f1436b719bfdcd37777c2f)] __-__ set eval at default None precision and recall (#1552) (*Joan Fontanals*)
+ - [[```7999ef90```](https://github.com/jina-ai/jina/commit/7999ef903bcde85129d3a1865ae0f184418a78ca)] __-__ add crud numpy indexer (#1550) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```b8eeedc9```](https://github.com/jina-ai/jina/commit/b8eeedc99b429ca17ee349aa3a803985771c4269)] __-__ hotfix release (*Han Xiao*)
+ - [[```bf97c36b```](https://github.com/jina-ai/jina/commit/bf97c36ba65c08f620d504ed556ca508fdf2368f)] __-__ __version__: the next version will be 0.8.16 (*Jina Dev Bot*)
 
