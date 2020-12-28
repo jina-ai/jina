@@ -89,7 +89,7 @@ class Chunk2DocRanker(BaseRanker):
         :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
         """
         r = np.array(r, dtype=[
-            (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.int64),
+            (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.object),
             (Chunk2DocRanker.COL_SCORE, np.float64)]
                      )
         return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
