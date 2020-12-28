@@ -31,7 +31,7 @@ from ...proto.jina_pb2 import DocumentProto
 from jina.logging import default_logger
 
 _digest_size = 8
-_id_regex = re.compile(r'[0-9a-fA-F]{16}')
+_id_regex = re.compile(r'[0-9a-fA-F]+')
 _warned_deprecation = False
 
 
@@ -100,7 +100,7 @@ def is_valid_id(value: str) -> bool:
         raise BadDocID(f'{value} is not a valid id. Customized ``id`` is only acceptable when: \
         - it only contains chars "0"–"9" to represent values 0 to 9, \
         and "A"–"F" (or alternatively "a"–"f"). \
-        - it has 16 chars described above.')
+        - it has n > 0 chars as described above.')
     return True
 
 
