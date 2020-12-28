@@ -64,12 +64,12 @@ class DocumentSet(MutableSequence):
             raise IndexError(f'do not support this index {item}')
 
     def __add__(self, other: 'DocumentSet'):
-        sum = DocumentSet([])
+        v = DocumentSet([])
         for doc in self:
-            sum.add(doc)
+            v.add(doc)
         for doc in other:
-            sum.add(doc)
-        return sum
+            v.add(doc)
+        return v
 
     def __iadd__(self, other: 'DocumentSet'):
         for doc in other:
