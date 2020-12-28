@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import re
 import subprocess
 import tempfile
 from datetime import datetime
@@ -58,7 +57,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
     @staticmethod
     def register_class(cls):
-        update_funcs = ['train', 'add']
+        update_funcs = ['train', 'add', 'delete', 'update']
         train_funcs = ['train']
         aggregate_funcs = ['evaluate']
 
