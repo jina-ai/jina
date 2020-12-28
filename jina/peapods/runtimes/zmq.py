@@ -1,10 +1,11 @@
 import argparse
+from abc import ABC
 
 from .base import BaseRuntime
 from ..zmq import Zmqlet, send_ctrl_message
 
 
-class ZMQRuntime(BaseRuntime):
+class ZMQRuntime(BaseRuntime, ABC):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)

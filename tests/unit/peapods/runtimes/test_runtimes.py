@@ -140,11 +140,12 @@ def test_zed_runtime():
 
 
 @pytest.mark.parametrize('cls', [GRPCRuntime, RESTRuntime])
-def test_gateway_runtime(cls):
+@pytest.mark.parametrize('runtime', ['thread', 'process'])
+def test_gateway_runtime(cls, runtime):
     class Pea1(BasePea):
         runtime_cls = cls
 
-    arg = set_gateway_parser().parse_args([])
+    arg = set_gateway_parser().parse_args(['--runtime', runtime])
     with Pea1(arg):
         pass
 
@@ -168,5 +169,21 @@ def test_container_runtime_good_entrypoint():
     # without correct entrypoint this will fail
     arg = set_pea_parser().parse_args(['--uses', 'jinaai/jina:test-pip',
                                        '--entrypoint', 'jina pod'])
+    with Pea1(arg):
+        pass
+
+
+@pytest.mark.parametrize('runtime', ['thread', 'process'])
+@pytest.mark.parametrize('cls, parser, args', [(ContainerRuntime, set_pea_parser,
+                                                ['--uses', 'jinaai/jina:test-pip',
+                                                 '--entrypoint', 'jina pod']),
+                                               (RESTRuntime, set_gateway_parser, []),
+                                               (ZEDRuntime, set_pea_parser, [])])
+def test_runtime_thread_process(runtime, cls, parser, args):
+    class Pea1(BasePea):
+        runtime_cls = cls
+
+    args.extend(['--runtime', runtime])
+    arg = parser().parse_args(args)
     with Pea1(arg):
         pass

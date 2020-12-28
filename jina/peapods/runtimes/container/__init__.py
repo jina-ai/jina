@@ -106,8 +106,6 @@ class ContainerRuntime(ZMQRuntime):
                                                 volumes=_volumes,
                                                 network_mode=self._net_mode,
                                                 entrypoint=self.args.entrypoint)
-
-        self.logger.info('waiting ready signal from the container')
         client.close()
 
     @property

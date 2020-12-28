@@ -1,4 +1,5 @@
 import asyncio
+from abc import ABC
 
 import zmq.asyncio
 
@@ -38,7 +39,7 @@ class AsyncZMQRuntime(ZMQRuntime):
         await self.async_cancel()
 
 
-class AsyncNewLoopRuntime(AsyncZMQRuntime):
+class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
 
     def run_forever(self):
         self._loop.run_until_complete(self._loop_body())
