@@ -4,7 +4,7 @@ import sys
 import time
 from pathlib import Path
 
-from ..zmq import ZMQRuntime
+from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from ....helper import ArgNamespace, is_valid_local_config_source
 from ....logging import JinaLogger

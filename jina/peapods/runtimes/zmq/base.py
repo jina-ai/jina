@@ -1,8 +1,8 @@
 import argparse
 from abc import ABC
 
-from .base import BaseRuntime
-from ..zmq import Zmqlet, send_ctrl_message
+from ..base import BaseRuntime
+from ...zmq import Zmqlet, send_ctrl_message
 
 
 class ZMQRuntime(BaseRuntime, ABC):

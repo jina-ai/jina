@@ -9,7 +9,7 @@ from jina.peapods.runtimes.asyncio.grpc import GRPCRuntime
 from jina.peapods.runtimes.asyncio.rest import RESTRuntime
 from jina.peapods.runtimes.base import BaseRuntime
 from jina.peapods.runtimes.container import ContainerRuntime
-from jina.peapods.runtimes.zed import ZEDRuntime
+from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 
 
 def bad_func(*args, **kwargs):

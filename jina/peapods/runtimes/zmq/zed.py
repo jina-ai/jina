@@ -5,16 +5,16 @@ from typing import Dict, List
 
 import zmq
 
-from .zmq import ZMQRuntime
-from ..zmq import ZmqStreamlet
-from ... import Message
-from ... import Request
-from ...enums import SkipOnErrorType
-from ...excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
+from .base import ZMQRuntime
+from ...zmq import ZmqStreamlet
+from .... import Message
+from .... import Request
+from ....enums import SkipOnErrorType
+from ....excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
     BadConfigSource, RuntimeTerminated
-from ...executors import BaseExecutor
-from ...logging.profile import used_memory, TimeDict
-from ...proto import jina_pb2
+from ....executors import BaseExecutor
+from ....logging.profile import used_memory, TimeDict
+from ....proto import jina_pb2
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -72,7 +72,7 @@ class ZEDRuntime(ZMQRuntime):
         """Loads the plugins if needed necessary to load executors
         """
         if self.args.py_modules:
-            from ...importer import PathImporter
+            from ....importer import PathImporter
             PathImporter.add_modules(*self.args.py_modules)
 
     #: Private methods required by :meth:`teardown`
