@@ -113,6 +113,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6196,4 +6197,26 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e9a427b2```](https://github.com/jina-ai/jina/commit/e9a427b2d415b30ddc969ab776a246797c020492)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```d5eef99b```](https://github.com/jina-ai/jina/commit/d5eef99b030ac0e62f9b5ca2a9a577b8039a2d83)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```f0356caf```](https://github.com/jina-ai/jina/commit/f0356caf0c97860a525e769539c3fae24342f465)] __-__ __version__: the next version will be 0.8.14 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-15></a>
+## Release Note (`0.8.15`)
+
+> Release time: 2020-12-28 12:56:05
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🏁 Unit Test and CICD
+
+ - [[```bd776bfc```](https://github.com/jina-ai/jina/commit/bd776bfc27cb8abfdc13580ebf5bff048e42fd5a)] __-__ add test for 1545 (#1547) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```8ad37a4f```](https://github.com/jina-ai/jina/commit/8ad37a4f7e40023a59929f97f055a9f323cd4f35)] __-__ hotfix release (*Han Xiao*)
+ - [[```e66f14d6```](https://github.com/jina-ai/jina/commit/e66f14d64155cfb7b8f527c31dadcd86fb873b4c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```495946ea```](https://github.com/jina-ai/jina/commit/495946eaa787094b6dfb85f1b84815ff7db95791)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```a49d15aa```](https://github.com/jina-ai/jina/commit/a49d15aa8f3f2f5334760642032cebda02f013b5)] __-__ __version__: the next version will be 0.8.15 (*Jina Dev Bot*)
 
