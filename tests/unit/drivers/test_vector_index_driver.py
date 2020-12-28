@@ -1,21 +1,21 @@
-from typing import Optional, Iterator
+from typing import Iterator, Union, List, Tuple
 
+import numpy as np
 import pytest
 
 from jina.drivers.index import KVIndexDriver
-from jina.executors.indexers import BaseKVIndexer
-from jina.proto import jina_pb2
+from jina.executors.indexers import BaseVectorIndexer
 from jina.types.document import Document
 
 
-class MockGroundTruthIndexer(BaseKVIndexer):
+class MockGroundTruthVectorIndexer(BaseVectorIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.docs = {}
 
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        for key, value in zip(keys, values):
+    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+        for key, value in zip(keys, vectors):
             self.docs[key] = value
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
@@ -26,7 +26,10 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         for key in keys:
             del self.docs[key]
 
-    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
+    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+        pass
+
+    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         pass
 
     def get_query_handler(self):
@@ -39,7 +42,7 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         pass
 
 
-class SimpleKVIndexDriver(KVIndexDriver):
+class SimpleVectorIndexDriver(KVIndexDriver):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -50,22 +53,22 @@ class SimpleKVIndexDriver(KVIndexDriver):
 
 @pytest.fixture(scope='function')
 def simple_kv_indexer_driver_add():
-    return SimpleKVIndexDriver()
+    return SimpleVectorIndexDriver()
 
 
 @pytest.fixture(scope='function')
 def simple_kv_indexer_driver_update():
-    return SimpleKVIndexDriver(method='update')
+    return SimpleVectorIndexDriver(method='update')
 
 
 @pytest.fixture(scope='function')
 def simple_kv_indexer_driver_delete():
-    return SimpleKVIndexDriver(method='delete')
+    return SimpleVectorIndexDriver(method='delete')
 
 
 @pytest.fixture(scope='function')
 def mock_groundtruth_indexer():
-    return MockGroundTruthIndexer()
+    return MockGroundTruthVectorIndexer()
 
 
 @pytest.fixture(scope='function')
@@ -74,6 +77,7 @@ def documents():
     for idx in range(5):
         with Document(text=f'{idx}') as d:
             d.id = f'{idx:0>16}'
+            d.embedding = np.random.random([10])
             docs.append(d)
     return docs
 
@@ -84,6 +88,7 @@ def updated_documents():
     for idx in range(3):
         with Document(text='updated_' + f'{idx}') as d:
             d.id = f'{idx:0>16}'
+            d.embedding = np.random.random([10])
             docs.append(d)
     return docs
 
@@ -98,7 +103,7 @@ def deleted_documents():
     return docs
 
 
-def test_kv_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_add, documents):
+def test_vector_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_add, documents):
     simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
@@ -107,8 +112,9 @@ def test_kv_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_
         assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
 
 
-def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_update,
-                                documents, updated_documents):
+def test_vector_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driver_add,
+                                    simple_kv_indexer_driver_update,
+                                    documents, updated_documents):
     simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
@@ -120,8 +126,9 @@ def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driv
         assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
 
 
-def test_kv_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_delete,
-                                documents, deleted_documents):
+def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_driver_add,
+                                    simple_kv_indexer_driver_delete,
+                                    documents, deleted_documents):
     simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 

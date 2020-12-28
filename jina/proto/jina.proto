@@ -298,7 +298,7 @@ message RequestProto {
      * Represents an update request
      */
     message UpdateRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to index
+        repeated DocumentProto docs = 1; // a list of Documents to update
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
     }
@@ -307,7 +307,7 @@ message RequestProto {
      * Represents a delete request
      */
     message DeleteRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to index
+        repeated DocumentProto docs = 1; // a list of Documents to delete
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
     }
