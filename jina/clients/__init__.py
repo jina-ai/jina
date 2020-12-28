@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 from . import request
 from .base import BaseClient, CallbackFnType, InputFnType
+from .websockets import WebSocketBaseClient
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
@@ -67,3 +68,7 @@ class Client(BaseClient):
         """
         self.mode = RequestType.INDEX
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
+
+
+class WebSocketClient(Client, WebSocketBaseClient):
+    pass

@@ -15,7 +15,7 @@ from urllib.request import Request, urlopen
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
-from ..clients import Client
+from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import colored, \
@@ -365,6 +365,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger.warning(f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
                                 f'you may want to double check if it is intentional or some mistake')
         op_flow._build_level = FlowBuildLevel.GRAPH
+        self._update_client()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -737,6 +738,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             return list(self._pod_nodes.values())[item]
         else:
             raise TypeError(f'{typename(item)} is not supported')
+
+    def _update_client(self):
+        if self._pod_nodes['gateway']._args.rest_api:
+            self._cls_client = WebSocketClient
 
     def index(self):
         raise NotImplementedError

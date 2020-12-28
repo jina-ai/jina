@@ -1,4 +1,5 @@
 from .base import InputFnType, BaseClient, CallbackFnType
+from .websockets import WebSocketBaseClient
 from ..enums import RequestType
 from ..helper import deprecated_alias
 
@@ -97,3 +98,7 @@ class AsyncClient(BaseClient):
         """
         self.mode = RequestType.INDEX
         return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+
+
+class AsyncWebSocketClient(AsyncClient, WebSocketBaseClient):
+    pass

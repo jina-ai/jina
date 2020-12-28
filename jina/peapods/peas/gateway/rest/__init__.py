@@ -21,7 +21,7 @@ class RESTGatewayPea(GatewayPea):
                 asyncio.create_task(self.serve(sockets=sockets))
 
         # change log_level for REST server debugging
-        config = Config(app=get_fastapi_app(self.args),
+        config = Config(app=get_fastapi_app(self.args, self.logger),
                         host=self.args.host,
                         port=self.args.port_expose,
                         log_level='critical')
