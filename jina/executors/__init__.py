@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import re
 import subprocess
 import tempfile
 from datetime import datetime
@@ -14,14 +13,13 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import expand_env_var, typename, get_random_identity
+from ..helper import typename, get_random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
     from ..peapods.peas import BasePea
-    from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -179,15 +177,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if not hasattr(self, k):
                 if isinstance(v, str):
                     if not subvar_regex.findall(v):
-                        print(f'set {k} to {v}')
                         setattr(self, k, v)
                     else:
                         unresolved_attr = True
                 else:
-                    print(f'2set {k} to {v}')
                     setattr(self, k, v)
             elif type(getattr(self, k)) == type(v):
-                print(f'3set {k} to {v}')
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
             _id = get_random_identity().split('-')[0]
@@ -201,23 +196,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if unresolved_attr:
             _tmp = vars(self)
             _tmp['metas'] = _metas
-            new_metas = JAML.expand_dict(_tmp)['metas']
-            print(f'new_metas: {new_metas}')
+            new_metas = JAML.expand_dict(_tmp, context=_ref_desolve_map)['metas']
 
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
                 if not hasattr(self, k):
-                    if isinstance(v, str) and subvar_regex.findall(v):
-                        v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
-                    print(f'!!!{k} to {v}')
                     if isinstance(v, str):
                         if not subvar_regex.findall(v):
-                            print(f'4set {k} to {v}')
                             setattr(self, k, v)
                         else:
-                            raise ValueError(f'{k}={v} is not expandable or badly referred')
+                            raise ValueError(f'{k}={v} is not substitutable or badly referred')
                     else:
-                        print(f'5set {k} to {v}')
                         setattr(self, k, v)
 
     def post_init(self):

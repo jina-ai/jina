@@ -95,7 +95,9 @@ class JAML:
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
-    def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True, resolve_passes: int = 3) -> Dict[str, Any]:
+    def expand_dict(d: Dict, context: Union[Dict, SimpleNamespace, None] = None,
+                    resolve_cycle_ref=True,
+                    resolve_passes: int = 3) -> Dict[str, Any]:
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
@@ -145,7 +147,6 @@ class JAML:
                                 sub_d[idx] = _sub(v)
 
         def _sub(v):
-            print(f'sub original: {v}')
             org_v = v
             v = expand_env_var(v)
             if not (isinstance(v, str) and subvar_regex.findall(v)):
@@ -170,38 +171,34 @@ class JAML:
             # 3. substitute the context dict
             if context:
                 try:
-                    v = v.format_map(context)
-                except KeyError:
+                    if isinstance(context, dict):
+                        v = v.format_map(context)
+                    elif isinstance(context, SimpleNamespace):
+                        v = v.format(root=context, this=context)
+                except (KeyError, AttributeError):
                     pass
 
             # 4. make string to float/int/list/bool with best effort
             v = parse_arg(v)
 
-            if internal_var_regex.findall(v):
+            if isinstance(v, str) and internal_var_regex.findall(v):
                 # replacement failed, revert back to before
-                print(f'revert: {v} -> {org_v}')
                 v = org_v
-
-            print(f'sub after: {v}')
 
             return v
 
         def _resolve(v, p):
             # resolve internal reference
             org_v = v
-            print(f'resolve original: {v}')
             v = re.sub(subvar_regex, '{\\1}', v)
-            print(f'resolve sub: {v}')
             try:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
                 v = v.format(root=expand_map, this=p, ENV=env_map)
             except KeyError:
                 pass
-            print(f'resolve after: {v}')
-            if internal_var_regex.findall(v):
+            if isinstance(v, str) and internal_var_regex.findall(v):
                 # replacement failed, revert back to before
-                print(f'resolve revert: {v} -> {org_v}')
                 v = org_v
 
             return v
