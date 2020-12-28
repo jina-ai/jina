@@ -145,6 +145,7 @@ class JAML:
                                 sub_d[idx] = _sub(v)
 
         def _sub(v):
+            print(f'sub original: {v}')
             v = expand_env_var(v)
             if not (isinstance(v, str) and subvar_regex.findall(v)):
                 return v
@@ -174,16 +175,21 @@ class JAML:
 
             # 4. make string to float/int/list/bool with best effort
             v = parse_arg(v)
+
+            print(f'sub after: {v}')
             return v
 
         def _resolve(v, p):
             # resolve internal reference
+            print(f'resolve original: {v}')
             try:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
                 v = v.format(root=expand_map, this=p, ENV=env_map)
             except KeyError:
                 pass
+            print(expand_map)
+            print(f'resolve after: {v}')
             return v
 
         _scan(d, expand_map)
