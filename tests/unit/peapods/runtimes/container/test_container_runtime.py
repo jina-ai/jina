@@ -119,13 +119,13 @@ def test_flow_topo_parallel(docker_image_built):
 def test_container_volume(docker_image_built, tmpdir):
     abc_path = os.path.join(tmpdir, 'abc')
     f = (Flow()
-         .add(name=random_name(), uses=img_name, volumes=str(abc_path),
+         .add(name=random_name(), uses=img_name, volumes=abc_path,
               uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_upd.yml')))
 
     with f:
         f.index(random_docs(10))
 
-    assert os.path.exists(os.path.join(abc_path, '/ext-mwu-encoder.bin'))
+    assert os.path.exists(os.path.join(abc_path, 'ext-mwu-encoder.bin'))
 
 
 def test_container_ping(docker_image_built):
