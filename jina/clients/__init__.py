@@ -71,4 +71,6 @@ class Client(BaseClient):
 
 
 class WebSocketClient(Client, WebSocketBaseClient):
-    pass
+    """
+    TODO(Deepankar): Add docstring
+    """

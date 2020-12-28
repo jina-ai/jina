@@ -1,4 +1,4 @@
-from os import umask
+import json
 from typing import Any
 
 from google.protobuf.json_format import MessageToDict
@@ -50,24 +50,37 @@ def get_fastapi_app(args, logger):
 
         await websocket.accept()
         client_info = f'{websocket.client.host}:{websocket.client.port}'
-        logger.success(f'client {client_info} connected to stream requests via websockets')
+        logger.success(f'Client {client_info} connected to stream requests via websockets')
         try:
-            logger.warning('before receive')
-            request_body = await websocket.receive()
-            logger.warning(f'after receive {request_body}')
-            if 'data' not in request_body:
-                logger.warning(f'before send inside not block')
-                await websocket.send('"data" field is empty')
-                logger.warning(f'after send inside not block')
+            while True:
+                logger.warning('server awaiting the next request')
+                ws_receive = await websocket.receive()
+                if 'bytes' in ws_receive:
+                    request_body = ws_receive['bytes']
+                elif 'text' in ws_receive:
+                    request_body = json.loads(ws_receive['text'])
+                    # TODO(Deepankar): convert request_body to jina.types.Request if it is text based
 
-            request_body['mode'] = RequestType.from_string(mode)
-            # TODO(Deepankar): calling clients.request inside the server seems unwise. Move request out of clients?
-            request_iterator = getattr(clients.request, mode)(**request_body)
-            async for response in servicer.Call(request_iterator=request_iterator, context=None):
-                print(response)
-                await websocket.send(response)
-            await websocket.send('done')
+                # if 'data' not in request_body:
+                #     await websocket.send_text('"data" field is empty')
+
+                def gen():
+                    yield request_body
+                request_iterator = gen()
+
+                # TODO(Deepankar): Using same servicer as gRPC is sub-optimal, since every `Call` creates a new zmqlet.
+                # For a single stream of requests, we can have a single zmqlet to process requests
+                async for response in servicer.Call(request_iterator=request_iterator, context=None):
+                    await websocket.send_bytes(response.SerializeToString())
+                await websocket.send_bytes(b'done')
         except WebSocketDisconnect:
+            # TODO(Deepankar): For some strange reason, a different exception is raised when client disconnects.
+            # websockets.exceptions.ConnectionClosedOK: code = 1000 (OK), no reason
+
+            # While WebSocketDisconnect is a high-level exception, websockets.exceptions.ConnectionClosedOK is
+            # raised by fastapi -> starlette -> uvicorn -> websockets library
             logger.info(f'client {client_info} got disconnected!')
+        except Exception as e:
+            logger.error(f'got an exception while streaming requests {e}')
 
     return app

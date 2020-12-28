@@ -101,4 +101,6 @@ class AsyncClient(BaseClient):
 
 
 class AsyncWebSocketClient(AsyncClient, WebSocketBaseClient):
-    pass
+    """
+    TODO(Deepankar): Add docstring
+    """
