@@ -1,10 +1,13 @@
-from typing import Callable
+from typing import Callable, List
 
 from .base import BaseClient
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
 from ..types.request import Request
+
+if False:
+    from ..types.request import Response
 
 
 class WebSocketBaseClient(BaseClient):
@@ -16,6 +19,7 @@ class WebSocketBaseClient(BaseClient):
         with ImportExtensions(required=True):
             import websockets
 
+        result = []  # type: List['Response']
         self.input_fn = input_fn
         req_iter, tname = self._get_requests(**kwargs)
         try:
@@ -39,6 +43,8 @@ class WebSocketBaseClient(BaseClient):
                         # https://websockets.readthedocs.io/en/stable/faq.html#why-does-the-server-close-the-connection-after-processing-one-message
                         response_bytes = await websocket.recv()
                         response = Request(response_bytes).to_response()
+                        if self.args.return_results:
+                            result.append(response)
                         callback_exec(response=response,
                                       on_error=on_error,
                                       on_done=on_done,
@@ -51,3 +57,6 @@ class WebSocketBaseClient(BaseClient):
             self.logger.warning(f'Client got disconnected from the websocket server')
         except websockets.exceptions.WebSocketException as e:
             self.logger.error(f'Got following error while streaming requests via websocket: {repr(e)}')
+        finally:
+            if self.args.return_results:
+                return result
