@@ -147,7 +147,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         :return: a numpy ndarray of vectors
         """
-        if np.all(self.valid_indices is True):
+        if np.all(self.valid_indices):
             vecs = self.raw_ndarray
         else:
             vecs = self.raw_ndarray[self.valid_indices]
