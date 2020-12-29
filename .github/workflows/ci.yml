@@ -104,7 +104,7 @@ jobs:
           pip install .[test]
           pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
           mv coverage.xml unit-test-coverage.xml
-        timeout-minutes: 60
+        timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
@@ -146,7 +146,7 @@ jobs:
           pip install .[test]
           pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration
           mv coverage.xml integration-test-coverage.xml
-        timeout-minutes: 60
+        timeout-minutes: 45
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
