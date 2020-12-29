@@ -38,7 +38,7 @@ def Pod(args: Optional['argparse.Namespace'] = None,
                 from .pods.mutable import MutablePod
                 return MutablePod(args)
             else:
-                from .runtimes.remote.jinad import JinadRemoteRuntime
+                from jina.peapods.runtimes.jinad import JinadRemoteRuntime
                 return JinadRemoteRuntime(args, kind='pod')
 
     if not allow_remote and args.host != __default_host__:
@@ -47,10 +47,10 @@ def Pod(args: Optional['argparse.Namespace'] = None,
 
     if args.host != __default_host__:
         if args.remote_access == RemoteAccessType.JINAD:
-            from .runtimes.remote.jinad import JinadRemoteRuntime
+            from jina.peapods.runtimes.jinad import JinadRemoteRuntime
             return JinadRemoteRuntime(args, kind='pod')
         elif args.remote_access == RemoteAccessType.SSH:
-            from .runtimes.remote.ssh import SSHRuntime
+            from jina.peapods.runtimes.ssh import SSHRuntime
             return SSHRuntime(args, kind='pod')
         else:
             raise ValueError(f'{args.remote_access} is not supported')

@@ -5,10 +5,10 @@ from multiprocessing.synchronize import Event
 from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
-from .....excepts import RemotePodClosed
-from .....importer import ImportExtensions
-from .....jaml import JAML
-from .....logging import JinaLogger
+from ....excepts import RemotePodClosed
+from ....importer import ImportExtensions
+from ....jaml import JAML
+from ....logging import JinaLogger
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):

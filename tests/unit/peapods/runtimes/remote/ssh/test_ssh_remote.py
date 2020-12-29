@@ -4,7 +4,7 @@ from jina.enums import RemoteAccessType
 from jina.flow import Flow
 from jina.parser import set_pea_parser, set_pod_parser
 from jina.peapods.pods import BasePod
-from jina.peapods.runtimes.remote.ssh import SSHRuntime
+from jina.peapods.runtimes.ssh import SSHRuntime
 from jina.proto import jina_pb2
 
 

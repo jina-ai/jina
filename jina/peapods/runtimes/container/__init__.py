@@ -22,7 +22,7 @@ class ContainerRuntime(ZMQRuntime):
             time.sleep(1)
         # two cases to reach here: 1. is_ready, 2. container is dead
         if not self._is_container_alive:
-            raise Exception('the container fail to start, check the arguments or entrypoint')
+            raise Exception('the container fails to start, check the arguments or entrypoint')
 
     def teardown(self):
         self._container.stop()
