@@ -8,7 +8,7 @@ from pkg_resources import resource_filename
 from jina.clients.sugary_io import _input_ndarray
 from jina.flow import Flow
 from jina.helloworld import download_data
-from jina.parser import set_hw_parser
+from jina.parsers import set_hw_parser
 
 
 @pytest.mark.timeout(360)
@@ -31,7 +31,7 @@ def test_helloworld_execution(tmpdir):
 
 @pytest.mark.timeout(360)
 def test_helloworld_py(tmpdir):
-    from jina.parser import set_hw_parser
+    from jina.parsers import set_hw_parser
     from jina.helloworld import hello_world
     hello_world(set_hw_parser().parse_args(['--workdir', str(tmpdir)]))
 

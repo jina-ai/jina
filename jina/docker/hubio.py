@@ -23,7 +23,7 @@ from ..helper import colored, get_readable_size, get_now_timestamp, get_full_ver
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
-from ..parser import set_pod_parser
+from ..parsers import set_pod_parser
 from ..peapods import Pod
 
 if False:

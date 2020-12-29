@@ -5,7 +5,7 @@ from .helper import _fill_in_host, _copy_to_head_args, _set_peas_args, _copy_to_
 from ... import __default_host__
 from ...enums import PodRoleType, SocketType, RemoteAccessType
 from ...helper import ArgNamespace
-from ...parser import set_pod_parser
+from ...parsers import set_pod_parser
 
 
 class FlowPod(BasePod):

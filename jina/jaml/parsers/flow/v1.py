@@ -4,7 +4,7 @@ from typing import Dict, Any
 from ..base import VersionedYAMLParser
 from ....flow import Flow
 from ....helper import expand_env_var
-from ....parser import set_pod_parser
+from ....parsers import set_pod_parser
 
 
 def _get_taboo():

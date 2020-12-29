@@ -5,7 +5,7 @@ import pytest
 from jina.docker.hubio import HubIO
 from jina.excepts import ImageAlreadyExists
 from jina.jaml import JAML
-from jina.parser import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
+from jina.parsers import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
 
 cur_dir = Path(__file__).parent
 

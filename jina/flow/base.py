@@ -23,7 +23,7 @@ from ..helper import colored, \
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..parser import set_client_cli_parser
+from ..parsers import set_client_cli_parser
 from ..peapods.pods.flow import FlowPod
 from ..peapods.pods.gateway import GatewayFlowPod
 
@@ -81,7 +81,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger = JinaLogger(self.__class__.__name__)
 
     def _update_args(self, args, **kwargs):
-        from ..parser import set_flow_parser
+        from ..parsers import set_flow_parser
         from ..helper import ArgNamespace
 
         _flow_parser = set_flow_parser()

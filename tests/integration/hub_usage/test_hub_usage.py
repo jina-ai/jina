@@ -8,7 +8,7 @@ from jina.docker.hubio import HubIO
 from jina.excepts import RuntimeFailToStart, HubBuilderError
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-from jina.parser import set_pod_parser, set_hub_build_parser
+from jina.parsers import set_pod_parser, set_hub_build_parser
 from jina.peapods import Pod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

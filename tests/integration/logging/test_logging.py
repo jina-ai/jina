@@ -3,7 +3,7 @@ import pytest
 
 from jina.flow import Flow
 from jina.peapods.pods import BasePod
-from jina.parser import set_pod_parser
+from jina.parsers import set_pod_parser
 
 NUM_DOCS = 100
 cur_dir = os.path.dirname(os.path.abspath(__file__))

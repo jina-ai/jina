@@ -8,7 +8,7 @@ from jina.drivers.control import ControlReqDriver
 from jina.drivers.search import KVSearchDriver
 from jina.executors import BaseExecutor
 from jina.jaml import JAML
-from jina.parser import set_pod_parser
+from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 
 cur_dir = Path(__file__).parent

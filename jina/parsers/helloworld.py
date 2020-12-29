@@ -1,0 +1,60 @@
+from .base import set_base_parser
+from .helper import add_arg_group
+
+
+def set_hw_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+    from ..helper import get_random_identity
+    from pkg_resources import resource_filename
+
+    gp = add_arg_group(parser, 'general arguments')
+    gp.add_argument('--workdir', type=str, default=get_random_identity(),
+                    help='the workdir for hello-world demo, '
+                         'all data, indices, shards and outputs will be saved there')
+    gp.add_argument('--logserver', action='store_true', default=False,
+                    help='start a log server for the dashboard')
+    gp.add_argument('--logserver-config', type=str,
+                    default=resource_filename('jina',
+                                              '/'.join(('resources', 'logserver.default.yml'))),
+                    help='the yaml config of the log server')
+    gp.add_argument('--download-proxy', type=str,
+                    help='specify the proxy when downloading sample data')
+    gp = add_arg_group(parser, 'scalability arguments')
+    gp.add_argument('--shards', type=int,
+                    default=2,
+                    help='number of shards when index and query')
+    gp.add_argument('--parallel', type=int,
+                    default=2,
+                    help='number of parallel when index and query')
+    gp = add_arg_group(parser, 'index arguments')
+    gp.add_argument('--uses-index', type=str,
+                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
+                    help='the yaml path of the index flow')
+    gp.add_argument('--index-data-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
+                    help='the url of index data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--index-labels-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz',
+                    help='the url of index labels data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--index-batch-size', type=int,
+                    default=1024,
+                    help='the batch size in indexing')
+    gp = add_arg_group(parser, 'query arguments')
+    gp.add_argument('--uses-query', type=str,
+                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml'))),
+                    help='the yaml path of the query flow')
+    gp.add_argument('--query-data-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
+                    help='the url of query data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--query-labels-url', type=str,
+                    default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz',
+                    help='the url of query labels data (should be in idx3-ubyte.gz format)')
+    gp.add_argument('--query-batch-size', type=int,
+                    default=32,
+                    help='the batch size in searching')
+    gp.add_argument('--num-query', type=int, default=128,
+                    help='number of queries to visualize')
+    gp.add_argument('--top-k', type=int, default=50,
+                    help='top-k results to retrieve and visualize')
+    return parser

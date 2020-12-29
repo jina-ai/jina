@@ -1,7 +1,7 @@
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.parser import set_pea_parser, set_pod_parser, set_gateway_parser
+from jina.parsers import set_pea_parser, set_pod_parser, set_gateway_parser
 from jina.peapods.runtimes.local import LocalRuntime
 from jina.peapods.pods import BasePod
 from jina.peapods.peas.gateway import GatewayPea, RESTGatewayPea

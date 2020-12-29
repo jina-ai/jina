@@ -3,7 +3,7 @@ import time
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.parser import set_pea_parser, set_gateway_parser
+from jina.parsers import set_pea_parser, set_gateway_parser
 from jina.peapods.peas.base import BasePea
 from jina.peapods.runtimes.asyncio.grpc import GRPCRuntime
 from jina.peapods.runtimes.asyncio.rest import RESTRuntime

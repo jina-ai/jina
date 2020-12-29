@@ -8,7 +8,7 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
-from jina.parser import set_pea_parser, set_ping_parser
+from jina.parsers import set_pea_parser, set_ping_parser
 from jina.peapods.runtimes.container import ContainerRuntime
 from tests import random_docs
 

@@ -2,7 +2,7 @@ import os
 
 import pytest
 from jina.executors import BaseExecutor
-from jina.parser import set_pod_parser, set_gateway_parser
+from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods import Pod
 from jina.peapods.pods import BasePod
 from jina.peapods.pods.flow import FlowPod

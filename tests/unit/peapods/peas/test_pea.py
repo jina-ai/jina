@@ -1,6 +1,6 @@
 import pytest
 
-from jina.parser import set_pea_parser
+from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.excepts import DriverError, NoDriverForRequest, ExecutorFailToLoad, EventLoopError, RuntimeTerminated
 

@@ -12,7 +12,7 @@ from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
 from jina.jaml import JAML
-from jina.parser import set_pea_parser
+from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 
 cur_dir = Path(__file__).parent

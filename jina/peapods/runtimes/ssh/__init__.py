@@ -40,14 +40,14 @@ class SSHRuntime(ZMQManyRuntime):
 
     @property
     def _pea_command(self) -> str:
-        from jina.parser import set_pea_parser
+        from jina.parsers import set_pea_parser
         non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
         _args = ArgNamespace.kwargs2list(non_defaults)
         return f'jina pea {" ".join(_args)}'
 
     @property
     def _pod_command(self) -> str:
-        from jina.parser import set_pod_parser
+        from jina.parsers import set_pod_parser
         non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
         _args = ArgNamespace.kwargs2list(non_defaults)
         return f'jina pod {" ".join(_args)}'

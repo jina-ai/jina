@@ -3,7 +3,7 @@ import os
 import pytest
 
 from jina.flow import Flow
-from jina.parser import set_pod_parser
+from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 
 """

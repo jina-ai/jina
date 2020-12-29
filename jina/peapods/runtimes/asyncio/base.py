@@ -3,7 +3,7 @@ from abc import ABC
 
 import zmq.asyncio
 
-from ..zmq import ZMQRuntime
+from ..zmq.base import ZMQRuntime
 from ...zmq import _init_socket, recv_message_async, send_message_async
 from ....enums import SocketType
 from ....proto import jina_pb2

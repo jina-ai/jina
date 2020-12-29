@@ -3,7 +3,7 @@ from typing import Dict, Set
 from . import BasePod, PodRoleType
 from .flow import FlowPod
 
-from ...parser import set_gateway_parser
+from ...parsers import set_gateway_parser
 
 
 class GatewayPod(BasePod):

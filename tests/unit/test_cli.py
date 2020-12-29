@@ -2,7 +2,7 @@ import subprocess
 
 import pytest
 
-from jina.parser import set_pod_parser
+from jina.parsers import set_pod_parser
 
 
 @pytest.mark.parametrize('cli', ['pod', 'pea', 'gateway', 'log',

@@ -10,7 +10,7 @@ from jina.flow import Flow
 from jina.helper import random_port
 from jina.peapods.pods.gateway import GatewayPod
 from jina.enums import FlowOptimizeLevel
-from jina.parser import set_gateway_parser
+from jina.parsers import set_gateway_parser
 from jina.executors.indexers.vector import NumpyIndexer
 from tests import random_docs
 

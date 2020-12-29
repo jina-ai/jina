@@ -64,7 +64,7 @@ class ContainerRuntime(ZMQRuntime):
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
         # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
-        from ....parser import set_pea_parser
+        from ....parsers import set_pea_parser
         non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(),
                                                           taboo={'uses', 'entrypoint', 'volumes', 'pull_latest'})
 

@@ -8,7 +8,7 @@ from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
 from jina.helper import random_port
-from jina.parser import set_gateway_parser
+from jina.parsers import set_gateway_parser
 from jina.peapods.runtimes.local import LocalRuntime
 from jina.peapods.peas.gateway import RESTGatewayPea
 from jina.proto.jina_pb2 import DocumentProto

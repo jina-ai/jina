@@ -18,7 +18,7 @@ def Pod(args: Optional['argparse.Namespace'] = None,
     :param kwargs: all supported arguments from CLI
     """
     if args is None:
-        from ..parser import set_pod_parser
+        from ..parsers import set_pod_parser
         from ..helper import ArgNamespace
         args = ArgNamespace.kwargs2namespace(kwargs, set_pod_parser())
     if isinstance(args, dict):
