@@ -71,7 +71,8 @@ def test_workspace(tmpdir):
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_index_remote(test_workspace):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_index_remote(test_workspace, rest_api):
     f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
 
     def start_gateway():
@@ -82,7 +83,7 @@ def test_index_remote(test_workspace):
     t.daemon = True
     t.start()
 
-    f = Flow().add(
+    f = Flow(rest_api=rest_api).add(
         uses=str(cur_dir / 'yaml/test-index-remote.yml'),
         parallel=3,
         separated_workspace=True,
@@ -102,7 +103,8 @@ def test_index_remote(test_workspace):
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_index_remote_rpi(test_workspace):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_index_remote_rpi(test_workspace, rest_api):
     f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
 
     def start_gateway():
@@ -113,7 +115,7 @@ def test_index_remote_rpi(test_workspace):
     t.daemon = True
     t.start()
 
-    f = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(
+    f = Flow(rest_api=rest_api, optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(
         uses=str(cur_dir / 'yaml/test-index-remote.yml'),
         parallel=3,
         separated_workspace=True,

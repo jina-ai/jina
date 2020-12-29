@@ -23,7 +23,8 @@ def random_queries(num_docs, chunks_per_doc=5):
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_shards_insufficient_data():
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_shards_insufficient_data(rest_api):
     """THIS IS SUPER IMPORTANT FOR TESTING SHARDS
 
     IF THIS FAILED, DONT IGNORE IT, DEBUG IT
@@ -40,10 +41,10 @@ def test_shards_insufficient_data():
             assert d.weight
             assert d.meta_info == b'hello world'
 
-    f = Flow().add(name='doc_pb',
-                   uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
-                   parallel=parallel,
-                   separated_workspace=True)
+    f = Flow(rest_api=rest_api).add(name='doc_pb',
+                                    uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                                    parallel=parallel,
+                                    separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(index_docs))
 
@@ -51,10 +52,10 @@ def test_shards_insufficient_data():
     with f:
         pass
     time.sleep(2)
-    f = Flow().add(name='doc_pb',
-                   uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
-                   parallel=parallel,
-                   separated_workspace=True, polling='all', uses_after='_merge_chunks')
+    f = Flow(rest_api=rest_api).add(name='doc_pb',
+                                    uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                                    parallel=parallel,
+                                    separated_workspace=True, polling='all', uses_after='_merge_chunks')
     with f:
         f.search(input_fn=random_queries(1, index_docs),
                  callback_on='body')

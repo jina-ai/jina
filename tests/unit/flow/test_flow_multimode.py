@@ -1,4 +1,5 @@
 import os
+import pytest
 from pathlib import Path
 from typing import List, Dict
 
@@ -38,7 +39,8 @@ class MockEncoder(BaseEncoder):
         return np.array(output)
 
 
-def test_flow_with_modalities(tmpdir):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow_with_modalities(tmpdir, rest_api):
     os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE'] = str(tmpdir)
 
     def input_fn():
@@ -56,7 +58,7 @@ def test_flow_with_modalities(tmpdir):
 
         return [doc1, doc2, doc3]
 
-    flow = Flow().add(name='crafter', uses='!MockSegmenter'). \
+    flow = Flow(rest_api=rest_api).add(name='crafter', uses='!MockSegmenter'). \
         add(name='encoder1', uses=str(cur_dir / 'yaml' / 'mockencoder-mode1.yml')). \
         add(name='indexer1', uses=str(cur_dir / 'yaml' / 'numpy-indexer-1.yml'), needs=['encoder1']). \
         add(name='encoder2', uses=str(cur_dir / 'yaml' / 'mockencoder-mode2.yml'), needs=['crafter']). \

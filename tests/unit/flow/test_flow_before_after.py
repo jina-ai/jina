@@ -1,10 +1,13 @@
+import pytest
+
 from jina.flow import Flow
 from tests import random_docs
 
 
-def test_flow():
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow(rest_api):
     docs = random_docs(10)
-    f = Flow().add(name='p1')
+    f = Flow(rest_api=rest_api).add(name='p1')
 
     with f:
         f.index(docs)
@@ -13,9 +16,10 @@ def test_flow():
         assert f.num_peas == 2
 
 
-def test_flow_before():
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow_before(rest_api):
     docs = random_docs(10)
-    f = Flow().add(uses_before='_pass', name='p1')
+    f = Flow(rest_api=rest_api).add(uses_before='_pass', name='p1')
 
     with f:
         f.index(docs)
@@ -24,9 +28,10 @@ def test_flow_before():
         assert f.num_peas == 3
 
 
-def test_flow_after():
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow_after(rest_api):
     docs = random_docs(10)
-    f = Flow().add(uses_after='_pass', name='p1')
+    f = Flow(rest_api=rest_api).add(uses_after='_pass', name='p1')
 
     with f:
         f.index(docs)
@@ -35,9 +40,10 @@ def test_flow_after():
         assert f.num_peas == 3
 
 
-def test_flow_before_after():
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow_before_after(rest_api):
     docs = random_docs(10)
-    f = Flow().add(uses_before='_pass', uses_after='_pass', name='p1')
+    f = Flow(rest_api=rest_api).add(uses_before='_pass', uses_after='_pass', name='p1')
 
     with f:
         f.index(docs)

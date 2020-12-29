@@ -40,9 +40,11 @@ def test_this_will_fail(mocker):
     response_mock.assert_called()
 
 
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
 @pytest.mark.timeout(180)
-def test_this_should_work(mocker):
-    f = (Flow()
+@pytest.mark.parametrize('rest_api', [False])
+def test_this_should_work(mocker, rest_api):
+    f = (Flow(rest_api=rest_api)
          .add(name='a1')
          .add(name='a11', uses='DummySegment', needs='a1')
          .add(name='a12', uses='DummySegment', needs='a1')
@@ -59,4 +61,3 @@ def test_this_should_work(mocker):
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
     response_mock.assert_called()
-

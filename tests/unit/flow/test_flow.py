@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 import requests
 
-from jina import JINA_GLOBAL, Request, AsyncFlow
+from jina import JINA_GLOBAL, AsyncFlow
 from jina.checker import NetworkChecker
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
@@ -106,14 +106,15 @@ def test_flow_with_jump():
     rm_files(['tmp.yml'])
 
 
-def test_simple_flow():
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_simple_flow(rest_api):
     bytes_gen = (b'aaa' for _ in range(10))
 
     def bytes_fn():
         for _ in range(100):
             yield b'aaa'
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add())
 
     with f:
@@ -199,8 +200,9 @@ def test_pod_status():
             assert v
 
 
-def test_flow_no_container():
-    f = (Flow()
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow_no_container(rest_api):
+    f = (Flow(rest_api=rest_api)
          .add(name='dummyEncoder', uses=str(cur_dir.parent / 'mwu-encoder' / 'mwu_encoder.yml')))
 
     with f:
@@ -250,9 +252,11 @@ def test_flow_log_server():
                 timeout=5)
 
 
-def test_shards():
-    f = Flow().add(name='doc_pb', uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'), parallel=3,
-                   separated_workspace=True)
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_shards(rest_api):
+    f = Flow(rest_api=rest_api).add(name='doc_pb',
+                                    uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'), parallel=3,
+                                    separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(1000), random_doc_id=False)
     with f:
@@ -419,8 +423,9 @@ def test_refactor_num_part_proxy():
             assert node.peas_args['peas'][0] == node.tail_args
 
 
-def test_refactor_num_part_proxy_2():
-    f = (Flow().add(name='r1', uses='_logforward')
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_refactor_num_part_proxy_2(rest_api):
+    f = (Flow(rest_api=rest_api).add(name='r1', uses='_logforward')
          .add(name='r2', uses='_logforward', needs='r1', parallel=2)
          .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
          .needs(['r2', 'r3']))
@@ -429,21 +434,23 @@ def test_refactor_num_part_proxy_2():
         f.index_lines(lines=['abbcs', 'efgh'])
 
 
-def test_refactor_num_part_2():
-    f = (Flow()
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_refactor_num_part_2(rest_api):
+    f = (Flow(rest_api=rest_api)
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3, polling='ALL'))
 
     with f:
         f.index_lines(lines=['abbcs', 'efgh'])
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3))
 
     with f:
         f.index_lines(lines=['abbcs', 'efgh'])
 
 
-def test_index_text_files(mocker):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_index_text_files(mocker, rest_api):
     def validate(req):
         assert len(req.docs) > 0
         for d in req.docs:
@@ -451,7 +458,8 @@ def test_index_text_files(mocker):
 
     response_mock = mocker.Mock(wrap=validate)
 
-    f = (Flow(read_only=True).add(uses=str(cur_dir.parent / 'yaml' / 'datauriindex.yml'), timeout_ready=-1))
+    f = (Flow(rest_api=rest_api, read_only=True)
+         .add(uses=str(cur_dir.parent / 'yaml' / 'datauriindex.yml'), timeout_ready=-1))
 
     with f:
         f.index_files('*.py', on_done=response_mock, callback_on='body')
@@ -460,14 +468,16 @@ def test_index_text_files(mocker):
     response_mock.assert_called()
 
 
-def test_flow_with_publish_driver(mocker):
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_flow_with_publish_driver(mocker, rest_api):
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
 
     response_mock = mocker.Mock(wrap=validate)
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(name='r2', uses='!OneHotTextEncoder')
          .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
          .join(needs=['r2', 'r3']))
@@ -478,7 +488,8 @@ def test_flow_with_publish_driver(mocker):
     response_mock.assert_called()
 
 
-def test_flow_with_modalitys_simple(mocker):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow_with_modalitys_simple(mocker, rest_api):
     def validate(req):
         for d in req.index.docs:
             assert d.modality in ['mode1', 'mode2']
@@ -494,9 +505,10 @@ def test_flow_with_modalitys_simple(mocker):
 
     response_mock = mocker.Mock(wrap=validate)
 
-    flow = Flow().add(name='chunk_seg', parallel=3). \
-        add(name='encoder12', parallel=2,
-            uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
+    flow = (Flow(rest_api=rest_api)
+            .add(name='chunk_seg', parallel=3)
+            .add(name='encoder12', parallel=2,
+                 uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}'))
     with flow:
         flow.index(input_fn=input_fn, on_done=response_mock)
 
@@ -514,8 +526,10 @@ def test_flow_default_argument_passing():
     assert '12345' in f._pod_nodes['test'].cli_args
 
 
-def test_flow_arbitrary_needs():
-    f = (Flow().add(name='p1').add(name='p2', needs='gateway')
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_flow_arbitrary_needs(rest_api):
+    f = (Flow(rest_api=rest_api).add(name='p1').add(name='p2', needs='gateway')
          .add(name='p3', needs='gateway')
          .add(name='p4', needs='gateway')
          .add(name='p5', needs='gateway')
@@ -528,12 +542,14 @@ def test_flow_arbitrary_needs():
         f.index_lines(['abc', 'def'])
 
 
-def test_flow_needs_all():
-    f = (Flow().add(name='p1', needs='gateway')
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_flow_needs_all(rest_api):
+    f = (Flow(rest_api=rest_api).add(name='p1', needs='gateway')
          .needs_all(name='r1'))
     assert f._pod_nodes['r1'].needs == {'p1'}
 
-    f = (Flow().add(name='p1', needs='gateway')
+    f = (Flow(rest_api=rest_api).add(name='p1', needs='gateway')
          .add(name='p2', needs='gateway')
          .add(name='p3', needs='gateway')
          .needs(needs=['p1', 'p2'], name='r1')
@@ -543,7 +559,7 @@ def test_flow_needs_all():
     with f:
         f.index_ndarray(np.random.random([10, 10]))
 
-    f = (Flow().add(name='p1', needs='gateway')
+    f = (Flow(rest_api=rest_api).add(name='p1', needs='gateway')
          .add(name='p2', needs='gateway')
          .add(name='p3', needs='gateway')
          .needs(needs=['p1', 'p2'], name='r1')
@@ -586,8 +602,9 @@ def test_flow_with_pod_envs():
 
 
 @pytest.mark.parametrize('return_results', [False, True])
-def test_return_results_sync_flow(return_results):
-    with Flow(return_results=return_results).add() as f:
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_return_results_sync_flow(return_results, rest_api):
+    with Flow(rest_api=rest_api, return_results=return_results).add() as f:
         r = f.index_ndarray(np.random.random([10, 2]))
         if return_results:
             assert isinstance(r, list)
@@ -598,8 +615,9 @@ def test_return_results_sync_flow(return_results):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('return_results', [False, True])
-async def test_return_results_async_flow(return_results):
-    with AsyncFlow(return_results=return_results).add() as f:
+@pytest.mark.parametrize('rest_api', [False, True])
+async def test_return_results_async_flow(return_results, rest_api):
+    with AsyncFlow(rest_api=rest_api, return_results=return_results).add() as f:
         r = await f.index_ndarray(np.random.random([10, 2]))
         if return_results:
             assert isinstance(r, list)
