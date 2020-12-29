@@ -241,7 +241,7 @@ def test_batching_ranker_input():
             self.batch_size=batch_size
             self.batches = []
 
-        @batching_ranker_input(slice_on=2)
+        @batching_ranker_input
         def score(
             self, query_meta, old_match_scores, match_meta
         ):
