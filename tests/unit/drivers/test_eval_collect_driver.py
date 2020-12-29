@@ -17,18 +17,18 @@ def input_fn():
 
 def test_collect_evals_driver(mocker):
     def validate(req):
+        mock()
         assert len(req.docs) == 2
         # each doc should now have two evaluations
         for d in req.docs:
             assert len(d.evaluations) == 2
 
-    response_mock = mocker.Mock(wrap=validate)
+    mock = mocker.Mock()
     # simulate two encoders
     flow = (Flow().add(name='a')
             .add(name='b', needs='gateway')
             .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
-
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock, callback_on='body')
+        flow.index(input_fn=input_fn, on_done=validate, callback_on='body')
 
-    response_mock.assert_called()
+    mock.assert_called_once()

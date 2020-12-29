@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import pytest
 
@@ -8,21 +8,20 @@ from jina.jaml import JAML
 
 
 def test_exec_type(tmpdir):
-    tmpdir = Path(tmpdir)
     from jina.executors.indexers import BaseIndexer
     assert 'BaseIndexer' in BaseExecutor._registered_class
 
     # init from YAML should be okay as well
     BaseExecutor.load_config('BaseIndexer')
 
-    BaseIndexer().save_config(str(tmpdir / 'tmp.yml'))
-    with open(tmpdir / 'tmp.yml') as fp:
+    BaseIndexer().save_config(os.path.join(tmpdir, 'tmp.yml'))
+    with open(os.path.join(tmpdir, 'tmp.yml')) as fp:
         s = JAML.load(fp)
 
     def assert_bi():
         b = BaseIndexer(1)
-        b.save_config(str(tmpdir / 'tmp.yml'))
-        with open(tmpdir / 'tmp.yml') as fp:
+        b.save_config(os.path.join(tmpdir, 'tmp.yml'))
+        with open(os.path.join(tmpdir, 'tmp.yml')) as fp:
             b = JAML.load(fp)
             assert b.a == 1
 

@@ -29,6 +29,7 @@ def input_doc_with_chunks():
 
 def test_message_docs_different_chunk_types(input_doc_with_chunks, mocker):
     def validate_chunks_fn(resp):
+        mock()
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
         assert int(doc.tags['id']) == 1
@@ -47,12 +48,12 @@ def test_message_docs_different_chunk_types(input_doc_with_chunks, mocker):
         assert int(chunk2.tags['id']) == 30
         assert chunk2.buffer == buffer
 
-    response_mock = mocker.Mock(wraps=validate_chunks_fn)
+    mock = mocker.Mock()
 
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_with_chunks], on_done=response_mock)
+        f.search(input_fn=[input_doc_with_chunks], on_done=validate_chunks_fn)
 
-    response_mock.assert_called()
+    mock.assert_called_once()
 
 
 @pytest.fixture
@@ -74,6 +75,7 @@ def input_doc_with_matches():
 
 def test_message_docs_different_matches_types(input_doc_with_matches, mocker):
     def validate_matches_fn(resp):
+        mock()
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
         assert int(doc.tags['id']) == 1
@@ -92,12 +94,10 @@ def test_message_docs_different_matches_types(input_doc_with_matches, mocker):
         assert int(match2.tags['id']) == 30
         assert match2.buffer == buffer
 
-    response_mock = mocker.Mock(wraps=validate_matches_fn)
-
+    mock = mocker.Mock()
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_with_matches], on_done=response_mock)
-
-    response_mock.assert_called()
+        f.search(input_fn=[input_doc_with_matches], on_done=validate_matches_fn)
+    mock.assert_called_once()
 
 
 @pytest.fixture
