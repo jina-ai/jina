@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import numpy as np
 import pytest
@@ -154,7 +154,7 @@ def test_batching_slice_on():
 
 
 def test_batching_ordinal_idx_arg(tmpdir):
-    path = Path(tmpdir) / 'vec.gz'
+    path = os.path.join(str(tmpdir), 'vec.gz')
     vec = np.random.random([10, 10])
     with open(path, 'wb') as f:
         f.write(vec.tobytes())
@@ -170,7 +170,7 @@ def test_batching_ordinal_idx_arg(tmpdir):
             return list(range(ord_idx.start, ord_idx.stop))
 
     instance = A(2)
-    result = instance.f(np.memmap(str(path), dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0])
+    result = instance.f(np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0])
     assert len(instance.ord_idx) == 5
     assert instance.ord_idx[0].start == 0
     assert instance.ord_idx[0].stop == 2

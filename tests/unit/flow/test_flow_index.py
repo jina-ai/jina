@@ -1,6 +1,5 @@
 import os
 import time
-from pathlib import Path
 
 import pytest
 
@@ -9,7 +8,7 @@ from jina.proto import jina_pb2
 from jina.types.document.uid import UniqueId
 from tests import random_docs, rm_files
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def random_queries(num_docs, chunks_per_doc=5):
@@ -42,7 +41,7 @@ def test_shards_insufficient_data(rest_api):
             assert d.meta_info == b'hello world'
 
     f = Flow(rest_api=rest_api).add(name='doc_pb',
-                                    uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                                    uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
                                     parallel=parallel,
                                     separated_workspace=True)
     with f:
@@ -53,7 +52,7 @@ def test_shards_insufficient_data(rest_api):
         pass
     time.sleep(2)
     f = Flow(rest_api=rest_api).add(name='doc_pb',
-                                    uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                                    uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
                                     parallel=parallel,
                                     separated_workspace=True, polling='all', uses_after='_merge_chunks')
     with f:

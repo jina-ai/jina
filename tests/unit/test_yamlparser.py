@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import pytest
 import yaml
@@ -15,7 +14,7 @@ from jina.jaml import JAML
 from jina.parser import set_pea_parser
 from jina.peapods.peas import BasePea
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope='function')
@@ -27,7 +26,7 @@ def test_workspace(tmpdir):
 
 
 def test_yaml_expand():
-    with open(cur_dir / 'yaml/test-expand.yml') as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand.yml')) as fp:
         a = JAML.load(fp)
     b = expand_dict(a)
     assert b['quote_dict'] == {}
@@ -41,7 +40,7 @@ def test_yaml_expand():
 
 
 def test_yaml_expand2():
-    with open(cur_dir / 'yaml/test-expand2.yml') as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
         a = JAML.load(fp)
     os.environ['ENV1'] = 'a'
     b = expand_dict(a)
@@ -54,7 +53,7 @@ def test_yaml_expand2():
 
 
 def test_yaml_expand3():
-    with open(cur_dir / 'yaml/test-expand3.yml') as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand3.yml')) as fp:
         a = JAML.load(fp)
 
     b = expand_dict(a)
@@ -64,7 +63,7 @@ def test_yaml_expand3():
 
 def test_yaml_expand4():
     os.environ['ENV1'] = 'a'
-    with open(cur_dir / 'yaml/test-expand4.yml') as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand4.yml')) as fp:
         b = JAML.load(fp, substitute=True,
                       context={'context_var': 3.14,
                                'context_var2': 'hello-world'})
@@ -91,7 +90,7 @@ def test_attr_dict():
 
 
 def test_yaml_fill():
-    with open(cur_dir / 'yaml/test-expand2.yml') as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
         a = JAML.load(fp)
     print(fill_metas_with_defaults(a))
 
@@ -123,7 +122,7 @@ def test_class_yaml3():
 
 
 def test_joint_indexer(test_workspace):
-    b = BaseExecutor.load_config(str(cur_dir / 'yaml/test-joint.yml'))
+    b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
     b.attach(pea=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]

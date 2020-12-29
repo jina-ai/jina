@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import numpy as np
 import pytest
@@ -11,7 +11,7 @@ from jina.excepts import BadClientInput
 
 @pytest.fixture(scope='function')
 def filepath(tmpdir):
-    input_filepath = Path(tmpdir) / 'input_file.csv'
+    input_filepath = os.path.join(tmpdir, 'input_file.csv')
     with open(input_filepath, 'w') as input_file:
         input_file.writelines(["1\n", "2\n", "3\n"])
     return input_filepath
