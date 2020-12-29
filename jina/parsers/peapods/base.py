@@ -6,8 +6,8 @@ from jina.helper import get_random_identity
 from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 
 
-def mixin_base_peapods_parser(parser):
-    """Mixing in arguments required by peapods module into the given parser.
+def mixin_base_ppr_parser(parser):
+    """Mixing in arguments required by pea/pod/runtime module into the given parser.
     """
 
     gp = add_arg_group(parser, title='Essential')
