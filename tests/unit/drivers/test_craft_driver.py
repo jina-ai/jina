@@ -8,6 +8,7 @@ from jina.drivers.craft import CraftDriver
 from jina.executors.crafters import BaseCrafter
 from jina.types.ndarray.generic import NdArray
 
+
 @pytest.fixture(scope='function')
 def docs():
     doc1 = Document(content='valid')

@@ -8,6 +8,7 @@ from jina.proto import jina_pb2
 from jina.types.message import Message
 from jina.types.ndarray.generic import NdArray
 
+
 @pytest.fixture(scope='function')
 def document():
     with Document() as doc:

@@ -1,7 +1,7 @@
 from typing import Any
 
-import pytest
 import numpy as np
+import pytest
 
 from jina import Document, DocumentSet
 from jina.drivers.encode import EncodeDriver

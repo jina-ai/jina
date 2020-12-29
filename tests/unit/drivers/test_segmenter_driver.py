@@ -3,9 +3,9 @@ from typing import Dict, List
 import numpy as np
 import pytest
 
+from jina import Document
 from jina.drivers.craft import SegmentDriver
 from jina.executors.crafters import BaseSegmenter
-from jina import Document
 from jina.types.sets import DocumentSet
 
 

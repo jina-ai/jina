@@ -1,11 +1,11 @@
 from typing import Any
 
-import pytest
 import numpy as np
+import pytest
 
+from jina import Document
 from jina.drivers.search import VectorFillDriver
 from jina.executors.indexers import BaseIndexer
-from jina import Document
 
 
 @pytest.fixture(scope='function')
