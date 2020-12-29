@@ -8,6 +8,18 @@ from jina.drivers.encode import EncodeDriver
 from jina.executors.encoders import BaseEncoder
 
 
+@pytest.fixture(scope='function')
+def num_docs():
+    return 10
+
+@pytest.fixture(scope='function')
+def docs_to_encode(num_docs):
+    docs = []
+    for idx in range(num_docs):
+        doc = Document(content=np.array([idx]))
+        docs.append(doc)
+    return DocumentSet(docs)
+
 class MockEncoder(BaseEncoder):
     def __init__(self,
                  driver_batch_size: int,
@@ -46,26 +58,16 @@ class SimpleEncoderDriver(EncodeDriver):
         return self._exec_fn
 
 
-def create_documents_to_encode(num_docs):
-    docs = []
-    for idx in range(num_docs):
-        doc = Document(content=np.array([idx]))
-        docs.append(doc)
-    return DocumentSet(docs)
-
-
 @pytest.mark.parametrize('batch_size', [None, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 20, 100, 10000])
-def test_encode_driver(batch_size):
-    num_docs = 10
-    docs = create_documents_to_encode(num_docs)
+def test_encode_driver(batch_size, docs_to_encode, num_docs):
     driver = SimpleEncoderDriver(batch_size=batch_size)
     executor = MockEncoder(driver_batch_size=batch_size, total_num_docs=num_docs)
     driver.attach(executor=executor, pea=None)
-    assert len(docs) == num_docs
-    for doc in docs:
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
         assert doc.embedding is None
-    driver._apply_all(docs)
+    driver._apply_all(docs_to_encode)
     driver._empty_cache()
-    assert len(docs) == num_docs
-    for doc in docs:
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
         assert doc.embedding == doc.blob
