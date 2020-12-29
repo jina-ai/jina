@@ -5,7 +5,6 @@ from functools import wraps
 from typing import Callable
 
 from .. import Request
-from ..enums import CallbackOnType
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions
@@ -55,7 +54,6 @@ def pprint_routes(resp: 'Request', stack_limit: int = 3):
                       break_long_words=False, replace_whitespace=False)])
 
     visualize(table)
-
 
 
 def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
