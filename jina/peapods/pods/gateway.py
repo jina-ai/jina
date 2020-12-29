@@ -3,7 +3,6 @@ from typing import Dict, Set
 from . import BasePod, PodRoleType
 from .flow import FlowPod
 from ..peas import RESTGatewayPea, GRPCGatewayPea
-
 from ...parsers import set_gateway_parser
 
 
@@ -13,9 +12,7 @@ class GatewayPod(BasePod):
     def start(self) -> 'GatewayPod':
         for s in self.all_args:
             pea_cls = RESTGatewayPea if getattr(s, 'rest_api', False) else GRPCGatewayPea
-            r = pea_cls(s)
-            self.peas.append(r)
-            self.enter_context(r)
+            self.enter_pea(pea_cls(s))
 
         return self
 

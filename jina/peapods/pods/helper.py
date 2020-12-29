@@ -9,7 +9,8 @@ from ...helper import random_port, get_random_identity, get_public_ip, get_inter
 
 def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Namespace = None) -> List[Namespace]:
     result = []
-    for _ in range(args.parallel):
+
+    for idx in range(args.parallel):
         _args = copy.deepcopy(args)
         if head_args:
             _args.port_in = head_args.port_out
@@ -32,6 +33,14 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
             _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
         if tail_args:
             _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
+
+        if args.parallel > 1:
+            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
+            _args.role = PeaRoleType.PARALLEL
+        else:
+            _args.pea_id = 0
+            _args.role = PeaRoleType.SINGLETON
+
         result.append(_args)
     return result
 

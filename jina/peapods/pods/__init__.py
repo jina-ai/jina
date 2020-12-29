@@ -7,7 +7,7 @@ from contextlib import ExitStack
 from typing import Optional, Dict, List, Union
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
-from ..peas import Pea
+from ..peas import Pea, BasePea
 from ...enums import *
 
 
@@ -22,7 +22,7 @@ class BasePod(ExitStack):
         :param args: arguments parsed from the CLI
         """
         super().__init__()
-        self.peas = []
+        self.peas = []  # type: List[BasePea]
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
@@ -181,31 +181,19 @@ class BasePod(ExitStack):
         """
         # start head and tail
         if self.peas_args['head']:
-            p = Pea(self.peas_args['head'])
-            self.peas.append(p)
-            self.enter_context(p)
+            self.enter_pea(Pea(self.peas_args['head']))
 
         if self.peas_args['tail']:
-            p = Pea(self.peas_args['tail'])
-            self.peas.append(p)
-            self.enter_context(p)
+            self.enter_pea(Pea(self.peas_args['tail']))
 
-        # start real peas and accumulate the storage id
-        if len(self.peas_args['peas']) > 1:
-            start_rep_id = 1
-            role = PeaRoleType.PARALLEL
-        else:
-            start_rep_id = 0
-            role = PeaRoleType.SINGLETON
-
-        for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
-            _args.pea_id = idx
-            _args.role = role
-            p = Pea(_args)
-            self.peas.append(p)
-            self.enter_context(p)
+        for _args in self.peas_args['peas']:
+            self.enter_pea(Pea(_args))
 
         return self
+
+    def enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
