@@ -12,6 +12,7 @@ from jina.executors.encoders import BaseEncoder
 def num_docs():
     return 10
 
+
 @pytest.fixture(scope='function')
 def docs_to_encode(num_docs):
     docs = []
@@ -19,6 +20,7 @@ def docs_to_encode(num_docs):
         doc = Document(content=np.array([idx]))
         docs.append(doc)
     return DocumentSet(docs)
+
 
 class MockEncoder(BaseEncoder):
     def __init__(self,

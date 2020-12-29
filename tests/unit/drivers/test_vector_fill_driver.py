@@ -1,10 +1,25 @@
 from typing import Any
 
+import pytest
 import numpy as np
 
 from jina.drivers.search import VectorFillDriver
 from jina.executors.indexers import BaseIndexer
 from jina import Document
+
+
+@pytest.fixture(scope='function')
+def num_docs():
+    return 10
+
+
+@pytest.fixture(scope='function')
+def docs_to_encode(num_docs):
+    docs = []
+    for idx in range(num_docs):
+        doc = Document(content=np.array([idx]))
+        docs.append(doc)
+    return docs
 
 
 class MockIndexer(BaseIndexer):
@@ -20,23 +35,14 @@ class SimpleFillDriver(VectorFillDriver):
         return self._exec_fn
 
 
-def create_documents_to_encode(num_docs):
-    docs = []
-    for idx in range(num_docs):
-        doc = Document()
-        docs.append(doc)
-    return docs
-
-
-def test_index_driver():
-    docs = create_documents_to_encode(10)
+def test_index_driver(docs_to_encode, num_docs):
     driver = SimpleFillDriver()
     executor = MockIndexer()
     driver.attach(executor=executor, pea=None)
-    assert len(docs) == 10
-    for doc in docs:
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
         assert doc.embedding is None
-    driver._apply_all(docs)
-    assert len(docs) == 10
-    for doc in docs:
+    driver._apply_all(docs_to_encode)
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
         assert doc.embedding.shape == (5,)
