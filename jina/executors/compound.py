@@ -26,16 +26,16 @@ class CompoundExecutor(BaseExecutor):
               index_filename: vec.gz
             metas:
               name: vecidx_exec  # a customized name
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
           - !BinaryPbIndexer
             with:
               index_filename: chunk.gz
             metas:
               name: chunkidx_exec
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
         metas:
           name: chunk_compound_indexer
-          workspace: $TEST_WORKDIR
+          workspace: ${{TEST_WORKDIR}}
         requests:
           on:
             SearchRequest:
@@ -59,7 +59,7 @@ class CompoundExecutor(BaseExecutor):
           - !GifNameRawSplit
             metas:
               name: name_split  # a customized name
-              workspace: $TEST_WORKDIR
+              workspace: ${{TEST_WORKDIR}}
           - !GifPreprocessor
             with:
               every_k_frame: 2
@@ -68,7 +68,7 @@ class CompoundExecutor(BaseExecutor):
               name: gif2chunk_preprocessor  # a customized name
         metas:
           name: compound_crafter
-          workspace: $TEST_WORKDIR
+          workspace: ${{TEST_WORKDIR}}
           py_modules: gif2chunk.py
         requests:
           on:

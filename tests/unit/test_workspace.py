@@ -1,22 +1,26 @@
+import os
 from pathlib import Path
 
-import pytest
 import numpy as np
+import pytest
 
 from jina.executors import BaseExecutor
 
-@pytest.mark.parametrize('pea_id', [1,2,3])
+
+@pytest.mark.parametrize('pea_id', [1, 2, 3])
 def test_share_workspace(tmpdir, pea_id):
-    with BaseExecutor.load_config('yaml/test-workspace.yml', True, pea_id) as executor:
+    with BaseExecutor.load_config('yaml/test-workspace.yml', separated_workspace=True, pea_id=pea_id) as executor:
         executor.touch()
         executor_dir = Path(tmpdir) / f'{executor.name}-{pea_id}-{executor.name}.bin'
         executor.save(str(executor_dir))
         assert executor_dir.exists()
 
-@pytest.mark.parametrize('pea_id', [1,2,3])
+
+@pytest.mark.parametrize('pea_id', [1, 2, 3])
 def test_compound_workspace(tmpdir, pea_id):
     tmpdir = Path(tmpdir)
-    with BaseExecutor.load_config('yaml/test-compound-workspace.yml', True, pea_id) as executor:
+    with BaseExecutor.load_config('yaml/test-compound-workspace.yml', separated_workspace=True,
+                                  pea_id=pea_id) as executor:
         for c in executor.components:
             c.touch()
             component_dir = tmpdir / f'{executor.name}-{pea_id}-{c.name}.bin'
@@ -27,10 +31,12 @@ def test_compound_workspace(tmpdir, pea_id):
         executor.save(str(executor_dir))
         assert executor_dir.exists()
 
-@pytest.mark.parametrize('pea_id', [1,2,3])
+
+@pytest.mark.parametrize('pea_id', [1, 2, 3])
 def test_compound_indexer(tmpdir, pea_id):
     tmpdir = Path(tmpdir)
-    with BaseExecutor.load_config('yaml/test-compound-indexer.yml', True, pea_id) as e:
+    with BaseExecutor.load_config('yaml/test-compound-indexer.yml',
+                                  separated_workspace=True, pea_id=pea_id) as e:
         for c in e:
             c.touch()
             component_dir = tmpdir / f'{e.name}-{pea_id}-{c.name}.bin'
@@ -44,10 +50,11 @@ def test_compound_indexer(tmpdir, pea_id):
         e.save(str(executor_dir))
         assert executor_dir.exists()
 
-def test_compound_indexer_rw():
+
+def test_compound_indexer_rw(tmpdir):
     all_vecs = np.random.random([6, 5])
     for j in range(3):
-        with BaseExecutor.load_config('yaml/test-compound-indexer2.yml', True, j) as a:
+        with BaseExecutor.load_config('yaml/test-compound-indexer2.yml', separated_workspace=True, pea_id=j) as a:
             assert a[0] == a['test_meta']
             assert not a[0].is_updated
             assert not a.is_updated
@@ -68,7 +75,7 @@ def test_compound_indexer_rw():
 
     recovered_vecs = []
     for j in range(3):
-        with BaseExecutor.load_config('yaml/test-compound-indexer2.yml', True, j) as a:
+        with BaseExecutor.load_config('yaml/test-compound-indexer2.yml', separated_workspace=True, pea_id=j) as a:
             recovered_vecs.append(a[1].query_handler)
 
     np.testing.assert_almost_equal(all_vecs, np.concatenate(recovered_vecs))

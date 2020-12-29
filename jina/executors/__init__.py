@@ -3,20 +3,18 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import re
 import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, Union, TypeVar, Type, TextIO, List
+from typing import Dict, TypeVar, Type, List
 
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
-from ..excepts import EmptyExecutorYAML, BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import expand_dict, expand_env_var, get_local_config_source, typename, get_random_identity
-from ..importer import PathImporter
-from ..jaml import JAML, JAMLCompatible
+from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
+from ..helper import typename, get_random_identity
+from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -59,7 +57,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
     @staticmethod
     def register_class(cls):
-        update_funcs = ['train', 'add']
+        update_funcs = ['train', 'add', 'delete', 'update']
         train_funcs = ['train']
         aggregate_funcs = ['evaluate']
 
@@ -179,7 +177,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         for k, v in _metas.items():
             if not hasattr(self, k):
                 if isinstance(v, str):
-                    if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                    if not subvar_regex.findall(v):
                         setattr(self, k, v)
                     else:
                         unresolved_attr = True
@@ -199,18 +197,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if unresolved_attr:
             _tmp = vars(self)
             _tmp['metas'] = _metas
-            new_metas = expand_dict(_tmp)['metas']
+            new_metas = JAML.expand_dict(_tmp, context=_ref_desolve_map)['metas']
 
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
                 if not hasattr(self, k):
-                    if isinstance(v, str) and (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
-                        v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
                     if isinstance(v, str):
-                        if not (re.match(r'{.*?}', v) or re.match(r'\$.*\b', v)):
+                        if not (subvar_regex.findall(v) or internal_var_regex.findall(v)):
                             setattr(self, k, v)
                         else:
-                            raise ValueError(f'{k}={v} is not expandable or badly referred')
+                            raise ValueError(f'{k}={v} is not substitutable or badly referred')
                     else:
                         setattr(self, k, v)
 
@@ -355,68 +351,30 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 self.logger.info(f'no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. '
                                  'If you really want to save it, call "touch()" before "save()" to force saving')
 
-    def save_config(self, filename: str = None) -> bool:
-        """
-        Serialize the object to a yaml file
-
-        :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used
-        :return: successfully dumped or not
-        """
-        _updated, self.is_updated = self.is_updated, False
-        f = filename or self.config_abspath
-        if not f:
-            f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
-        with open(f, 'w', encoding='utf8') as fp:
-            JAML.dump(self, fp)
-        self.logger.info(f'executor\'s yaml config is save to {f}')
-
-        self.is_updated = _updated
-        return True
-
     @classmethod
-    def load_config(cls: Type[AnyExecutor], source: Union[str, TextIO], separated_workspace: bool = False,
-                    pea_id: int = 0, read_only: bool = False) -> AnyExecutor:
-        """Build an executor from a YAML file.
+    def inject_config(cls: Type[AnyExecutor],
+                      raw_config: Dict,
+                      separated_workspace: bool = False,
+                      pea_id: int = 0,
+                      read_only: bool = False,
+                      *args, **kwargs) -> Dict:
+        """Inject config into the raw_config before loading into an object.
 
-        :param source: the file path of the YAML file or a ``TextIO`` stream to be loaded from
+        :param raw_config: raw config to work on
         :param separated_workspace: the dump and data files associated to this executor will be stored separately for
                 each parallel pea, which will be indexed by the ``pea_id``
         :param pea_id: the id of the storage of this parallel pea, only effective when ``separated_workspace=True``
+        :param read_only: if the executor should be readonly
         :return: an executor object
         """
-        if not source: raise FileNotFoundError
-        source = get_local_config_source(source)
-        # first scan, find if external modules are specified
-        with (open(source, encoding='utf8') if isinstance(source, str) else source) as fp:
-            # ignore all lines start with ! because they could trigger the deserialization of that class
-            safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in fp)
-            tmp = JAML.load(safe_yml)
-            if tmp:
-                if 'metas' not in tmp:
-                    tmp['metas'] = {}
-                tmp = fill_metas_with_defaults(tmp)
+        if 'metas' not in raw_config:
+            raw_config['metas'] = {}
+        tmp = fill_metas_with_defaults(raw_config)
+        tmp['metas']['separated_workspace'] = separated_workspace
+        tmp['metas']['pea_id'] = pea_id
+        tmp['metas']['read_only'] = read_only
 
-                if 'py_modules' in tmp['metas'] and tmp['metas']['py_modules']:
-                    mod = tmp['metas']['py_modules']
-
-                    if isinstance(mod, str):
-                        mod = [mod]
-
-                    if isinstance(mod, list):
-                        mod = [m if os.path.isabs(m) else os.path.join(os.path.dirname(source), m) for m in mod]
-                        PathImporter.add_modules(*mod)
-                    else:
-                        raise TypeError(f'{type(mod)!r} is not acceptable, only str or list are acceptable')
-
-                tmp['metas']['separated_workspace'] = separated_workspace
-                tmp['metas']['pea_id'] = pea_id
-                tmp['metas']['read_only'] = read_only
-
-            else:
-                raise EmptyExecutorYAML(f'{source} is empty? nothing to read from there')
-
-            tmp = expand_dict(tmp)
-            return JAML.load(JAML.dump(tmp).replace('__tag: ', '!'))
+        return tmp
 
     @staticmethod
     def load(filename: str = None) -> AnyExecutor:

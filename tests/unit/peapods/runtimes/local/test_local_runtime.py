@@ -46,10 +46,10 @@ def test_local_runtime_naming_with_parallel():
                                         '--max-idle-time', '5',
                                         '--shutdown-idle'])
     with BasePod(args) as bp:
-        assert bp.runtimes[0].name == 'runtime-pod-head'
-        assert bp.runtimes[1].name == 'runtime-pod-tail'
-        assert bp.runtimes[2].name == 'runtime-pod-1'
-        assert bp.runtimes[3].name == 'runtime-pod-2'
+        assert bp.runtimes[0].name == 'pod-head'
+        assert bp.runtimes[1].name == 'pod-tail'
+        assert bp.runtimes[2].name == 'pod-1'
+        assert bp.runtimes[3].name == 'pod-2'
         assert bp.runtimes[0].pea.name == 'pod-head'
         assert bp.runtimes[1].pea.name == 'pod-tail'
         assert bp.runtimes[2].pea.name == 'pod-1'
