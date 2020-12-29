@@ -13,7 +13,7 @@ def get_main_parser():
     from .hub import set_hub_parser
     from .logger import set_logger_parser
     from .peapods.pea import set_pea_parser
-    from .peapods.pod import set_pod_parser
+    from .peapods.pods import set_pod_parser
     from .peapods.runtimes.remote import set_gateway_parser
     from .ping import set_ping_parser
 

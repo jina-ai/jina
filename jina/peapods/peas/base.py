@@ -29,7 +29,7 @@ class PeaType(type):
         _cls = {
             'thread': threading.Thread,
             'process': multiprocessing.Process,
-        }.get(getattr(args[0], 'runtime', 'thread'))
+        }.get(getattr(args[0], 'runtime_backend', 'thread'))
 
         # rebuild the class according to mro
         for c in cls.mro()[-2::-1]:

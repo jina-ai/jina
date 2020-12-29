@@ -5,7 +5,7 @@ _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
 def add_arg_group(parser, title):
-    return parser.add_argument_group(title)
+    return parser.add_argument_group(f'{title} arguments')
 
 
 class KVAppendAction(argparse.Action):
