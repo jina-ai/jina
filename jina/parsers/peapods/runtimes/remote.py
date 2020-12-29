@@ -13,8 +13,8 @@ def mixin_remote_parser(parser=None):
                      type=int,
                      default=random_port(),
                      help='host port of the gateway, "port-grpc" alias will be removed in future versions')
-
     return parser
+
 
 def mixin_grpc_parser(parser=None):
     if not parser:

@@ -1,6 +1,6 @@
 from ..base import set_base_parser
 from ...helper import add_arg_group
-from ....enums import PollingType, SchedulerType
+from ....enums import PollingType, SchedulerType, RemoteAccessType, RemotePeapodType
 
 
 def mixin_base_pod_parser(parser=None):
@@ -32,4 +32,13 @@ def mixin_base_pod_parser(parser=None):
 
     gp0.add_argument('--shutdown-idle', action='store_true', default=False,
                      help='shutdown this pod when all peas are idle')
+
+    gp0.add_argument('--remote-access', choices=list(RemoteAccessType),
+                     default=RemoteAccessType.JINAD,
+                     type=RemoteAccessType.from_string,
+                     help=f'the way of managing remote runtime')
+    gp0.add_argument('--remote-type', choices=list(RemotePeapodType),
+                     default=RemotePeapodType.POD,
+                     type=RemotePeapodType.from_string,
+                     help=f'the way of managing remote runtime')
     return parser

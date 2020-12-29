@@ -34,7 +34,7 @@ class ZMQManyRuntime(BaseRuntime, ABC):
             self.timeout_ctrl = first_args.timeout_ctrl
             self.host = first_args.host
             self.port_expose = first_args.port_expose
-            self.api_kind = first_args.api_kind
+            self.remote_type = first_args.remote_type
             for args in self.args['peas']:
                 ctrl_addr, _ = Zmqlet.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
                 self.many_ctrl_addr.append(ctrl_addr)
@@ -43,7 +43,7 @@ class ZMQManyRuntime(BaseRuntime, ABC):
             self.timeout_ctrl = args.timeout_ctrl
             self.host = args.host
             self.port_expose = args.port_expose
-            self.api_kind = args.api_kind
+            self.remote_type = args.remote_type
 
     def cancel(self):
         for ctrl_addr in self.many_ctrl_addr:

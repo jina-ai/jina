@@ -10,7 +10,7 @@ class JinadRuntime(ZMQManyRuntime):
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
-        self.api = get_jinad_api(kind=self.api_kind, host=self.host, port=self.port_expose, logger=self.logger)
+        self.api = get_jinad_api(kind=self.remote_type, host=self.host, port=self.port_expose, logger=self.logger)
 
     def setup(self):
         if self._remote_id:

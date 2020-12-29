@@ -2,6 +2,7 @@ from typing import Dict, Set, Callable
 
 from . import BasePod
 from .helper import _fill_in_host, _copy_to_head_args, _set_peas_args, _copy_to_tail_args
+from ..peas import JinadPea
 from ... import __default_host__
 from ...enums import PodRoleType, SocketType, RemoteAccessType
 from ...helper import ArgNamespace
@@ -112,7 +113,7 @@ class FlowPod(BasePod):
         else:
             if self._args.remote_access == RemoteAccessType.JINAD:
                 from jina.peapods.runtimes.jinad import JinadRemoteRuntime
-                _remote_runtime = JinadRemoteRuntime(self.peas_args, kind='pod')
+                _remote_runtime = JinadPea(self.peas_args)
             elif self._args.remote_access == RemoteAccessType.SSH:
                 from jina.peapods.runtimes.ssh import SSHRuntime
                 _remote_runtime = SSHRuntime(self.peas_args, kind='pod')
@@ -120,5 +121,4 @@ class FlowPod(BasePod):
                 raise ValueError(f'{self._args.remote_access} is unsupported')
 
             self.enter_context(_remote_runtime)
-            self.start_sentinels()
             return self

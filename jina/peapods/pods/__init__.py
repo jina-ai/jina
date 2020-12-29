@@ -2,13 +2,12 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
-import time
 from argparse import Namespace
 from contextlib import ExitStack
-from threading import Thread
 from typing import Optional, Dict, List, Union
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
+from ..peas import Pea
 from ...enums import *
 
 
@@ -17,13 +16,13 @@ class BasePod(ExitStack):
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: 'argparse.Namespace'):
         """
 
         :param args: arguments parsed from the CLI
         """
         super().__init__()
-        self.runtimes = []
+        self.peas = []
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
@@ -37,22 +36,9 @@ class BasePod(ExitStack):
         return not (self.is_head_router or self.is_tail_router)
 
     @property
-    def is_idle(self) -> bool:
-        """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
-        """
-        return all(runtime.is_idle for runtime in self.runtimes if runtime.is_ready_event.is_set())
-
-    def close_if_idle(self):
-        """Check every second if the pod is in idle, if yes, then close the pod"""
-        while True:
-            if self.is_idle:
-                self.close()
-            time.sleep(1)
-
-    @property
     def name(self) -> str:
         """The name of this :class:`BasePod`. """
-        return self.first_pea_args.name
+        return self._args.name
 
     @property
     def port_expose(self) -> int:
@@ -180,30 +166,10 @@ class BasePod(ExitStack):
     @property
     def num_peas(self) -> int:
         """Get the number of running :class:`BasePea`"""
-        return len(self.runtimes)
+        return len(self.peas)
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
-
-    def set_runtime(self, runtime: str):
-        """Set the parallel runtime of this BasePod.
-
-        :param runtime: possible values: process, thread
-        """
-        for s in self.all_args:
-            s.runtime = runtime
-            # for thread and process backend which runs locally, host_in and host_out should not be set
-            # s.host_in = __default_host__
-            # s.host_out = __default_host__
-
-    def start_sentinels(self) -> None:
-        self.sentinel_threads = []
-        if isinstance(self._args, argparse.Namespace) and getattr(self._args, 'shutdown_idle', False):
-            self.sentinel_threads.append(Thread(target=self.close_if_idle,
-                                                name='sentinel-shutdown-idle',
-                                                daemon=True))
-        for t in self.sentinel_threads:
-            t.start()
 
     def start(self) -> 'BasePod':
         """Start to run all Peas in this BasePod.
@@ -215,13 +181,13 @@ class BasePod(ExitStack):
         """
         # start head and tail
         if self.peas_args['head']:
-            p = Runtime(self.peas_args['head'], pea_cls=HeadPea, allow_remote=False)
-            self.runtimes.append(p)
+            p = Pea(self.peas_args['head'])
+            self.peas.append(p)
             self.enter_context(p)
 
         if self.peas_args['tail']:
-            p = Runtime(self.peas_args['tail'], pea_cls=TailPea, allow_remote=False)
-            self.runtimes.append(p)
+            p = Pea(self.peas_args['tail'])
+            self.peas.append(p)
             self.enter_context(p)
 
         # start real peas and accumulate the storage id
@@ -231,36 +197,18 @@ class BasePod(ExitStack):
         else:
             start_rep_id = 0
             role = PeaRoleType.SINGLETON
+
         for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
             _args.pea_id = idx
             _args.role = role
-            p = Runtime(_args, pea_cls=BasePea, allow_remote=False)
-            self.runtimes.append(p)
+            p = Pea(_args)
+            self.peas.append(p)
             self.enter_context(p)
 
-        self.start_sentinels()
         return self
-
-    @property
-    def is_shutdown(self) -> bool:
-        return all(not runtime.is_ready_event.is_set() for runtime in self.runtimes)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
-
-    @property
-    def status(self) -> List:
-        """The status of a BasePod is the list of status of all its Peas """
-        return [runtime.status for runtime in self.runtimes]
-
-    def is_ready(self) -> bool:
-        """Wait till the ready signal of this BasePod.
-
-        The pod is ready only when all the contained Peas returns is_ready_event
-        """
-        for runtime in self.runtimes:
-            runtime.is_ready_event.wait()
-        return True
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -268,9 +216,9 @@ class BasePod(ExitStack):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for runtime in self.runtimes:
-                runtime.join()
+            for p in self.peas:
+                p.join()
         except KeyboardInterrupt:
             pass
         finally:
-            self.runtimes.clear()
+            self.peas.clear()

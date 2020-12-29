@@ -54,9 +54,9 @@ class SSHRuntime(ZMQManyRuntime):
 
     @property
     def _remote_command(self) -> str:
-        if self.api_kind == 'pea':
+        if self.remote_type == 'pea':
             return self._pea_command
-        elif self.api_kind == 'pod':
+        elif self.remote_type == 'pod':
             return self._pod_command
         else:
-            raise ValueError(f'kind must be pea/pod but it is {self.api_kind}')
+            raise ValueError(f'kind must be pea/pod but it is {self.remote_type}')

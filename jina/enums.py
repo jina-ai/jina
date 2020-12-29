@@ -318,6 +318,13 @@ class RemoteAccessType(BetterEnum):
     JINAD = 1  # using rest api via jinad
 
 
+class RemotePeapodType(BetterEnum):
+    """Remote access type when connect to the host """
+
+    PEA = 0
+    POD = 1
+
+
 class BuildTestLevel(BetterEnum):
     """Test level in :command:`jina hub build`, higher level includes lower levels """
 

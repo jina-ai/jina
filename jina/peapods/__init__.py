@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import argparse
 from typing import Optional
 
+from .peas import JinadPea, SSHPea
 from .. import __default_host__
 from ..enums import RemoteAccessType
 from ..logging import default_logger
@@ -47,11 +48,9 @@ def Pod(args: Optional['argparse.Namespace'] = None,
 
     if args.host != __default_host__:
         if args.remote_access == RemoteAccessType.JINAD:
-            from jina.peapods.runtimes.jinad import JinadRemoteRuntime
-            return JinadRemoteRuntime(args, kind='pod')
+            return JinadPea(args)
         elif args.remote_access == RemoteAccessType.SSH:
-            from jina.peapods.runtimes.ssh import SSHRuntime
-            return SSHRuntime(args, kind='pod')
+            return SSHPea(args)
         else:
             raise ValueError(f'{args.remote_access} is not supported')
     else:
