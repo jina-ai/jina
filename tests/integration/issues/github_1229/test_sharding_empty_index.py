@@ -62,12 +62,13 @@ def test_sharding_empty_index(tmpdir, execution_number, mocker):
             query.append(doc)
 
     def callback(result):
+        mock()
         assert len(result.docs) == num_query
         for d in result.docs:
             assert len(list(d.matches)) == num_docs
 
-    response_mock = mocker.Mock(wraps=callback)
+    mock = mocker.Mock()
     with f:
-        f.search(query, on_done=response_mock)
+        f.search(query, on_done=callback)
 
-    response_mock.assert_called()
+    mock.assert_called_once()

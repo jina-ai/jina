@@ -19,7 +19,9 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, rest_api):
     with index_flow:
         index_flow.index(index_data)
 
+    mock = mocker.Mock()
     def validate_granularity_1(resp):
+        mock()
         assert len(resp.docs) == 3
         for doc in resp.docs:
             assert doc.granularity == 0
@@ -49,13 +51,13 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, rest_api):
         'I am chunk 0 of doc 2,',
         ' I am chunk 3 of doc 3',
     ]
-    response_mock = mocker.Mock(wrap=validate_granularity_1)
+
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
             input_fn=search_data,
-            on_done=response_mock,
+            on_done=validate_granularity_1,
             callback_on='body',
         )
 
     del os.environ['JINA_TEST_LEVEL_DEPTH_WORKSPACE']
-    response_mock.assert_called()
+    mock.assert_called_once()

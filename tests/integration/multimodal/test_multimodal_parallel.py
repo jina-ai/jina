@@ -41,17 +41,17 @@ def multimodal_documents():
 @pytest.mark.parametrize('rest_api', [False])
 def test_multimodal_embedding_parallel(multimodal_documents, mocker, monkeypatch, rest_api):
     monkeypatch.setenv("REST_API", rest_api)
-
     def validate_response(resp):
+        mock()
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
             np.testing.assert_almost_equal(NdArray(doc.embedding).value, np.array([idx, idx, idx, idx, idx]))
 
-    response_mock = mocker.Mock(wraps=validate_response)
+    mock = mocker.Mock()
     with Flow.load_config(os.path.join(cur_dir, 'flow-embedding-multimodal-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_documents,
-                            on_done=response_mock)
-    response_mock.assert_called()
+                            on_done=validate_response)
+    mock.assert_called_once()
 
 
 @pytest.fixture
@@ -92,15 +92,14 @@ def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker, m
     monkeypatch.setenv("REST_API", rest_api)
 
     def validate_response(resp):
+        mock()
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
             np.testing.assert_almost_equal(NdArray(doc.embedding).value,
                                            np.array([idx, idx, idx, idx, idx, 3, 3, 4, 4]))
 
-    response_mock = mocker.Mock(wraps=validate_response)
-
+    mock = mocker.Mock()
     with Flow.load_config(os.path.join(cur_dir, 'flow-multimodal-all-types-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(input_fn=multimodal_all_types_documents,
-                            on_done=response_mock)
-
-    response_mock.assert_called()
+                            on_done=validate_response)
+    mock.assert_called_once()
