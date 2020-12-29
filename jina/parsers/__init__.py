@@ -12,12 +12,14 @@ def set_pea_parser(parser=None):
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
     from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import mixin_remote_parser
+    from .peapods.pea import mixin_pea_parser
 
     mixin_base_peapods_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_zed_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_parser(parser)
+    mixin_pea_parser(parser)
 
     return parser
 
@@ -47,10 +49,13 @@ def set_gateway_parser(parser=None):
     from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import mixin_remote_parser
     from .peapods.runtimes.remote import mixin_grpc_parser
+    from .peapods.pea import mixin_pea_parser
 
     mixin_base_peapods_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_grpc_parser(parser)
+    mixin_remote_parser(parser)
+    mixin_pea_parser(parser)
 
     return parser
 

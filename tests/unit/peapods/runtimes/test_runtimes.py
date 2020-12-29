@@ -20,7 +20,7 @@ def test_base_runtime_bad_init(mocker):
     class Pea1(BasePea):
         runtime_cls = BaseRuntime
 
-    arg = set_pea_parser().parse_args(['--runtime', 'thread'])
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, '__init__', bad_func)
     setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
@@ -43,7 +43,7 @@ def test_base_runtime_bad_run_forever(mocker):
     class Pea1(BasePea):
         runtime_cls = BaseRuntime
 
-    arg = set_pea_parser().parse_args(['--runtime', 'thread'])
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, 'run_forever', bad_func)
     setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
@@ -71,7 +71,7 @@ def test_base_runtime_bad_setup(mocker):
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
-    arg = set_pea_parser().parse_args(['--runtime', 'thread'])
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     with pytest.raises(RuntimeFailToStart):
         with Pea1(arg):
             pass
@@ -94,7 +94,7 @@ def test_base_runtime_bad_teardown(mocker):
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
-    arg = set_pea_parser().parse_args(['--runtime', 'thread'])
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     with Pea1(arg):
         pass
 
@@ -118,7 +118,7 @@ def test_base_runtime_bad_cancel(mocker):
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
-    arg = set_pea_parser().parse_args(['--runtime', 'thread'])
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     with Pea1(arg):
         pass
 
@@ -145,7 +145,7 @@ def test_gateway_runtime(cls, runtime):
     class Pea1(BasePea):
         runtime_cls = cls
 
-    arg = set_gateway_parser().parse_args(['--runtime', runtime])
+    arg = set_gateway_parser().parse_args(['--runtime-backend', runtime])
     with Pea1(arg):
         pass
 
@@ -183,7 +183,7 @@ def test_runtime_thread_process(runtime, cls, parser, args):
     class Pea1(BasePea):
         runtime_cls = cls
 
-    args.extend(['--runtime', runtime])
+    args.extend(['--runtime-backend', runtime])
     arg = parser().parse_args(args)
     with Pea1(arg):
         pass
