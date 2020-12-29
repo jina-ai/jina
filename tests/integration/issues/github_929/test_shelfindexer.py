@@ -27,14 +27,15 @@ def test_shelf_in_flow(uses, mocker):
     d = jina_pb2.DocumentProto()
 
     def validate(req):
+        mock()
         m4 = used_memory()
         print(f'before: {m1}, after index: {m2}, after loading: {m3} after searching {m4}')
 
-    response_mock = mocker.Mock(wraps=validate)
+    mock = mocker.Mock()
 
     with f:
         m3 = used_memory()
-        f.search([d], on_done=response_mock)
+        f.search([d], on_done=validate)
 
     shutil.rmtree('test-workspace', ignore_errors=False, onerror=None)
-    response_mock.assert_called()
+    mock.assert_called_once()
