@@ -32,33 +32,34 @@ def test_topk(config, mocker):
     NDOCS = 3
     TOPK = int(os.getenv('JINA_TOPK'))
 
-    def validate_results(resp):
+    def validate(resp):
+        mock()
         assert len(resp.search.docs) == NDOCS
         for doc in resp.search.docs:
             assert len(doc.matches) == TOPK
 
-    response_mock = mocker.Mock(wraps=validate_results)
-
     with Flow.load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
 
+    mock = mocker.Mock()
     with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(NDOCS),
-                           on_done=response_mock)
+                           on_done=validate)
 
-    response_mock.assert_called()
+    mock.assert_called_once()
 
 
 def test_topk_override(config, mocker):
     NDOCS = 3
     TOPK_OVERRIDE = 11
 
-    def validate_override_results(resp):
+    def validate(resp):
+        mock()
         assert len(resp.search.docs) == NDOCS
         for doc in resp.search.docs:
             assert len(doc.matches) == TOPK_OVERRIDE
 
-    response_mock = mocker.Mock(wraps=validate_override_results)
+
 
     # Making queryset
     top_k_queryset = QueryLang(VectorSearchDriver(top_k=TOPK_OVERRIDE, priority=1))
@@ -66,8 +67,8 @@ def test_topk_override(config, mocker):
     with Flow.load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))
 
+    mock = mocker.Mock()
     with Flow.load_config('flow.yml') as search_flow:
         search_flow.search(input_fn=random_docs(NDOCS),
-                           on_done=response_mock, queryset=[top_k_queryset])
-
-    response_mock.assert_called()
+                           on_done=validate, queryset=[top_k_queryset])
+    mock.assert_called_once()

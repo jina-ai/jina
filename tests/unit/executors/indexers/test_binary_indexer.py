@@ -15,6 +15,7 @@ from tests import random_docs
 def test_binarypb_in_flow(test_metas, mocker):
     docs = list(random_docs(10))
     def validate(req):
+        mock()
         assert len(docs) == len(req.docs)
         for d, d0 in zip(req.docs, docs):
             np.testing.assert_almost_equal(NdArray(d.embedding).value,
@@ -22,7 +23,7 @@ def test_binarypb_in_flow(test_metas, mocker):
 
     f = Flow(callback_on='body').add(uses='binarypb.yml')
 
-    response_mock = mocker.Mock(wrap=validate)
+
     with f:
         f.index(docs)
 
@@ -30,10 +31,11 @@ def test_binarypb_in_flow(test_metas, mocker):
     for d in docs_no_embedding:
         d.ClearField('embedding')
 
+    mock = mocker.Mock()
     with f:
-        f.search(docs_no_embedding, on_done=response_mock)
+        f.search(docs_no_embedding, on_done=validate)
 
-    response_mock.assert_called()
+    mock.assert_called_once()
 
 
 def test_binarypb_update1(test_metas):
