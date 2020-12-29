@@ -71,7 +71,9 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
     with Flow.load_config(index_yaml) as index_gt_flow:
         index_gt_flow.index(input_fn=index_groundtruth, batch_size=10)
 
+    m = mocker.Mock()
     def validate_evaluation_response(resp):
+        m()
         assert len(resp.docs) == 97
         assert len(resp.groundtruths) == 97
         for doc in resp.docs:
@@ -81,12 +83,11 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
         for gt in resp.groundtruths:
             assert gt.tags['groundtruth']
 
-    response_mock = mocker.Mock(wrap=validate_evaluation_response)
     with Flow.load_config(search_yaml) as evaluate_flow:
         evaluate_flow.search(
             input_fn=evaluate_docs,
-            on_done=response_mock,
+            on_done=validate_evaluation_response,
             callback_on='body',
         )
 
-    response_mock.assert_called()
+    m.assert_called_once()

@@ -45,6 +45,7 @@ def test_concat_embed_driver(mocker):
         del os.environ['JINA_ARRAY_QUANT']
 
     def validate(req):
+        mock()
         assert len(req.docs) == 2
         assert NdArray(req.docs[0].embedding).value.shape == (e1.shape[0] * 2,)
         assert NdArray(req.docs[1].embedding).value.shape == (e3.shape[0] * 2,)
@@ -56,13 +57,13 @@ def test_concat_embed_driver(mocker):
         #                                np.concatenate([e2, e2], axis=0),
         #                                decimal=4)
 
-    response_mock = mocker.Mock(wrap=validate)
+    mock = mocker.Mock()
     # simulate two encoders
     flow = (Flow().add(name='a')
             .add(name='b', needs='gateway')
             .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
 
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock, callback_on='body')
+        flow.index(input_fn=input_fn, on_done=validate, callback_on='body')
 
-    response_mock.assert_called()
+    mock.assert_called_once()

@@ -16,7 +16,7 @@ __all__ = ['DocumentSet']
 class DocumentSet(MutableSequence):
     """:class:`DocumentSet` is a mutable sequence of :class:`Document`,
     it gives an efficient view of a list of Document. One can iterate over it like
-    a generator but ALSO modify it, count it, get item.
+    a generator but ALSO modify it, count it, get item, or union two 'DocumentSet's using the '+' and '+=' operators.
     """
 
     def __init__(self, docs_proto: Union['RepeatedCompositeContainer', Sequence['Document']]):
@@ -62,6 +62,19 @@ class DocumentSet(MutableSequence):
             return DocumentSet(self._docs_proto[item])
         else:
             raise IndexError(f'do not support this index {item}')
+
+    def __add__(self, other: 'DocumentSet'):
+        v = DocumentSet([])
+        for doc in self:
+            v.add(doc)
+        for doc in other:
+            v.add(doc)
+        return v
+
+    def __iadd__(self, other: 'DocumentSet'):
+        for doc in other:
+            self.add(doc)
+        return self
 
     def append(self, doc: 'Document') -> 'Document':
         return self._docs_proto.append(doc.as_pb_object)

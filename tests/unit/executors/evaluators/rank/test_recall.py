@@ -7,6 +7,7 @@ from jina.executors.evaluators.rank.recall import RecallEvaluator
 @pytest.mark.parametrize(
     'eval_at, expected',
     [
+        (None, 0.4),
         (0, 0.0),
         (1, 0.2),
         (2, 0.4),
@@ -21,7 +22,7 @@ def test_recall_evaluator(eval_at, expected):
     desired_ids = [1, 0, 20, 30, 40]
 
     evaluator = RecallEvaluator(eval_at=eval_at)
-    assert evaluator.evaluate(actual=matches_ids[:eval_at], desired=desired_ids) == expected
+    assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == expected
     assert evaluator._running_stats._n == 1
     np.testing.assert_almost_equal(evaluator.mean, expected)
 
@@ -29,6 +30,7 @@ def test_recall_evaluator(eval_at, expected):
 @pytest.mark.parametrize(
     'eval_at, expected_first',
     [
+        (None, 0.4),
         (0, 0.0),
         (1, 0.2),
         (2, 0.4),
@@ -43,9 +45,9 @@ def test_recall_evaluator_average(eval_at, expected_first):
     desired_ids = [[1, 0, 20, 30, 40], [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1]]
 
     evaluator = RecallEvaluator(eval_at=eval_at)
-    assert evaluator.evaluate(actual=matches_ids[0][:eval_at], desired=desired_ids[0]) == expected_first
-    assert evaluator.evaluate(actual=matches_ids[1][:eval_at], desired=desired_ids[1]) == 0.0
-    assert evaluator.evaluate(actual=matches_ids[2][:eval_at], desired=desired_ids[2]) == 0.0
+    assert evaluator.evaluate(actual=matches_ids[0], desired=desired_ids[0]) == expected_first
+    assert evaluator.evaluate(actual=matches_ids[1], desired=desired_ids[1]) == 0.0
+    assert evaluator.evaluate(actual=matches_ids[2], desired=desired_ids[2]) == 0.0
     assert evaluator._running_stats._n == 3
     np.testing.assert_almost_equal(evaluator.mean, expected_first / 3)
 
