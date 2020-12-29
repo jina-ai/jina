@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 from typing import List, Dict
 
 import numpy as np
@@ -8,7 +8,7 @@ from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 from jina.proto.jina_pb2 import DocumentProto
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockSegmenterReduce(BaseSegmenter):
@@ -53,8 +53,8 @@ def test_merge_chunks_with_different_modality(mocker):
     response_mock = mocker.Mock(wrap=validate)
 
     flow = Flow().add(name='crafter', uses='MockSegmenterReduce'). \
-        add(name='encoder1', uses=str(cur_dir / 'yaml/mockencoder-mode1.yml')). \
-        add(name='encoder2', uses=str(cur_dir / 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
+        add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
+        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
         add(name='reducer', uses='- !ReduceAllDriver | {traversal_paths: [c]}',
             needs=['encoder1', 'encoder2'])
 

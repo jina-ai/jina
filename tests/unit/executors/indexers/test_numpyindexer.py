@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import numpy as np
 import pytest
@@ -25,7 +25,7 @@ def test_numpy_indexer(batch_size, compress_level, test_metas):
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -49,7 +49,7 @@ def test_numpy_indexer_known(batch_size, compress_level, test_metas):
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     queries = np.array([[1, 1, 1],
@@ -74,7 +74,7 @@ def test_scipy_indexer(batch_size, compress_level, test_metas):
         indexer.batch_size = batch_size
         indexer.add(vec_idx, vec)
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -107,7 +107,7 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
                       metas=test_metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -143,7 +143,7 @@ def test_scipy_indexer_known_big(batch_size, compress_level, test_metas):
                       metas=test_metas) as indexer:
         indexer.add(keys, vectors)
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -175,12 +175,12 @@ def test__get_sorted_top_k(batch_size, num_docs, top_k, test_metas):
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (2, 0), (2, 1)])
 def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
-    idx_file_path = Path(test_metas['workspace']) / 'np.test.gz'
+    idx_file_path = os.path.join(test_metas['workspace'], 'np.test.gz')
     with NumpyIndexer(index_filename=str(idx_file_path), compress_level=compress_level, metas=test_metas) as indexer:
         indexer.batch_size = batch_size
         indexer.touch()
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -201,7 +201,7 @@ def test_indexer_one_dimensional(metric, test_metas):
         indexer.add(add_vec_idx, add_vec)
 
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
@@ -223,7 +223,7 @@ def test_indexer_zeros(metric, dimension, test_metas):
                       metas=test_metas) as indexer:
         indexer.add(add_vec_idx, add_vec)
         indexer.save()
-        assert Path(indexer.index_abspath).exists()
+        assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
 
     with BaseIndexer.load(save_abspath) as indexer:
