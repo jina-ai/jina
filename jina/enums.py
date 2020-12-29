@@ -302,15 +302,6 @@ class FlowInspectType(BetterEnum):
         return self.value in {0, 2}
 
 
-class CallbackOnType(BetterEnum):
-    """Apply the callback_fn on which field of the request """
-
-    REQUEST = 0  # the full request object
-    BODY = 1  # the body of the request, `status`, `routes` and `queryset` are removed
-    DOCS = 2  # the documents inside the request body
-    GROUNDTRUTHS = 3  # the groundtruths inside the request body
-
-
 class RemoteAccessType(BetterEnum):
     """Remote access type when connect to the host """
 

@@ -2,19 +2,82 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 
+def set_pea_parser(parser=None):
+    if not parser:
+        from .base import set_base_parser
+        parser = set_base_parser()
+
+    from .peapods.base import mixin_base_peapods_parser
+    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
+    from .peapods.runtimes.zed import mixin_zed_runtime_parser
+    from .peapods.runtimes.container import mixin_container_runtime_parser
+    from .peapods.runtimes.remote import mixin_remote_parser
+
+    mixin_base_peapods_parser(parser)
+    mixin_zmq_runtime_parser(parser)
+    mixin_zed_runtime_parser(parser)
+    mixin_container_runtime_parser(parser)
+    mixin_remote_parser(parser)
+
+    return parser
+
+
+def set_pod_parser(parser=None):
+    if not parser:
+        from .base import set_base_parser
+        parser = set_base_parser()
+
+    set_pea_parser(parser)
+
+    from .peapods.pods.base import mixin_base_pod_parser
+
+    mixin_base_pod_parser(parser)
+
+    return parser
+
+
+def set_gateway_parser(parser=None):
+    if not parser:
+        from .base import set_base_parser
+        parser = set_base_parser()
+
+    from .peapods.base import mixin_base_peapods_parser
+    from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
+    from .peapods.runtimes.zed import mixin_zed_runtime_parser
+    from .peapods.runtimes.container import mixin_container_runtime_parser
+    from .peapods.runtimes.remote import mixin_remote_parser
+    from .peapods.runtimes.remote import mixin_grpc_parser
+
+    mixin_base_peapods_parser(parser)
+    mixin_zmq_runtime_parser(parser)
+    mixin_grpc_parser(parser)
+
+    return parser
+
+
+def set_client_cli_parser(parser=None):
+    if not parser:
+        from .base import set_base_parser
+        parser = set_base_parser()
+
+    from .peapods.runtimes.remote import mixin_grpc_parser
+    from .client import mixin_client_cli_parser
+
+    mixin_client_cli_parser(parser)
+    mixin_grpc_parser(parser)
+
+    return parser
+
+
 def get_main_parser():
     from .base import set_base_parser
     from .helloworld import set_hw_parser
     from .helper import _chf, _SHOW_ALL_ARGS
     from .check import set_check_parser
-    from .client import set_client_cli_parser
     from .export_api import set_export_api_parser
     from .flow import set_flow_parser
     from .hub import set_hub_parser
     from .logger import set_logger_parser
-    from .peapods.pea import set_pea_parser
-    from .peapods.pods import set_pod_parser
-    from .peapods.runtimes.remote import set_gateway_parser
     from .ping import set_ping_parser
 
     # create the top-level parser
@@ -53,10 +116,9 @@ def get_main_parser():
                                    description='Check the import status all executors and drivers',
                                    formatter_class=_chf))
 
-    set_hub_parser(
-        sp.add_parser('hub', help='build, push, pull Jina Hub images',
-                      description='Build, push, pull Jina Hub images',
-                      formatter_class=_chf))
+    set_hub_parser(sp.add_parser('hub', help='build, push, pull Jina Hub images',
+                                 description='Build, push, pull Jina Hub images',
+                                 formatter_class=_chf))
 
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 
@@ -71,10 +133,11 @@ def get_main_parser():
                                                 'Depreciated, use Jina Dashboard instead',
                                     formatter_class=_chf,
                                     **(dict(help='beautify the log')) if _SHOW_ALL_ARGS else {}))
-    set_client_cli_parser(
-        sp.add_parser('client',
-                      description='Start a Python client that connects to a remote Jina gateway',
-                      formatter_class=_chf, **(dict(help='start a client')) if _SHOW_ALL_ARGS else {}))
+
+    set_client_cli_parser(sp.add_parser('client',
+                                        description='Start a Python client that connects to a remote Jina gateway',
+                                        formatter_class=_chf,
+                                        **(dict(help='start a client')) if _SHOW_ALL_ARGS else {}))
 
     set_export_api_parser(sp.add_parser('export-api',
                                         description='Export Jina API to JSON/YAML file for 3rd party applications',

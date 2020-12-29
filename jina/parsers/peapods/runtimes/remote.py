@@ -1,12 +1,8 @@
-from ...base import set_base_parser
 from ...helper import add_arg_group
 from ....helper import random_port
 
 
-def mixin_remote_parser(parser=None):
-    if not parser:
-        parser = set_base_parser()
-
+def mixin_remote_parser(parser):
     gp1 = add_arg_group(parser, title='Expose')
 
     gp1.add_argument('--port-expose', '--port-grpc', '--port-rest',
@@ -17,9 +13,6 @@ def mixin_remote_parser(parser=None):
 
 
 def mixin_grpc_parser(parser=None):
-    if not parser:
-        parser = set_base_parser()
-
     gp1 = add_arg_group(parser, title='GRPC')
 
     gp1.add_argument('--max-message-size', type=int, default=-1,

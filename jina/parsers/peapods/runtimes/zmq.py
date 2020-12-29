@@ -1,16 +1,12 @@
 import os
 
-from ...base import set_base_parser
 from ...helper import add_arg_group
 from .... import __default_host__
 from ....helper import random_port
 
 
-def mixin_zmq_runtime_parser(parser=None):
+def mixin_zmq_runtime_parser(parser):
     """Mixing in arguments required by :class:`ZMQRuntime` into the given parser."""
-
-    if not parser:
-        parser = set_base_parser()
 
     gp0 = add_arg_group(parser, title='ZMQRuntime')
     gp0.add_argument('--host', type=str, default=__default_host__,

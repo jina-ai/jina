@@ -4,6 +4,7 @@ from .base import set_base_parser
 def set_logger_parser(parser=None):
     if not parser:
         parser = set_base_parser()
+
     parser.add_argument('--groupby-regex', type=str,
                         default=r'(.*@\d+)\[',
                         help='the regular expression for grouping logs')

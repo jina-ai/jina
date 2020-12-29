@@ -1,11 +1,7 @@
 import os
 
-from ..base import set_base_parser
 
-
-def set_hub_login_parser(parser=None):
-    if not parser:
-        parser = set_base_parser()
+def mixin_hub_login_parser(parser):
     parser.add_argument('--username', type=str, help='the Docker registry username',
                         default=os.environ.get('JINAHUB_USERNAME', ''))
     # _gp = parser.add_mutually_exclusive_group()

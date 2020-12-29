@@ -1,15 +1,12 @@
 import argparse
 
-from ..base import set_base_parser
 from ..helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 from ...enums import PeaRoleType
 
 
-def mixin_pea_parser(parser=None):
+def mixin_pea_parser(parser):
     """Mixing in arguments required by :class:`BasePea` into the given parser.
     """
-    if not parser:
-        parser = set_base_parser()
 
     gp0 = add_arg_group(parser, title='Pea')
 

@@ -1,11 +1,12 @@
+from .login import mixin_hub_login_parser
 from ..base import set_base_parser
-from .login import set_hub_login_parser
 
 
 def set_hub_list_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    set_hub_login_parser(parser)
+
+    mixin_hub_login_parser(parser)
 
     parser.add_argument('--name', type=str,
                         help='name of hub image')

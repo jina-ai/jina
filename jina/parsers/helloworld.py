@@ -1,14 +1,15 @@
+from pkg_resources import resource_filename
+
 from .base import set_base_parser
 from .helper import add_arg_group
+from ..helper import get_random_identity
 
 
 def set_hw_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..helper import get_random_identity
-    from pkg_resources import resource_filename
 
-    gp = add_arg_group(parser, 'general arguments')
+    gp = add_arg_group(parser, title='General')
     gp.add_argument('--workdir', type=str, default=get_random_identity(),
                     help='the workdir for hello-world demo, '
                          'all data, indices, shards and outputs will be saved there')
@@ -20,14 +21,14 @@ def set_hw_parser(parser=None):
                     help='the yaml config of the log server')
     gp.add_argument('--download-proxy', type=str,
                     help='specify the proxy when downloading sample data')
-    gp = add_arg_group(parser, 'scalability arguments')
+    gp = add_arg_group(parser, title='Scalability')
     gp.add_argument('--shards', type=int,
                     default=2,
                     help='number of shards when index and query')
     gp.add_argument('--parallel', type=int,
                     default=2,
                     help='number of parallel when index and query')
-    gp = add_arg_group(parser, 'index arguments')
+    gp = add_arg_group(parser, title='Index')
     gp.add_argument('--uses-index', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
                     help='the yaml path of the index flow')
@@ -40,7 +41,7 @@ def set_hw_parser(parser=None):
     gp.add_argument('--index-batch-size', type=int,
                     default=1024,
                     help='the batch size in indexing')
-    gp = add_arg_group(parser, 'query arguments')
+    gp = add_arg_group(parser, title='Search')
     gp.add_argument('--uses-query', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml'))),
                     help='the yaml path of the query flow')

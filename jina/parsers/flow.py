@@ -1,18 +1,20 @@
 import argparse
 
+from pkg_resources import resource_filename
+
 from .base import set_base_parser
 from .helper import add_arg_group, _SHOW_ALL_ARGS
+from ..enums import FlowOutputType, FlowOptimizeLevel, FlowInspectType
+from ..helper import get_random_identity
 
 
 def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
-    from ..enums import FlowOutputType, FlowOptimizeLevel, FlowInspectType
-    from ..helper import get_random_identity
 
-    gp = add_arg_group(parser, 'flow arguments')
+    gp = add_arg_group(parser, title='Flow')
     gp.add_argument('--uses', type=str, help='a yaml file represents a flow')
-    from pkg_resources import resource_filename
+
     gp.add_argument('--logserver', action='store_true', default=False,
                     help='start a log server for the dashboard')
     gp.add_argument('--logserver-config', type=str,

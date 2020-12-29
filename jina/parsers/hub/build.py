@@ -1,4 +1,4 @@
-from .login import set_hub_login_parser
+from .login import mixin_hub_login_parser
 from ..base import set_base_parser
 from ...enums import BuildTestLevel
 
@@ -7,7 +7,7 @@ def set_hub_build_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    set_hub_login_parser(parser)
+    mixin_hub_login_parser(parser)
 
     parser.add_argument('path', type=str, help='path to the directory containing '
                                                'Dockerfile, manifest.yml, README.md '

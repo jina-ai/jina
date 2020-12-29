@@ -1,18 +1,14 @@
 import argparse
 from argparse import ArgumentParser
 
-from ...base import set_base_parser
 from ...helper import add_arg_group, _SHOW_ALL_ARGS
 from .... import __default_host__
 from ....enums import SkipOnErrorType, SocketType
 from ....helper import random_port
 
 
-def mixin_zed_runtime_parser(parser=None) -> 'ArgumentParser':
+def mixin_zed_runtime_parser(parser) -> 'ArgumentParser':
     """Mixing in arguments required by :class:`ZEDRuntime` into the given parser."""
-
-    if not parser:
-        parser = set_base_parser()
 
     gp0 = add_arg_group(parser, title='ZEDRuntime')
 
