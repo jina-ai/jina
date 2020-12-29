@@ -18,12 +18,6 @@ from jina.peapods import Pod
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.fixture
-def access_token_github():
-    token = os.environ.get('GITHUB_TOKEN', None)
-    return token
-
-
 def test_simple_use_abs_import_shall_fail():
     with pytest.raises(ModuleNotFoundError):
         from .dummyhub_abs import DummyHubExecutorAbs
@@ -88,10 +82,11 @@ def test_build_timeout_ready():
         pass
 
 
-@pytest.mark.skipif(condition='os.environ.get(\'GITHUB_TOKEN\')==None', reason='Token not found')
-def test_hub_build_push(monkeypatch, access_token_github):
+@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
+def test_hub_build_push(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
-    monkeypatch.setattr(hubapi, '_fetch_access_token', access_token_github)
+    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
     args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
 
@@ -120,11 +115,12 @@ def test_hub_build_push(monkeypatch, access_token_github):
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
 
-@pytest.mark.skip
-@pytest.mark.skipif(condition='os.environ.get(\'GITHUB_TOKEN\')==None', reason='Token not found')
-def test_hub_build_push_push_again(monkeypatch, access_token_github):
+@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
+def test_hub_build_push_push_again(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
-    monkeypatch.setattr(hubapi, '_fetch_access_token', access_token_github)
+    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
+
     args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info'])
     summary = HubIO(args).build()
 
