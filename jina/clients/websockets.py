@@ -20,7 +20,10 @@ class WebSocketBaseClient(BaseClient):
         req_iter, tname = self._get_requests(**kwargs)
         try:
             client_info = f'{self.args.host}:{self.args.port_expose}'
-            async with websockets.connect(f'ws://{client_info}/stream') as websocket:
+
+            # setting `max_size` as None to avoid connection closure due to size of message
+            # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
+            async with websockets.connect(f'ws://{client_info}/stream', max_size=None) as websocket:
                 self.logger.success(f'Connected to the gateway at {client_info}')
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
@@ -45,6 +48,6 @@ class WebSocketBaseClient(BaseClient):
                         p_bar.update(self.args.batch_size)
 
         except websockets.exceptions.ConnectionClosedOK:
-            self.logger.warning(f'client got disconnected from the rest server')
+            self.logger.warning(f'Client got disconnected from the websocket server')
         except websockets.exceptions.WebSocketException as e:
             self.logger.error(f'Got following error while streaming requests via websocket: {repr(e)}')

@@ -14,8 +14,7 @@ from ..grpc.async_call import AsyncPrefetchCall
 
 def get_fastapi_app(args, logger):
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, Body
-        from fastapi import WebSocket, WebSocketDisconnect
+        from fastapi import FastAPI, WebSocket, Body
         from fastapi.responses import JSONResponse
         from fastapi.middleware.cors import CORSMiddleware
         # TODO(Deepankar): starlette comes installed with fastapi. Should this be added as a separate dependency?
@@ -56,7 +55,7 @@ def get_fastapi_app(args, logger):
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):
 
-        # This disabled other encodings ('text' & 'json')
+        # This disables other encodings - 'text' & 'json'
         encoding = 'bytes'
 
         def __init__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
@@ -78,13 +77,14 @@ def get_fastapi_app(args, logger):
             # At any point only a single request is sent in bytes instead of an iterator of requests
             # For each such request, we send back the response in bytes
             try:
+                # data is in bytes. We can either send data directly or convert it to :class:`Request`
                 asyncio.create_task(
                     self.zmqlet.send_message(
-                        Message(None, data, 'gateway', **vars(self.args))
+                        Message(None, Request(data), 'gateway', **vars(self.args))
                     )
                 )
                 response = await self.zmqlet.recv_message(callback=self.handle)
-                # Convert to bytes before sending the response
+                # Convert to bytes before sending the response back to the client
                 await websocket.send_bytes(response.SerializeToString())
             except Exception as e:
                 logger.error(f'Got an exception while streaming requests: {e}')
