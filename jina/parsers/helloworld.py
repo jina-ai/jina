@@ -21,6 +21,7 @@ def set_hw_parser(parser=None):
                     help='the yaml config of the log server')
     gp.add_argument('--download-proxy', type=str,
                     help='specify the proxy when downloading sample data')
+
     gp = add_arg_group(parser, title='Scalability')
     gp.add_argument('--shards', type=int,
                     default=2,
@@ -41,6 +42,7 @@ def set_hw_parser(parser=None):
     gp.add_argument('--index-batch-size', type=int,
                     default=1024,
                     help='the batch size in indexing')
+
     gp = add_arg_group(parser, title='Search')
     gp.add_argument('--uses-query', type=str,
                     default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml'))),

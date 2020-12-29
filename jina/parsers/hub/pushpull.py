@@ -1,12 +1,6 @@
-from .login import mixin_hub_login_parser
-from ..base import set_base_parser
+from ..helper import add_arg_group
 
 
-def set_hub_pushpull_parser(parser=None):
-    if not parser:
-        parser = set_base_parser()
-
-    mixin_hub_login_parser(parser)
-
-    parser.add_argument('name', type=str, help='the name of the image.')
-    return parser
+def mixin_hub_pushpull_parser(parser):
+    gp = add_arg_group(parser, title='Push Pull')
+    gp.add_argument('name', type=str, help='the name of the image.')

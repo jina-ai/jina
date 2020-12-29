@@ -1,9 +1,53 @@
-from .build import set_hub_build_parser
-from .list import set_hub_list_parser
-from .new import set_hub_new_parser
-from .pushpull import set_hub_pushpull_parser
 from ..base import set_base_parser
 from ..helper import _chf
+
+
+def set_hub_pushpull_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    from .login import mixin_hub_login_parser
+    from .pushpull import mixin_hub_pushpull_parser
+
+    mixin_hub_login_parser(parser)
+    mixin_hub_pushpull_parser(parser)
+    return parser
+
+
+def set_hub_build_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    from .login import mixin_hub_login_parser
+    from .build import mixin_hub_build_parser
+
+    mixin_hub_login_parser(parser)
+    mixin_hub_build_parser(parser)
+
+    return parser
+
+
+def set_hub_list_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    from .login import mixin_hub_login_parser
+    from .list import mixin_hub_list_parser
+
+    mixin_hub_login_parser(parser)
+    mixin_hub_list_parser(parser)
+
+    return parser
+
+
+def set_hub_new_parser(parser=None):
+    if not parser:
+        parser = set_base_parser()
+
+    from .new import mixin_hub_new_parser
+    mixin_hub_new_parser(parser)
+
+    return parser
 
 
 def set_hub_parser(parser=None):
@@ -14,9 +58,11 @@ def set_hub_parser(parser=None):
                                 description='use "%(prog)-8s [sub-command] --help" '
                                             'to get detailed information about each sub-command', required=True)
 
-    spp.add_parser('login', help='login via Github to push images to Jina hub registry',
-                   description='Login via Github to push images to Jina hub registry',
-                   formatter_class=_chf)
+    from .login import mixin_hub_login_parser
+    mixin_hub_login_parser(
+        spp.add_parser('login', help='login via Github to push images to Jina hub registry',
+                       description='Login via Github to push images to Jina hub registry',
+                       formatter_class=_chf))
 
     set_hub_new_parser(
         spp.add_parser('new', aliases=['init', 'create'], help='create a new Hub executor or app using cookiecutter',
