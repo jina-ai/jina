@@ -8,9 +8,9 @@ from jina.types.document.uid import UniqueId
 from jina.types.ndarray.generic import NdArray
 
 e1 = np.random.random([7])
-e2 = np.random.random([7])
-e3 = np.random.random([7])
-e4 = np.random.random([7])
+e2 = np.random.random([5])
+e3 = np.random.random([3])
+e4 = np.random.random([9])
 
 
 def input_fn():
