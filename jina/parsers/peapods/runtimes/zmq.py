@@ -31,5 +31,4 @@ def mixin_zmq_runtime_parser(parser=None):
     gp0.add_argument('--ssh-password', type=str, default=None,
                      help='ssh password to the ssh server.')
 
-
     return parser
