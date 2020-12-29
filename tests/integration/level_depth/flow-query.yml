@@ -1,4 +1,6 @@
 !Flow
+with:
+  rest_api: $REST_API
 pods:
   encoder:
     uses: yaml/encoder.yml

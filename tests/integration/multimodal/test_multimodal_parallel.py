@@ -37,7 +37,10 @@ def multimodal_documents():
     return docs
 
 
-def test_multimodal_embedding_parallel(multimodal_documents, mocker):
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_multimodal_embedding_parallel(multimodal_documents, mocker, monkeypatch, rest_api):
+    monkeypatch.setenv("REST_API", rest_api)
 
     def validate_response(resp):
         assert len(resp.index.docs) == NUM_DOCS
@@ -83,7 +86,11 @@ def multimodal_all_types_documents():
     return docs
 
 
-def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker):
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker, monkeypatch, rest_api):
+    monkeypatch.setenv("REST_API", rest_api)
+
     def validate_response(resp):
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):

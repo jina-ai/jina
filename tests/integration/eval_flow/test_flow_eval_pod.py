@@ -40,16 +40,18 @@ def validate(ids, expect):
 
 
 @pytest.mark.parametrize('inspect', params)
-def test_flow1(inspect):
-    f = Flow(inspect=inspect).add()
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow1(inspect, rest_api):
+    f = Flow(rest_api=rest_api, inspect=inspect).add()
 
     with f:
         f.index(docs)
 
 
 @pytest.mark.parametrize('inspect', params)
-def test_flow2(inspect):
-    f = Flow(inspect=inspect).add().inspect(uses='DummyEvaluator1')
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow2(inspect, rest_api):
+    f = Flow(rest_api=rest_api, inspect=inspect).add().inspect(uses='DummyEvaluator1')
 
     with f:
         f.index(docs)
@@ -57,9 +59,11 @@ def test_flow2(inspect):
     validate([1], expect=f.args.inspect.is_keep)
 
 
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
 @pytest.mark.parametrize('inspect', params)
-def test_flow3(inspect):
-    f = Flow(inspect=inspect).add(name='p1').inspect(uses='DummyEvaluator1') \
+@pytest.mark.parametrize('rest_api', [False])
+def test_flow3(inspect, rest_api):
+    f = Flow(rest_api=rest_api, inspect=inspect).add(name='p1').inspect(uses='DummyEvaluator1') \
         .add(name='p2', needs='gateway').needs(['p1', 'p2']).inspect(uses='DummyEvaluator2')
 
     with f:
@@ -69,8 +73,9 @@ def test_flow3(inspect):
 
 
 @pytest.mark.parametrize('inspect', params)
-def test_flow5(inspect):
-    f = Flow(inspect=inspect).add().inspect(uses='DummyEvaluator1').add().inspect(
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_flow5(inspect, rest_api):
+    f = Flow(rest_api=rest_api, inspect=inspect).add().inspect(uses='DummyEvaluator1').add().inspect(
         uses='DummyEvaluator2').add().inspect(
         uses='DummyEvaluator3').plot(build=True)
 

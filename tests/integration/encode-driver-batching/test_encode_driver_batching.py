@@ -84,7 +84,8 @@ def document_generator(num_docs, num_chunks, num_chunks_chunks):
 
 @pytest.mark.parametrize('request_batch_size', [5, 100, 500])
 @pytest.mark.parametrize('driver_batch_size', [8, 16, 64])
-def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_encode_driver_batching(request_batch_size, driver_batch_size, rest_api, tmpdir):
     num_docs = 1315
     num_chunks = 0
     num_chunks_chunks = 0
@@ -115,7 +116,7 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
     executor_yml_file = os.path.join(tmpdir, 'executor.yml')
     encoder.save_config(executor_yml_file)
 
-    with Flow().add(uses=executor_yml_file) as f:
+    with Flow(rest_api=rest_api).add(uses=executor_yml_file) as f:
         f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  batch_size=request_batch_size,
                  on_done=validate_response,
@@ -126,8 +127,9 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
 @pytest.mark.parametrize('driver_batch_size', [8, 64, 128])
 @pytest.mark.parametrize('num_chunks', [2, 8])
 @pytest.mark.parametrize('num_chunks_chunks', [2, 8])
+@pytest.mark.parametrize('rest_api', [False, True])
 def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_size, num_chunks, num_chunks_chunks,
-                                            tmpdir):
+                                            rest_api, tmpdir):
     num_docs = 1315
     num_requests = int(num_docs / request_batch_size)
     num_docs_last_req_batch = num_docs % (num_requests * request_batch_size)
@@ -159,7 +161,7 @@ def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_siz
     executor_yml_file = os.path.join(tmpdir, 'executor.yml')
     encoder.save_config(executor_yml_file)
 
-    with Flow().add(uses=executor_yml_file) as f:
+    with Flow(rest_api=rest_api).add(uses=executor_yml_file) as f:
         f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  batch_size=request_batch_size,
                  on_done=validate_response,

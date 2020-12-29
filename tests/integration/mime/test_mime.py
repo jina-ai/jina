@@ -1,5 +1,6 @@
 import glob
 import os
+import pytest
 
 from jina.flow import Flow
 
@@ -30,31 +31,34 @@ def input_fn3():
         yield g
 
 
-def test_dummy_seg(mocker):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_dummy_seg(mocker, rest_api):
     response_mock = mocker.Mock()
-    f = Flow().add(uses='- !Buffer2URI | {mimetype: png}')
+    f = Flow(rest_api=rest_api).add(uses='- !Buffer2URI | {mimetype: png}')
     with f:
         f.index(input_fn=input_fn, on_done=response_mock)
 
     response_mock.assert_called()
     response_mock_2 = mocker.Mock()
-    f = Flow().add(uses='- !Buffer2URI | {mimetype: png, base64: true}')
+    f = Flow(rest_api=rest_api).add(uses='- !Buffer2URI | {mimetype: png, base64: true}')
     with f:
         f.index(input_fn=input_fn, on_done=response_mock_2)
     response_mock_2.assert_called()
 
 
-def test_any_file(mocker):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_any_file(mocker, rest_api):
     response_mock = mocker.Mock()
-    f = Flow().add(uses='- !URI2DataURI | {base64: true}')
+    f = Flow(rest_api=rest_api).add(uses='- !URI2DataURI | {base64: true}')
     with f:
         f.index(input_fn=input_fn2, on_done=response_mock)
     response_mock.assert_called()
 
 
-def test_aba(mocker):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_aba(mocker, rest_api):
     response_mock = mocker.Mock()
-    f = (Flow().add(uses='- !Buffer2URI | {mimetype: png}')
+    f = (Flow(rest_api=rest_api).add(uses='- !Buffer2URI | {mimetype: png}')
          .add(uses='- !URI2Buffer {}')
          .add(uses='- !Buffer2URI | {mimetype: png}'))
 
@@ -63,9 +67,10 @@ def test_aba(mocker):
     response_mock.assert_called()
 
 
-def test_pathURI2Buffer(mocker):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_pathURI2Buffer(mocker, rest_api):
     response_mock = mocker.Mock()
-    f = (Flow().add(uses='- !URI2Buffer {}')
+    f = (Flow(rest_api=rest_api).add(uses='- !URI2Buffer {}')
          .add(uses='- !Buffer2URI {}'))
 
     with f:
@@ -73,18 +78,20 @@ def test_pathURI2Buffer(mocker):
     response_mock.assert_called()
 
 
-def test_text2datauri(mocker):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_text2datauri(mocker, rest_api):
     response_mock = mocker.Mock()
-    f = (Flow().add(uses='- !Text2URI {}'))
+    f = (Flow(rest_api=rest_api).add(uses='- !Text2URI {}'))
 
     with f:
         f.index_lines(lines=['abc', '123', 'hello, world'], on_done=response_mock)
     response_mock.assert_called()
 
 
-def test_gateway_dataui(mocker):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_gateway_dataui(mocker, rest_api):
     response_mock = mocker.Mock()
-    f = (Flow().add())
+    f = (Flow(rest_api=rest_api).add())
 
     with f:
         f.index_lines(lines=['abc', '123', 'hello, world'], on_done=response_mock)

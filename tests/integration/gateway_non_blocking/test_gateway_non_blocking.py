@@ -7,7 +7,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.mark.parametrize('parallel, expected_response', [(1, ['slow', 'fast']), (2, ['fast', 'slow'])])
-def test_non_blocking_gateway(parallel, expected_response, mocker):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_non_blocking_gateway(parallel, expected_response, rest_api, mocker):
     os.environ['JINA_NON_BLOCKING_PARALLEL'] = str(parallel)
     response = []
 
@@ -19,7 +20,7 @@ def test_non_blocking_gateway(parallel, expected_response, mocker):
         'slow', 'fast'
     ]
 
-    with Flow().load_config(os.path.join(cur_dir, 'flow.yml')) as f:
+    with Flow(rest_api=rest_api).load_config(os.path.join(cur_dir, 'flow.yml')) as f:
         f.search(input_fn=data,
                  on_done=fill_responses,
                  batch_size=1,

@@ -1,4 +1,6 @@
 !Flow
+with:
+  rest_api: $REST_API
 pods:
   gt_indexer:
     uses: yaml/index-gt.yml
@@ -8,4 +10,3 @@ pods:
     shards: 2
   evaluator:
     uses: yaml/single-evaluator.yml
-

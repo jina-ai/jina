@@ -1,9 +1,13 @@
 import os
+import pytest
 
 from jina.flow import Flow
 
 
-def test_index_depth_0_search_depth_1(tmpdir, mocker):
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, rest_api):
+    monkeypatch.setenv("REST_API", rest_api)
     os.environ['JINA_TEST_LEVEL_DEPTH_WORKSPACE'] = str(tmpdir)
     index_data = [
         'I am chunk 0 of doc 1, I am chunk 1 of doc 1, I am chunk 2 of doc 1',

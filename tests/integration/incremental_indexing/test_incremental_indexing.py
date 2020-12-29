@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from jina.clients import Client
 from jina.executors import BaseExecutor
@@ -13,11 +14,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 print(random_workspace)
 
 
-def test_incremental_indexing_sequential_indexers(random_workspace):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_incremental_indexing_sequential_indexers(random_workspace, rest_api):
     total_docs = 20
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer.yml'))
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml')))
 
@@ -39,13 +41,14 @@ def test_incremental_indexing_sequential_indexers(random_workspace):
         assert doc_indexer._size == num_uniq_docs
 
 
-def test_incremental_indexing_sequential_indexers_content_hash_same_content(random_workspace):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_incremental_indexing_sequential_indexers_content_hash_same_content(random_workspace, rest_api):
     total_docs = 20
     duplicate_docs, _ = get_duplicate_docs(num_docs=total_docs, same_content=True)
     # because they all have the same content
     num_uniq_docs = 1
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer_content_hash.yml'))
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer_content_hash.yml')))
 
@@ -67,13 +70,14 @@ def test_incremental_indexing_sequential_indexers_content_hash_same_content(rand
         assert doc_indexer._size == num_uniq_docs
 
 
-def test_incremental_indexing_sequential_indexers_content_hash(random_workspace):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_incremental_indexing_sequential_indexers_content_hash(random_workspace, rest_api):
     total_docs = 20
     duplicate_docs, _ = get_duplicate_docs(num_docs=total_docs, same_content=False)
     # because the content is % 2
     num_uniq_docs = 10
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer_content_hash.yml'))
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer_content_hash.yml')))
 
@@ -94,12 +98,13 @@ def test_incremental_indexing_sequential_indexers_content_hash(random_workspace)
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
 
-
-def test_incremental_indexing_parallel_indexers(random_workspace):
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_incremental_indexing_parallel_indexers(random_workspace, rest_api):
     total_docs = 1000
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer.yml'),
               name='inc_vec')
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'),
@@ -121,13 +126,14 @@ def test_incremental_indexing_parallel_indexers(random_workspace):
         assert doc_indexer._size == num_uniq_docs
 
 
-def test_incremental_indexing_sequential_indexers_with_shards(random_workspace):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_incremental_indexing_sequential_indexers_with_shards(random_workspace, rest_api):
     total_docs = 1000
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     num_shards = 4
     # can't use plain _unique in uses_before because workspace will conflict with other
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
               shards=num_shards,
@@ -160,14 +166,16 @@ def test_incremental_indexing_sequential_indexers_with_shards(random_workspace):
     assert doc_idx_size == num_uniq_docs
 
 
-def test_incremental_indexing_parallel_indexers_with_shards(random_workspace):
+# TODO(Deepankar): This gets stuck for `rest_api: True`. Must resolve before merging
+@pytest.mark.parametrize('rest_api', [False])
+def test_incremental_indexing_parallel_indexers_with_shards(random_workspace, rest_api):
     total_docs = 1000
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     num_shards = 4
 
     # can't use plain _unique in uses_before because workspace will conflict with other
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
         .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
              uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
              shards=num_shards,

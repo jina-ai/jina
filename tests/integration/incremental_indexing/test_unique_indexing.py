@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from jina.executors import BaseExecutor
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
@@ -12,11 +13,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 print(random_workspace)
 
 
-def test_unique_indexing_vecindexers(random_workspace):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_unique_indexing_vecindexers(random_workspace, rest_api):
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'uniq_vectorindexer.yml'), name='vec_idx'))
 
     with f:
@@ -27,11 +29,12 @@ def test_unique_indexing_vecindexers(random_workspace):
         assert vector_indexer.size == num_uniq_docs
 
 
-def test_unique_indexing_docindexers(random_workspace):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_unique_indexing_docindexers(random_workspace, rest_api):
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'), shards=1))
 
     with f:
@@ -42,12 +45,13 @@ def test_unique_indexing_docindexers(random_workspace):
         assert doc_indexer.size == num_uniq_docs
 
 
-def test_unique_indexing_vecindexers_before(random_workspace):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_unique_indexing_vecindexers_before(random_workspace, rest_api):
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     # can't use plain _unique because workspace will conflict with other tests
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_vec.yml')))
 
@@ -59,12 +63,13 @@ def test_unique_indexing_vecindexers_before(random_workspace):
         assert vector_indexer.size == num_uniq_docs
 
 
-def test_unique_indexing_docindexers_before(random_workspace):
+@pytest.mark.parametrize('rest_api', [True, False])
+def test_unique_indexing_docindexers_before(random_workspace, rest_api):
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     # can't use plain _unique because workspace will conflict with other tests
-    f = (Flow()
+    f = (Flow(rest_api=rest_api)
          .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_doc.yml')))
 

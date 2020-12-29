@@ -67,7 +67,10 @@ def random_workspace(tmpdir):
                           ('flow-index-gt-parallel.yml', 'flow-evaluate-from-file-parallel.yml'),
                           ('flow-index-gt-parallel.yml', 'flow-parallel-evaluate-from-file-parallel.yml')
                           ])
-def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs, index_yaml, search_yaml, mocker):
+@pytest.mark.parametrize('rest_api', [False, True])
+def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs, index_yaml,
+                              search_yaml, rest_api, mocker, monkeypatch):
+    monkeypatch.setenv("REST_API", rest_api)
     with Flow.load_config(index_yaml) as index_gt_flow:
         index_gt_flow.index(input_fn=index_groundtruth, batch_size=10)
 

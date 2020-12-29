@@ -1,4 +1,6 @@
 !Flow
+with:
+  rest_api: $REST_API
 pods:
   evaluate_from_file:
     uses: yaml/evaluate-from-file.yml

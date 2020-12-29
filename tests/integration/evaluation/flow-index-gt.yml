@@ -1,4 +1,6 @@
 !Flow
+with:
+  rest_api: $REST_API
 pods:
   gt_indexer:
     uses: yaml/index-gt.yml
