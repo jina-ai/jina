@@ -66,3 +66,4 @@ requests:                   http
 prettytable:                devel, test
 sseclient-py:               test
 websockets:                 http, devel, cicd, test
+wsproto:                    http, devel, cicd, test
