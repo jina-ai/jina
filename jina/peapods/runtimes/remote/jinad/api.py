@@ -176,6 +176,7 @@ class JinadAPI:
             import websockets
 
         try:
+            # TODO(Deepankar): https://github.com/jina-ai/jinad/issues/74
             # sleeping for few seconds to allow the logs to be written in remote
             await asyncio.sleep(3)
             async with websockets.connect(f'{self.log_url}/{remote_id}?timeout=20') as websocket:
@@ -214,12 +215,9 @@ class JinadAPI:
         :param remote_id: the identity of that pea/pod
         :return:
         """
-        current_line = 0
         try:
             self.logger.info(f'fetching streamed logs from remote id: {remote_id}')
-            while True:
-                current_line = asyncio.run(self.wslogs(
-                    remote_id=remote_id, stop_event=stop_event, current_line=current_line))
+            asyncio.run(self.wslogs(remote_id=remote_id, stop_event=stop_event, current_line=0))
         except RemotePodClosed:
             self.logger.debug(f'🌏 remote closed')
         finally:
