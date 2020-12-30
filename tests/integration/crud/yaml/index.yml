@@ -1,0 +1,61 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: cosine
+    metas:
+      name: vecidx
+      workspace: $JINA_TOPK_DIR
+  - !BinaryPbIndexer
+    with:
+      index_filename: doc.gz
+    metas:
+      name: docidx
+      workspace: $JINA_TOPK_DIR
+metas:
+  name: chunk_indexer
+  workspace: $JINA_TOPK_DIR
+requests:
+  on:
+    UpdateRequest:
+      - !VectorIndexDriver
+        with:
+          method: update
+          executor: vecidx
+          traversal_paths: [ 'r' ]
+      - !KVIndexDriver
+        with:
+          method: update
+          executor: docidx
+          traversal_paths: [ 'r' ]
+    DeleteRequest:
+      - !VectorIndexDriver
+        with:
+          method: delete
+          executor: vecidx
+          traversal_paths: [ 'r' ]
+      - !KVIndexDriver
+        with:
+          method: delete
+          executor: docidx
+          traversal_paths: [ 'r' ]
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['r']
+      - !KVIndexDriver
+        with:
+          executor: docidx
+          traversal_paths: ['r']
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: vecidx
+          top_k: $JINA_TOPK
+          traversal_paths: ['r']
+      - !KVSearchDriver
+        with:
+          executor: docidx
+          traversal_paths: ['m']
