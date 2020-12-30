@@ -6,36 +6,15 @@ import pytest
 import requests
 
 from jina import JINA_GLOBAL
-from jina.checker import NetworkChecker
-from jina.enums import FlowOptimizeLevel, SocketType
+from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-from jina.parsers import set_pea_parser, set_ping_parser, set_pod_parser
+from jina.parsers import set_pod_parser
 from jina.peapods.pods import BasePod
-from jina.peapods.runtimes.local import LocalRuntime
 from jina.proto.jina_pb2 import DocumentProto
 from tests import random_docs, rm_files
 
 cur_dir = Path(__file__).parent
-
-
-def test_ping():
-    a1 = set_pea_parser().parse_args([])
-    a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print-response'])
-    a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
-
-    with pytest.raises(SystemExit) as cm:
-        with LocalRuntime(a1):
-            NetworkChecker(a2)
-
-    assert cm.value.code == 0
-
-    # test with bad addresss
-    with pytest.raises(SystemExit) as cm:
-        with LocalRuntime(a1):
-            NetworkChecker(a3)
-
-    assert cm.value.code == 1
 
 
 def test_flow_with_jump():

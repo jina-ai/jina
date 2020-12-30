@@ -40,4 +40,5 @@ def mixin_pea_parser(parser):
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp.add_argument('--pea-role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
+                    default=PeaRoleType.SINGLETON,
                     help='the role of this pea in a pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS)

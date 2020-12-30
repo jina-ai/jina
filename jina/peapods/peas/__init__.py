@@ -1,4 +1,5 @@
 import argparse
+import copy
 import os
 from typing import Type
 
@@ -27,9 +28,7 @@ class BasePea(metaclass=PeaType):
         self.name = self.args.name or self.__class__.__name__
         if args.pea_role == PeaRoleType.PARALLEL:
             self.name = f'{self.name}-{args.pea_id}'
-        elif args.pea_role == PeaRoleType.SINGLETON:
-            pass
-        else:
+        elif args.pea_role == PeaRoleType.HEAD or args.pea_role == PeaRoleType.TAIL:
             self.name = f'{self.name}-{str(args.pea_role).lower()}'
 
         self.is_ready = _get_event(self)
@@ -38,9 +37,12 @@ class BasePea(metaclass=PeaType):
         self.logger = JinaLogger(self.name,
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)
+
+        _args = copy.deepcopy(args)
+        _args.name = f'{self.name}-R'
+
         try:
-            args.name = f'{self.name}-R'
-            self.runtime = self._get_runtime_cls()(args)  # type: 'BaseRuntime'
+            self.runtime = self._get_runtime_cls()(_args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}')
             raise RuntimeFailToStart from ex
