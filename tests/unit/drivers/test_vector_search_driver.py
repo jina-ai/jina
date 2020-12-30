@@ -3,10 +3,9 @@ from typing import Tuple
 import numpy as np
 import pytest
 
+from jina import Document, QueryLang
 from jina.drivers.search import VectorSearchDriver
 from jina.executors.indexers import BaseVectorIndexer
-from jina import Document, QueryLang
-from jina.types.document import uid
 
 
 class MockVectorSearchDriver(VectorSearchDriver):
