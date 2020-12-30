@@ -1,7 +1,6 @@
 import os
 
 from ...helper import add_arg_group
-from .... import __default_host__
 from ....helper import random_port
 
 
@@ -9,8 +8,6 @@ def mixin_zmq_runtime_parser(parser):
     """Mixing in arguments required by :class:`ZMQRuntime` into the given parser."""
 
     gp = add_arg_group(parser, title='ZMQRuntime')
-    gp.add_argument('--host', type=str, default=__default_host__,
-                    help=f'host address of the runtime, by default it is {__default_host__}.')
     gp.add_argument('--port-ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', random_port()),
                     help='port for controlling the runtime, default a random port between [49152, 65535]')
     gp.add_argument('--ctrl-with-ipc', action='store_true', default=False,

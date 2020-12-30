@@ -74,11 +74,12 @@ def set_client_cli_parser(parser=None):
         from .base import set_base_parser
         parser = set_base_parser()
 
-    from .peapods.runtimes.remote import mixin_grpc_parser
+    from .peapods.runtimes.remote import mixin_grpc_parser, mixin_remote_parser
     from .client import mixin_client_cli_parser
 
     mixin_client_cli_parser(parser)
     mixin_grpc_parser(parser)
+    mixin_remote_parser(parser)
 
     return parser
 

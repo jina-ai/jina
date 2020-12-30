@@ -2,8 +2,8 @@ import argparse
 
 from pkg_resources import resource_filename
 
-from jina.helper import get_random_identity
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from ..helper import add_arg_group, _SHOW_ALL_ARGS
+from ...helper import get_random_identity
 
 
 def mixin_base_ppr_parser(parser):

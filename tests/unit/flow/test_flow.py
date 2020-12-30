@@ -9,8 +9,6 @@ from jina import JINA_GLOBAL
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-from jina.parsers import set_pod_parser
-from jina.peapods.pods import BasePod
 from jina.proto.jina_pb2 import DocumentProto
 from tests import random_docs, rm_files
 
@@ -73,6 +71,7 @@ def test_flow_with_jump():
         _validate(f)
 
     rm_files(['tmp.yml'])
+
 
 def test_simple_flow():
     bytes_gen = (b'aaa' for _ in range(10))
@@ -157,14 +156,6 @@ def test_flow_identical():
         assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
     rm_files(['test2.yml'])
-
-
-def test_pod_status():
-    args = set_pod_parser().parse_args(['--parallel', '3'])
-    with BasePod(args) as p:
-        assert len(p.status) == p.num_peas
-        for v in p.status:
-            assert v
 
 
 def test_flow_no_container():
