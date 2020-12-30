@@ -619,10 +619,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _ipython_display_(self):
         """Displays the object in IPython as a side effect"""
-        build = True
-        if self._build_level == FlowBuildLevel.GRAPH:
-            build = False
-        self.plot(inline_display=True, build=build)
+        self.plot(inline_display=True, build=(self._build_level != FlowBuildLevel.GRAPH))
 
     def _mermaid_to_url(self, mermaid_str, img_type) -> str:
         """
