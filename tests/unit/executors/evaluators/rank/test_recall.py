@@ -25,6 +25,10 @@ def test_recall_evaluator(eval_at, expected):
     assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == expected
     assert evaluator._running_stats._n == 1
     np.testing.assert_almost_equal(evaluator.mean, expected)
+    if eval_at:
+        assert evaluator.metric == f'Recall@{eval_at}'
+    else:
+        assert evaluator.metric == f'Recall@N'
 
 
 @pytest.mark.parametrize(

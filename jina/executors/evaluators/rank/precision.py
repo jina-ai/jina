@@ -8,8 +8,6 @@ class PrecisionEvaluator(BaseRankingEvaluator):
        It computes how many of the first given `eval_at` matches are found in the groundtruth
     """
 
-    metric = 'Precision@N'
-
     def __init__(self,
                  eval_at: Optional[int] = None,
                  *args, **kwargs):
@@ -18,6 +16,10 @@ class PrecisionEvaluator(BaseRankingEvaluator):
         """
         super().__init__(*args, **kwargs)
         self.eval_at = eval_at
+
+    @property
+    def metric(self):
+        return f'Precision@{self.eval_at}' if self.eval_at else 'Precision@N'
 
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
