@@ -121,21 +121,29 @@ class BasePea(ExitStack):
 
         """
         try:
-            try:
-                self.executor = BaseExecutor.load_config(self.args.uses,
-                                                         separated_workspace=self.args.separated_workspace,
-                                                         pea_id=self.args.pea_id,
-                                                         read_only=self.args.read_only)
-            except BadConfigSource:
-                # retry loading but with "uses_internal" as the source
-                self.executor = BaseExecutor.load_config(self.args.uses_internal,
-                                                         separated_workspace=self.args.separated_workspace,
-                                                         pea_id=self.args.pea_id,
-                                                         read_only=self.args.read_only)
-            self.executor.attach(pea=self)
+            self.executor = BaseExecutor.load_config(self.args.uses,
+                                                     separated_workspace=self.args.separated_workspace,
+                                                     pea_id=self.args.pea_id,
+                                                     read_only=self.args.read_only)
+        except BadConfigSource:
+            pass  # fallback to use "uses_internal" as the source
+        except Exception as ex:
+            raise ExecutorFailToLoad from ex
+
+        try:
+            # fallback to use "uses_internal" as the source
+            self.executor = BaseExecutor.load_config(self.args.uses_internal,
+                                                     separated_workspace=self.args.separated_workspace,
+                                                     pea_id=self.args.pea_id,
+                                                     read_only=self.args.read_only)
         except FileNotFoundError as ex:
             self.logger.error(f'fail to load file dependency: {repr(ex)}')
             raise ExecutorFailToLoad from ex
+        except Exception as ex:
+            raise ExecutorFailToLoad from ex
+
+        try:
+            self.executor.attach(pea=self)
         except Exception as ex:
             raise ExecutorFailToLoad from ex
 

@@ -2,7 +2,8 @@ import pytest
 
 from jina.parser import set_pea_parser
 from jina.peapods.peas import BasePea
-from jina.excepts import DriverError, NoDriverForRequest, ExecutorFailToLoad, EventLoopError, RequestLoopEnd
+from jina.excepts import DriverError, NoDriverForRequest, ExecutorFailToLoad, EventLoopError, RequestLoopEnd, \
+    BadConfigSource
 
 
 class MockExceptionRequestLoopPea(BasePea):
@@ -108,5 +109,13 @@ def test_pea_proper_terminate_when_load_fails(pea_exception_load_executor_factor
         with pea:
             pass
 
-    # exception happens in __enter__
-    assert not pea.properly_closed
+
+@pytest.mark.parametrize('exception_class', [BadConfigSource, FileNotFoundError, Exception])
+@pytest.mark.parametrize('exception_raised_by', ['jina.executors.BaseExecutor.load_config',
+                                                 'jina.executors.BaseExecutor.attach'])
+def test_pea_load_executor_exceptions(mocker, exception_class, exception_raised_by):
+    args = set_pea_parser().parse_args([])
+    with pytest.raises(ExecutorFailToLoad):
+        pea = BasePea(args)
+        mocker.patch(exception_raised_by, side_effect=exception_class())
+        pea.load_executor()
