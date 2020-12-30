@@ -5,7 +5,7 @@ import pytest
 from jina.drivers.index import KVIndexDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.proto import jina_pb2
-from jina.types.document import uid, Document
+from jina.types.document import Document
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):

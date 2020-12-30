@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
+
 from jina import Document, DocumentSet
 from jina.drivers.multimodal import MultiModalDriver
-from jina.excepts import LengthMismatchException
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 from jina.types.document.multimodal import MultimodalDocument
 

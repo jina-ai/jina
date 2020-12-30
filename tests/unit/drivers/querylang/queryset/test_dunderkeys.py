@@ -1,5 +1,6 @@
 import pytest
 
+from jina import Document
 from jina.drivers.querylang.queryset.dunderkey import (
     dunderkey,
     dunder_init,
@@ -8,7 +9,7 @@ from jina.drivers.querylang.queryset.dunderkey import (
     undunder_keys,
     dunder_truncate,
 )
-from jina import Document
+
 
 def test_dunderkey():
     assert dunderkey('a', 'b', 'c') == 'a__b__c'
