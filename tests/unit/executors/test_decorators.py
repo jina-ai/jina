@@ -266,7 +266,7 @@ def test_batching_ranker_slice_on():
             self.batch_size = batch_size
             self.batch_sizes = []
 
-        @batching_ranker_input(slice_on=[1,2])
+        @batching_ranker_input(slice_on=1, num_data=2)
         def f(self, key, data):
             self.batch_sizes.append([len(key),len(data)])
             return data

@@ -376,8 +376,8 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
 def batching_ranker_input(func: Callable[[Any], np.ndarray] = None,
                          batch_size: Union[int, Callable] = None,
                          num_batch: Optional[int] = None,
-                         slice_on: Union[int, List[int]] = 2,
-                         num_data: int = None) -> Any:
+                         slice_on: int = 2,
+                         num_data: int = 1) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory.
     This can batch multiple inputs. 
@@ -403,28 +403,12 @@ def batching_ranker_input(func: Callable[[Any], np.ndarray] = None,
                 ) -> 'np.ndarray': 
                 ...       
 
-                @batching_ranker_input(batch_size = 64, num_data = 1)
-                def score(
-                    self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
-                ) -> 'np.ndarray': 
-                ...
                     
     """
     def _batching(func):
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
-            _slice_on = slice_on
-            _num_data = num_data
-            if _num_data is not None:
-                if isinstance(_slice_on, List):
-                    raise ValueError(f'When using num_data in @batching_ranker_input, an integer value '
-                'for slice_on (default=2) is expected.')
-                _slice_on = [_slice_on + i for i in range(0, _num_data)]
-            else:
-                if isinstance(_slice_on, int):
-                    _slice_on = [_slice_on]
-
-            data = [args[i] for i in _slice_on]
+            data = [args[slice_on + i] for i in range(0, num_data)]
             # priority: decorator > class_attribute
             # by default data is in args[1:] (self needs to be taken into account)
             b_size = batch_size or getattr(args[0], 'batch_size', None)
@@ -437,19 +421,19 @@ def batching_ranker_input(func: Callable[[Any], np.ndarray] = None,
                 f'num_batch={num_batch}')
 
             # assume all datas have the same length
-            full_data_size = _get_size(args[_slice_on[0]])
+            full_data_size = _get_size(args[slice_on])
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
-            yield_dict = [isinstance(args[i], Dict) for i in _slice_on]
-            data_iterators = [batch_iterator(_get_slice(args[i],total_size), b_size) for i in _slice_on]
+            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0,num_data)]
+            data_iterators = [batch_iterator(_get_slice(args[slice_on + i],total_size), b_size) for i in range(0, num_data)]
 
             for batch in data_iterators[0]:
-                args[_slice_on[0]] = dict(batch) if yield_dict[0] else batch
-                for idx,slice_idx in enumerate(_slice_on[1:]):
-                    batch_idx = next(data_iterators[idx+1])
-                    if yield_dict[idx+1]:
+                args[slice_on] = dict(batch) if yield_dict[0] else batch
+                for idx in range(1, num_data):
+                    batch_idx = next(data_iterators[idx])
+                    if yield_dict[idx]:
                         batch_idx = dict(batch_idx)
-                    args[slice_idx] = batch_idx
+                    args[slice_on + idx] = batch_idx
 
                 r = func(*args, **kwargs)
 
