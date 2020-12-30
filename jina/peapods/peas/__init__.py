@@ -96,7 +96,7 @@ class BasePea(metaclass=PeaType):
         # the is case where in subprocess, runtime.setup() fails and _finally() is not yet executed, BUT close() in the
         # main process is calling runtime.cancel(), which is completely unnecessary as runtime.run_forever() is not
         # started yet.
-        self.join(1)
+        self.join(.1)
 
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
