@@ -4,10 +4,11 @@ __license__ = "Apache-2.0"
 import argparse
 from argparse import Namespace
 from contextlib import ExitStack
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Set
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
-from ..peas import Pea, BasePea
+from ..peas import BasePea
+from ... import __default_host__
 from ...enums import *
 
 
@@ -16,7 +17,7 @@ class BasePod(ExitStack):
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', needs: Set[str] = None):
         """
 
         :param args: arguments parsed from the CLI
@@ -27,8 +28,13 @@ class BasePod(ExitStack):
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self._args = args
+        self.args = args
         self.peas_args = self._parse_args(args)
+        self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+
+    @property
+    def role(self) -> 'PodRoleType':
+        return self.args.pod_role
 
     @property
     def is_singleton(self) -> bool:
@@ -38,7 +44,7 @@ class BasePod(ExitStack):
     @property
     def name(self) -> str:
         """The name of this :class:`BasePod`. """
-        return self._args.name
+        return self.args.name
 
     @property
     def port_expose(self) -> int:
@@ -105,6 +111,9 @@ class BasePod(ExitStack):
             self.is_tail_router = False
             peas_args['peas'] = [args]
 
+        for a in self.all_args:
+            self._set_conditional_args(a)
+
         # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
 
@@ -159,9 +168,9 @@ class BasePod(ExitStack):
     @property
     def all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod. """
-        return self.peas_args['peas'] + (
-            [self.peas_args['head']] if self.peas_args['head'] else []) + (
-                   [self.peas_args['tail']] if self.peas_args['tail'] else [])
+        return ([self.peas_args['head']] if self.peas_args['head'] else []) + \
+               ([self.peas_args['tail']] if self.peas_args['tail'] else []) + \
+               self.peas_args['peas']
 
     @property
     def num_peas(self) -> int:
@@ -180,18 +189,13 @@ class BasePod(ExitStack):
         which is inherited from :class:`jina.peapods.peas.BasePea`
         """
         # start head and tail
-        if self.peas_args['head']:
-            self.enter_pea(Pea(self.peas_args['head']))
 
-        if self.peas_args['tail']:
-            self.enter_pea(Pea(self.peas_args['tail']))
-
-        for _args in self.peas_args['peas']:
-            self.enter_pea(Pea(_args))
+        for _args in self.all_args:
+            self._enter_pea(BasePea(_args))
 
         return self
 
-    def enter_pea(self, pea: 'BasePea') -> None:
+    def _enter_pea(self, pea: 'BasePea') -> None:
         self.peas.append(pea)
         self.enter_context(pea)
 
@@ -210,3 +214,79 @@ class BasePod(ExitStack):
             pass
         finally:
             self.peas.clear()
+
+    @staticmethod
+    def _set_conditional_args(args):
+        if args.pod_role == PodRoleType.GATEWAY:
+            if args.restful:
+                args.runtime_cls = 'RESTRuntime'
+            else:
+                args.runtime_cls = 'GRPCRuntime'
+
+        if args.host != __default_host__:
+            if args.remote_access == RemoteAccessType.JINAD:
+                args.runtime_cls = 'JinadRuntime'
+            elif args.remote_access == RemoteAccessType.SSH:
+                args.runtime_cls = 'SSHRuntime'
+
+    @staticmethod
+    def connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
+        """Connect two Pods
+
+        :param first: the first BasePod
+        :param second: the second BasePod
+        :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
+        """
+        first.tail_args.socket_out = first_socket_type
+        second.head_args.socket_in = first.tail_args.socket_out.paired
+
+        if first_socket_type == SocketType.PUSH_BIND:
+            first.tail_args.host_out = __default_host__
+            second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
+                                                     connect_args=second.head_args)
+            second.head_args.port_in = first.tail_args.port_out
+        elif first_socket_type == SocketType.PUSH_CONNECT:
+            first.tail_args.host_out = _fill_in_host(connect_args=first.tail_args,
+                                                     bind_args=second.head_args)
+            second.head_args.host_in = __default_host__
+            first.tail_args.port_out = second.head_args.port_in
+        elif first_socket_type == SocketType.PUB_BIND:
+            first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
+            second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
+                                                     connect_args=second.head_args)  # the hostname of s_pod
+            second.head_args.port_in = first.tail_args.port_out
+        else:
+            raise NotImplementedError(f'{first_socket_type!r} is not supported here')
+
+    def connect_to_tail_of(self, pod: 'BasePod'):
+        """Eliminate the head node by connecting prev_args node directly to peas """
+        if self.args.parallel > 1 and self.is_head_router:
+            # keep the port_in and socket_in of prev_args
+            # only reset its output
+            pod.tail_args = _copy_to_head_args(pod.tail_args, self.args.polling.is_push, as_router=False)
+            # update peas to receive from it
+            self.peas_args['peas'] = _set_peas_args(self.args, pod.tail_args, self.tail_args)
+            # remove the head node
+            self.peas_args['head'] = None
+            # head is no longer a router anymore
+            self.is_head_router = False
+            self.deducted_head = pod.tail_args
+        else:
+            raise ValueError('the current pod has no head router, deducting the head is confusing')
+
+    def connect_to_head_of(self, pod: 'BasePod'):
+        """Eliminate the tail node by connecting next_args node directly to peas """
+        if self.args.parallel > 1 and self.is_tail_router:
+            # keep the port_out and socket_out of next_arts
+            # only reset its input
+            pod.head_args = _copy_to_tail_args(pod.head_args,
+                                               as_router=False)
+            # update peas to receive from it
+            self.peas_args['peas'] = _set_peas_args(self.args, self.head_args, pod.head_args)
+            # remove the tail node
+            self.peas_args['tail'] = None
+            # tail is no longer a router anymore
+            self.is_tail_router = False
+            self.deducted_tail = pod.head_args
+        else:
+            raise ValueError('the current pod has no tail router, deducting the tail is confusing')

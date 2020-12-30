@@ -5,7 +5,6 @@ import argparse
 import base64
 import copy
 import os
-import tempfile
 import threading
 import time
 from collections import OrderedDict, defaultdict
@@ -23,9 +22,8 @@ from ..helper import colored, \
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..parsers import set_client_cli_parser
+from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 from ..peapods.pods.flow import FlowPod
-from ..peapods.pods.gateway import GatewayFlowPod
 
 __all__ = ['BaseFlow', 'FlowLike']
 
@@ -81,7 +79,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger = JinaLogger(self.__class__.__name__)
 
     def _update_args(self, args, **kwargs):
-        from ..parsers import set_flow_parser
+        from ..parsers.flow import set_flow_parser
         from ..helper import ArgNamespace
 
         _flow_parser = set_flow_parser()
@@ -145,9 +143,16 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def _add_gateway(self, needs, **kwargs):
         pod_name = 'gateway'
 
+        kwargs.update(dict(name=pod_name,
+                           ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
+                           read_only=True,
+                           runtime_cls='GRPCRuntime',
+                           pod_role=PodRoleType.GATEWAY))
+
         kwargs.update(self._common_kwargs)
-        kwargs['name'] = 'gateway'
-        self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
+        args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
+
+        self._pod_nodes[pod_name] = self._cls_pod(args, needs)
 
     def needs(self, needs: Union[Tuple[str], List[str]],
               name: str = 'joiner', *args, **kwargs) -> FlowLike:
@@ -218,11 +223,21 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             if key not in kwargs:
                 kwargs[key] = value
 
-        kwargs['name'] = pod_name
-        kwargs['log_id'] = self.args.log_id
-        kwargs['num_part'] = len(needs)
+        kwargs.update(dict(
+            name=pod_name,
+            pod_role=pod_role,
+            log_id=self.args.log_id,
+            num_part=len(needs)
+        ))
 
-        op_flow._pod_nodes[pod_name] = self._cls_pod(kwargs=kwargs, needs=needs, pod_role=pod_role)
+
+        parser = set_pod_parser()
+        if pod_role == PodRoleType.GATEWAY:
+            parser = set_gateway_parser()
+
+        args = ArgNamespace.kwargs2namespace(kwargs, parser)
+
+        op_flow._pod_nodes[pod_name] = self._cls_pod(args, needs=needs)
         op_flow.last_pod = pod_name
 
         return op_flow
@@ -661,8 +676,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                      'services': {}}
 
         for k, v in self._pod_nodes.items():
+            if v.role == PodRoleType.GATEWAY:
+                cmd = 'jina gateway'
+            else:
+                cmd = 'jina pod'
             swarm_yml['services'][k] = {
-                'command': v.to_cli_command(),
+                'command': f'{cmd} {" ".join(ArgNamespace.kwargs2list(vars(v.args)))}',
                 'deploy': {'parallel': 1}
             }
 

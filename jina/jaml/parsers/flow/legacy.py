@@ -1,8 +1,10 @@
 from typing import Dict, Any, Type
 
 from ..base import VersionedYAMLParser
+from ....enums import PodRoleType
 from ....flow.base import BaseFlow
-from ....helper import expand_env_var
+from ....helper import expand_env_var, ArgNamespace
+from ....parsers import set_gateway_parser, set_pod_parser
 
 
 class LegacyParser(VersionedYAMLParser):
@@ -55,7 +57,14 @@ class LegacyParser(VersionedYAMLParser):
                 continue
 
             kwargs = {'needs': list(v.needs)} if v.needs else {}
-            kwargs.update(v._kwargs)
+
+            parser = set_pod_parser()
+            if v.role == PodRoleType.GATEWAY:
+                parser = set_gateway_parser()
+
+            non_default_kw = ArgNamespace.get_non_defaults_args(v._args, parser)
+
+            kwargs.update(non_default_kw)
 
             if 'name' in kwargs:
                 kwargs.pop('name')

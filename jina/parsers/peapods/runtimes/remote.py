@@ -24,3 +24,5 @@ def mixin_grpc_parser(parser=None):
                     help='the number of pre-fetched requests from the client')
     gp.add_argument('--prefetch-on-recv', type=int, default=1,
                     help='the number of additional requests to fetch on every receive')
+    gp.add_argument('--restful', '--rest-api', action='store_true', default=False,
+                    help='use RESTful interface instead of gRPC as the main interface')

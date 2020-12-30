@@ -57,14 +57,15 @@ def set_gateway_parser(parser=None):
     mixin_remote_parser(parser)
     mixin_pea_parser(parser)
 
-    from ..enums import SocketType
+    from ..enums import SocketType, PodRoleType
 
     parser.set_defaults(name='gateway',
                         socket_in=SocketType.PULL_CONNECT,  # otherwise there can be only one client at a time
                         socket_out=SocketType.PUSH_CONNECT,
                         ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                         read_only=True,
-                        runtime_cls='GRPCRuntime')
+                        runtime_cls='GRPCRuntime',
+                        pod_role=PodRoleType.GATEWAY)
     return parser
 
 

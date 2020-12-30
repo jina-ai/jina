@@ -77,11 +77,6 @@ def test_load_flow_from_cli():
 def test_load_flow_from_yaml():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
-        with a:
-            with open(str(cur_dir.parent / 'yaml' / 'swarm-out.yml'), 'w') as fp:
-                a.to_swarm_yaml(fp)
-        rm_files([str(cur_dir.parent / 'yaml' / 'swarm-out.yml')])
-
 
 def test_flow_yaml_dump():
     f = Flow(logserver_config=str(cur_dir.parent / 'yaml' / 'test-server-config.yml'),
