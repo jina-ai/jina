@@ -40,6 +40,7 @@ def test_simple_container(docker_image_built):
     ContainerRuntime(args).start().close()
 
 
+@pytest.mark.skip(reason='flaky, will be refactored as part of #1539')
 def test_simple_container_with_ext_yaml(docker_image_built):
     args = set_pea_parser().parse_args(['--uses', img_name,
                                         '--uses-internal',
