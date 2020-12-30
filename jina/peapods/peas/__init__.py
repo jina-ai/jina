@@ -1,5 +1,4 @@
 import argparse
-import copy
 import os
 from typing import Type
 
@@ -144,7 +143,7 @@ class BasePea(metaclass=PeaType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def _get_runtime_cls(self):
+    def _get_runtime_cls(self) -> Type['BaseRuntime']:
         v = self.runtime_cls
         if not v:
             from ..runtimes import get_runtime
