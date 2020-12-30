@@ -464,13 +464,10 @@ def test_flow_with_modalitys_simple(mocker):
 
 def test_flow_arguments_priorities():
     f = Flow(port_expose=12345).add(name='test', port_expose=23456)
-    assert '23456' in f._pod_nodes['test'].cli_args
-    assert '12345' not in f._pod_nodes['test'].cli_args
+    assert f._pod_nodes['test'].args.port_expose == 23456
 
-
-def test_flow_default_argument_passing():
     f = Flow(port_expose=12345).add(name='test')
-    assert '12345' in f._pod_nodes['test'].cli_args
+    assert f._pod_nodes['test'].args.port_expose == 12345
 
 
 def test_flow_arbitrary_needs():

@@ -53,6 +53,7 @@ def set_gateway_parser(parser=None):
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
+    mixin_zed_runtime_parser(parser)
     mixin_grpc_parser(parser)
     mixin_remote_parser(parser)
     mixin_pea_parser(parser)
