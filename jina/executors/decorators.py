@@ -425,15 +425,13 @@ def batching_ranker_input(func: Callable[[Any], np.ndarray] = None,
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
             yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0,num_data)]
-            data_iterators = [batch_iterator(_get_slice(args[slice_on + i],total_size), b_size) for i in range(0, num_data)]
+            data_iterators = [batch_iterator(_get_slice(args[slice_on + i],total_size), b_size , yield_dict=yield_dict[i]) for i in range(0, num_data)]
 
             for batch in data_iterators[0]:
-                args[slice_on] = dict(batch) if yield_dict[0] else batch
+                args[slice_on] =  batch
                 for idx in range(1, num_data):
-                    batch_idx = next(data_iterators[idx])
-                    if yield_dict[idx]:
-                        batch_idx = dict(batch_idx)
-                    args[slice_on + idx] = batch_idx
+                    args[slice_on + idx] = next(data_iterators[idx])
+                    
 
                 r = func(*args, **kwargs)
 
