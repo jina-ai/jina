@@ -67,7 +67,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
+        self._pod_nodes = OrderedDict()  # type: Dict[str, 'BasePod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()

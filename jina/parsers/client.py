@@ -16,3 +16,5 @@ def mixin_client_cli_parser(parser):
                     help='MIME type of the input, useful when input-type is set to BUFFER')
     gp.add_argument('--continue-on-error', action='store_true', default=False,
                     help='if to continue on all requests when callback function throws an error')
+    gp.add_argument('--return-results', action='store_true', default=False,
+                     help='if to return all results as a list')
