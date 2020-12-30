@@ -289,7 +289,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             :meth:`inspect`
 
         """
-
         needs = [k for k, v in self._pod_nodes.items() if v.role == PodRoleType.INSPECT]
         if needs:
             if include_last_pod:
@@ -329,7 +328,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         _pod_edges = set()
-
         if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
 
@@ -621,7 +619,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _ipython_display_(self):
         """Displays the object in IPython as a side effect"""
-        self.plot(inline_display=True)
+        self.plot(inline_display=True, build=(self._build_level != FlowBuildLevel.GRAPH))
 
     def _mermaid_to_url(self, mermaid_str, img_type) -> str:
         """
