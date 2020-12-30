@@ -1,8 +1,7 @@
 import pytest
 
-from jina.types.document import Document
 from jina.drivers.querylang.queryset.lookup import LookupLeaf, Q, QuerySet
-
+from jina.types.document import Document
 from tests import random_docs
 
 

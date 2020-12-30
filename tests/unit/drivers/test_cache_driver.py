@@ -1,5 +1,5 @@
+import os
 import pickle
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -46,7 +46,7 @@ def test_cache_driver_twice(tmpdir):
         filename = executor.save_abspath
 
     # check persistence
-    assert Path(filename).exists()
+    assert os.path.exists(filename)
 
 
 def test_cache_driver_tmpfile():
@@ -66,7 +66,7 @@ def test_cache_driver_tmpfile():
         docs = list(random_docs(10, start_id=100, embedding=False))
         driver._traverse_apply(docs)
 
-    assert Path(executor.index_abspath).exists()
+    assert os.path.exists(executor.index_abspath)
 
 
 def test_cache_driver_from_file(tmp_path):
@@ -89,7 +89,7 @@ def test_cache_driver_from_file(tmp_path):
         driver._traverse_apply(docs)
 
     # check persistence
-    assert Path(executor.save_abspath).exists()
+    assert os.path.exists(executor.save_abspath)
 
 
 class MockBaseCacheDriver(BaseCacheDriver):

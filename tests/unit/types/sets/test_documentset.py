@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pytest
 
 from jina import Document
@@ -47,6 +49,30 @@ def test_add(docset, document_factory):
     doc = document_factory.create(4, 'test 4')
     docset.add(doc)
     assert docset[-1].id == doc.id
+
+
+def test_union(docset, document_factory):
+    additional_docset = DocumentSet([])
+    for idx in range(4, 10):
+        doc = document_factory.create(idx, f'test {idx}')
+        additional_docset.add(doc)
+    union = docset + additional_docset
+    for idx in range(0, 3):
+        assert union[idx].id == docset[idx].id
+    for idx in range(0, 6):
+        assert union[idx + 3].id == additional_docset[idx].id
+
+def test_union_inplace(docset, document_factory):
+    additional_docset = DocumentSet([])
+    for idx in range(4, 10):
+        doc = document_factory.create(idx, f'test {idx}')
+        additional_docset.add(doc)
+    union = deepcopy(docset)
+    union += additional_docset
+    for idx in range(0, 3):
+        assert union[idx].id == docset[idx].id
+    for idx in range(0, 6):
+        assert union[idx + 3].id == additional_docset[idx].id
 
 
 def test_extend(docset, document_factory):
