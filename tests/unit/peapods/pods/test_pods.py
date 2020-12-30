@@ -42,11 +42,11 @@ def test_pod_naming_with_parallel(runtime):
                                         '--parallel', '2',
                                         '--runtime-backend', runtime])
     with BasePod(args) as bp:
-        assert bp.peas[0].name == 'pod-head'
-        assert bp.peas[1].name == 'pod-tail'
-        assert bp.peas[2].name == 'pod-1'
-        assert bp.peas[3].name == 'pod-2'
-        assert bp.peas[0].runtime.name == 'pod-head-R'
-        assert bp.peas[1].runtime.name == 'pod-tail-R'
-        assert bp.peas[2].runtime.name == 'pod-1-R'
-        assert bp.peas[3].runtime.name == 'pod-2-R'
+        assert bp.peas[0].name == 'pod/head'
+        assert bp.peas[1].name == 'pod/tail'
+        assert bp.peas[2].name == 'pod/1'
+        assert bp.peas[3].name == 'pod/2'
+        assert bp.peas[0].runtime.name == 'pod/head/ZEDRuntime'
+        assert bp.peas[1].runtime.name == 'pod/tail/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod/1/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod/2/ZEDRuntime'

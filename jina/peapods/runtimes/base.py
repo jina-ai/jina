@@ -110,7 +110,10 @@ class BaseRuntime:
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()
         self.args = args
-        self.name = args.name or self.__class__.__name__
+        if args.name:
+            self.name = f'{args.name}/{self.__class__.__name__}'
+        else:
+            self.name = self.__class__.__name__
         self.logger = JinaLogger(self.name,
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)

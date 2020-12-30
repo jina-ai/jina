@@ -24,13 +24,7 @@ class BasePea(metaclass=PeaType):
         self.args = args
         self.daemon = args.daemon  #: required here to set process/thread daemon
 
-        # set name
         self.name = self.args.name or self.__class__.__name__
-        if args.pea_role == PeaRoleType.PARALLEL:
-            self.name = f'{self.name}-{args.pea_id}'
-        elif args.pea_role == PeaRoleType.HEAD or args.pea_role == PeaRoleType.TAIL:
-            self.name = f'{self.name}-{str(args.pea_role).lower()}'
-
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
@@ -38,11 +32,8 @@ class BasePea(metaclass=PeaType):
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)
 
-        _args = copy.deepcopy(args)
-        _args.name = f'{self.name}-R'
-
         try:
-            self.runtime = self._get_runtime_cls()(_args)  # type: 'BaseRuntime'
+            self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}')
             raise RuntimeFailToStart from ex

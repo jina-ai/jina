@@ -37,6 +37,7 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
         if args.parallel > 1:
             _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
             _args.pea_role = PeaRoleType.PARALLEL
+            _args.name += f'/{_args.pea_id}'
         else:
             _args.pea_id = 0
             _args.pea_role = PeaRoleType.SINGLETON
@@ -78,6 +79,7 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
     if as_router:
         _head_args.name = args.name or ''
         _head_args.pea_role = PeaRoleType.HEAD
+        _head_args.name += '/head'
 
     # in any case, if header is present, it represent this Pod to consume `num_part`
     # the following peas inside the pod will have num_part=1
@@ -98,6 +100,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     if as_router:
         _tail_args.uses = args.uses_after or '_pass'
         _tail_args.name = args.name or ''
+        _tail_args.name += '/tail'
         _tail_args.pea_role = PeaRoleType.TAIL
         _tail_args.num_part = 1 if args.polling.is_push else args.parallel
 
