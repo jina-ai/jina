@@ -22,15 +22,24 @@ class BasePea(metaclass=PeaType):
         super().__init__()  #: required here to call process/thread __init__
         self.args = args
         self.daemon = args.daemon  #: required here to set process/thread daemon
+
+        # set name
         self.name = self.args.name or self.__class__.__name__
+        if args.pea_role == PeaRoleType.PARALLEL:
+            self.name = f'{self.name}-{args.pea_id}'
+        elif args.pea_role == PeaRoleType.SINGLETON:
+            pass
+        else:
+            self.name = f'{self.name}-{str(args.pea_role).lower()}'
+
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
         self.logger = JinaLogger(self.name,
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)
-
         try:
+            args.name = f'{self.name}-R'
             self.runtime = self._get_runtime_cls()(args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}')
@@ -80,8 +89,8 @@ class BasePea(metaclass=PeaType):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fails to start {self!r}, '
-                                     f'this often means the runtime {self.runtime!r} has some exception')
+                self.logger.critical(f'fail to start {self!r}, '
+                                     f'this often means the runtime {self.runtime!r} throws some exception')
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)

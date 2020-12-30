@@ -1,7 +1,9 @@
 import pytest
 
-from jina.parsers import set_pod_parser, set_gateway_parser
+from jina.parsers import set_gateway_parser
+from jina.parsers import set_pod_parser
 from jina.peapods import Pod
+from jina.peapods.pods import BasePod
 
 
 @pytest.mark.parametrize('parallel', [1, 2, 4])
@@ -32,3 +34,19 @@ def test_gateway_pod(runtime, restful, runtime_cls):
             assert p.all_args[0].runtime_cls == 'GRPCRuntime'
 
     Pod(args).start().close()
+
+
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_naming_with_parallel(runtime):
+    args = set_pod_parser().parse_args(['--name', 'pod',
+                                        '--parallel', '2',
+                                        '--runtime-backend', runtime])
+    with BasePod(args) as bp:
+        assert bp.peas[0].name == 'pod-head'
+        assert bp.peas[1].name == 'pod-tail'
+        assert bp.peas[2].name == 'pod-1'
+        assert bp.peas[3].name == 'pod-2'
+        assert bp.peas[0].runtime.name == 'pod-head-R'
+        assert bp.peas[1].runtime.name == 'pod-tail-R'
+        assert bp.peas[2].runtime.name == 'pod-1-R'
+        assert bp.peas[3].runtime.name == 'pod-2-R'

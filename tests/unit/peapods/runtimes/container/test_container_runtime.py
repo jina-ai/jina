@@ -1,4 +1,3 @@
-import os
 import time
 from pathlib import Path
 from sys import platform

@@ -5,6 +5,7 @@ import pytest
 
 from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pea_parser, set_gateway_parser
+from jina.peapods import Pea
 from jina.peapods.peas import BasePea
 from jina.peapods.runtimes.asyncio.grpc import GRPCRuntime
 from jina.peapods.runtimes.asyncio.rest import RESTRuntime
@@ -59,6 +60,15 @@ def test_container_runtime_good_entrypoint():
                                        '--entrypoint', 'jina pod'])
     with Pea1(arg):
         pass
+
+
+@pytest.mark.parametrize('runtime', ['thread', 'process'])
+def test_address_in_use(runtime):
+    with pytest.raises(RuntimeFailToStart):
+        args1 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime-backend', runtime])
+        args2 = set_pea_parser().parse_args(['--port-ctrl', '55555', '--runtime-backend', runtime])
+        with Pea(args1), Pea(args2):
+            pass
 
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])

@@ -36,7 +36,6 @@ class BasePod(ExitStack):
         for a in self.all_args:
             self._set_conditional_args(a)
 
-
     @property
     def role(self) -> 'PodRoleType':
         return self.args.pod_role
