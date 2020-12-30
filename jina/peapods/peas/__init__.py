@@ -1,45 +1,15 @@
 import argparse
-import multiprocessing
 import os
-import threading
 from typing import Type
 
-from .helper import _get_event, _make_or_event
+from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__
-from ...enums import RuntimeBackendType, PeaRoleType
+from ...enums import PeaRoleType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
 
 __all__ = ['BasePea']
-
-
-class PeaType(type):
-    _dct = {}
-
-    def __new__(cls, name, bases, dct):
-        _cls = super().__new__(cls, name, bases, dct)
-        PeaType._dct.update({name: {'cls': cls,
-                                    'name': name,
-                                    'bases': bases,
-                                    'dct': dct}})
-        return _cls
-
-    def __call__(cls, *args, **kwargs) -> 'PeaType':
-        # switch to the new backend
-        _cls = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args[0], 'runtime_backend', RuntimeBackendType.THREAD))
-
-        # rebuild the class according to mro
-        for c in cls.mro()[-2::-1]:
-            arg_cls = PeaType._dct[c.__name__]['cls']
-            arg_name = PeaType._dct[c.__name__]['name']
-            arg_dct = PeaType._dct[c.__name__]['dct']
-            _cls = super().__new__(arg_cls, arg_name, (_cls,), arg_dct)
-
-        return type.__call__(_cls, *args, **kwargs)
 
 
 class BasePea(metaclass=PeaType):

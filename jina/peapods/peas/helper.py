@@ -2,6 +2,8 @@ import multiprocessing
 import threading
 from multiprocessing.synchronize import Event
 
+from ...enums import RuntimeBackendType
+
 
 def _get_event(obj) -> Event:
     if isinstance(obj, threading.Thread):
@@ -41,3 +43,31 @@ def _make_or_event(obj, *events) -> Event:
         orify(e, changed)
     changed()
     return or_event
+
+
+class PeaType(type):
+    _dct = {}
+
+    def __new__(cls, name, bases, dct):
+        _cls = super().__new__(cls, name, bases, dct)
+        PeaType._dct.update({name: {'cls': cls,
+                                    'name': name,
+                                    'bases': bases,
+                                    'dct': dct}})
+        return _cls
+
+    def __call__(cls, *args, **kwargs) -> 'PeaType':
+        # switch to the new backend
+        _cls = {
+            RuntimeBackendType.THREAD: threading.Thread,
+            RuntimeBackendType.PROCESS: multiprocessing.Process,
+        }.get(getattr(args[0], 'runtime_backend', RuntimeBackendType.THREAD))
+
+        # rebuild the class according to mro
+        for c in cls.mro()[-2::-1]:
+            arg_cls = PeaType._dct[c.__name__]['cls']
+            arg_name = PeaType._dct[c.__name__]['name']
+            arg_dct = PeaType._dct[c.__name__]['dct']
+            _cls = super().__new__(arg_cls, arg_name, (_cls,), arg_dct)
+
+        return type.__call__(_cls, *args, **kwargs)
