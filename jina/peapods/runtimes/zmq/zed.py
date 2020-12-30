@@ -35,7 +35,9 @@ class ZEDRuntime(ZMQRuntime):
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List['Message']]
         self._partial_requests = None
         self._partial_messages = None
-        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger)
+
+        # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main process/thread
+        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
 
         self._load_plugins()
         self._load_executor()

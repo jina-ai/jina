@@ -13,11 +13,13 @@ from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
-def test_zed_runtime(runtime):
+@pytest.mark.parametrize('ctrl_ipc', [True, False])
+def test_zed_runtime(runtime, ctrl_ipc):
     class Pea1(BasePea):
         runtime_cls = ZEDRuntime
 
-    arg = set_pea_parser().parse_args(['--runtime-backend', runtime])
+    arg = set_pea_parser().parse_args(['--runtime-backend', runtime] +
+                                      (['--ctrl-with-ipc'] if ctrl_ipc else []))
     with Pea1(arg) as p:
         if runtime == 'thread':
             assert isinstance(p, threading.Thread)

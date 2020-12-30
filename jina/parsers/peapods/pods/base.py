@@ -1,5 +1,7 @@
-from ...helper import add_arg_group
-from ....enums import PollingType, SchedulerType, RemoteAccessType, RemotePeapodType
+import argparse
+
+from ...helper import add_arg_group, _SHOW_ALL_ARGS
+from ....enums import PollingType, SchedulerType, RemoteAccessType, RemotePeapodType, PodRoleType
 
 
 def mixin_base_pod_parser(parser):
@@ -36,3 +38,6 @@ def mixin_base_pod_parser(parser):
                     default=RemotePeapodType.POD,
                     type=RemotePeapodType.from_string,
                     help=f'the way of managing remote runtime')
+
+    gp.add_argument('--pod-role', type=PodRoleType.from_string, choices=list(PodRoleType),
+                    help='the role of this pod in the flow' if _SHOW_ALL_ARGS else argparse.SUPPRESS)

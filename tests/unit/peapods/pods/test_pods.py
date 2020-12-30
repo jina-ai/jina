@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from jina.executors import BaseExecutor
 from jina.parsers import set_pod_parser, set_gateway_parser
 from jina.peapods import Pod
@@ -10,11 +11,16 @@ from jina.peapods.pods.gateway import GatewayFlowPod, GatewayPod
 from jina.peapods.pods.mutable import MutablePod
 
 
+@pytest.mark.parametrize('parallel', [1, 2, 4])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_context1(runtime):
-    args = set_pod_parser().parse_args(['--runtime-backend', runtime, '--parallel', '2'])
-    with BasePod(args):
-        pass
+def test_pod_context_parallel(runtime, parallel):
+    args = set_pod_parser().parse_args(['--runtime-backend', runtime, '--parallel', str(parallel)])
+    with BasePod(args) as bp:
+        if parallel == 1:
+            assert bp.num_peas == 1
+        else:
+            # count head and tail
+            assert bp.num_peas == parallel + 2
 
     BasePod(args).start().close()
 

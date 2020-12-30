@@ -33,7 +33,7 @@ class Zmqlet:
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr:str=None):
         """
 
         :param args: the parsed arguments from the CLI
@@ -43,7 +43,12 @@ class Zmqlet:
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
-        self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
+        if ctrl_addr:
+            self.ctrl_addr = ctrl_addr
+            self.ctrl_with_ipc = self.ctrl_addr.startswith('ipc://')
+        else:
+            self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
+
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0

@@ -39,5 +39,5 @@ def mixin_pea_parser(parser):
                     help='the id of the storage of this pea, only effective when `separated_workspace=True`'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
-    gp.add_argument('--role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
+    gp.add_argument('--pea-role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                     help='the role of this pea in a pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
