@@ -1,5 +1,3 @@
-import argparse
-
 from .base import BasePea
 from ..runtimes.asyncio.grpc import GRPCRuntime
 from ..runtimes.asyncio.rest import RESTRuntime
@@ -33,8 +31,4 @@ class SSHPea(BasePea):
     runtime_cls = SSHRuntime
 
 
-class Pea(BasePea):
-
-    def __init__(self, args: 'argparse.Namespace'):
-        self.runtime_cls = args.runtime_cls
-        super().__init__(args)
+Pea = BasePea

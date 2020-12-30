@@ -22,6 +22,8 @@ class ContainerRuntime(ZMQRuntime):
             time.sleep(1)
         # two cases to reach here: 1. is_ready, 2. container is dead
         if not self._is_container_alive:
+            # replay it to see the log
+            self._docker_run(replay=True)
             raise Exception('the container fails to start, check the arguments or entrypoint')
 
     def teardown(self):
@@ -55,7 +57,7 @@ class ContainerRuntime(ZMQRuntime):
                                     f' Control address set to {self.ctrl_addr}')
         client.close()
 
-    def _docker_run(self):
+    def _docker_run(self, replay: bool = False):
         # important to notice, that client is not assigned as instance member to avoid potential
         # heavy copy into new process memory space
         import docker
@@ -106,6 +108,14 @@ class ContainerRuntime(ZMQRuntime):
                                                 volumes=_volumes,
                                                 network_mode=self._net_mode,
                                                 entrypoint=self.args.entrypoint)
+
+        if replay:
+            with JinaLogger('🐳', **vars(self.args)) as logger:
+                # when replay is on, it means last time it fails to start
+                # therefore we know the loop below wont block the main process
+                for line in self._container.logs(stream=True):
+                    logger.info(line.strip().decode())
+
         client.close()
 
     @property

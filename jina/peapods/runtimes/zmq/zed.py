@@ -19,6 +19,7 @@ from ....proto import jina_pb2
 
 class ZEDRuntime(ZMQRuntime):
     def run_forever(self):
+        self._executor.attach(runtime=self)
         self._zmqlet.start(self._msg_callback)
 
     def setup(self):
@@ -60,7 +61,6 @@ class ZEDRuntime(ZMQRuntime):
                                                           separated_workspace=self.args.separated_workspace,
                                                           pea_id=self.args.pea_id,
                                                           read_only=self.args.read_only)
-            self._executor.attach(pea=self)
         except FileNotFoundError as ex:
             self.logger.error(f'fail to load file dependency: {ex!r}')
             raise ExecutorFailToLoad from ex
@@ -96,15 +96,15 @@ class ZEDRuntime(ZMQRuntime):
         self._request = msg.request
         self._message = msg
 
-        part_str = ' '
+        part_str = ''
         if self.expect_parts > 1:
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
             self._partial_messages = self._pending_msgs[req_id]
             self._partial_requests = [v.request for v in self._partial_messages]
-            part_str = f' ({len(self.partial_requests)}/{self.expect_parts} parts) '
+            part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)'
 
-        self.logger.info(f'recv {msg.envelope.request_type}{part_str}from {msg.colored_route}')
+        self.logger.info(f'recv {msg.envelope.request_type} {part_str} from {msg.colored_route}')
         return self
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':

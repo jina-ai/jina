@@ -9,6 +9,7 @@ from ... import __stop_msg__, __ready_msg__
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
+from ...enums import RuntimeBackendType
 
 __all__ = ['BasePea']
 
@@ -27,9 +28,9 @@ class PeaType(type):
     def __call__(cls, *args, **kwargs) -> 'PeaType':
         # switch to the new backend
         _cls = {
-            'thread': threading.Thread,
-            'process': multiprocessing.Process,
-        }.get(getattr(args[0], 'runtime_backend', 'thread'))
+            RuntimeBackendType.THREAD: threading.Thread,
+            RuntimeBackendType.PROCESS: multiprocessing.Process,
+        }.get(getattr(args[0], 'runtime_backend', RuntimeBackendType.THREAD))
 
         # rebuild the class according to mro
         for c in cls.mro()[-2::-1]:
@@ -55,6 +56,10 @@ class BasePea(metaclass=PeaType):
         self.logger = JinaLogger(self.name,
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)
+
+        if not self.runtime_cls:
+            from ..runtimes import get_runtime
+            self.runtime_cls = get_runtime(self.args.runtime_cls)
 
         try:
             self.runtime = self.runtime_cls(args)

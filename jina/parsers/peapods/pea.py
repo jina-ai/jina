@@ -1,7 +1,8 @@
 import argparse
 
 from ..helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
-from ...enums import PeaRoleType
+from ...enums import PeaRoleType, RuntimeBackendType
+from ...peapods.runtimes import list_all_runtimes
 
 
 def mixin_pea_parser(parser):
@@ -11,13 +12,17 @@ def mixin_pea_parser(parser):
     gp = add_arg_group(parser, title='Pea')
 
     gp.add_argument('--daemon', action='store_true', default=False,
-                    help='when a Runtime exits, it attempts to terminate all of its daemonic child processes. '
+                    help='the Pea attempts to terminate all of its Runtime child processes/threads on existing. '
                          'setting it to true basically tell the Pea do not wait on the Runtime when closing')
+
     gp.add_argument('--runtime-backend', '--runtime',
-                    type=str, choices=['thread', 'process'], default='process',
-                    help='the parallel backend of the runtime')
-    gp.add_argument('--runtime-cls', type=str, choices=['thread', 'process'], default='process',
-                    help='the runtime class to equip')
+                    type=RuntimeBackendType.from_string,
+                    choices=list(RuntimeBackendType),
+                    default=RuntimeBackendType.PROCESS,
+                    help='the parallel backend of the runtime inside the pea')
+
+    gp.add_argument('--runtime-cls', type=str, choices=list_all_runtimes(), default='ZEDRuntime',
+                    help='the runtime class to run inside the pea')
 
     gp.add_argument('--timeout-ready', type=int, default=10000,
                     help='timeout (ms) of a pea waits for the runtime to be ready, -1 for waiting forever')

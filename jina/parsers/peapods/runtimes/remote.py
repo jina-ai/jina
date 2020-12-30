@@ -12,10 +12,10 @@ def mixin_remote_parser(parser):
 
 
 def mixin_grpc_parser(parser=None):
-    gp = add_arg_group(parser, title='GRPC')
+    gp = add_arg_group(parser, title='GRPC/REST')
 
     gp.add_argument('--max-message-size', type=int, default=-1,
-                    help='maximum send and receive size for grpc server in bytes, -1 means unlimited')
+                    help='maximum send and receive size for gRPC server in bytes, -1 means unlimited')
     gp.add_argument('--proxy', action='store_true', default=False,
                     help='respect the http_proxy and https_proxy environment variables. '
                          'otherwise, it will unset these proxy variables before start. '

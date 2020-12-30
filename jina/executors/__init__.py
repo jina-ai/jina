@@ -20,7 +20,7 @@ from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
-    from ..peapods.peas import BasePea
+    from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
@@ -408,18 +408,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def attach(self, pea: 'BasePea', *args, **kwargs):
+    def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
         """Attach this executor to a :class:`jina.peapods.pea.BasePea`.
 
         This is called inside the initializing of a :class:`jina.peapods.pea.BasePea`.
         """
         for v in self._drivers.values():
             for d in v:
-                d.attach(executor=self, pea=pea, *args, **kwargs)
+                d.attach(executor=self, runtime=runtime, *args, **kwargs)
 
-        # replacing the logger to pea's logger
-        if pea and isinstance(getattr(pea, 'logger', None), JinaLogger):
-            self.logger = pea.logger
+        # replacing the logger to runtime's logger
+        if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
+            self.logger = runtime.logger
 
     def __call__(self, req_type, *args, **kwargs):
         if req_type in self._drivers:

@@ -11,8 +11,8 @@ from jina.peapods.pods.mutable import MutablePod
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_context(runtime):
-    args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
+def test_pod_context1(runtime):
+    args = set_pod_parser().parse_args(['--runtime-backend', runtime, '--parallel', '2'])
     with BasePod(args):
         pass
 
