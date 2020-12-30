@@ -41,7 +41,7 @@ class Flow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
@@ -59,7 +59,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_ndarray
-        self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
+        return self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -103,7 +103,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
-        self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -127,7 +127,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
-        self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -151,7 +151,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_files
-        self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(output_fn='on_done')
@@ -174,7 +174,7 @@ class Flow(BaseFlow):
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         from ..clients.sugary_io import _input_lines
-        self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
+        return self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
@@ -207,7 +207,71 @@ class Flow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
+
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    def update(self, input_fn: InputFnType = None,
+              on_done: CallbackFnType = None,
+              on_error: CallbackFnType = None,
+              on_always: CallbackFnType = None,
+              **kwargs):
+        """Updates documents on the current flow
+        Example,
+        .. highlight:: python
+        .. code-block:: python
+            with f:
+                f.update(input_fn)
+                ...
+        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
+        One may also build a reader/generator on your own.
+        Example,
+        .. highlight:: python
+        .. code-block:: python
+            def my_reader():
+                for _ in range(10):
+                    yield b'abcdfeg'  # each yield generates a document to update
+            with f.build(runtime='thread') as flow:
+                flow.update(bytes_gen=my_reader())
+        It will start a :py:class:`CLIClient` and call :py:func:`update`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        self._get_client(**kwargs).update(input_fn, on_done, on_error, on_always, **kwargs)
+
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    def delete(self, input_fn: InputFnType = None,
+              on_done: CallbackFnType = None,
+              on_error: CallbackFnType = None,
+              on_always: CallbackFnType = None,
+              **kwargs):
+        """Do deletion on the current flow
+        Example,
+        .. highlight:: python
+        .. code-block:: python
+            with f:
+                f.delete(input_fn)
+                ...
+        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
+        One may also build a reader/generator on your own.
+        Example,
+        .. highlight:: python
+        .. code-block:: python
+            def my_reader():
+                for _ in range(10):
+                    yield b'abcdfeg'  # each yield generates a document to delete
+            with f.build(runtime='thread') as flow:
+                flow.delete(bytes_gen=my_reader())
+        It will start a :py:class:`CLIClient` and call :py:func:`delete`.
+        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        self._get_client(**kwargs).delete(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def search(self, input_fn: InputFnType = None,
@@ -239,4 +303,4 @@ class Flow(BaseFlow):
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs)

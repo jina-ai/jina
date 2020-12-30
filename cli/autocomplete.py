@@ -63,8 +63,8 @@ ac_table = {
         'hub init': ['--help', '--output-dir', '--template', '--type', '--overwrite'],
         'hub create': ['--help', '--output-dir', '--template', '--type', '--overwrite'],
         'hub build': ['--help', '--username', '--password', '--registry', '--repository', '--pull', '--push',
-                      '--dry-run', '--prune-images', '--raise-error', '--test-uses', '--test-level', '--host-info',
-                      '--daemon', '--no-overwrite'],
+                      '--dry-run', '--prune-images', '--raise-error', '--test-uses', '--test-level', '--timeout-ready',
+                      '--host-info', '--daemon', '--no-overwrite'],
         'hub push': ['--help', '--username', '--password', '--registry', '--repository'],
         'hub pull': ['--help', '--username', '--password', '--registry', '--repository'],
         'hub list': ['--help', '--name', '--kind', '--keywords', '--type', '--local-only'],
@@ -79,5 +79,5 @@ ac_table = {
         'log': ['--help', '--groupby-regex', '--refresh-time'],
         'client': ['--help', '--host', '--port-expose', '--port-grpc', '--max-message-size', '--proxy',
                    '--remote-access', '--batch-size', '--mode', '--top-k', '--mime-type', '--callback-on',
-                   '--timeout-ready', '--skip-dry-run', '--continue-on-error'],
+                   '--timeout-ready', '--skip-dry-run', '--continue-on-error', '--return-results'],
         'export-api': ['--help', '--yaml-path', '--json-path']}}

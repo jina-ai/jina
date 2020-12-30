@@ -37,11 +37,11 @@ __license__ = "Apache-2.0"
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '0.8.13'
+__version__ = '0.8.17'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.76'
+__proto_version__ = '0.0.77'
 
 __uptime__ = _datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
@@ -90,7 +90,7 @@ _names_with_underscore = ['__version__', '__copyright__', '__license__',
 # Primitive data type,
 # note, they must be loaded BEFORE all executors/drivers/... to avoid cyclic imports
 from jina.types.ndarray.generic import NdArray
-from jina.types.request import Request
+from jina.types.request import Request, Response
 from jina.types.message import Message
 from jina.types.querylang import QueryLang
 from jina.types.document import Document

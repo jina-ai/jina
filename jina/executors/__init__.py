@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import re
 import subprocess
 import tempfile
 from datetime import datetime
@@ -14,8 +13,8 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import expand_env_var, typename, get_random_identity
-from ..jaml import JAMLCompatible, JAML, subvar_regex
+from ..helper import typename, get_random_identity
+from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
@@ -58,7 +57,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
     @staticmethod
     def register_class(cls):
-        update_funcs = ['train', 'add']
+        update_funcs = ['train', 'add', 'delete', 'update']
         train_funcs = ['train']
         aggregate_funcs = ['evaluate']
 
@@ -113,7 +112,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id']
+    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id', 'delete', 'update']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -198,18 +197,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if unresolved_attr:
             _tmp = vars(self)
             _tmp['metas'] = _metas
-            new_metas = JAML.expand_dict(_tmp)['metas']
+            new_metas = JAML.expand_dict(_tmp, context=_ref_desolve_map)['metas']
 
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
                 if not hasattr(self, k):
-                    if isinstance(v, str) and subvar_regex.findall(v):
-                        v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
                     if isinstance(v, str):
-                        if not subvar_regex.findall(v):
+                        if not (subvar_regex.findall(v) or internal_var_regex.findall(v)):
                             setattr(self, k, v)
                         else:
-                            raise ValueError(f'{k}={v} is not expandable or badly referred')
+                            raise ValueError(f'{k}={v} is not substitutable or badly referred')
                     else:
                         setattr(self, k, v)
 

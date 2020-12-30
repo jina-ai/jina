@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import pytest
 from pkg_resources import resource_filename
@@ -11,22 +11,21 @@ from jina.jaml import JAML
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_load_yaml1(tmpdir):
-    tmpdir = Path(tmpdir)
-    with open(cur_dir / 'yaml/test-driver.yml', encoding='utf8') as fp:
+    with open(os.path.join(cur_dir, 'yaml/test-driver.yml'), encoding='utf8') as fp:
         a = JAML.load(fp)
 
     assert isinstance(a[0], KVSearchDriver)
     assert isinstance(a[1], ControlReqDriver)
     assert isinstance(a[2], BaseDriver)
 
-    with open(tmpdir / 'test_driver.yml', 'w', encoding='utf8') as fp:
+    with open(os.path.join(tmpdir, 'test_driver.yml'), 'w', encoding='utf8') as fp:
         JAML.dump(a[0], fp)
 
-    with open(tmpdir / 'test_driver.yml', encoding='utf8') as fp:
+    with open(os.path.join(tmpdir, 'test_driver.yml'), encoding='utf8') as fp:
         b = JAML.load(fp)
 
     assert isinstance(b, KVSearchDriver)
@@ -34,26 +33,26 @@ def test_load_yaml1(tmpdir):
 
 
 def test_load_cust_with_driver():
-    a = BaseExecutor.load_config(str(cur_dir / 'mwu-encoder/mwu_encoder_driver.yml'))
+    a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
     assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
-    p = set_pod_parser().parse_args(['--uses', str(cur_dir / 'mwu-encoder/mwu_encoder_driver.yml')])
+    p = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
     with Pod(p):
         # will print a cust task_name from the driver when terminate
         pass
 
 
 def test_pod_new_api_from_kwargs():
-    a = BaseExecutor.load_config(str(cur_dir / 'mwu-encoder/mwu_encoder_driver.yml'))
+    a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
     assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
 
-    with Pod(uses=str(cur_dir / 'mwu-encoder/mwu_encoder_driver.yml')):
+    with Pod(uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
         # will print a cust task_name from the driver when terminate
         pass
 
 
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_EXEC_WITH_DRIVER'])
 def test_load_yaml2(test_metas):
-    a = BaseExecutor.load_config(str(cur_dir / 'yaml/test-exec-with-driver.yml'))
+    a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-exec-with-driver.yml'))
     assert len(a._drivers) == 2
     # should be able to auto fill in ControlRequest
     assert 'ControlRequest' in a._drivers

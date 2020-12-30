@@ -1,6 +1,5 @@
 import os
 import time
-from pathlib import Path
 
 import pytest
 
@@ -9,7 +8,7 @@ from jina.proto import jina_pb2
 from jina.types.document.uid import UniqueId
 from tests import random_docs, rm_files
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def random_queries(num_docs, chunks_per_doc=5):
@@ -23,7 +22,7 @@ def random_queries(num_docs, chunks_per_doc=5):
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_shards_insufficient_data():
+def test_shards_insufficient_data(mocker):
     """THIS IS SUPER IMPORTANT FOR TESTING SHARDS
 
     IF THIS FAILED, DONT IGNORE IT, DEBUG IT
@@ -31,7 +30,9 @@ def test_shards_insufficient_data():
     index_docs = 3
     parallel = 4
 
+    mock = mocker.Mock()
     def validate(req):
+        mock()
         assert len(req.docs) == 1
         assert len(req.docs[0].matches) == index_docs
 
@@ -41,7 +42,7 @@ def test_shards_insufficient_data():
             assert d.meta_info == b'hello world'
 
     f = Flow().add(name='doc_pb',
-                   uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                   uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
                    parallel=parallel,
                    separated_workspace=True)
     with f:
@@ -52,11 +53,14 @@ def test_shards_insufficient_data():
         pass
     time.sleep(2)
     f = Flow().add(name='doc_pb',
-                   uses=str(cur_dir.parent / 'yaml' / 'test-docpb.yml'),
+                   uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
                    parallel=parallel,
                    separated_workspace=True, polling='all', uses_after='_merge_chunks')
     with f:
         f.search(input_fn=random_queries(1, index_docs),
-                 callback_on='body')
+                 callback_on='body',
+                 on_done=validate
+                 )
     time.sleep(2)
     rm_files(['test-docshard-tmp'])
+    mock.assert_called_once()

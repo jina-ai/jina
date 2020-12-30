@@ -1,67 +1,58 @@
-from pathlib import Path
+import os
 
 from jina.flow import Flow
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_visualization_with_yml_file_img(tmpdir):
-    output_file = Path(tmpdir) / 'flow.svg'
-    Flow.load_config(str(cur_dir.parent / 'yaml' / 'test_flow_visualization.yml')).plot(
-        output=str(output_file))
-    assert output_file.exists()
+    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(
+        output=os.path.join(tmpdir, 'flow.svg'))
+    assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))
 
 
 def test_visualization_with_yml_file_jpg(tmpdir):
-    output_file = Path(tmpdir) / 'flow.jpg'
-    Flow.load_config(str(cur_dir.parent / 'yaml' / 'test_flow_visualization.yml')).plot(
-        output=str(output_file))
-    assert output_file.exists()
+    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(
+        output=os.path.join(tmpdir, 'flow.jpg'))
+    assert os.path.exists(os.path.join(tmpdir, 'flow.jpg'))
 
 
 def test_visualization_with_yml_file_jpg_lr(tmpdir):
-    output_file = Path(tmpdir) / 'flow-hor.jpg'
-    Flow.load_config(str(cur_dir.parent / 'yaml' / 'test_flow_visualization.yml')).plot(
-        output=str(output_file),
+    Flow.load_config(os.path.join(cur_dir, '../yaml/test_flow_visualization.yml')).plot(
+        output=os.path.join(tmpdir, 'flow-hor.jpg'),
         vertical_layout=False)
-    assert output_file.exists()
+    assert os.path.exists(os.path.join(tmpdir, 'flow-hor.jpg'))
 
 
 def test_visualization_plot_twice(tmpdir):
-    output_file1 = Path(tmpdir) / 'flow1.svg'
-    output_file2 = Path(tmpdir) / 'flow2.svg'
     (Flow().add(name='pod_a')
-     .plot(output=str(output_file1))
+     .plot(output=os.path.join(tmpdir, 'flow1.svg'))
      .add(name='pod_b', needs='gateway')
-     .join(needs=['pod_a', 'pod_b']).plot(output=str(output_file2)))
+     .join(needs=['pod_a', 'pod_b']).plot(output=os.path.join(tmpdir, 'flow2.svg')))
 
-    assert output_file1.exists()
-    assert output_file2.exists()
+    assert os.path.exists(os.path.join(tmpdir, 'flow1.svg'))
+    assert os.path.exists(os.path.join(tmpdir, 'flow2.svg'))
 
 
 def test_visualization_plot_in_middle(tmpdir):
-    output_file = Path(tmpdir) / 'flow3.svg'
     (Flow().add(name='pod_a')
-     .plot(output=str(output_file))
+     .plot(output=os.path.join(tmpdir, 'flow3.svg'))
      .add(name='pod_b', needs='gateway')
      .join(needs=['pod_a', 'pod_b']))
 
-    assert output_file.exists()
+    assert os.path.exists(os.path.join(tmpdir, 'flow3.svg'))
 
 
 def test_flow_before_after_plot(tmpdir):
-    output_file = Path(tmpdir) / 'flow.svg'
-    Flow().add(uses_before='_pass', uses_after='_pass', name='p1').plot(str(output_file))
-    assert output_file.exists()
+    Flow().add(uses_before='_pass', uses_after='_pass', name='p1').plot(os.path.join(tmpdir, 'flow.svg'))
+    assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))
 
 
 def test_flow_before_plot(tmpdir):
-    output_file = Path(tmpdir) / 'flow.svg'
-    Flow().add(uses_before='_pass', name='p1').plot(str(output_file))
-    assert output_file.exists()
+    Flow().add(uses_before='_pass', name='p1').plot(os.path.join(tmpdir, 'flow.svg'))
+    assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))
 
 
 def test_flow_after_plot(tmpdir):
-    output_file = Path(tmpdir) / 'flow.svg'
-    Flow().add(uses_after='_pass', name='p1').plot(str(output_file))
-    assert output_file.exists()
+    Flow().add(uses_after='_pass', name='p1').plot(os.path.join(tmpdir, 'flow.svg'))
+    assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))
