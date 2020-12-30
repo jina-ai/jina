@@ -229,35 +229,6 @@ class BasePod(ExitStack):
             elif args.remote_access == RemoteAccessType.SSH:
                 args.runtime_cls = 'SSHRuntime'
 
-    @staticmethod
-    def connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
-        """Connect two Pods
-
-        :param first: the first BasePod
-        :param second: the second BasePod
-        :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
-        """
-        first.tail_args.socket_out = first_socket_type
-        second.head_args.socket_in = first.tail_args.socket_out.paired
-
-        if first_socket_type == SocketType.PUSH_BIND:
-            first.tail_args.host_out = __default_host__
-            second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
-                                                     connect_args=second.head_args)
-            second.head_args.port_in = first.tail_args.port_out
-        elif first_socket_type == SocketType.PUSH_CONNECT:
-            first.tail_args.host_out = _fill_in_host(connect_args=first.tail_args,
-                                                     bind_args=second.head_args)
-            second.head_args.host_in = __default_host__
-            first.tail_args.port_out = second.head_args.port_in
-        elif first_socket_type == SocketType.PUB_BIND:
-            first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
-            second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
-                                                     connect_args=second.head_args)  # the hostname of s_pod
-            second.head_args.port_in = first.tail_args.port_out
-        else:
-            raise NotImplementedError(f'{first_socket_type!r} is not supported here')
-
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
         if self.args.parallel > 1 and self.is_head_router:

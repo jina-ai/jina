@@ -23,9 +23,10 @@ from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
-from ..peapods.pods.flow import FlowPod
 
 __all__ = ['BaseFlow', 'FlowLike']
+
+from ..peapods import BasePod
 
 FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
@@ -42,7 +43,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         Please use :class:`Flow` or :class:`AsyncFlow`.
     """
 
-    _cls_pod = FlowPod  #: the type of the Pod, can be changed to other class
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
     def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
@@ -152,7 +152,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        self._pod_nodes[pod_name] = self._cls_pod(args, needs)
+        self._pod_nodes[pod_name] = BasePod(args, needs)
 
     def needs(self, needs: Union[Tuple[str], List[str]],
               name: str = 'joiner', *args, **kwargs) -> FlowLike:
@@ -237,7 +237,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
 
-        op_flow._pod_nodes[pod_name] = self._cls_pod(args, needs=needs)
+        op_flow._pod_nodes[pod_name] = BasePod(args, needs=needs)
         op_flow.last_pod = pod_name
 
         return op_flow

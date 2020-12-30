@@ -5,7 +5,7 @@ import pytest
 
 from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pea_parser, set_gateway_parser
-from jina.peapods.peas.base import BasePea
+from jina.peapods.peas import BasePea
 from jina.peapods.runtimes.asyncio.grpc import GRPCRuntime
 from jina.peapods.runtimes.asyncio.rest import RESTRuntime
 from jina.peapods.runtimes.container import ContainerRuntime

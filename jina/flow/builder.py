@@ -2,12 +2,14 @@ from collections import deque
 from functools import wraps
 from typing import Dict, List, Callable
 
+from .. import __default_host__
 from ..enums import SocketType, FlowOptimizeLevel, FlowBuildLevel, PodRoleType
 from ..excepts import FlowBuildLevelError
-from ..peapods.pods.flow import FlowPod
+from ..peapods.pods import _fill_in_host
 
 if False:
     from . import Flow
+    from ..peapods import BasePod
 
 
 def build_required(required_level: 'FlowBuildLevel'):
@@ -89,11 +91,40 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             first_socket_type = SocketType.PUB_BIND
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
-        FlowPod.connect(start_node, end_node, first_socket_type=first_socket_type)
+        _connect(start_node, end_node, first_socket_type=first_socket_type)
         flow.logger.debug(f'Connect {start_node_name} '
                           f'with {end_node_name} {str(end_node.role)} require {end_node.head_args.num_part} messages')
 
     return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
+
+
+def _connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
+    """Connect two Pods
+
+    :param first: the first BasePod
+    :param second: the second BasePod
+    :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
+    """
+    first.tail_args.socket_out = first_socket_type
+    second.head_args.socket_in = first.tail_args.socket_out.paired
+
+    if first_socket_type == SocketType.PUSH_BIND:
+        first.tail_args.host_out = __default_host__
+        second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
+                                                 connect_args=second.head_args)
+        second.head_args.port_in = first.tail_args.port_out
+    elif first_socket_type == SocketType.PUSH_CONNECT:
+        first.tail_args.host_out = _fill_in_host(connect_args=first.tail_args,
+                                                 bind_args=second.head_args)
+        second.head_args.host_in = __default_host__
+        first.tail_args.port_out = second.head_args.port_in
+    elif first_socket_type == SocketType.PUB_BIND:
+        first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
+        second.head_args.host_in = _fill_in_host(bind_args=first.tail_args,
+                                                 connect_args=second.head_args)  # the hostname of s_pod
+        second.head_args.port_in = first.tail_args.port_out
+    else:
+        raise NotImplementedError(f'{first_socket_type!r} is not supported here')
 
 
 def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str, str}) -> 'Flow':
