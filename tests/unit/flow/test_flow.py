@@ -18,6 +18,41 @@ cur_dir = Path(__file__).parent
 
 
 def test_flow_with_jump():
+    def _validate(f):
+        node = f._pod_nodes['gateway']
+        assert node.head_args.socket_in == SocketType.PULL_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r1']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUB_BIND
+        node = f._pod_nodes['r2']
+        assert node.head_args.socket_in == SocketType.SUB_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r3']
+        assert node.head_args.socket_in == SocketType.SUB_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r4']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r5']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r6']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r8']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r9']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r10']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_BIND
+        for name, node in f._pod_nodes.items():
+            assert node.peas_args['peas'][0] == node.head_args
+            assert node.peas_args['peas'][0] == node.tail_args
+
     f = (Flow().add(name='r1')
          .add(name='r2')
          .add(name='r3', needs='r1')
@@ -29,60 +64,15 @@ def test_flow_with_jump():
          .add(name='r10', needs=['r9', 'r8']))
 
     with f:
-        pass
-
-    node = f._pod_nodes['gateway']
-    assert node.head_args.socket_in == SocketType.PULL_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r1']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUB_BIND
-
-    node = f._pod_nodes['r2']
-    assert node.head_args.socket_in == SocketType.SUB_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r3']
-    assert node.head_args.socket_in == SocketType.SUB_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r4']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r5']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r6']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r8']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r9']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r10']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_BIND
-
-    for name, node in f._pod_nodes.items():
-        assert node.peas_args['peas'][0] == node.head_args
-        assert node.peas_args['peas'][0] == node.tail_args
+        _validate(f)
 
     f.save_config('tmp.yml')
     Flow.load_config('tmp.yml')
 
-    with Flow.load_config('tmp.yml') as fl:
-        pass
+    with Flow.load_config('tmp.yml') as f:
+        _validate(f)
 
     rm_files(['tmp.yml'])
-
 
 def test_simple_flow():
     bytes_gen = (b'aaa' for _ in range(10))

@@ -62,7 +62,7 @@ class LegacyParser(VersionedYAMLParser):
             if v.role == PodRoleType.GATEWAY:
                 parser = set_gateway_parser()
 
-            non_default_kw = ArgNamespace.get_non_defaults_args(v._args, parser)
+            non_default_kw = ArgNamespace.get_non_defaults_args(v.args, parser)
 
             kwargs.update(non_default_kw)
 

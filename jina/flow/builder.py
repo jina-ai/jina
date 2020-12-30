@@ -93,7 +93,8 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             first_socket_type = SocketType.PUSH_BIND
         _connect(start_node, end_node, first_socket_type=first_socket_type)
         flow.logger.debug(f'Connect {start_node_name} '
-                          f'with {end_node_name} {str(end_node.role)} require {end_node.head_args.num_part} messages')
+                          f'with {end_node_name} {str(end_node.role)} require '
+                          f'{getattr(end_node.head_args, "num_part", 0)} messages')
 
     return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
 

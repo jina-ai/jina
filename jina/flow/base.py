@@ -518,7 +518,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         end_repl = {}
         for node, v in self._pod_nodes.items():
             if not v.is_singleton and v.role != PodRoleType.GATEWAY:
-                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v._args.parallel})"]')
+                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v.args.parallel})"]')
                 if v.is_head_router:
                     head_router = node + '_HEAD'
                     end_repl[node] = (head_router, '((fa:fa-random))')
@@ -528,8 +528,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
                 p_r = '((%s))'
                 p_e = '[[%s]]'
-                for j in range(v._args.parallel):
-                    r = node + (f'_{j}' if v._args.parallel > 1 else '')
+                for j in range(v.args.parallel):
+                    r = node + (f'_{j}' if v.args.parallel > 1 else '')
                     if v.is_head_router:
                         mermaid_graph.append(f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea')
                     if v.is_tail_router:
@@ -715,7 +715,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return self._pod_nodes.items().__iter__()
 
     def _show_success_message(self):
-        if self._pod_nodes['gateway']._args.rest_api:
+        if self._pod_nodes['gateway'].args.restful:
             header = 'http://'
             protocol = 'REST'
         else:
