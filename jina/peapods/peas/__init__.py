@@ -4,12 +4,15 @@ from typing import Type
 
 from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__
-from ...enums import PeaRoleType
+from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
 
 __all__ = ['BasePea']
+
+if False:
+    from ..runtimes.base import BaseRuntime
 
 
 class BasePea(metaclass=PeaType):
@@ -28,7 +31,7 @@ class BasePea(metaclass=PeaType):
                                  log_config=self.args.log_config)
 
         try:
-            self.runtime = self._get_runtime_cls()(args)
+            self.runtime = self._get_runtime_cls()(args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}')
             raise RuntimeFailToStart from ex
@@ -121,14 +124,14 @@ class BasePea(metaclass=PeaType):
             If you are using ``thread`` as backend, envs setting will likely be overidden by others
         """
         if self.args.env:
-            if self.args.runtime == 'thread':
+            if self.args.runtime_backend == RuntimeBackendType.THREAD:
                 self.logger.warning('environment variables should not be set when runtime="thread".')
             else:
                 for k, v in self.args.env.items():
                     os.environ[k] = v
 
     def _unset_envs(self):
-        if self.args.env and self.args.runtime != 'thread':
+        if self.args.env and self.args.runtime_backend != RuntimeBackendType.THREAD:
             for k in self.args.env.keys():
                 os.unsetenv(k)
 

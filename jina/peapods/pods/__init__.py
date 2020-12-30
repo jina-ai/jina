@@ -23,14 +23,19 @@ class BasePod(ExitStack):
         :param args: arguments parsed from the CLI
         """
         super().__init__()
-        self.peas = []  # type: List[BasePea]
+        self.args = args
+        self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+
+        self.peas = []  # type: List['BasePea']
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self.args = args
+
         self.peas_args = self._parse_args(args)
-        self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+        for a in self.all_args:
+            self._set_conditional_args(a)
+
 
     @property
     def role(self) -> 'PodRoleType':
@@ -110,9 +115,6 @@ class BasePod(ExitStack):
             self.is_head_router = False
             self.is_tail_router = False
             peas_args['peas'] = [args]
-
-        for a in self.all_args:
-            self._set_conditional_args(a)
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
