@@ -1,10 +1,9 @@
-from typing import Optional, Iterator
+from typing import Iterator
 
 import pytest
 
 from jina.drivers.index import KVIndexDriver
 from jina.executors.indexers import BaseKVIndexer
-from jina.proto import jina_pb2
 from jina.types.document import Document
 
 
@@ -25,18 +24,6 @@ class MockGroundTruthIndexer(BaseKVIndexer):
     def delete(self, keys: Iterator[int], *args, **kwargs):
         for key in keys:
             del self.docs[key]
-
-    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
-        pass
-
-    def get_query_handler(self):
-        pass
-
-    def get_add_handler(self):
-        pass
-
-    def get_create_handler(self):
-        pass
 
 
 class SimpleKVIndexDriver(KVIndexDriver):

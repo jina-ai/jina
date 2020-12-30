@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Iterator, Union, List, Tuple
+from typing import Iterator
 
 import numpy as np
 import pytest
@@ -27,21 +27,6 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
     def delete(self, keys: Iterator[int], *args, **kwargs):
         for key in keys:
             del self.docs[key]
-
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        pass
-
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        pass
-
-    def get_query_handler(self):
-        pass
-
-    def get_add_handler(self):
-        pass
-
-    def get_create_handler(self):
-        pass
 
 
 class SimpleVectorIndexDriver(VectorIndexDriver):
