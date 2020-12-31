@@ -65,26 +65,26 @@ def ground_truth_pairs():
 
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
-def test_ranking_evaluate_driver(simple_rank_evaluate_driver,
+def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
                                  ground_truth_pairs):
     simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'Precision@N'
+        assert doc.evaluations[0].op_name == 'Precision@2'
         assert doc.evaluations[0].value == 1.0
 
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
-def test_ranking_evaluate_driver(ruuningavg_rank_evaluate_driver,
+def test_ranking_evaluate_ruuningavg_driver(ruuningavg_rank_evaluate_driver,
                                  ground_truth_pairs):
     ruuningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
     ruuningavg_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'Precision@N'
+        assert doc.evaluations[0].op_name == 'Precision@2'
         assert doc.evaluations[0].value == 1.0
 
 
