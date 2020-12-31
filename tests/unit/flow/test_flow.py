@@ -609,16 +609,3 @@ def test_return_results_sync_flow(return_results, rest_api):
             assert isinstance(r[0], Response)
         else:
             assert r is None
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize('return_results', [False, True])
-@pytest.mark.parametrize('rest_api', [False, True])
-async def test_return_results_async_flow(return_results, rest_api):
-    with AsyncFlow(rest_api=rest_api, return_results=return_results).add() as f:
-        r = await f.index_ndarray(np.random.random([10, 2]))
-        if return_results:
-            assert isinstance(r, list)
-            assert isinstance(r[0], Response)
-        else:
-            assert r is None
