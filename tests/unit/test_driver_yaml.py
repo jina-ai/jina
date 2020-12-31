@@ -45,7 +45,8 @@ def test_pod_new_api_from_kwargs():
     a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
     assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
 
-    with Pod(uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')):
+    args = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
+    with Pod(args):
         # will print a cust task_name from the driver when terminate
         pass
 

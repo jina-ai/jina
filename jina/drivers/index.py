@@ -26,7 +26,7 @@ class VectorIndexDriver(BaseIndexDriver):
         else:
             embed_vecs, docs_pts, bad_docs = docs.all_embeddings
             if bad_docs:
-                self.pea.logger.warning(f'these bad docs can not be added: {bad_docs}')
+                self.runtime.logger.warning(f'these bad docs can not be added: {bad_docs}')
             if docs_pts:
                 self.exec_fn(np.array([int(doc.id) for doc in docs_pts]), np.stack(embed_vecs))
 

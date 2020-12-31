@@ -156,7 +156,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         """
         self.attached = False  # : represent if this driver is attached to a
         # :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` (& :class:`jina.executors.BaseExecutor`)
-        self.pea = None  # type: Optional['ZEDRuntime']
+        self.runtime = None  # type: Optional['ZEDRuntime']
         self._priority = priority
 
     def attach(self, runtime: 'ZEDRuntime', *args, **kwargs) -> None:
@@ -164,34 +164,34 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
         :param runtime: the pea to be attached.
         """
-        self.pea = runtime
+        self.runtime = runtime
         self.attached = True
 
     @property
     def req(self) -> 'Request':
         """Get the current (typed) request, shortcut to ``self.pea.request``"""
-        return self.pea.request
+        return self.runtime.request
 
     @property
     def partial_reqs(self) -> Sequence['Request']:
         """The collected partial requests under the current ``request_id`` """
         if self.expect_parts > 1:
-            return self.pea.partial_requests
+            return self.runtime.partial_requests
         else:
             raise ValueError(
                 f'trying to access all partial requests, '
-                f'but {self.pea} has only one message'
+                f'but {self.runtime} has only one message'
             )
 
     @property
     def expect_parts(self) -> int:
         """The expected number of partial messages """
-        return self.pea.expect_parts
+        return self.runtime.expect_parts
 
     @property
     def msg(self) -> 'Message':
         """Get the current request, shortcut to ``self.pea.message``"""
-        return self.pea.message
+        return self.runtime.message
 
     @property
     def queryset(self) -> 'QueryLangSet':
@@ -203,7 +203,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.pea.logger``"""
-        return self.pea.logger
+        return self.runtime.logger
 
     def __call__(self, *args, **kwargs) -> None:
         raise NotImplementedError
@@ -326,7 +326,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
                 not self.msg.is_error
-                or self.pea.args.skip_on_error < SkipOnErrorType.EXECUTOR
+                or self.runtime.args.skip_on_error < SkipOnErrorType.EXECUTOR
         ):
             return self._exec_fn
         else:

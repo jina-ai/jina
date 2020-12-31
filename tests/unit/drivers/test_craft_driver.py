@@ -41,7 +41,7 @@ class SimpleCraftDriver(CraftDriver):
 def test_craft_driver(docs):
     driver = SimpleCraftDriver()
     executor = MockCrafter()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._apply_all(docs[:1])
     np.testing.assert_equal(NdArray(docs[0].blob).value, np.array([0.0, 0.0, 0.0]))
     assert docs[0].weight == 10
