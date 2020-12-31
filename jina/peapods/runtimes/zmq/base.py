@@ -46,11 +46,13 @@ class ZMQManyRuntime(BaseRuntime, ABC):
             self.remote_type = args.remote_type
 
     def cancel(self):
+        # TODO: can use send_message_async to avoid sequential waiting
         for ctrl_addr in self.many_ctrl_addr:
             send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=self.timeout_ctrl)
 
     @property
     def status(self):
+        # TODO: can use send_ctrl_message to avoid sequential waiting
         result = []
         for ctrl_addr in self.many_ctrl_addr:
             result.append(send_ctrl_message(ctrl_addr, 'STATUS', timeout=self.timeout_ctrl))
