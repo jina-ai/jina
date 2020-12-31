@@ -29,11 +29,17 @@ def mixin_pea_parser(parser):
 
     gp.add_argument('--env', action=KVAppendAction,
                     metavar='KEY=VALUE', nargs='*',
-                    help='a map of environment variables that are available inside runtime.')
+                    help='a map of environment variables that are available inside runtime')
 
     gp.add_argument('--expose-public', action='store_true', default=False,
                     help='expose the public IP address to remote when necessary, by default it exposes'
                          'private IP address, which only allows accessing under the same network/subnet')
+
+    gp.add_argument('--show-exc-info', action='store_true', default=False,
+                    help='if true then exception stack information to be added to the logging message, '
+                         'useful in debugging')
+
+    # hidden CLI used for internal only
 
     gp.add_argument('--pea-id', type=int, default=-1,
                     help='the id of the storage of this pea, only effective when `separated_workspace=True`'

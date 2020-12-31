@@ -29,7 +29,7 @@ class Zmqlet:
     has three sockets for input, output and control.
 
     .. warning::
-        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`.
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
@@ -294,7 +294,7 @@ class ZmqStreamlet(Zmqlet):
     has three sockets for input, output and control.
 
     .. warning::
-        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.runtime.BasePea`.
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 

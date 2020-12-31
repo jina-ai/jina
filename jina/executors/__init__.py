@@ -97,7 +97,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         with:
             awesomeness: 5
 
-    To use an executor in a :class:`jina.peapods.pea.BasePea` or :class:`jina.peapods.pod.BasePod`,
+    To use an executor in a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`,
     a proper :class:`jina.drivers.Driver` is required. This is because the
     executor is *NOT* protobuf-aware and has no access to the key-values in the protobuf message.
 
@@ -406,9 +406,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self.close()
 
     def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
-        """Attach this executor to a :class:`jina.peapods.pea.BasePea`.
+        """Attach this executor to a :class:`jina.peapods.runtime.BasePea`.
 
-        This is called inside the initializing of a :class:`jina.peapods.pea.BasePea`.
+        This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
         """
         for v in self._drivers.values():
             for d in v:

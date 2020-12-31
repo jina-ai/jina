@@ -39,5 +39,7 @@ def mixin_base_pod_parser(parser):
                     type=RemotePeapodType.from_string,
                     help=f'the way of managing remote runtime')
 
+    # hidden CLI used for internal only
+
     gp.add_argument('--pod-role', type=PodRoleType.from_string, choices=list(PodRoleType),
                     help='the role of this pod in the flow' if _SHOW_ALL_ARGS else argparse.SUPPRESS)

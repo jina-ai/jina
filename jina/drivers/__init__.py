@@ -169,7 +169,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     @property
     def req(self) -> 'Request':
-        """Get the current (typed) request, shortcut to ``self.pea.request``"""
+        """Get the current (typed) request, shortcut to ``self.runtime.request``"""
         return self.runtime.request
 
     @property
@@ -190,7 +190,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     @property
     def msg(self) -> 'Message':
-        """Get the current request, shortcut to ``self.pea.message``"""
+        """Get the current request, shortcut to ``self.runtime.message``"""
         return self.runtime.message
 
     @property
@@ -202,7 +202,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     @property
     def logger(self) -> 'JinaLogger':
-        """Shortcut to ``self.pea.logger``"""
+        """Shortcut to ``self.runtime.logger``"""
         return self.runtime.logger
 
     def __call__(self, *args, **kwargs) -> None:
@@ -224,8 +224,8 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         """Do not save the BasePea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
         file is always unattached."""
         d = dict(self.__dict__)
-        if 'pea' in d:
-            del d['pea']
+        if 'runtime' in d:
+            del d['runtime']
         d['attached'] = False
         return d
 

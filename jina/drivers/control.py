@@ -15,7 +15,7 @@ class BaseControlDriver(BaseDriver):
 
     @property
     def envelope(self) -> 'jina_pb2.EnvelopeProto':
-        """Get the current request, shortcut to ``self.pea.message``"""
+        """Get the current request, shortcut to ``self.runtime.message``"""
         return self.msg.envelope
 
 
@@ -43,7 +43,7 @@ class WaitDriver(BaseControlDriver):
 
 
 class ControlReqDriver(BaseControlDriver):
-    """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
+    """Handling the control request, by default it is installed for all :class:`jina.peapods.runtime.BasePea`"""
 
     def __call__(self, *args, **kwargs):
         if self.req.command == 'TERMINATE':

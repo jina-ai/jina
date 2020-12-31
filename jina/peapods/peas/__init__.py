@@ -34,11 +34,15 @@ class BasePea(metaclass=PeaType):
         try:
             self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
-            self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}')
+            self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}', exc_info=self.args.show_exc_info)
             raise RuntimeFailToStart from ex
 
     def run(self):
         """ Method representing the :class:`BaseRuntime` activity.
+
+        .. note::
+            :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
+            Hence, please do not raise any exception here.
         """
 
         def _finally():
@@ -51,7 +55,7 @@ class BasePea(metaclass=PeaType):
         try:
             self.runtime.setup()
         except Exception as ex:
-            self.logger.error(f'{ex!r} during {self.runtime.setup!r}')
+            self.logger.error(f'{ex!r} during {self.runtime.setup!r}', exc_info=self.args.show_exc_info)
         else:
             self.is_ready.set()
             try:
@@ -61,12 +65,12 @@ class BasePea(metaclass=PeaType):
             except KeyboardInterrupt:
                 self.logger.info(f'{self.runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
-                self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}', exc_info=True)
+                self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}', exc_info=self.args.show_exc_info)
 
             try:
                 self.runtime.teardown()
             except Exception as ex:
-                self.logger.error(f'{ex!r} during {self.runtime.teardown!r}')
+                self.logger.error(f'{ex!r} during {self.runtime.teardown!r}', exc_info=self.args.show_exc_info)
         finally:
             _finally()
 
