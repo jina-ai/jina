@@ -12,7 +12,8 @@ from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.helper import expand_dict
 from jina.jaml import JAML
-from jina.parsers import set_pod_parser, set_hub_build_parser, set_hub_list_parser
+from jina.parsers import set_pod_parser
+from jina.parsers.hub import set_hub_build_parser, set_hub_list_parser
 from jina.peapods import Pod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -78,7 +79,8 @@ def test_build_timeout_ready():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub_slow'), '--timeout-ready', '20000', '--test-uses', '--raise-error'])
     HubIO(args).build()
-    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}', timeout_ready=20000):
+    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}',
+                    timeout_ready=20000):
         pass
 
 
