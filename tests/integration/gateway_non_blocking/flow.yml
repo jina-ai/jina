@@ -1,4 +1,6 @@
 !Flow
+with:
+  rest_api: $REST_API
 pods:
   pod:
     uses: yaml/fast_slow.yml
