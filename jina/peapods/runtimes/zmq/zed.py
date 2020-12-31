@@ -52,22 +52,19 @@ class ZEDRuntime(ZMQRuntime):
         """Load the executor to this BasePea, specified by ``uses`` CLI argument.
         """
         try:
-            try:
-                self._executor = BaseExecutor.load_config(self.args.uses,
-                                                          separated_workspace=self.args.separated_workspace,
-                                                          pea_id=self.args.pea_id,
-                                                          read_only=self.args.read_only)
-            except BadConfigSource:
-                # retry loading but with "uses_internal" as the source
-                self._executor = BaseExecutor.load_config(self.args.uses_internal,
-                                                          separated_workspace=self.args.separated_workspace,
-                                                          pea_id=self.args.pea_id,
-                                                          read_only=self.args.read_only)
+            self._executor = BaseExecutor.load_config(self.args.uses,
+                                                      separated_workspace=self.args.separated_workspace,
+                                                      pea_id=self.args.pea_id,
+                                                      read_only=self.args.read_only)
+        except BadConfigSource as ex:
+            self.logger.error(f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
+                              f'please use "docker://YOUR_IMAGE_NAME"')
+            raise ExecutorFailToLoad from ex
         except FileNotFoundError as ex:
-            self.logger.error(f'fail to load file dependency: {ex!r}')
+            self.logger.error(f'fail to load file dependency')
             raise ExecutorFailToLoad from ex
         except Exception as ex:
-            self.logger.critical(f'can not load the executor from {self.args.uses}', exc_info=True)
+            self.logger.critical(f'can not load the executor from {self.args.uses}')
             raise ExecutorFailToLoad from ex
 
     def _load_plugins(self):

@@ -56,7 +56,7 @@ def test_use_from_local_dir_flow_container_level():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error'])
     HubIO(args).build()
-    with Flow().add(uses=f'jinahub/pod.crafter.dummyhubexecutor:0.0.0-{jina_version}'):
+    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutor:0.0.0-{jina_version}'):
         pass
 
 
@@ -78,7 +78,7 @@ def test_build_timeout_ready():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub_slow'), '--timeout-ready', '20000', '--test-uses', '--raise-error'])
     HubIO(args).build()
-    with Flow().add(uses=f'jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}', timeout_ready=20000):
+    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}', timeout_ready=20000):
         pass
 
 

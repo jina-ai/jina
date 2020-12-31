@@ -3,8 +3,8 @@ import os
 from typing import Type
 
 from .helper import _get_event, _make_or_event, PeaType
-from ... import __stop_msg__, __ready_msg__
-from ...enums import PeaRoleType, RuntimeBackendType
+from ... import __stop_msg__, __ready_msg__, __default_host__
+from ...enums import PeaRoleType, RuntimeBackendType, RemoteAccessType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -85,8 +85,8 @@ class BasePea(metaclass=PeaType):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {self!r}, '
-                                     f'this often means the runtime {self.runtime!r} throws some exception')
+                self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
+                                     f'add "--show-exc-info" to see the exception stack in details')
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
@@ -149,11 +149,21 @@ class BasePea(metaclass=PeaType):
 
     def _get_runtime_cls(self) -> Type['BaseRuntime']:
         v = self.runtime_cls
-        if not v:
+        if not self.runtime_cls:
+            if self.args.host != __default_host__:
+                if self.args.remote_access == RemoteAccessType.JINAD:
+                    self.args.runtime_cls = 'JinadRuntime'
+                elif self.args.remote_access == RemoteAccessType.SSH:
+                    self.args.runtime_cls = 'SSHRuntime'
+
+            if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith('docker://'):
+                self.args.runtime_cls = 'ContainerRuntime'
+
             from ..runtimes import get_runtime
             v = get_runtime(self.args.runtime_cls)
         return v
 
     @property
     def role(self) -> 'PeaRoleType':
+        """Get the role of this pea in a pod"""
         return self.args.pea_role

@@ -1,5 +1,4 @@
 import argparse
-from argparse import ArgumentParser
 
 from ...helper import add_arg_group, _SHOW_ALL_ARGS
 from .... import __default_host__
@@ -7,7 +6,7 @@ from ....enums import SkipOnErrorType, SocketType
 from ....helper import random_port
 
 
-def mixin_zed_runtime_parser(parser) -> 'ArgumentParser':
+def mixin_zed_runtime_parser(parser):
     """Mixing in arguments required by :class:`ZEDRuntime` into the given parser."""
 
     gp = add_arg_group(parser, title='ZEDRuntime')
@@ -15,10 +14,10 @@ def mixin_zed_runtime_parser(parser) -> 'ArgumentParser':
     gp.add_argument('--uses', type=str, default='_pass',
                     help='the config of the executor, it could be '
                          '> a YAML file path, '
-                         '> a supported executor\'s class name, '
-                         '> one of "_clear", "_pass", "_logforward" '
-                         '> the content of YAML config (must starts with "!")'
-                         '> a docker image')
+                         '> an executor\'s class name, '
+                         '> a docker image (must start with docker://)'
+                         '> one of "_pass", "_logforward" '
+                         '> the raw content of YAML config (must starts with "!")')
     gp.add_argument('--py-modules', type=str, nargs='*', metavar='PATH',
                     help='the customized python modules need to be imported before loading the'
                          ' executor')

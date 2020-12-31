@@ -19,9 +19,9 @@ def set_base_parser():
 
     parser = argparse.ArgumentParser(
         epilog=f'Jina (v{colored(__version__, "green")}) is the cloud-native neural search solution '
-               'powered by AI and deep learning technology.\n'
+               'powered by AI & deep learning.\n'
                'It provides a universal solution for large-scale index and query '
-               'of media contents.\n'
+               'of multimedia contents.\n'
                f'{url_str}',
         formatter_class=_chf,
         description='Jina Command Line Interface'

@@ -39,25 +39,28 @@ def test_gateway_runtime(cls, runtime):
         pass
 
 
-def test_container_runtime_bad_entrypoint():
+@pytest.mark.parametrize('runtime', ['thread', 'process'])
+def test_container_runtime_bad_entrypoint(runtime):
     class Pea1(BasePea):
         runtime_cls = ContainerRuntime
 
     # without correct entrypoint this will fail
-    arg = set_pea_parser().parse_args(['--uses', 'jinaai/jina:test-pip',
-                                       ])
+    arg = set_pea_parser().parse_args(['--uses', 'docker://jinaai/jina:test-pip',
+                                       '--runtime-backend', runtime])
     with pytest.raises(RuntimeFailToStart):
         with Pea1(arg):
             pass
 
 
-def test_container_runtime_good_entrypoint():
+@pytest.mark.parametrize('runtime', ['thread', 'process'])
+def test_container_runtime_good_entrypoint(runtime):
     class Pea1(BasePea):
         runtime_cls = ContainerRuntime
 
-    # without correct entrypoint this will fail
-    arg = set_pea_parser().parse_args(['--uses', 'jinaai/jina:test-pip',
-                                       '--entrypoint', 'jina pod'])
+    arg = set_pea_parser().parse_args(['--uses', 'docker://jinaai/jina:test-pip',
+                                       '--entrypoint', 'jina pod',
+                                       '--runtime-backend', runtime,
+                                       '--show-exc-info'])
     with Pea1(arg):
         pass
 

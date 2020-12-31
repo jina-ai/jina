@@ -8,7 +8,6 @@ from typing import Optional, Dict, List, Union, Set
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
 from ..peas import BasePea
-from ... import __default_host__
 from ...enums import *
 
 
@@ -223,12 +222,6 @@ class BasePod(ExitStack):
                 args.runtime_cls = 'RESTRuntime'
             else:
                 args.runtime_cls = 'GRPCRuntime'
-
-        if args.host != __default_host__:
-            if args.remote_access == RemoteAccessType.JINAD:
-                args.runtime_cls = 'JinadRuntime'
-            elif args.remote_access == RemoteAccessType.SSH:
-                args.runtime_cls = 'SSHRuntime'
 
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """

@@ -3,7 +3,6 @@ from subprocess import Popen, PIPE
 
 from ..zmq.base import ZMQManyRuntime
 from ....helper import ArgNamespace
-from ....logging import JinaLogger
 
 
 class SSHRuntime(ZMQManyRuntime):
@@ -29,9 +28,8 @@ class SSHRuntime(ZMQManyRuntime):
             raise Exception('the subprocess fails to start, check the arguments or entrypoint')
 
     def run_forever(self):
-        with JinaLogger('🌏', **vars(self.args)) as logger:
-            for line in self._ssh_proc.stdout:
-                logger.info(line.strip())
+        for line in self._ssh_proc.stdout:
+            self.logger.info(line.strip())
 
     def teardown(self):
         self._ssh_proc.stdin.write('logout\n')

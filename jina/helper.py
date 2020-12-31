@@ -457,7 +457,7 @@ class ArgNamespace:
 def is_valid_local_config_source(path: str) -> bool:
     # TODO: this function must be refactored before 1.0 (Han 12.22)
     try:
-        from jina.jaml import parse_config_source
+        from .jaml import parse_config_source
         parse_config_source(path)
         return True
     except FileNotFoundError:

@@ -129,7 +129,7 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     # is CONNECT inside docker?
     conn_docker = (getattr(connect_args, 'uses', None) is not None and
-                   not is_valid_local_config_source(connect_args.uses))
+                   connect_args.uses.startswith('docker://'))
 
     # is BIND & CONNECT all on the same remote?
     bind_conn_same_remote = not bind_local and not conn_local and \
