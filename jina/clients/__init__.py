@@ -11,7 +11,7 @@ from ..helper import run_async, deprecated_alias
 
 
 class Client(BaseClient):
-    """A simple Python client for connecting to the gateway.
+    """A simple Python client for connecting to the gRPC gateway.
     It manges the asyncio eventloop internally, so all interfaces are synchronous from the outside.
     """
 
@@ -107,6 +107,41 @@ class Client(BaseClient):
 
 
 class WebSocketClient(Client, WebSocketBaseClient):
-    """
-    TODO(Deepankar): Add docstring
+    """A Python Client to stream requests from a Flow with a RESTGateway
+    :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like
+    :meth:`index`, "meth:`search`, :meth:`train`, :meth:`update` & :meth:`delete`.
+
+    It is used by default while running operations when we create a `Flow` with `rest_api=True`
+
+    .. highlight:: python
+    .. code-block:: python
+
+        from jina.flow import Flow
+        f = Flow(rest_api=True).add().add()
+
+        with f:
+            f.index(['abc'])
+
+
+    :class:`WebSocketClient` can also be used to run operations for a remote Flow
+
+    .. highlight:: python
+    .. code-block:: python
+
+        # A Flow running on remote
+        from jina.flow import Flow
+        f = Flow(rest_api=True, port_expose=34567).add().add()
+
+        with f:
+            f.block()
+
+        # Local WebSocketClient running index & search
+        from jina.clients import WebSocketClient
+
+        client = WebSocketClient(...)
+        client.index(...)
+        client.search(...)
+
+
+    :class:`WebSocketClient` internally handles an event loop to run operations asynchronously.
     """
