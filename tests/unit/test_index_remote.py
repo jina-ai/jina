@@ -7,10 +7,10 @@ import numpy as np
 
 from jina.flow import Flow
 from jina.helper import random_port
-from jina.peapods.pods.gateway import GatewayPod
 from jina.enums import FlowOptimizeLevel
 from jina.parsers import set_gateway_parser
 from jina.executors.indexers.vector import NumpyIndexer
+from jina.peapods import Pod
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -105,7 +105,7 @@ def test_index_remote_rpi(test_workspace):
     f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
 
     def start_gateway():
-        with GatewayPod(f_args):
+        with Pod(f_args):
             time.sleep(3)
 
     t = mp.Process(target=start_gateway)

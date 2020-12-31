@@ -88,7 +88,7 @@ class RouteDriver(ControlReqDriver):
                 dealer_id = self.idle_dealer_ids.pop()
                 self.envelope.receiver_id = dealer_id
                 if not self.idle_dealer_ids:
-                    self.runtime.zmqlet.pause_pollin()
+                    self.runtime._zmqlet.pause_pollin()
                     self.is_pollin_paused = True
             elif self.raise_no_dealer:
                 raise RuntimeError('if this router connects more than one dealer, '
@@ -109,7 +109,7 @@ class RouteDriver(ControlReqDriver):
             self.idle_dealer_ids.add(self.envelope.receiver_id)
             self.logger.debug(f'{self.envelope.receiver_id} is idle')
             if self.is_pollin_paused:
-                self.runtime.zmqlet.resume_pollin()
+                self.runtime._zmqlet.resume_pollin()
                 self.is_pollin_paused = False
             raise NoExplicitMessage
         else:
