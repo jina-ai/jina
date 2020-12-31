@@ -1,0 +1,31 @@
+!BinaryPbIndexer
+with:
+  index_filename: doc.gzip
+metas:
+  name: docIndexer
+  workspace: $JINA_TOPK_DIR
+
+requests:
+  on:
+    IndexRequest:
+      - !KVIndexDriver
+        with:
+          executor: docIndexer
+          traversal_paths: ['r']
+    SearchRequest:
+      - !KVSearchDriver
+        with:
+          executor: docIndexer
+
+    UpdateRequest:
+      - !KVIndexDriver
+        with:
+          method: update
+          executor: docIndexer
+          traversal_paths: [ 'r' ]
+    DeleteRequest:
+      - !KVIndexDriver
+        with:
+          method: delete
+          executor: docIndexer
+          traversal_paths: [ 'r' ]

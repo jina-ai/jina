@@ -69,6 +69,42 @@ class Client(BaseClient):
         self.mode = RequestType.INDEX
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    def update(self, input_fn: InputFnType = None,
+               on_done: CallbackFnType = None,
+               on_error: CallbackFnType = None,
+               on_always: CallbackFnType = None,
+               **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
+        self.mode = RequestType.UPDATE
+        return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
+
+    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    def delete(self, input_fn: InputFnType = None,
+               on_done: CallbackFnType = None,
+               on_error: CallbackFnType = None,
+               on_always: CallbackFnType = None,
+               **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
+        self.mode = RequestType.DELETE
+        return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
+
 
 class WebSocketClient(Client, WebSocketBaseClient):
     """
