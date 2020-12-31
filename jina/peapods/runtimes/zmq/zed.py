@@ -180,7 +180,7 @@ class ZEDRuntime(ZMQRuntime):
                 msg.add_exception()
                 self.logger.warning(f'{ex!r}')
             else:
-                msg.add_exception(ex, executor=getattr(self, 'executor'))
+                msg.add_exception(ex, executor=getattr(self, '_executor'))
                 self.logger.error(f'{ex!r}')
             if 'JINA_RAISE_ERROR_EARLY' in os.environ:
                 raise

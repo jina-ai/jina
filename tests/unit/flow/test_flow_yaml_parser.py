@@ -9,7 +9,7 @@ from jina.excepts import BadFlowYAMLVersion
 from jina.flow import BaseFlow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
-from jina.parsers import set_flow_parser
+from jina.parsers.flow import set_flow_parser
 from tests import rm_files
 
 cur_dir = Path(__file__).parent
