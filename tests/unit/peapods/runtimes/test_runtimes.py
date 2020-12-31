@@ -76,7 +76,7 @@ def test_address_in_use(runtime):
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 @pytest.mark.parametrize('cls, parser, args', [(ContainerRuntime, set_pea_parser,
-                                                ['--uses', 'jinaai/jina:test-pip',
+                                                ['--uses', 'docker://jinaai/jina:test-pip',
                                                  '--entrypoint', 'jina pod']),
                                                (RESTRuntime, set_gateway_parser, []),
                                                (ZEDRuntime, set_pea_parser, [])])
