@@ -18,6 +18,7 @@ def get_fastapi_app(args, logger):
         from fastapi.responses import JSONResponse
         from fastapi.middleware.cors import CORSMiddleware
         # TODO(Deepankar): starlette comes installed with fastapi. Should this be added as a separate dependency?
+        from starlette import status
         from starlette.endpoints import WebSocketEndpoint
         if False:
             from starlette.types import Receive, Scope, Send
@@ -51,44 +52,94 @@ def get_fastapi_app(args, logger):
     async def get_result_in_json(request_iterator):
         return [MessageToDict(k) async for k in servicer.Call(request_iterator=request_iterator, context=None)]
 
-
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):
+        """
+        :meth:`handle_receive`
+            await a message on :meth:`websocket.receive()`
+            send the message to zmqlet via :meth:`zmqlet.send_message()` and await
+        :meth:`handle_send`
+            await a message on :meth:`zmqlet.recv_message()`
+            send the message back to client via :meth:`websocket.send()` and await
+        :meth:`dispatch`
+            starts an independent task :meth:`handle_receive`
+            awaits on :meth:`handle_send`
+            this makes sure gateway is nonblocking
+        await exit strategy:
+            :meth:`handle_receive` keeps track of num_requests received
+            :meth:`handle_send` keeps track of num_responses sent
+            client sends a final message: `bytes(True)` to indicate request iterator is empty
+            server exits out of await when `(num_requests == num_responses != 0 and is_req_empty)`
+        """
 
-        # This disables other encodings - 'text' & 'json'
+        # TODO(Deepankar): This disables other encodings - 'text' & 'json'. Enable json based encoding
         encoding = 'bytes'
+        is_req_empty = False
+        num_requests = 0
+        num_responses = 0
 
         def __init__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
             super().__init__(scope, receive, send)
             self.args = args
             self.name = args.name or self.__class__.__name__
 
-        def handle(self, msg: 'Message') -> 'Request':
-            msg.add_route(self.name, self.args.identity)
-            return msg.response
+        async def dispatch(self) -> None:
+            websocket = WebSocket(self.scope, receive=self.receive, send=self.send)
+            await self.on_connect(websocket)
+            close_code = status.WS_1000_NORMAL_CLOSURE
+
+            asyncio.create_task(
+                self.handle_receive(websocket=websocket, close_code=close_code)
+            )
+            await self.handle_send(websocket=websocket)
 
         async def on_connect(self, websocket: WebSocket) -> None:
+            # TODO(Deepankar): To enable multiple concurrent clients,
+            # Register each client - https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients
+            # And move class variables to instance variable
             await websocket.accept()
             self.client_info = f'{websocket.client.host}:{websocket.client.port}'
             logger.success(f'Client {self.client_info} connected to stream requests via websockets')
             self.zmqlet = AsyncZmqlet(args, logger)
 
-        async def on_receive(self, websocket: WebSocket, data: Any) -> None:
-            # At any point only a single request is sent in bytes instead of an iterator of requests
-            # For each such request, we send back the response in bytes
+        async def handle_receive(self, websocket: WebSocket, close_code: int) -> None:
             try:
-                # data is in bytes. We can either send data directly or convert it to :class:`Request`
-                asyncio.create_task(
-                    self.zmqlet.send_message(
-                        Message(None, Request(data), 'gateway', **vars(self.args))
-                    )
-                )
-                response = await self.zmqlet.recv_message(callback=self.handle)
-                # Convert to bytes before sending the response back to the client
-                await websocket.send_bytes(response.SerializeToString())
+
+                while True:
+                    message = await websocket.receive()
+
+                    if message["type"] == "websocket.receive":
+                        data = await self.decode(websocket, message)
+                        if data == bytes(True):
+                            self.is_req_empty = True
+                            continue
+                        await self.zmqlet.send_message(
+                            Message(None, Request(data), 'gateway', **vars(self.args))
+                        )
+                        self.num_requests += 1
+                    elif message["type"] == "websocket.disconnect":
+                        close_code = int(message.get("code", status.WS_1000_NORMAL_CLOSURE))
+                        break
+            except Exception as exc:
+                close_code = status.WS_1011_INTERNAL_ERROR
+                logger.error(f'Got an exception in handle_receive: {repr(exc)}')
+                raise exc from None
+            finally:
+                await self.on_disconnect(websocket, close_code)
+
+        async def handle_send(self, websocket: WebSocket) -> None:
+
+            def handle_route(msg: 'Message') -> 'Request':
+                msg.add_route(self.name, self.args.identity)
+                return msg.response
+
+            try:
+                while not (self.num_requests == self.num_responses != 0 and self.is_req_empty):
+                    response = await self.zmqlet.recv_message(callback=handle_route)
+                    await websocket.send_bytes(response.SerializeToString())
+                    self.num_responses += 1
             except Exception as e:
-                logger.error(f'Got an exception while streaming requests: {e}')
-                return
+                logger.error(f'Got an exception in handle_send: {repr(e)}')
 
         async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
             self.zmqlet.close()
