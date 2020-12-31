@@ -4,10 +4,14 @@ from logging import getLogger
 import json
 import mock
 import pytest
+import requests
+import responses
 
+from jina.docker import hubapi
 from jina.docker.hubapi import _list
 from jina.docker.hubapi import JAML
 from jina.docker.hubapi import _fetch_access_token
+from jina.docker.hubapi import _docker_auth
 
 sample_manifest = {
     'manifest': [
@@ -58,3 +62,45 @@ def test_fetch_access_token(mocker):
     token_json = json.loads(token_string)
     mocker.return_value = token_json
     _fetch_access_token(logger=getLogger())
+
+
+@responses.activate
+def test_docker_auth_success(mocker):
+    token_string = json.dumps({'hubapi': {'url': 'dummy_url', 'docker_auth': 'dummy_auth'}})
+    token_json = json.loads(token_string)
+    mock_load = mocker.patch.object(hubapi.JAML, 'load', autospec=True)
+    mock_load.return_value = token_json
+
+    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token.return_value = 'dummy_token'
+
+    responses.add(responses.GET, 'https://hubapi.jina.ai/docker_auth',
+                  json={"docker_username": "amQ==", "docker_password": "amQ=="}, status=200)
+    resp = requests.get('https://hubapi.jina.ai/docker_auth')
+    mock_response = mocker.patch.object(requests, 'get', autospec=True)
+    mock_response.return_value = resp
+
+    # Verify the fetched creds are as expected
+    fetch_cred = _docker_auth(logger=getLogger())
+    assert fetch_cred['docker_username'] == 'jd'
+    assert fetch_cred['docker_password'] == 'jd'
+
+
+@responses.activate
+def test_docker_auth_failure(mocker):
+    token_string = json.dumps({'hubapi': {'url': 'dummy_url', 'docker_auth': 'dummy_auth'}})
+    token_json = json.loads(token_string)
+    mock_load = mocker.patch.object(hubapi.JAML, 'load', autospec=True)
+    mock_load.return_value = token_json
+
+    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token.return_value = 'dummy_token'
+
+    responses.add(responses.GET, 'https://hubapi.jina.ai/docker_auth',
+                  json={"message":"Missing Authentication Token"}, status=403)
+    resp = requests.get('https://hubapi.jina.ai/docker_auth')
+    mock_response = mocker.patch.object(requests, 'get', autospec=True)
+    mock_response.return_value = resp
+    # If no token is fetched, docker auth fails
+    fetch_cred = _docker_auth(logger=getLogger())
+    assert fetch_cred == None
