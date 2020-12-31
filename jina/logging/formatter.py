@@ -21,8 +21,9 @@ class ColorFormatter(Formatter):
 
     def format(self, record):
         cr = copy(record)
-        seq = self.MAPPING.get(cr.levelname, self.MAPPING['INFO'])  # default white
-        cr.msg = colored(cr.msg, **seq)
+        if cr.levelname != 'INFO':
+            seq = self.MAPPING.get(cr.levelname, self.MAPPING['INFO'])  # default white
+            cr.msg = colored(cr.msg, **seq)
         return super().format(cr)
 
 

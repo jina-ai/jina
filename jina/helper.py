@@ -696,3 +696,12 @@ def check_keys_exist(keys_to_check, existing_keys):
         if k not in existing_keys:
             missed.append(k)
     return missed
+
+
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    s = str(value).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', s)

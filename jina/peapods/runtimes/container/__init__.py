@@ -7,7 +7,7 @@ from pathlib import Path
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
-from ....helper import ArgNamespace, is_valid_local_config_source
+from ....helper import ArgNamespace, is_valid_local_config_source, slugify
 
 
 class ContainerRuntime(ZMQRuntime):
@@ -75,7 +75,8 @@ class ContainerRuntime(ZMQRuntime):
         # this prevent setting containerPea twice
         from ....parsers import set_pea_parser
         non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(),
-                                                          taboo={'uses', 'entrypoint', 'volumes', 'pull_latest'})
+                                                          taboo={'uses', 'entrypoint',
+                                                                 'volumes', 'pull_latest', 'runtime_cls'})
 
         if self.args.pull_latest:
             self.logger.warning(f'pulling {uses_img}, this could take a while. if you encounter '
@@ -112,7 +113,7 @@ class ContainerRuntime(ZMQRuntime):
                                                 detach=True,
                                                 auto_remove=True,
                                                 ports=ports,
-                                                name=self.name,
+                                                name=slugify(self.name),
                                                 volumes=_volumes,
                                                 network_mode=self._net_mode,
                                                 entrypoint=self.args.entrypoint)

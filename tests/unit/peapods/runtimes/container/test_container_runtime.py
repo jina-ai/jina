@@ -137,7 +137,7 @@ def test_container_ping(docker_image_built):
 
     # test with container
     with pytest.raises(SystemExit) as cm:
-        with ContainerRuntime(a4):
+        with Pea(a4):
             NetworkChecker(a5)
 
     assert cm.value.code == 0

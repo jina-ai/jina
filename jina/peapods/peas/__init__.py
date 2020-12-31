@@ -95,6 +95,8 @@ class BasePea(metaclass=PeaType):
             raise TimeoutError(
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')
 
+        return self
+
     def close(self) -> None:
         # wait 1s for the process/thread to end naturally, in this case no "cancel" is required this is required for
         # the is case where in subprocess, runtime.setup() fails and _finally() is not yet executed, BUT close() in the
@@ -141,8 +143,7 @@ class BasePea(metaclass=PeaType):
                 os.unsetenv(k)
 
     def __enter__(self):
-        self.start()
-        return self
+        return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
