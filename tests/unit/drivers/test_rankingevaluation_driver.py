@@ -66,25 +66,27 @@ def ground_truth_pairs():
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
 def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
-                                 ground_truth_pairs):
-    simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
+                                        ground_truth_pairs):
+    executor = PrecisionEvaluator(eval_at=2)
+    simple_rank_evaluate_driver.attach(executor=executor, pea=None)
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'Precision@2'
+        assert doc.evaluations[0].op_name == executor.metric
         assert doc.evaluations[0].value == 1.0
 
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
 def test_ranking_evaluate_ruuningavg_driver(ruuningavg_rank_evaluate_driver,
-                                 ground_truth_pairs):
-    ruuningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
+                                            ground_truth_pairs):
+    executor = PrecisionEvaluator(eval_at=2)
+    ruuningavg_rank_evaluate_driver.attach(executor=executor, pea=None)
     ruuningavg_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'Precision@2'
+        assert doc.evaluations[0].op_name == executor.metric
         assert doc.evaluations[0].value == 1.0
 
 
@@ -141,7 +143,8 @@ def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_dr
                                                    eval_request):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
-    simple_chunk_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), pea=None)
+    executor = PrecisionEvaluator(eval_at=2)
+    simple_chunk_rank_evaluate_driver.attach(executor=executor, pea=None)
     simple_chunk_rank_evaluate_driver.eval_request = eval_request
     simple_chunk_rank_evaluate_driver()
 
@@ -152,7 +155,7 @@ def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_dr
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].op_name == 'Precision@N'
+        assert chunk.evaluations[0].op_name == executor.metric
         assert chunk.evaluations[0].value == 1.0
 
 
