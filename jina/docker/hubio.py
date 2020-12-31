@@ -427,7 +427,7 @@ class HubIO:
         return result
 
     @staticmethod
-    def _test_build(image: str,
+    def _test_build(image,  # type docker image object
                     test_level: 'BuildTestLevel',
                     config_yaml_path: str,
                     timeout_ready: int,
