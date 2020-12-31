@@ -329,6 +329,14 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
                     embed0 = _encode_modality(batch_modality0)
                     batch_modality1 = batches[1]
                     embed1 = _encode_modality(batch_modality0)
+
+            class MemoryHungryRanker:
+                
+                @batching_multi_input(batch_size = 64, slice_on = 2 , num_data=2)
+                def score(
+                    self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
+                ) -> 'np.ndarray': 
+                ...       
     """
 
     def _batching(func):
@@ -351,8 +359,9 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
             full_data_size = _get_size(args[slice_on], split_over_axis)
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
-            data_iterators = [batch_iterator(args[slice_on + i][:total_size], b_size, split_over_axis) for i in
-                              range(0, num_data)]
+            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0,num_data)]
+            data_iterators = [batch_iterator(_get_slice(args[slice_on + i], total_size), b_size , split_over_axis, 
+                            yield_dict=yield_dict[i]) for i in range(0, num_data)]
 
             for batch in data_iterators[0]:
                 args[slice_on] = batch
@@ -365,80 +374,6 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
                     final_result.append(r)
 
             return _merge_results_after_batching(final_result, merge_over_axis)
-
-        return arg_wrapper
-
-    if func:
-        return _batching(func)
-    else:
-        return _batching
-
-def batching_ranker_input(func: Callable[[Any], np.ndarray] = None,
-                         batch_size: Union[int, Callable] = None,
-                         num_batch: Optional[int] = None,
-                         slice_on: int = 2,
-                         num_data: int = 1) -> Any:
-    """Split the input of a function into small batches and call :func:`func` on each batch
-    , collect the merged result and return. This is useful when the input is too big to fit into memory.
-    This can batch multiple inputs. 
-
-    :param func: function to decorate
-    :param batch_size: size of each batch
-    :param num_batch: number of batches to take, the rest will be ignored
-    :param slice_on: the location of the data. When using inside a class,
-            ``slice_on`` should take ``self`` into consideration.
-    :param num_data: the number of data inside the arguments
-    :return: the merged result as if run :func:`func` once on the input.
-    ..warning:
-        data arguments will be taken starting from ``slice_on` to ``slice_on + num_data``
-    Example:
-        .. highlight:: python
-        .. code-block:: python
-            
-            class MemoryHungryRanker:
-                
-                @batching_ranker_input(batch_size = 64)
-                def score(
-                    self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
-                ) -> 'np.ndarray': 
-                ...       
-
-                    
-    """
-    def _batching(func):
-        @wraps(func)
-        def arg_wrapper(*args, **kwargs):
-            data = [args[slice_on + i] for i in range(0, num_data)]
-            # priority: decorator > class_attribute
-            # by default data is in args[1:] (self needs to be taken into account)
-            b_size = batch_size or getattr(args[0], 'batch_size', None)
-            # no batching if b_size is None
-            if b_size is None or data is None:
-                return func(*args, **kwargs)
-            args = list(args)
-            default_logger.debug(
-                f'batching enabled for {func.__qualname__} batch_size={b_size} '
-                f'num_batch={num_batch}')
-
-            # assume all datas have the same length
-            full_data_size = _get_size(args[slice_on])
-            total_size = _get_total_size(full_data_size, b_size, num_batch)
-            final_result = []
-            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0,num_data)]
-            data_iterators = [batch_iterator(_get_slice(args[slice_on + i],total_size), b_size , yield_dict=yield_dict[i]) for i in range(0, num_data)]
-
-            for batch in data_iterators[0]:
-                args[slice_on] =  batch
-                for idx in range(1, num_data):
-                    args[slice_on + idx] = next(data_iterators[idx])
-                    
-
-                r = func(*args, **kwargs)
-
-                if r is not None:
-                    final_result.append(r)
-
-            return _merge_results_after_batching(final_result)
 
         return arg_wrapper
 
