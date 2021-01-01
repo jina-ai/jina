@@ -5,7 +5,7 @@ set -ex
 DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
 
-cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
+cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
 docker run --rm \
@@ -20,8 +20,8 @@ if [[ $1 == "commit" ]]; then
   cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
-  rsync -avr . master  # sync to master/
-  rsync -avr --exclude=master . ${JINA_VERSION}  # sync to version/
+  rsync -avr . master  # sync everything under the root to master/
+  rsync -avr --exclude=master . ${JINA_VERSION}  # sync everything under the root to version/
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
