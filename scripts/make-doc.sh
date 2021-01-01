@@ -47,7 +47,7 @@ elif [[ $1 == "release" ]]; then
   cd -
   cd ${HTML_DIR}
   rsync -avr . latest  # sync to latest/
-  rsync -avr --exclude=latest . ${JINA_VERSION}  # sync to versions
+  rsync -avr --exclude=latest . "v${JINA_VERSION}"  # sync to versions
   cd -
   cd ${DOC_DIR}/bak
   rsync -avr ./v* ../_build/html/ --ignore-existing  # revert backup back
