@@ -5,6 +5,11 @@ set -ex
 DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
 
+# backup the old version's doc as later we do make clean, they all gone.
+cd ${HTML_DIR}
+rsync -rzvvhP ./v* ../bak
+cd -
+
 cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
@@ -22,6 +27,7 @@ if [[ $1 == "commit" ]]; then
   cd ${HTML_DIR}
   rsync -avr . master  # sync everything under the root to master/
   rsync -avr --exclude=master . "v${JINA_VERSION}"  # sync everything under the root to version/
+  rsync -rzvvhP ..bak/v* ./ --ignore-existing  # revert backup back
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
@@ -38,6 +44,7 @@ elif [[ $1 == "release" ]]; then
   cd ${HTML_DIR}
   rsync -avr . latest  # sync to latest/
   rsync -avr --exclude=latest . ${JINA_VERSION}  # sync to versions
+  rsync -rzvvhP ..bak/v* ./ --ignore-existing  # revert backup back
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
