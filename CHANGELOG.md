@@ -116,6 +116,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6291,4 +6292,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```db7a36a4```](https://github.com/jina-ai/jina/commit/db7a36a4f04db2f9008b063b785a45b4b605469a)] __-__ mock wrapper does not call validation function  #1535 (#1536) (*florian-hoenicke*)
  - [[```0c1047e1```](https://github.com/jina-ai/jina/commit/0c1047e1de09f8658d072bf67c616550f0f7e173)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```7b54f311```](https://github.com/jina-ai/jina/commit/7b54f311950e58493e6a6a494d1b32804bdedcc1)] __-__ __version__: the next version will be 0.8.17 (*Jina Dev Bot*)
+
+<a name=release-note-0-8-18></a>
+## Release Note (`0.8.18`)
+
+> Release time: 2021-01-01 15:44:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Florian Hönicke,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```4f50e802```](https://github.com/jina-ai/jina/commit/4f50e80292aa06c92e12d4d74dfe578ce3ade992)] __-__ russian translation 101 (#1572) (*Florian Hönicke*)
+
+### 🚧 Code Refactoring
+
+ - [[```9b81559d```](https://github.com/jina-ai/jina/commit/9b81559dadb624a3d5230614fef1d38539aa0226)] __-__ redesign Runtime, Pea, Pod, Parser (#1539) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```04d7d9da```](https://github.com/jina-ai/jina/commit/04d7d9da078434c5a0e8d7adb94733674f5864b3)] __-__ versioning docs (*Han Xiao*)
+ - [[```33590bd6```](https://github.com/jina-ai/jina/commit/33590bd64e7ad0857c1f9c7f00b2473c16fcf086)] __-__ fix parser module path (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```8b72e175```](https://github.com/jina-ai/jina/commit/8b72e175124a1da1125736e1615379bc521cb5c7)] __-__ hotfix release (*Han Xiao*)
+ - [[```804a0a4c```](https://github.com/jina-ai/jina/commit/804a0a4cdb994e20a731ff3e82597826101ac88a)] __-__ __version__: the next version will be 0.8.18 (*Jina Dev Bot*)
 
