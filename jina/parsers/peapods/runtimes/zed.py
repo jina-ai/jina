@@ -36,6 +36,8 @@ def mixin_zed_runtime_parser(parser):
     gp.add_argument('--socket-out', type=SocketType.from_string, choices=list(SocketType),
                     default=SocketType.PUSH_BIND,
                     help='socket type for output port')
+    gp.add_argument('--max-socket-retries', type=int, default=3,
+                    help='max number of retries when socket is conflict')
 
     gp.add_argument('--dump-interval', type=int, default=240,
                     help='serialize the model in the pod every n seconds if model changes. '
@@ -58,3 +60,4 @@ def mixin_zed_runtime_parser(parser):
     gp.add_argument('--num-part', type=int, default=0,
                     help='the number of messages expected from upstream, 0 and 1 means single part'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+

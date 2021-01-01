@@ -36,9 +36,7 @@ class ZEDRuntime(ZMQRuntime):
         self._partial_requests = None
         self._partial_messages = None
 
-        # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main process/thread
-        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
-
+        self._load_zmqlet()
         self._load_plugins()
         self._load_executor()
 
@@ -48,8 +46,22 @@ class ZEDRuntime(ZMQRuntime):
 
     #: Private methods required by :meth:`setup`
 
+    def _load_zmqlet(self):
+        """Load ZMQStreamlet to this runtime"""
+        num_tries = 0
+        try:
+            # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
+            # process/thread
+            num_tries += 1
+            self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
+        except zmq.error.ZMQError:
+            if num_tries < self.args.max_socket_retries:
+                self.logger.warning(f'retry init socket {num_tries}/{self.args.max_socket_retries}')
+            else:
+                raise
+
     def _load_executor(self):
-        """Load the executor to this BasePea, specified by ``uses`` CLI argument.
+        """Load the executor to this runtime, specified by ``uses`` CLI argument.
         """
         try:
             self._executor = BaseExecutor.load_config(self.args.uses,
