@@ -197,3 +197,7 @@ class LookupyError(Exception):
 
 class EventLoopError(Exception):
     """ Exception when a running event loop is found but not under jupyter or ipython """
+
+
+class ZMQSocketError(Exception):
+    """Exeception when ZMQlet/ZMQStreamlet can not be initialized """
