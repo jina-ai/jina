@@ -19,7 +19,6 @@ from ....proto import jina_pb2
 
 class ZEDRuntime(ZMQRuntime):
     def run_forever(self):
-        self._executor.attach(runtime=self)
         self._zmqlet.start(self._msg_callback)
 
     def setup(self):
@@ -68,6 +67,7 @@ class ZEDRuntime(ZMQRuntime):
                                                       separated_workspace=self.args.separated_workspace,
                                                       pea_id=self.args.pea_id,
                                                       read_only=self.args.read_only)
+            self._executor.attach(runtime=self)
         except BadConfigSource as ex:
             self.logger.error(f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
                               f'please use "docker://YOUR_IMAGE_NAME"')

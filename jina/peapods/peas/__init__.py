@@ -31,6 +31,11 @@ class BasePea(metaclass=PeaType):
                                  log_id=self.args.log_id,
                                  log_config=self.args.log_config)
 
+        self._envs = {'JINA_POD_NAME': self.name,
+                      'JINA_LOG_ID': self.args.log_id}
+        if self.args.env:
+            self._envs.update(self.args.env)
+
         try:
             self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
@@ -134,12 +139,11 @@ class BasePea(metaclass=PeaType):
             if self.args.runtime_backend == RuntimeBackendType.THREAD:
                 self.logger.warning('environment variables should not be set when runtime="thread".')
             else:
-                for k, v in self.args.env.items():
-                    os.environ[k] = v
+                os.environ.update(self._envs)
 
     def _unset_envs(self):
-        if self.args.env and self.args.runtime_backend != RuntimeBackendType.THREAD:
-            for k in self.args.env.keys():
+        if self._envs and self.args.runtime_backend != RuntimeBackendType.THREAD:
+            for k in self._envs.keys():
                 os.unsetenv(k)
 
     def __enter__(self):
