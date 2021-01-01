@@ -75,7 +75,7 @@ def touch_dir(base_dir: str) -> None:
 
 
 def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
-                   yield_slice: bool = False) -> Iterator[Any]:
+                   yield_slice: bool = False, yield_dict: bool = False) -> Iterator[Any]:
     import numpy as np
     if not batch_size or batch_size <= 0:
         yield data
@@ -107,7 +107,10 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
         data = iter(data)
         # as iterator, there is no way to know the length of it
         while True:
-            chunk = tuple(islice(data, batch_size))
+            if yield_dict:
+                chunk = dict(islice(data, batch_size))
+            else:
+                chunk = tuple(islice(data, batch_size))
             if not chunk:
                 return
             yield chunk
