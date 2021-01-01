@@ -52,7 +52,8 @@ elif [[ $1 == "release" ]]; then
   cd ${DOC_DIR}/bak
   rsync -avr ./v* ../_build/html/ --ignore-existing  # revert backup back
   cd -
-  cd ${HTML_DIR}  echo docs.jina.ai > CNAME
+  cd ${HTML_DIR}
+  echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
   git config --local user.name "Jina Dev Bot"
