@@ -5,7 +5,7 @@ set -ex
 DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
 
-cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && cd -
+cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
 docker run --rm \
@@ -21,7 +21,7 @@ if [[ $1 == "commit" ]]; then
   cd -
   cd ${HTML_DIR}
   rsync -avr . master  # sync everything under the root to master/
-  rsync -avr --exclude=master . ${JINA_VERSION}  # sync everything under the root to version/
+  rsync -avr --exclude=master . "v${JINA_VERSION}"  # sync everything under the root to version/
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
