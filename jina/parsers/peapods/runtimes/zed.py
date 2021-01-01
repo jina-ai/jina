@@ -50,9 +50,6 @@ def mixin_zed_runtime_parser(parser):
     gp.add_argument('--memory-hwm', type=int, default=-1,
                     help='memory high watermark of this pod in Gigabytes, pod will restart when this is reached. '
                          '-1 means no restriction')
-    gp.add_argument('--max-idle-time', type=int, default=60,
-                    help='label this pea as inactive when it does not '
-                         'process any request after certain time (in second)')
 
     gp.add_argument('--skip-on-error', type=SkipOnErrorType.from_string, choices=list(SkipOnErrorType),
                     default=SkipOnErrorType.NONE,

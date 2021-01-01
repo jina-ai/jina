@@ -27,9 +27,6 @@ def mixin_base_pod_parser(parser):
                     default=SchedulerType.LOAD_BALANCE,
                     help='the strategy of scheduling workload among peas')
 
-    gp.add_argument('--shutdown-idle', action='store_true', default=False,
-                    help='shutdown this pod when all peas are idle')
-
     gp.add_argument('--remote-access', choices=list(RemoteAccessType),
                     default=RemoteAccessType.JINAD,
                     type=RemoteAccessType.from_string,

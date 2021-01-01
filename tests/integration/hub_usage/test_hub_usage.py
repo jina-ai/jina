@@ -69,11 +69,6 @@ def test_use_executor_pretrained_model_except():
         HubIO(args).build()
 
 
-def test_use_from_cli_level():
-    subprocess.check_call(['jina', 'pod', '--uses',
-                           os.path.join(cur_dir, 'dummyhub/config.yml'),
-                           '--shutdown-idle', '--max-idle-time', '5'])
-
 
 def test_build_timeout_ready():
     args = set_hub_build_parser().parse_args(
