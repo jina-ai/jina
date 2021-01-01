@@ -49,12 +49,6 @@ class BasePea(metaclass=PeaType):
             :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
             Hence, please do not raise any exception here.
         """
-
-        def _finally():
-            self.is_shutdown.set()
-            self.is_ready.clear()
-            self._unset_envs()
-
         self._set_envs()
 
         try:
@@ -77,7 +71,9 @@ class BasePea(metaclass=PeaType):
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.teardown!r}', exc_info=self.args.show_exc_info)
         finally:
-            _finally()
+            self.is_shutdown.set()
+            self.is_ready.clear()
+            self._unset_envs()
 
     def start(self):
         super().start()  #: required here to call process/thread method
