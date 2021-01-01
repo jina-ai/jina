@@ -16,6 +16,13 @@ if False:
 
 
 class BasePea(metaclass=PeaType):
+    """
+    :class:`BasePea` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
+    or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
+
+    A :class:`BasePea` must be equipped with a proper :class:`Runtime` class to work.
+    """
+
     runtime_cls = None  # type: Type['BaseRuntime']
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -44,6 +51,8 @@ class BasePea(metaclass=PeaType):
 
     def run(self):
         """ Method representing the :class:`BaseRuntime` activity.
+
+        This method overrides :meth:`run` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
         .. note::
             :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
@@ -76,6 +85,11 @@ class BasePea(metaclass=PeaType):
             self._unset_envs()
 
     def start(self):
+        """ Start the Pea.
+
+        This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        """
+
         super().start()  #: required here to call process/thread method
         _timeout = self.args.timeout_ready
         if _timeout <= 0:
