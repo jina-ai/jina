@@ -5,7 +5,7 @@ Jina Command-Line Interface
    :nosubcommands:
    :noepilog:
    :nodescription:
-   :ref: jina.parser.get_main_parser
+   :ref: jina.parsers.get_main_parser
    :prog: jina
 
 .. toctree::
