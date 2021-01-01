@@ -7,7 +7,7 @@ import numpy as np
 from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector import NumpyIndexer
 from jina.flow import Flow
-from jina.parser import set_flow_parser
+from jina.parsers.flow import set_flow_parser
 from jina.proto import jina_pb2
 from jina import Document
 from tests import random_docs

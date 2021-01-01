@@ -9,7 +9,8 @@ from ...helper import random_port, get_random_identity, get_public_ip, get_inter
 
 def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Namespace = None) -> List[Namespace]:
     result = []
-    for _ in range(args.parallel):
+
+    for idx in range(args.parallel):
         _args = copy.deepcopy(args)
         if head_args:
             _args.port_in = head_args.port_out
@@ -32,6 +33,18 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
             _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
         if tail_args:
             _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
+
+        if args.parallel > 1:
+            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
+            _args.pea_role = PeaRoleType.PARALLEL
+            if _args.name:
+                _args.name += f'/{_args.pea_id}'
+            else:
+                _args.name = f'{_args.pea_id}'
+        else:
+            _args.pea_id = 0
+            _args.pea_role = PeaRoleType.SINGLETON
+
         result.append(_args)
     return result
 
@@ -67,8 +80,12 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
             _head_args.uses = args.uses_before or '_pass'
 
     if as_router:
-        _head_args.name = args.name or ''
-        _head_args.role = PeaRoleType.HEAD
+        _head_args.pea_role = PeaRoleType.HEAD
+        if args.name:
+            _head_args.name = f'{args.name}/head'
+        else:
+            _head_args.name = f'head'
+
 
     # in any case, if header is present, it represent this Pod to consume `num_part`
     # the following peas inside the pod will have num_part=1
@@ -88,8 +105,11 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
 
     if as_router:
         _tail_args.uses = args.uses_after or '_pass'
-        _tail_args.name = args.name or ''
-        _tail_args.role = PeaRoleType.TAIL
+        if args.name:
+            _tail_args.name = f'{args.name}/tail'
+        else:
+            _tail_args.name = f'tail'
+        _tail_args.pea_role = PeaRoleType.TAIL
         _tail_args.num_part = 1 if args.polling.is_push else args.parallel
 
     return _tail_args
@@ -109,7 +129,7 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
 
     # is CONNECT inside docker?
     conn_docker = (getattr(connect_args, 'uses', None) is not None and
-                   not is_valid_local_config_source(connect_args.uses))
+                   connect_args.uses.startswith('docker://'))
 
     # is BIND & CONNECT all on the same remote?
     bind_conn_same_remote = not bind_local and not conn_local and \

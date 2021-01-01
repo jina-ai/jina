@@ -98,7 +98,7 @@ def test_vectorsearch_driver_mock_indexer_apply_all(document):
     driver = SimpleKVSearchDriver()
 
     executor = MockIndexer()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
 
     dcs = list(document.chunks)
     assert len(dcs) == 5
@@ -121,7 +121,7 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply(document):
     driver = SimpleKVSearchDriver()
 
     executor = MockIndexer()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
 
     dcs = list(document.chunks)
     assert len(dcs) == 5
@@ -142,7 +142,7 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply(document):
 def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(document_with_matches_on_chunks):
     driver = SimpleKVSearchDriver(traversal_paths=('cm',))
     executor = MockIndexer()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
 
     driver._traverse_apply([document_with_matches_on_chunks])
 

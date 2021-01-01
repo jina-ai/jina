@@ -39,7 +39,7 @@ def test_segment_driver():
 
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._apply_all(DocumentSet([valid_doc]))
 
     assert valid_doc.length == 2
@@ -69,7 +69,7 @@ def test_segment_driver():
 def test_broken_document():
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
 
     invalid_doc = Document()
     invalid_doc.id = 1

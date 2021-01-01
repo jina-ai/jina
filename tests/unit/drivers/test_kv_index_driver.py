@@ -86,7 +86,7 @@ def deleted_documents():
 
 
 def test_kv_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_add, documents):
-    simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
@@ -96,10 +96,10 @@ def test_kv_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_
 
 def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_update,
                                 documents, updated_documents):
-    simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
-    simple_kv_indexer_driver_update.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_kv_indexer_driver_update.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_update._apply_all(updated_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
@@ -109,10 +109,10 @@ def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driv
 
 def test_kv_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_delete,
                                 documents, deleted_documents):
-    simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
-    simple_kv_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_kv_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_delete._apply_all(deleted_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 2

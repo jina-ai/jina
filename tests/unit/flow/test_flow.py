@@ -5,13 +5,9 @@ import pytest
 import requests
 
 from jina import JINA_GLOBAL, Request, AsyncFlow
-from jina.checker import NetworkChecker
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
-from jina.parser import set_pea_parser, set_ping_parser, set_pod_parser
-from jina.peapods.pods import BasePod
-from jina.peapods.runtimes.local import LocalRuntime
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from tests import random_docs, rm_files
@@ -19,26 +15,42 @@ from tests import random_docs, rm_files
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_ping():
-    a1 = set_pea_parser().parse_args([])
-    a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print-response'])
-    a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
-
-    with pytest.raises(SystemExit) as cm:
-        with LocalRuntime(a1):
-            NetworkChecker(a2)
-
-    assert cm.value.code == 0
-
-    # test with bad addresss
-    with pytest.raises(SystemExit) as cm:
-        with LocalRuntime(a1):
-            NetworkChecker(a3)
-
-    assert cm.value.code == 1
-
-
 def test_flow_with_jump():
+    def _validate(f):
+        node = f._pod_nodes['gateway']
+        assert node.head_args.socket_in == SocketType.PULL_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r1']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUB_BIND
+        node = f._pod_nodes['r2']
+        assert node.head_args.socket_in == SocketType.SUB_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r3']
+        assert node.head_args.socket_in == SocketType.SUB_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r4']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r5']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r6']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r8']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r9']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['r10']
+        assert node.head_args.socket_in == SocketType.PULL_BIND
+        assert node.tail_args.socket_out == SocketType.PUSH_BIND
+        for name, node in f._pod_nodes.items():
+            assert node.peas_args['peas'][0] == node.head_args
+            assert node.peas_args['peas'][0] == node.tail_args
+
     f = (Flow().add(name='r1')
          .add(name='r2')
          .add(name='r3', needs='r1')
@@ -50,57 +62,13 @@ def test_flow_with_jump():
          .add(name='r10', needs=['r9', 'r8']))
 
     with f:
-        pass
-
-    node = f._pod_nodes['gateway']
-    assert node.head_args.socket_in == SocketType.PULL_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r1']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUB_BIND
-
-    node = f._pod_nodes['r2']
-    assert node.head_args.socket_in == SocketType.SUB_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r3']
-    assert node.head_args.socket_in == SocketType.SUB_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r4']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r5']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r6']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r8']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r9']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
-
-    node = f._pod_nodes['r10']
-    assert node.head_args.socket_in == SocketType.PULL_BIND
-    assert node.tail_args.socket_out == SocketType.PUSH_BIND
-
-    for name, node in f._pod_nodes.items():
-        assert node.peas_args['peas'][0] == node.head_args
-        assert node.peas_args['peas'][0] == node.tail_args
+        _validate(f)
 
     f.save_config('tmp.yml')
     Flow.load_config('tmp.yml')
 
-    with Flow.load_config('tmp.yml') as fl:
-        pass
+    with Flow.load_config('tmp.yml') as f:
+        _validate(f)
 
     rm_files(['tmp.yml'])
 
@@ -188,14 +156,6 @@ def test_flow_identical():
         assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
     rm_files(['test2.yml'])
-
-
-def test_pod_status():
-    args = set_pod_parser().parse_args(['--parallel', '3'])
-    with BasePod(args) as p:
-        assert len(p.status) == p.num_peas
-        for v in p.status:
-            assert v
 
 
 def test_flow_no_container():
@@ -505,13 +465,10 @@ def test_flow_with_modalitys_simple(mocker):
 
 def test_flow_arguments_priorities():
     f = Flow(port_expose=12345).add(name='test', port_expose=23456)
-    assert '23456' in f._pod_nodes['test'].cli_args
-    assert '12345' not in f._pod_nodes['test'].cli_args
+    assert f._pod_nodes['test'].args.port_expose == 23456
 
-
-def test_flow_default_argument_passing():
     f = Flow(port_expose=12345).add(name='test')
-    assert '12345' in f._pod_nodes['test'].cli_args
+    assert f._pod_nodes['test'].args.port_expose == 12345
 
 
 def test_flow_arbitrary_needs():

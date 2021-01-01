@@ -101,7 +101,7 @@ def empty_documents():
 
 
 def test_vector_index_driver_add(mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_vector_indexer_driver_add._apply_all(documents)
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
@@ -110,11 +110,11 @@ def test_vector_index_driver_add(mock_groundtruth_indexer, simple_vector_indexer
 
 def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents,
                                           empty_documents):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     logger_mock = mocker.Mock()
     pea_mock = mocker.Mock()
     pea_mock.logger = logger_mock
-    simple_vector_indexer_driver_add.pea = pea_mock
+    simple_vector_indexer_driver_add.runtime = pea_mock
     # TODO once https://github.com/jina-ai/jina/pull/1555 is merged union can be declared using '+'
     union = deepcopy(documents)
     for d in empty_documents:
@@ -133,10 +133,10 @@ def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simp
 def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_indexer_driver_add,
                                     simple_vector_indexer_driver_update,
                                     documents, updated_documents):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_vector_indexer_driver_add._apply_all(documents)
 
-    simple_vector_indexer_driver_update.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_vector_indexer_driver_update.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_vector_indexer_driver_update._apply_all(updated_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
@@ -150,10 +150,10 @@ def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_inde
 def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_vector_indexer_driver_add,
                                     simple_vector_indexer_driver_delete,
                                     documents, deleted_documents):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_vector_indexer_driver_add._apply_all(documents)
 
-    simple_vector_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_vector_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_vector_indexer_driver_delete._apply_all(deleted_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 2

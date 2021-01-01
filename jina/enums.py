@@ -304,20 +304,18 @@ class FlowInspectType(BetterEnum):
         return self.value in {0, 2}
 
 
-class CallbackOnType(BetterEnum):
-    """Apply the callback_fn on which field of the request """
-
-    REQUEST = 0  # the full request object
-    BODY = 1  # the body of the request, `status`, `routes` and `queryset` are removed
-    DOCS = 2  # the documents inside the request body
-    GROUNDTRUTHS = 3  # the groundtruths inside the request body
-
-
 class RemoteAccessType(BetterEnum):
     """Remote access type when connect to the host """
 
     SSH = 0  # ssh connection
     JINAD = 1  # using rest api via jinad
+
+
+class RemotePeapodType(BetterEnum):
+    """Remote access type when connect to the host """
+
+    PEA = 0
+    POD = 1
 
 
 class BuildTestLevel(BetterEnum):
@@ -336,3 +334,8 @@ class DataInputType(BetterEnum):
     AUTO = 0  # auto inference the input type from data (!WARN: could be slow as it relies on try-execept)
     DOCUMENT = 1  # the input is a full document
     CONTENT = 2  # the input is just the content of the document
+
+
+class RuntimeBackendType(BetterEnum):
+    THREAD = 0
+    PROCESS = 1
