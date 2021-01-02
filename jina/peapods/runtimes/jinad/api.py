@@ -209,12 +209,9 @@ class JinadAPI:
         :param remote_id: the identity of that pea/pod
         :return:
         """
-        current_line = 0
         try:
             self.logger.info(f'fetching streamed logs from remote id: {remote_id}')
-            while True:
-                current_line = asyncio.run(self.wslogs(
-                    remote_id=remote_id, stop_event=stop_event, current_line=current_line))
+            asyncio.run(self.wslogs(remote_id=remote_id, stop_event=stop_event, current_line=0))
         except RemotePodClosed:
             self.logger.debug(f'🌏 remote closed')
         finally:
