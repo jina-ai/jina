@@ -1,14 +1,15 @@
-import asyncio
 import json
+import asyncio
+from pathlib import Path
 from contextlib import ExitStack
 from multiprocessing.synchronize import Event
-from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
-from ....excepts import RemotePodClosed
-from ....importer import ImportExtensions
 from ....jaml import JAML
 from ....logging import JinaLogger
+from ....enums import RemotePeapodType
+from ....excepts import RemotePodClosed
+from ....importer import ImportExtensions
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
@@ -248,9 +249,9 @@ class PodJinadAPI(JinadAPI):
 
 
 def get_jinad_api(kind: str, host: str, port: int, logger: JinaLogger, **kwargs):
-    if kind == 'pea':
+    if kind == RemotePeapodType.PEA:
         return PeaJinadAPI(host=host, port=port, logger=logger, **kwargs)
-    elif kind == 'pod':
+    elif kind == RemotePeapodType.POD:
         return PodJinadAPI(host=host, port=port, logger=logger, **kwargs)
     else:
         raise ValueError(f'kind must be pea/pod but it is {kind}')
