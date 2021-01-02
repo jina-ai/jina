@@ -141,12 +141,12 @@
             {% endif %}
             {% if nav_version %}
 
-          <div class="dropdown">
-            Version: <button class="dropbtn version">{{ nav_version }}</button>
+          <div class="dropdown version">
+            <button class="dropbtn version">{{ nav_version }}</button>
             <div class="dropdown-content">
               {% for version in theme_version_switcher %}
-                        <a class="dropdown-item" href="{{ version[0] }}">{{ version[1] }}</a>
-                        {% endfor %}
+              <a class="dropdown-item" href="{{ version[0] }}">{{ version[1] }}</a>
+              {% endfor %}
             </div>
           </div>
             {% endif %}

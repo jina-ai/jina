@@ -10,4 +10,4 @@ def test_get_ctrl_addr(host):
 
 @pytest.mark.parametrize('host', ['pi@192.0.0.1', '192.0.0.1'])
 def test_get_ctrl_addr_ipc(host):
-    assert 'ipc' == Zmqlet.get_ctrl_address(host, 56789, True)[0][0:3]
+    assert Zmqlet.get_ctrl_address(host, 56789, True)[0].startswith('ipc')

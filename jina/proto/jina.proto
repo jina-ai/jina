@@ -270,6 +270,8 @@ message RequestProto {
         IndexRequestProto index = 3; // an index request
         SearchRequestProto search = 4; // a search request
         ControlRequestProto control = 5; // a control request
+        DeleteRequestProto delete = 9; // a delete request
+        UpdateRequestProto update = 10; // an update request
     }
 
     /**
@@ -288,6 +290,24 @@ message RequestProto {
      */
     message IndexRequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to index
+
+        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+    }
+
+     /**
+     * Represents an update request
+     */
+    message UpdateRequestProto {
+        repeated DocumentProto docs = 1; // a list of Documents to update
+
+        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+    }
+
+     /**
+     * Represents a delete request
+     */
+    message DeleteRequestProto {
+        repeated DocumentProto docs = 1; // a list of Documents to delete
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
     }

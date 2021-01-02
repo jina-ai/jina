@@ -11,7 +11,7 @@ from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
 from jina.jaml import JAML
-from jina.parser import set_pea_parser
+from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -123,7 +123,7 @@ def test_class_yaml3():
 
 def test_joint_indexer(test_workspace):
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
-    b.attach(pea=None)
+    b.attach(runtime=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]
 

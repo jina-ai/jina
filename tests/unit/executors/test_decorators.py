@@ -233,3 +233,29 @@ def test_batching_multi():
     assert len(instance.batching) == ceil(num_docs / batch_size)
     for batch in instance.batching:
         assert batch.shape == (batch_size, result_dim)
+
+def test_batching_multi_input_dictionary():
+    batch_size = 2
+    class MockRanker:
+        def __init__(self, batch_size):
+            self.batch_size=batch_size
+            self.batches = []
+
+        @batching_multi_input(slice_on=2,num_data=2)
+        def score(
+            self, query_meta, old_match_scores, match_meta
+        ):
+            self.batches.append([query_meta, old_match_scores, match_meta])
+            return np.array([(x,y) for x,y in old_match_scores.items()])
+    
+    query_meta = {'text': 'cool stuff'}
+    old_match_scores = {1: 5, 2: 4, 3:4 , 4:0}
+    match_meta = {1: {'text': 'cool stuff'}, 2: {'text': 'kewl stuff'},3: {'text': 'kewl stuff'},4: {'text': 'kewl stuff'}}
+    instance = MockRanker(batch_size)
+    result = instance.score(query_meta,old_match_scores,match_meta)
+    np.testing.assert_almost_equal(result,np.array([(x,y) for x,y in old_match_scores.items()]))
+    for batch in instance.batches:
+        assert batch[0] == query_meta
+        assert len(batch[1]) == batch_size
+        assert len(batch[2]) == batch_size
+

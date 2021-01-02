@@ -96,7 +96,7 @@ def simple_evaluate_driver(field_type):
 
 
 def test_crafter_evaluate_driver(mock_diff_evaluator, simple_evaluate_driver, ground_truth_pairs):
-    simple_evaluate_driver.attach(executor=mock_diff_evaluator, pea=None)
+    simple_evaluate_driver.attach(executor=mock_diff_evaluator, runtime=None)
     simple_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
@@ -194,7 +194,7 @@ def test_crafter_evaluate_driver_in_chunks(field_type,
     # proving that the driver can traverse in a parallel way docs and groundtruth
     req = eval_request(field_type)
     driver = simple_chunk_evaluate_driver(field_type)
-    driver.attach(executor=mock_diff_evaluator, pea=None)
+    driver.attach(executor=mock_diff_evaluator, runtime=None)
     driver.eval_request = req
     driver()
 

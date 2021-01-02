@@ -1,5 +1,5 @@
 from jina.logging import default_logger
-from jina.parser import set_pea_parser
+from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
@@ -8,14 +8,14 @@ from jina.helper import get_random_identity
 
 
 class MockBasePeaNotRead(BasePea):
-    def post_hook(self, msg: 'Message') -> 'BasePea':
-        super().post_hook(msg)
+    def _post_hook(self, msg: 'Message') -> 'BasePea':
+        super()._post_hook(msg)
         assert not msg.request.is_used
 
 
 class MockBasePeaRead(BasePea):
-    def post_hook(self, msg: 'Message') -> 'BasePea':
-        super().post_hook(msg)
+    def _post_hook(self, msg: 'Message') -> 'BasePea':
+        super()._post_hook(msg)
         assert msg.request.is_used
 
 

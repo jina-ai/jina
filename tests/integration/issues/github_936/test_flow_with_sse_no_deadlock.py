@@ -3,7 +3,7 @@ import os
 import pytest
 
 from jina.flow import Flow
-from jina.parser import set_pod_parser
+from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 
 """
@@ -68,7 +68,7 @@ def test_pod_with_sse_no_deadlock_parallelism():
 @pytest.mark.timeout(10)
 @pytest.mark.repeat(10)
 def test_pod_with_sse_no_deadlock_log_remote():
-    args = set_pod_parser().parse_args(['--parallel', '2', '--log-remote'])
+    args = set_pod_parser().parse_args(['--parallel', '2'])
     p = Pod(args)
     with p:
         pass

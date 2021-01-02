@@ -36,6 +36,12 @@ html_theme = 'sphinx_rtd_theme'
 base_url = '/'
 version_choices = [('', 'latest'),
                    ('master', 'master')]
+with open('versions') as fp:
+    s = [(f'v{v.strip()}', v.strip()) for v in fp if (v.strip() and not v.startswith('#'))]
+    s.reverse()
+version_choices.extend(s)
+
+# a list of tuple of (relative_url, version_tag)
 version_choices = [(base_url + v[0], v[1]) for v in version_choices]
 
 html_theme_options = {
