@@ -23,10 +23,6 @@ def test_precision_evaluator(eval_at, expected):
     evaluator = PrecisionEvaluator(eval_at=eval_at)
     assert evaluator.evaluate(actual=matches_ids, desired=desired_ids) == expected
     np.testing.assert_almost_equal(evaluator.mean, expected)
-    if eval_at:
-        assert evaluator.metric == f'Precision@{eval_at}'
-    else:
-        assert evaluator.metric == f'Precision@N'
 
 
 @pytest.mark.parametrize(

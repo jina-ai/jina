@@ -17,10 +17,6 @@ class RecallEvaluator(BaseRankingEvaluator):
         super().__init__(*args, **kwargs)
         self.eval_at = eval_at
 
-    @property
-    def metric(self):
-        return f'Recall@{self.eval_at}' if self.eval_at else 'Recall@N'
-
     def evaluate(self, actual: Sequence[Any], desired: Sequence[Any], *args, **kwargs) -> float:
         """"
         :param actual: the matched document identifiers from the request as matched by jina indexers and rankers
