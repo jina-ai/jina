@@ -48,6 +48,7 @@ function git_commit {
     echo -e "$RELEASE_VER" >> docs/versions
     git add $INIT_FILE ./CHANGELOG.md jina/hub docs/versions
     git commit -m "chore(version): the next version will be $NEXT_VER"
+    git push
 }
 
 function slack_notif {
