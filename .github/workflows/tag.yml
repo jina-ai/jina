@@ -66,28 +66,6 @@ jobs:
           directory: docs/_build/html
           tags: true
 
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-      - run: |
-          python scripts/get-last-release-note.py
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: 🎉 Release ${{ github.ref }}
-          body_path: 'tmp.md'
-          draft: false
-          prerelease: false
-
   update-docker:
     needs: update-doc
     runs-on: ubuntu-latest
@@ -126,3 +104,26 @@ jobs:
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION
           tags: "latest, ${{env.JINA_VERSION}}, ${{env.JINA_MINOR_VERSION}}"
+
+  create-release:
+    needs: update-docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          python scripts/get-last-release-note.py
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: 🎉 Release ${{ github.ref }}
+          body_path: 'tmp.md'
+          draft: false
+          prerelease: false
