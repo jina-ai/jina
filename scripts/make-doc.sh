@@ -7,6 +7,7 @@ HTML_DIR=${DOC_DIR}/_build/html
 
 # backup the old version's doc as later we do make clean, they all gone.
 cd ${HTML_DIR}
+mkdir -p ../../bak
 rsync -rzvh --ignore-missing-args ./v* ../../bak
 rsync -rzvh --ignore-missing-args ./latest ../../bak
 cd -
