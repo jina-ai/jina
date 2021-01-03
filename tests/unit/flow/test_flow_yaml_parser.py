@@ -93,7 +93,7 @@ def test_flow_yaml_dump():
 
 def test_flow_yaml_from_string():
     f1 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
-    with open('yaml/flow-v1.0-syntax.yml') as fp:
+    with open(str(cur_dir / 'yaml' / 'flow-v1.0-syntax.yml')) as fp:
         str_yaml = fp.read()
         assert isinstance(str_yaml, str)
         f2 = Flow.load_config(str_yaml)
