@@ -91,7 +91,7 @@ class JAML:
     def load_no_tags(stream, **kwargs):
         """Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow
         """
-        safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '!cls: ') for v in stream)
+        safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__cls: ') for v in stream)
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
@@ -390,7 +390,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(s_path),) if s_path else None)
 
             # revert yaml's tag and load again, this time with substitution
-            revert_tag_yml = JAML.dump(no_tag_yml).replace('\'!cls\': ', '!')
+            revert_tag_yml = JAML.dump(no_tag_yml).replace('__cls: ', '!')
 
             # load into object, no more substitute
             return JAML.load(revert_tag_yml, substitute=False)
