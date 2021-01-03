@@ -68,7 +68,7 @@ docker run jinaai/jina --help
 
 ## Jina "Hello, World!" 👋🌍
 
-Just starting out? Try Jina's "Hello, World" - a simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply run:
+Just starting out? Try Jina's "Hello, World" - a simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No se necesitan dependencias adicionales, simplemente ejecute:
 
 ```bash
 jina hello-world
