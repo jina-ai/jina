@@ -78,6 +78,7 @@ def test_load_flow_from_yaml():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
 
+
 def test_flow_yaml_dump():
     f = Flow(logserver_config=str(cur_dir.parent / 'yaml' / 'test-server-config.yml'),
              optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
@@ -88,3 +89,17 @@ def test_flow_yaml_dump():
     assert f.args.logserver_config == fl.args.logserver_config
     assert f.args.optimize_level == fl.args.optimize_level
     rm_files(['test1.yml'])
+
+
+def test_flow_yaml_from_string():
+    f1 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
+    with open('yaml/flow-v1.0-syntax.yml') as fp:
+        str_yaml = fp.read()
+        assert isinstance(str_yaml, str)
+        f2 = Flow.load_config(str_yaml)
+        assert f1 == f2
+
+    f3 = Flow.load_config('!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]')
+    assert 'ppp0' in f3._pod_nodes.keys()
+    assert 'aaa1' in f3._pod_nodes.keys()
+    assert f3.num_pods == 2
