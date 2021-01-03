@@ -41,11 +41,11 @@
   <a href="https://jobs.jina.ai">Estamos contratando</a>
 </p>
 
-Jina es un framework de búsqueda basado en la IA que permite a los desarrolladores crear sistemas de búsqueda **cross/multi-modals** (como texto, imágenes, video, audio) en la nube.
+Jina es un framework de búsqueda basado en IA que permite a los desarrolladores crear sistemas de búsqueda **cross/multi-modals** (como texto, imágenes, video, audio) en la nube.
 
-⏱️ **Ahorro de tiempo** - Inicie un sistema alimentado por la IA en sólo unos minutos..
+⏱️ **Ahorro de tiempo** - Inicie un sistema AI-powered en sólo unos minutos..
 
-🧠 **Modelos de IA de primeira classe** - *El* patrón de diseño de los sistemas de búsqueda neuronal, con soporte de primera clase para [modelos de IA de última generación](https://docs.jina.ai/chapters/all_exec.html).
+🧠 **Modelos IA de primera clase** - *El* patrón de diseño de los sistemas de búsqueda neuronal, con soporte de primera clase para [modelos IA de última generación](https://docs.jina.ai/chapters/all_exec.html).
 
 🌌 **Búsqueda universal** - Indización y consulta a gran escala de cualquier tipo de datos en múltiples plataformas: vídeo, imagen, texto largo/corto, música, código fuente, etc.
 
@@ -85,7 +85,7 @@ En sistemas operativos Linux/MacOS con Python >= 3.7:
 pip install jina
 ```
 
-Para instalar Jina en dependencias adicionales o en Raspberry Pi, [por favor revise la documentación](https://docs.jina.ai).
+Para instalar Jina con dependencias adicionales o en Raspberry Pi, [por favor revise la documentación](https://docs.jina.ai).
 
 ### En un contenedor Docker
 
