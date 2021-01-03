@@ -59,12 +59,13 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - run: |
           ./scripts/make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
-      - uses: ad-m/github-push-action@master
+      - uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           repository: jina-ai/jina-docs
           directory: docs/_build/html
           force: true
+          branch: master
 
   update-docker:
     needs: update-doc
