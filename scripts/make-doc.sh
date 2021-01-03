@@ -8,6 +8,7 @@ HTML_DIR=${DOC_DIR}/_build/html
 # backup the old version's doc as later we do make clean, they all gone.
 cd ${HTML_DIR}
 rsync -rzvh ./v* ../../bak
+rsync -rzvh ./latest ../../bak
 cd -
 
 cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
@@ -30,8 +31,10 @@ if [[ $1 == "commit" ]]; then
   cd -
   cd ${DOC_DIR}/bak
   rsync -avr ./v* ../_build/html/ --ignore-existing  # revert backup back
+  rsync -avr ./latest ../_build/html/ --ignore-existing  # revert backup back
   cd -
   cd ${HTML_DIR}
+  rm -rf bak
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
@@ -53,6 +56,7 @@ elif [[ $1 == "release" ]]; then
   rsync -avr ./v* ../_build/html/ --ignore-existing  # revert backup back
   cd -
   cd ${HTML_DIR}
+  rm -rf bak
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
