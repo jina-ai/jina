@@ -51,7 +51,6 @@ def hello_world(args):
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = args.workdir
-    os.environ['WITH_LOGSERVER'] = str(args.logserver)
 
     # reduce the network load by using `fp16`, or even `uint8`
     os.environ['JINA_ARRAY_QUANT'] = 'fp16'

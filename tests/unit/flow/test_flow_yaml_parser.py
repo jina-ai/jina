@@ -78,6 +78,7 @@ def test_load_flow_from_yaml():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
 
+
 def test_flow_yaml_dump():
     f = Flow(logserver_config=str(cur_dir.parent / 'yaml' / 'test-server-config.yml'),
              optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
@@ -85,6 +86,5 @@ def test_flow_yaml_dump():
     f.save_config('test1.yml')
 
     fl = Flow.load_config('test1.yml')
-    assert f.args.logserver_config == fl.args.logserver_config
     assert f.args.optimize_level == fl.args.optimize_level
     rm_files(['test1.yml'])

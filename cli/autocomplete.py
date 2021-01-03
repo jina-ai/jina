@@ -34,10 +34,9 @@ if __name__ == '__main__':
 ac_table = {
     'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check',
                  'hub', 'pea', 'log', 'client', 'export-api'], 'completions': {
-        'hello-world': ['--help', '--workdir', '--logserver', '--logserver-config', '--download-proxy', '--shards',
-                        '--parallel', '--uses-index', '--index-data-url', '--index-labels-url', '--index-batch-size',
-                        '--uses-query', '--query-data-url', '--query-labels-url', '--query-batch-size', '--num-query',
-                        '--top-k'],
+        'hello-world': ['--help', '--workdir', '--download-proxy', '--shards', '--parallel', '--uses-index',
+                        '--index-data-url', '--index-labels-url', '--index-batch-size', '--uses-query',
+                        '--query-data-url', '--query-labels-url', '--query-batch-size', '--num-query', '--top-k'],
         'pod': ['--help', '--name', '--log-config', '--identity', '--log-id', '--port-ctrl', '--ctrl-with-ipc',
                 '--timeout-ctrl', '--ssh-server', '--ssh-keyfile', '--ssh-password', '--uses', '--py-modules',
                 '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in', '--socket-out',
@@ -47,8 +46,7 @@ ac_table = {
                 '--runtime-cls', '--timeout-ready', '--env', '--expose-public', '--show-exc-info', '--pea-id',
                 '--pea-role', '--uses-before', '--uses-after', '--parallel', '--shards', '--polling', '--scheduling',
                 '--remote-access', '--remote-type', '--pod-role'],
-        'flow': ['--help', '--uses', '--logserver', '--logserver-config', '--log-id', '--optimize-level',
-                 '--output-type', '--output-path', '--inspect'],
+        'flow': ['--help', '--uses', '--log-id', '--optimize-level', '--output-type', '--output-path', '--inspect'],
         'gateway': ['--help', '--name', '--log-config', '--identity', '--log-id', '--port-ctrl', '--ctrl-with-ipc',
                     '--timeout-ctrl', '--ssh-server', '--ssh-keyfile', '--ssh-password', '--uses', '--py-modules',
                     '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in', '--socket-out',
