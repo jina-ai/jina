@@ -9,12 +9,22 @@ from ....excepts import RemotePodClosed
 from ....importer import ImportExtensions
 from ....jaml import JAML
 from ....logging import JinaLogger
+from ....jaml.helper import parse_config_source
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
     if _file and _file.endswith(('yml', 'yaml', 'py')):
-        if Path(_file).is_file():
-            _file_list.add(_file)
+        _, real_file = parse_config_source(_file,
+                                           allow_stream=False,
+                                           allow_yaml_file=True,
+                                           allow_builtin_resource=False,
+                                           allow_raw_yaml_content=False,
+                                           allow_raw_driver_yaml_content=False,
+                                           allow_class_type=False,
+                                           allow_dict=False,
+                                           allow_json=False)
+        if Path(real_file).is_file():
+            _file_list.add(real_file)
             logger.debug(f'adding file {_file} to be uploaded to remote context')
         else:
             logger.warning(f'file {_file} doesn\'t exist in the disk')
