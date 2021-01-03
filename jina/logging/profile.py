@@ -180,7 +180,18 @@ class ProgressBar(TimeContext):
         super().__init__(task_name, logger)
         self.bar_len = bar_len
         self.num_docs = 0
+        self._ticks = 0
         self.batch_unit = batch_unit
+
+    def update_tick(self, tick: float = .1) -> None:
+        """ Increment the progress bar by one tick, when the ticks accumulate to one, trigger one :meth:`update`
+
+        :param tick: a float unit to increment (should < 1)
+        """
+        self._ticks += tick
+        if self._ticks > 1:
+            self.update()
+            self._ticks = 0
 
     def update(self, progress: int = None, *args, **kwargs) -> None:
         """ Increment the progress bar by one unit
@@ -196,9 +207,9 @@ class ProgressBar(TimeContext):
             self.num_docs += progress
 
         sys.stdout.write(
-            '{:>10} [{:<{}}] 📃 {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f}/s {:6d} {:>10}'.format(
+            '{:>10} |{:<{}}| 📃 {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f}/s {:6d} {:>10}'.format(
                 colored(self.task_name, 'cyan'),
-                colored('=' * num_bars, 'green'),
+                colored('▓' * num_bars, 'green'),
                 self.bar_len + 9,
                 self.num_docs,
                 elapsed,

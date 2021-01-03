@@ -2,7 +2,7 @@ import os
 
 import mock
 from jina.logging import JinaLogger
-from jina.peapods.runtimes.remote.jinad.api import JinadAPI, PodJinadAPI, PeaJinadAPI, fetch_files_from_yaml
+from jina.peapods.runtimes.jinad.api import JinadAPI, PodJinadAPI, PeaJinadAPI, fetch_files_from_yaml
 
 logger = JinaLogger(context='test-remote')
 yaml_path = os.path.dirname(os.path.realpath(__file__))

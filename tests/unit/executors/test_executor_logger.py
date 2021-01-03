@@ -2,7 +2,7 @@ import pytest
 
 from jina.executors import BaseExecutor
 from jina.executors.metas import get_default_metas
-from jina.parser import set_pea_parser
+from jina.parsers import set_pea_parser
 
 
 @pytest.fixture(scope='function', autouse=True)

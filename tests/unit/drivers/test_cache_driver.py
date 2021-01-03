@@ -33,7 +33,7 @@ def test_cache_driver_twice(tmpdir):
     # FIXME DocIdCache doesn't use tmpdir, it saves in curdir
     with DocIDCache(tmpdir) as executor:
         assert not executor.handler_mutex
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs)
 
         with pytest.raises(NotImplementedError):
@@ -54,7 +54,7 @@ def test_cache_driver_tmpfile():
     driver = MockCacheDriver()
     with DocIDCache(field=ID_KEY) as executor:
         assert not executor.handler_mutex
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
 
         driver._traverse_apply(docs)
 
@@ -78,7 +78,7 @@ def test_cache_driver_from_file(tmp_path):
     driver = MockCacheDriver()
     with DocIDCache(filename, field=CONTENT_HASH_KEY) as executor:
         assert not executor.handler_mutex
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
 
         with pytest.raises(NotImplementedError):
             # duplicate docs
@@ -118,7 +118,7 @@ def test_cache_content_driver_same_content(tmpdir):
     filename = None
 
     with DocIDCache(tmpdir, field=CONTENT_HASH_KEY) as executor:
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
 
         with pytest.raises(NotImplementedError):
@@ -165,7 +165,7 @@ def test_cache_content_driver_same_id(tmp_path):
     driver = MockBaseCacheDriver()
 
     with DocIDCache(filename, field=CONTENT_HASH_KEY) as executor:
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
         driver._traverse_apply(docs2)
         assert executor.size == 2

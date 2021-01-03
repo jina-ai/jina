@@ -460,7 +460,7 @@ class ArgNamespace:
 def is_valid_local_config_source(path: str) -> bool:
     # TODO: this function must be refactored before 1.0 (Han 12.22)
     try:
-        from jina.jaml import parse_config_source
+        from .jaml import parse_config_source
         parse_config_source(path)
         return True
     except FileNotFoundError:
@@ -699,3 +699,12 @@ def check_keys_exist(keys_to_check, existing_keys):
         if k not in existing_keys:
             missed.append(k)
     return missed
+
+
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    s = str(value).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', s)

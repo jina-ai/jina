@@ -71,7 +71,7 @@ def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search
     exec = BaseVectorIndexer()
     monkeypatch.setattr(exec, 'query_by_id', None)
     monkeypatch.setattr(driver, '_exec', exec)
-    monkeypatch.setattr(driver, 'pea', None)
+    monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)
     doc = create_document_to_search
     driver._apply_all(doc.chunks)
@@ -91,7 +91,7 @@ def test_vectorsearch_driver_mock_indexer_with_fill(monkeypatch, create_document
     exec = BaseVectorIndexer()
     monkeypatch.setattr(exec, 'query_by_id', mock_query_by_id)
     monkeypatch.setattr(driver, '_exec', exec)
-    monkeypatch.setattr(driver, 'pea', None)
+    monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)
     doc = create_document_to_search
     driver._apply_all(doc.chunks)

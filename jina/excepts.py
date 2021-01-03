@@ -20,7 +20,7 @@ class ExecutorFailToLoad(SystemError):
     """When the executor can not be loaded in pea/pod"""
 
 
-class PeaFailToStart(SystemError):
+class RuntimeFailToStart(SystemError):
     """When pea/pod is failed to started"""
 
 
@@ -32,7 +32,7 @@ class DriverError(Exception):
     """Driver related exceptions"""
 
 
-class RequestLoopEnd(KeyboardInterrupt):
+class RuntimeTerminated(KeyboardInterrupt):
     """The event loop of BasePea ends"""
 
 
@@ -197,3 +197,7 @@ class LookupyError(Exception):
 
 class EventLoopError(Exception):
     """ Exception when a running event loop is found but not under jupyter or ipython """
+
+
+class ZMQSocketError(Exception):
+    """Exeception when ZMQlet/ZMQStreamlet can not be initialized """
