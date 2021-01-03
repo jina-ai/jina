@@ -234,10 +234,11 @@ To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Exec
 
 ```python
 f = (Flow().add(uses='MyBertEncoder')  # class name of a Jina Executor
-           .add(uses='jinahub/pretrained-cnn:latest')  # Dockerized Jina Pod
+           .add(uses='docker://jinahub/pretrained-cnn:latest')  # the container name
            .add(uses='myencoder.yaml')  # YAML serialization of a Jina Executor
            .add(uses='!WaveletTransformer | {freq: 20}')  # inline YAML config
            .add(uses='_pass'))  # built-in shortcut executor
+           .add(uses={'__cls': 'MyBertEncoder', 'with': {'param': 1.23}})  # dict config object with __cls keyword
 ```
 
 The power of Jina lies in its decentralized architecture: each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
