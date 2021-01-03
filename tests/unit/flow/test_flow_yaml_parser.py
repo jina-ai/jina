@@ -6,6 +6,7 @@ import pytest
 from jina import Flow, AsyncFlow
 from jina.enums import FlowOptimizeLevel
 from jina.excepts import BadFlowYAMLVersion
+from jina.executors.encoders import BaseEncoder
 from jina.flow import BaseFlow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
@@ -103,3 +104,13 @@ def test_flow_yaml_from_string():
     assert 'ppp0' in f3._pod_nodes.keys()
     assert 'aaa1' in f3._pod_nodes.keys()
     assert f3.num_pods == 2
+
+
+def test_flow_uses_from_dict():
+    class DummyEncoder(BaseEncoder):
+        pass
+
+    d1 = {'!cls': 'DummyEncoder',
+          'metas': {'name': 'dummy1'}}
+    with Flow().add(uses=d1):
+        pass

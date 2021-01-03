@@ -6,11 +6,12 @@ from pkg_resources import resource_filename
 
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
+from jina.executors.compound import CompoundExecutor
 from jina.executors.indexers.vector import NumpyIndexer
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
-from jina.jaml import JAML
+from jina.jaml import JAML, JAMLCompatible
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 
@@ -178,3 +179,83 @@ def test_encoder_name_dict_replace():
 def test_encoder_inject_config_via_kwargs():
     with BaseExecutor.load_config('yaml/test-encoder-env.yml', pea_id=345) as be:
         assert be.pea_id == 345
+
+
+class TagDict(JAMLCompatible, dict):
+    def __init__(self, name):
+        super().__init__()
+        self._name = name
+
+
+def to_tag_dict(d):
+    if isinstance(d, dict):
+        for k, v in d.items():
+            if isinstance(k, str) and k.startswith('!') and isinstance(v, dict):
+                _v = TagDict(k)
+                _v.update(v)
+                d[k] = _v
+            to_tag_dict(d[k])
+    elif isinstance(d, list) or isinstance(d, tuple):
+        for dd in d:
+            to_tag_dict(dd)
+
+
+def dice_representer(dumper, data):
+    return dumper.represent_mapping(f'!abc', data)
+
+
+def test_load_from_dict():
+    # !BaseEncoder
+    # metas:
+    #   name: ${{BE_TEST_NAME}}
+    #   batch_size: ${{BATCH_SIZE}}
+    #   pea_id: ${{pea_id}}
+    #   workspace: ${{this.name}}-${{this.batch_size}}
+
+    d1 = {
+        '!cls': 'BaseEncoder',
+        'metas': {'name': '${{BE_TEST_NAME}}',
+                  'batch_size': '${{BATCH_SIZE}}',
+                  'pea_id': '${{pea_id}}',
+                  'workspace': '${{this.name}} -${{this.batch_size}}'}
+    }
+
+    # !CompoundExecutor
+    # components:
+    #   - !BinaryPbIndexer
+    #     with:
+    #       index_filename: tmp1
+    #     metas:
+    #       name: test1
+    #   - !BinaryPbIndexer
+    #     with:
+    #       index_filename: tmp2
+    #     metas:
+    #       name: test2
+    # metas:
+    #   name: compound1
+
+    d2 = {
+        '!cls': 'CompoundExecutor',
+        'components':
+            [
+                {
+                    '!cls': 'BinaryPbIndexer',
+                    'with': {'index_filename': 'tmp1'},
+                    'metas': {'name': 'test1'}
+                },
+                {
+                    '!cls': 'BinaryPbIndexer',
+                    'with': {'index_filename': 'tmp2'},
+                    'metas': {'name': 'test2'}
+                },
+            ]
+    }
+    d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
+    b1 = BaseExecutor.load_config(d1, context=d)
+    b2 = BaseExecutor.load_config(d2, context=d)
+    assert isinstance(b1, BaseExecutor)
+    assert isinstance(b2, CompoundExecutor)
+    assert b1.batch_size == 256
+    assert b1.name == 'hello123'
+
