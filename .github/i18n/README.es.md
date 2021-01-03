@@ -47,7 +47,7 @@ Jina es un framework de búsqueda basado en IA que permite a los desarrolladores
 
 🧠 **Modelos IA de primera clase** - *El* patrón de diseño de los sistemas de búsqueda neuronal, con soporte de primera clase para [modelos IA de última generación](https://docs.jina.ai/chapters/all_exec.html).
 
-🌌 **Búsqueda universal** - Indización y consulta a gran escala de cualquier tipo de datos en múltiples plataformas: vídeo, imagen, texto largo/corto, música, código fuente, etc.
+🌌 **Búsqueda universal** - indexación y consulta a gran escala de cualquier tipo de datos en múltiples plataformas: vídeo, imagen, texto largo/corto, música, código fuente, etc.
 
 ☁️ **Cloud Ready** - Arquitectura descentralizada con características propias cloud-natives: contenedorización, microservicio, escalado, sharding, async IO, REST, gRPC.
 
