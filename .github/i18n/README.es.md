@@ -97,7 +97,7 @@ docker run jinaai/jina --help
 
 ## Jina "Hola, mundo!" 👋🌍
 
-Para empezar, puede probar nuestro "Hola, Mundo" - una simple demostración de búsqueda de imágenes neuronales para [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No es necesaria ninguna otra adicción. Sólo corre:
+Para empezar, puede probar nuestro "Hola, Mundo" - una simple demostración de búsqueda de imágenes mediante redes neuronales  [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No es necesaria ninguna otra adicción. Sólo corre:
 
 ```bash
 jina hello-world
