@@ -20,7 +20,10 @@ class JinadRuntime(ZMQManyRuntime):
             self.logger.success(f'created remote {self.api.kind} with id {colored(self._remote_id, "cyan")}')
 
     def run_forever(self):
-        self.api.log(self._remote_id, None)
+        self.api.log(self._remote_id)
+
+    def teardown(self):
+        self.api.delete(remote_id=self._remote_id)
 
     @cached_property
     def _remote_id(self) -> Optional[str]:

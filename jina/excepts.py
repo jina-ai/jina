@@ -175,10 +175,6 @@ class BadNamedScoreType(TypeError):
     """ Exception when can not construct a named score from the given data """
 
 
-class RemotePodClosed(Exception):
-    """ Exception when remote pod is closed and log streaming needs to exit """
-
-
 class LengthMismatchException(Exception):
     """ Exception when length of two items should be identical while not """
 

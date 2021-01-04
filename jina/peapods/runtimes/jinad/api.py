@@ -8,7 +8,6 @@ from typing import Dict, Tuple, Set, List, Optional
 from ....jaml import JAML
 from ....logging import JinaLogger
 from ....enums import RemotePeapodType
-from ....excepts import RemotePodClosed
 from ....importer import ImportExtensions
 
 
@@ -162,7 +161,7 @@ class JinadAPI:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t create pod with remote jinad {repr(ex)}')
 
-    async def wslogs(self, remote_id: 'str', stop_event: Event, current_line: int = 0):
+    async def wslogs(self, remote_id: 'str', current_line: int = 0):
         """ websocket log stream from remote pea/pod
         :param remote_id: the identity of that pea/pod
         :param stop_event: the multiprocessing event which marks if stop event is set
@@ -172,51 +171,48 @@ class JinadAPI:
         with ImportExtensions(required=True):
             import websockets
 
+        remote_loggers = {}
         try:
             # sleeping for few seconds to allow the logs to be written in remote
             await asyncio.sleep(3)
-            async with websockets.connect(f'{self.log_url}/{remote_id}?timeout=20') as websocket:
+            async with websockets.connect(f'{self.log_url}/{remote_id}?timeout=5') as websocket:
                 await websocket.send(json.dumps({'from': current_line}))
-                remote_loggers = {}
-                while True:
-                    log_line = await websocket.recv()
-                    if log_line:
-                        try:
-                            log_line = json.loads(log_line)
-                            current_line = int(list(log_line.keys())[0])
-                            log_line_dict = list(log_line.values())[0]
-                            log_line_dict = json.loads(log_line_dict.split('\t')[-1].strip())
-                            name = log_line_dict['name']
-                            if name not in remote_loggers:
-                                remote_loggers[name] = JinaLogger(context=f'🌏 {name}')
-                            # TODO: change logging level, process name in local logger
-                            remote_loggers[name].info(f'{log_line_dict["message"].strip()}')
-                        except json.decoder.JSONDecodeError:
-                            continue
+                async for log_line in websocket:
+                    try:
+                        log_line = json.loads(log_line)
+                        current_line = int(list(log_line.keys())[0])
+                        log_line_dict = list(log_line.values())[0]
+                        log_line_dict = json.loads(log_line_dict.split('\t')[-1].strip())
+                        name = log_line_dict['name']
+
+                        if name not in remote_loggers:
+                            remote_loggers[name] = JinaLogger(context=f'🌏 {name}')
+                        # TODO(Deepankar): change logging level, process name in local logger
+                        remote_loggers[name].info(f'{log_line_dict["message"].strip()}')
+                    except json.decoder.JSONDecodeError:
+                        continue
                     await websocket.send(json.dumps({}))
-                    if stop_event.is_set():
-                        for logger in remote_loggers.values():
-                            logger.close()
-                        raise RemotePodClosed
         except websockets.exceptions.ConnectionClosedOK:
             self.logger.debug(f'Client got disconnected from server')
             return current_line
         except websockets.exceptions.WebSocketException as e:
             self.logger.error(f'Got following error while streaming logs via websocket {repr(e)}')
             return 0
+        finally:
+            if remote_loggers:
+                for logger in remote_loggers.values():
+                    logger.close()
 
-    def log(self, remote_id: 'str', stop_event: Event, **kwargs) -> None:
+    def log(self, remote_id: 'str', **kwargs) -> None:
         """ Start the log stream from remote pea/pod, will use local logger for output
         :param remote_id: the identity of that pea/pod
         :return:
         """
         try:
-            self.logger.info(f'fetching streamed logs from remote id: {remote_id}')
-            asyncio.run(self.wslogs(remote_id=remote_id, stop_event=stop_event, current_line=0))
-        except RemotePodClosed:
-            self.logger.debug(f'🌏 remote closed')
+            self.logger.info(f'🌏 Fetching streamed logs from remote id: {remote_id}')
+            asyncio.run(self.wslogs(remote_id=remote_id, current_line=0))
         finally:
-            self.logger.info(f'🌏 exiting from remote logger')
+            self.logger.info(f'🌏 Exiting from remote logger')
 
     def delete(self, remote_id: 'str', **kwargs) -> bool:
         """ Delete a remote pea/pod
