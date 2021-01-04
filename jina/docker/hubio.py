@@ -182,11 +182,12 @@ class HubIO:
             else:
                 self.logger.debug(f'Image with name {name} does not exist. Pushing now...')
             docker_creds = _docker_auth(logger=self.logger)
-            if docker_creds['docker_username'] and docker_creds['docker_password']:
+            if docker_creds and docker_creds['docker_username'] and docker_creds['docker_password']:
                 self.logger.info(f'Fetched docker credentials successfully. Pushing now...')
                 self._push_docker_hub(name, readme_path, docker_creds['docker_username'], docker_creds['docker_password'])
             else:
                 self.logger.error(f'Failed to fetch docker login creds. Aborting push.')
+                return
 
             if not build_result:
                 file_path = get_summary_path(name)

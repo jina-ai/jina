@@ -140,7 +140,7 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
         import requests
         response = requests.get(url=f'{hubapi_url}',
                                  headers=headers)
-        if response.status_code == requests.codes.ok:            
+        if response.status_code == requests.codes.ok:
             import json
             import base64
             json_response = json.loads(response.text)
@@ -254,7 +254,6 @@ def _fetch_access_token(logger):
     logger.info('fetching github access token...')
 
     if not credentials_file().is_file():
-        logger.error(f'user hasnot logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
 
     with open(credentials_file(), 'r') as cf:
