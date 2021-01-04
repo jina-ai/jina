@@ -6,7 +6,7 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
-docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . up  --build -d
+docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . up  --build -d --remove-orphans
 
 sleep 10
 #Indexing part
@@ -43,7 +43,7 @@ echo "document matched has the text: ${TEXT_INDEXED}"
 curl -s --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 curl -s --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
-docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . down
+docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . down --remove-orphans
 
 EXPECTED_TEXT='"text:hey, dude"'
 
