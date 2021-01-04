@@ -1,7 +1,7 @@
 import argparse
 from typing import Union, Dict, Optional
 
-from .api import PeaJinadAPI, get_jinad_api
+from .api import get_jinad_api
 from ..zmq.base import ZMQManyRuntime
 from ....helper import cached_property, ArgNamespace, colored
 
@@ -10,7 +10,10 @@ class JinadRuntime(ZMQManyRuntime):
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
-        self.api = get_jinad_api(kind=self.remote_type, host=self.host, port=self.port_expose, logger=self.logger)
+        self.api = get_jinad_api(kind=self.remote_type,
+                                 host=self.host,
+                                 port=self.port_expose,
+                                 logger=self.logger)
 
     def setup(self):
         if self._remote_id:

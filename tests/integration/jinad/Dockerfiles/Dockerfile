@@ -8,7 +8,7 @@ ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD cli ./cli/
 ADD jina ./jina/
 
-ARG PIP_TAG
+ARG PIP_TAG=[test]
 
 RUN pip install ."$PIP_TAG"
 

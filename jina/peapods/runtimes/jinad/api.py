@@ -1,14 +1,15 @@
-import asyncio
 import json
+import asyncio
+from pathlib import Path
 from contextlib import ExitStack
 from multiprocessing.synchronize import Event
-from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
-from ....excepts import RemotePodClosed
-from ....importer import ImportExtensions
 from ....jaml import JAML
 from ....logging import JinaLogger
+from ....enums import RemotePeapodType
+from ....excepts import RemotePodClosed
+from ....importer import ImportExtensions
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
@@ -143,22 +144,23 @@ class JinadAPI:
             except requests.exceptions.RequestException as ex:
                 self.logger.error(f'something wrong on remote: {repr(ex)}')
 
-    def create(self, args: Dict, pod_type: str = 'flow', **kwargs) -> Optional[str]:
+    def create(self, args: Dict, **kwargs) -> Optional[str]:
         """ Create a remote pea/pod
-        :param args: the arguments in dict that pea can accept
-        :param pod_type: two types of pod, can be ``cli``, ``flow`` TODO: need clarify this
+        :param args: the arguments in dict that pea can accept.
+                     (convert argparse.Namespace to Dict before passing to this method)
         :return: the identity of the spawned pea/pod
         """
         with ImportExtensions(required=True):
             import requests
 
         try:
-            url = self.pea_url if self.kind == 'pea' else f'{self.pod_url}/{pod_type}'
+            url = self.pea_url if self.kind == 'pea' else self.pod_url
             r = requests.put(url=url, json=args, timeout=self.timeout)
             if r.status_code == requests.codes.ok:
                 return r.json()[f'{self.kind}_id']
+            self.logger.error(f'couldn\'t create pod with remote jinad {r.json()}')
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t create {pod_type} with remote jinad {repr(ex)}')
+            self.logger.error(f'couldn\'t create pod with remote jinad {repr(ex)}')
 
     async def wslogs(self, remote_id: 'str', stop_event: Event, current_line: int = 0):
         """ websocket log stream from remote pea/pod
@@ -208,12 +210,9 @@ class JinadAPI:
         :param remote_id: the identity of that pea/pod
         :return:
         """
-        current_line = 0
         try:
             self.logger.info(f'fetching streamed logs from remote id: {remote_id}')
-            while True:
-                current_line = asyncio.run(self.wslogs(
-                    remote_id=remote_id, stop_event=stop_event, current_line=current_line))
+            asyncio.run(self.wslogs(remote_id=remote_id, stop_event=stop_event, current_line=0))
         except RemotePodClosed:
             self.logger.debug(f'🌏 remote closed')
         finally:
@@ -248,9 +247,9 @@ class PodJinadAPI(JinadAPI):
 
 
 def get_jinad_api(kind: str, host: str, port: int, logger: JinaLogger, **kwargs):
-    if kind == 'pea':
+    if kind == RemotePeapodType.PEA:
         return PeaJinadAPI(host=host, port=port, logger=logger, **kwargs)
-    elif kind == 'pod':
+    elif kind == RemotePeapodType.POD:
         return PodJinadAPI(host=host, port=port, logger=logger, **kwargs)
     else:
         raise ValueError(f'kind must be pea/pod but it is {kind}')

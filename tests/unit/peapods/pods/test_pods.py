@@ -50,3 +50,15 @@ def test_pod_naming_with_parallel(runtime):
         assert bp.peas[1].runtime.name == 'pod/tail/ZEDRuntime'
         assert bp.peas[2].runtime.name == 'pod/1/ZEDRuntime'
         assert bp.peas[3].runtime.name == 'pod/2/ZEDRuntime'
+
+
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_remote_context(runtime):
+    args = set_pod_parser().parse_args(['--runtime-backend', runtime, '--parallel', str(2)])
+    with Pod(args) as p:
+        remote_pod_args = p.peas_args
+
+    with Pod(remote_pod_args) as remote_pod:
+        assert remote_pod.num_peas == 4  # head + tail + 2 peas
+
+    Pod(remote_pod_args).start().close()

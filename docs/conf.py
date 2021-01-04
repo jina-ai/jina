@@ -34,11 +34,11 @@ pygments_style = 'rainbow_dash'
 html_theme = 'sphinx_rtd_theme'
 
 base_url = '/'
-version_choices = [('', 'latest'),
-                   ('master', 'master')]
+version_choices = [('master', 'master')]
 with open('versions') as fp:
     s = [(f'v{v.strip()}', v.strip()) for v in fp if (v.strip() and not v.startswith('#'))]
-    s.reverse()
+    if s:
+        s.reverse()
 version_choices.extend(s)
 
 # a list of tuple of (relative_url, version_tag)
