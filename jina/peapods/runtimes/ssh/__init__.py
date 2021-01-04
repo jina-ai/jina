@@ -3,6 +3,7 @@ from subprocess import Popen, PIPE
 
 from ..zmq.base import ZMQManyRuntime
 from ....helper import ArgNamespace
+from ....enums import RemotePeapodType
 
 
 class SSHRuntime(ZMQManyRuntime):
@@ -52,9 +53,9 @@ class SSHRuntime(ZMQManyRuntime):
 
     @property
     def _remote_command(self) -> str:
-        if self.remote_type == 'pea':
+        if self.remote_type == RemotePeapodType.PEA:
             return self._pea_command
-        elif self.remote_type == 'pod':
+        elif self.remote_type == RemotePeapodType.POD:
             return self._pod_command
         else:
             raise ValueError(f'kind must be pea/pod but it is {self.remote_type}')
