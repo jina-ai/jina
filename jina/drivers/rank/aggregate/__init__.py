@@ -6,6 +6,7 @@ import numpy as np
 from ....executors.rankers import Chunk2DocRanker
 from ....types.document import Document
 from ....types.score import NamedScore
+from ....types.document.uid import UniqueId
 
 from .. import BaseRankDriver
 
@@ -104,9 +105,9 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
         :return:
         """
 
-        match_idx = []  # type: List[Tuple[ObjectId, ObjectId, ObjectId, float]]
-        query_meta = {}  # type: Dict[ObjectId, Dict]
-        match_meta = {}  # type: Dict[ObjectId, Dict]
+        match_idx = []  # type: List[Tuple[UniqueId, UniqueId, UniqueId, float]]
+        query_meta = {}  # type: Dict[UniqueId, Dict]
+        match_meta = {}  # type: Dict[UniqueId, Dict]
         parent_id_chunk_id_map = defaultdict(list)
         matches_by_id = defaultdict(Document)
         for chunk in docs:
