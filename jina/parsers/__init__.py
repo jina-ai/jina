@@ -128,8 +128,8 @@ def get_main_parser():
                                   formatter_class=_chf))
 
     set_check_parser(sp.add_parser('check',
-                                   help='check the import status all executors and drivers',
-                                   description='Check the import status all executors and drivers',
+                                   help='check the import status of all executors and drivers',
+                                   description='Check the import status of all executors and drivers',
                                    formatter_class=_chf))
 
     set_hub_parser(sp.add_parser('hub', help='build, push, pull Jina Hub images',
