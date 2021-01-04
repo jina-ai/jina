@@ -3,7 +3,7 @@ Welcome to Jina!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Getting Started
+   :caption: Get Started
 
    chapters/install/os/index
    chapters/helloworld/index
@@ -15,7 +15,7 @@ Welcome to Jina!
 
 .. toctree::
    :maxdepth: 1
-   :caption: API References
+   :caption: API Reference
 
    chapters/cli/index
    api/jina
@@ -24,7 +24,7 @@ Welcome to Jina!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Advanced Usages
+   :caption: Advanced Usage
 
    chapters/traversal/index
    chapters/flow/pattern
