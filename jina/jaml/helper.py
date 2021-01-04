@@ -103,7 +103,7 @@ def parse_config_source(path: Union[str, TextIO, Dict],
         # already a readable stream
         return path, None
     elif allow_yaml_file and (path.endswith('.yml') or path.endswith('.yaml')):
-        comp_path = _complete_path(path)
+        comp_path = complete_path(path)
         return open(comp_path, encoding='utf8'), comp_path
     elif allow_builtin_resource and path.startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
@@ -138,7 +138,7 @@ def parse_config_source(path: Union[str, TextIO, Dict],
                               ' or a valid file path, or a supported class name.')
 
 
-def _complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
+def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
     _p = None
     if os.path.exists(path):
         # this checks both abs and relative paths already
@@ -190,5 +190,5 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) ->
 
     _finditem(d)
     if mod:
-        mod = [_complete_path(m, extra_search_paths) for m in mod]
+        mod = [complete_path(m, extra_search_paths) for m in mod]
         PathImporter.add_modules(*mod)
