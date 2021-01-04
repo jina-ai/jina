@@ -31,7 +31,7 @@ class QueryLangSet(MutableSequence):
         if isinstance(key, int):
             self._querylangs_proto[key].CopyFrom(value.as_pb_object)
         elif isinstance(key, str):
-            return self._querylangs_map[key].CopyFrom(value.as_pb_object)
+            self._querylangs_map[key].CopyFrom(value.as_pb_object)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -85,4 +85,5 @@ class QueryLangSet(MutableSequence):
         """Build a doc_id to doc mapping so one can later index a Document using
         doc_id as string key
         """
-        self._docs_map = {d.id: d for d in self._querylangs_proto}
+        # TODO This is a temp fix, QueryLangProto do not have an id field.
+        self._querylangs_map = {d.name: d for d in self._querylangs_proto}
