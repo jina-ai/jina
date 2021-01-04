@@ -65,7 +65,7 @@ def ground_truth_pairs():
 
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
-def test_ranking_evaluate_driver(simple_rank_evaluate_driver,
+def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
                                  ground_truth_pairs):
     simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
@@ -77,7 +77,7 @@ def test_ranking_evaluate_driver(simple_rank_evaluate_driver,
 
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
-def test_ranking_evaluate_driver(ruuningavg_rank_evaluate_driver,
+def test_ranking_evaluate_ruuningavg_driver(ruuningavg_rank_evaluate_driver,
                                  ground_truth_pairs):
     ruuningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
     ruuningavg_rank_evaluate_driver._apply_all(ground_truth_pairs)
