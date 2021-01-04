@@ -31,7 +31,7 @@ from ...proto.jina_pb2 import DocumentProto
 from jina.logging import default_logger
 
 _digest_size = 8
-_id_regex = re.compile(r'[0-9a-fA-F]+')
+_id_regex = re.compile(r'([0-9a-fA-F][0-9a-fA-F])+')
 _warned_deprecation = False
 
 
