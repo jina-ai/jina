@@ -63,11 +63,16 @@ def test_fetch_access_token(mocker):
     _fetch_access_token(logger=getLogger())
 
 
-def test_docker_auth_success(mocker):
+@pytest.fixture(scope='function')
+def docker_jaml_token():
     token_string = json.dumps({'hubapi': {'url': 'dummy_url', 'docker_auth': 'dummy_auth'}})
     token_json = json.loads(token_string)
+    return token_json
+
+
+def test_docker_auth_success(mocker, docker_jaml_token):
     mock_load = mocker.patch.object(hubapi.JAML, 'load', autospec=True)
-    mock_load.return_value = token_json
+    mock_load.return_value = docker_jaml_token
 
     mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = 'dummy_token'
@@ -82,11 +87,9 @@ def test_docker_auth_success(mocker):
     assert fetch_cred['docker_password'] == 'jd'
 
 
-def test_docker_auth_failure(mocker):
-    token_string = json.dumps({'hubapi': {'url': 'dummy_url', 'docker_auth': 'dummy_auth'}})
-    token_json = json.loads(token_string)
+def test_docker_auth_failure(mocker, docker_jaml_token):
     mock_load = mocker.patch.object(hubapi.JAML, 'load', autospec=True)
-    mock_load.return_value = token_json
+    mock_load.return_value = docker_jaml_token
 
     mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = 'dummy_token'
