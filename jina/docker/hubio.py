@@ -23,7 +23,7 @@ from ..helper import colored, get_readable_size, get_now_timestamp, get_full_ver
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
-from ..parser import set_pod_parser
+from ..parsers import set_pod_parser
 from ..peapods import Pod
 
 if False:
@@ -438,7 +438,7 @@ class HubIO:
         return result
 
     @staticmethod
-    def _test_build(image: str,
+    def _test_build(image,  # type docker image object
                     test_level: 'BuildTestLevel',
                     config_yaml_path: str,
                     timeout_ready: int,
@@ -457,7 +457,8 @@ class HubIO:
         # test uses at Pod level (no docker)
         if test_level >= BuildTestLevel.POD_NONDOCKER:
             try:
-                with Pod(set_pod_parser().parse_args(['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
+                with Pod(set_pod_parser().parse_args(
+                        ['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
                     pass
             except:
                 failed_levels.append(BuildTestLevel.POD_NONDOCKER)
@@ -466,8 +467,10 @@ class HubIO:
         if test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
             try:
-                with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name, '--timeout-ready', str(timeout_ready)] +
-                                                     ['--daemon'] if daemon_arg else [])):
+                with Pod(set_pod_parser().parse_args(
+                        ['--uses', f'docker://{image.tags[0]}', '--name', p_name, '--timeout-ready',
+                         str(timeout_ready)] +
+                        ['--daemon'] if daemon_arg else [])):
                     pass
                 p_names.append(p_name)
             except:
@@ -477,7 +480,8 @@ class HubIO:
         if test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
             try:
-                with Flow().add(name=random_name(), uses=image.tags[0], daemon=daemon_arg, timeout_ready=timeout_ready):
+                with Flow().add(name=random_name(), uses=f'docker://{image.tags[0]}', daemon=daemon_arg,
+                                timeout_ready=timeout_ready):
                     pass
                 p_names.append(p_name)
             except:

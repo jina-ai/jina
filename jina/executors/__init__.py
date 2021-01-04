@@ -19,7 +19,7 @@ from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
-    from ..peapods.peas import BasePea
+    from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
@@ -97,7 +97,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         with:
             awesomeness: 5
 
-    To use an executor in a :class:`jina.peapods.pea.BasePea` or :class:`jina.peapods.pod.BasePod`,
+    To use an executor in a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`,
     a proper :class:`jina.drivers.Driver` is required. This is because the
     executor is *NOT* protobuf-aware and has no access to the key-values in the protobuf message.
 
@@ -112,7 +112,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id']
+    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id', 'delete', 'update']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -405,18 +405,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def attach(self, pea: 'BasePea', *args, **kwargs):
-        """Attach this executor to a :class:`jina.peapods.pea.BasePea`.
+    def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
+        """Attach this executor to a :class:`jina.peapods.runtime.BasePea`.
 
-        This is called inside the initializing of a :class:`jina.peapods.pea.BasePea`.
+        This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
         """
         for v in self._drivers.values():
             for d in v:
-                d.attach(executor=self, pea=pea, *args, **kwargs)
+                d.attach(executor=self, runtime=runtime, *args, **kwargs)
 
-        # replacing the logger to pea's logger
-        if pea and isinstance(getattr(pea, 'logger', None), JinaLogger):
-            self.logger = pea.logger
+        # replacing the logger to runtime's logger
+        if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
+            self.logger = runtime.logger
 
     def __call__(self, req_type, *args, **kwargs):
         if req_type in self._drivers:

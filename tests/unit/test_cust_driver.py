@@ -2,7 +2,7 @@ from pathlib import Path
 
 from jina import Flow, Document
 from jina.executors import BaseExecutor
-from jina.parser import set_pea_parser
+from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 
 cur_dir = Path(__file__).parent

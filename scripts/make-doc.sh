@@ -5,6 +5,13 @@ set -ex
 DOC_DIR=docs
 HTML_DIR=${DOC_DIR}/_build/html
 
+# backup the old version's doc as later we do make clean, they all gone.
+cd ${HTML_DIR}
+mkdir -p ../../bak
+rsync -rzvh --ignore-missing-args ./v* ../../bak
+rsync -rzvh --ignore-missing-args ./latest ../../bak
+cd -
+
 cd ${DOC_DIR} && rm -rf api && pip install -r requirements.txt && make clean && cd -
 
 # require docker installed https://github.com/pseudomuto/protoc-gen-doc
@@ -20,8 +27,14 @@ if [[ $1 == "commit" ]]; then
   cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
-  rsync -avr . master  # sync to master/
-  rsync -avr --exclude=master . ${JINA_VERSION}  # sync to version/
+  rsync -avr . master  # sync everything under the root to master/
+  cd -
+  cd ${DOC_DIR}/bak
+  rsync -avr --ignore-missing-args ./v* ../_build/html/ --ignore-existing  # revert backup back
+  rsync -avr --ignore-missing-args ./latest ../_build/html/ --ignore-existing  # revert backup back
+  cd -
+  cd ${HTML_DIR}
+  rm -rf bak
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"
@@ -37,7 +50,13 @@ elif [[ $1 == "release" ]]; then
   cd -
   cd ${HTML_DIR}
   rsync -avr . latest  # sync to latest/
-  rsync -avr --exclude=latest . ${JINA_VERSION}  # sync to versions
+  rsync -avr --exclude=latest . "v${JINA_VERSION}"  # sync to versions
+  cd -
+  cd ${DOC_DIR}/bak
+  rsync -avr --ignore-missing-args ./v* ../_build/html/ --ignore-existing  # revert backup back
+  cd -
+  cd ${HTML_DIR}
+  rm -rf bak
   echo docs.jina.ai > CNAME
   git init
   git config --local user.email "dev-bot@jina.ai"

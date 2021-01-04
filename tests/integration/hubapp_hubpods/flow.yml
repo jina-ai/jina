@@ -5,6 +5,6 @@ with:
   port_expose: 45678
 pods:
   pod1:
-    uses: hubpod:test
+    uses: docker://hubpod:test
   pod2:
-    uses: hubpod:test
+    uses: docker://hubpod:test

@@ -79,7 +79,7 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
     doc = create_document_to_score_same_depth_level()
     driver = SimpleCollectMatchesRankDriver()
     executor = MockLengthRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     dm = list(doc.matches)
     assert len(dm) == 2
@@ -97,7 +97,7 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
     doc = create_document_to_score_same_depth_level()
     driver = SimpleCollectMatchesRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     import sys
     min_value_30 = sys.maxsize
     min_value_20 = sys.maxsize
@@ -129,7 +129,7 @@ def test_collect_matches2doc_ranker_driver_max_ranker(keep_source_matches_as_chu
     doc = create_document_to_score_same_depth_level()
     driver = SimpleCollectMatchesRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMaxRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     dm = list(doc.matches)
     assert len(dm) == 2

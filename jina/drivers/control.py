@@ -5,7 +5,7 @@ import time
 
 from . import BaseDriver
 from .querylang.queryset.dunderkey import dunder_get
-from ..excepts import UnknownControlCommand, RequestLoopEnd, NoExplicitMessage
+from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
 from ..proto import jina_pb2
 
 
@@ -15,7 +15,7 @@ class BaseControlDriver(BaseDriver):
 
     @property
     def envelope(self) -> 'jina_pb2.EnvelopeProto':
-        """Get the current request, shortcut to ``self.pea.message``"""
+        """Get the current request, shortcut to ``self.runtime.message``"""
         return self.msg.envelope
 
 
@@ -43,15 +43,15 @@ class WaitDriver(BaseControlDriver):
 
 
 class ControlReqDriver(BaseControlDriver):
-    """Handling the control request, by default it is installed for all :class:`jina.peapods.pea.BasePea`"""
+    """Handling the control request, by default it is installed for all :class:`jina.peapods.runtime.BasePea`"""
 
     def __call__(self, *args, **kwargs):
         if self.req.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
-            raise RequestLoopEnd
+            raise RuntimeTerminated
         elif self.req.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
-            self.req.args = vars(self.pea.args)
+            self.req.args = vars(self.runtime.args)
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
@@ -88,7 +88,7 @@ class RouteDriver(ControlReqDriver):
                 dealer_id = self.idle_dealer_ids.pop()
                 self.envelope.receiver_id = dealer_id
                 if not self.idle_dealer_ids:
-                    self.pea.zmqlet.pause_pollin()
+                    self.runtime._zmqlet.pause_pollin()
                     self.is_pollin_paused = True
             elif self.raise_no_dealer:
                 raise RuntimeError('if this router connects more than one dealer, '
@@ -109,7 +109,7 @@ class RouteDriver(ControlReqDriver):
             self.idle_dealer_ids.add(self.envelope.receiver_id)
             self.logger.debug(f'{self.envelope.receiver_id} is idle')
             if self.is_pollin_paused:
-                self.pea.zmqlet.resume_pollin()
+                self.runtime._zmqlet.resume_pollin()
                 self.is_pollin_paused = False
             raise NoExplicitMessage
         else:

@@ -38,7 +38,7 @@ class SimpleFillDriver(VectorFillDriver):
 def test_index_driver(docs_to_encode, num_docs):
     driver = SimpleFillDriver()
     executor = MockIndexer()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
         assert doc.embedding is None

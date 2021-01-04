@@ -29,11 +29,11 @@ class Zmqlet:
     has three sockets for input, output and control.
 
     .. warning::
-        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`.
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr:str=None):
         """
 
         :param args: the parsed arguments from the CLI
@@ -43,7 +43,12 @@ class Zmqlet:
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
-        self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
+        if ctrl_addr:
+            self.ctrl_addr = ctrl_addr
+            self.ctrl_with_ipc = self.ctrl_addr.startswith('ipc://')
+        else:
+            self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
+
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0
@@ -175,7 +180,12 @@ class Zmqlet:
         self.close()
 
     def close(self):
-        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
+        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
+
+        .. note::
+            This method is idempotent.
+
+        """
         if not self.is_closed:
             self.is_closed = True
             self.close_sockets()
@@ -284,7 +294,7 @@ class ZmqStreamlet(Zmqlet):
     has three sockets for input, output and control.
 
     .. warning::
-        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.pea.BasePea`.
+        Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.runtime.BasePea`.
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
@@ -299,7 +309,11 @@ class ZmqStreamlet(Zmqlet):
         self.in_sock.stop_on_recv()
 
     def close(self):
-        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`. """
+        """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
+
+        .. note::
+            This method is idempotent.
+        """
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(.01)

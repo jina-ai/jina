@@ -1,16 +1,15 @@
 import json
 from logging import getLogger
 
-import json
 import mock
 import pytest
 import requests
 
 from jina.docker import hubapi
-from jina.docker.hubapi import _list
 from jina.docker.hubapi import JAML
 from jina.docker.hubapi import _fetch_access_token
 from jina.docker.hubapi import _docker_auth
+from jina.docker.hubapi import _list
 
 sample_manifest = {
     'manifest': [
@@ -57,7 +56,7 @@ def test_hubapi_list(mocker):
 
 @mock.patch('jina.docker.hubapi.JAML.load')
 def test_fetch_access_token(mocker):
-    token_string = json.dumps({'access_token':'dummy_token'})
+    token_string = json.dumps({'access_token': 'dummy_token'})
     token_json = json.loads(token_string)
     mocker.return_value = token_json
     _fetch_access_token(logger=getLogger())

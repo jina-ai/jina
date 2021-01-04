@@ -55,7 +55,7 @@ def ground_truth_pairs():
 def test_encoding_evaluate_driver(mock_diff_evaluator,
                                   simple_evaluate_driver,
                                   ground_truth_pairs):
-    simple_evaluate_driver.attach(executor=mock_diff_evaluator, pea=None)
+    simple_evaluate_driver.attach(executor=mock_diff_evaluator, runtime=None)
     simple_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
@@ -109,7 +109,7 @@ def test_encoding_evaluate_driver_embedding_in_chunks(simple_chunk_evaluate_driv
                                                       eval_request):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
-    simple_chunk_evaluate_driver.attach(executor=mock_diff_evaluator, pea=None)
+    simple_chunk_evaluate_driver.attach(executor=mock_diff_evaluator, runtime=None)
     simple_chunk_evaluate_driver.eval_request = eval_request
     simple_chunk_evaluate_driver()
 

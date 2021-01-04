@@ -1,112 +1,180 @@
+import os
+import time
+
 import pytest
 
-from jina.parser import set_pea_parser
-from jina.peapods.peas import BasePea
-from jina.excepts import DriverError, NoDriverForRequest, ExecutorFailToLoad, EventLoopError, RequestLoopEnd
+from jina.excepts import RuntimeFailToStart
+from jina.executors import BaseExecutor
+from jina.parsers import set_pea_parser
+from jina.peapods import Pea
+from jina.peapods.runtimes.base import BaseRuntime
 
 
-class MockExceptionRequestLoopPea(BasePea):
-
-    def __init__(self, args, exception_class):
-        super().__init__(args)
-        self.exception = exception_class
-        self.properly_closed = False
-
-    def request_loop(self, is_ready_event):
-        raise self.exception
-
-    def _teardown(self):
-        super()._teardown()
-        self.properly_closed = True
+def bad_func(*args, **kwargs):
+    raise Exception('intentional error')
 
 
-def pea_exception_request_loop_factory():
-    class MockExceptionRequestLoopPeaFactory:
-        def create(self, exception_class):
-            args = set_pea_parser().parse_args([])
-            return MockExceptionRequestLoopPea(args, exception_class)
+def test_base_pea_with_runtime_bad_init(mocker):
+    class Pea1(Pea):
+        runtime_cls = BaseRuntime
 
-    return MockExceptionRequestLoopPeaFactory()
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
+    mocker.patch.object(BaseRuntime, '__init__', bad_func)
+    setup_spy = mocker.spy(BaseRuntime, 'setup')
+    teardown_spy = mocker.spy(BaseRuntime, 'teardown')
+    cancel_spy = mocker.spy(BaseRuntime, 'cancel')
+    run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
-
-class MockExceptionCallbackPea(BasePea):
-
-    def __init__(self, args, exception_class):
-        super().__init__(args)
-        self.exception = exception_class
-        self.properly_closed = False
-
-    def _callback(self, msg):
-        raise self.exception
-
-    def _teardown(self):
-        super()._teardown()
-        self.properly_closed = True
-
-
-def pea_exception_callback_factory():
-    class MockExceptionCallbackPeaFactory:
-        def create(self, exception_class):
-            args = set_pea_parser().parse_args([])
-            return MockExceptionCallbackPea(args, exception_class)
-
-    return MockExceptionCallbackPeaFactory()
-
-
-class MockExceptionLoadExecutorPea(BasePea):
-
-    def __init__(self, args, exception_class):
-        super().__init__(args)
-        self.exception = exception_class
-        self.properly_closed = False
-
-    def load_executor(self):
-        raise self.exception
-
-    def _teardown(self):
-        super()._teardown()
-        self.properly_closed = True
-
-
-@pytest.fixture
-def pea_exception_load_executor_factory():
-    class MockExceptionLoadExecutorPeaFactory:
-        def create(self, exception_class):
-            args = set_pea_parser().parse_args([])
-            return MockExceptionLoadExecutorPea(args, exception_class)
-
-    return MockExceptionLoadExecutorPeaFactory()
-
-
-def test_pea_context_load_executor():
-    args = set_pea_parser().parse_args([])
-    pea = BasePea(args)
-    assert not hasattr(pea, 'executor')
-    with pea:
-        assert pea.executor
-
-
-@pytest.mark.parametrize('factory', [pea_exception_request_loop_factory,
-                                     pea_exception_callback_factory])
-@pytest.mark.parametrize('exception_class', [RuntimeError, SystemError,
-                                             KeyboardInterrupt, DriverError, NoDriverForRequest,
-                                             NotImplementedError, ExecutorFailToLoad, EventLoopError,
-                                             RequestLoopEnd])
-def test_pea_proper_terminate(factory, exception_class):
-    pea = factory().create(exception_class)
-    with pea:
-        pass
-    assert pea.properly_closed
-
-
-@pytest.mark.parametrize('exception_class', [ExecutorFailToLoad, RuntimeError, SystemError,
-                                             DriverError, NoDriverForRequest,
-                                             NotImplementedError])
-def test_pea_proper_terminate_when_load_fails(pea_exception_load_executor_factory, exception_class):
-    with pytest.raises(exception_class):
-        pea = pea_exception_load_executor_factory.create(exception_class)
-        with pea:
+    with pytest.raises(RuntimeFailToStart):
+        with Pea1(arg):
             pass
 
-    # exception happens in __enter__
-    assert not pea.properly_closed
+    # teardown, setup should be called, cancel should not be called
+
+    setup_spy.assert_not_called()
+    teardown_spy.assert_not_called()
+    run_spy.assert_not_called()
+    cancel_spy.assert_not_called()
+
+
+def test_base_pea_with_runtime_bad_run_forever(mocker):
+    class Pea1(Pea):
+        runtime_cls = BaseRuntime
+
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
+    mocker.patch.object(BaseRuntime, 'run_forever', bad_func)
+    setup_spy = mocker.spy(BaseRuntime, 'setup')
+    teardown_spy = mocker.spy(BaseRuntime, 'teardown')
+    cancel_spy = mocker.spy(BaseRuntime, 'cancel')
+    run_spy = mocker.spy(BaseRuntime, 'run_forever')
+
+    with Pea1(arg):
+        pass
+
+    # teardown, setup should be called, cancel should not be called
+
+    setup_spy.assert_called()
+    teardown_spy.assert_called()
+    run_spy.assert_called()
+    cancel_spy.assert_not_called()
+
+
+def test_base_pea_with_runtime_bad_setup(mocker):
+    class Pea1(Pea):
+        runtime_cls = BaseRuntime
+
+    mocker.patch.object(BaseRuntime, 'setup', bad_func)
+    setup_spy = mocker.spy(BaseRuntime, 'setup')
+    teardown_spy = mocker.spy(BaseRuntime, 'teardown')
+    cancel_spy = mocker.spy(BaseRuntime, 'cancel')
+    run_spy = mocker.spy(BaseRuntime, 'run_forever')
+
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
+    with pytest.raises(RuntimeFailToStart):
+        with Pea1(arg):
+            pass
+
+    setup_spy.assert_called()
+    teardown_spy.assert_not_called()
+    run_spy.assert_not_called()
+    cancel_spy.assert_not_called()  # 3s > .join(1), need to cancel
+    # run_forever, teardown, cancel should not be called
+
+
+def test_base_pea_with_runtime_bad_teardown(mocker):
+    class Pea1(Pea):
+        runtime_cls = BaseRuntime
+
+    mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
+    mocker.patch.object(BaseRuntime, 'teardown', lambda x: bad_func)
+    setup_spy = mocker.spy(BaseRuntime, 'setup')
+    teardown_spy = mocker.spy(BaseRuntime, 'teardown')
+    cancel_spy = mocker.spy(BaseRuntime, 'cancel')
+    run_spy = mocker.spy(BaseRuntime, 'run_forever')
+
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
+    with Pea1(arg):
+        pass
+
+    setup_spy.assert_called()
+    teardown_spy.assert_called()
+    run_spy.assert_called()
+    cancel_spy.assert_called_once()  # 3s > .join(1), need to cancel
+
+    # setup, run_forever cancel should all be called
+
+
+def test_base_pea_with_runtime_bad_cancel(mocker):
+    class Pea1(Pea):
+        runtime_cls = BaseRuntime
+
+    mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
+    mocker.patch.object(BaseRuntime, 'cancel', bad_func)
+
+    setup_spy = mocker.spy(BaseRuntime, 'setup')
+    teardown_spy = mocker.spy(BaseRuntime, 'teardown')
+    cancel_spy = mocker.spy(BaseRuntime, 'cancel')
+    run_spy = mocker.spy(BaseRuntime, 'run_forever')
+
+    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
+    with Pea1(arg):
+        pass
+
+    setup_spy.assert_called()
+    teardown_spy.assert_called()
+    run_spy.assert_called()
+    cancel_spy.assert_called_once()
+
+    # setup, run_forever cancel should all be called
+
+
+def test_pea_runtime_env_setting_in_process():
+    class EnvChecker(BaseExecutor):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # pea/pod-specific
+            assert os.environ['key1'] == 'value1'
+            assert os.environ['key2'] == 'value2'
+            # inherit from parent process
+            assert os.environ['key_parent'] == 'value3'
+
+    os.environ['key_parent'] = 'value3'
+
+    with Pea(set_pea_parser().parse_args(['--uses', 'EnvChecker',
+                                          '--env', 'key1=value1',
+                                          '--env', 'key2=value2',
+                                          '--runtime-backend', 'process'])):
+        pass
+
+    # should not affect the main process
+    assert 'key1' not in os.environ
+    assert 'key2' not in os.environ
+    assert 'key_parent' in os.environ
+
+    os.unsetenv('key_parent')
+
+
+def test_pea_runtime_env_setting_in_thread():
+    class EnvChecker(BaseExecutor):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # pea/pod-specific
+            assert 'key1' not in os.environ
+            assert 'key2' not in os.environ
+            # inherit from parent process
+            assert os.environ['key_parent'] == 'value3'
+
+    os.environ['key_parent'] = 'value3'
+
+    with Pea(set_pea_parser().parse_args(['--uses', 'EnvChecker',
+                                          '--env', 'key1=value1',
+                                          '--env', 'key2=value2',
+                                          '--runtime-backend', 'thread'])):
+        pass
+
+    # should not affect the main process
+    assert 'key1' not in os.environ
+    assert 'key2' not in os.environ
+    assert 'key_parent' in os.environ
+
+    os.unsetenv('key_parent')

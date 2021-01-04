@@ -8,9 +8,8 @@ from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
 from jina.helper import random_port
-from jina.parser import set_gateway_parser
-from jina.peapods.runtimes.local import LocalRuntime
-from jina.peapods.peas.gateway import RESTGatewayPea
+from jina.parsers import set_gateway_parser
+from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
 
 
@@ -53,8 +52,8 @@ def test_check_input_fail(input_fn):
     ]
 )
 def test_gateway_ready(port_expose, route, status_code):
-    p = set_gateway_parser().parse_args(['--port-expose', str(port_expose)])
-    with LocalRuntime(p, pea_cls=RESTGatewayPea):
+    p = set_gateway_parser().parse_args(['--port-expose', str(port_expose), '--runtime-cls', 'RESTRuntime'])
+    with Pea(p):
         time.sleep(0.5)
         a = requests.get(f'http://0.0.0.0:{p.port_expose}{route}')
         assert a.status_code == status_code

@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import pkgutil
@@ -12,6 +13,7 @@ from setuptools import find_packages
 
 from .helper import credentials_file
 from ..helper import colored
+from ..importer import ImportExtensions
 from ..jaml import JAML
 from ..logging import default_logger
 from ..logging.profile import TimeContext
@@ -137,22 +139,22 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
     }
 
     try:
-        import requests
-        response = requests.get(url=f'{hubapi_url}',
-                                 headers=headers)
-        if response.status_code == requests.codes.ok:
-            import json
-            import base64
-            json_response = json.loads(response.text)
-            encoded_username = json_response['docker_username']
-            encoded_password = json_response['docker_password']
-            decoded_username = base64.b64decode(encoded_username).decode('ascii')
-            decoded_password = base64.b64decode(encoded_password).decode('ascii')
-            docker_creds = {'docker_username': decoded_username, 'docker_password': decoded_password} 
-            logger.info(f'Successfully fetched docker creds for user')
-            return docker_creds
-        else:
-            logger.error(f'failed to fetch docker credentials')
+        with ImportExtensions(required=False,
+                        help_text='missing "requests" dependency, please do pip install "jina[http]"'):
+            import requests
+            response = requests.get(url=f'{hubapi_url}',
+                                    headers=headers)
+            if response.status_code == requests.codes.ok:
+                json_response = json.loads(response.text)
+                encoded_username = json_response['docker_username']
+                encoded_password = json_response['docker_password']
+                decoded_username = base64.b64decode(encoded_username).decode('ascii')
+                decoded_password = base64.b64decode(encoded_password).decode('ascii')
+                docker_creds = {'docker_username': decoded_username, 'docker_password': decoded_password} 
+                logger.debug(f'Successfully fetched docker creds for user')
+                return docker_creds
+            else:
+                logger.error(f'failed to fetch docker credentials')
     except Exception as exp:
         logger.error(f'got an exception while fetching docker credentials {repr(exp)}')
 
