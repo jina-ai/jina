@@ -7,6 +7,7 @@ if [ "${PWD##*/}" != "jina" ]
     exit 1
 fi
 
+
 docker-compose -f tests/integration/jinad/test_index_query_with_shards/docker-compose.yml --project-directory . up  --build -d
 
 sleep 10
