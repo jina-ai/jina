@@ -140,7 +140,7 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
 
     try:
         with ImportExtensions(required=False,
-                        help_text='missing "requests" dependency, please do pip install "jina[http]"'):
+                              help_text='missing "requests" dependency, please do pip install "jina[http]"'):
             import requests
             response = requests.get(url=f'{hubapi_url}',
                                     headers=headers)
@@ -150,7 +150,7 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
                 encoded_password = json_response['docker_password']
                 decoded_username = base64.b64decode(encoded_username).decode('ascii')
                 decoded_password = base64.b64decode(encoded_password).decode('ascii')
-                docker_creds = {'docker_username': decoded_username, 'docker_password': decoded_password} 
+                docker_creds = {'docker_username': decoded_username, 'docker_password': decoded_password}
                 logger.debug(f'Successfully fetched docker creds for user')
                 return docker_creds
             else:
@@ -204,16 +204,6 @@ def _make_hub_table(manifests):
     return info_table
 
 
-def _fetch_access_token(logger):
-    if not credentials_file().is_file():
-        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
-        return
-    with open(credentials_file(), 'r') as cf:
-        cred_yml = JAML.load(cf)
-    access_token = cred_yml['access_token']
-    return access_token
-
-
 def _register_to_mongodb(logger, summary: Dict = None):
     """ Hub API Invocation to run `hub push` """
     logger.info('registering image to Jina Hub database...')
@@ -225,7 +215,8 @@ def _register_to_mongodb(logger, summary: Dict = None):
 
     access_token = _fetch_access_token(logger)
     if not access_token:
-        logger.error(f'aborting push to mongodb. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        logger.error(
+            f'aborting push to mongodb. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
 
     headers = {
