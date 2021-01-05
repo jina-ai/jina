@@ -277,7 +277,7 @@ class PathImporter:
             spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
             module = importlib.util.module_from_spec(spec)
             user_module_name = os.path.splitext(os.path.basename(absolute_path))[0]
-            sys.modules[f'{spec.name}.{user_module_name}'] = module  # add this line
+            sys.modules[f'{spec.name}.{user_module_name}'] = module
             spec.loader.exec_module(module)
         except Exception as ex:
             raise ImportError(f'can not import module from {absolute_path}') from ex
