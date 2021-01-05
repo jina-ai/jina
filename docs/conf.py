@@ -121,6 +121,7 @@ nitpicky = True
 
 extensions = [
     'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
 ]
 
 def setup(app):
