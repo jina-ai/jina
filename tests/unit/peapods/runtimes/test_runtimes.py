@@ -30,7 +30,8 @@ def test_zed_runtime(runtime, ctrl_ipc):
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ,
-                    reason='this test is flaky on Github action, but locally it SHOULD work fine')
+                    reason='for unknown reason, this test is flaky on Github action, '
+                           'but locally it SHOULD work fine')
 @pytest.mark.parametrize('cls', [GRPCRuntime, RESTRuntime])
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_gateway_runtime(cls, runtime):
