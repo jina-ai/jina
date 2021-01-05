@@ -103,7 +103,7 @@ def import_classes(namespace: str, targets=None,
                         if k in targets:
                             targets.remove(k)
                             if not targets:
-                                return getattr(mod, k) # target execs are all found and loaded, return
+                                return getattr(mod, k)  # target execs are all found and loaded, return
                         try:
                             # load the default request for this executor if possible
                             from .executors.requests import get_default_reqs
@@ -158,7 +158,7 @@ class ImportExtensions:
     """
 
     def __init__(self, required: bool, logger=None,
-                 help_text: str = None, pkg_name: str = None, verbose: bool=True):
+                 help_text: str = None, pkg_name: str = None, verbose: bool = True):
         """
 
         :param required: set to True if you want to raise the ModuleNotFound error
@@ -277,7 +277,12 @@ class PathImporter:
             spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
             module = importlib.util.module_from_spec(spec)
             user_module_name = os.path.splitext(os.path.basename(absolute_path))[0]
-            sys.modules[f'{spec.name}.{user_module_name}'] = module
+            if user_module_name == '__init__':
+                # __init__ can not be used as a module name
+                spec_name = spec.name
+            else:
+                spec_name = f'{spec.name}.{user_module_name}'
+            sys.modules[spec_name] = module
             spec.loader.exec_module(module)
         except Exception as ex:
             raise ImportError(f'can not import module from {absolute_path}') from ex
