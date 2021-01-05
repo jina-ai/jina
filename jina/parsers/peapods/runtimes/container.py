@@ -16,5 +16,8 @@ def mixin_container_runtime_parser(parser):
                     help='pull the latest image before running')
     gp.add_argument('--volumes', type=str, nargs='*', metavar='DIR',
                     help='the path on the host to be mounted inside the container. '
-                         'they will be mounted to the root path, i.e. /user/test/my-workspace will be mounted to '
-                         '/my-workspace inside the container. all volumes are mounted with read-write mode.')
+                         'if separated by ":" the first part will be considered as the local path and the second '
+                         'part, the path in the container system. '
+                         'If no split provided, they will be mounted to the root path, i.e. /user/test/my-workspace '
+                         'will be mounted to /my-workspace inside the container. all volumes are mounted with '
+                         'read-write mode.')

@@ -29,9 +29,12 @@ class ContainerRuntime(ZMQRuntime):
     def teardown(self):
         self._container.stop()
 
-    def run_forever(self):
+    def _stream_logs(self):
         for line in self._container.logs(stream=True):
             self.logger.info(line.strip().decode())
+
+    def run_forever(self):
+        self._stream_logs()
 
     def _set_network_for_dind_linux(self):
         import docker
@@ -96,9 +99,14 @@ class ContainerRuntime(ZMQRuntime):
                     f'"uses_internal" {self.args.uses_internal} is not like a path, please check it')
         if self.args.volumes:
             for p in self.args.volumes:
-                Path(os.path.abspath(p)).mkdir(parents=True, exist_ok=True)
-                _p = '/' + os.path.basename(p)
-                _volumes[os.path.abspath(p)] = {'bind': _p, 'mode': 'rw'}
+                paths = p.split(':')
+                local_path = paths[0]
+                Path(os.path.abspath(local_path)).mkdir(parents=True, exist_ok=True)
+                if len(paths) == 2:
+                    container_path = paths[1]
+                else:
+                    container_path = '/' + os.path.basename(p)
+                _volumes[os.path.abspath(local_path)] = {'bind': container_path, 'mode': 'rw'}
 
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
@@ -121,8 +129,7 @@ class ContainerRuntime(ZMQRuntime):
         if replay:
             # when replay is on, it means last time it fails to start
             # therefore we know the loop below wont block the main process
-            for line in self._container.logs(stream=True):
-                self.logger.info(line.strip().decode())
+            self._stream_logs()
 
         client.close()
 
