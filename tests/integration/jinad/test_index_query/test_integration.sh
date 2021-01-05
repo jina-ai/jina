@@ -23,7 +23,11 @@ echo "Successfully started the flow: ${FLOW_ID}. Let's index some data"
 TEXT_INDEXED=$(curl -s --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/index' | \
     jq -e ".index.docs[] | .text")
 echo "Indexed document has the text: ${TEXT_INDEXED}"
+
+echo "Getting status code of the Flow: "
 curl -s --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+
+echo "Closing Flow context.."
 curl -s --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
 #Query part
@@ -40,7 +44,11 @@ echo "Successfully started the flow: ${FLOW_ID}. Let's send some query"
 TEXT_MATCHED=$(curl -s --request POST -d '{"top_k": 10, "data": ["text:anything will match the same"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/search' | \
     jq -e ".search.docs[] | .matches[] | .text")
 echo "document matched has the text: ${TEXT_INDEXED}"
+
+echo "Getting status code of the Flow: "
 curl -s --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+
+echo "Closing Flow context.."
 curl -s --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
 docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . down --remove-orphans

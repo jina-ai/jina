@@ -30,7 +30,10 @@ for i in {1..100};
     echo "Indexed document has the text: ${TEXT_INDEXED}"
   done
 
+echo "Getting status code of the Flow: "
 curl -s --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+
+echo "Closing Flow context.."
 curl -s --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
 #Query part
@@ -56,7 +59,10 @@ rm count.txt
 
 echo "found ${COUNT} matches"
 
+echo "Getting status code of the Flow: "
 curl -s --request GET "http://0.0.0.0:8000/v1/flow/${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
+
+echo "Closing Flow context.."
 curl -s --request DELETE "http://0.0.0.0:8000/v1/flow?flow_id=${FLOW_ID}" -H "accept: application/json" | jq -e ".status_code"
 
 docker-compose -f tests/integration/jinad/test_index_query/docker-compose.yml --project-directory . down --remove-orphans
