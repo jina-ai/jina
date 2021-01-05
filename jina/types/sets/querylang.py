@@ -86,4 +86,4 @@ class QueryLangSet(MutableSequence):
         name as string key
         """
         # TODO This is a temp fix, QueryLangProto do not have an id field.
-        self._querylangs_map = {d.name: d for d in self._querylangs_proto}
+        self._querylangs_map = {q.name: q for q in self._querylangs_proto}
