@@ -107,6 +107,7 @@ jobs:
           tags: "latest, ${{env.JINA_VERSION}}, ${{env.JINA_MINOR_VERSION}}"
 
   create-release:
+    needs: update-docker
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
