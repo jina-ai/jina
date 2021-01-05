@@ -276,10 +276,11 @@ class PathImporter:
             # I dont want to trust user path based on directory structure, "jinahub", period
             spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
             module = importlib.util.module_from_spec(spec)
-            sys.modules[spec.name] = module  # add this line
+            user_module_name = os.path.splitext(os.path.basename(absolute_path))[0]
+            sys.modules[f'{spec.name}.{user_module_name}'] = module  # add this line
             spec.loader.exec_module(module)
-        except ModuleNotFoundError:
-            module = None
+        except Exception as ex:
+            raise ImportError(f'can not import module from {absolute_path}') from ex
         return module
 
 
