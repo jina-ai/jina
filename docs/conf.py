@@ -84,6 +84,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode',
+    'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
     'sphinx_rtd_theme',
@@ -118,11 +119,6 @@ autoclass_content = 'both'
 set_type_checking_flag = False
 html_last_updated_fmt = ''
 nitpicky = True
-
-extensions = [
-    'sphinx.ext.coverage',
-    'sphinx.ext.doctest',
-]
 
 def setup(app):
     from sphinx.domains.python import PyField
