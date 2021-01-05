@@ -22,7 +22,8 @@ An easier way to build neural search in the cloud
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.kr.md">한국어</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">Português</a> •
   <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.ru.md">Русский язык</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">український</a>
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">український</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.es.md">Español</a>
 </sub>
 </p>
 
