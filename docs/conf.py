@@ -119,6 +119,7 @@ autoclass_content = 'both'
 set_type_checking_flag = False
 html_last_updated_fmt = ''
 nitpicky = True
+nitpick_ignore = [('py:class', 'type')]
 
 def setup(app):
     from sphinx.domains.python import PyField
