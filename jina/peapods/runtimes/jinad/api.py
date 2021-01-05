@@ -162,15 +162,15 @@ class JinadAPI:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t create pod with remote jinad {repr(ex)}')
 
-    async def logstream(self, remote_id: 'str', event: Event):
+    async def logstream(self, remote_id: 'str'):
         """ websocket log stream from remote pea/pod
         :param remote_id: the identity of that pea/pod
-        :param event: the multiprocessing event which marks if stop event is set
         :return:
         """
         with ImportExtensions(required=True):
             import websockets
 
+        self.logger.info(f'🌏 Fetching streamed logs from remote id: {remote_id}')
         remote_loggers = {}
         try:
             # sleeping for few seconds to allow the logs to be written in remote
@@ -179,8 +179,7 @@ class JinadAPI:
             async with websockets.connect(f'{self.log_url}/{remote_id}?timeout=5') as websocket:
                 current_line_number = -1
 
-                while not event.is_set():
-                    self.logger.warning(f'fetching logs from line# {int(current_line_number) + 1}, event: {event}')
+                while True:
                     await websocket.send(json.dumps({'from': int(current_line_number) + 1}))
                     async for log_line in websocket:
                         try:
@@ -199,24 +198,16 @@ class JinadAPI:
                         except json.decoder.JSONDecodeError:
                             continue
         except websockets.exceptions.ConnectionClosedOK:
-            self.logger.debug(f'Client got disconnected from server')
+            self.logger.error(f'🌏 Client got disconnected from server')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(f'Got following error while streaming logs via websocket {repr(e)}')
+            self.logger.error(f'🌏 Got following error while streaming logs via websocket {repr(e)}')
+        except asyncio.CancelledError:
+            self.logger.info(f'🌏 Logging task cancelled successfully')
         finally:
+            self.logger.info(f'🌏 Exiting from remote loggers')
             if remote_loggers:
                 for logger in remote_loggers.values():
                     logger.close()
-
-    def log(self, remote_id: 'str', event: Event, **kwargs) -> None:
-        """ Start the log stream from remote pea/pod, will use local logger for output
-        :param remote_id: the identity of that pea/pod
-        :return:
-        """
-        try:
-            self.logger.info(f'🌏 Fetching streamed logs from remote id: {remote_id}, event: {event}')
-            asyncio.run(self.logstream(remote_id=remote_id, event=event))
-        finally:
-            self.logger.info(f'🌏 Exiting from remote logger')
 
     def delete(self, remote_id: 'str', **kwargs) -> bool:
         """ Delete a remote pea/pod

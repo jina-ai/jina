@@ -1,18 +1,22 @@
 import argparse
-from multiprocessing import Event
+import asyncio
 from typing import Union, Dict, Optional
 
+from ...zmq import Zmqlet
 from .api import get_jinad_api
-from ..zmq.base import ZMQManyRuntime
+from ..asyncio.base import AsyncZMQRuntime
 from ....helper import cached_property, ArgNamespace, colored
 
 
-class JinadRuntime(ZMQManyRuntime):
+class JinadRuntime(AsyncZMQRuntime):
 
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
-        self.exit_event = Event()
-        self.exit_event.clear()
+        self.ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
+        self.timeout_ctrl = args.timeout_ctrl
+        self.host = args.host
+        self.port_expose = args.port_expose
+        self.remote_type = args.remote_type
         self.api = get_jinad_api(kind=self.remote_type,
                                  host=self.host,
                                  port=self.port_expose,
@@ -23,14 +27,13 @@ class JinadRuntime(ZMQManyRuntime):
         if self._remote_id:
             self.logger.success(f'created remote {self.api.kind} with id {colored(self._remote_id, "cyan")}')
 
-    def run_forever(self):
+    async def async_run_forever(self):
         # Streams log messages using websocket from remote server.
-        # Waits for an `asyncio.Event` to be set to exit out of streaming loop
-        self.api.log(remote_id=self._remote_id, event=self.exit_event)
+        self.logging_task = asyncio.create_task(self.api.logstream(self._remote_id))
 
-    def cancel(self):
-        # Indicates :meth:`run_forever` to exit by setting the `asyncio.Event`
-        self.exit_event.set()
+    async def async_cancel(self):
+        # Cancels the logging task
+        self.logging_task.cancel()
 
     def teardown(self):
         # Closes the remote Pod/Pea using :class:`JinadAPI`
