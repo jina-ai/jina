@@ -5,7 +5,7 @@ from typing import Optional
 from .api import get_jinad_api
 from ..asyncio.base import AsyncZMQRuntime
 from ...zmq import Zmqlet
-from ....helper import cached_property, ArgNamespace, colored
+from ....helper import cached_property, colored
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -50,6 +50,6 @@ class JinadRuntime(AsyncZMQRuntime):
     @cached_property
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
-            args = ArgNamespace.flatten_to_dict(self.args)
-            if self.api.upload(args):
-                return self.api.create(args)
+            _args_dict = vars(self.args)
+            if self.api.upload(_args_dict):
+                return self.api.create(_args_dict)
