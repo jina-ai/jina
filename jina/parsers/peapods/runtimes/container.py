@@ -18,6 +18,6 @@ def mixin_container_runtime_parser(parser):
                     help='the path on the host to be mounted inside the container. '
                          'if separated by ":" the first part will be considered as the local host path and the second '
                          'part is the path in the container system. '
-                         'If no split provided, then the basename of that directory will be mounted into container's root path, e.g. --volumes="/user/test/my-workspace" '
+                         'If no split provided, then the basename of that directory will be mounted into container\'s root path, e.g. --volumes="/user/test/my-workspace" '
                          'will be mounted into "/my-workspace" inside the container. all volumes are mounted with '
                          'read-write mode.')
