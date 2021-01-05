@@ -1,0 +1,5 @@
+!Flow
+pods:
+  indexer:
+    uses: pods/indexer_with_ref.yml
+    parallel: $JINA_TEST_REF_INDEXER_PARALLEL
