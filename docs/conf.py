@@ -119,6 +119,9 @@ set_type_checking_flag = False
 html_last_updated_fmt = ''
 nitpicky = True
 
+extensions = [
+    'sphinx.ext.coverage',
+]
 
 def setup(app):
     from sphinx.domains.python import PyField
