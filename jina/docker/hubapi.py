@@ -203,6 +203,7 @@ def _make_hub_table(manifests):
                               f'{desc:<30s}')
     return info_table
 
+
 def _fetch_access_token(logger):
     if not credentials_file().is_file():
         logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
@@ -211,6 +212,7 @@ def _fetch_access_token(logger):
         cred_yml = JAML.load(cf)
     access_token = cred_yml['access_token']
     return access_token
+
 
 def _register_to_mongodb(logger, summary: Dict = None):
     """ Hub API Invocation to run `hub push` """
@@ -248,7 +250,6 @@ def _register_to_mongodb(logger, summary: Dict = None):
             logger.error(f'got an error from the API: {response.text}')
     except Exception as exp:
         logger.error(f'got an exception while invoking hubapi for push {repr(exp)}')
-
 
 
 def _fetch_access_token(logger):
