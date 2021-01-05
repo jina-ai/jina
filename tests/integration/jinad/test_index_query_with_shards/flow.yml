@@ -14,6 +14,7 @@ pods:
     uses: index.yml
     read_only: False
     parallel: 3
+    polling: all
     separated_workspace: True
     host: $JINA_INDEXER_HOST
     port_expose: 8000
