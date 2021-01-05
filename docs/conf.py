@@ -117,6 +117,7 @@ autodoc_mock_imports = ['argparse', 'numpy', 'np', 'tensorflow', 'torch', 'scipy
 autoclass_content = 'both'
 set_type_checking_flag = False
 html_last_updated_fmt = ''
+nitpicky = True
 
 
 def setup(app):
