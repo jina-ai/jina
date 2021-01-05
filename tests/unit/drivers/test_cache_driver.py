@@ -70,11 +70,11 @@ def test_cache_driver_tmpfile(tmpdir, test_metas):
 
 
 def test_cache_driver_from_file(tmpdir, test_metas):
-    filename = 'test-tmp.bin'
+    filename = 'cache'
+    bin_full_path = os.path.join(test_metas["workspace"], filename)
     docs = list(random_docs(10, embedding=False))
-    pickle.dump([doc.id for doc in docs], open(f'{os.path.join(test_metas["workspace"], filename)}.ids', 'wb'))
-    pickle.dump([doc.content_hash for doc in docs],
-                open(f'{os.path.join(test_metas["workspace"], filename)}.cache', 'wb'))
+    pickle.dump([doc.id for doc in docs], open(f'{bin_full_path}.ids', 'wb'))
+    pickle.dump([doc.content_hash for doc in docs], open(f'{bin_full_path}.cache', 'wb'))
 
     driver = MockCacheDriver()
     with DocIDCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:

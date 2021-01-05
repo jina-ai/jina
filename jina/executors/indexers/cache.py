@@ -122,11 +122,13 @@ class DocIDCache(BaseCache):
 
     def get_add_handler(self):
         # not needed, as we use the queryhandler
-        pass
+        # FIXME better way to silence warnings
+        return 1
 
     def get_query_handler(self) -> CacheHandler:
         return self.CacheHandler(self.index_abspath, self.logger)
 
     def get_create_handler(self):
         # not needed, as we use the queryhandler
-        pass
+        # FIXME better way to silence warnings
+        return 1

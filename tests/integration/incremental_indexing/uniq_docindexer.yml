@@ -1,6 +1,8 @@
 !UniquePbIndexer
 components:
   - !DocIDCache
+    with:
+      field: id
     metas:
       workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE
       name: cache

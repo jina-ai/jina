@@ -19,7 +19,7 @@ def get_index_flow():
 
 
 def get_search_flow():
-    num_shards = 2
+    num_shards = 3
     f = Flow(read_only=True) \
         .add(
         uses='vectorindexer.yml',
@@ -40,7 +40,7 @@ def test_sharding_empty_index(tmpdir, execution_number, mocker):
 
     f = get_index_flow()
 
-    num_docs = 1
+    num_docs = 10
     data = []
     for i in range(num_docs):
         with Document() as doc:

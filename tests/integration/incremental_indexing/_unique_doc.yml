@@ -1,6 +1,8 @@
 !DocIDCache
 with:
   index_path: cache.tmp
+  field: id
+  # TODO make it explicit
 metas:
   name: cache-doc
   workspace: $JINA_TEST_INCREMENTAL_INDEX_WORKSPACE/doc_cache
