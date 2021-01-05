@@ -1,14 +1,13 @@
-import json
 import asyncio
-from pathlib import Path
+import json
 from contextlib import ExitStack
-from multiprocessing import Event
+from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
-from ....jaml import JAML
-from ....logging import JinaLogger
 from ....enums import RemotePeapodType
 from ....importer import ImportExtensions
+from ....jaml import JAML
+from ....logging import JinaLogger
 
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
