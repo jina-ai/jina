@@ -184,7 +184,8 @@ class HubIO:
             docker_creds = _docker_auth(logger=self.logger)
             if docker_creds and docker_creds['docker_username'] and docker_creds['docker_password']:
                 self.logger.info(f'Fetched docker credentials successfully. Pushing now...')
-                self._push_docker_hub(name, readme_path, docker_creds['docker_username'], docker_creds['docker_password'])
+                self._push_docker_hub(name, readme_path, docker_creds['docker_username'],
+                                      docker_creds['docker_password'])
             else:
                 self.logger.error(f'Failed to fetch docker login creds. Aborting push.')
                 return
@@ -209,7 +210,8 @@ class HubIO:
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
-    def _push_docker_hub(self, name: str = None, readme_path: str = None, docker_username: str = None, docker_password: str = None) -> None:
+    def _push_docker_hub(self, name: str = None, readme_path: str = None, docker_username: str = None,
+                         docker_password: str = None) -> None:
         """ Helper push function """
         check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
@@ -288,7 +290,7 @@ class HubIO:
         login_password = docker_password
         if self.args.username and self.args.password:
             login_username = self.args.username
-            login_password = self.args.password           
+            login_password = self.args.password
         if login_username and login_password:
             try:
                 self._client.login(username=login_username, password=login_password,
@@ -310,6 +312,7 @@ class HubIO:
             with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
                 try:
                     self._check_completeness()
+                    self._freeze_jina_version()
 
                     streamer = self._raw_client.build(
                         decode=True,
@@ -504,15 +507,35 @@ class HubIO:
             json.dump(summary, f)
         self.logger.debug(f'stored the summary from build to {file_path}')
 
+    def _freeze_jina_version(self) -> None:
+        import pkg_resources
+        requirements_path = get_exist_path(self.args.path, 'requirements.txt')
+        if requirements_path and os.path.exists(requirements_path):
+            new_requirements = []
+            update = False
+            with open(requirements_path, 'r') as fp:
+                requirements = pkg_resources.parse_requirements(fp)
+                for req in requirements:
+                    if 'jina' in str(req):
+                        update = True
+                        self.logger.info(f'Freezing jina version to {jina_version}')
+                        new_requirements.append(f'jina=={jina_version}')
+                    else:
+                        new_requirements.append(str(req))
+
+            if update:
+                with open(requirements_path, 'w') as fp:
+                    fp.write('\n'.join(new_requirements))
+
     def _check_completeness(self) -> Dict:
-        self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
-        self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')
+        dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
+        manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
-        self.requirements_path = get_exist_path(self.args.path, 'requirements.txt')
+        requirements_path = get_exist_path(self.args.path, 'requirements.txt')
 
         yaml_glob = set(glob.glob(os.path.join(self.args.path, '*.yml')))
-        yaml_glob.difference_update({self.manifest_path, self.config_yaml_path})
+        yaml_glob.difference_update({manifest_path, self.config_yaml_path})
 
         if not self.config_yaml_path:
             self.config_yaml_path = yaml_glob.pop()
@@ -522,11 +545,11 @@ class HubIO:
         test_glob = glob.glob(os.path.join(self.args.path, 'tests/test_*.py'))
 
         completeness = {
-            'Dockerfile': self.dockerfile_path,
-            'manifest.yml': self.manifest_path,
+            'Dockerfile': dockerfile_path,
+            'manifest.yml': manifest_path,
             'config.yml': self.config_yaml_path,
             'README.md': self.readme_path,
-            'requirements.txt': self.requirements_path,
+            'requirements.txt': requirements_path,
             '*.yml': yaml_glob,
             '*.py': py_glob,
             'tests': test_glob
@@ -543,9 +566,9 @@ class HubIO:
             self.logger.critical('Dockerfile or manifest.yml is not given, can not build')
             raise FileNotFoundError('Dockerfile or manifest.yml is not given, can not build')
 
-        self.manifest = self._read_manifest(self.manifest_path)
+        self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
-        self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
+        self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
         tag_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}:{self.manifest["version"]}-{jina_version}')
         self.tag = tag_name
