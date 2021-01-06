@@ -45,6 +45,8 @@ def get_content_hash(doc: 'DocumentProto') -> str:
     doc_without_id = DocumentProto()
     doc_without_id.CopyFrom(doc)
     doc_without_id.id = ""
+    del doc_without_id.chunks[:]
+    del doc_without_id.matches[:]
     return blake2b(doc_without_id.SerializeToString(), digest_size=_digest_size).hexdigest()
 
 
