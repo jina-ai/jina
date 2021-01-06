@@ -22,9 +22,12 @@ def validate(req):
     assert len(chunk_ids) == 80
 
 
+# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.skip('this should fail as explained in https://github.com/jina-ai/jina/pull/730')
-def test_this_will_fail(mocker):
-    f = (Flow().add(name='a11', uses='DummySegment')
+@pytest.mark.parametrize('restful', [False])
+def test_this_will_fail(mocker, restful):
+    f = (Flow(restful=restful)
+         .add(name='a11', uses='DummySegment')
          .add(name='a12', uses='DummySegment', needs='gateway')
          .add(name='r1', uses='_merge_chunks', needs=['a11', 'a12'])
          .add(name='a21', uses='DummySegment', needs='gateway')
@@ -40,9 +43,11 @@ def test_this_will_fail(mocker):
     response_mock.assert_called()
 
 
+# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.timeout(180)
-def test_this_should_work(mocker):
-    f = (Flow()
+@pytest.mark.parametrize('restful', [False])
+def test_this_should_work(mocker, restful):
+    f = (Flow(restful=restful)
          .add(name='a1')
          .add(name='a11', uses='DummySegment', needs='a1')
          .add(name='a12', uses='DummySegment', needs='a1')

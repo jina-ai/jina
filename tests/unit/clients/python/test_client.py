@@ -75,8 +75,9 @@ def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
         assert resp['index']['docs'][0]['uri'] == test_img_1
 
 
-def test_mime_type():
-    f = Flow().add(uses='- !URI2Buffer {}')
+@pytest.mark.parametrize('restful', [False, True])
+def test_mime_type(restful):
+    f = Flow(restful=restful).add(uses='- !URI2Buffer {}')
 
     def validate_mime_type(req):
         for d in req.index.docs:

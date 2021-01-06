@@ -1,3 +1,5 @@
+import pytest
+
 from jina.enums import SkipOnErrorType
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
@@ -9,7 +11,8 @@ class DummyCrafter(BaseCrafter):
         return 1 / 0
 
 
-def test_bad_flow_skip_handle(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_bad_flow_skip_handle(mocker, restful):
     def validate(req):
         bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 3
@@ -20,7 +23,8 @@ def test_bad_flow_skip_handle(mocker):
         assert bad_routes[2].pod == 'r3'
         assert bad_routes[2].status.code == jina_pb2.StatusProto.ERROR_CHAINED
 
-    f = (Flow(skip_on_error=SkipOnErrorType.HANDLE).add(name='r1', uses='DummyCrafter')
+    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.HANDLE)
+         .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3'))
 
@@ -33,7 +37,8 @@ def test_bad_flow_skip_handle(mocker):
     on_error_mock.assert_called()
 
 
-def test_bad_flow_skip_handle_join(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_bad_flow_skip_handle_join(mocker, restful):
     """When skipmode is set to handle, reduce driver wont work anymore"""
 
     def validate(req):
@@ -53,7 +58,8 @@ def test_bad_flow_skip_handle_join(mocker):
         assert bad_routes[-1].status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[-1].status.exception.name == 'GatewayPartialMessage'
 
-    f = (Flow(skip_on_error=SkipOnErrorType.HANDLE).add(name='r1', uses='DummyCrafter')
+    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.HANDLE)
+         .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))
@@ -67,14 +73,16 @@ def test_bad_flow_skip_handle_join(mocker):
     on_error_mock.assert_called()
 
 
-def test_bad_flow_skip_exec(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_bad_flow_skip_exec(mocker, restful):
     def validate(req):
         bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 1
         assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
 
-    f = (Flow(skip_on_error=SkipOnErrorType.EXECUTOR).add(name='r1', uses='DummyCrafter')
+    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.EXECUTOR)
+         .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3'))
 
@@ -87,7 +95,8 @@ def test_bad_flow_skip_exec(mocker):
     on_error_mock.assert_called()
 
 
-def test_bad_flow_skip_exec_join(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_bad_flow_skip_exec_join(mocker, restful):
     """Make sure the exception wont affect the gather/reduce ops"""
 
     def validate(req):
@@ -96,7 +105,8 @@ def test_bad_flow_skip_exec_join(mocker):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
 
-    f = (Flow(skip_on_error=SkipOnErrorType.EXECUTOR).add(name='r1', uses='DummyCrafter')
+    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.EXECUTOR)
+         .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))

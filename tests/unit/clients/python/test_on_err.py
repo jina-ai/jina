@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 
 from jina.excepts import BadClientCallback
@@ -8,7 +9,8 @@ def validate(x):
     raise NotImplementedError
 
 
-def test_client_on_error():
+@pytest.mark.parametrize('restful', [False, True])
+def test_client_on_error(restful):
     # In this particular test, when you write two tests in a row, you are testing the following case:
     #
     # You are testing exception in client's callback, not error in client's request generator
@@ -19,7 +21,7 @@ def test_client_on_error():
     def validate(x):
         raise NotImplementedError
 
-    with Flow().add() as f:
+    with Flow(restful=restful).add() as f:
         t = 0
         try:
             f.index_ndarray(np.random.random([5, 4]), on_done=validate, continue_on_error=False)
@@ -29,4 +31,3 @@ def test_client_on_error():
         # now query the gateway again, make sure gateway's channel is still usable
         f.index_ndarray(np.random.random([5, 4]), on_done=validate, continue_on_error=True)
         assert t == 1
-
