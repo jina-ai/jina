@@ -3,7 +3,6 @@ import tempfile
 from typing import Optional, Iterator
 
 from jina.executors.indexers import BaseKVIndexer
-from jina.helper import check_keys_exist
 
 DATA_FIELD = 'data'
 ID_KEY = 'id'
@@ -99,9 +98,7 @@ class DocIDCache(BaseCache):
         """
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document"""
-        missed = check_keys_exist(keys, self.query_handler.ids)
-        if missed:
-            raise KeyError(f'Keys {missed} were not found in {self.index_abspath}. No operation performed...')
+        keys = self._filter_nonexistent_keys(keys, self.query_handler.ids, self.save_abspath)
 
         for key, cached_field in zip(keys, values):
             key_idx = self.query_handler.ids.index(key)
@@ -113,9 +110,7 @@ class DocIDCache(BaseCache):
         """
         :param keys: list of Document.id
         """
-        missed = check_keys_exist(keys, self.query_handler.ids)
-        if missed:
-            raise KeyError(f'Keys {missed} were not found in {self.index_abspath}. No operation performed...')
+        keys = self._filter_nonexistent_keys(keys, self.query_handler.ids, self.save_abspath)
 
         for key in keys:
             key_idx = self.query_handler.ids.index(key)
