@@ -12,10 +12,6 @@ class MockDiffEvaluator(BaseEmbeddingEvaluator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @property
-    def metric(self):
-        return 'MockDiffEvaluator'
-
     def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
         """"
         :param actual: the embedding of the document (resulting from an Encoder)
