@@ -56,6 +56,8 @@ def test_hubapi_list(mocker):
 
 def test_fetch_access_token(mocker):
     target_val = 'dummy_token'
+    from jina.docker.helper import credentials_file
+    credentials_file().touch()
     mocker.patch('jina.docker.hubapi.JAML.load', return_value={'access_token': target_val})
     assert _fetch_access_token(logger=getLogger()) == target_val
 
