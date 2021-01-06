@@ -72,7 +72,7 @@ class AsyncFlow(BaseFlow):
     _cls_client = AsyncClient  #: the type of the Client, can be changed to other class
 
     def _update_client(self):
-        if self._pod_nodes['gateway']._args.rest_api:
+        if self._pod_nodes['gateway'].args.restful:
             self._cls_client = AsyncWebSocketClient
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')

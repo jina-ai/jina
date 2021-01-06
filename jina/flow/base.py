@@ -757,7 +757,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             raise TypeError(f'{typename(item)} is not supported')
 
     def _update_client(self):
-        if self._pod_nodes['gateway']._args.rest_api:
+        if self._pod_nodes['gateway'].args.restful:
             self._cls_client = WebSocketClient
 
     def index(self):
