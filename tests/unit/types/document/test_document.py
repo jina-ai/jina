@@ -242,3 +242,32 @@ def test_doc_score():
     assert doc.score.op_name == 'operation'
     assert doc.score.value == 10.0
     assert doc.score.ref_id == doc.id
+
+
+def test_content_hash_not_dependent_on_chunks_or_matches():
+    doc1 = Document()
+    doc1.content = 'one'
+    doc1.update_content_hash()
+
+    doc2 = Document()
+    doc2.content = 'one'
+    doc2.update_content_hash()
+    assert doc1.content_hash == doc2.content_hash
+
+    doc3 = Document()
+    doc3.content = 'one'
+    for _ in range(3):
+        with Document() as m:
+            m.content = 'some chunk'
+        doc3.chunks.append(m)
+    doc3.update_content_hash()
+    assert doc1.content_hash == doc3.content_hash
+
+    doc4 = Document()
+    doc4.content = 'one'
+    for _ in range(3):
+        with Document() as m:
+            m.content = 'some match'
+        doc4.matches.append(m)
+    doc4.update_content_hash()
+    assert doc1.content_hash == doc4.content_hash
