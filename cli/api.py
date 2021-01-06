@@ -14,9 +14,9 @@ def pod(args):
 
 def pea(args):
     """Start a Pea"""
-    from jina.peapods import Runtime
+    from jina.peapods import Pea
     try:
-        with Runtime(args) as p:
+        with Pea(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass
@@ -24,9 +24,7 @@ def pea(args):
 
 def gateway(args):
     """Start a Gateway Pod"""
-    from jina.peapods.pods.gateway import GatewayPod
-    with GatewayPod(args) as fs:
-        fs.join()
+    pod(args)
 
 
 def log(args):
@@ -95,4 +93,3 @@ def hub(args):
     """Start a hub builder for build, push, pull"""
     from jina.docker.hubio import HubIO
     getattr(HubIO(args), args.hub)()
-

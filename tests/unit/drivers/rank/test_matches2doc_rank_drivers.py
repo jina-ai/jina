@@ -55,7 +55,7 @@ def test_chunk2doc_ranker_driver_mock_exec():
     doc = create_document_to_score()
     driver = MockMatches2DocRankDriver()
     executor = MockAbsoluteLengthRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '3' * 16

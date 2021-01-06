@@ -94,7 +94,7 @@ def eval_request():
 
 
 def test_load_groundtruth_driver(mock_groundtruth_indexer, simple_load_groundtruth_driver, eval_request):
-    simple_load_groundtruth_driver.attach(executor=mock_groundtruth_indexer, pea=None)
+    simple_load_groundtruth_driver.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_load_groundtruth_driver.eval_request = eval_request
     simple_load_groundtruth_driver()
 

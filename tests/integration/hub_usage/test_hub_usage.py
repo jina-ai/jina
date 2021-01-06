@@ -7,12 +7,13 @@ import pytest
 from jina import __version__ as jina_version
 from jina.docker import hubapi
 from jina.docker.hubio import HubIO
-from jina.excepts import PeaFailToStart, HubBuilderError, ImageAlreadyExists
+from jina.excepts import RuntimeFailToStart, HubBuilderError, ImageAlreadyExists
 from jina.executors import BaseExecutor
 from jina.flow import Flow
 from jina.helper import expand_dict
 from jina.jaml import JAML
-from jina.parser import set_pod_parser, set_hub_build_parser, set_hub_list_parser
+from jina.parsers import set_pod_parser
+from jina.parsers.hub import set_hub_build_parser, set_hub_list_parser
 from jina.peapods import Pod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,7 +24,7 @@ def test_simple_use_abs_import_shall_fail():
         from .dummyhub_abs import DummyHubExecutorAbs
         DummyHubExecutorAbs()
 
-    with pytest.raises(PeaFailToStart):
+    with pytest.raises(RuntimeFailToStart):
         with Flow().add(uses='DummyHubExecutorAbs'):
             pass
 
@@ -56,7 +57,7 @@ def test_use_from_local_dir_flow_container_level():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error'])
     HubIO(args).build()
-    with Flow().add(uses=f'jinahub/pod.crafter.dummyhubexecutor:0.0.0-{jina_version}'):
+    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutor:0.0.0-{jina_version}'):
         pass
 
 
@@ -68,17 +69,13 @@ def test_use_executor_pretrained_model_except():
         HubIO(args).build()
 
 
-def test_use_from_cli_level():
-    subprocess.check_call(['jina', 'pod', '--uses',
-                           os.path.join(cur_dir, 'dummyhub/config.yml'),
-                           '--shutdown-idle', '--max-idle-time', '5'])
-
 
 def test_build_timeout_ready():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub_slow'), '--timeout-ready', '20000', '--test-uses', '--raise-error'])
     HubIO(args).build()
-    with Flow().add(uses=f'jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}', timeout_ready=20000):
+    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}',
+                    timeout_ready=20000):
         pass
 
 

@@ -2,9 +2,10 @@ import argparse
 from typing import Dict, Any
 
 from ..base import VersionedYAMLParser
+from ....enums import PodRoleType
 from ....flow import Flow
-from ....helper import expand_env_var
-from ....parser import set_pod_parser
+from ....helper import expand_env_var, ArgNamespace
+from ....parsers import set_pod_parser, set_gateway_parser
 
 
 def _get_taboo():
@@ -97,7 +98,16 @@ class V1Parser(VersionedYAMLParser):
             # only add "needs" when the value is not the last pod name
             if list(v.needs) != [last_name]:
                 kwargs = {'needs': list(v.needs)}
-            kwargs.update(v._kwargs)
+
+            # get nondefault kwargs
+            parser = set_pod_parser()
+            if v.role == PodRoleType.GATEWAY:
+                parser = set_gateway_parser()
+
+            non_default_kw = ArgNamespace.get_non_defaults_args(v.args, parser)
+
+            kwargs.update(non_default_kw)
+
             for t in _get_taboo():
                 if t in kwargs:
                     kwargs.pop(t)

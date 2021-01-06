@@ -5,7 +5,6 @@ from functools import wraps
 from typing import Callable
 
 from .. import Response
-from ..enums import CallbackOnType
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions
@@ -54,22 +53,6 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
                       break_long_words=False, replace_whitespace=False)])
 
     visualize(table)
-
-
-def extract_field(resp, callback_on: 'CallbackOnType'):
-    resp_body = getattr(resp, resp.WhichOneof('body'))
-
-    if callback_on == CallbackOnType.BODY:
-        return resp_body
-    elif callback_on == CallbackOnType.DOCS:
-        return resp_body.docs
-    elif callback_on == CallbackOnType.GROUNDTRUTHS:
-        return resp_body.groundtruths
-    elif callback_on == CallbackOnType.REQUEST:
-        return resp
-    else:
-        raise ValueError(f'callback_on={callback_on} is not supported, '
-                         f'must be one of {list(CallbackOnType)}')
 
 
 def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:

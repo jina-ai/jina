@@ -132,7 +132,7 @@ def test_chunk2doc_ranker_driver_mock_exec(keep_source_matches_as_chunks):
     doc = create_document_to_score()
     driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockLengthRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '70' * 8
@@ -155,7 +155,7 @@ def test_chunk2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
     driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMaxRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '70' * 8
@@ -178,7 +178,7 @@ def test_chunk2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
     driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet([doc, ]))
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '40' * 8
@@ -201,7 +201,7 @@ def test_chunk2doc_ranker_driver_traverse_apply(keep_source_matches_as_chunks):
     docs = [create_chunk_matches_to_score(), ]
     driver = SimpleChunk2DocRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet(docs))
     for doc in docs:
         assert len(doc.matches) == 2
@@ -217,7 +217,7 @@ def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
     docs = [create_chunk_chunk_matches_to_score(), ]
     driver = SimpleChunk2DocRankDriver(traversal_paths=('cc', 'c'))
     executor = MockMinRanker()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet(docs))
     for doc in docs:
         assert len(doc.matches) == 1

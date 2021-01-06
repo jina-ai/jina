@@ -114,7 +114,7 @@ Intrigued? Play with different options via:
 
 .. argparse::
    :noepilog:
-   :ref: jina.parser.get_main_parser
+   :ref: jina.parsers.get_main_parser
    :prog: jina
    :path: hello-world
 
