@@ -14,6 +14,7 @@ from tests import random_docs
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_WORKSPACE_BINARY_PB'])
 def test_binarypb_in_flow(test_metas, mocker):
     docs = list(random_docs(10))
+
     def validate(req):
         mock()
         assert len(docs) == len(req.docs)
@@ -22,7 +23,6 @@ def test_binarypb_in_flow(test_metas, mocker):
                                            NdArray(d0.embedding).value)
 
     f = Flow(callback_on='body').add(uses='binarypb.yml')
-
 
     with f:
         f.index(docs)
@@ -117,8 +117,8 @@ def test_binarypb_delete(test_metas):
         assert idxer.size == 1
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query(1) == None
-        assert idxer.query(2) == None
+        assert idxer.query(1) is None
+        assert idxer.query(2) is None
         assert idxer.query(3) == b'random'
 
 
