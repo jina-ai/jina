@@ -2,17 +2,18 @@ import base64
 import os
 import urllib.parse
 import urllib.request
-import warnings
-from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence
+from hashlib import blake2b
+from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tuple
 
 from google.protobuf import json_format
+from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
+from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
-from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
@@ -186,9 +187,16 @@ class Document:
     def content_hash(self):
         return self._document.content_hash
 
-    def update_content_hash(self):
-        """Update the document hash according to its content."""
-        self._document.content_hash = get_content_hash(self._document)
+    def update_content_hash(self, mask: Tuple[str] = ('id', 'chunks', 'matches', 'content_hash')) -> None:
+        """Update the document hash according to its content.
+
+        :param mask: a tuple of field names that excluded when computing content hash
+        """
+        masked_d = jina_pb2.DocumentProto()
+        masked_d.CopyFrom(self._document)
+        empty_doc = jina_pb2.DocumentProto()
+        FieldMask(paths=mask).MergeMessage(empty_doc, masked_d, replace_repeated_field=True)
+        self._document.content_hash = blake2b(masked_d.SerializeToString(), digest_size=uid._digest_size).hexdigest()
 
     @property
     def id(self) -> 'UniqueId':

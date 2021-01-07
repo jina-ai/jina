@@ -1,4 +1,4 @@
-from typing import Dict, Sequence, List, Optional, Any
+from typing import Dict, Sequence, List, Optional, Any, Tuple
 
 from . import Document, DocumentSourceType, typename, DocumentContentType
 from ...excepts import BadDocType
@@ -123,3 +123,8 @@ class MultimodalDocument(Document):
         :return: List of modalities extracted from chunks of the document.
         """
         return list(self.modality_content_map.keys())
+
+    def update_content_hash(self, mask: Tuple[str] = ('id', 'matches', 'content_hash')) -> None:
+        """ Update content hash of the document by including ``chunks`` when computing the hash
+        """
+        self.update_content_hash(mask)

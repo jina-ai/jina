@@ -19,51 +19,16 @@ __license__ = "Apache-2.0"
 
 import re
 import sys
+import warnings
 from binascii import unhexlify
-from hashlib import blake2b
 
 import numpy as np
 
 from ...excepts import BadDocID
 from ...helper import typename
-from ...proto.jina_pb2 import DocumentProto
-
-from jina.logging import default_logger
 
 _digest_size = 8
 _id_regex = re.compile(r'[0-9a-fA-F]{16}')
-_warned_deprecation = False
-
-
-def get_content_hash(doc: 'DocumentProto') -> str:
-    """ Generate a new hexdigest based on the content of the document.
-
-    :param doc: a non-empty document
-    :return: the hexdigest based on :meth:`blake2b`
-    """
-    # TODO: once `new_doc_id` is removed, the content of this function can directly move to the `Document`.
-    doc_without_id = DocumentProto()
-    doc_without_id.CopyFrom(doc)
-    doc_without_id.id = ""
-    del doc_without_id.chunks[:]
-    del doc_without_id.matches[:]
-    return blake2b(doc_without_id.SerializeToString(), digest_size=_digest_size).hexdigest()
-
-
-def new_doc_id(doc: 'DocumentProto') -> str:
-    """ Generate a new hexdigest based on the content of the document.
-
-    .. note::
-        Always use it AFTER you fill in the content of the document
-
-    :param doc: a non-empty document
-    :return: the hexdigest based on :meth:`blake2b`
-    """
-    global _warned_deprecation
-    if not _warned_deprecation:
-        default_logger.warning('This function name is deprecated and will be renamed to `get_content_hash` latest with Jina 1.0.0. Please already use the updated name.')
-        _warned_deprecation = True
-    return get_content_hash(doc)
 
 
 def int2bytes(value: int) -> bytes:
@@ -133,7 +98,7 @@ class UniqueId(str):
         This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
         such as ranker and Numpyindexer
         """
-        # Deprecated. Please use `int(doc_id)` instead.
+        warnings.warn('Please use `int(doc_id)` instead.', DeprecationWarning)
         return id2int(self)
 
     def __bytes__(self):
