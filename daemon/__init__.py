@@ -5,14 +5,13 @@ from collections import namedtuple
 
 import pkg_resources
 from fastapi import FastAPI
-from uvicorn import Config, Server
-
 from jina.logging import JinaLogger
+from uvicorn import Config, Server
 
 daemon_logger = JinaLogger(context='👻 JINAD')
 
 
-def get_app():
+def _get_app():
     from .api.endpoints import common_router, flow, pod, pea, logs
     from .config import jinad_config, fastapi_config, server_config, openapitags_config
 
@@ -52,13 +51,13 @@ def get_app():
 
 
 def write_openapi_schema(filename='schema.json'):
-    app = get_app()
+    app = _get_app()
     schema = app.openapi()
     with open(filename, 'w') as f:
         json.dump(schema, f)
 
 
-def uvicorn_serve(app: 'FastAPI'):
+def _start_uvicorn(app: 'FastAPI'):
     from .config import server_config
     config = Config(app=app,
                     host=server_config.HOST,
@@ -70,12 +69,12 @@ def uvicorn_serve(app: 'FastAPI'):
     daemon_logger.info('bye!')
 
 
-def start_fluentd():
+def _start_fluentd():
     daemon_logger.info('starting fluentd')
     cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
     subprocess.Popen(['fluentd', '-c', cfg])
 
 
 def main():
-    threading.Thread(target=start_fluentd).start()
-    uvicorn_serve(app=get_app())
+    threading.Thread(target=_start_fluentd).start()
+    _start_uvicorn(app=_get_app())
