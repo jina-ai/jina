@@ -24,12 +24,11 @@ jobs:
       - run: |
           echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-          pip install .  --no-cache-dir
-      - run: |
+          pip install .[daemon] --no-cache-dir
           cd schema
           jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" latest.yml --json-path "${{env.JINA_VERSION}}.json" latest.json latest
           mkdir -p jinad && cd jinad
-          python -c "from daemon.main import _write_openapi_schema; _write_openapi_schema()"
+          python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           cd -
       - name: redoc-cli-jinad
         uses: seeebiii/redoc-cli-github-action@v10
