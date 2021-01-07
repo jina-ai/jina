@@ -133,6 +133,7 @@ To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are u
 Let's create some random data and index it:
 
 ```python
+import numpy 
 from jina import Document
 
 with Flow().add() as f:
