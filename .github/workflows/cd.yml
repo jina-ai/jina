@@ -39,7 +39,7 @@ jobs:
         with:
           python-version: 3.7
       - run: |
-          pip install .  --no-cache-dir
+          pip install .[daemon] --no-cache-dir
           jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
           echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-devel" >> $GITHUB_ENV
           pip install css-html-js-minify
@@ -49,6 +49,17 @@ jobs:
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
           jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" devel.yml --json-path "${{env.JINA_VERSION}}.json" devel.json devel
+          mkdir -p jinad && cd jinad
+          python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
+          cd -
+      - name: redoc-cli-jinad
+        uses: seeebiii/redoc-cli-github-action@v10
+        with:
+          args: 'bundle schema/jinad/schema.json -o jinad.html'
+      - name: push-to-api-repo
+        run: |
+          cp jinad.html schema/jinad/${{env.JINA_VERSION}}-devel.html
+          cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
@@ -70,18 +81,19 @@ jobs:
   update-docker:
     needs: update-doc
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - tag_prefix: ""
+            build_option: "--target jina_base"
+          - tag_prefix: "daemon-"
+            build_option: "--target jina_daemon"
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true  # this job build devel image, devel image includes hub submodule
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v1
-        with:
-          buildx-version: latest
       - name: Set envs and versions
         run: |
-          echo ${{ steps.buildx.outputs.platforms }}
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
           echo "INSTALL_DEV=true" >> $GITHUB_ENV
@@ -94,7 +106,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
-          tags: "devel, ${{env.JINA_VERSION}}"
+          buildoptions: ${{ matrix.build_option }}
+          tags: "${{ matrix.tag_prefix }}latest, ${{ matrix.tag_prefix }}${{env.JINA_VERSION}}, ${{ matrix.tag_prefix }}${{env.JINA_MINOR_VERSION}}"
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -104,7 +117,8 @@ jobs:
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
-          tags: "devel, ${{env.JINA_VERSION}}"
+          buildoptions: ${{ matrix.build_option }}
+          tags: "${{ matrix.tag_prefix }}latest, ${{ matrix.tag_prefix }}${{env.JINA_VERSION}}, ${{ matrix.tag_prefix }}${{env.JINA_MINOR_VERSION}}"
 
   unit-test:
     needs: update-docker

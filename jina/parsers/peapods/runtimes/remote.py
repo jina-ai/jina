@@ -9,10 +9,10 @@ def mixin_remote_parser(parser):
     gp.add_argument('--host', type=str, default=__default_host__,
                     help=f'host address of the runtime, by default it is {__default_host__}.')
 
-    gp.add_argument('--port-expose', '--port-grpc', '--port-rest',
+    gp.add_argument('--port-expose',
                     type=int,
                     default=random_port(),
-                    help='host port of the gateway, "port-grpc" alias will be removed in future versions')
+                    help='host port exposed to the public')
 
 
 def mixin_grpc_parser(parser=None):
