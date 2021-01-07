@@ -88,7 +88,7 @@ def start_sse_logger(log_config: Dict,
     def get_podargs():
         """Get the default args of a pod"""
 
-        from ..parser import set_pod_parser
+        from ..parsers import set_pod_parser
         from argparse import _StoreAction, _StoreTrueAction
         port_attr = ('help', 'choices', 'default')
         d = {}

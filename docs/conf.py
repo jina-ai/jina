@@ -34,8 +34,14 @@ pygments_style = 'rainbow_dash'
 html_theme = 'sphinx_rtd_theme'
 
 base_url = '/'
-version_choices = [('', 'latest'),
-                   ('master', 'master')]
+version_choices = [('master', 'master')]
+with open('versions') as fp:
+    s = [(f'v{v.strip()}', v.strip()) for v in fp if (v.strip() and not v.startswith('#'))]
+    if s:
+        s.reverse()
+version_choices.extend(s)
+
+# a list of tuple of (relative_url, version_tag)
 version_choices = [(base_url + v[0], v[1]) for v in version_choices]
 
 html_theme_options = {
@@ -78,6 +84,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode',
+    'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
     'sphinx_rtd_theme',
@@ -111,7 +118,18 @@ autodoc_mock_imports = ['argparse', 'numpy', 'np', 'tensorflow', 'torch', 'scipy
 autoclass_content = 'both'
 set_type_checking_flag = False
 html_last_updated_fmt = ''
-
+nitpicky = True
+nitpick_ignore = [('py:class', 'type')]
+linkcheck_ignore = [
+    # Avoid link check on local uri
+    "http://0.0.0.0:*",
+    # Avoid errors due to GitHub rate limit
+    # https://github.com/sphinx-doc/sphinx/issues/7388
+    "https://github.com/jina-ai/jina/commit/*",
+]
+linkcheck_timeout = 20
+linkcheck_retries = 2
+linkcheck_anchors = False
 
 def setup(app):
     from sphinx.domains.python import PyField

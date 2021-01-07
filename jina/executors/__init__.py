@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import re
 import subprocess
 import tempfile
 from datetime import datetime
@@ -14,13 +13,13 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import expand_env_var, typename, get_random_identity
-from ..jaml import JAMLCompatible, JAML, subvar_regex
+from ..helper import typename, get_random_identity
+from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
 
 if False:
-    from ..peapods.peas import BasePea
+    from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..drivers import BaseDriver
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
@@ -58,7 +57,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
     @staticmethod
     def register_class(cls):
-        update_funcs = ['train', 'add']
+        update_funcs = ['train', 'add', 'delete', 'update']
         train_funcs = ['train']
         aggregate_funcs = ['evaluate']
 
@@ -98,7 +97,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         with:
             awesomeness: 5
 
-    To use an executor in a :class:`jina.peapods.pea.BasePea` or :class:`jina.peapods.pod.BasePod`,
+    To use an executor in a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`,
     a proper :class:`jina.drivers.Driver` is required. This is because the
     executor is *NOT* protobuf-aware and has no access to the key-values in the protobuf message.
 
@@ -113,7 +112,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id']
+    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id', 'delete', 'update']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -198,18 +197,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if unresolved_attr:
             _tmp = vars(self)
             _tmp['metas'] = _metas
-            new_metas = JAML.expand_dict(_tmp)['metas']
+            new_metas = JAML.expand_dict(_tmp, context=_ref_desolve_map)['metas']
 
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
                 if not hasattr(self, k):
-                    if isinstance(v, str) and subvar_regex.findall(v):
-                        v = expand_env_var(v.format(root=_ref_desolve_map, this=_ref_desolve_map))
                     if isinstance(v, str):
-                        if not subvar_regex.findall(v):
+                        if not (subvar_regex.findall(v) or internal_var_regex.findall(v)):
                             setattr(self, k, v)
                         else:
-                            raise ValueError(f'{k}={v} is not expandable or badly referred')
+                            raise ValueError(f'{k}={v} is not substitutable or badly referred')
                     else:
                         setattr(self, k, v)
 
@@ -408,18 +405,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def attach(self, pea: 'BasePea', *args, **kwargs):
-        """Attach this executor to a :class:`jina.peapods.pea.BasePea`.
+    def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
+        """Attach this executor to a :class:`jina.peapods.runtime.BasePea`.
 
-        This is called inside the initializing of a :class:`jina.peapods.pea.BasePea`.
+        This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
         """
         for v in self._drivers.values():
             for d in v:
-                d.attach(executor=self, pea=pea, *args, **kwargs)
+                d.attach(executor=self, runtime=runtime, *args, **kwargs)
 
-        # replacing the logger to pea's logger
-        if pea and isinstance(getattr(pea, 'logger', None), JinaLogger):
-            self.logger = pea.logger
+        # replacing the logger to runtime's logger
+        if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
+            self.logger = runtime.logger
 
     def __call__(self, req_type, *args, **kwargs):
         if req_type in self._drivers:

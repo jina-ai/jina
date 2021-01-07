@@ -9,6 +9,13 @@ from jina.executors.crafters import BaseCrafter
 from jina.types.ndarray.generic import NdArray
 
 
+@pytest.fixture(scope='function')
+def docs():
+    doc1 = Document(content='valid')
+    doc2 = Document(content='invalid')
+    return [doc1, doc2]
+
+
 class MockCrafter(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,17 +38,10 @@ class SimpleCraftDriver(CraftDriver):
         return self._exec_fn
 
 
-def create_documents_to_craft():
-    doc1 = Document(content='valid')
-    doc2 = Document(content='invalid')
-    return [doc1, doc2]
-
-
-def test_craft_driver():
-    docs = create_documents_to_craft()
+def test_craft_driver(docs):
     driver = SimpleCraftDriver()
     executor = MockCrafter()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
     driver._apply_all(docs[:1])
     np.testing.assert_equal(NdArray(docs[0].blob).value, np.array([0.0, 0.0, 0.0]))
     assert docs[0].weight == 10

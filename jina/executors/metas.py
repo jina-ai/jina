@@ -68,6 +68,44 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         using :func:`BaseExecutor.load_config` from a YAML file. If a relative path is given then the root path is set to
         the path of the current YAML file.
 
+        Example of ``py_module`` usage:
+
+        1. This is a valid structure and it is RECOMMENDED:
+            - "my_cust_module" is a python module
+            - all core logic of your customized executor goes to ``__init__.py``
+            - to import ``foo.py``, you can use relative import, e.g. ``from .foo import bar``
+            - ``helper.py`` needs to be put BEFORE `__init__.py` in YAML ``py_modules``
+
+        This is also the structure given by ``jina hub new`` CLI.
+
+            .. highlight:: text
+            .. code-block:: text
+
+                 my_cust_module
+                   |- __init__.py
+                   |- helper.py
+                   |- config.yml
+                        |- py_modules
+                               |- helper.py
+                               |- __init__.py
+
+        2. This is a valid structure but not recommended:
+            - "my_cust_module" is not a python module (lack of __init__.py under the root)
+            - to import ``foo.py``, you must to use ``from jinahub.foo import bar``
+            - ``jinahub`` is a common namespace for all plugin-modules, not changeable.
+            - ``helper.py`` needs to be put BEFORE `my_cust.py` in YAML ``py_modules``
+
+            .. highlight:: text
+            .. code-block:: text
+
+                 my_cust_module
+                   |- my_cust.py
+                   |- helper.py
+                   |- config.yml
+                        |- py_modules
+                               |- helper.py
+                               |- my_cust.py
+
         :type: str/List[str]
         :default: ``None``
 
@@ -76,7 +114,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         the integer index used for distinguish each parallel pea of this executor, useful in :attr:`pea_workspace`
 
         :type: int
-        :default: ``'{root.metas.pea_id}'``
+        :default: ``'${{root.metas.pea_id}}'``
 
     .. confval:: separated_workspace
 
@@ -84,7 +122,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         workspace specified in :attr:`pea_workspace`
 
         :type: bool
-        :default: ``'{root.metas.separated_workspace}'``
+        :default: ``'${{root.metas.separated_workspace}}'``
         
     .. confval:: pea_workspace
 
@@ -92,7 +130,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         related to this parallel pea will be conducted under this workspace. It is often set as the sub-directory of :attr:`workspace`.
 
         :type: str
-        :default: ``'{root.metas.workspace}/{root.metas.name}-{root.metas.pea_id}'``
+        :default: ``'${{root.metas.workspace}}/${{root.metas.name}}-${{root.metas.pea_id}}'``
 
     .. confval:: read_only
 

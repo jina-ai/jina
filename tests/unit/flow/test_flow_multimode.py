@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 from typing import List, Dict
 
 import numpy as np
@@ -11,9 +10,7 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.document.uid import UniqueId
 
-# import DocumentProto
-
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockSegmenter(BaseSegmenter):
@@ -57,10 +54,10 @@ def test_flow_with_modalities(tmpdir):
         return [doc1, doc2, doc3]
 
     flow = Flow().add(name='crafter', uses='!MockSegmenter'). \
-        add(name='encoder1', uses=str(cur_dir / 'yaml' / 'mockencoder-mode1.yml')). \
-        add(name='indexer1', uses=str(cur_dir / 'yaml' / 'numpy-indexer-1.yml'), needs=['encoder1']). \
-        add(name='encoder2', uses=str(cur_dir / 'yaml' / 'mockencoder-mode2.yml'), needs=['crafter']). \
-        add(name='indexer2', uses=str(cur_dir / 'yaml' / 'numpy-indexer-2.yml')). \
+        add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
+        add(name='indexer1', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'), needs=['encoder1']). \
+        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
+        add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml')). \
         join(['indexer1', 'indexer2'])
 
     with flow:

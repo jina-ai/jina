@@ -2,16 +2,12 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
-import time
 from argparse import Namespace
 from contextlib import ExitStack
-from threading import Thread
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Set
 
 from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
-from .. import Runtime
 from ..peas import BasePea
-from ..peas.headtail import HeadPea, TailPea
 from ...enums import *
 
 
@@ -20,19 +16,33 @@ class BasePod(ExitStack):
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict]):
+    def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
         """
 
         :param args: arguments parsed from the CLI
         """
         super().__init__()
-        self.runtimes = []
+        self.args = args
+        self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+
+        self.peas = []  # type: List['BasePea']
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self._args = args
-        self.peas_args = self._parse_args(args)
+
+        if isinstance(args, Dict):
+            # This is used when a Pod is created in a remote context, where peas & their connections are already given.
+            self.peas_args = args
+        else:
+            self.peas_args = self._parse_args(args)
+
+        for a in self.all_args:
+            self._set_conditional_args(a)
+
+    @property
+    def role(self) -> 'PodRoleType':
+        return self.args.pod_role
 
     @property
     def is_singleton(self) -> bool:
@@ -40,22 +50,9 @@ class BasePod(ExitStack):
         return not (self.is_head_router or self.is_tail_router)
 
     @property
-    def is_idle(self) -> bool:
-        """A Pod is idle when all its peas are idle, see also :attr:`jina.peapods.pea.Pea.is_idle`.
-        """
-        return all(runtime.is_idle for runtime in self.runtimes if runtime.is_ready_event.is_set())
-
-    def close_if_idle(self):
-        """Check every second if the pod is in idle, if yes, then close the pod"""
-        while True:
-            if self.is_idle:
-                self.close()
-            time.sleep(1)
-
-    @property
     def name(self) -> str:
         """The name of this :class:`BasePod`. """
-        return self.first_pea_args.name
+        return self.args.name
 
     @property
     def port_expose(self) -> int:
@@ -176,37 +173,17 @@ class BasePod(ExitStack):
     @property
     def all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod. """
-        return self.peas_args['peas'] + (
-            [self.peas_args['head']] if self.peas_args['head'] else []) + (
-                   [self.peas_args['tail']] if self.peas_args['tail'] else [])
+        return ([self.peas_args['head']] if self.peas_args['head'] else []) + \
+               ([self.peas_args['tail']] if self.peas_args['tail'] else []) + \
+               self.peas_args['peas']
 
     @property
     def num_peas(self) -> int:
         """Get the number of running :class:`BasePea`"""
-        return len(self.runtimes)
+        return len(self.peas)
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
-
-    def set_runtime(self, runtime: str):
-        """Set the parallel runtime of this BasePod.
-
-        :param runtime: possible values: process, thread
-        """
-        for s in self.all_args:
-            s.runtime = runtime
-            # for thread and process backend which runs locally, host_in and host_out should not be set
-            # s.host_in = __default_host__
-            # s.host_out = __default_host__
-
-    def start_sentinels(self) -> None:
-        self.sentinel_threads = []
-        if isinstance(self._args, argparse.Namespace) and getattr(self._args, 'shutdown_idle', False):
-            self.sentinel_threads.append(Thread(target=self.close_if_idle,
-                                                name='sentinel-shutdown-idle',
-                                                daemon=True))
-        for t in self.sentinel_threads:
-            t.start()
 
     def start(self) -> 'BasePod':
         """Start to run all Peas in this BasePod.
@@ -217,53 +194,18 @@ class BasePod(ExitStack):
         which is inherited from :class:`jina.peapods.peas.BasePea`
         """
         # start head and tail
-        if self.peas_args['head']:
-            p = Runtime(self.peas_args['head'], pea_cls=HeadPea, allow_remote=False)
-            self.runtimes.append(p)
-            self.enter_context(p)
 
-        if self.peas_args['tail']:
-            p = Runtime(self.peas_args['tail'], pea_cls=TailPea, allow_remote=False)
-            self.runtimes.append(p)
-            self.enter_context(p)
+        for _args in self.all_args:
+            self._enter_pea(BasePea(_args))
 
-        # start real peas and accumulate the storage id
-        if len(self.peas_args['peas']) > 1:
-            start_rep_id = 1
-            role = PeaRoleType.PARALLEL
-        else:
-            start_rep_id = 0
-            role = PeaRoleType.SINGLETON
-        for idx, _args in enumerate(self.peas_args['peas'], start=start_rep_id):
-            _args.pea_id = idx
-            _args.role = role
-            p = Runtime(_args, pea_cls=BasePea, allow_remote=False)
-            self.runtimes.append(p)
-            self.enter_context(p)
-
-        self.start_sentinels()
         return self
 
-    @property
-    def is_shutdown(self) -> bool:
-        return all(not runtime.is_ready_event.is_set() for runtime in self.runtimes)
+    def _enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
-
-    @property
-    def status(self) -> List:
-        """The status of a BasePod is the list of status of all its Peas """
-        return [runtime.status for runtime in self.runtimes]
-
-    def is_ready(self) -> bool:
-        """Wait till the ready signal of this BasePod.
-
-        The pod is ready only when all the contained Peas returns is_ready_event
-        """
-        for runtime in self.runtimes:
-            runtime.is_ready_event.wait()
-        return True
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -271,9 +213,50 @@ class BasePod(ExitStack):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for runtime in self.runtimes:
-                runtime.join()
+            for p in self.peas:
+                p.join()
         except KeyboardInterrupt:
             pass
         finally:
-            self.runtimes.clear()
+            self.peas.clear()
+
+    @staticmethod
+    def _set_conditional_args(args):
+        if args.pod_role == PodRoleType.GATEWAY:
+            if args.restful:
+                args.runtime_cls = 'RESTRuntime'
+            else:
+                args.runtime_cls = 'GRPCRuntime'
+
+    def connect_to_tail_of(self, pod: 'BasePod'):
+        """Eliminate the head node by connecting prev_args node directly to peas """
+        if self.args.parallel > 1 and self.is_head_router:
+            # keep the port_in and socket_in of prev_args
+            # only reset its output
+            pod.tail_args = _copy_to_head_args(pod.tail_args, self.args.polling.is_push, as_router=False)
+            # update peas to receive from it
+            self.peas_args['peas'] = _set_peas_args(self.args, pod.tail_args, self.tail_args)
+            # remove the head node
+            self.peas_args['head'] = None
+            # head is no longer a router anymore
+            self.is_head_router = False
+            self.deducted_head = pod.tail_args
+        else:
+            raise ValueError('the current pod has no head router, deducting the head is confusing')
+
+    def connect_to_head_of(self, pod: 'BasePod'):
+        """Eliminate the tail node by connecting next_args node directly to peas """
+        if self.args.parallel > 1 and self.is_tail_router:
+            # keep the port_out and socket_out of next_arts
+            # only reset its input
+            pod.head_args = _copy_to_tail_args(pod.head_args,
+                                               as_router=False)
+            # update peas to receive from it
+            self.peas_args['peas'] = _set_peas_args(self.args, self.head_args, pod.head_args)
+            # remove the tail node
+            self.peas_args['tail'] = None
+            # tail is no longer a router anymore
+            self.is_tail_router = False
+            self.deducted_tail = pod.head_args
+        else:
+            raise ValueError('the current pod has no tail router, deducting the tail is confusing')

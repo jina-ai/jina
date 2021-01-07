@@ -1,20 +1,19 @@
 import os
 import time
 import multiprocessing as mp
-from pathlib import Path
 
 import pytest
 import numpy as np
 
 from jina.flow import Flow
 from jina.helper import random_port
-from jina.peapods.pods.gateway import GatewayPod
 from jina.enums import FlowOptimizeLevel
-from jina.parser import set_gateway_parser
+from jina.parsers import set_gateway_parser
 from jina.executors.indexers.vector import NumpyIndexer
+from jina.peapods import Pod
 from tests import random_docs
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def get_result(resp):
@@ -83,7 +82,7 @@ def test_index_remote(test_workspace):
     t.start()
 
     f = Flow().add(
-        uses=str(cur_dir / 'yaml/test-index-remote.yml'),
+        uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
         parallel=3,
         separated_workspace=True,
         host='0.0.0.0',
@@ -95,10 +94,10 @@ def test_index_remote(test_workspace):
 
     time.sleep(3)
     for j in range(3):
-        bin_path = Path(test_workspace) / f'test2-{j + 1}/test2.bin'
-        index_filename_path = Path(test_workspace) / f'test2-{j + 1}/tmp2'
-        assert bin_path.exists()
-        assert index_filename_path.exists()
+        bin_path = os.path.join(test_workspace, f'test2-{j + 1}/test2.bin')
+        index_filename_path = os.path.join(test_workspace, f'test2-{j + 1}/tmp2')
+        assert os.path.exists(bin_path)
+        assert os.path.exists(index_filename_path)
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
@@ -106,7 +105,7 @@ def test_index_remote_rpi(test_workspace):
     f_args = set_gateway_parser().parse_args(['--host', '0.0.0.0'])
 
     def start_gateway():
-        with GatewayPod(f_args):
+        with Pod(f_args):
             time.sleep(3)
 
     t = mp.Process(target=start_gateway)
@@ -114,7 +113,7 @@ def test_index_remote_rpi(test_workspace):
     t.start()
 
     f = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(
-        uses=str(cur_dir / 'yaml/test-index-remote.yml'),
+        uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
         parallel=3,
         separated_workspace=True,
         host='0.0.0.0',

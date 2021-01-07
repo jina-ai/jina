@@ -35,8 +35,6 @@
     <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
   {%- endfor %}
 
-<!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">-->
-
 
   {# FAVICON #}
   {% if favicon %}
@@ -121,9 +119,9 @@
           {% block sidebartitle %}
 
           {% if logo and theme_logo_only %}
-            <a href="{{ pathto(master_doc) }}">
+            <a href="https://docs.jina.ai">
           {% else %}
-            <a href="{{ pathto(master_doc) }}" class="icon icon-home" alt="{{ _("Documentation Home") }}"> {{ project }}
+            <a href="https://docs.jina.ai" class="icon icon-home" alt="{{ _("Documentation Home") }}"> {{ project }}
           {% endif %}
 
           {% if logo %}
@@ -141,12 +139,12 @@
             {% endif %}
             {% if nav_version %}
 
-          <div class="dropdown">
-            Version: <button class="dropbtn version">{{ nav_version }}</button>
+          <div class="dropdown version">
+            <button class="dropbtn version">{{ nav_version }}</button>
             <div class="dropdown-content">
               {% for version in theme_version_switcher %}
-                        <a class="dropdown-item" href="{{ version[0] }}">{{ version[1] }}</a>
-                        {% endfor %}
+              <a class="dropdown-item" href="{{ version[0] }}">{{ version[1] }}</a>
+              {% endfor %}
             </div>
           </div>
             {% endif %}

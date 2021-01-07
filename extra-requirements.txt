@@ -19,8 +19,8 @@
 scipy>=1.4.1:               index, numeric, cicd
 flask:                      devel, cicd, http, sse
 flask_cors:                 devel, cicd, http, sse
-fastapi:                    devel, cicd, http
-uvicorn>=0.12.1:            devel, cicd, http
+fastapi:                    devel, cicd, http, test
+uvicorn>=0.12.1:            devel, cicd, http, test
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, test
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, test
@@ -66,5 +66,5 @@ mock:                       test
 requests:                   http
 prettytable:                devel, test
 sseclient-py:               test
-websockets:                 http, devel
 optuna:                     test, optimizer
+websockets:                 http, devel, test

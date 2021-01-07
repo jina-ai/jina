@@ -5,13 +5,14 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List, Optional
+from typing import Callable, Any, Union, Iterator, List, Optional, Dict
 
 import numpy as np
 
 from .metas import get_default_metas
 from ..helper import batch_iterator, typename, convert_tuple_to_list
 from ..logging import default_logger
+from itertools import islice
 
 
 def as_aggregate_method(func: Callable) -> Callable:
@@ -145,6 +146,12 @@ def store_init_kwargs(func: Callable) -> Callable:
 
     return arg_wrapper
 
+def _get_slice(data: Union[Iterator[Any], List[Any], np.ndarray], total_size: int) -> Union[Iterator[Any], List[Any], np.ndarray]:
+    if isinstance(data, Dict):
+        data = islice(data.items(), total_size)
+    else:
+        data = data[:total_size]
+    return data
 
 def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> int:
     if isinstance(data, np.ndarray):
@@ -166,7 +173,7 @@ def _get_total_size(full_data_size, batch_size, num_batch):
     return total_size
 
 
-def _merge_results_after_batching(final_result, merge_over_axis):
+def _merge_results_after_batching(final_result, merge_over_axis: int = 0):
     if len(final_result) == 1:
         # the only result of one batch
         return final_result[0]
@@ -322,6 +329,14 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
                     embed0 = _encode_modality(batch_modality0)
                     batch_modality1 = batches[1]
                     embed1 = _encode_modality(batch_modality0)
+
+            class MemoryHungryRanker:
+                
+                @batching_multi_input(batch_size = 64, slice_on = 2 , num_data=2)
+                def score(
+                    self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
+                ) -> 'np.ndarray': 
+                ...       
     """
 
     def _batching(func):
@@ -344,8 +359,9 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
             full_data_size = _get_size(args[slice_on], split_over_axis)
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
-            data_iterators = [batch_iterator(args[slice_on + i][:total_size], b_size, split_over_axis) for i in
-                              range(0, num_data)]
+            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0,num_data)]
+            data_iterators = [batch_iterator(_get_slice(args[slice_on + i], total_size), b_size , split_over_axis, 
+                            yield_dict=yield_dict[i]) for i in range(0, num_data)]
 
             for batch in data_iterators[0]:
                 args[slice_on] = batch

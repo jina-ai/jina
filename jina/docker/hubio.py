@@ -12,7 +12,7 @@ from docker import DockerClient
 
 from .checker import *
 from .helper import credentials_file
-from .hubapi import _list, _register_to_mongodb, _list_local
+from .hubapi import _list, _register_to_mongodb, _list_local, _docker_auth
 from .. import __version__ as jina_version
 from ..enums import BuildTestLevel
 from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
@@ -23,7 +23,7 @@ from ..helper import colored, get_readable_size, get_now_timestamp, get_full_ver
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
-from ..parser import set_pod_parser
+from ..parsers import set_pod_parser
 from ..peapods import Pod
 
 if False:
@@ -181,7 +181,14 @@ class HubIO:
                 raise ImageAlreadyExists(f'Image with name {name} already exists. Will NOT overwrite.')
             else:
                 self.logger.debug(f'Image with name {name} does not exist. Pushing now...')
-            self._push_docker_hub(name, readme_path)
+            docker_creds = _docker_auth(logger=self.logger)
+            if docker_creds and docker_creds['docker_username'] and docker_creds['docker_password']:
+                self.logger.info(f'Fetched docker credentials successfully. Pushing now...')
+                self._push_docker_hub(name, readme_path, docker_creds['docker_username'],
+                                      docker_creds['docker_password'])
+            else:
+                self.logger.error(f'Failed to fetch docker login creds. Aborting push.')
+                return
 
             if not build_result:
                 file_path = get_summary_path(name)
@@ -203,11 +210,12 @@ class HubIO:
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
-    def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
+    def _push_docker_hub(self, name: str = None, readme_path: str = None, docker_username: str = None,
+                         docker_password: str = None) -> None:
         """ Helper push function """
         check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
-        self._docker_login()
+        self._docker_login(docker_username, docker_password)
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
             for line in self._client.images.push(name, stream=True, decode=True):
                 t.update(1)
@@ -275,12 +283,17 @@ class HubIO:
 
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
 
-    def _docker_login(self) -> None:
+    def _docker_login(self, docker_username: str = None, docker_password: str = None) -> None:
         """A wrapper of docker login """
         from docker.errors import APIError
+        login_username = docker_username
+        login_password = docker_password
         if self.args.username and self.args.password:
+            login_username = self.args.username
+            login_password = self.args.password
+        if login_username and login_password:
             try:
-                self._client.login(username=self.args.username, password=self.args.password,
+                self._client.login(username=login_username, password=login_password,
                                    registry=self.args.registry)
                 self.logger.debug(f'successfully logged in to docker hub')
             except APIError:
@@ -299,6 +312,7 @@ class HubIO:
             with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
                 try:
                     self._check_completeness()
+                    self._freeze_jina_version()
 
                     streamer = self._raw_client.build(
                         decode=True,
@@ -427,7 +441,7 @@ class HubIO:
         return result
 
     @staticmethod
-    def _test_build(image: str,
+    def _test_build(image,  # type docker image object
                     test_level: 'BuildTestLevel',
                     config_yaml_path: str,
                     timeout_ready: int,
@@ -446,7 +460,8 @@ class HubIO:
         # test uses at Pod level (no docker)
         if test_level >= BuildTestLevel.POD_NONDOCKER:
             try:
-                with Pod(set_pod_parser().parse_args(['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
+                with Pod(set_pod_parser().parse_args(
+                        ['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
                     pass
             except:
                 failed_levels.append(BuildTestLevel.POD_NONDOCKER)
@@ -455,8 +470,10 @@ class HubIO:
         if test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
             try:
-                with Pod(set_pod_parser().parse_args(['--uses', image.tags[0], '--name', p_name, '--timeout-ready', str(timeout_ready)] +
-                                                     ['--daemon'] if daemon_arg else [])):
+                with Pod(set_pod_parser().parse_args(
+                        ['--uses', f'docker://{image.tags[0]}', '--name', p_name, '--timeout-ready',
+                         str(timeout_ready)] +
+                        ['--daemon'] if daemon_arg else [])):
                     pass
                 p_names.append(p_name)
             except:
@@ -466,7 +483,8 @@ class HubIO:
         if test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
             try:
-                with Flow().add(name=random_name(), uses=image.tags[0], daemon=daemon_arg, timeout_ready=timeout_ready):
+                with Flow().add(name=random_name(), uses=f'docker://{image.tags[0]}', daemon=daemon_arg,
+                                timeout_ready=timeout_ready):
                     pass
                 p_names.append(p_name)
             except:
@@ -489,15 +507,35 @@ class HubIO:
             json.dump(summary, f)
         self.logger.debug(f'stored the summary from build to {file_path}')
 
+    def _freeze_jina_version(self) -> None:
+        import pkg_resources
+        requirements_path = get_exist_path(self.args.path, 'requirements.txt')
+        if requirements_path and os.path.exists(requirements_path):
+            new_requirements = []
+            update = False
+            with open(requirements_path, 'r') as fp:
+                requirements = pkg_resources.parse_requirements(fp)
+                for req in requirements:
+                    if 'jina' in str(req):
+                        update = True
+                        self.logger.info(f'Freezing jina version to {jina_version}')
+                        new_requirements.append(f'jina=={jina_version}')
+                    else:
+                        new_requirements.append(str(req))
+
+            if update:
+                with open(requirements_path, 'w') as fp:
+                    fp.write('\n'.join(new_requirements))
+
     def _check_completeness(self) -> Dict:
-        self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
-        self.manifest_path = get_exist_path(self.args.path, 'manifest.yml')
+        dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
+        manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
-        self.requirements_path = get_exist_path(self.args.path, 'requirements.txt')
+        requirements_path = get_exist_path(self.args.path, 'requirements.txt')
 
         yaml_glob = set(glob.glob(os.path.join(self.args.path, '*.yml')))
-        yaml_glob.difference_update({self.manifest_path, self.config_yaml_path})
+        yaml_glob.difference_update({manifest_path, self.config_yaml_path})
 
         if not self.config_yaml_path:
             self.config_yaml_path = yaml_glob.pop()
@@ -507,11 +545,11 @@ class HubIO:
         test_glob = glob.glob(os.path.join(self.args.path, 'tests/test_*.py'))
 
         completeness = {
-            'Dockerfile': self.dockerfile_path,
-            'manifest.yml': self.manifest_path,
+            'Dockerfile': dockerfile_path,
+            'manifest.yml': manifest_path,
             'config.yml': self.config_yaml_path,
             'README.md': self.readme_path,
-            'requirements.txt': self.requirements_path,
+            'requirements.txt': requirements_path,
             '*.yml': yaml_glob,
             '*.py': py_glob,
             'tests': test_glob
@@ -528,9 +566,9 @@ class HubIO:
             self.logger.critical('Dockerfile or manifest.yml is not given, can not build')
             raise FileNotFoundError('Dockerfile or manifest.yml is not given, can not build')
 
-        self.manifest = self._read_manifest(self.manifest_path)
+        self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
-        self.dockerfile_path_revised = self._get_revised_dockerfile(self.dockerfile_path, self.manifest)
+        self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
         tag_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}:{self.manifest["version"]}-{jina_version}')
         self.tag = tag_name

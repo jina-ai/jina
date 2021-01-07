@@ -657,20 +657,30 @@ input {
     display: inline-block;
 }
 
+.dropdown .version {
+    max-width: 150px;
+}
+
+.dropbtn .version {
+    padding: 0.5rem 1rem;
+}
+
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 100px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
+    border-radius: 5px;
+    width: 100%;
+    overflow: hidden;
 }
 
 /* Links inside the dropdown */
 .dropdown-content a {
     color: black;
-    padding: 10px 10px;
+    padding: 0.5rem 1rem;
     text-decoration: none;
     display: block;
 }

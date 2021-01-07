@@ -2,9 +2,9 @@ import os
 
 import numpy as np
 
+from jina import Document
 from jina.flow import Flow
 from jina.types.document.uid import UniqueId
-from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
 e1 = np.random.random([7])
@@ -14,16 +14,18 @@ e4 = np.random.random([9])
 
 
 def input_fn():
-    doc1 = DocumentProto()
-    NdArray(doc1.embedding).value = e1
-    c = doc1.chunks.add()
-    NdArray(c.embedding).value = e2
-    c.id = UniqueId(1)
-    doc2 = DocumentProto()
-    NdArray(doc2.embedding).value = e3
-    d = doc2.chunks.add()
-    d.id = UniqueId(2)
-    NdArray(d.embedding).value = e4
+    with Document() as doc1:
+        doc1.embedding = e1
+        with Document() as chunk1:
+            chunk1.embedding = e2
+            chunk1.id = UniqueId(1)
+        doc1.chunks.add(chunk1)
+    with Document() as doc2:
+        doc2.embedding = e3
+        with Document() as chunk2:
+            chunk2.embedding = e4
+            chunk2.id = UniqueId(2)
+        doc2.chunks.add(chunk2)
     return [doc1, doc2]
 
 
@@ -45,24 +47,20 @@ def test_concat_embed_driver(mocker):
         del os.environ['JINA_ARRAY_QUANT']
 
     def validate(req):
+        mock()
         assert len(req.docs) == 2
         assert NdArray(req.docs[0].embedding).value.shape == (e1.shape[0] * 2,)
         assert NdArray(req.docs[1].embedding).value.shape == (e3.shape[0] * 2,)
-        # assert NdArray(req.docs[0].chunks[0].embedding).value.shape == (e2.shape[0] * 2,)
-        # assert NdArray(req.docs[1].chunks[0].embedding).value.shape == (e4.shape[0] * 2,)
         np.testing.assert_almost_equal(NdArray(req.docs[0].embedding).value, np.concatenate([e1, e1], axis=0),
                                        decimal=4)
-        # np.testing.assert_almost_equal(NdArray(req.docs[0].chunks[0].embedding).value,
-        #                                np.concatenate([e2, e2], axis=0),
-        #                                decimal=4)
 
-    response_mock = mocker.Mock(wrap=validate)
+    mock = mocker.Mock()
     # simulate two encoders
     flow = (Flow().add(name='a')
             .add(name='b', needs='gateway')
             .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
 
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock, callback_on='body')
+        flow.index(input_fn=input_fn, on_done=validate, callback_on='body')
 
-    response_mock.assert_called()
+    mock.assert_called_once()

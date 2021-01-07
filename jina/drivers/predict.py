@@ -40,7 +40,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
         embed_vecs, docs_pts, bad_docs = docs.all_embeddings
 
         if bad_docs:
-            self.pea.logger.warning(f'these bad docs can not be added: {bad_docs}')
+            self.runtime.logger.warning(f'these bad docs can not be added: {bad_docs}')
 
         if docs_pts:
             prediction = self.exec_fn(embed_vecs)
@@ -155,7 +155,7 @@ class Prediction2DocBlobDriver(BasePredictDriver):
         embed_vecs, docs_pts, bad_docs = docs.all_embeddings
 
         if bad_docs:
-            self.pea.logger.warning(f'these bad docs can not be added: {bad_docs}')
+            self.runtime.logger.warning(f'these bad docs can not be added: {bad_docs}')
 
         if docs_pts:
             prediction = self.exec_fn(embed_vecs)

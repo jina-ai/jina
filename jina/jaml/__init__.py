@@ -91,11 +91,13 @@ class JAML:
     def load_no_tags(stream, **kwargs):
         """Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow
         """
-        safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__tag: ') for v in stream)
+        safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__cls: ') for v in stream)
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
-    def expand_dict(d: Dict, context: Dict = None, resolve_cycle_ref=True, resolve_passes: int = 3) -> Dict[str, Any]:
+    def expand_dict(d: Dict, context: Union[Dict, SimpleNamespace, None] = None,
+                    resolve_cycle_ref=True,
+                    resolve_passes: int = 3) -> Dict[str, Any]:
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
@@ -145,6 +147,7 @@ class JAML:
                                 sub_d[idx] = _sub(v)
 
         def _sub(v):
+            org_v = v
             v = expand_env_var(v)
             if not (isinstance(v, str) and subvar_regex.findall(v)):
                 return v
@@ -168,22 +171,39 @@ class JAML:
             # 3. substitute the context dict
             if context:
                 try:
-                    v = v.format_map(context)
-                except KeyError:
+                    if isinstance(context, dict):
+                        v = v.format_map(context)
+                    elif isinstance(context, SimpleNamespace):
+                        v = v.format(root=context, this=context)
+                except (KeyError, AttributeError):
                     pass
 
             # 4. make string to float/int/list/bool with best effort
             v = parse_arg(v)
+
+            if isinstance(v, str) and internal_var_regex.findall(v):
+                # replacement failed, revert back to before
+                v = org_v
+
             return v
 
         def _resolve(v, p):
             # resolve internal reference
+            org_v = v
+            v = re.sub(subvar_regex, '{\\1}', v)
             try:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
                 v = v.format(root=expand_map, this=p, ENV=env_map)
             except KeyError:
                 pass
+
+            v = parse_arg(v)
+
+            if isinstance(v, str) and internal_var_regex.findall(v):
+                # replacement failed, revert back to before
+                v = org_v
+
             return v
 
         _scan(d, expand_map)
@@ -301,7 +321,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
     @classmethod
     def load_config(cls,
-                    source: Union[str, TextIO], *,
+                    source: Union[str, TextIO, Dict], *,
                     allow_py_modules: bool = True,
                     substitute: bool = True,
                     context: Dict[str, Any] = None,
@@ -370,7 +390,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(s_path),) if s_path else None)
 
             # revert yaml's tag and load again, this time with substitution
-            revert_tag_yml = JAML.dump(no_tag_yml).replace('__tag: ', '!')
+            revert_tag_yml = JAML.dump(no_tag_yml).replace('__cls: ', '!')
 
             # load into object, no more substitute
             return JAML.load(revert_tag_yml, substitute=False)

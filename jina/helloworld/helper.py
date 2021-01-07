@@ -124,7 +124,7 @@ def download_data(targets, download_proxy=None):
     with ProgressBar(task_name='download fashion-mnist', batch_unit='') as t:
         for k, v in targets.items():
             if not os.path.exists(v['filename']):
-                urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update(1))
+                urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update_tick(.01))
             if k == 'index-labels' or k == 'query-labels':
                 v['data'] = load_labels(v['filename'])
             if k == 'index' or k == 'query':

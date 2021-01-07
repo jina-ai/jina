@@ -6,10 +6,11 @@ import pytest
 from jina import Flow, AsyncFlow
 from jina.enums import FlowOptimizeLevel
 from jina.excepts import BadFlowYAMLVersion
+from jina.executors.encoders import BaseEncoder
 from jina.flow import BaseFlow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
-from jina.parser import set_flow_parser
+from jina.parsers.flow import set_flow_parser
 from tests import rm_files
 
 cur_dir = Path(__file__).parent
@@ -77,10 +78,6 @@ def test_load_flow_from_cli():
 def test_load_flow_from_yaml():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
         a = Flow.load_config(fp)
-        with a:
-            with open(str(cur_dir.parent / 'yaml' / 'swarm-out.yml'), 'w') as fp:
-                a.to_swarm_yaml(fp)
-        rm_files([str(cur_dir.parent / 'yaml' / 'swarm-out.yml')])
 
 
 def test_flow_yaml_dump():
@@ -93,3 +90,27 @@ def test_flow_yaml_dump():
     assert f.args.logserver_config == fl.args.logserver_config
     assert f.args.optimize_level == fl.args.optimize_level
     rm_files(['test1.yml'])
+
+
+def test_flow_yaml_from_string():
+    f1 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
+    with open(str(cur_dir / 'yaml' / 'flow-v1.0-syntax.yml')) as fp:
+        str_yaml = fp.read()
+        assert isinstance(str_yaml, str)
+        f2 = Flow.load_config(str_yaml)
+        assert f1 == f2
+
+    f3 = Flow.load_config('!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]')
+    assert 'ppp0' in f3._pod_nodes.keys()
+    assert 'aaa1' in f3._pod_nodes.keys()
+    assert f3.num_pods == 2
+
+
+def test_flow_uses_from_dict():
+    class DummyEncoder(BaseEncoder):
+        pass
+
+    d1 = {'__cls': 'DummyEncoder',
+          'metas': {'name': 'dummy1'}}
+    with Flow().add(uses=d1):
+        pass

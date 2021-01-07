@@ -7,11 +7,12 @@ WORKDIR /jina/
 ADD setup.py MANIFEST.in requirements.txt extra-requirements.txt README.md ./
 ADD cli ./cli/
 ADD jina ./jina/
+ADD tests/integration/jinad/Dockerfiles/entrypoint.sh ./
 
-ARG PIP_TAG
+ARG PIP_TAG=[test]
 
+RUN chmod +x entrypoint.sh
 RUN pip install ."$PIP_TAG"
 
-# This doesn't start fluentd in the background
-# add entrypoint script if fluentd needs to be enabled for tests
-ENTRYPOINT ["jinad"]
+# This starts both jinad & fluentd in the background
+ENTRYPOINT ["bash", "-c", "./entrypoint.sh"]
