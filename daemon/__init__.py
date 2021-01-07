@@ -5,8 +5,10 @@ from collections import namedtuple
 
 import pkg_resources
 from fastapi import FastAPI
-from jina.logging import JinaLogger
 from uvicorn import Config, Server
+
+from jina.logging import JinaLogger
+from .parser import get_main_parser
 
 daemon_logger = JinaLogger(context='👻 JINAD')
 
@@ -75,6 +77,14 @@ def _start_fluentd():
     subprocess.Popen(['fluentd', '-c', cfg])
 
 
+def _parse_arg():
+    from .config import server_config
+    args = get_main_parser().parse_args()
+    server_config.HOST = args.host
+    server_config.PORT = args.port_expose
+
+
 def main():
+    _parse_arg()
     threading.Thread(target=_start_fluentd).start()
     _start_uvicorn(app=_get_app())
