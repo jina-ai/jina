@@ -8,11 +8,10 @@ from fastapi import APIRouter, WebSocket
 from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 
-from jina.logging import JinaLogger
+from ... import daemon_logger
 from ...config import log_config
 from ...excepts import NoSuchFileException
 
-logger = JinaLogger(context='👻 LOGS')
 router = APIRouter()
 
 
@@ -29,7 +28,7 @@ async def tail(file_handler, line_num_from=0, timeout=5):
             last_log_time = time.time()
             await asyncio.sleep(0.01)
     else:
-        logger.debug(f'File tailer timed-out!')
+        daemon_logger.debug(f'File tailer timed-out!')
         yield None, None
 
 
@@ -83,7 +82,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
         self.active_clients.append(websocket)
         self.client_details = f'{websocket.client.host}:{websocket.client.port}'
-        logger.info(f'Client {self.client_details} got connected to stream Fluentd logs!')
+        daemon_logger.info(f'Client {self.client_details} got connected to stream Fluentd logs!')
 
     async def on_receive(self, websocket: WebSocket, data: Any) -> None:
         if not Path(self.filepath).is_file():
@@ -97,13 +96,13 @@ class LogStreamingEndpoint(WebSocketEndpoint):
                     await websocket.send_json({"code": self.TIMEOUT_ERROR_CODE})
                     break
                 logs_to_be_sent[line_number] = line
-                logger.info(f'Sending logs {logs_to_be_sent}')
+                daemon_logger.info(f'Sending logs {logs_to_be_sent}')
                 await websocket.send_json(logs_to_be_sent)
                 logs_to_be_sent = {}
 
     async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
         self.active_clients.remove(websocket)
-        logger.info(f'Client {self.client_details} got disconnected!')
+        daemon_logger.info(f'Client {self.client_details} got disconnected!')
 
 
 router.add_websocket_route(path='/logstream/{log_id}',

@@ -63,7 +63,7 @@ pytest-repeat:              test
 pytest-asyncio:             test
 flaky:                      test
 mock:                       test
-requests:                   http, daemon, test
+requests:                   http, devel, test, daemon
 prettytable:                devel, test
 sseclient-py:               test
 websockets:                 http, devel, test, daemon

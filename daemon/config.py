@@ -1,6 +1,8 @@
 from pydantic import BaseSettings, validator
 
-from . import __version__, __prefix__
+from jina import __version__
+
+__prefix__ = 'v1'
 
 
 class BaseConfig(BaseSettings):

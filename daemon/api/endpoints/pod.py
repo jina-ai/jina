@@ -4,13 +4,12 @@ from typing import List, Union
 from fastapi import status, APIRouter, File, UploadFile
 from fastapi.exceptions import HTTPException
 
-from jina.logging import JinaLogger
+from ... import daemon_logger
 from ...excepts import PodStartException
 from ...helper import pod_to_namespace, create_meta_files_from_upload
 from ...models import SinglePodModel, ParallelPodModel
 from ...store import pod_store
 
-logger = JinaLogger(context='👻 PODAPI')
 router = APIRouter()
 
 
@@ -60,7 +59,7 @@ async def _create(
             raise HTTPException(status_code=404,
                                 detail=f'Pod couldn\'t get started: {repr(e)}')
         except Exception as e:
-            logger.error(f'Got an error while creating a pod {repr(e)}')
+            daemon_logger.error(f'Got an error while creating a pod {repr(e)}')
             raise HTTPException(status_code=404,
                                 detail=f'Something went wrong')
         return {

@@ -1,17 +1,16 @@
 from fastapi import status, APIRouter
 
 from jina import __version__ as jina_version
-from jina.logging import JinaLogger
+from ... import daemon_logger
 from ...config import server_config
 
-logger = JinaLogger(context='👻 JINAD')
 common_router = APIRouter()
 
 
 @common_router.on_event('startup')
 async def startup():
-    logger.success(f'Uvicorn + FastAPI running on {server_config.HOST}:{server_config.PORT}')
-    logger.success('Welcome to Jina daemon - the remote manager for jina!')
+    daemon_logger.success('Welcome to Jina daemon - the manager of distributed Jina')
+    daemon_logger.success(f'Uvicorn + FastAPI running on {server_config.HOST}:{server_config.PORT}')
 
 
 @common_router.get(

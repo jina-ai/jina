@@ -7,13 +7,11 @@ from fastapi.exceptions import HTTPException
 
 from jina.clients import Client
 from jina.helper import ArgNamespace
-from jina.logging import JinaLogger
 from jina.parsers import set_client_cli_parser
 from ...excepts import FlowYamlParseException, FlowCreationException, FlowStartException
 from ...models import SinglePodModel
 from ...store import flow_store
 
-logger = JinaLogger(context='👻 FLOWAPI')
 router = APIRouter()
 
 

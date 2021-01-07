@@ -4,13 +4,12 @@ from typing import List
 from fastapi import status, APIRouter, File, UploadFile
 from fastapi.exceptions import HTTPException
 
-from jina.logging import JinaLogger
+from ... import daemon_logger
 from ...excepts import PeaStartException
 from ...helper import pea_to_namespace, create_meta_files_from_upload
 from ...models import PeaModel
 from ...store import pea_store
 
-logger = JinaLogger(context='👻 PEAAPI')
 router = APIRouter()
 
 
@@ -59,7 +58,7 @@ async def _create(
             raise HTTPException(status_code=404,
                                 detail=f'Pea couldn\'t get started:  {repr(e)}')
         except Exception as e:
-            logger.error(f'Got an error while creating a pea {repr(e)}')
+            daemon_logger.error(f'Got an error while creating a pea {repr(e)}')
             raise HTTPException(status_code=404,
                                 detail=f'Something went wrong')
     return {
