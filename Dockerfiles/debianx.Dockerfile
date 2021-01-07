@@ -1,3 +1,6 @@
+# To build jina not jinad please use
+# docker build --target jina_base
+
 ARG PY_VERSION=3.7
 ARG VCS_REF
 ARG BUILD_DATE
@@ -45,6 +48,12 @@ ENTRYPOINT ["jina"]
 
 FROM jina_base AS jina_daemon
 
-RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && gem install fluentd --no-doc
+COPY . /jina/
+
+RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
+    gem install fluentd --no-doc && \
+    cd /jina && \
+    pip install .[daemon] --compile && \
+    rm -rf /tmp/* && rm -rf /jina
 
 ENTRYPOINT ["jinad"]
