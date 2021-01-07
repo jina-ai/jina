@@ -1,4 +1,8 @@
-set -e
+set -ex
+
+docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
+docker build -f tests/integration/hubapp_hubpods/Dockerfile tests/integration/hubapp_hubpods/ -t jinaai/test_hubapp_hubpods
 
 if [ "${PWD##*/}" != "jina" ]
   then
@@ -8,7 +12,7 @@ fi
 
 CONTAINER_ID=$(docker run -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/test_hubapp_hubpods)
 
-sleep 5
+sleep 10
 
 RESPONSE=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/api/index')
 
