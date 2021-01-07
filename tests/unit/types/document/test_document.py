@@ -271,3 +271,50 @@ def test_content_hash_not_dependent_on_chunks_or_matches():
         doc4.matches.append(m)
     doc4.update_content_hash()
     assert doc1.content_hash == doc4.content_hash
+
+
+def test_include_scalar():
+    d1 = Document()
+    d1.text = 'hello'
+    dd1 = Document()
+    d1.chunks.append(dd1)
+    d1.update_content_hash(include_fields=('text',), exclude_fields=None)
+
+    d2 = Document()
+    d2.text = 'hello'
+    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
+
+    assert d1.content_hash == d2.content_hash
+
+    # change text should result in diff hash
+    d2.text = 'world'
+    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
+    assert d1.content_hash != d2.content_hash
+
+
+def test_include_repeated_fields():
+    d1 = Document()
+    dd1 = Document()
+    d1.chunks.append(dd1)
+    d1.chunks[0].update_content_hash(exclude_fields=('parent_id', 'id', 'content_hash'))
+    d1.chunks[0].parent_id = 0
+    d1.update_content_hash(include_fields=('chunks',), exclude_fields=None)
+
+    d2 = Document()
+    d2.chunks.append(dd1)
+    d2.chunks[0].update_content_hash(exclude_fields=('parent_id', 'id', 'content_hash'))
+    d2.chunks[0].parent_id = 0
+    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
+
+    assert d1.chunks[0].content_hash == d2.chunks[0].content_hash
+    assert d1.content_hash == d2.content_hash
+
+    # change text should result in same harsh
+    d2.text = 'world'
+    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
+    assert d1.content_hash == d2.content_hash
+
+    # change chunks should result in diff harsh
+    d2.chunks.clear()
+    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
+    assert d1.content_hash != d2.content_hash
