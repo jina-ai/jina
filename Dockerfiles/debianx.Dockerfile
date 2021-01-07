@@ -1,11 +1,11 @@
 ARG PY_VERSION=3.7
-
-FROM python:${PY_VERSION}-slim AS jina_base
-
 ARG VCS_REF
 ARG BUILD_DATE
 ARG JINA_VERSION
 ARG INSTALL_DEV
+ARG PIP_TAG
+
+FROM python:${PY_VERSION}-slim AS jina_base
 
 LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.authors="dev-team@jina.ai" \
@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y $JINA_BUILD_BAS
     cd /jina && \
     pip install . --compile && \
     if [ -n "$INSTALL_DEV" ]; then pip install .[devel] --compile; fi && \
+    if [ -n "$PIP_TAG" ]; then pip install ".[$PIP_TAG]" --compile; fi && \
     rm -rf /tmp/* && rm -rf /jina && \
     rm /usr/include/xlocale.h
 
