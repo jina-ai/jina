@@ -87,6 +87,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             super().__init__(scope, receive, send)
             self.args = args
             self.name = args.name or self.__class__.__name__
+            self.client_encoding = None
 
         async def dispatch(self) -> None:
             websocket = WebSocket(self.scope, receive=self.receive, send=self.send)
@@ -139,10 +140,22 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             try:
                 while not (self.num_requests == self.num_responses != 0 and self.is_req_empty):
                     response = await self.zmqlet.recv_message(callback=handle_route)
-                    await websocket.send_bytes(response.SerializeToString())
+                    if self.client_encoding == 'bytes':
+                        await websocket.send_bytes(response.SerializeToString())
+                    else:
+                        await websocket.send_json(response.to_json())
                     self.num_responses += 1
             except Exception as e:
                 logger.error(f'Got an exception in handle_send: {repr(e)}')
+
+        async def decode(self, websocket: WebSocket, message: Message) -> Any:
+            if 'text' in message or 'json' in message:
+                self.client_encoding = 'text'
+
+            if 'bytes' in message:
+                self.client_encoding = 'bytes'
+
+            return await super().decode(websocket, message)
 
         async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
             self.zmqlet.close()
