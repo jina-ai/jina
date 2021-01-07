@@ -1,5 +1,6 @@
 import json
 import subprocess
+import threading
 from collections import namedtuple
 
 import pkg_resources
@@ -58,6 +59,7 @@ def write_openapi_schema(filename='schema.json'):
 
 
 def uvicorn_serve(app: 'FastAPI'):
+    from .config import server_config
     config = Config(app=app,
                     host=server_config.HOST,
                     port=server_config.PORT,
@@ -65,12 +67,15 @@ def uvicorn_serve(app: 'FastAPI'):
                     log_level='error')
     server = Server(config=config)
     server.run()
+    daemon_logger.info('bye!')
 
 
 def start_fluentd():
-    subprocess.Popen(['fluentd', '-c', pkg_resources.resource_filename('jina', 'resources/fluent.conf')])
+    daemon_logger.info('starting fluentd')
+    cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
+    subprocess.Popen(['fluentd', '-c', cfg])
 
 
 def main():
-    start_fluentd()
+    threading.Thread(target=start_fluentd).start()
     uvicorn_serve(app=get_app())

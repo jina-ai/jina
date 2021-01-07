@@ -70,18 +70,19 @@ jobs:
   update-docker:
     needs: update-doc
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - tag_prefix: ""
+            build_option: "--target jina_base"
+          - tag_prefix: "daemon-"
+            build_option: "--target jina_daemon"
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true  # this job build devel image, devel image includes hub submodule
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v1
-        with:
-          buildx-version: latest
       - name: Set envs and versions
         run: |
-          echo ${{ steps.buildx.outputs.platforms }}
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
           echo "INSTALL_DEV=true" >> $GITHUB_ENV
@@ -94,7 +95,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
-          tags: "devel, ${{env.JINA_VERSION}}"
+          buildoptions: ${{ matrix.build_option }}
+          tags: "${{ matrix.tag_prefix }}latest, ${{ matrix.tag_prefix }}${{env.JINA_VERSION}}, ${{ matrix.tag_prefix }}${{env.JINA_MINOR_VERSION}}"
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -104,7 +106,8 @@ jobs:
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV
-          tags: "devel, ${{env.JINA_VERSION}}"
+          buildoptions: ${{ matrix.build_option }}
+          tags: "${{ matrix.tag_prefix }}latest, ${{ matrix.tag_prefix }}${{env.JINA_VERSION}}, ${{ matrix.tag_prefix }}${{env.JINA_MINOR_VERSION}}"
 
   unit-test:
     needs: update-docker
