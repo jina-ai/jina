@@ -211,7 +211,7 @@ feat: add remote api
 
 #### What if I Mess Up?
 
-We all make mistakes. GitHub has a guide on [rewriting commit messages](https://help.github.com/en/github/committing-changes-to-your-project/changing-a-commit-message) to they can adhere to our standards.
+We all make mistakes. GitHub has a guide on [rewriting commit messages](https://docs.github.com/en/free-pro-team@latest/github/committing-changes-to-your-project/changing-a-commit-message) to they can adhere to our standards.
 
 You can also install [commitlint](https://commitlint.js.org/#/) onto your own machine and check your commit message by running:
 
