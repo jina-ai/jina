@@ -127,4 +127,4 @@ class MultimodalDocument(Document):
     def update_content_hash(self, mask: Tuple[str] = ('id', 'matches', 'content_hash')) -> None:
         """ Update content hash of the document by including ``chunks`` when computing the hash
         """
-        self.update_content_hash(mask)
+        super().update_content_hash(mask)
