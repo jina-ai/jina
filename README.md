@@ -134,6 +134,7 @@ Let's create some random data and index it:
 
 ```python
 from jina import Document
+import numpy
 
 with Flow().add() as f:
     f.index((Document() for _ in range(10)))  # index raw Jina Documents
