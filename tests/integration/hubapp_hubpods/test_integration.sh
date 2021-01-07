@@ -1,7 +1,7 @@
 set -ex
 
 docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
+docker build -f tests/integration/hubapp_hubpods/hub_mwu/Dockerfile tests/integration/hubapp_hubpods/hub_mwu -t hubpod:test
 docker build -f tests/integration/hubapp_hubpods/Dockerfile tests/integration/hubapp_hubpods/ -t jinaai/test_hubapp_hubpods
 
 if [ "${PWD##*/}" != "jina" ]
