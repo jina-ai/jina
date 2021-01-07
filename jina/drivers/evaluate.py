@@ -55,7 +55,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             if self._running_avg:
                 evaluation.value = self.exec.mean
 
-            if hasattr(self.exec, 'eval_at'):
+            if hasattr(self.exec, 'eval_at') and self.exec.eval_at is not None:
                 evaluation.op_name = f'{self.exec.__class__.__name__}@{self.exec.eval_at}'
             else:
                 evaluation.op_name = self.exec.__class__.__name__
