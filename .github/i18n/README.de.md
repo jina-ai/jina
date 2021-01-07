@@ -26,11 +26,14 @@
 
 <p align="center">
   <a href="https://github.com/jina-ai/jina">English</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.ja.md">日本語</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.fr.md">français</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.de.md">Deutsch</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.ru.md">Русский язык</a> •
-  <a href="https://github.com/jina-ai/jina/blob/master/README.zh.md">中文</a>
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.fr.md">Français</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.zh.md">中文</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.ja.md">日本語</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.kr.md">한국어</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">Português</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.ru.md">Русский язык</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.pt_br.md">український</a> •
+  <a href="https://github.com/jina-ai/jina/blob/master/.github/i18n/README.es.md">Español</a>
 </p>
 
 <p align="center">
@@ -47,19 +50,26 @@
 
 </p>
 
-Wollen Sie ein Suchsystem aufbauen, das durch tiefes Lernen unterstützt wird? Hier sind Sie an der richtigen Stelle!
+Jina ist ein durch Deep Learning gestütztes Framework um <strong>Cross- und/Multi-Modale Suchsysteme</strong> (e.g. text, images, video, audio) in der Cloud zu erstellen. 
 
-Jina ist das cloud-native neuronale Such-Framework, das auf modernster KI und tiefgehendem Lernen basiert. Es wird langfristig von einem Vollzeitteam unterstützt, das von Venture Capital finanziert wird.
+⏱️ **Zeitersparnis** – Erstellen Sie ein KI-System innerhalb weniger Minuten.
 
-🌌**Die universelle Suchlösung** - Jina ermöglicht groß angelegte Indizes und Abfragen jeder Art auf mehreren Plattformen und Architekturen. Ob Sie nach Bildern, Videoclips, Audioschnipseln, langen juristischen Dokumenten oder kurzen Tweets suchen, Jina kann sie alle verarbeiten.
+🧠 **Erstklassige KI Modelle** – *Das* Designmuster für neuronale Systeme, mit erstklassiger Unterstützung durch [state-of-the-art KI Modelle](https://docs.jina.ai/chapters/all_exec.html).
 
-🚀**Leistungsstark und auf dem neuesten Stand der Technik** - Jina strebt KI in Produktion an. Sie können Ihr VideoBERT, Xception, Ihren Word-Tokenizer, Bildsegmentierer und Ihre Datenbank leicht skalieren, um Daten auf Milliardenebene zu verarbeiten. Funktionen wie Replikate und Scherben kommen von der Stange.
+🌌 **Universelle Suchlösung** – Skalierbares Indizieren und Suchen von beliebigen Daten. Z. B.: Videos, Bilder, lange und kurze Texte, Musik, Quellcode, usw.
 
-🐣**Systemtechnik leicht gemacht** - Jina bietet eine Lösung aus einer Hand, die Sie von Handarbeit und Kleben von Verpackungen, Bibliotheken und Datenbanken befreit. Mit der intuitivsten API und[dashboard](https://github.com/jina-ai/dashboard)Der Aufbau eines cloud-nativen Suchsystems ist nur eine Kleinigkeit.
-<!---
-🧩**Leistungsstarke Erweiterungen, einfache Integration** - Neues KI-Modell für Jina? Schreiben Sie einfach ein Python-Skript oder erstellen Sie ein Docker-Image. Das Einfügen neuer Algorithmen war noch nie so einfach, wie es sein sollte[Sehen Sie sich Jina Hub an (beta)](https://github.com/jina-ai/jina-hub) und finden Sie weitere Erweiterungen zu verschiedenen Anwendungsfällen, die von der Gemeinschaft beigetragen wurden.
--->
-Jina ist ein Open-Source-Projekt[Wir stellen ein](https://jobs.jina.ai) KI-Ingenieure, Full-Stack-Entwickler, Evangelisten, PMs zum Aufbau des nächsten neuronalen Such-Ökosystems in Open-Source
+☁️ **Cloud Ready** - Dezentralisierte Architektur mit integrierten Cloud Native-Funktionen. Z.B.: Containervirtualisierung, Microservices, Skalierung, Sharding, Async IO, REST, gRPC.
+
+🧩 **Plug-and-play** – Einfach mit Python erweiterbar.
+
+❤️ **Mit Liebe gemacht** – Qualität steht an erster Stelle, und wird von unseren [Teams](https://jina.ai) kompromissfrei gewährleistet.
+
+---
+
+<p align="center">
+<a href="http://docs.jina.ai">Dokumentation</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#get-started">Quick Start</a> • <a href="#learn">lernen</a> • <a href="#contributing">mitwirken</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Webseite</a> • <a href="http://slack.jina.ai">Slack</a>
+</p>
+
 
 ## Inhaltsverzeichnis
 

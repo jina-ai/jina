@@ -49,8 +49,9 @@ elif [[ $1 == "release" ]]; then
   cp README.md jinahub.jpg jina-logo-dark.png _build/html/
   cd -
   cd ${HTML_DIR}
-  rsync -avr . latest  # sync to latest/
-  rsync -avr --exclude=latest . "v${JINA_VERSION}"  # sync to versions
+  rsync -avr . master  # sync everything under the root to master/
+  rsync -avr --exclude=master . latest  # sync everything under the root to master/
+  rsync -avr --exclude=master --exclude=latest . "v${JINA_VERSION}"  # sync to versions
   cd -
   cd ${DOC_DIR}/bak
   rsync -avr --ignore-missing-args ./v* ../_build/html/ --ignore-existing  # revert backup back

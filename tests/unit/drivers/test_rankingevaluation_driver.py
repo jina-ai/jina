@@ -23,7 +23,7 @@ class SimpleRankEvaluateDriver(RankEvaluateDriver):
 class RunningAvgRankEvaluateDriver(RankEvaluateDriver):
 
     def __init__(self, field: str, *args, **kwargs):
-        super().__init__(field, running_avg=True, *args, **kwargs)
+        super().__init__(field, runining_avg=True, *args, **kwargs)
 
     @property
     def exec_fn(self):
@@ -40,7 +40,7 @@ def simple_rank_evaluate_driver(field):
 
 
 @pytest.fixture
-def ruuningavg_rank_evaluate_driver(field):
+def runningavg_rank_evaluate_driver(field):
     return RunningAvgRankEvaluateDriver(field)
 
 
@@ -66,25 +66,25 @@ def ground_truth_pairs():
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
 def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
-                                 ground_truth_pairs):
+                                        ground_truth_pairs):
     simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'Precision@N'
+        assert doc.evaluations[0].op_name == 'PrecisionEvaluator@2'
         assert doc.evaluations[0].value == 1.0
 
 
 @pytest.mark.parametrize('field', ['tags__id', 'score__value'])
-def test_ranking_evaluate_ruuningavg_driver(ruuningavg_rank_evaluate_driver,
-                                 ground_truth_pairs):
-    ruuningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
-    ruuningavg_rank_evaluate_driver._apply_all(ground_truth_pairs)
+def test_ranking_evaluate_runningavg_driver(runningavg_rank_evaluate_driver,
+                                            ground_truth_pairs):
+    runningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
+    runningavg_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
         assert len(doc.evaluations) == 1
-        assert doc.evaluations[0].op_name == 'Precision@N'
+        assert doc.evaluations[0].op_name == 'PrecisionEvaluator@2'
         assert doc.evaluations[0].value == 1.0
 
 
@@ -152,7 +152,7 @@ def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_dr
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].op_name == 'Precision@N'
+        assert chunk.evaluations[0].op_name == 'PrecisionEvaluator@2'
         assert chunk.evaluations[0].value == 1.0
 
 

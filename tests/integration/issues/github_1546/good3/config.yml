@@ -1,0 +1,8 @@
+!FiveImageCropper2
+with:
+  {}
+metas:
+  py_modules:
+    # - you can put more dependencies here
+    - helper.py
+    - __init__.py

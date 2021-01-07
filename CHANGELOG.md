@@ -119,6 +119,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -236,6 +238,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.8.18`)](#release-note-0818)
 - [Release Note (`0.8.21`)](#release-note-0821)
 - [Release Note (`0.8.22`)](#release-note-0822)
+- [Release Note (`0.9.1`)](#release-note-091)
+- [Release Note (`0.9.2`)](#release-note-092)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -6366,4 +6370,59 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```2e7786cb```](https://github.com/jina-ai/jina/commit/2e7786cb237f3e54cea870051d92c477af8524e8)] __-__ __version__: the next version will be 0.8.22 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-1></a>
+## Release Note (`0.9.1`)
+
+> Release time: 2021-01-05 13:06:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```87d6fd34```](https://github.com/jina-ai/jina/commit/87d6fd34cce7aea765a0047b96861ead4bd080dd)] __-__ hotfix release (*Han Xiao*)
+ - [[```ac222b7a```](https://github.com/jina-ai/jina/commit/ac222b7ae6cd24cd1ef9d5213cb3e14305c0e5ea)] __-__ hotfix 0.9.0 (*Han Xiao*)
+
+<a name=release-note-0-9-2></a>
+## Release Note (`0.9.2`)
+
+> Release time: 2021-01-05 20:09:01
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Deepankar Mahapatro,  Pablo Reyes Naranjo,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```692c2d9d```](https://github.com/jina-ai/jina/commit/692c2d9dbb3bf22eaa616d884111b12cb9d33663)] __-__ ref indexer avoid getting abspath (#1595) (*Joan Fontanals*)
+ - [[```63bc924f```](https://github.com/jina-ai/jina/commit/63bc924ff80a2c37745290a6416206b62d9d0789)] __-__ volumes can be mapped to arbitrary path in container (#1596) (*Joan Fontanals*)
+ - [[```93024f71```](https://github.com/jina-ai/jina/commit/93024f71996502cf73c2751e9f04e2bf947ad313)] __-__ freeze jina version in hub build (#1587) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```8f4bc221```](https://github.com/jina-ai/jina/commit/8f4bc221e2a821cef8bcd0824bafe0fb5c0c996d)] __-__ clarify py_modules usage in 1546 (#1597) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```cd2ddb11```](https://github.com/jina-ai/jina/commit/cd2ddb119ca550223c296fabc2d06db15f7a83be)] __-__ __jinad__: log streaming from remote (#1584) (*Deepankar Mahapatro*)
+
+### 📗 Documentation
+
+ - [[```fc7e4b4d```](https://github.com/jina-ai/jina/commit/fc7e4b4d175b05a3f69c6891e53b7947a492724a)] __-__ __readme__: add spanish link and fix others (#1591) (*Pablo Reyes Naranjo*)
+ - [[```90a04c94```](https://github.com/jina-ai/jina/commit/90a04c94db57a37f31416fe7c339a055cc4ec934)] __-__ fix doc link of logo (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```3a90cbbd```](https://github.com/jina-ai/jina/commit/3a90cbbde12d3270fb50bef19666928f1012168b)] __-__ skip flaky tests (#1598) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```c0f91b3a```](https://github.com/jina-ai/jina/commit/c0f91b3ab07ce9af2bbab4ac0b675e24ffaebe9e)] __-__ hotfix release (*Han Xiao*)
+ - [[```2c1995f9```](https://github.com/jina-ai/jina/commit/2c1995f9a28b2247179796af952d2a97929a59e1)] __-__ __version__: the next version will be 0.9.2 (*Jina Dev Bot*)
 

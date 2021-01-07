@@ -24,9 +24,8 @@ jobs:
       - name: Build jina test-pip for hubpod
         run: |
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-      - name: Build hub pod image
-        run: |
           docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
+          sudo apt-get install jq
       - name: Test jinad
         run: |
           ./tests/integration/jinad/exec_tests.sh

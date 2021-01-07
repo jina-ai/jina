@@ -7,6 +7,6 @@ def test_separated_workspace(test_metas):
     assert not indexer.separated_workspace
     assert indexer.pea_id == 0
     assert indexer.workspace == './'
-    assert indexer.py_modules == None
+    assert indexer.py_modules is None
     assert indexer.pea_workspace == './/None-0'
     assert indexer.name.startswith('jina.executors.indexers')
