@@ -45,6 +45,6 @@ ENTRYPOINT ["jina"]
 
 FROM jina_base AS jina_daemon
 
-RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev && gem install fluentd --no-doc
+RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && gem install fluentd --no-doc
 
 ENTRYPOINT ["jinad"]
