@@ -5,9 +5,9 @@ from jina.optimizers.flow_runner import FlowRunner, MultiFlowRunner
 import yaml
 
 
-def test_optimizer():
-    best_parameters = {'JINA_DUMMYCRAFTER_PARAM1': 0, 
-                       'JINA_DUMMYCRAFTER_PARAM2': 1, 
+def test_optimizer(tmpdir):
+    best_parameters = {'JINA_DUMMYCRAFTER_PARAM1': 0,
+                       'JINA_DUMMYCRAFTER_PARAM2': 1,
                        'JINA_DUMMYCRAFTER_PARAM3': 1}
 
     def document_generator(num_doc):
@@ -17,7 +17,7 @@ def test_optimizer():
         yield doc, groundtruth_doc
 
     eval_flow_runner = FlowRunner(
-        flow_yaml='flow.yml',
+        flow_yaml='tests/integration/optimizers/flow.yml',
         documents=document_generator(10),
         batch_size=1,
         task='search',
@@ -28,7 +28,7 @@ def test_optimizer():
 
     opt = OptunaOptimizer(
         multi_flow,
-        'parameter.yml',
+        'tests/integration/optimizers/parameter.yml',
     )
     result = opt.optimize_flow(n_trials=10)
     path = 'results/best_parameters.yml'
