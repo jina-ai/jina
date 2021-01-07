@@ -1,5 +1,8 @@
-# To build jina not jinad please use
-# docker build --target jina_base
+# NOTE: The strucutre of this file is optimized for our CICD
+# If you try to build Jina locally, please use
+# docker build --target jina_base ...
+# If you try to build JinaD locally, please use
+# docker build ...
 
 ARG PY_VERSION=3.7
 ARG VCS_REF

@@ -734,7 +734,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def block(self):
         """Block the process until user hits KeyboardInterrupt """
         try:
-            self._show_success_message()
             threading.Event().wait()
         except KeyboardInterrupt:
             pass
