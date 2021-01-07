@@ -11,8 +11,12 @@ from .....types.request import Request
 from .....importer import ImportExtensions
 from ..grpc.async_call import AsyncPrefetchCall
 
+if False:
+    import argparse
+    from .....logging import JinaLogger
 
-def get_fastapi_app(args, logger):
+
+def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     with ImportExtensions(required=True):
         from fastapi import FastAPI, WebSocket, Body
         from fastapi.responses import JSONResponse
@@ -58,25 +62,23 @@ def get_fastapi_app(args, logger):
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):
         """
-        :meth:`handle_receive`
-            await a message on :meth:`websocket.receive()`
-            send the message to zmqlet via :meth:`zmqlet.send_message()` and await
-        :meth:`handle_send`
-            await a message on :meth:`zmqlet.recv_message()`
-            send the message back to client via :meth:`websocket.send()` and await
-        :meth:`dispatch`
-            starts an independent task :meth:`handle_receive`
-            awaits on :meth:`handle_send`
-            this makes sure gateway is nonblocking
-        await exit strategy:
-            :meth:`handle_receive` keeps track of num_requests received
-            :meth:`handle_send` keeps track of num_responses sent
-            client sends a final message: `bytes(True)` to indicate request iterator is empty
-            server exits out of await when `(num_requests == num_responses != 0 and is_req_empty)`
+        :meth:`handle_receive()`
+            Await a message on :meth:`websocket.receive()`
+            Send the message to zmqlet via :meth:`zmqlet.send_message()` and await
+        :meth:`handle_send()`
+            Await a message on :meth:`zmqlet.recv_message()`
+            Send the message back to client via :meth:`websocket.send()` and await
+        :meth:`dispatch()`
+            Awaits on concurrent tasks :meth:`handle_receive()` & :meth:`handle_send()`
+            This makes sure gateway is nonblocking
+        Await exit strategy:
+            :meth:`handle_receive()` keeps track of num_requests received
+            :meth:`handle_send()` keeps track of num_responses sent
+            Client sends a final message: `bytes(True)` to indicate request iterator is empty
+            Server exits out of await when `(num_requests == num_responses != 0 and is_req_empty)`
         """
 
-        # TODO(Deepankar): This disables other encodings - 'text' & 'json'. Enable json based encoding
-        encoding = 'bytes'
+        encoding = None
         is_req_empty = False
         num_requests = 0
         num_responses = 0
@@ -91,10 +93,10 @@ def get_fastapi_app(args, logger):
             await self.on_connect(websocket)
             close_code = status.WS_1000_NORMAL_CLOSURE
 
-            asyncio.create_task(
-                self.handle_receive(websocket=websocket, close_code=close_code)
+            await asyncio.gather(
+                self.handle_receive(websocket=websocket, close_code=close_code),
+                self.handle_send(websocket=websocket)
             )
-            await self.handle_send(websocket=websocket)
 
         async def on_connect(self, websocket: WebSocket) -> None:
             # TODO(Deepankar): To enable multiple concurrent clients,

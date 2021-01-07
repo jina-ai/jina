@@ -18,18 +18,18 @@ class WebSocketBaseClient(BaseClient):
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
         """
-        :meth:`send_requests`
-            traverses through the request iterator
-            sends each request & awaits :meth:` websocket.send`
-            sends & awaits `byte(True)` to acknowledge request iteraor is empty
-        traversal logic:
-            starts an independent task :meth:`send_requests`
-            awaits on each response from :meth:` websocket.recv` (done in an async loop)
-            this makes sure client makes concurrent invocations
-        await exit strategy:
-            :meth:`send_requests` keeps track of num_requests sent
-            async recv loop keeps track of num_responses received
-            client exits out of await when num_requests == num_responses
+        :meth:`send_requests()`
+            Traverses through the request iterator
+            Sends each request & awaits :meth:`websocket.send()`
+            Sends & awaits `byte(True)` to acknowledge request iteraor is empty
+        Traversal logic:
+            Starts an independent task :meth:`send_requests()`
+            Awaits on each response from :meth:`websocket.recv()` (done in an async loop)
+            This makes sure client makes concurrent invocations
+        Await exit strategy:
+            :meth:`send_requests()` keeps track of num_requests sent
+            Async recv loop keeps track of num_responses received
+            Client exits out of await when num_requests == num_responses
         """
         with ImportExtensions(required=True):
             import websockets
