@@ -124,7 +124,7 @@ class MultimodalDocument(Document):
         """
         return list(self.modality_content_map.keys())
 
-    def update_content_hash(self, mask: Tuple[str] = ('id', 'matches', 'content_hash')) -> None:
+    def update_content_hash(self, exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash')) -> None:
         """ Update content hash of the document by including ``chunks`` when computing the hash
         """
-        super().update_content_hash(mask)
+        super().update_content_hash(exclude_fields)

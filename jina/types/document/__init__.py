@@ -187,15 +187,29 @@ class Document:
     def content_hash(self):
         return self._document.content_hash
 
-    def update_content_hash(self, mask: Tuple[str] = ('id', 'chunks', 'matches', 'content_hash')) -> None:
+    def update_content_hash(self,
+                            exclude_fields: Optional[Tuple[str]] = ('id', 'chunks', 'matches', 'content_hash'),
+                            include_fields: Optional[Tuple[str]] = None) -> None:
         """Update the document hash according to its content.
 
-        :param mask: a tuple of field names that excluded when computing content hash
+        :param exclude_fields: a tuple of field names that excluded when computing content hash
+        :param include_fields: a tuple of field names that included when computing content hash
+
+        .. note::
+            "exclude_fields" and "exclude_fields" are mutually exclusive, use one only
         """
         masked_d = jina_pb2.DocumentProto()
         masked_d.CopyFrom(self._document)
         empty_doc = jina_pb2.DocumentProto()
-        FieldMask(paths=mask).MergeMessage(empty_doc, masked_d, replace_repeated_field=True)
+        if include_fields and exclude_fields:
+            raise ValueError('"exclude_fields" and "exclude_fields" are mutually exclusive, use one only')
+
+        if include_fields is not None:
+            FieldMask(paths=include_fields).MergeMessage(masked_d, empty_doc)
+            masked_d = empty_doc
+        elif exclude_fields is not None:
+            FieldMask(paths=exclude_fields).MergeMessage(empty_doc, masked_d, replace_repeated_field=True)
+
         self._document.content_hash = blake2b(masked_d.SerializeToString(), digest_size=uid._digest_size).hexdigest()
 
     @property
