@@ -28,6 +28,18 @@ jobs:
       - run: |
           cd schema
           jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" latest.yml --json-path "${{env.JINA_VERSION}}.json" latest.json latest
+          mkdir -p jinad && cd jinad
+          python -c "from daemon.main import _write_openapi_schema; _write_openapi_schema()"
+          cd -
+      - name: redoc-cli-jinad
+        uses: seeebiii/redoc-cli-github-action@v10
+        with:
+          args: 'bundle schema/jinad/schema.json -o jinad.html'
+      - name: push-to-api-repo
+        run: |
+          cp jinad.html schema/jinad/index.html
+          cp jinad.html schema/jinad/${{env.JINA_VERSION}}.html
+          cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
