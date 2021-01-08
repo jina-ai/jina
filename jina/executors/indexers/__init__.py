@@ -162,6 +162,18 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
+    def _filter_nonexistent_keys(self, keys: Iterator, existent_keys: Iterator, check_path: str):
+        indices_to_drop = []
+        keys = list(keys)
+        for key_index, key in enumerate(keys):
+            if key not in existent_keys:
+                indices_to_drop.append(key_index)
+        if indices_to_drop:
+            self.logger.warning(
+                f'Key(s) {[keys[i] for i in indices_to_drop]} were not found in {check_path}. Continuing anyway...')
+            keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
+        return keys
+
 
 class BaseVectorIndexer(BaseIndexer):
     """An abstract class for vector indexer. It is equipped with drivers in ``requests.on``
