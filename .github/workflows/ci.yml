@@ -94,7 +94,7 @@ jobs:
           tags: "test-pip"
       - run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-          docker pull docker.pkg.github.com/jinaai/jina:test-pip
+          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker run jina:test-pip hello-world
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
