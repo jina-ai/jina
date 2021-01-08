@@ -19,15 +19,6 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build jina test-pip
-        run: |
-          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-      - name: Build hub pod image
-        run: |
-          docker build -f tests/integration/jinad/hub_mwu/Dockerfile tests/integration/jinad/hub_mwu -t hubpod:test
-      - name: Build hubapp image
-        run: |
-          docker build -f tests/integration/hubapp_hubpods/Dockerfile -t jinaai/test_hubapp_hubpods .
       - name: Test hubapp with hubpods
         run: |
           ./tests/integration/hubapp_hubpods/test_integration.sh
