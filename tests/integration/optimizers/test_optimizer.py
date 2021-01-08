@@ -27,13 +27,14 @@ def test_optimizer(tmpdir):
     multi_flow = MultiFlowRunner(eval_flow_runner)
 
     opt = OptunaOptimizer(
-        multi_flow,
-        'tests/integration/optimizers/parameter.yml',
+        multi_flow=multi_flow,
+        parameter_yaml='tests/integration/optimizers/parameter.yml',
+        workspace_base_dir=str(tmpdir)
     )
     result = opt.optimize_flow(n_trials=10)
-    path = 'results/best_parameters.yml'
-    result.save_parameters(path)
+    result_path = str(tmpdir) + '/results/best_parameters.yml'
+    result.save_parameters(result_path)
     parameters = result.best_parameters
 
     assert parameters == best_parameters
-    assert yaml.load(open(path)) == best_parameters
+    assert yaml.load(open(result_path)) == best_parameters

@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 import shutil
 from typing import Iterator, Optional
 
@@ -27,11 +27,11 @@ class FlowRunner:
         :param callback: callback to be passed to the flow's `on_done`
         :param overwrite_workspace: overwrite workspace created by the flow
         """
-        self.flow_yaml = Path(flow_yaml)
+        self.flow_yaml = flow_yaml
         # TODO: Make changes for working with doc generator (Pratik, before v1.0)
         self.documents = documents if type(documents) == list else list(documents)
         self.batch_size = batch_size
-        if task in ('index', 'search'): 
+        if task in ('index', 'search'):
             self.task = task
         else:
             raise ValueError('task can be either of index or search')
@@ -54,8 +54,8 @@ class FlowRunner:
         yaml.SafeLoader.add_constructor('!Flow', _Flow.from_yaml)
         yaml.SafeDumper.add_multi_representer(_Flow, _Flow.to_yaml)
 
-        flow_workspace = trial_dir / 'flows'
-        flow_workspace.mkdir(exist_ok=True)
+        flow_workspace = trial_dir + '/flows'
+        os.makedirs(flow_workspace, exist_ok=True)
 
         with open(self.flow_yaml) as f:
             parameters = yaml.load(f, Loader=yaml.Loader)
@@ -63,8 +63,7 @@ class FlowRunner:
             for env in parameters.env.keys():
                 if env in trial_parameters:
                     parameters.env[env] = trial_parameters[env]
-
-        trial_flow_file_path = flow_workspace / self.flow_yaml.name
+        trial_flow_file_path = flow_workspace + '/' + os.path.basename(self.flow_yaml)
         yaml.dump(parameters, open(trial_flow_file_path, 'w'))
         return trial_flow_file_path
 
@@ -74,11 +73,11 @@ class FlowRunner:
         :param trial_parameters: flow env variable values
         :param workspace: directory to be used for artifacts generated
         """
-        workspace = Path(workspace)
+
         if trial_parameters is None:
             trial_parameters = {}
 
-        if workspace.exists():
+        if os.path.exists(workspace):
             if self.overwrite_workspace:
                 FlowRunner.clean_workdir(workspace)
                 logger.warning(
@@ -94,7 +93,7 @@ class FlowRunner:
                     )
                     return
 
-        workspace.mkdir(exist_ok=True)
+        os.makedirs(workspace, exist_ok=True)
         flow_yaml = str(self._create_trial_flow(workspace, trial_parameters))
         with Flow.load_config(flow_yaml) as f:
             getattr(f, self.task)(

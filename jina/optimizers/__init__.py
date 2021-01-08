@@ -1,5 +1,5 @@
 from collections import defaultdict
-from pathlib import Path
+import os
 from typing import Optional
 
 import yaml
@@ -37,9 +37,9 @@ class EvaluationCallback:
         else:
             evaluation = {metric: val / self.n_docs for metric, val in self.evaluation_values.items()}
 
-        if (len(evaluation.keys()) > 1) and (self.eval_name is None): 
+        if (len(evaluation.keys()) > 1) and (self.eval_name is None):
             logger.warning(f'More than one evaluation metric found. Please use the right eval_name. Currently {list(evaluation)[0]} is used')
-        
+
         return evaluation
 
     def __call__(self, response):
@@ -55,6 +55,7 @@ class EvaluationCallback:
 
 class OptunaResultProcessor:
     """Result processor for Optuna"""
+
     def __init__(self, study: 'optuna.study.Study'):
         """
         :param study: optuna study object
@@ -65,12 +66,12 @@ class OptunaResultProcessor:
         logger.info(colored(f'Best trial: {study.best_trial.params}', 'green'))
         logger.info(colored(f'Time to finish: {study.best_trial.duration}', 'green'))
 
-    def save_parameters(self, filepath: str='config/best_config.yml'):
+    def save_parameters(self, filepath: str = 'config/best_config.yml'):
         """
         :param filepath: path where the best parameter config will be saved
         """
-        filepath = Path(filepath)
-        filepath.parent.mkdir(exist_ok=True)
+        parameter_dir = os.path.dirname(filepath)
+        os.makedirs(parameter_dir, exist_ok=True)
         yaml.dump(self.best_parameters, open(filepath, 'w'))
 
 
@@ -81,6 +82,7 @@ class OptunaOptimizer:
         self,
         multi_flow: 'MultiFlowRunner',
         parameter_yaml: str,
+        workspace_base_dir: str = '',
         workspace_env: str = 'JINA_WORKSPACE',
         eval_flow_index: int = -1,
     ):
@@ -94,6 +96,7 @@ class OptunaOptimizer:
         self.parameter_yaml = parameter_yaml
         self.workspace_env = workspace_env.lstrip('$')
         self.eval_flow_index = eval_flow_index
+        self.workspace_base_dir = workspace_base_dir
 
     def _trial_parameter_sampler(self, trial):
         trial_parameters = {}
@@ -103,11 +106,9 @@ class OptunaOptimizer:
                 **param.to_optuna_args()
             )
 
-        trial_workspace = Path(
-            'JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
-        )
-        trial_parameters[self.workspace_env] = str(trial_workspace)
+        trial_workspace = self.workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
 
+        trial_parameters[self.workspace_env] = trial_workspace
         trial.workspace = trial_workspace
         return trial_parameters
 
@@ -128,7 +129,7 @@ class OptunaOptimizer:
         sampler: str = 'TPESampler',
         direction: str = 'maximize',
         seed: int = 42,
-        result_processor = OptunaResultProcessor,
+        result_processor: 'OptunaResultProcessor' = OptunaResultProcessor,
         **kwargs
     ):
         """
