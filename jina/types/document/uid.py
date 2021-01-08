@@ -2,7 +2,7 @@
 Remarks on the ``id``, we have three views for it
 - ``id``: ``str`` is a hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable. it will be used as the major view.
 - ``bytes``: ``bytes`` is the binary format of str, it has 8 bytes fixed length, so it can be used in the dense file storage, e.g. BinaryPbIndexer, as it requires the key has to be fixed length.
-- ``int``:``int64`` (formerly names ``hash``) is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
+- ``int``:``int`` (formerly names ``hash``) is the integer form of bytes. This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
 .. note:
     Customized ``id`` is acceptable as long as
     - it only contains the symbols "0"–"9" to represent values 0 to 9,
