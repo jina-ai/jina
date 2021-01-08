@@ -29,7 +29,7 @@ class BinaryPbIndexer(BaseKVIndexer):
     class ReadHandler:
         def __init__(self, path):
             with open(path + '.head', 'rb') as fp:
-                tmp = np.frombuffer(fp.read(), dtype=np.int64).reshape([-1, 4])
+                tmp = np.frombuffer(fp.read(), dtype=[np.object, np.int64, np.int64, np.int64).reshape([-1, 4])
                 self.header = {r[0]: None if np.array_equal(r[1:], HEADER_NONE_ENTRY) else r[1:] for r in tmp}
             self._body = open(path, 'r+b')
             self.body = self._body.fileno()
