@@ -1,6 +1,6 @@
 import os
 
-from jina.executors.crafters import BaseSegmenter
+from jina.executors.segmenters import BaseSegmenter
 from jina.flow import Flow
 from tests import random_docs
 
@@ -8,7 +8,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class DummySegment(BaseSegmenter):
-    def craft(self):
+    def segment(self):
         return [dict(buffer=b'aa'), dict(buffer=b'bb')]
 
 
