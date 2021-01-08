@@ -92,14 +92,21 @@ jobs:
           buildargs: PIP_TAG
           buildoptions: ${{ matrix.build_option }}
           tags: "test-pip"
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash scripts/get-test-paths.sh)"
+
+  docker-image-test:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    steps:
       - run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker run docker.pkg.github.com/jina-ai/jina/jina:test-pip hello-world
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - id: set-matrix
-        run: echo "::set-output name=matrix::$(bash scripts/get-test-paths.sh)"
 
   core-test:
     needs: docker-build
