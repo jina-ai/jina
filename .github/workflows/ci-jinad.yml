@@ -30,6 +30,7 @@ jobs:
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           export JINA_LOG_VERBOSITY="ERROR"
           pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/jinad/${{ matrix.test-path }}
+          mv coverage.xml jinad-${{ matrix.test-path }}-coverage.xml
         timeout-minutes: 40
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
@@ -38,7 +39,7 @@ jobs:
         uses: codecov/codecov-action@v1
         if: ${{ matrix.python-version }} == 3.7
         with:
-          file: coverage.xml
+          file: jinad-${{ matrix.test-path }}-coverage.xml
           env_vars: OS,PYTHON
           name: codecov
           fail_ci_if_error: false
