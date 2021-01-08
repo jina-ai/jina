@@ -9,10 +9,9 @@ on:
 
 jobs:
   daemon-test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
         python-version: [3.7, 3.8]
         test-path: ['unit', 'integration']
 

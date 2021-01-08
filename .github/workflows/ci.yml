@@ -71,14 +71,13 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
-
-  unit-test:
+  core-test:
     needs: lint-flake-8
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
         python-version: [3.7, 3.8]
+        test-path: ['unit', 'integration']
 
     steps:
       - uses: actions/checkout@v2
@@ -95,98 +94,23 @@ jobs:
       - name: Test docker install
         run: |
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-      - name: Test with pytest
-        run: |
-          # make sure docker exist
-          docker ps
-          jina check
-          export JINA_LOG_VERBOSITY="ERROR"
-          pip install .[test]
-          pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/unit
-          mv coverage.xml unit-test-coverage.xml
-        timeout-minutes: 40
-        env:
-          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-      - name: Upload coverage result from unit-test
-        if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
-        uses: actions/upload-artifact@v1
-        with:
-          name: unit-test-codecoverage
-          path: ./unit-test-coverage.xml
-
-  integration-test:
-    needs: lint-flake-8
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8]
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install .[cicd] --no-cache-dir
-      - name: Test with pytest
-        run: |
-          # make sure docker exist
-          docker ps
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           docker run jinaai/jina:test-pip hello-world
+      - name: Test with pytest
+        run: |
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
           pip install .[test]
-          pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration
-          mv coverage.xml integration-test-coverage.xml
+          pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/${{ matrix.test-path }}
         timeout-minutes: 40
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload coverage result from integration-test
-        if: ${{ matrix.python-version }} == 3.7 && ${{ matrix.os }} == ubuntu-latest
-        uses: actions/upload-artifact@v1
-        with:
-          name: integration-test-codecoverage
-          path: ./integration-test-coverage.xml
-
-  codecov:
-    needs: [unit-test, integration-test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: false
-      - uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-      - name: Download coverage result from unit-test
-        uses: actions/download-artifact@v1
-        with:
-          name: unit-test-codecoverage
-      - name: Download coverage result from integration-test
-        uses: actions/download-artifact@v1
-        with:
-          name: integration-test-codecoverage
-      - name: Upload coverage from unit-test to Codecov
+      - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v1
+        if: ${{ matrix.python-version }} == 3.7
         with:
-          file: unit-test-codecoverage/unit-test-coverage.xml
-          env_vars: OS,PYTHON
-          name: codecov
-          fail_ci_if_error: false
-      - name: Upload coverage from integration-test to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          file: integration-test-codecoverage/integration-test-coverage.xml
+          file: coverage.xml
           env_vars: OS,PYTHON
           name: codecov
           fail_ci_if_error: false
