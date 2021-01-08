@@ -71,58 +71,27 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
-  core-test:
+
+  docker-build:
     needs: lint-flake-8
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8]
-        # 1. to get all test-path:  ls -d tests/{unit,integration}/*/ | cut -f2,3 -d'/' | grep -v '__pycache__' | paste -sd "," -
-        # 2. add unit/*.py and integration/*.py to cover remained root-level files
-        #
-        # But what if someone create a new test folder but forget to update
-        # here, isn't this newly added folder missed?
-        # yes, it will be missed. However, the solution is quite simple:
-        # e.g.
-        # 1. write a small script to read this YAML and validate the "test-path" below, if inconsistent, then exit(1)
-        # 2. add step1 script as a job before "core-test" job.
-        #
-        # I will leave this task to whoever see this message and want to learn Github Action & DevOps.
-        # welcome to submit your PR here: https://github.com/jina-ai/jina/pull/
-        test-path: [unit/*.py, integration/*.py, integration/crud,integration/encode_driver_batching,integration/eval_flow,integration/evaluation,integration/gateway_non_blocking,integration/high_order_matches,integration/hub_usage,integration/incremental_indexing,integration/issues,integration/level_depth,integration/logging,integration/memmap,integration/mime,integration/multimodal,integration/ref_indexer,unit/clients,unit/docker,unit/drivers,unit/executors,unit/flow,unit/logging,unit/mwu-encoder,unit/peapods,unit/proto,unit/types,unit/yaml]
-
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+      - run: |
+          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
+      - name: Upload to Github Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install .[cicd] --no-cache-dir
-      - name: Test docker install
-        run: |
-          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker run jinaai/jina:test-pip hello-world
-      - name: Test with pytest
-        run: |
-          jina check
-          export JINA_LOG_VERBOSITY="ERROR"
-          pip install .[test]
-          pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/${{ matrix.test-path }}
-        timeout-minutes: 40
-        env:
-          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload coverage from test to Codecov
-        uses: codecov/codecov-action@v1
-        if: ${{ matrix.python-version }} == '3.7'
-        with:
-          file: coverage.xml
-          name: ${{ matrix.test-path }}-codecov
-          flags: ${{ matrix.test-path }}, core, ci, ${{ matrix.python-version }}
-          fail_ci_if_error: false
+          name: jina-ai/jina/jina
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.pkg.github.com
+          dockerfile: Dockerfiles/pip.Dockerfile
+          buildargs: PIP_TAG
+          buildoptions: ${{ matrix.build_option }}
+          tags: "test-pip"
+      - run: |
+          docker run docker.pkg.github.com/jinaai/jina:test-pip hello-world
+
