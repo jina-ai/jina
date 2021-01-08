@@ -45,28 +45,6 @@ class FlowRunner:
             logger.warning(colored('Existing workspace deleted', 'red'))
             logger.warning(colored('WORKSPACE: ' + str(workspace), 'red'))
 
-    def _create_trial_flow(self, trial_dir, trial_parameters):
-        import yaml
-
-        class _Flow(yaml.YAMLObject):
-            yaml_tag = u'!Flow'
-
-        yaml.SafeLoader.add_constructor('!Flow', _Flow.from_yaml)
-        yaml.SafeDumper.add_multi_representer(_Flow, _Flow.to_yaml)
-
-        flow_workspace = trial_dir + '/flows'
-        os.makedirs(flow_workspace, exist_ok=True)
-
-        with open(self.flow_yaml) as f:
-            parameters = yaml.load(f, Loader=yaml.Loader)
-        if hasattr(parameters, 'env'):
-            for env in parameters.env.keys():
-                if env in trial_parameters:
-                    parameters.env[env] = trial_parameters[env]
-        trial_flow_file_path = flow_workspace + '/' + os.path.basename(self.flow_yaml)
-        yaml.dump(parameters, open(trial_flow_file_path, 'w'))
-        return trial_flow_file_path
-
     def run(self, trial_parameters=None, workspace='workspace', **kwargs):
         """[summary]
 
@@ -94,8 +72,8 @@ class FlowRunner:
                     return
 
         os.makedirs(workspace, exist_ok=True)
-        flow_yaml = str(self._create_trial_flow(workspace, trial_parameters))
-        with Flow.load_config(flow_yaml) as f:
+
+        with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
             getattr(f, self.task)(
                 self.documents,
                 batch_size=self.batch_size,
