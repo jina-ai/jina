@@ -9,6 +9,7 @@ on:
 
 jobs:
   daemon-test:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest] #[macos-latest, ubuntu-latest]
