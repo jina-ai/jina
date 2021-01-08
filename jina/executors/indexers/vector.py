@@ -129,7 +129,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def update(self, keys: Sequence[int], values: Sequence[bytes], *args, **kwargs) -> None:
         keys = self._filter_nonexistent_keys(keys, self.ext2int_id.keys(), self.save_abspath)
         # could be empty
-        if keys:
+        if keys is not None:
             # expects np array for computing shapes
             keys = np.array(list(keys))
             self._delete(keys)
@@ -137,7 +137,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     def _delete(self, keys):
         # could be empty
-        if keys:
+        if keys is not None:
             # expects np array for computing shapes
             keys = np.array(list(keys))
             for key in keys:
