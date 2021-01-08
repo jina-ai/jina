@@ -125,7 +125,19 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8]
-        test-path: ['unit', 'integration']
+        # 1. to get all test-path:  ls -d tests/{unit,integration}/*/ | cut -f2,3 -d'/' | grep -v '__pycache__' | paste -sd "," -
+        # 2. add unit/*.py and integration/*.py to cover remained root-level files
+        #
+        # But what if someone create a new test folder but forget to update
+        # here, isn't this newly added folder missed?
+        # yes, it will be missed. However, the solution is quite simple:
+        # e.g.
+        # 1. write a small script to read this YAML and validate the "test-path" below, if inconsistent, then exit(1)
+        # 2. add step1 script as a job before "core-test" job.
+        #
+        # I will leave this task to whoever see this message and want to learn Github Action & DevOps.
+        # welcome to submit your PR here: https://github.com/jina-ai/jina/pull/
+        test-path: [unit/*.py, integration/*.py, integration/crud,integration/encode_driver_batching,integration/eval_flow,integration/evaluation,integration/gateway_non_blocking,integration/high_order_matches,integration/hub_usage,integration/incremental_indexing,integration/issues,integration/level_depth,integration/logging,integration/memmap,integration/mime,integration/multimodal,integration/ref_indexer,unit/clients,unit/docker,unit/drivers,unit/executors,unit/flow,unit/logging,unit/mwu-encoder,unit/peapods,unit/proto,unit/types,unit/yaml]
 
     steps:
       - uses: actions/checkout@v2
@@ -151,9 +163,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v1
-        if: ${{ matrix.python-version }} == 3.7
+        if: ${{ matrix.python-version }} == '3.7'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
-          flags: ${{ matrix.test-path }}, cd
+          flags: ${{ matrix.test-path }}, cd, ${{ matrix.python-version }}
           fail_ci_if_error: false
