@@ -93,5 +93,6 @@ jobs:
           buildoptions: ${{ matrix.build_option }}
           tags: "test-pip"
       - run: |
-          docker run docker.pkg.github.com/jinaai/jina:test-pip hello-world
+          docker pull docker.pkg.github.com/jinaai/jina:test-pip
+          docker run jina:test-pip hello-world
 
