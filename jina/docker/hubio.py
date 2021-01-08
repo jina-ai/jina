@@ -31,7 +31,7 @@ if False:
 
 _allowed = {'name', 'description', 'author', 'url',
             'documentation', 'version', 'vendor', 'license', 'avatar',
-            'jina_version', 'platform', 'update', 'keywords'}
+            'platform', 'update', 'keywords'}
 
 _label_prefix = 'ai.jina.hub.'
 
