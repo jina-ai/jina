@@ -1,13 +1,9 @@
 """
-
 Remarks on the ``id``, we have three views for it
-
 - ``id``: ``str`` is a hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable. it will be used as the major view.
 - ``bytes``: ``bytes`` is the binary format of str, it has 8 bytes fixed length, so it can be used in the dense file storage, e.g. BinaryPbIndexer, as it requires the key has to be fixed length.
 - ``int``:``int64`` (formerly names ``hash``) is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
-
 .. note:
-
     Customized ``id`` is acceptable as long as
     - it only contains the symbols "0"–"9" to represent values 0 to 9,
     and "A"–"F" (or alternatively "a"–"f").
@@ -29,36 +25,6 @@ from ...helper import typename
 
 _digest_size = 8
 _id_regex = re.compile(r'([0-9a-fA-F][0-9a-fA-F])+')
-_warned_deprecation = False
-
-
-def get_content_hash(doc: 'DocumentProto') -> str:
-    """ Generate a new hexdigest based on the content of the document.
-
-    :param doc: a non-empty document
-    :return: the hexdigest based on :meth:`blake2b`
-    """
-    # TODO: once `new_doc_id` is removed, the content of this function can directly move to the `Document`.
-    doc_without_id = DocumentProto()
-    doc_without_id.CopyFrom(doc)
-    doc_without_id.id = ""
-    return blake2b(doc_without_id.SerializeToString(), digest_size=_digest_size).hexdigest()
-
-
-def new_doc_id(doc: 'DocumentProto') -> str:
-    """ Generate a new hexdigest based on the content of the document.
-
-    .. note::
-        Always use it AFTER you fill in the content of the document
-
-    :param doc: a non-empty document
-    :return: the hexdigest based on :meth:`blake2b`
-    """
-    global _warned_deprecation
-    if not _warned_deprecation:
-        default_logger.warning('This function name is deprecated and will be renamed to `get_content_hash` latest with Jina 1.0.0. Please already use the updated name.')
-        _warned_deprecation = True
-    return get_content_hash(doc)
 
 
 def int2bytes(value: int) -> bytes:
@@ -97,7 +63,7 @@ def is_valid_id(value: str) -> bool:
         raise BadDocID(f'{value} is not a valid id. Customized ``id`` is only acceptable when: \
         - it only contains chars "0"–"9" to represent values 0 to 9, \
         and "A"–"F" (or alternatively "a"–"f"). \
-        - it has n > 0 chars as described above.')
+        - it has 16 chars described above.')
     return True
 
 
