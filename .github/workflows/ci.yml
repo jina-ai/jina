@@ -131,7 +131,7 @@ jobs:
         run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
-          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jina:test-pip
+          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
           pip install ".[cicd,test]" --no-cache-dir
           jina check
