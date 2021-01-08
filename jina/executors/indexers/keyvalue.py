@@ -64,7 +64,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.header.write(
                 np.array(
                     (key, p, r, r + l),
-                    dtype=np.int64
+                    dtype=np.object
                 ).tobytes()
             )
             self._start += l
@@ -92,7 +92,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.header.write(
                 np.array(
                     np.concatenate([[key], HEADER_NONE_ENTRY]),
-                    dtype=np.int64
+                    dtype=np.object
                 ).tobytes()
             )
             if self.query_handler:
