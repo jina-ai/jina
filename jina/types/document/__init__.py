@@ -196,7 +196,7 @@ class Document:
         :param include_fields: a tuple of field names that included when computing content hash
 
         .. note::
-            "exclude_fields" and "exclude_fields" are mutually exclusive, use one only
+            "exclude_fields" and "include_fields" are mutually exclusive, use one only
         """
         masked_d = jina_pb2.DocumentProto()
         masked_d.CopyFrom(self._document)
