@@ -7,8 +7,9 @@ from typing import List, Dict, Union
 from fastapi import UploadFile
 
 from jina.flow import Flow
-from jina.helper import colored, get_random_identity
 from jina.jaml import JAML
+from jina.helper import colored
+from jina.enums import PodRoleType
 from jina.logging import JinaLogger
 from jina.peapods import Pea, Pod
 from .excepts import FlowYamlParseException, FlowCreationException, \
@@ -86,8 +87,6 @@ class InMemoryFlowStore(InMemoryStore):
         elif isinstance(config, list):
             try:
                 flow = self._build_with_pods(pod_args=config)
-                with flow:
-                    pass
             except Exception as e:
                 self.logger.error(f'Got error while creating flows via pods: {repr(e)}')
                 raise FlowCreationException
@@ -95,7 +94,6 @@ class InMemoryFlowStore(InMemoryStore):
             raise FlowBadInputException(f'Not valid Flow config input {type(config)}')
 
         try:
-            flow.args.log_id = flow.args.identity if 'identity' in flow.args else get_random_identity()
             flow_id = uuid.UUID(flow.args.log_id)
             flow = self._start(context=flow)
         except Exception as e:
@@ -114,6 +112,8 @@ class InMemoryFlowStore(InMemoryStore):
         flow = Flow()
         for current_pod_args in pod_args:
             _current_pod_args = current_pod_args.dict()
+            if not _current_pod_args.get('pod_role'):
+                _current_pod_args.update(pod_role=PodRoleType.POD)
             _current_pod_args.pop('log_config')
             flow = flow.add(**_current_pod_args)
         return flow

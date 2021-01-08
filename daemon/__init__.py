@@ -68,13 +68,16 @@ def _start_uvicorn(app: 'FastAPI'):
                     log_level='error')
     server = Server(config=config)
     server.run()
-    daemon_logger.info('bye!')
+    daemon_logger.info('Bye!')
 
 
 def _start_fluentd():
-    daemon_logger.info('starting fluentd')
+    daemon_logger.info('Starting fluentd')
     cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
-    subprocess.Popen(['fluentd', '-c', cfg])
+    try:
+        subprocess.Popen(['fluentd', '-qq', '-c', cfg])
+    except FileNotFoundError:
+        daemon_logger.warning('Fluentd not found locally, Jinad cannot stream logs!')
 
 
 def _parse_arg():
@@ -86,5 +89,5 @@ def _parse_arg():
 
 def main():
     _parse_arg()
-    threading.Thread(target=_start_fluentd).start()
+    threading.Thread(target=_start_fluentd, daemon=True).start()
     _start_uvicorn(app=_get_app())

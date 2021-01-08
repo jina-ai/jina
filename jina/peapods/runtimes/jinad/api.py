@@ -161,7 +161,7 @@ class JinadAPI:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t create pod with remote jinad {repr(ex)}')
 
-    async def logstream(self, remote_id: 'str'):
+    async def logstream(self, remote_id: 'str', log_id: 'str'):
         """ websocket log stream from remote pea/pod
         :param remote_id: the identity of that pea/pod
         :return:
@@ -190,8 +190,10 @@ class JinadAPI:
                             complete_log_message = log_line[current_line_number]
                             log_line_dict = json.loads(complete_log_message.split('\t')[-1].strip())
                             name = log_line_dict['name']
+
                             if name not in remote_loggers:
-                                remote_loggers[name] = JinaLogger(context=f'🌏 {name}')
+                                remote_loggers[name] = JinaLogger(context=f'🌏 {name}', log_id=log_id)
+
                             # TODO(Deepankar): change logging level, process name in local logger
                             remote_loggers[name].info(f'{log_line_dict["message"].strip()}')
                         except json.decoder.JSONDecodeError:
