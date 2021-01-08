@@ -112,4 +112,5 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.python-version }}-${{ matrix.test-path }}-codecov
+          flags: ${{ matrix.test-path }}, core, ci
           fail_ci_if_error: false

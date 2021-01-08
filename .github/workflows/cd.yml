@@ -155,4 +155,5 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
+          flags: ${{ matrix.test-path }}, cd
           fail_ci_if_error: false
