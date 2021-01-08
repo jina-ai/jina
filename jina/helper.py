@@ -75,7 +75,7 @@ def touch_dir(base_dir: str) -> None:
 
 
 def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
-                   yield_slice: bool = False) -> Iterator[Any]:
+                   yield_slice: bool = False, yield_dict: bool = False) -> Iterator[Any]:
     import numpy as np
     if not batch_size or batch_size <= 0:
         yield data
@@ -107,7 +107,10 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
         data = iter(data)
         # as iterator, there is no way to know the length of it
         while True:
-            chunk = tuple(islice(data, batch_size))
+            if yield_dict:
+                chunk = dict(islice(data, batch_size))
+            else:
+                chunk = tuple(islice(data, batch_size))
             if not chunk:
                 return
             yield chunk
@@ -457,7 +460,7 @@ class ArgNamespace:
 def is_valid_local_config_source(path: str) -> bool:
     # TODO: this function must be refactored before 1.0 (Han 12.22)
     try:
-        from jina.jaml import parse_config_source
+        from .jaml import parse_config_source
         parse_config_source(path)
         return True
     except FileNotFoundError:
@@ -696,3 +699,12 @@ def check_keys_exist(keys_to_check, existing_keys):
         if k not in existing_keys:
             missed.append(k)
     return missed
+
+
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    s = str(value).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', s)

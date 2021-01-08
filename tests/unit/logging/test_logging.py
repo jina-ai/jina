@@ -1,12 +1,11 @@
 import os
-from pathlib import Path
 
 import pytest
 
 from jina import __uptime__
 from jina.logging import JinaLogger
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def log(logger):
@@ -22,7 +21,7 @@ def log(logger):
 
 
 def test_logging_syslog():
-    with JinaLogger('test_logger', log_config=str(cur_dir / 'yaml' / 'syslog.yml')) as logger:
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/syslog.yml')) as logger:
         log(logger)
         assert len(logger.handlers) == 1
 
@@ -40,17 +39,17 @@ def test_logging_default():
 
 def test_logging_file():
     fn = f'jina-{__uptime__}.log'
-    if Path(fn).exists():
+    if os.path.exists(fn):
         os.remove(fn)
-    with JinaLogger('test_logger', log_config=str(cur_dir / 'yaml' / 'file.yml')) as logger:
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
         log(logger)
-    assert Path(fn).exists()
+    assert os.path.exists(fn)
     with open(fn) as fp:
         assert len(fp.readlines()) == 7
     os.remove(fn)
 
 
-@pytest.mark.parametrize('log_config', [str(cur_dir / 'yaml/fluent.yml'), None])
+@pytest.mark.parametrize('log_config', [os.path.join(cur_dir, 'yaml/fluent.yml'), None])
 def test_logging_fluentd(monkeypatch, log_config):
     from fluent import asynchandler as fluentasynchandler
     with JinaLogger('test_logger', log_config=log_config, log_id='test_log_id') as logger:

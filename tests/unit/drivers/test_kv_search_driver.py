@@ -1,6 +1,7 @@
 from typing import Optional
 
 import numpy as np
+import pytest
 
 from jina import Document
 from jina.drivers.search import KVSearchDriver
@@ -31,24 +32,15 @@ class MockIndexer(BaseKVIndexer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        doc1 = Document()
-        doc1.id = str(1) * 16
-        doc1.embedding = np.array([int(doc1.id)])
-        doc2 = Document()
-        doc2.id = str(2) * 16
-        doc2.embedding = np.array([int(doc2.id)])
-        doc3 = Document()
-        doc3.id = str(3) * 16
-        doc3.embedding = np.array([int(doc3.id)])
-        doc4 = Document()
-        doc4.id = str(4) * 16
-        doc4.embedding = np.array([int(doc4.id)])
-        self.db = {
-            int(doc1.id): doc1.SerializeToString(),
-            int(doc2.id): doc2.SerializeToString(),
-            int(doc3.id): doc3.SerializeToString(),
-            int(doc4.id): doc4.SerializeToString()
-        }
+        self.db = {}
+        doc_ids = ['1', '2', '3', '4']
+        doc_ids = [item * 16 for item in doc_ids]
+        for doc_id in doc_ids:
+            with Document() as doc:
+                doc.id = doc_id
+                doc.embedding = np.array([int(doc.id)])
+            self.db[int(doc.id)] = doc.SerializeToString()
+
 
 
 class SimpleKVSearchDriver(KVSearchDriver):
@@ -61,7 +53,8 @@ class SimpleKVSearchDriver(KVSearchDriver):
         return self._exec_fn
 
 
-def create_document_to_search():
+@pytest.fixture(scope='function')
+def document():
     # 1-D embedding
     # doc: 0
     #   - chunk: 1
@@ -72,12 +65,14 @@ def create_document_to_search():
     doc = Document()
     doc.id = '0' * 16
     for c in range(5):
-        chunk = doc.chunks.new()
-        chunk.id = str(c + 1) * 16
+        with Document() as chunk:
+            chunk.id = str(c + 1) * 16
+        doc.chunks.add(chunk)
     return doc
 
 
-def create_document_to_search_with_matches_on_chunks():
+@pytest.fixture(scope='function')
+def document_with_matches_on_chunks():
     # 1-D embedding
     # doc: 0
     #   - chunk: 1
@@ -86,32 +81,33 @@ def create_document_to_search_with_matches_on_chunks():
     #     - match: 4
     #     - match: 5 - will be missing from KV indexer
     #     - match: 6 - will be missing from KV indexer
-    doc = Document()
-    doc.id = '0' * 16
-    chunk = doc.chunks.new()
-    chunk.id = '1' * 16
-    for m in range(5):
-        d = Document(id=str(m + 2) * 16)
-        d.score.value = 1.
-        chunk.matches.append(d)
+    with Document() as doc:
+        doc.id = '0' * 16
+        with Document() as chunk:
+            chunk.id = '1' * 16
+            for m in range(5):
+                with Document() as match:
+                    match.id = str(m + 2) * 16
+                    match.score.value = 1.
+                chunk.matches.append(match)
+        doc.chunks.append(chunk)
     return doc
 
 
-def test_vectorsearch_driver_mock_indexer_apply_all():
-    doc = create_document_to_search()
+def test_vectorsearch_driver_mock_indexer_apply_all(document):
     driver = SimpleKVSearchDriver()
 
     executor = MockIndexer()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
 
-    dcs = list(doc.chunks)
+    dcs = list(document.chunks)
     assert len(dcs) == 5
     for chunk in dcs:
         assert chunk.embedding is None
 
-    driver._apply_all(doc.chunks)
+    driver._apply_all(document.chunks)
 
-    dcs = list(doc.chunks)
+    dcs = list(document.chunks)
 
     # chunk idx: 5 had no matched and is removed as missing idx
     assert len(dcs) == 4
@@ -121,22 +117,21 @@ def test_vectorsearch_driver_mock_indexer_apply_all():
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
-def test_vectorsearch_driver_mock_indexer_traverse_apply():
-    doc = create_document_to_search()
+def test_vectorsearch_driver_mock_indexer_traverse_apply(document):
     driver = SimpleKVSearchDriver()
 
     executor = MockIndexer()
-    driver.attach(executor=executor, pea=None)
+    driver.attach(executor=executor, runtime=None)
 
-    dcs = list(doc.chunks)
+    dcs = list(document.chunks)
     assert len(dcs) == 5
     for chunk in dcs:
         assert chunk.embedding is None
 
-    driver._traverse_apply(doc.chunks)
+    driver._traverse_apply(document.chunks)
 
     # chunk idx: 5 had no matched and is removed as missing idx
-    dcs = list(doc.chunks)
+    dcs = list(document.chunks)
     assert len(dcs) == 4
     for chunk in dcs:
         assert chunk.embedding is not None
@@ -144,15 +139,14 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply():
         np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
 
 
-def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks():
+def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(document_with_matches_on_chunks):
     driver = SimpleKVSearchDriver(traversal_paths=('cm',))
     executor = MockIndexer()
-    driver.attach(executor=executor, pea=None)
-    doc = create_document_to_search_with_matches_on_chunks()
+    driver.attach(executor=executor, runtime=None)
 
-    driver._traverse_apply([doc])
+    driver._traverse_apply([document_with_matches_on_chunks])
 
-    dcs = list(doc.chunks)
+    dcs = list(document_with_matches_on_chunks.chunks)
     assert len(dcs) == 1
     chunk = dcs[0]
     matches = list(chunk.matches)

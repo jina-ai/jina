@@ -1,130 +1,68 @@
 import os
 
 import pytest
-from jina.executors import BaseExecutor
-from jina.parser import set_pod_parser, set_gateway_parser
+from jina.parsers import set_gateway_parser
+from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 from jina.peapods.pods import BasePod
-from jina.peapods.pods.flow import FlowPod
-from jina.peapods.pods.gateway import GatewayFlowPod, GatewayPod
-from jina.peapods.pods.mutable import MutablePod
+
+
+@pytest.mark.parametrize('parallel', [1, 2, 4])
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_context_parallel(runtime, parallel):
+    args = set_pod_parser().parse_args(['--runtime-backend', runtime, '--parallel', str(parallel)])
+    with Pod(args) as bp:
+        if parallel == 1:
+            assert bp.num_peas == 1
+        else:
+            # count head and tail
+            assert bp.num_peas == parallel + 2
+
+    Pod(args).start().close()
+
+
+@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ,
+                    reason='for unknown reason, this test is flaky on Github action, '
+                           'but locally it SHOULD work fine')
+@pytest.mark.parametrize('restful', [True, False])
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+@pytest.mark.parametrize('runtime_cls', ['RESTRuntime', 'GRPCRuntime'])
+def test_gateway_pod(runtime, restful, runtime_cls):
+    args = set_gateway_parser().parse_args(
+        ['--runtime-backend', runtime, '--runtime-cls', runtime_cls] + (['--restful'] if restful else []))
+    with Pod(args) as p:
+        assert len(p.all_args) == 1
+        if restful:
+            assert p.all_args[0].runtime_cls == 'RESTRuntime'
+        else:
+            assert p.all_args[0].runtime_cls == 'GRPCRuntime'
+
+    Pod(args).start().close()
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_context(runtime):
-    args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
-    with BasePod(args):
-        pass
-
-    BasePod(args).start().close()
-
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_gateway_pod(runtime):
-    args = set_gateway_parser().parse_args(['--runtime', runtime])
-    with GatewayPod(args):
-        pass
-
-    GatewayPod(args).start().close()
-
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_gateway_pod(runtime):
-    with GatewayFlowPod({'runtime': runtime}):
-        pass
-
-    GatewayFlowPod({'runtime': runtime}).start().close()
-
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_mutable_pod(runtime):
-    args = set_pod_parser().parse_args(['--runtime', runtime, '--parallel', '2'])
-
-    with MutablePod(BasePod(args).peas_args):
-        pass
-
-    MutablePod(BasePod(args).peas_args).start().close()
-
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_flow_pod(runtime):
-    args = {'runtime': runtime, 'parallel': 2}
-    with FlowPod(args):
-        pass
-
-    FlowPod(args).start().close()
-
-
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_context(runtime):
-    args = set_pod_parser().parse_args(['--runtime', runtime,
-                                        '--parallel', '2',
-                                        '--max-idle-time', '5',
-                                        '--shutdown-idle'])
-    with BasePod(args) as bp:
-        bp.join()
-
-    BasePod(args).start().close()
-
-
-def test_pod_gracefully_close_idle():
-    import time
+def test_pod_naming_with_parallel(runtime):
     args = set_pod_parser().parse_args(['--name', 'pod',
                                         '--parallel', '2',
-                                        '--max-idle-time', '4',
-                                        '--shutdown-idle'])
-
-    start_time = time.time()
+                                        '--runtime-backend', runtime])
     with BasePod(args) as bp:
-        while not bp.is_shutdown:
-            time.sleep(1.5)
-
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    assert elapsed_time > 4
-
-
-def test_pod_env_setting():
-    class EnvChecker(BaseExecutor):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert os.environ['key1'] == 'value1'
-            assert os.environ['key2'] == 'value2'
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
-
-    os.environ['key_parent'] = 'value3'
-
-    with Pod(uses='EnvChecker', env=['key1=value1', 'key2=value2']):
-        pass
-
-    # should not affect the main process
-    assert 'key1' not in os.environ
-    assert 'key2' not in os.environ
-    assert 'key_parent' in os.environ
-
-    os.unsetenv('key_parent')
+        assert bp.peas[0].name == 'pod/head'
+        assert bp.peas[1].name == 'pod/tail'
+        assert bp.peas[2].name == 'pod/1'
+        assert bp.peas[3].name == 'pod/2'
+        assert bp.peas[0].runtime.name == 'pod/head/ZEDRuntime'
+        assert bp.peas[1].runtime.name == 'pod/tail/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod/1/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod/2/ZEDRuntime'
 
 
-def test_pod_env_setting_thread():
-    class EnvChecker(BaseExecutor):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # pea/pod-specific
-            assert 'key1' not in os.environ
-            assert 'key2' not in os.environ
-            # inherit from parent process
-            assert os.environ['key_parent'] == 'value3'
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_remote_context(runtime):
+    args = set_pod_parser().parse_args(['--runtime-backend', runtime, '--parallel', str(2)])
+    with Pod(args) as p:
+        remote_pod_args = p.peas_args
 
-    os.environ['key_parent'] = 'value3'
+    with Pod(remote_pod_args) as remote_pod:
+        assert remote_pod.num_peas == 4  # head + tail + 2 peas
 
-    with Pod(uses='EnvChecker', env=['key1=value1', 'key2=value2'], runtime='thread'):
-        pass
-
-    # should not affect the main process
-    assert 'key1' not in os.environ
-    assert 'key2' not in os.environ
-    assert 'key_parent' in os.environ
-
-    os.unsetenv('key_parent')
+    Pod(remote_pod_args).start().close()

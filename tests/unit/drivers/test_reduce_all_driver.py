@@ -1,14 +1,25 @@
-from pathlib import Path
+import os
 from typing import List, Dict
 
 import numpy as np
+import pytest
 
+from jina import Document
 from jina.executors.crafters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
-from jina.proto.jina_pb2 import DocumentProto
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture(scope='function')
+def docs():
+    documents = []
+    for i in range(1, 4):
+        with Document() as doc:
+            doc.text = f'title: this is mode1 from doc{i}, body: this is mode2 from doc{i}'
+        documents.append(doc)
+    return documents
 
 
 class MockSegmenterReduce(BaseSegmenter):
@@ -33,15 +44,9 @@ class MockEncoderReduce(BaseEncoder):
         return np.array(output)
 
 
-def test_merge_chunks_with_different_modality(mocker):
+def test_merge_chunks_with_different_modality(mocker, docs):
     def input_fn():
-        doc1 = DocumentProto()
-        doc1.text = 'title: this is mode1 from doc1, body: this is mode2 from doc1'
-        doc2 = DocumentProto()
-        doc2.text = 'title: this is mode1 from doc2, body: this is mode2 from doc2'
-        doc3 = DocumentProto()
-        doc3.text = 'title: this is mode1 from doc3, body: this is mode2 from doc3'
-        return [doc1, doc2, doc3]
+        return docs
 
     def validate(req):
         assert len(req.index.docs) == 3
@@ -53,8 +58,8 @@ def test_merge_chunks_with_different_modality(mocker):
     response_mock = mocker.Mock(wrap=validate)
 
     flow = Flow().add(name='crafter', uses='MockSegmenterReduce'). \
-        add(name='encoder1', uses=str(cur_dir / 'yaml/mockencoder-mode1.yml')). \
-        add(name='encoder2', uses=str(cur_dir / 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
+        add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
+        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
         add(name='reducer', uses='- !ReduceAllDriver | {traversal_paths: [c]}',
             needs=['encoder1', 'encoder2'])
 

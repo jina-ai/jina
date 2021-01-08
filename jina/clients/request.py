@@ -89,6 +89,14 @@ def index(*args, **kwargs):
     """Generate a indexing request"""
     yield from _generate(*args, **kwargs)
 
+def update(*args, **kwargs):
+    """Generate a update request"""
+    yield from _generate(*args, **kwargs)
+
+def delete(*args, **kwargs):
+    """Generate a delete request"""
+    yield from _generate(*args, **kwargs)
+
 
 def train(*args, **kwargs):
     """Generate a training request """

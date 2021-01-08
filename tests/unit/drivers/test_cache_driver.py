@@ -1,5 +1,5 @@
+import os
 import pickle
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -33,7 +33,7 @@ def test_cache_driver_twice(tmpdir):
     # FIXME DocIdCache doesn't use tmpdir, it saves in curdir
     with DocIDCache(tmpdir) as executor:
         assert not executor.handler_mutex
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs)
 
         with pytest.raises(NotImplementedError):
@@ -46,7 +46,7 @@ def test_cache_driver_twice(tmpdir):
         filename = executor.save_abspath
 
     # check persistence
-    assert Path(filename).exists()
+    assert os.path.exists(filename)
 
 
 def test_cache_driver_tmpfile():
@@ -54,7 +54,7 @@ def test_cache_driver_tmpfile():
     driver = MockCacheDriver()
     with DocIDCache(field=ID_KEY) as executor:
         assert not executor.handler_mutex
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
 
         driver._traverse_apply(docs)
 
@@ -66,7 +66,7 @@ def test_cache_driver_tmpfile():
         docs = list(random_docs(10, start_id=100, embedding=False))
         driver._traverse_apply(docs)
 
-    assert Path(executor.index_abspath).exists()
+    assert os.path.exists(executor.index_abspath)
 
 
 def test_cache_driver_from_file(tmp_path):
@@ -78,7 +78,7 @@ def test_cache_driver_from_file(tmp_path):
     driver = MockCacheDriver()
     with DocIDCache(filename, field=CONTENT_HASH_KEY) as executor:
         assert not executor.handler_mutex
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
 
         with pytest.raises(NotImplementedError):
             # duplicate docs
@@ -89,7 +89,7 @@ def test_cache_driver_from_file(tmp_path):
         driver._traverse_apply(docs)
 
     # check persistence
-    assert Path(executor.save_abspath).exists()
+    assert os.path.exists(executor.save_abspath)
 
 
 class MockBaseCacheDriver(BaseCacheDriver):
@@ -118,7 +118,7 @@ def test_cache_content_driver_same_content(tmpdir):
     filename = None
 
     with DocIDCache(tmpdir, field=CONTENT_HASH_KEY) as executor:
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
 
         with pytest.raises(NotImplementedError):
@@ -165,7 +165,7 @@ def test_cache_content_driver_same_id(tmp_path):
     driver = MockBaseCacheDriver()
 
     with DocIDCache(filename, field=CONTENT_HASH_KEY) as executor:
-        driver.attach(executor=executor, pea=None)
+        driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
         driver._traverse_apply(docs2)
         assert executor.size == 2

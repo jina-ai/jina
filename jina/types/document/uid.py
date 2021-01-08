@@ -19,16 +19,13 @@ __license__ = "Apache-2.0"
 
 import re
 import sys
+import warnings
 from binascii import unhexlify
-from hashlib import blake2b
 
 import numpy as np
 
 from ...excepts import BadDocID
 from ...helper import typename
-from ...proto.jina_pb2 import DocumentProto
-
-from jina.logging import default_logger
 
 _digest_size = 8
 _id_regex = re.compile(r'([0-9a-fA-F][0-9a-fA-F])+')
@@ -131,7 +128,7 @@ class UniqueId(str):
         This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
         such as ranker and Numpyindexer
         """
-        # Deprecated. Please use `int(doc_id)` instead.
+        warnings.warn('Please use `int(doc_id)` instead.', DeprecationWarning)
         return id2int(self)
 
     def __bytes__(self):

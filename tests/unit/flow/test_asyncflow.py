@@ -55,5 +55,5 @@ async def test_run_async_flow_other_task_concurrent():
     with TimeContext('concurrent await') as t:
         await concurrent_main()
 
-    # some dispatch cost, can't be just 5s, usually at <7s
-    assert t.duration < 8
+    # some dispatch cost, can't be just 5s, usually at 7~8s, but must <10s
+    assert t.duration < 10

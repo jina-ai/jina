@@ -5,7 +5,6 @@ import argparse
 import base64
 import copy
 import os
-import tempfile
 import threading
 import time
 from collections import OrderedDict, defaultdict
@@ -23,11 +22,11 @@ from ..helper import colored, \
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..logging.sse import start_sse_logger
-from ..parser import set_client_cli_parser
-from ..peapods.pods.flow import FlowPod
-from ..peapods.pods.gateway import GatewayFlowPod
+from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 
 __all__ = ['BaseFlow', 'FlowLike']
+
+from ..peapods import BasePod
 
 FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
@@ -44,7 +43,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         Please use :class:`Flow` or :class:`AsyncFlow`.
     """
 
-    _cls_pod = FlowPod  #: the type of the Pod, can be changed to other class
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
     def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
@@ -69,7 +67,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._pod_nodes = OrderedDict()  # type: Dict[str, 'FlowPod']
+        self._pod_nodes = OrderedDict()  # type: Dict[str, 'BasePod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
@@ -81,7 +79,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger = JinaLogger(self.__class__.__name__)
 
     def _update_args(self, args, **kwargs):
-        from ..parser import set_flow_parser
+        from ..parsers.flow import set_flow_parser
         from ..helper import ArgNamespace
 
         _flow_parser = set_flow_parser()
@@ -145,9 +143,16 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def _add_gateway(self, needs, **kwargs):
         pod_name = 'gateway'
 
+        kwargs.update(dict(name=pod_name,
+                           ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
+                           read_only=True,
+                           runtime_cls='GRPCRuntime',
+                           pod_role=PodRoleType.GATEWAY))
+
         kwargs.update(self._common_kwargs)
-        kwargs['name'] = 'gateway'
-        self._pod_nodes[pod_name] = GatewayFlowPod(kwargs, needs)
+        args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
+
+        self._pod_nodes[pod_name] = BasePod(args, needs)
 
     def needs(self, needs: Union[Tuple[str], List[str]],
               name: str = 'joiner', *args, **kwargs) -> FlowLike:
@@ -218,11 +223,21 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             if key not in kwargs:
                 kwargs[key] = value
 
-        kwargs['name'] = pod_name
-        kwargs['log_id'] = self.args.log_id
-        kwargs['num_part'] = len(needs)
+        kwargs.update(dict(
+            name=pod_name,
+            pod_role=pod_role,
+            log_id=self.args.log_id,
+            num_part=len(needs)
+        ))
 
-        op_flow._pod_nodes[pod_name] = self._cls_pod(kwargs=kwargs, needs=needs, pod_role=pod_role)
+
+        parser = set_pod_parser()
+        if pod_role == PodRoleType.GATEWAY:
+            parser = set_gateway_parser()
+
+        args = ArgNamespace.kwargs2namespace(kwargs, parser)
+
+        op_flow._pod_nodes[pod_name] = BasePod(args, needs=needs)
         op_flow.last_pod = pod_name
 
         return op_flow
@@ -289,7 +304,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             :meth:`inspect`
 
         """
-
         needs = [k for k, v in self._pod_nodes.items() if v.role == PodRoleType.INSPECT]
         if needs:
             if include_last_pod:
@@ -329,7 +343,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         _pod_edges = set()
-
         if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
 
@@ -503,7 +516,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         end_repl = {}
         for node, v in self._pod_nodes.items():
             if not v.is_singleton and v.role != PodRoleType.GATEWAY:
-                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v._args.parallel})"]')
+                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v.args.parallel})"]')
                 if v.is_head_router:
                     head_router = node + '_HEAD'
                     end_repl[node] = (head_router, '((fa:fa-random))')
@@ -513,8 +526,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
                 p_r = '((%s))'
                 p_e = '[[%s]]'
-                for j in range(v._args.parallel):
-                    r = node + (f'_{j}' if v._args.parallel > 1 else '')
+                for j in range(v.args.parallel):
+                    r = node + (f'_{j}' if v.args.parallel > 1 else '')
                     if v.is_head_router:
                         mermaid_graph.append(f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea')
                     if v.is_tail_router:
@@ -621,7 +634,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _ipython_display_(self):
         """Displays the object in IPython as a side effect"""
-        self.plot(inline_display=True)
+        self.plot(inline_display=True, build=(self._build_level != FlowBuildLevel.GRAPH))
 
     def _mermaid_to_url(self, mermaid_str, img_type) -> str:
         """
@@ -661,8 +674,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                      'services': {}}
 
         for k, v in self._pod_nodes.items():
+            if v.role == PodRoleType.GATEWAY:
+                cmd = 'jina gateway'
+            else:
+                cmd = 'jina pod'
             swarm_yml['services'][k] = {
-                'command': v.to_cli_command(),
+                'command': f'{cmd} {" ".join(ArgNamespace.kwargs2list(vars(v.args)))}',
                 'deploy': {'parallel': 1}
             }
 
@@ -696,7 +713,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return self._pod_nodes.items().__iter__()
 
     def _show_success_message(self):
-        if self._pod_nodes['gateway']._args.rest_api:
+        if self._pod_nodes['gateway'].args.restful:
             header = 'http://'
             protocol = 'REST'
         else:
@@ -717,7 +734,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def block(self):
         """Block the process until user hits KeyboardInterrupt """
         try:
-            self._show_success_message()
             threading.Event().wait()
         except KeyboardInterrupt:
             pass
