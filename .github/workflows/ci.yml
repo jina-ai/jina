@@ -96,6 +96,8 @@ jobs:
         run: |
           sudo apt-get install jq
           echo "::set-output name=matrix::$(bash scripts/get-test-paths.sh)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   docker-image-test:
     needs: docker-build
