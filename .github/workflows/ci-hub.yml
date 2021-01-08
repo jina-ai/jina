@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  hubapp-hubpod-test:
+  jinahub-test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -21,7 +21,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Test hubapp with hubpods
         run: |
-          ./tests/integration/hubapp_hubpods/test_integration.sh
+          ./tests/jinahub/test_integration.sh
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
