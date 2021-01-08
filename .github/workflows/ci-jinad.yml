@@ -34,3 +34,11 @@ jobs:
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v1
+        if: ${{ matrix.python-version }} == 3.7
+        with:
+          file: coverage.xml
+          env_vars: OS,PYTHON
+          name: codecov
+          fail_ci_if_error: false
