@@ -116,7 +116,7 @@ jobs:
           path: ./unit-test-coverage.xml
 
   integration-test:
-    needs: commit-lint
+    needs: lint-flake-8
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
