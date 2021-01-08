@@ -1,13 +1,9 @@
 """
-
 Remarks on the ``id``, we have three views for it
-
 - ``id``: ``str`` is a hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable. it will be used as the major view.
 - ``bytes``: ``bytes`` is the binary format of str, it has 8 bytes fixed length, so it can be used in the dense file storage, e.g. BinaryPbIndexer, as it requires the key has to be fixed length.
 - ``int``:``int64`` (formerly names ``hash``) is the integer form of bytes, as 8 bytes map to int64 . This is useful when sometimes you want to use key along with other numeric values together in one ndarray, such as ranker and Numpyindexer
-
 .. note:
-
     Customized ``id`` is acceptable as long as
     - it only contains the symbols "0"–"9" to represent values 0 to 9,
     and "A"–"F" (or alternatively "a"–"f").
@@ -67,7 +63,7 @@ def is_valid_id(value: str) -> bool:
         raise BadDocID(f'{value} is not a valid id. Customized ``id`` is only acceptable when: \
         - it only contains chars "0"–"9" to represent values 0 to 9, \
         and "A"–"F" (or alternatively "a"–"f"). \
-        - it has n > 0 chars as described above.')
+        - it has 16 chars described above.')
     return True
 
 
