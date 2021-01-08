@@ -62,7 +62,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.header.write(
                 np.array(
                     (key, p, r, r + l),
-                    dtype=np.object
+                    dtype=[np.object, np.int64, np.int64, np.int64]
                 ).tobytes()
             )
             self._start += l
