@@ -685,20 +685,13 @@ def run_async(func, *args, **kwargs):
                 from .excepts import BadClient
                 raise BadClient('something wrong when running the eventloop, result can not be retrieved')
         else:
+
             raise RuntimeError('you have an eventloop running but not using Jupyter/ipython, '
                                'this may mean you are using Jina with other integration? if so, then you '
                                'may want to use AsyncClient/AsyncFlow instead of Client/Flow. If not, then '
                                'please report this issue here: https://github.com/jina-ai/jina')
     else:
         return asyncio.run(func(*args, **kwargs))
-
-
-def check_keys_exist(keys_to_check, existing_keys):
-    missed = []
-    for k in keys_to_check:
-        if k not in existing_keys:
-            missed.append(k)
-    return missed
 
 
 def slugify(value):
