@@ -130,7 +130,8 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
-        test-path: ${{fromJson(needs.update-docker.outputs.matrix)}}
+        test-path: ['unit', 'integration']
+        #test-path: ${{fromJson(needs.update-docker.outputs.matrix)}}
 
     steps:
       - uses: actions/checkout@v2
