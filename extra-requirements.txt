@@ -70,3 +70,4 @@ optuna:                     test, optimizer
 websockets:                 http, devel, test, daemon
 pydantic:                   http, devel, test, daemon
 python-multipart:           http, devel, test, daemon
+pytest-custom_exit_code:    cicd, test

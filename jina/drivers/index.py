@@ -31,7 +31,6 @@ class VectorIndexDriver(BaseIndexDriver):
                 self.exec_fn(np.array([int(doc.id) for doc in docs_pts]), np.stack(embed_vecs))
 
 
-
 class KVIndexDriver(BaseIndexDriver):
     """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
     """

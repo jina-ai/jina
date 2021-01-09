@@ -4,12 +4,11 @@ on:
   pull_request:
 
 jobs:
-  hubapp-hubpod-test:
-    runs-on: ${{ matrix.os }}
+  hub-test:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        python-version: [3.7, 3.8]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +20,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Test hubapp with hubpods
         run: |
-          ./tests/integration/hubapp_hubpods/test_integration.sh
+          ./tests/jinahub/test_integration.sh
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
