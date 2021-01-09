@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import List, Union
+from typing import List, Union, Dict
 
 from fastapi import status, APIRouter, Body, Response, File, UploadFile
 from fastapi.exceptions import HTTPException
@@ -10,6 +10,7 @@ from jina.helper import ArgNamespace
 from jina.parsers import set_client_cli_parser
 from ...excepts import FlowYamlParseException, FlowCreationException, FlowStartException
 from ...models import SinglePodModel
+from ...models.custom import build_pydantic_model
 from ...store import flow_store
 
 router = APIRouter()
@@ -20,11 +21,10 @@ router = APIRouter()
     summary='Build & start a Flow using Pods',
 )
 async def _create_from_pods(
-        pods: Union[List[SinglePodModel]] = Body(...,
-                                                 example=json.loads(SinglePodModel().json()))
+        pods: Union[List[Dict]] = Body(..., example=json.loads(SinglePodModel().json()))
 ):
     """
-    Build a Flow using a list of `PodModel`
+    Build a Flow using a list of `SinglePodModel`
 
         [
             {
@@ -220,13 +220,13 @@ async def _ping(
 
 @router.delete(
     path='/flow',
-    summary='Close Flow context',
+    summary='Close Flow Context',
 )
 async def _delete(
         flow_id: uuid.UUID
 ):
     """
-    Close Flow context
+    Close Flow Context
     """
     with flow_store._session():
         try:

@@ -71,12 +71,12 @@ async def _create(
 
 @router.delete(
     path='/pod',
-    summary='Delete pod',
+    summary='Close Pod Context',
 )
 async def _delete(
         pod_id: uuid.UUID
 ):
-    """Close Pod context
+    """Close Pod Context
     """
     with pod_store._session():
         try:

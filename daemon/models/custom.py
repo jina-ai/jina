@@ -55,7 +55,10 @@ def get_pydantic_fields(config: Union[dict, argparse.ArgumentParser]):
                                   description=arg['help'])
             all_options[arg_key] = (arg_type, current_field)
 
-    # TODO(Deepankar): possible refactoring to `jina.api_to_dict()`
+    # Issue: For all args that have a default value which comes from a function call (get_random_identity() or random_port()),
+    # 1st pydantic model invocation sets these default values, means build_pydantic_model(...) sets the args, not SinglePodModel()
+    # In case of multiple Pods, port conflict happens because of same port set as default in both.
+    # TODO(Deepankar): Add support for `default_factory` for default args that are functions
     if isinstance(config, argparse.ArgumentParser):
         # Ignoring first 3 as they're generic args
         from jina.parsers.helper import KVAppendAction

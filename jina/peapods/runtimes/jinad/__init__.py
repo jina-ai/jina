@@ -33,7 +33,9 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         Streams log messages using websocket from remote server
         """
-        self._logging_task = asyncio.create_task(self.api.logstream(self._remote_id))
+        self._logging_task = asyncio.create_task(
+            self.api.logstream(remote_id=self._remote_id, log_id=self.args.log_id)
+        )
 
     async def async_cancel(self):
         """

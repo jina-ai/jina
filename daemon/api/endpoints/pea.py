@@ -70,12 +70,12 @@ async def _create(
 
 @router.delete(
     path='/pea',
-    summary='Close Pea context',
+    summary='Close Pea Context',
 )
 async def _delete(
         pea_id: uuid.UUID
 ):
-    """Close Pea context
+    """Close Pea Context
     """
     with pea_store._session():
         try:

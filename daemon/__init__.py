@@ -15,7 +15,7 @@ daemon_logger = JinaLogger(context='👻 JINAD')
 
 def _get_app():
     from .api.endpoints import common_router, flow, pod, pea, logs
-    from .config import jinad_config, fastapi_config, server_config, openapitags_config
+    from .config import jinad_config, fastapi_config, openapitags_config
 
     context = namedtuple('context', ['router', 'openapi_tags', 'tags'])
     _all_routers = {
@@ -68,13 +68,16 @@ def _start_uvicorn(app: 'FastAPI'):
                     log_level='error')
     server = Server(config=config)
     server.run()
-    daemon_logger.info('bye!')
+    daemon_logger.info('Bye!')
 
 
 def _start_fluentd():
-    daemon_logger.info('starting fluentd')
+    daemon_logger.info('Starting fluentd')
     cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
-    subprocess.Popen(['fluentd', '-c', cfg])
+    try:
+        subprocess.Popen(['fluentd', '-qq', '-c', cfg])
+    except FileNotFoundError:
+        daemon_logger.warning('Fluentd not found locally, Jinad cannot stream logs!')
 
 
 def _parse_arg():
@@ -86,5 +89,5 @@ def _parse_arg():
 
 def main():
     _parse_arg()
-    threading.Thread(target=_start_fluentd).start()
+    threading.Thread(target=_start_fluentd, daemon=True).start()
     _start_uvicorn(app=_get_app())
