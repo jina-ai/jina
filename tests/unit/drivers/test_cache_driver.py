@@ -190,16 +190,10 @@ class MockCache(DocIDCache):
             assert all([v == d.id for v, d in zip(values, docs)])
 
 
-def test_cache_driver_delete(tmpdir, test_metas):
-    driver = MockBaseCacheDriver(method='delete', traversal_paths=['r'])
-    with MockCache(tmpdir, metas=test_metas, field=CONTENT_HASH_KEY) as e:
-        driver.attach(executor=e, runtime=None)
-        driver._traverse_apply(docs)
-
-
 @pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
-def test_cache_driver_update(tmpdir, test_metas, field_type):
-    driver = MockBaseCacheDriver(method='update', traversal_paths=['r'])
+@pytest.mark.parametrize('method_type', ['delete', 'update'])
+def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type):
+    driver = MockBaseCacheDriver(method=method_type, traversal_paths=['r'])
     with MockCache(tmpdir, metas=test_metas, field=field_type) as e:
         driver.attach(executor=e, runtime=None)
         driver._traverse_apply(docs)
