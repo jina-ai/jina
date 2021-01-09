@@ -205,7 +205,7 @@ class Message:
                 self.envelope.compression.algorithm = 'NONE'
         except Exception as ex:
             default_logger.error(
-                f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {repr(ex)}')
+                f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {ex!r}')
             self.envelope.compression.algorithm = 'NONE'
 
         return data

@@ -206,7 +206,7 @@ class HubIO:
                 if build_result.get('details', None) and build_result.get('build_history', None):
                     self._write_slack_message(build_result, build_result['details'], build_result['build_history'])
         except Exception as e:
-            self.logger.error(f'Error when trying to push image {name}: {repr(e)}')
+            self.logger.error(f'Error when trying to push image {name}: {e!r}')
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
@@ -263,7 +263,7 @@ class HubIO:
             self.logger.success(
                 f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
         except Exception as ex:
-            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry} due to {repr(ex)}')
+            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry} due to {ex!r}')
 
     def _check_docker_image(self, name: str) -> None:
         # check local image
@@ -383,7 +383,7 @@ class HubIO:
                             self.logger.warning(
                                 f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be due to the fact that the executor has non-installed external dependencies')
                     except Exception as ex:
-                        self.logger.error(f'something wrong while testing the build: {repr(ex)}')
+                        self.logger.error(f'something wrong while testing the build: {ex!r}')
                         ex = HubBuilderTestError(ex)
                         _except_strs.append(repr(ex))
                         _excepts.append(ex)

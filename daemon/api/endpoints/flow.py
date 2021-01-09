@@ -145,7 +145,7 @@ async def _create_from_yaml(
                                 detail=f'Invalid yaml file.')
         except FlowStartException as e:
             raise HTTPException(status_code=404,
-                                detail=f'Flow couldn\'t get started:  {repr(e)}')
+                                detail=f'Flow couldn\'t get started:  {e!r}')
 
     return {
         'status_code': status.HTTP_200_OK,

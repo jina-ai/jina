@@ -110,7 +110,8 @@ class BaseClient:
         else:
             self._input_fn = bytes_gen
 
-    async def _get_results(self, input_fn: Callable,
+    async def _get_results(self,
+                           input_fn: Callable,
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):

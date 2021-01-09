@@ -1,4 +1,6 @@
 !Flow
+with:
+  restful: $RESTFUL
 pods:
   pod:
     uses: yaml/fast_slow.yml

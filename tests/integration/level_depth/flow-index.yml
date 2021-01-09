@@ -1,4 +1,6 @@
 !Flow
+with:
+  restful: $RESTFUL
 pods:
   segmenter:
     uses: yaml/segmenter.yml

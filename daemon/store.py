@@ -82,13 +82,13 @@ class InMemoryFlowStore(InMemoryStore):
                 JAML.register(Flow)
                 flow = JAML.load(yamlspec)
             except Exception as e:
-                self.logger.error(f'Got error while loading from yaml {repr(e)}')
+                self.logger.error(f'Got error while loading from yaml {e!r}')
                 raise FlowYamlParseException
         elif isinstance(config, list):
             try:
                 flow = self._build_with_pods(pod_args=config)
             except Exception as e:
-                self.logger.error(f'Got error while creating flows via pods: {repr(e)}')
+                self.logger.error(f'Got error while creating flows via pods: {e!r}')
                 raise FlowCreationException
         else:
             raise FlowBadInputException(f'Not valid Flow config input {type(config)}')
@@ -97,7 +97,7 @@ class InMemoryFlowStore(InMemoryStore):
             flow_id = uuid.UUID(flow.args.log_id)
             flow = self._start(context=flow)
         except Exception as e:
-            self.logger.critical(f'Got following error while starting the flow: {repr(e)}')
+            self.logger.critical(f'Got following error while starting the flow: {e!r}')
             raise FlowStartException(repr(e))
 
         self._store[flow_id] = {}
@@ -160,7 +160,7 @@ class InMemoryPodStore(InMemoryStore):
             pod = Pod(pod_arguments)
             pod = self._start(context=pod)
         except Exception as e:
-            self.logger.critical(f'Got following error while starting the pod: {repr(e)}')
+            self.logger.critical(f'Got following error while starting the pod: {e!r}')
             raise PodStartException(repr(e))
 
         self._store[pod_id] = {}
@@ -195,7 +195,7 @@ class InMemoryPeaStore(InMemoryStore):
             pea = Pea(pea_arguments)
             pea = self._start(context=pea)
         except Exception as e:
-            self.logger.critical(f'Got following error while starting the pea: {repr(e)}')
+            self.logger.critical(f'Got following error while starting the pea: {e!r}')
             raise PeaStartException(repr(e))
 
         self._store[pea_id] = {}

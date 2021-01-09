@@ -1,10 +1,16 @@
 import os
 
+import pytest
+
 from jina.flow import Flow
 
 
-def test_index_depth_0_search_depth_1(tmpdir, mocker):
-    os.environ['JINA_TEST_LEVEL_DEPTH_WORKSPACE'] = str(tmpdir)
+# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
+@pytest.mark.parametrize('restful', [False])
+def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
+    monkeypatch.setenv("RESTFUL", restful)
+    monkeypatch.setenv("JINA_TEST_LEVEL_DEPTH_WORKSPACE", str(tmpdir))
+
     index_data = [
         'I am chunk 0 of doc 1, I am chunk 1 of doc 1, I am chunk 2 of doc 1',
         'I am chunk 0 of doc 2, I am chunk 1 of doc 2',
@@ -55,5 +61,4 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker):
             callback_on='body',
         )
 
-    del os.environ['JINA_TEST_LEVEL_DEPTH_WORKSPACE']
     mock.assert_called_once()

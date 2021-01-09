@@ -42,7 +42,7 @@ class DocIDCache(BaseCache):
                 self.content_hash = pickle.load(open(path + '.cache', 'rb'))
             except FileNotFoundError as e:
                 logger.warning(
-                    f'File path did not exist : {path}.ids or {path}.cache: {repr(e)}. Creating new CacheHandler...')
+                    f'File path did not exist : {path}.ids or {path}.cache: {e!r}. Creating new CacheHandler...')
                 self.ids = []
                 self.content_hash = []
 
