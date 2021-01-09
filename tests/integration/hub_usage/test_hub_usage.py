@@ -1,9 +1,7 @@
 import os
-import subprocess
 from pathlib import Path
 
 import pytest
-
 from jina import __version__ as jina_version
 from jina.docker import hubapi
 from jina.docker.hubio import HubIO
@@ -67,7 +65,6 @@ def test_use_executor_pretrained_model_except():
 
     with pytest.raises(HubBuilderError):
         HubIO(args).build()
-
 
 
 def test_build_timeout_ready():

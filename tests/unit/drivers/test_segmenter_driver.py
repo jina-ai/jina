@@ -26,6 +26,9 @@ class MockSegmenter(BaseSegmenter):
 
 class SimpleSegmentDriver(SegmentDriver):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     @property
     def exec_fn(self):
         return self._exec_fn
