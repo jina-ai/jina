@@ -3,9 +3,7 @@ from pathlib import Path
 import pytest
 from fastapi import UploadFile
 
-from daemon.models import SinglePodModel
 from daemon.store import InMemoryPeaStore, InMemoryPodStore, InMemoryFlowStore
-from jina.enums import PodRoleType
 from jina.flow import Flow
 from jina.parsers import set_pea_parser, set_pod_parser
 from jina.peapods.pods import BasePod
@@ -13,8 +11,12 @@ from jina.peapods.pods import BasePod
 cur_dir = Path(__file__).parent
 
 
-def pod_list():
-    return [SinglePodModel(pod_role=PodRoleType.POD)]
+def pod_list_one():
+    return [{'name': 'pod1'}]
+
+
+def pod_list_multiple():
+    return [{'name': 'pod1'}, {'name': 'pod2'}]
 
 
 def flow_file_str():
@@ -24,7 +26,7 @@ def flow_file_str():
     return config_str
 
 
-@pytest.mark.parametrize('config', [flow_file_str(), pod_list()])
+@pytest.mark.parametrize('config', [flow_file_str(), pod_list_one(), pod_list_multiple()])
 def test_flow_store(config):
     store = InMemoryFlowStore()
     with store._session():

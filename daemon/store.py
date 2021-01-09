@@ -119,7 +119,6 @@ class InMemoryFlowStore(InMemoryStore):
             if not _current_pod_args.get('pod_role'):
                 _current_pod_args.update(pod_role=PodRoleType.POD)
             _current_pod_args.pop('log_config')
-            self.logger.warning(f'Current Pod Args: {_current_pod_args}')
             flow = flow.add(**_current_pod_args)
         return flow
 
