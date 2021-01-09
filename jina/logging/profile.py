@@ -209,7 +209,7 @@ class ProgressBar(TimeContext):
         sys.stdout.write(
             '{:>10} |{:<{}}| 📃 {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f}/s {:6d} {:>10}'.format(
                 colored(self.task_name, 'cyan'),
-                colored('▓' * num_bars, 'green'),
+                colored('█' * num_bars, 'green'),
                 self.bar_len + 9,
                 self.num_docs,
                 elapsed,

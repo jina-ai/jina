@@ -130,8 +130,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
-        test-path: ['unit', 'integration']
-        #test-path: ${{fromJson(needs.update-docker.outputs.matrix)}}
+        test-path: ${{fromJson(needs.update-docker.outputs.matrix)}}
 
     steps:
       - uses: actions/checkout@v2
@@ -161,5 +160,5 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
-          flags: ${{ matrix.test-path }}, cd, ${{ matrix.python-version }}
+          flags: cd
           fail_ci_if_error: false
