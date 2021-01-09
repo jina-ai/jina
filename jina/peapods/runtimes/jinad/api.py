@@ -4,6 +4,7 @@ from contextlib import ExitStack
 from pathlib import Path
 from typing import Dict, Tuple, Set, List, Optional
 
+from ....jaml.helper import complete_path
 from ....enums import RemotePeapodType
 from ....importer import ImportExtensions
 from ....jaml import JAML
@@ -12,8 +13,9 @@ from ....logging import JinaLogger
 
 def _add_file_to_list(_file: str, _file_list: Set, logger: 'JinaLogger'):
     if _file and _file.endswith(('yml', 'yaml', 'py')):
-        if Path(_file).is_file():
-            _file_list.add(_file)
+        real_file = complete_path(_file)
+        if Path(real_file).is_file():
+            _file_list.add(real_file)
             logger.debug(f'adding file {_file} to be uploaded to remote context')
         else:
             logger.warning(f'file {_file} doesn\'t exist in the disk')

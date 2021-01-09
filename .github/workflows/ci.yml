@@ -71,14 +71,52 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
-  core-test:
+
+  docker-build:
     needs: lint-flake-8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: |
+          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
+      - name: Upload to Github Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: jina-ai/jina/jina
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.pkg.github.com
+          dockerfile: Dockerfiles/pip.Dockerfile
+          buildargs: PIP_TAG
+          buildoptions: ${{ matrix.build_option }}
+          tags: "test-pip"
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash scripts/get-test-paths.sh)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  docker-image-test:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
+          docker run docker.pkg.github.com/jina-ai/jina/jina:test-pip hello-world
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  core-test:
+    needs: docker-build
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
-        test-path: ['unit', 'integration']
-
+        python-version: [3.7]
+        test-path: ${{fromJson(needs.docker-build.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -89,28 +127,29 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
+          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
-          pip install .[cicd] --no-cache-dir
-      - name: Test docker install
-        run: |
-          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker run jinaai/jina:test-pip hello-world
-      - name: Test with pytest
-        run: |
+          pip install ".[cicd,test]" --no-cache-dir
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
-          pip install .[test]
-          pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/${{ matrix.test-path }}
-        timeout-minutes: 40
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/${{ matrix.test-path }}
+        timeout-minutes: 20
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v1
-        if: ${{ matrix.python-version }} == 3.7
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
         with:
           file: coverage.xml
-          name: ${{ matrix.python-version }}-${{ matrix.test-path }}-codecov
-          flags: ${{ matrix.test-path }}, core, ci
+          name: ${{ matrix.test-path }}-codecov
+          flags: core, ci
           fail_ci_if_error: false
