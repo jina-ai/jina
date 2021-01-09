@@ -30,7 +30,7 @@ jobs:
           cd latency
           docker build --build-arg JINA_VER=master . -t latency-tracking
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
-          bash batch.sh 3
+          bash batch.sh 2
           pip install prettytable
           python ppstat.py > comment.txt
       - id: get-comment-body
