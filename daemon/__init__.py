@@ -15,7 +15,7 @@ daemon_logger = JinaLogger(context='👻 JINAD')
 
 def _get_app():
     from .api.endpoints import common_router, flow, pod, pea, logs
-    from .config import jinad_config, fastapi_config, server_config, openapitags_config
+    from .config import jinad_config, fastapi_config, openapitags_config
 
     context = namedtuple('context', ['router', 'openapi_tags', 'tags'])
     _all_routers = {

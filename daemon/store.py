@@ -15,7 +15,7 @@ from jina.peapods import Pea, Pod
 from .excepts import FlowYamlParseException, FlowCreationException, \
     FlowStartException, PodStartException, PeaStartException, FlowBadInputException
 from .helper import create_meta_files_from_upload, delete_meta_files_from_upload
-from .models import SinglePodModel
+from .models import SinglePodModel, build_pydantic_model
 
 
 class InMemoryStore:
@@ -107,20 +107,24 @@ class InMemoryFlowStore(InMemoryStore):
         return flow_id, flow.host, flow.port_expose
 
     def _build_with_pods(self,
-                         pod_args: List[SinglePodModel]):
-        """ Since we rely on PodModel, this can accept all params that a Pod can accept """
+                         pod_args: List[Dict]):
+        """ Since we rely on SinglePodModel, this can accept all params that a Pod can accept """
         flow = Flow()
         for current_pod_args in pod_args:
-            _current_pod_args = current_pod_args.dict()
+            # Hacky code here. We build `SinglePodModel` from `Dict` everytime to reset the default values
+            SinglePodModel = build_pydantic_model(model_name='SinglePodModel',
+                                                  module='pod')
+            _current_pod_args = SinglePodModel(**current_pod_args).dict()
+
             if not _current_pod_args.get('pod_role'):
                 _current_pod_args.update(pod_role=PodRoleType.POD)
             _current_pod_args.pop('log_config')
+            self.logger.warning(f'Current Pod Args: {_current_pod_args}')
             flow = flow.add(**_current_pod_args)
         return flow
 
     def _get(self,
-             flow_id: uuid.UUID,
-             yaml_only: bool = False):
+             flow_id: uuid.UUID):
         """ Fetches a Flow from the store """
         if flow_id not in self._store:
             raise KeyError(f'{flow_id} not found')
