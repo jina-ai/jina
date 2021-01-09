@@ -10,7 +10,7 @@ from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback
 from jina.helper import cached_property, convert_tuple_to_list
-from jina.jaml.helper import _complete_path
+from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
@@ -130,18 +130,15 @@ def test_pprint_routes(capfd):
     rr.routes.extend(result)
     pprint_routes(rr)
     out, err = capfd.readouterr()
-    assert out == '''+-----+------+------------+
-| \x1b[1mPod\x1b[0m | \x1b[1mTime\x1b[0m | \x1b[1mException\x1b[0m  |
-+-----+------+------------+
-| 🔴  | 0ms  | r1         |
-|     |      | line1r2    |
-|     |      | line2      |
-+-----+------+------------+
-| ⚪  | 0ms  | line1line2 |
-+-----+------+------------+
-| 🟢  | 0ms  |            |
-+-----+------+------------+
-'''
+    assert '⚪' in out
+    assert '🟢' in out
+    assert 'Pod' in out
+    assert 'Time' in out
+    assert 'Exception' in out
+    assert 'r1' in out
+    assert 'line1r2' in out
+    assert 'line2' in out
+    assert 'line1line2' in out
 
 
 def test_convert_tuple_to_list():
@@ -187,11 +184,11 @@ def test_random_docs():
 
 
 def test_complete_path_success():
-    assert _complete_path('test_helper.py')
-    assert _complete_path('helper.py')
-    assert _complete_path('bash')
+    assert complete_path('test_helper.py')
+    assert complete_path('helper.py')
+    assert complete_path('bash')
 
 
 def test_complete_path_not_found():
     with pytest.raises(FileNotFoundError):
-        assert _complete_path('unknown.yaml')
+        assert complete_path('unknown.yaml')
