@@ -172,15 +172,18 @@ def test_cache_content_driver_same_id(tmp_path, test_metas):
         assert executor.size == 2
 
 
-docs = [Document(text=f'doc_{i}') for i in range(5)]
+@pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
+@pytest.mark.parametrize('method_type', ['delete', 'update'])
+def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type, mocker):
+    driver = MockBaseCacheDriver(method=method_type, traversal_paths=['r'])
 
+    docs = [Document(text=f'doc_{i}') for i in range(5)]
 
-class MockCache(DocIDCache):
-    def delete(self, keys, *args, **kwargs):
+    def validate_delete(self, keys, *args, **kwargs):
         assert len(keys) == len(docs)
         assert all([k == d.id for k, d in zip(keys, docs)])
 
-    def update(self, keys, values, *args, **kwargs):
+    def validate_update(self, keys, values, *args, **kwargs):
         assert len(keys) == len(docs)
         assert len(values) == len(docs)
         assert all([k == d.id for k, d in zip(keys, docs)])
@@ -189,11 +192,8 @@ class MockCache(DocIDCache):
         elif self.field == ID_KEY:
             assert all([v == d.id for v, d in zip(values, docs)])
 
-
-@pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
-@pytest.mark.parametrize('method_type', ['delete', 'update'])
-def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type):
-    driver = MockBaseCacheDriver(method=method_type, traversal_paths=['r'])
-    with MockCache(tmpdir, metas=test_metas, field=field_type) as e:
+    with DocIDCache(tmpdir, metas=test_metas, field=field_type) as e:
+        mocker.patch.object(DocIDCache, 'update', validate_update)
+        mocker.patch.object(DocIDCache, 'delete', validate_delete)
         driver.attach(executor=e, runtime=None)
-        driver._traverse_apply(docs)
+        driver._apply_all(docs)
