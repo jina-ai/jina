@@ -9,11 +9,9 @@ from ....zmq import AsyncZmqlet
 from ..... import clients
 from .....enums import RequestType
 from .....importer import ImportExtensions
+from .....logging import JinaLogger
 from .....types.message import Message
 from .....types.request import Request
-
-if False:
-    from .....logging import JinaLogger
 
 
 def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
@@ -126,7 +124,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                         break
             except Exception as exc:
                 close_code = status.WS_1011_INTERNAL_ERROR
-                logger.error(f'Got an exception in handle_receive: {repr(exc)}')
+                logger.error(f'Got an exception in handle_receive: {exc!r}')
                 raise exc from None
             finally:
                 await self.on_disconnect(websocket, close_code)
