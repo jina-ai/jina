@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+#    paths-ignore:
+#      - 'README.md'
+#      - '.all-contributorsrc'
+#      - 'docs/*'
+
+jobs:
+  daemon-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+        test-path: ['unit', 'integration']
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[cicd,daemon,test]" --no-cache-dir
+          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          export JINA_LOG_VERBOSITY="ERROR"
+          pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/jinad/${{ matrix.test-path }}
+        timeout-minutes: 40
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v1
+        if: ${{ matrix.python-version }} == 3.7
+        with:
+          file: coverage.xml
+          name: jinad-${{ matrix.python-version }}-${{ matrix.test-path }}-codecov
+          flags: ${{ matrix.test-path }}, jinad, ci
+          fail_ci_if_error: false

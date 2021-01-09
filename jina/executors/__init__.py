@@ -426,7 +426,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 else:
                     raise UnattachedDriver(d)
         else:
-            raise NoDriverForRequest(req_type)
+            raise NoDriverForRequest(f'{req_type} for {self}')
 
     def __str__(self):
         return self.__class__.__name__

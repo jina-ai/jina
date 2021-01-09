@@ -1,7 +1,8 @@
-import json
 from logging import getLogger
 
+import json
 import mock
+
 import pytest
 import requests
 
@@ -53,12 +54,12 @@ def test_hubapi_list(mocker):
     assert result[0]['kind'] == 'encoder'
 
 
-@mock.patch('jina.docker.hubapi.JAML.load')
 def test_fetch_access_token(mocker):
-    token_string = json.dumps({'access_token': 'dummy_token'})
-    token_json = json.loads(token_string)
-    mocker.return_value = token_json
-    _fetch_access_token(logger=getLogger())
+    target_val = 'dummy_token'
+    from jina.docker.helper import credentials_file
+    credentials_file().touch()
+    mocker.patch('jina.docker.hubapi.JAML.load', return_value={'access_token': target_val})
+    assert _fetch_access_token(logger=getLogger()) == target_val
 
 
 @pytest.fixture(scope='function')
