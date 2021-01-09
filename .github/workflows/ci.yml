@@ -151,5 +151,5 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
-          flags: ${{ matrix.test-path }}, core, ci, ${{ matrix.python-version }}
+          flags: core, ci, ${{ matrix.python-version }}
           fail_ci_if_error: false
