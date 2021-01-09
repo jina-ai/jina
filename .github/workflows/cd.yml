@@ -221,6 +221,7 @@ jobs:
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v1
         if: ${{ matrix.python-version }} == 3.7

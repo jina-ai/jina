@@ -56,9 +56,9 @@ async def _create(
             pea_id = pea_store._create(pea_arguments=pea_arguments)
         except PeaStartException as e:
             raise HTTPException(status_code=404,
-                                detail=f'Pea couldn\'t get started:  {repr(e)}')
+                                detail=f'Pea couldn\'t get started:  {e!r}')
         except Exception as e:
-            daemon_logger.error(f'Got an error while creating a pea {repr(e)}')
+            daemon_logger.error(f'Got an error while creating a pea {e!r}')
             raise HTTPException(status_code=404,
                                 detail=f'Something went wrong')
     return {

@@ -1,18 +1,18 @@
+import argparse
 import asyncio
 from typing import Any
 
 from google.protobuf.json_format import MessageToDict
 
-from ..... import clients
+from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
+from ..... import clients
 from .....enums import RequestType
+from .....importer import ImportExtensions
 from .....types.message import Message
 from .....types.request import Request
-from .....importer import ImportExtensions
-from ..grpc.async_call import AsyncPrefetchCall
 
 if False:
-    import argparse
     from .....logging import JinaLogger
 
 
@@ -112,7 +112,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             try:
                 while True:
                     message = await websocket.receive()
-                    if message["type"] == "websocket.receive":
+                    if message['type'] == 'websocket.receive':
                         data = await self.decode(websocket, message)
                         if data == bytes(True):
                             self.is_req_empty = True
@@ -121,8 +121,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                             Message(None, Request(data), 'gateway', **vars(self.args))
                         )
                         self.num_requests += 1
-                    elif message["type"] == "websocket.disconnect":
-                        close_code = int(message.get("code", status.WS_1000_NORMAL_CLOSURE))
+                    elif message['type'] == 'websocket.disconnect':
+                        close_code = int(message.get('code', status.WS_1000_NORMAL_CLOSURE))
                         break
             except Exception as exc:
                 close_code = status.WS_1011_INTERNAL_ERROR
@@ -146,7 +146,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                         await websocket.send_json(response.to_json())
                     self.num_responses += 1
             except Exception as e:
-                logger.error(f'Got an exception in handle_send: {repr(e)}')
+                logger.error(f'Got an exception in handle_send: {e!r}')
 
         async def decode(self, websocket: WebSocket, message: Message) -> Any:
             if 'text' in message or 'json' in message:

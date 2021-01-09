@@ -15,7 +15,7 @@ def invoke_requests(method: str,
             url, data=json.dumps(payload), headers=headers)
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f'got an exception while invoking request {repr(e)}')
+        print(f'got an exception while invoking request {e!r}')
         return
 
 def get_results(query: str,

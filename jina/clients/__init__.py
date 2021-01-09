@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from . import request
 from .base import BaseClient, CallbackFnType, InputFnType
-from .websockets import WebSocketBaseClient
+from .websockets import WebSocketClientMixin
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
@@ -106,7 +106,7 @@ class Client(BaseClient):
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
 
-class WebSocketClient(Client, WebSocketBaseClient):
+class WebSocketClient(Client, WebSocketClientMixin):
     """A Python Client to stream requests from a Flow with a RESTGateway
     :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like
     :meth:`index`, "meth:`search`, :meth:`train`, :meth:`update` & :meth:`delete`.

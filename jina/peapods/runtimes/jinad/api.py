@@ -113,7 +113,7 @@ class JinadAPI:
             r = requests.get(url=self.alive_url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'something wrong on remote: {repr(ex)}')
+            self.logger.error(f'something wrong on remote: {ex!r}')
             return False
 
     def upload(self, args: Dict, **kwargs) -> bool:
@@ -143,7 +143,7 @@ class JinadAPI:
                     self.logger.success(f'Got status {r.json()["status"]} from remote')
                     return True
             except requests.exceptions.RequestException as ex:
-                self.logger.error(f'something wrong on remote: {repr(ex)}')
+                self.logger.error(f'something wrong on remote: {ex!r}')
 
     def create(self, args: Dict, **kwargs) -> Optional[str]:
         """ Create a remote pea/pod
@@ -161,7 +161,7 @@ class JinadAPI:
                 return r.json()[f'{self.kind}_id']
             self.logger.error(f'couldn\'t create pod with remote jinad {r.json()}')
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t create pod with remote jinad {repr(ex)}')
+            self.logger.error(f'couldn\'t create pod with remote jinad {ex!r}')
 
     async def logstream(self, remote_id: 'str'):
         """ websocket log stream from remote pea/pod
@@ -201,7 +201,7 @@ class JinadAPI:
         except websockets.exceptions.ConnectionClosedOK:
             self.logger.error(f'🌏 Client got disconnected from server')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(f'🌏 Got following error while streaming logs via websocket {repr(e)}')
+            self.logger.error(f'🌏 Got following error while streaming logs via websocket {e!r}')
         except asyncio.CancelledError:
             self.logger.info(f'🌏 Logging task cancelled successfully')
         finally:
@@ -224,7 +224,7 @@ class JinadAPI:
             r = requests.delete(url=url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t connect with remote jinad url {repr(ex)}')
+            self.logger.error(f'couldn\'t connect with remote jinad url {ex!r}')
             return False
 
 

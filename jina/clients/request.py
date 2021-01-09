@@ -82,7 +82,7 @@ def _generate(data: GeneratorSourceType,
             yield req
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception
-        default_logger.critical(f'input_fn is not valid! {repr(ex)}', exc_info=True)
+        default_logger.critical(f'input_fn is not valid! {ex!r}', exc_info=True)
 
 
 def index(*args, **kwargs):

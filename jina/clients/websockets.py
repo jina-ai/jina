@@ -11,7 +11,7 @@ if False:
     from ..types.request import Response
 
 
-class WebSocketBaseClient(BaseClient):
+class WebSocketClientMixin(BaseClient):
     async def _get_results(self,
                            input_fn: Callable,
                            on_done: Callable,
@@ -21,7 +21,7 @@ class WebSocketBaseClient(BaseClient):
         :meth:`send_requests()`
             Traverses through the request iterator
             Sends each request & awaits :meth:`websocket.send()`
-            Sends & awaits `byte(True)` to acknowledge request iteraor is empty
+            Sends & awaits `byte(True)` to acknowledge request iterator is empty
         Traversal logic:
             Starts an independent task :meth:`send_requests()`
             Awaits on each response from :meth:`websocket.recv()` (done in an async loop)
@@ -50,17 +50,16 @@ class WebSocketBaseClient(BaseClient):
                 self.num_responses = 0
 
                 async def send_requests(request_iterator):
-                    while True:
-                        try:
+                    try:
+                        while True:
                             next_request = next(request_iterator)
                             await websocket.send(next_request.SerializeToString())
                             self.num_requests += 1
-                        except StopIteration:
-                            # Server has no way of knowing when to stop the await on sending response back to the client
-                            # We send one last message to say `request_iterator` is completed.
-                            # On the client side, this :meth:`send` doesn't need to be awaited with a :meth:`recv`
-                            await websocket.send(bytes(True))
-                            return
+                    except StopIteration:
+                        # Server has no way of knowing when to stop the await on sending response back to the client
+                        # We send one last message to say `request_iterator` is completed.
+                        # On the client side, this :meth:`send` doesn't need to be awaited with a :meth:`recv`
+                        await websocket.send(bytes(True))
 
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     # Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.
@@ -90,7 +89,7 @@ class WebSocketBaseClient(BaseClient):
         except websockets.exceptions.ConnectionClosedOK:
             self.logger.warning(f'Client got disconnected from the websocket server')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(f'Got following error while streaming requests via websocket: {repr(e)}')
+            self.logger.error(f'Got following error while streaming requests via websocket: {e!r}')
         finally:
             if self.args.return_results:
                 return result

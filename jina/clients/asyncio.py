@@ -1,5 +1,5 @@
 from .base import InputFnType, BaseClient, CallbackFnType
-from .websockets import WebSocketBaseClient
+from .websockets import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
 
@@ -100,7 +100,7 @@ class AsyncClient(BaseClient):
         return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
 
-class AsyncWebSocketClient(AsyncClient, WebSocketBaseClient):
+class AsyncWebSocketClient(AsyncClient, WebSocketClientMixin):
     """
     :class:`AsyncWebSocketClient` is the asynchronous version of the :class:`WebSocketClient`.
     They share the same interface, except in :class:`AsyncWebSocketClient` :meth:`train`, :meth:`index`, :meth:`search`
