@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import threading
 from collections import namedtuple
@@ -10,7 +11,9 @@ from uvicorn import Config, Server
 from jina.logging import JinaLogger
 from .parser import get_main_parser
 
-daemon_logger = JinaLogger(context='👻 JinaD')
+daemon_logger = JinaLogger(context='👻', log_config=os.getenv('JINAD_LOG_CONFIG',
+                                                              pkg_resources.resource_filename('jina', '/'.join(
+                                                                  ('resources', 'logging.daemon.yml')))))
 
 
 def _get_app():

@@ -59,18 +59,18 @@ def flow_endpoints():
 @pytest.fixture(scope='session')
 def pod_endpoints():
     return [
-        ('_upload', f'upload'),
-        ('_create', f'pod'),
-        ('_delete', f'pod')
+        ('_upload', f'/upload'),
+        ('_create', f'/pod'),
+        ('_delete', f'/pod')
     ]
 
 
 @pytest.fixture(scope='session')
 def pea_endpoints():
     return [
-        ('_upload', f'pea/upload'),
-        ('_create', f'pea'),
-        ('_delete', f'pea')
+        ('_upload', f'/pea/upload'),
+        ('_create', f'/pea'),
+        ('_delete', f'/pea')
     ]
 
 
