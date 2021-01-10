@@ -58,7 +58,7 @@ jobs:
           args: 'bundle schema/jinad/schema.json -o jinad.html'
       - name: push-to-api-repo
         run: |
-          cp jinad.html schema/jinad/${{env.JINA_VERSION}}.html
+          mkdir -p schema/daemon/
           cp jinad.html schema/daemon/${{env.JINA_VERSION}}.html
           cd schema
           git config --local user.email "dev-bot@jina.ai"
