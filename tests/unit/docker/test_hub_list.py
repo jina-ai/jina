@@ -10,7 +10,7 @@ def test_hub_list_local_with_submodule():
     assert len(response) > 1
 
 
-@pytest.mark.skip('temporarily broken')
+@pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
 def test_hub_list_keywords():
     args = set_hub_list_parser().parse_args(['--keywords', 'numeric'])
     response = HubIO(args).list()
@@ -28,6 +28,7 @@ def test_hub_list_keywords():
     assert combined_count >= numeric_count
 
 
+@pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
 def test_hub_list_nonexisting_kind():
     args = set_hub_list_parser().parse_args(['--kind', 'blah'])
     response = HubIO(args).list()

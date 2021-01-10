@@ -75,7 +75,7 @@ def test_build_timeout_ready():
                     timeout_ready=20000):
         pass
 
-
+@pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
 @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
@@ -109,6 +109,7 @@ def test_hub_build_push(monkeypatch, mocker):
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
 
+@pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
 @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push_push_again(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
