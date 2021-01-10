@@ -60,6 +60,7 @@ jobs:
         run: |
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/${{env.JINA_VERSION}}.html
+          cp jinad.html schema/daemon/devel.html
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
