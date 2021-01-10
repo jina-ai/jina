@@ -11,7 +11,7 @@ services:
       - "45001:45001"
       - "45002:45002"
     env_file:
-      - tests/integration/daemon/distributed/test_simple_local_remote/.env
+      - tests/jinad/integration/distributed/test_simple_local_remote/.env
     expose:
       - 10000-60000
     networks:
@@ -23,7 +23,7 @@ services:
       - 8000
       - 10000-60000
     env_file:
-      - tests/integration/daemon/distributed/test_simple_local_remote/.env
+      - tests/jinad/integration/distributed/test_simple_local_remote/.env
     networks:
       testing_net:
         ipv4_address: 172.28.1.2

@@ -125,7 +125,7 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Prepare enviroment
         run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
@@ -134,13 +134,17 @@ jobs:
           pip install ".[cicd,test]" --no-cache-dir
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test
+        run: |
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/${{ matrix.test-path }}
         timeout-minutes: 20
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check file existence
+      - name: Check codecov file
         id: check_files
         uses: andstor/file-existence-action@v1
         with:
@@ -151,5 +155,5 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
-          flags: ${{ matrix.test-path }}, core, ci, ${{ matrix.python-version }}
+          flags: core, ci
           fail_ci_if_error: false

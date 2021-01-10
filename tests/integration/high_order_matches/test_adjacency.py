@@ -1,6 +1,8 @@
 import os
 import shutil
 
+import pytest
+
 from jina.flow import Flow
 from tests import random_docs
 
@@ -17,7 +19,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 #         f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), on_done=validate)
 
 
-def test_high_order_matches_integrated(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_high_order_matches_integrated(mocker, restful):
     def validate(req):
         assert len(req.docs) == 1
         assert len(req.docs[0].matches) == 5
@@ -28,7 +31,7 @@ def test_high_order_matches_integrated(mocker):
 
     response_mock = mocker.Mock(wrap=validate)
     # this is equivalent to the last test but with simplified YAML spec.
-    f = Flow(callback_on='body').add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
+    f = Flow(restful=restful, callback_on='body').add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
 
     with f:
         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))

@@ -56,9 +56,9 @@ async def _create(
             pea_id = pea_store._create(pea_arguments=pea_arguments)
         except PeaStartException as e:
             raise HTTPException(status_code=404,
-                                detail=f'Pea couldn\'t get started:  {repr(e)}')
+                                detail=f'Pea couldn\'t get started:  {e!r}')
         except Exception as e:
-            daemon_logger.error(f'Got an error while creating a pea {repr(e)}')
+            daemon_logger.error(f'Got an error while creating a pea {e!r}')
             raise HTTPException(status_code=404,
                                 detail=f'Something went wrong')
     return {
@@ -70,12 +70,12 @@ async def _create(
 
 @router.delete(
     path='/pea',
-    summary='Close Pea context',
+    summary='Close Pea Context',
 )
 async def _delete(
         pea_id: uuid.UUID
 ):
-    """Close Pea context
+    """Close Pea Context
     """
     with pea_store._session():
         try:

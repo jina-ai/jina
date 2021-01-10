@@ -4,8 +4,7 @@ from pydantic import BaseModel
 
 from .custom import build_pydantic_model
 
-SinglePodModel = build_pydantic_model(model_name='PodModel',
-                                      module='pod')
+SinglePodModel = build_pydantic_model(model_name='SinglePodModel', module='pod')
 
 
 class ParallelPodModel(BaseModel):

@@ -272,7 +272,7 @@ class AsyncZmqlet(Zmqlet):
             self.bytes_sent += num_bytes
             self.msg_sent += 1
         except (asyncio.CancelledError, TypeError) as ex:
-            self.logger.error(f'sending message error: {repr(ex)}, gateway cancelled?')
+            self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
     async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> 'Message':
         try:
@@ -282,7 +282,7 @@ class AsyncZmqlet(Zmqlet):
             if callback:
                 return callback(msg)
         except (asyncio.CancelledError, TypeError) as ex:
-            self.logger.error(f'receiving message error: {repr(ex)}, gateway cancelled?')
+            self.logger.error(f'receiving message error: {ex!r}, gateway cancelled?')
 
     def __enter__(self):
         time.sleep(.2)  # sleep a bit until handshake is done

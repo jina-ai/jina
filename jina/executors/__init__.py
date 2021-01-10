@@ -293,7 +293,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._post_init_wrapper(fill_in_metas=False)
         except ModuleNotFoundError as ex:
             self.logger.warning(f'{typename(ex)} is often caused by a missing component, '
-                                f'which often can be solved by "pip install" relevant package: {repr(ex)}',
+                                f'which often can be solved by "pip install" relevant package: {ex!r}',
                                 exc_info=True)
 
     def train(self, *args, **kwargs) -> None:

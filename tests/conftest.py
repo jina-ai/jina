@@ -1,11 +1,11 @@
 import os
 import random
 import string
+import time
 
 import pytest
-from fastapi.testclient import TestClient
-
 from daemon.config import fastapi_config
+from fastapi.testclient import TestClient
 from jina.executors.metas import get_default_metas
 
 PREFIX = fastapi_config.PREFIX
@@ -74,3 +74,15 @@ def pea_endpoints():
         ('_create', f'{PREFIX}/pea'),
         ('_delete', f'{PREFIX}/pea')
     ]
+
+
+@pytest.fixture()
+def docker_compose(request):
+    os.system(
+        f"docker-compose -f {request.param} --project-directory . up  --build -d --remove-orphans"
+    )
+    time.sleep(10)
+    yield
+    os.system(
+        f"docker-compose -f {request.param} --project-directory . down --remove-orphans"
+    )

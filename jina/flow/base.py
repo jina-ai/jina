@@ -14,7 +14,7 @@ from urllib.request import Request, urlopen
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import JINA_GLOBAL
-from ..clients import Client
+from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import colored, \
@@ -147,6 +147,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                            read_only=True,
                            runtime_cls='GRPCRuntime',
+                           log_id=self.args.log_id,
                            pod_role=PodRoleType.GATEWAY))
 
         kwargs.update(self._common_kwargs)
@@ -378,6 +379,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger.warning(f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
                                 f'you may want to double check if it is intentional or some mistake')
         op_flow._build_level = FlowBuildLevel.GRAPH
+        self._update_client()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -407,7 +409,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             # it may have been shutdown from the outside
             urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
         except Exception as ex:
-            self.logger.info(f'Failed to connect to shutdown log sse server: {repr(ex)}')
+            self.logger.info(f'Failed to connect to shutdown log sse server: {ex!r}')
 
     def _start_log_server(self):
         try:
@@ -427,13 +429,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 if response.status == 200:
                     self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
             except Exception as ex:
-                self.logger.error(f'Could not start logserver because of {repr(ex)}')
+                self.logger.error(f'Could not start logserver because of {ex!r}')
         except ModuleNotFoundError:
             self.logger.error(
                 f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
                 f'use pip install "jina[http]" (with double quotes) to install the dependencies')
         except Exception as ex:
-            self.logger.error(f'logserver fails to start: {repr(ex)}')
+            self.logger.error(f'logserver fails to start: {ex!r}')
 
     def start(self):
         """Start to run all Pods in this Flow.
@@ -753,6 +755,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             return list(self._pod_nodes.values())[item]
         else:
             raise TypeError(f'{typename(item)} is not supported')
+
+    def _update_client(self):
+        if self._pod_nodes['gateway'].args.restful:
+            self._cls_client = WebSocketClient
 
     def index(self):
         raise NotImplementedError

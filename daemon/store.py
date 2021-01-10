@@ -7,14 +7,15 @@ from typing import List, Dict, Union
 from fastapi import UploadFile
 
 from jina.flow import Flow
-from jina.helper import colored, get_random_identity
 from jina.jaml import JAML
+from jina.helper import colored
+from jina.enums import PodRoleType
 from jina.logging import JinaLogger
 from jina.peapods import Pea, Pod
 from .excepts import FlowYamlParseException, FlowCreationException, \
     FlowStartException, PodStartException, PeaStartException, FlowBadInputException
 from .helper import create_meta_files_from_upload, delete_meta_files_from_upload
-from .models import SinglePodModel
+from .models import SinglePodModel, build_pydantic_model
 
 
 class InMemoryStore:
@@ -81,25 +82,22 @@ class InMemoryFlowStore(InMemoryStore):
                 JAML.register(Flow)
                 flow = JAML.load(yamlspec)
             except Exception as e:
-                self.logger.error(f'Got error while loading from yaml {repr(e)}')
+                self.logger.error(f'Got error while loading from yaml {e!r}')
                 raise FlowYamlParseException
         elif isinstance(config, list):
             try:
                 flow = self._build_with_pods(pod_args=config)
-                with flow:
-                    pass
             except Exception as e:
-                self.logger.error(f'Got error while creating flows via pods: {repr(e)}')
+                self.logger.error(f'Got error while creating flows via pods: {e!r}')
                 raise FlowCreationException
         else:
             raise FlowBadInputException(f'Not valid Flow config input {type(config)}')
 
         try:
-            flow.args.log_id = flow.args.identity if 'identity' in flow.args else get_random_identity()
             flow_id = uuid.UUID(flow.args.log_id)
             flow = self._start(context=flow)
         except Exception as e:
-            self.logger.critical(f'Got following error while starting the flow: {repr(e)}')
+            self.logger.critical(f'Got following error while starting the flow: {e!r}')
             raise FlowStartException(repr(e))
 
         self._store[flow_id] = {}
@@ -109,18 +107,23 @@ class InMemoryFlowStore(InMemoryStore):
         return flow_id, flow.host, flow.port_expose
 
     def _build_with_pods(self,
-                         pod_args: List[SinglePodModel]):
-        """ Since we rely on PodModel, this can accept all params that a Pod can accept """
+                         pod_args: List[Dict]):
+        """ Since we rely on SinglePodModel, this can accept all params that a Pod can accept """
         flow = Flow()
         for current_pod_args in pod_args:
-            _current_pod_args = current_pod_args.dict()
+            # Hacky code here. We build `SinglePodModel` from `Dict` everytime to reset the default values
+            SinglePodModel = build_pydantic_model(model_name='SinglePodModel',
+                                                  module='pod')
+            _current_pod_args = SinglePodModel(**current_pod_args).dict()
+
+            if not _current_pod_args.get('pod_role'):
+                _current_pod_args.update(pod_role=PodRoleType.POD)
             _current_pod_args.pop('log_config')
             flow = flow.add(**_current_pod_args)
         return flow
 
     def _get(self,
-             flow_id: uuid.UUID,
-             yaml_only: bool = False):
+             flow_id: uuid.UUID):
         """ Fetches a Flow from the store """
         if flow_id not in self._store:
             raise KeyError(f'{flow_id} not found')
@@ -157,7 +160,7 @@ class InMemoryPodStore(InMemoryStore):
             pod = Pod(pod_arguments)
             pod = self._start(context=pod)
         except Exception as e:
-            self.logger.critical(f'Got following error while starting the pod: {repr(e)}')
+            self.logger.critical(f'Got following error while starting the pod: {e!r}')
             raise PodStartException(repr(e))
 
         self._store[pod_id] = {}
@@ -192,7 +195,7 @@ class InMemoryPeaStore(InMemoryStore):
             pea = Pea(pea_arguments)
             pea = self._start(context=pea)
         except Exception as e:
-            self.logger.critical(f'Got following error while starting the pea: {repr(e)}')
+            self.logger.critical(f'Got following error while starting the pea: {e!r}')
             raise PeaStartException(repr(e))
 
         self._store[pea_id] = {}

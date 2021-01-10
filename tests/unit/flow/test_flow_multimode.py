@@ -1,6 +1,7 @@
 import os
 from typing import List, Dict
 
+import pytest
 import numpy as np
 
 from jina.executors.segmenters import BaseSegmenter
@@ -35,7 +36,8 @@ class MockEncoder(BaseEncoder):
         return np.array(output)
 
 
-def test_flow_with_modalities(tmpdir):
+@pytest.mark.parametrize('restful', [False, True])
+def test_flow_with_modalities(tmpdir, restful):
     os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE'] = str(tmpdir)
 
     def input_fn():
@@ -53,12 +55,13 @@ def test_flow_with_modalities(tmpdir):
 
         return [doc1, doc2, doc3]
 
-    flow = Flow().add(name='segmenter', uses='!MockSegmenter'). \
-        add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
-        add(name='indexer1', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'), needs=['encoder1']). \
-        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter']). \
-        add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml')). \
-        join(['indexer1', 'indexer2'])
+    flow = (Flow(restful=restful)
+            .add(name='segmenter', uses='!MockSegmenter')
+            .add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml'))
+            .add(name='indexer1', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'), needs=['encoder1'])
+            .add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter'])
+            .add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml'))
+            .join(['indexer1', 'indexer2']))
 
     with flow:
         flow.index(input_fn=input_fn)
