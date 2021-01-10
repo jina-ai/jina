@@ -122,6 +122,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6484,4 +6485,51 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a4de9328```](https://github.com/jina-ai/jina/commit/a4de93287cae401611484db42d28947197b70d9b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```043a2bf3```](https://github.com/jina-ai/jina/commit/043a2bf378c8ef2fb801452b6a9c7b8a05380f49)] __-__ fix jinadruntime styling (#1599) (*Han Xiao*)
  - [[```96e28fe8```](https://github.com/jina-ai/jina/commit/96e28fe88c57c9e586659f9916ab4b779745f10c)] __-__ __version__: the next version will be 0.9.3 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-5></a>
+## Release Note (`0.9.5`)
+
+> Release time: 2021-01-10 15:34:57
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  Deepankar Mahapatro,  cristian,  🙇
+
+
+### 🆕 New Features
+
+ - [[```e5df803e```](https://github.com/jina-ai/jina/commit/e5df803e0f272e3e202c5f99a3b80a6ea9247cca)] __-__ __gateway__: websocket based streaming and client (#1608) (*Deepankar Mahapatro*)
+
+### 🐞 Bug fixes
+
+ - [[```168a5e48```](https://github.com/jina-ai/jina/commit/168a5e48d4680d22532d0e370f4a0923fc172ae2)] __-__ fix some bugs in hubio (#1631) (*Joan Fontanals*)
+ - [[```d6d14f2c```](https://github.com/jina-ai/jina/commit/d6d14f2cc8b766977f3f10c82abec1d60cf8e7ef)] __-__ __daemon__: miscellaneous fixes for logging, pod model, flow creation  (#1637) (*Deepankar Mahapatro*)
+ - [[```a7f1187a```](https://github.com/jina-ai/jina/commit/a7f1187a6dea64cef7b9b95bf7819326630d969d)] __-__ fix eval name from driver (#1623) (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```921cba31```](https://github.com/jina-ai/jina/commit/921cba31d49148b59b48f7430af4afca7fe0978f)] __-__ __cli__: move show-exc-info as PPR common args (#1639) (*Han Xiao*)
+ - [[```00a0c6c3```](https://github.com/jina-ai/jina/commit/00a0c6c344609bdea88bc00394d2a0d14a95ea3c)] __-__ move test to its proper place (#1636) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```a1617e00```](https://github.com/jina-ai/jina/commit/a1617e00f675c5a6cda68c62cf1e878e496696d8)] __-__ update license for 2021 (#1625) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```32154b29```](https://github.com/jina-ai/jina/commit/32154b294593081b285fc0b7c9c2e939dcb132b7)] __-__ fix cd test pipeline (*Han Xiao*)
+ - [[```2a803977```](https://github.com/jina-ai/jina/commit/2a80397721dbc828035dd4629a65d4a2db5f2001)] __-__ fix cd tag and test-path (*Han Xiao*)
+ - [[```9b846d79```](https://github.com/jina-ai/jina/commit/9b846d7951d36193a74fb89f92364bf7829cb8a2)] __-__ fix escape flag in codecov (#1635) (*Han Xiao*)
+ - [[```e7ddd439```](https://github.com/jina-ai/jina/commit/e7ddd439407b2ab74602349812a37c825f1616aa)] __-__ add test with local flow and remote pods (#1583) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```a4ba159a```](https://github.com/jina-ai/jina/commit/a4ba159a56aef9ae9a8ea7c172daf98480e81056)] __-__ hotfix 0.9.5 (*Han Xiao*)
+ - [[```ac7f4b04```](https://github.com/jina-ai/jina/commit/ac7f4b04de206494496103e0258ca3aef860bce4)] __-__ hotfix release (*Han Xiao*)
+ - [[```2a1039ca```](https://github.com/jina-ai/jina/commit/2a1039caa9bcf04d3f582430a601568f55da13ff)] __-__ fix release script (*Han Xiao*)
+ - [[```df836d08```](https://github.com/jina-ai/jina/commit/df836d08842b1d306aebddd008e903361cb221c5)] __-__ update readme (*Han Xiao*)
+ - [[```e33794b8```](https://github.com/jina-ai/jina/commit/e33794b83abde43ed35900d08b11c2a6f945d8b8)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```910b3278```](https://github.com/jina-ai/jina/commit/910b32788a2d21722b92cf189eef9d9418ac42a2)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```4b97cf3d```](https://github.com/jina-ai/jina/commit/4b97cf3df352ce869be6079b85ff0e2df1b66ab6)] __-__ __version__: the next version will be 0.9.4 (*Jina Dev Bot*)
 
