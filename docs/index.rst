@@ -19,7 +19,7 @@ Welcome to Jina!
 
    chapters/cli/index
    api/jina
-   chapters/yaml/yaml
+   chapters/yaml/index
    chapters/proto/index
 
 .. toctree::
