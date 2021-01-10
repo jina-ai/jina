@@ -2,8 +2,6 @@ from pydantic import BaseSettings, validator
 
 from jina import __version__
 
-__prefix__ = 'v1'
-
 
 class BaseConfig(BaseSettings):
     class Config:
@@ -14,7 +12,6 @@ class FastAPIConfig(BaseConfig):
     NAME: str = 'JinaD (Daemon)'
     DESCRIPTION: str = 'The REST API of the daemon for managing distributed Jina'
     VERSION: str = __version__
-    PREFIX: str = '/' + __prefix__
 
 
 class OpenAPITags(BaseConfig):

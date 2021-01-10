@@ -10,7 +10,7 @@ from uvicorn import Config, Server
 from jina.logging import JinaLogger
 from .parser import get_main_parser
 
-daemon_logger = JinaLogger(context='👻 JINAD')
+daemon_logger = JinaLogger(context='👻 JinaD')
 
 
 def _get_app():

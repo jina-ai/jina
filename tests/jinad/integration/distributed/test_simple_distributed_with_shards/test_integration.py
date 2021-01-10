@@ -24,11 +24,11 @@ def test_flow(docker_compose):
     assert text_indexed == 'text:cats rulessss'
 
     r = invoke_requests(method='get',
-                        url=f'http://localhost:8000/v1/flow/{flow_id}')
+                        url=f'http://localhost:8000/flow/{flow_id}')
     assert r is not None
     assert r['status_code'] == 200
 
     r = invoke_requests(method='delete',
-                        url=f'http://localhost:8000/v1/flow?flow_id={flow_id}')
+                        url=f'http://localhost:8000/flow?flow_id={flow_id}')
     assert r is not None
     assert r['status_code'] == 200
