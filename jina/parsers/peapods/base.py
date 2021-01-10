@@ -27,3 +27,7 @@ def mixin_base_ppr_parser(parser):
 
     gp.add_argument('--log-id', type=str, default=get_random_identity(),
                     help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+
+    gp.add_argument('--show-exc-info', action='store_true', default=False,
+                    help='if true then exception stack information to be added to the logging message, '
+                         'useful in debugging')
