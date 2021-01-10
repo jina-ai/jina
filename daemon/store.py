@@ -6,12 +6,11 @@ from typing import List, Dict, Union
 
 from fastapi import UploadFile
 
-from jina.flow import Flow
-from jina.jaml import JAML
-from jina.helper import colored
 from jina.enums import PodRoleType
-from jina.logging import JinaLogger
+from jina.flow import Flow
+from jina.helper import colored
 from jina.peapods import Pea, Pod
+from . import daemon_logger
 from .excepts import FlowYamlParseException, FlowCreationException, \
     FlowStartException, PodStartException, PeaStartException, FlowBadInputException
 from .helper import create_meta_files_from_upload, delete_meta_files_from_upload
@@ -24,7 +23,7 @@ class InMemoryStore:
     # https://github.com/jina-ai/jinad/issues/4
     credentials = 'foo:bar'
     _session_token = None
-    logger = JinaLogger(context='🏪 STORE')
+    logger = daemon_logger
 
     @contextmanager
     def _session(self):
@@ -79,8 +78,7 @@ class InMemoryFlowStore(InMemoryStore):
         if isinstance(config, str) or isinstance(config, SpooledTemporaryFile):
             yamlspec = config.read().decode() if isinstance(config, SpooledTemporaryFile) else config
             try:
-                JAML.register(Flow)
-                flow = JAML.load(yamlspec)
+                flow = Flow.load_config(yamlspec)
             except Exception as e:
                 self.logger.error(f'Got error while loading from yaml {e!r}')
                 raise FlowYamlParseException

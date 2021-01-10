@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import threading
 from collections import namedtuple
@@ -10,7 +11,9 @@ from uvicorn import Config, Server
 from jina.logging import JinaLogger
 from .parser import get_main_parser
 
-daemon_logger = JinaLogger(context='👻 JINAD')
+daemon_logger = JinaLogger(context='👻', log_config=os.getenv('JINAD_LOG_CONFIG',
+                                                              pkg_resources.resource_filename('jina', '/'.join(
+                                                                  ('resources', 'logging.daemon.yml')))))
 
 
 def _get_app():
@@ -34,21 +37,17 @@ def _get_app():
         description=fastapi_config.DESCRIPTION,
         version=fastapi_config.VERSION
     )
-    app.include_router(router=common_router,
-                       prefix=fastapi_config.PREFIX)
-    app.include_router(router=logs.router,
-                       prefix=fastapi_config.PREFIX)
+    app.include_router(router=common_router)
+    app.include_router(router=logs.router)
     if jinad_config.CONTEXT == 'all':
         for _current_router in _all_routers.values():
             app.include_router(router=_current_router.router,
-                               tags=_current_router.tags,
-                               prefix=fastapi_config.PREFIX)
+                               tags=_current_router.tags)
     else:
         _current_router = _all_routers[jinad_config.CONTEXT]
         app.openapi_tags = _current_router.openapi_tags
         app.include_router(router=_current_router.router,
-                           tags=_current_router.tags,
-                           prefix=fastapi_config.PREFIX)
+                           tags=_current_router.tags)
     return app
 
 
