@@ -36,7 +36,7 @@ def test_dummy_seg(mocker, restful):
 @pytest.mark.parametrize('restful', [False, True])
 def test_dummy_seg_random(mocker, restful):
     mock = mocker.Mock()
-    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-random.yml'))
+    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, 'dummy-seg-random.yml'))
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=validate_factory(mock))
     mock.assert_called_once()
@@ -45,7 +45,7 @@ def test_dummy_seg_random(mocker, restful):
 @pytest.mark.parametrize('restful', [False, True])
 def test_dummy_seg_not_random(mocker, restful):
     mock = mocker.Mock()
-    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-not-random.yml'))
+    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, 'dummy-seg-not-random.yml'))
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=validate_factory(mock))
     mock.assert_called_once()
