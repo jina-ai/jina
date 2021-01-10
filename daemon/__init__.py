@@ -34,21 +34,17 @@ def _get_app():
         description=fastapi_config.DESCRIPTION,
         version=fastapi_config.VERSION
     )
-    app.include_router(router=common_router,
-                       prefix=fastapi_config.PREFIX)
-    app.include_router(router=logs.router,
-                       prefix=fastapi_config.PREFIX)
+    app.include_router(router=common_router)
+    app.include_router(router=logs.router)
     if jinad_config.CONTEXT == 'all':
         for _current_router in _all_routers.values():
             app.include_router(router=_current_router.router,
-                               tags=_current_router.tags,
-                               prefix=fastapi_config.PREFIX)
+                               tags=_current_router.tags)
     else:
         _current_router = _all_routers[jinad_config.CONTEXT]
         app.openapi_tags = _current_router.openapi_tags
         app.include_router(router=_current_router.router,
-                           tags=_current_router.tags,
-                           prefix=fastapi_config.PREFIX)
+                           tags=_current_router.tags)
     return app
 
 

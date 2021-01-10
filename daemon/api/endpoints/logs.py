@@ -104,6 +104,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         self.active_clients.remove(websocket)
         daemon_logger.info(f'Client {self.client_details} got disconnected!')
 
-
+# TODO: adding websocket in this way do not generate any docs
+#  see: https://github.com/tiangolo/fastapi/issues/1983
 router.add_websocket_route(path='/logstream/{log_id}',
                            endpoint=LogStreamingEndpoint)
