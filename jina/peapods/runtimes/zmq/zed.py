@@ -188,8 +188,9 @@ class ZEDRuntime(ZMQRuntime):
                 self._post_hook(msg)
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
-                self.logger.warning(f'{ex!r} '
-                                    f'add "--show-exc-info" to see the exception stack in details',
+                self.logger.warning(f'{ex!r}' +
+                                    f'add "--show-exc-info" to see the exception stack in details'
+                                    if not self.args.show_exc_info else '',
                                     exc_info=self.args.show_exc_info)
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
