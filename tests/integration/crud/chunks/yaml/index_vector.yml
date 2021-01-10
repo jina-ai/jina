@@ -13,18 +13,18 @@ requests:
         with:
           method: update
           executor: vecidx
-          traversal_paths: [ 'r' ]
+          traversal_paths: [ 'c' ]
     DeleteRequest:
       - !VectorIndexDriver
         with:
           method: delete
           executor: vecidx
-          traversal_paths: [ 'r' ]
+          traversal_paths: [ 'c' ]
     IndexRequest:
       - !VectorIndexDriver
         with:
           executor: vecidx
-          traversal_paths: ['r']
+          traversal_paths: ['c']
     SearchRequest:
       - !VectorSearchDriver
         with:
