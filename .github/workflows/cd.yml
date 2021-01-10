@@ -151,6 +151,7 @@ jobs:
     needs: docker-build
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.7]
         test-path: ${{fromJson(needs.docker-build.outputs.matrix)}}
@@ -199,6 +200,7 @@ jobs:
     needs: docker-build
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.7]
         test-path: ['unit', 'integration']
