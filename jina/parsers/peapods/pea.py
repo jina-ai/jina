@@ -35,10 +35,6 @@ def mixin_pea_parser(parser):
                     help='expose the public IP address to remote when necessary, by default it exposes'
                          'private IP address, which only allows accessing under the same network/subnet')
 
-    gp.add_argument('--show-exc-info', action='store_true', default=False,
-                    help='if true then exception stack information to be added to the logging message, '
-                         'useful in debugging')
-
     # hidden CLI used for internal only
 
     gp.add_argument('--pea-id', type=int, default=-1,
