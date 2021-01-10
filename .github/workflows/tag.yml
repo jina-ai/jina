@@ -121,7 +121,7 @@ jobs:
           tags: "${{ matrix.tag_prefix }}latest, ${{ matrix.tag_prefix }}${{env.JINA_VERSION}}, ${{ matrix.tag_prefix }}${{env.JINA_MINOR_VERSION}}"
 
   create-release:
-    needs: update-docker
+    needs: update-doc
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
