@@ -79,8 +79,7 @@ class InMemoryFlowStore(InMemoryStore):
         if isinstance(config, str) or isinstance(config, SpooledTemporaryFile):
             yamlspec = config.read().decode() if isinstance(config, SpooledTemporaryFile) else config
             try:
-                JAML.register(Flow)
-                flow = JAML.load(yamlspec)
+                Flow.load_config(yamlspec)
             except Exception as e:
                 self.logger.error(f'Got error while loading from yaml {e!r}')
                 raise FlowYamlParseException
