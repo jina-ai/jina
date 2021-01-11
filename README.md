@@ -517,7 +517,7 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
   </tr>
 </table>
 
-### Examples
+### Examples ([View all](https://github.com/jina-ai/examples))
 
 Example code to build your own projects
 
@@ -587,13 +587,7 @@ Example code to build your own projects
   </tr>
 </table>
 
-<p align="center">
-<a href="https://github.com/jina-ai/examples">
-<h3>
-View All Examples
-</h3>
-</a>
-</p>
+Please check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
 
 Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [our official blog](https://jina.ai/blog). 
 
