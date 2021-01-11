@@ -84,42 +84,37 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - tag_prefix: ""
-            py_suffix: ""
-            build_option: "--target jina_base"
-            py_version: "3.7"
-          - tag_prefix: "daemon-"
-            py_suffix: ""
-            build_option: "--target jina_daemon"
-            py_version: "3.7"
-          - tag_prefix: ""
-            py_suffix: "-py37"
-            build_option: "--target jina_base"
-            py_version: "3.7"
-          - tag_prefix: "daemon-"
-            py_suffix: "-py37"
-            build_option: "--target jina_daemon"
-            py_version: "3.7"
-          - tag_prefix: ""
-            py_suffix: "-py38"
-            build_option: "--target jina_base"
-            py_version: "3.8"
-          - tag_prefix: "daemon-"
-            py_suffix: "-py38"
-            build_option: "--target jina_daemon"
-            py_version: "3.8"
+        tag_dependency: ["", "-devel"]
+        tag_pyversion: ["-py37", "-py38"]
+        tag_entrypoint: ["", "-daemon"]
     steps:
       - uses: actions/checkout@v2
       - name: Set envs and versions
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          echo "PY_VERSION=${{matrix.py_version}}" >> $GITHUB_ENV
+          echo "PY_VERSION=${{matrix.py_ersion}}" >> $GITHUB_ENV
           echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
           echo "JINA_MINOR_VERSION=${JINA_VERSION%.*}" >> $GITHUB_ENV
+
+          if [[ "${{ matrix.tag_dependency }}" == "-devel" ]]; then
+            echo "INSTALL_DEV=true" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
+            echo "PY_VERSION=3.8" >> $GITHUB_ENV
+          else
+            echo "PY_VERSION=3.7" >> $GITHUB_ENV
+            echo "TAG_ALIAS=master${{ matrix.tag_dependency }}${{ matrix.tag_entrypoint }}" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.tag_entrypoint }}" == "-daemon" ]]; then
+            echo "BUILD_ARG=--target jina_daemon" >> $GITHUB_ENV
+          else
+            echo "BUILD_ARG=--target jina_base" >> $GITHUB_ENV
+          fi
       - name: Upload to Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -127,9 +122,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
-          buildoptions: ${{ matrix.build_option }}
-          tags: "${{ matrix.tag_prefix }}latest${{matrix.py_suffix}}, ${{ matrix.tag_prefix }}${{env.JINA_VERSION}}${{matrix.py_suffix}}, ${{ matrix.tag_prefix }}${{env.JINA_MINOR_VERSION}}${{matrix.py_suffix}}"
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
+          buildoptions: ${{ env.BUILD_ARG }}
+          tags: "latest${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.JINA_VERSION}}${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -138,9 +133,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
-          buildoptions: ${{ matrix.build_option }}
-          tags: "${{ matrix.tag_prefix }}latest${{matrix.py_suffix}}, ${{ matrix.tag_prefix }}${{env.JINA_VERSION}}${{matrix.py_suffix}}, ${{ matrix.tag_prefix }}${{env.JINA_MINOR_VERSION}}${{matrix.py_suffix}}"
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
+          buildoptions: ${{ env.BUILD_ARG }}
+          tags: "latest${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.JINA_VERSION}}${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
 
   create-release:
     needs: update-doc

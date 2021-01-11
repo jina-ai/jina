@@ -86,7 +86,7 @@ jobs:
     strategy:
       matrix:
         tag_dependency: ["", "-devel"]
-        tag_pyversion: ["", "-py37", "-py38"]
+        tag_pyversion: ["-py37", "-py38"]
         tag_entrypoint: ["", "-daemon"]
     steps:
       - uses: actions/checkout@v2
@@ -102,12 +102,11 @@ jobs:
             echo "INSTALL_DEV=true" >> $GITHUB_ENV
           fi
 
-          if [[ "${{ matrix.tag_pyversion }}" == "-py37" ]]; then
-            echo "PY_VERSION=3.7" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
+          if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
+            echo "TAG_ALIAS=master${{ matrix.tag_dependency }}${{ matrix.tag_entrypoint }}" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.tag_entrypoint }}" == "-daemon" ]]; then
@@ -124,7 +123,7 @@ jobs:
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
           buildoptions: ${{ env.BUILD_ARG }}
-          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}"
+          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -135,7 +134,7 @@ jobs:
           dockerfile: Dockerfiles/debianx.Dockerfile
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
           buildoptions: ${{ env.BUILD_ARG }}
-          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}"
+          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
 
   docker-build:
     needs: update-doc
