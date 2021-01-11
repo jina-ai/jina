@@ -1,5 +1,6 @@
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6548,4 +6549,20 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```07db2955```](https://github.com/jina-ai/jina/commit/07db2955ee6f88dce7aa10951e6ec77d27e02d10)] __-__ hotfix release script (*Han Xiao*)
  - [[```0e3e5959```](https://github.com/jina-ai/jina/commit/0e3e59595f436683c70f0791e8baf87462ce4741)] __-__ __version__: the next version will be 0.9.8 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-9></a>
+## Release Note (`0.9.9`)
+
+> Release time: 2021-01-11 16:48:42
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```8309ec93```](https://github.com/jina-ai/jina/commit/8309ec9337590f8b7bf44f5cf0307f404a17c436)] __-__ hotfix release script (*Han Xiao*)
+ - [[```555351b4```](https://github.com/jina-ai/jina/commit/555351b417d57a3d7890c49eb0014924dd6a4cc8)] __-__ __version__: the next version will be 0.9.9 (*Jina Dev Bot*)
 
