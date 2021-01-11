@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.put(
     path='/upload',
-    summary='Upload pod context yamls & pymodules',
+    summary='Upload YAML & py_modules required by a Pod',
 )
 async def _upload(
         uses_files: List[UploadFile] = File(()),
@@ -41,7 +41,7 @@ async def _upload(
 
 @router.put(
     path='/pod',
-    summary='Create a Pod via Flow or CLI',
+    summary='Create a Pod',
 )
 async def _create(
         pod_arguments: Union[SinglePodModel, ParallelPodModel]
@@ -71,7 +71,7 @@ async def _create(
 
 @router.delete(
     path='/pod',
-    summary='Close Pod Context',
+    summary='Terminate a running Pod',
 )
 async def _delete(
         pod_id: uuid.UUID

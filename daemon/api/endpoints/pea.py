@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.put(
     path='/pea/upload',
-    summary='Upload pod context yamls & pymodules',
+    summary='Upload YAML & py_modules required by a Pea',
 )
 async def _upload(
         uses_files: List[UploadFile] = File(()),
@@ -70,7 +70,7 @@ async def _create(
 
 @router.delete(
     path='/pea',
-    summary='Close Pea Context',
+    summary='Terminate a running Pea',
 )
 async def _delete(
         pea_id: uuid.UUID

@@ -74,7 +74,6 @@ class JinadAPI:
     def __init__(self,
                  host: str,
                  port: int,
-                 version: str = 'v1',
                  logger: 'JinaLogger' = None,
                  timeout: int = 5, **kwargs):
         """
@@ -92,9 +91,9 @@ class JinadAPI:
         # TODO: for https, the jinad server would need a tls certificate.
         # no changes would be required in terms of how the api gets invoked,
         # as requests does ssl verfication. we'd need to add some exception handling logic though
-        url = f'{host}:{port}/{version}'
-        rest_url = f'http://{url}'
-        websocket_url = f'ws://{url}'
+        base_url = f'{host}:{port}'
+        rest_url = f'http://{base_url}'
+        websocket_url = f'ws://{base_url}'
         self.alive_url = f'{rest_url}/alive'
         self.upload_url = f'{rest_url}/upload'
         self.pea_url = f'{rest_url}/pea'

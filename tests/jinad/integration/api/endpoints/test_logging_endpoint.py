@@ -34,7 +34,7 @@ def feed_path_logs(filepath, total_lines, sleep, mp_event=None):
 async def test_logging_endpoint_invalid_id(fastapi_client):
     log_id = uuid.uuid1()
     with pytest.raises(NoSuchFileException) as response:
-        with fastapi_client.websocket_connect(f'{fastapi_config.PREFIX}/logstream/{log_id}') as websocket:
+        with fastapi_client.websocket_connect(f'logstream/{log_id}') as websocket:
             pass
 
 
@@ -65,7 +65,7 @@ async def test_logging_dashboard(fastapi_client, total_lines, sleep):
     # sleeping for 2 secs to allow the process to write logs
     time.sleep(2)
 
-    with fastapi_client.websocket_connect(f'{fastapi_config.PREFIX}/logstream/{log_id}?timeout=1') as websocket:
+    with fastapi_client.websocket_connect(f'logstream/{log_id}?timeout=1') as websocket:
         websocket.send_json({'from': 0})
         while True:
             data = websocket.receive_json()
@@ -121,7 +121,7 @@ async def test_logging_core(fastapi_client, total_lines, sleep, timeout):
     # sleeping for 2 secs to allow the process to write logs
     time.sleep(2)
 
-    with fastapi_client.websocket_connect(f'{fastapi_config.PREFIX}/logstream/{log_id}?timeout={timeout}') as websocket:
+    with fastapi_client.websocket_connect(f'logstream/{log_id}?timeout={timeout}') as websocket:
         current_line_number = -1
         # During tests, these are usual function calls not awaitables
         # https://www.starlette.io/testclient/#testing-websocket-sessions
@@ -166,7 +166,7 @@ async def test_logging_client_disconnection(fastapi_client, total_lines, sleep, 
     # sleeping for 2 secs to allow the process to write logs
     time.sleep(2)
 
-    with fastapi_client.websocket_connect(f'{fastapi_config.PREFIX}/logstream/{log_id}?timeout=1') as websocket:
+    with fastapi_client.websocket_connect(f'logstream/{log_id}?timeout=1') as websocket:
         websocket.send_json({'from': 0})
         while True:
             data = websocket.receive_json()
