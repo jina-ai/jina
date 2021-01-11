@@ -106,7 +106,7 @@ jobs:
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
             echo "BUILD_ARG=--target jina_daemon" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]
+          elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
             echo "BUILD_ARG=--target jina_devel" >> $GITHUB_ENV
           else
             echo "BUILD_ARG=--target jina_base" >> $GITHUB_ENV

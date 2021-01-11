@@ -34,7 +34,7 @@ jinaai/jina:{version}{python_version}{extra}
 - `{extra}`: the extra dependency installed along with Jina. Possible values:
     - ` `: Jina is installed inside the image via `pip install jina`;
     - `-devel`: Jina is installed inside the image via `pip install jina[devel]`;
-    - `-daemon`: Jina is installed inside the image via `pip install jina[dameon]`; and the entrypoint is set to `jinad`
+    - `-daemon`: Jina is installed inside the image via `pip install jina[dameon]` along with `fluentd`; and the entrypoint is set to `jinad`
 
 Examples:
 
@@ -53,23 +53,16 @@ Use `-devel` image, if you want to use:
 
 On every master merge, the following images got updated:
 
-- `jinaai/jina:master{python_version}{extra}`
+| Timing | Affected tags | 
+| --- | --- | 
+| On Master Merge | `jinaai/jina:master{python_version}{extra}` |
+| On `x.y.z` release | `jinaai/jina:latest{python_version}{extra}`, `jinaai/jina:x.y.z{python_version}{extra}`, `jinaai/jina:x.y{python_version}{extra}` |
 
-, where:
-  - dependency: `["", "-devel"]`
-  - python_version: `["-py37", "-py38"]`
-  - entrypoint: `["", "-daemon"]`
-
-On every `x.y.z` release, the following images got update:
-
-- `jinaai/jina:latest{python_version}{extra}`
-- `jinaai/jina:x.y.z{python_version}{extra}`
-- `jinaai/jina:x.y{python_version}{extra},`
-
-, `latest` & `x.y.z` & `x.y` are aliases, and where
-  - python_version: `["-py37", "-py38"]`
-  - extra: `["", "-devel", "-daemon"]`
+, where
+  - `{python_version} = ["-py37", "-py38"]`
+  - `extra = ["", "-devel", "-daemon"]`
   
+
 
 ### Image Size of Different Versions
 
