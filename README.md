@@ -45,7 +45,7 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 ---
 
 <p align="center">
-<a href="http://docs.jina.ai">Documentation</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#get-started">Quick Start</a> • <a href="#learn">Learn</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
+<a href="http://docs.jina.ai">Docs</a> • <a href="#jina-hello-world-">Hello World</a> • <a href="#get-started">Quick Start</a> • <a href="#learn">Learn</a> • <a href="https://github.com/jina-ai/examples">Examples</a> • <a href="#contributing">Contribute</a> • <a href="https://jobs.jina.ai">Jobs</a> • <a href="http://jina.ai">Website</a> • <a href="http://slack.jina.ai">Slack</a>
 </p>
 
 
@@ -517,156 +517,79 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
   </tr>
 </table>
 
-### Build Your Search App
+### Examples ([View all](https://github.com/jina-ai/examples))
 
-Get started with neural search, inputs, outputs, and Flows
+Example code to build your own projects
 
 <table>
   <tr>
-    <th width="5%"></th>
-    <th width="47.5%">Tutorials</th> 
-    <th width="47.5%">Readings</th>
+    <td>
+      <h1>📄</h1>
+    </td>
+    <td>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Jina App</a></h4>
+      Brand new to neural search? Not for long! Use cookiecutter to search through Star Trek scripts using Jina
+    </td>
   </tr>
   <tr>
-    <td>🐣</td>
     <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Search App</a></h4>
-      Beginners tutorial: Search Star Trek script data
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Image Search</a></h4>
-      Image to image search Pokémon sprites with Google's BiT model
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Audio Search</a></h4>
-      Audio to audio search with Vggish model
+      <h1>📄</h1>
     </td>
     <td>
-      <h4><a href="https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html">What is Neural Search?</a></h4>
-      What it is, how it works, and how it's different
-      <h4><a href="https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/">Primitive Data Types in Neural Search System</a></h4>
-      Construct your first `Document` in Jina
-      <h4><a href="https://hanxiao.io/2020/08/02/Layer-of-Abstraction-when-Building-Tensorflow-for-Search/">Jina's Layers of Abstraction</a></h4>
-      Why do we build Jina and for whom?
-      <h4><a href="https://hanxiao.io/2020/10/19/A-Curated-List-of-Neural-Search-and-Jina-Framework-Designs/">Curated List of Neural Search and Jina</a></h4>
-      Comprehensive round-up on Jina tech, concepts
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build a NLP Semantic Search System with Transformers</a></h4>
+      Upgrade from plain search to sentence search and practice your Flows and Pods by searching South Park scripts
     </td>
+  </tr>
   <tr>
-    <td>🐥</td>
     <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Search with QueryLanguage</a></h4>
-      Filter search results by category
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">NLP Semantic Search with Transformers</a></h4>
-      Dig into Flows and Pods
+      <h1>📄</h1>
     </td>
     <td>
-      <h4><a href="https://docs.jina.ai/chapters/flow/index.html">Flow API: Compose Your Jina Workflow</a></h4>
-      With Python, YAML, or graphical Dashboard
-      <h4><a href="https://docs.jina.ai/chapters/io/index.html">Input and Output Functions</a></h4>
-      Data goes in, data comes out. Here's how
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/multires-lyrics-search">Search Lyrics with Transformers and PyTorch</a></h4>
+      Get a better understanding of chunks by searching a lyrics database. Now with shiny front-end!
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h1>🖼️</h1>
+    </td>
+    <td>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
+      Use SOTA visual representation for searching Pokémon!
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h1>🖼️</h1>
+    </td>
+    <td>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/object-search">Object detection with fasterrcnn and MobileNetV2</a></h4>
+      Detect, index and query similar objects
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h1>🎧</h1>
+    </td>
+    <td>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Search YouTube audio data with Vggish</a></h4>
+      A demo of neural search for audio data based Vggish model.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h1>🎞️ </h1>
+    </td>
+    <td>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Search Tumblr GIFs with KerasEncoder</a></h4>
+      Use prefetching and sharding to improve the performance of your index and query flow when searching animated GIFs.
     </td>
   </tr>
 </table>
 
-### Level Up Your Search App
-
-Client-server, scaling, containerization, Docker, and more
-
-<table>
-  <tr>
-    <th width="5%"></th>
-    <th width="47.5%">Tutorials</th> 
-    <th width="47.5%">Readings</th>
-  </tr>
-  <tr>
-    <td>🐥</td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/helloworld-in-cs">Client-Server Architecture</a></h4>
-      Refactor hello-world into client-server architecture
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/flower-search">Scale Up and Speed Up</a></h4>
-      Scale up Pods to speed up your search and add a customized executor
-      <h4><a href="https://github.com/jina-ai/dashboard">Workflow Insights in Dashboard</a></h4>Log and monitor with Jina's graphical Dashboard
-    </td>
-    <td>
-      <h4><a href="https://docs.jina.ai/chapters/remote/index.html">Distribute Your Workflow Remotely</a></h4>
-      Run Pods remotely via console, Jina Gateway, or Flow API
-      <h4><a href="https://docs.jina.ai/chapters/hub/index.html">Jina in Docker</a></h4>
-      Build your Pod into a Docker image: How and why
-    </td>
-  </tr>
-</table>
+Please check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
 
 Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [our official blog](https://jina.ai/blog). 
-
-<!-- 
-
-<table>
-<tr>
-<th width="10%">Level</th>
-<th width="90%">Tutorials</th>
-</tr>
-
-<tr>
-<td><h3>🐣</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/southpark-search">Build an NLP Semantic Search System</a></h4>
-Search South Park scripts and practice with Flows and Pods
-</td>
-</tr>
-
-<tr>
-<td><h3>🐣</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Jina App</a></h4>
-Using cookiecutter for bootstrap a jina app
-</td>
-</tr>
-
-<tr>
-<td><h3>🐣</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/fashion-example-query">Fashion Search with Query Language</a></h4>
-Spice up the Hello-World with Query Language
-</td>
-</tr>
-
-<tr>
-<td><h3>🕊</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/multires-lyrics-search">Use Chunk to search Lyrics</a></h4>
-Split documents in order to search on a finegrained level
-</td>
-</tr>
-
-<tr>
-<td><h3>🕊</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/cross-modal-search">Mix and Match images and captions</a></h4>
-Search cross modal to get images from captions and vice versa
-</td>
-</tr>
-
-<tr>
-<td><h3>🚀</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Scale Up Video Semantic Search</a></h4>
-Improve performance using prefetching and sharding
-</td>
-</tr>
-
-<tr>
-<td><h3>🐣</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/x-as-service">From BERT-as-Service to X-as-Service</a></h4>
-Extract feature vector data using any deep learning representation
-</td>
-</tr>
-
-<tr>
-<td><h3>🚀</h3></td>
-<td>
-<h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
-Search Pokemon with state-of-the-art visual representation
-</td>
-</tr>
- -->
-</table>
 
 ## Documentation
 
