@@ -41,7 +41,6 @@ def test_shards_insufficient_data(mocker, restful):
         for d in req.docs[0].matches:
             assert hasattr(d, 'weight')
             assert d.weight
-            assert d.meta_info == b'hello world'
 
     f = (Flow(restful=restful)
          .add(name='doc_pb',

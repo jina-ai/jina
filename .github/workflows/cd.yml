@@ -84,6 +84,7 @@ jobs:
   update-docker:
     needs: update-doc
     runs-on: ubuntu-latest
+    fail-fast: false
     strategy:
       matrix:
         tag_stage: ["", "-devel", "-daemon"]
