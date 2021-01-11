@@ -9,18 +9,40 @@
 [![Release CD](https://github.com/jina-ai/jina/workflows/Release%20CD/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+CD%22)
 [![API Schema](https://github.com/jina-ai/jina/workflows/API%20Schema/badge.svg)](https://api.jina.ai/)
 
+## PyPi Versioning 
 
-We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`.
+We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`. By default, `pip install jina` always install the latest release. To install a particular version from PyPi, please use:
 
-## Docker Image Tag Explained
+```bash
+pip install jina==x.y.z
+```
 
-| Tag | Description |
-| --- | --- |
-| `latest` | the last Sunday release, contains the bare minimum of to run Jina framework. |
-| `x.y.z` | (previous) Sunday release. |
-| `devel` | the development version corresponds to the latest master, it extends `latest` by adding required packages for [Dashboard](https://github.com/jina-ai/dashboard). |
-| `x.y.z-devel` | (previous) `devel` version of `x.y.z` |
-| `x.y` | shortcut alias to the last `x.y.z` release |
+## Docker Image Versioning
+
+The docker image name starts with `jinaai/jina` and the tag follows the following convention:
+
+```text
+jinaai/jina:{version}-{dependency}-{python_version}-{entrypoint}
+```
+
+The delimiter `-` is omitted when the values on the left/right tag is empty. 
+
+- `{version}`: The version of Jina. Possible values:
+    - `latest`: the last release;
+    - `master`: the master branch of `jina-ai/jina` repository;
+    - `x.y.z`: the release of a particular version;
+    - `x.y`: the alias to the last `x.y.z` patch release;
+    - `x.y.z-devel`: the `x.y.z` release installed with `pip install jina[devel]`;
+- `{dependency}`: the extra dependency installed along with Jina. Possible values:
+    - ` `: Jina is installed inside the image via `pip install jina`;
+    - `devel`: Jina is installed inside the image via `pip install jina[devel]`;
+- `{python-version}`: The Python version of the image. Possible values: ` `, `py37`, `py38` for Python 3.7 and Python 3.8 respectively, where ` ` means Python 3.7.
+- `{entrypoint}`: The entrypoint of the image. Possible values: ` `, `daemon`, where ` ` means default Jina entrypoint.
+
+Examples:
+
+- `0.9.6`: the `0.9.6` release with Python 3.7 base and the entrypoint of default Jina.
+- `daemon-latest-py38`: the latest release with Python 3.8 base and the entrypoint of Jina daemon.
 
 ### Which Version to Use?
 
