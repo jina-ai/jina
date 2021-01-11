@@ -244,6 +244,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.9.1`)](#release-note-091)
 - [Release Note (`0.9.2`)](#release-note-092)
 - [Release Note (`0.9.3`)](#release-note-093)
+- [Release Note (`0.9.4`)](#release-note-094)
 - [Release Note (`0.9.5`)](#release-note-095)
 - [Release Note (`0.9.6`)](#release-note-096)
 
@@ -6489,6 +6490,22 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```043a2bf3```](https://github.com/jina-ai/jina/commit/043a2bf378c8ef2fb801452b6a9c7b8a05380f49)] __-__ fix jinadruntime styling (#1599) (*Han Xiao*)
  - [[```96e28fe8```](https://github.com/jina-ai/jina/commit/96e28fe88c57c9e586659f9916ab4b779745f10c)] __-__ __version__: the next version will be 0.9.3 (*Jina Dev Bot*)
 
+<a name=release-note-0-9-4></a>
+## Release Note (`0.9.4`)
+
+> Release time: 2021-01-11 11:17:25
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```3b62cd8b```](https://github.com/jina-ai/jina/commit/3b62cd8b4f94696fe435a7c983ff401542b748f7)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```4b97cf3d```](https://github.com/jina-ai/jina/commit/4b97cf3df352ce869be6079b85ff0e2df1b66ab6)] __-__ __version__: the next version will be 0.9.4 (*Jina Dev Bot*)
+ 
 <a name=release-note-0-9-5></a>
 ## Release Note (`0.9.5`)
 
@@ -6534,7 +6551,6 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```df836d08```](https://github.com/jina-ai/jina/commit/df836d08842b1d306aebddd008e903361cb221c5)] __-__ update readme (*Han Xiao*)
  - [[```e33794b8```](https://github.com/jina-ai/jina/commit/e33794b83abde43ed35900d08b11c2a6f945d8b8)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```910b3278```](https://github.com/jina-ai/jina/commit/910b32788a2d21722b92cf189eef9d9418ac42a2)] __-__ __docs__: update TOC (*Jina Dev Bot*)
- - [[```4b97cf3d```](https://github.com/jina-ai/jina/commit/4b97cf3df352ce869be6079b85ff0e2df1b66ab6)] __-__ __version__: the next version will be 0.9.4 (*Jina Dev Bot*)
 
 <a name=release-note-0-9-6></a>
 ## Release Note (`0.9.6`)
