@@ -27,18 +27,19 @@ jobs:
           pip install .[daemon] --no-cache-dir
           cd schema
           jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" latest.yml --json-path "${{env.JINA_VERSION}}.json" latest.json latest
-          mkdir -p jinad && cd jinad
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           cd -
       - name: redoc-cli-jinad
         uses: seeebiii/redoc-cli-github-action@v10
         with:
-          args: 'bundle schema/jinad/schema.json -o jinad.html'
+          args: 'bundle schema/daemon.json -o jinad.html'
       - name: push-to-api-repo
         run: |
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/index.html
           cp jinad.html schema/daemon/${{env.JINA_VERSION}}.html
+          rm schema/daemon.json
+          rm -rf schema/jinad
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
