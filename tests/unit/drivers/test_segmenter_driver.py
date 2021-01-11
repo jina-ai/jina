@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 from jina import Document
-from jina.drivers.craft import SegmentDriver
-from jina.executors.crafters import BaseSegmenter
+from jina.drivers.segment import SegmentDriver
+from jina.executors.segmenters import BaseSegmenter
 from jina.types.sets import DocumentSet
 
 
@@ -14,7 +14,7 @@ class MockSegmenter(BaseSegmenter):
         super().__init__(*args, **kwargs)
         self.required_keys = {'text'}
 
-    def craft(self, text: str, *args, **kwargs) -> List[Dict]:
+    def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         if text == 'valid':
             # length, parent_id and id are protected keys that won't affect the segments
             return [{'blob': np.array([0.0, 0.0, 0.0]), 'weight': 0.0, 'mime_type': 'text/plain', 'tags': {'id': 3}},
@@ -25,6 +25,9 @@ class MockSegmenter(BaseSegmenter):
 
 
 class SimpleSegmentDriver(SegmentDriver):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     @property
     def exec_fn(self):

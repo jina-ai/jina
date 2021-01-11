@@ -1,10 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
+from typing import Optional
 
 from . import BaseExecutableDriver
-from ..types.document import Document
 
 if False:
     from .. import DocumentSet
@@ -13,7 +12,7 @@ if False:
 class CraftDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
-    def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
+    def __init__(self, executor: Optional[str] = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
@@ -26,24 +25,3 @@ class CraftDriver(BaseExecutableDriver):
     @staticmethod
     def update(doc, ret):
         doc.set_attrs(**ret)
-
-
-class SegmentDriver(CraftDriver):
-    """Segment document into chunks using the executor
-    """
-
-    def __init__(
-            self,
-            traversal_paths: Tuple[str] = ('r',),
-            *args,
-            **kwargs
-    ):
-        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
-
-    @staticmethod
-    def update(doc, ret):
-        for r in ret:
-            with Document(length=len(ret), **r) as c:
-                if not c.mime_type:
-                    c.mime_type = doc.mime_type
-            doc.chunks.append(c)

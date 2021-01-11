@@ -1,10 +1,10 @@
 !BaseExecutor
 with: {}
 metas:
-  name: merge
+  name: merge_chunks
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest]:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
       - !ReduceAllDriver {}
     ControlRequest:
       - !ControlReqDriver {}

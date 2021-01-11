@@ -1,7 +1,7 @@
 from typing import Tuple, Dict, List, Union
 
 import numpy as np
-from jina.executors.crafters import BaseSegmenter
+from jina.executors.segmenters import BaseSegmenter
 
 from .helper import _crop_image, _move_channel_axis, _load_image
 
@@ -25,7 +25,7 @@ class FiveImageCropper2(BaseSegmenter):
         self.target_size = target_size
         self.channel_axis = channel_axis
 
-    def craft(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
+    def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.
 

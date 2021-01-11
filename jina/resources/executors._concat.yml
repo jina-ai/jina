@@ -1,8 +1,8 @@
 !BaseExecutor
 with: {}
 metas:
-  name: merge
+  name: concat
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest]:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
       - !ConcatEmbedDriver {}

@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from jina.executors.crafters import BaseSegmenter
+from jina.executors.segmenters import BaseSegmenter
 from jina.flow import Flow
 from tests import random_docs
 
@@ -12,7 +12,7 @@ class DummySegment(BaseSegmenter):
         super().__init__(*args, **kwargs)
         self._label = random.random()
 
-    def craft(self):
+    def segment(self):
         return [dict(buffer=f'aa{self._label}'.encode()), dict(buffer=f'bb{self._label}'.encode())]
 
 
