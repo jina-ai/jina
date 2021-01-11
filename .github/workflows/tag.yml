@@ -86,8 +86,8 @@ jobs:
   update-docker:
     needs: update-doc
     runs-on: ubuntu-latest
-    fail-fast: false
     strategy:
+      fail-fast: false
       matrix:
         tag_stage: ["", "-devel", "-daemon"]
         tag_pyversion: ["-py37", "-py38"]
