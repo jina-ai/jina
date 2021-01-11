@@ -1,5 +1,5 @@
 on:
-  [SearchRequest]:
+  SearchRequest:
     - !VectorSearchDriver
       with:
         executor: BaseVectorIndexer
@@ -11,7 +11,7 @@ on:
       with:
         executor: BaseKVIndexer
         traversal_paths: ['m']
-  IndexRequest:
+  [IndexRequest, UpdateRequest, DeleteRequest]:
     - !VectorIndexDriver
       with:
         executor: BaseVectorIndexer

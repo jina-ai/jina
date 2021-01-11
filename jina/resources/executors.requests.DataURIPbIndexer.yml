@@ -1,9 +1,9 @@
 on:
   ControlRequest:
     - !ControlReqDriver {}
-  [SearchRequest]:
+  SearchRequest:
     - !KVSearchDriver {}
-  IndexRequest:
+  [IndexRequest, UpdateRequest, DeleteRequest]:
     - !Buffer2URI {}
     - !ExcludeQL
       with:

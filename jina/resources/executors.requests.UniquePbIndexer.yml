@@ -1,5 +1,5 @@
 on:
-  IndexRequest:
+  [IndexRequest, UpdateRequest, DeleteRequest]:
     - !TaggingCacheDriver
       with:
         executor: DocIDCache

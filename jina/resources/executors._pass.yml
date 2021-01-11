@@ -4,5 +4,5 @@ metas:
   name: forward
 requests:
   on:
-    [ SearchRequest, TrainRequest, IndexRequest, ControlRequest ]:
-      - !RouteDriver { }
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ControlRequest]:
+      - !RouteDriver {}
