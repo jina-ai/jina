@@ -82,7 +82,7 @@ jobs:
       - run: |
           echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
       - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           name: jina-ai/jina/jina
           username: ${{ secrets.DOCKER_USERNAME }}

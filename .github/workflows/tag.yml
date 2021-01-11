@@ -116,7 +116,7 @@ jobs:
             echo "BUILD_ARG=--target jina_base" >> $GITHUB_ENV
           fi
       - name: Upload to Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           name: jinaai/jina
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
@@ -126,7 +126,7 @@ jobs:
           buildoptions: ${{ env.BUILD_ARG }}
           tags: "latest${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.JINA_VERSION}}${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
       - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           name: jina-ai/jina/jina
           username: ${{ secrets.DOCKER_USERNAME }}
