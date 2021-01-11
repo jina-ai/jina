@@ -1,0 +1,18 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: euclidean
+    metas:
+      name: vecidx
+      workspace: $JINA_WORKSPACE
+  - !BinaryPbIndexer
+    with:
+      index_filename: doc.gz
+    metas:
+      name: docidx
+      workspace: $JINA_WORKSPACE
+metas:
+  name: indexer
+  workspace: $JINA_WORKSPACE
