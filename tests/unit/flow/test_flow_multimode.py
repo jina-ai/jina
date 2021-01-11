@@ -4,7 +4,7 @@ from typing import List, Dict
 import pytest
 import numpy as np
 
-from jina.executors.crafters import BaseSegmenter
+from jina.executors.segmenters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
@@ -16,7 +16,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 class MockSegmenter(BaseSegmenter):
 
-    def craft(self, text: str, *args, **kwargs) -> List[Dict]:
+    def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
         chunks = [dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
                   dict(text=split[1], offset=1, weight=1.0, modality='mode2')]
@@ -56,10 +56,10 @@ def test_flow_with_modalities(tmpdir, restful):
         return [doc1, doc2, doc3]
 
     flow = (Flow(restful=restful)
-            .add(name='crafter', uses='!MockSegmenter')
+            .add(name='segmenter', uses='!MockSegmenter')
             .add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml'))
             .add(name='indexer1', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'), needs=['encoder1'])
-            .add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter'])
+            .add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter'])
             .add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml'))
             .join(['indexer1', 'indexer2']))
 

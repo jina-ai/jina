@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from jina import Document
-from jina.executors.crafters import BaseSegmenter
+from jina.executors.segmenters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 
@@ -24,7 +24,7 @@ def docs():
 
 class MockSegmenterReduce(BaseSegmenter):
 
-    def craft(self, text: str, *args, **kwargs) -> List[Dict]:
+    def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
         chunks = [dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
                   dict(text=split[1], offset=1, weight=1.0, modality='mode2')]
@@ -57,9 +57,9 @@ def test_merge_chunks_with_different_modality(mocker, docs):
 
     response_mock = mocker.Mock(wrap=validate)
 
-    flow = Flow().add(name='crafter', uses='MockSegmenterReduce'). \
+    flow = Flow().add(name='segmenter', uses='MockSegmenterReduce'). \
         add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
-        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['crafter']). \
+        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter']). \
         add(name='reducer', uses='- !ReduceAllDriver | {traversal_paths: [c]}',
             needs=['encoder1', 'encoder2'])
 
