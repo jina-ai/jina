@@ -9,13 +9,13 @@ common_router = APIRouter()
 
 @common_router.on_event('startup')
 async def startup():
-    daemon_logger.success('Welcome to Jina daemon - the manager of distributed Jina')
-    daemon_logger.success(f'Uvicorn + FastAPI running on {server_config.HOST}:{server_config.PORT}')
+    daemon_logger.success(f'Welcome to Jina daemon - the manager of distributed Jina\n'
+                          f'Uvicorn + FastAPI running on {server_config.HOST}:{server_config.PORT}')
 
 
 @common_router.get(
     path='/alive',
-    summary='Get status of jinad',
+    summary='Check if daemon is alive',
     status_code=status.HTTP_200_OK
 )
 async def _status():

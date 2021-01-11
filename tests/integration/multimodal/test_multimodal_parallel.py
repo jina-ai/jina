@@ -37,7 +37,11 @@ def multimodal_documents():
     return docs
 
 
-def test_multimodal_embedding_parallel(multimodal_documents, mocker):
+# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
+@pytest.mark.parametrize('restful', [False])
+def test_multimodal_embedding_parallel(multimodal_documents, mocker, monkeypatch, restful):
+    monkeypatch.setenv("RESTFUL", restful)
+
     def validate_response(resp):
         mock()
         assert len(resp.index.docs) == NUM_DOCS
@@ -83,7 +87,11 @@ def multimodal_all_types_documents():
     return docs
 
 
-def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker):
+# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
+@pytest.mark.parametrize('restful', [False])
+def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker, monkeypatch, restful):
+    monkeypatch.setenv("RESTFUL", restful)
+
     def validate_response(resp):
         mock()
         assert len(resp.index.docs) == NUM_DOCS

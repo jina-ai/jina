@@ -7,8 +7,10 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.mark.parametrize('parallel, expected_response', [(1, ['slow', 'fast']), (2, ['fast', 'slow'])])
-def test_non_blocking_gateway(parallel, expected_response, mocker):
-    os.environ['JINA_NON_BLOCKING_PARALLEL'] = str(parallel)
+@pytest.mark.parametrize('restful', [False, True])
+def test_non_blocking_gateway(parallel, expected_response, restful, mocker, monkeypatch):
+    monkeypatch.setenv("JINA_NON_BLOCKING_PARALLEL", str(parallel))
+    monkeypatch.setenv("RESTFUL", restful)
     response = []
 
     def fill_responses(resp):

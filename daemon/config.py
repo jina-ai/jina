@@ -2,8 +2,6 @@ from pydantic import BaseSettings, validator
 
 from jina import __version__
 
-__prefix__ = 'v1'
-
 
 class BaseConfig(BaseSettings):
     class Config:
@@ -11,40 +9,39 @@ class BaseConfig(BaseSettings):
 
 
 class FastAPIConfig(BaseConfig):
-    NAME: str = 'Jina Remote Manager'
-    DESCRIPTION: str = 'REST API for managing Jina on Remote'
+    NAME: str = 'JinaD (Daemon)'
+    DESCRIPTION: str = 'The REST API of the daemon for managing distributed Jina'
     VERSION: str = __version__
-    PREFIX: str = '/' + __prefix__
 
 
 class OpenAPITags(BaseConfig):
     API_TAGS: list = [{
-        'name': 'Jina Remote Management',
-        'description': 'API to invoke remote Flows/Pods/Peas',
+        'name': 'Distributed Jina management',
+        'description': 'API to invoke distributed Flows/Pods/Peas',
         'externalDocs': {
-            'description': 'Jina Remote Context Manager',
+            'description': 'Jina Documentation',
             'url': 'https://docs.jina.ai/',
         },
     }]
     FLOW_API_TAGS: list = [{
-        'name': 'Remote Flow Manager',
-        'description': 'API to invoke local/remote Flows',
+        'name': 'Managing distributed Flow',
+        'description': 'API to invoke distributed Flows',
         'externalDocs': {
             'description': 'Jina Flow Context Manager',
             'url': 'https://docs.jina.ai/chapters/flow/index.html',
         },
     }]
     POD_API_TAGS: list = [{
-        'name': 'Remote Pod Manager',
-        'description': 'API to invoke remote Pods (__should be used by Flow APIs only__)',
+        'name': 'Managing distributed Pod',
+        'description': 'API to invoke distributed Pods (__should be used by Flow APIs only__)',
         'externalDocs': {
             'description': 'Jina 101',
             'url': 'https://docs.jina.ai/chapters/101/.sphinx.html',
         },
     }]
     PEA_API_TAGS: list = [{
-        'name': 'Remote Pea Manager',
-        'description': 'API to invoke remote Peas',
+        'name': 'Managing distributed Pea',
+        'description': 'API to invoke distributed Peas',
         'externalDocs': {
             'description': 'Jina 101',
             'url': 'https://docs.jina.ai/chapters/101/.sphinx.html',

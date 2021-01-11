@@ -15,7 +15,7 @@ def invoke_requests(method: str,
             url, data=json.dumps(payload), headers=headers)
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f'got an exception while invoking request {repr(e)}')
+        print(f'got an exception while invoking request {e!r}')
         return
 
 def get_results(query: str,
@@ -29,7 +29,7 @@ def get_results(query: str,
 
 def create_flow(flow_yaml: str,
                 pod_dir: Optional[str] = None,
-                url: str = 'http://localhost:8000/v1/flow/yaml'):
+                url: str = 'http://localhost:8000/flow/yaml'):
     with ExitStack() as file_stack:
         pymodules_files = []
         uses_files = []

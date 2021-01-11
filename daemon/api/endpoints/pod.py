@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.put(
     path='/upload',
-    summary='Upload pod context yamls & pymodules',
+    summary='Upload YAML & py_modules required by a Pod',
 )
 async def _upload(
         uses_files: List[UploadFile] = File(()),
@@ -41,7 +41,7 @@ async def _upload(
 
 @router.put(
     path='/pod',
-    summary='Create a Pod via Flow or CLI',
+    summary='Create a Pod',
 )
 async def _create(
         pod_arguments: Union[SinglePodModel, ParallelPodModel]
@@ -57,9 +57,9 @@ async def _create(
             pod_id = pod_store._create(pod_arguments=pod_arguments)
         except PodStartException as e:
             raise HTTPException(status_code=404,
-                                detail=f'Pod couldn\'t get started: {repr(e)}')
+                                detail=f'Pod couldn\'t get started: {e!r}')
         except Exception as e:
-            daemon_logger.error(f'Got an error while creating a pod {repr(e)}')
+            daemon_logger.error(f'Got an error while creating a pod {e!r}')
             raise HTTPException(status_code=404,
                                 detail=f'Something went wrong')
         return {
@@ -71,12 +71,12 @@ async def _create(
 
 @router.delete(
     path='/pod',
-    summary='Delete pod',
+    summary='Terminate a running Pod',
 )
 async def _delete(
         pod_id: uuid.UUID
 ):
-    """Close Pod context
+    """Close Pod Context
     """
     with pod_store._session():
         try:

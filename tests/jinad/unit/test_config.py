@@ -7,7 +7,6 @@ def test_valid_fastapi_config():
     assert FastAPIConfig(NAME='blah').NAME == 'blah'
     assert FastAPIConfig(DESCRIPTION='blah').DESCRIPTION == 'blah'
     assert FastAPIConfig(VERSION='blah').VERSION == 'blah'
-    assert FastAPIConfig(PREFIX='blah').PREFIX == 'blah'
 
 
 def test_invalid_fastapi_config():

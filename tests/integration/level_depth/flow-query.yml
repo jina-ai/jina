@@ -1,4 +1,6 @@
 !Flow
+with:
+  restful: $RESTFUL
 pods:
   encoder:
     uses: yaml/encoder.yml

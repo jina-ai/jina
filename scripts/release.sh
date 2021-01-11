@@ -36,6 +36,7 @@ function clean_build {
 function pub_pypi {
     # publish to pypi
     clean_build
+    cp extra-requirements.txt jina/resources/
     python setup.py sdist
     twine upload dist/*
     clean_build
@@ -46,7 +47,7 @@ function git_commit {
     git config --local user.name "Jina Dev Bot"
     git tag "v$RELEASE_VER" -m "$(cat ./CHANGELOG.tmp)"
     echo -e "$RELEASE_VER" >> docs/versions
-    git add $INIT_FILE ./CHANGELOG.md jina/hub docs/versions
+    git add $INIT_FILE ./CHANGELOG.md jina/hub docs/versions jina/resources/extra-requirements.txt
     git commit -m "chore(version): the next version will be $NEXT_VER"
 }
 

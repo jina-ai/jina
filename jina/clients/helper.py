@@ -61,7 +61,7 @@ def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
         try:
             return func(*args, **kwargs)
         except Exception as ex:
-            err_msg = f'uncaught exception in callback {func.__name__}(): {repr(ex)}'
+            err_msg = f'uncaught exception in callback {func.__name__}(): {ex!r}'
             if continue_on_error:
                 logger.error(err_msg)
             else:

@@ -156,7 +156,7 @@ def _docker_auth(logger) -> Optional[Dict[str, str]]:
             else:
                 logger.error(f'failed to fetch docker credentials')
     except Exception as exp:
-        logger.error(f'got an exception while fetching docker credentials {repr(exp)}')
+        logger.error(f'got an exception while fetching docker credentials {exp!r}')
 
 
 def _make_hub_table_with_local(manifests, local_manifests):
@@ -240,7 +240,7 @@ def _register_to_mongodb(logger, summary: Dict = None):
                              f'please login using command: {colored("jina hub login", attrs=["bold"])}')
             logger.error(f'got an error from the API: {response.text}')
     except Exception as exp:
-        logger.error(f'got an exception while invoking hubapi for push {repr(exp)}')
+        logger.error(f'got an exception while invoking hubapi for push {exp!r}')
 
 
 def _fetch_access_token(logger):

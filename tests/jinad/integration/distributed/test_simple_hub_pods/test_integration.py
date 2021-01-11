@@ -25,11 +25,11 @@ def test_simple_hub_pods(docker_compose):
     print(f'Returned document has the text: {text_matched}')
 
     r = invoke_requests(method='get',
-                        url=f'http://0.0.0.0:8000/v1/flow/{flow_id}')
+                        url=f'http://0.0.0.0:8000/flow/{flow_id}')
     assert r['status_code'] == 200
 
     r = invoke_requests(method='delete',
-                        url=f'http://0.0.0.0:8000/v1/flow?flow_id={flow_id}')
+                        url=f'http://0.0.0.0:8000/flow?flow_id={flow_id}')
     assert r['status_code'] == 200
 
     assert expected_text == text_matched

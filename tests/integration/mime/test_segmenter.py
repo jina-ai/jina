@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from jina.executors.crafters import BaseSegmenter
 from jina.flow import Flow
 from tests import random_docs
@@ -22,25 +24,28 @@ def validate_factory(mock):
     return validate
 
 
-def test_dummy_seg(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_dummy_seg(mocker, restful):
     mock = mocker.Mock()
-    f = Flow().add(uses='DummySegment')
+    f = Flow(restful=restful).add(uses='DummySegment')
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=validate_factory(mock))
     mock.assert_called_once()
 
 
-def test_dummy_seg_random(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_dummy_seg_random(mocker, restful):
     mock = mocker.Mock()
-    f = Flow().add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-random.yml'))
+    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-random.yml'))
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=validate_factory(mock))
     mock.assert_called_once()
 
 
-def test_dummy_seg_not_random(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_dummy_seg_not_random(mocker, restful):
     mock = mocker.Mock()
-    f = Flow().add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-not-random.yml'))
+    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, '../../unit/yaml/dummy-seg-not-random.yml'))
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=validate_factory(mock))
     mock.assert_called_once()

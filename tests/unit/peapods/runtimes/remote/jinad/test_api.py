@@ -5,8 +5,7 @@ from jina.logging import JinaLogger
 from jina.peapods.runtimes.jinad.api import JinadAPI, PodJinadAPI, PeaJinadAPI, fetch_files_from_yaml
 
 logger = JinaLogger(context='test-remote')
-yaml_path = os.path.dirname(os.path.realpath(__file__))
-relative_pymodules_path = 'tests/unit/peapods/runtimes/remote/jinad'
+yaml_path = os.path.dirname(os.path.abspath(__file__))
 jinad_api = JinadAPI(host='0.0.0.0', port=8000, logger=logger)
 pod_api = PodJinadAPI(host='0.0.0.0', port=8000, logger=logger)
 pea_api = PeaJinadAPI(host='0.0.0.0', port=8000, logger=logger)
@@ -36,7 +35,7 @@ def test_fetch_files_from_yaml_pods():
     _uses_files, _pymodule_files = fetch_files_from_yaml(pea_args, logger)
     assert _uses_files == {f'{yaml_path}/yamls/encoder.yml',
                            f'{yaml_path}/yamls/indexer.yml'}
-    assert _pymodule_files == {f'{relative_pymodules_path}/yamls/dummy.py'}
+    assert _pymodule_files == {f'{yaml_path}/yamls/dummy.py'}
 
 
 def test_fetch_files_from_yaml_pea():
@@ -49,7 +48,7 @@ def test_fetch_files_from_yaml_pea():
     }
     _uses_files, _pymodule_files = fetch_files_from_yaml(pea_args, logger)
     assert _uses_files == {f'{yaml_path}/yamls/encoder.yml'}
-    assert _pymodule_files == {f'{relative_pymodules_path}/yamls/dummy.py'}
+    assert _pymodule_files == {f'{yaml_path}/yamls/dummy.py'}
 
 
 @mock.patch('requests.get')

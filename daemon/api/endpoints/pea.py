@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.put(
     path='/pea/upload',
-    summary='Upload pod context yamls & pymodules',
+    summary='Upload YAML & py_modules required by a Pea',
 )
 async def _upload(
         uses_files: List[UploadFile] = File(()),
@@ -56,9 +56,9 @@ async def _create(
             pea_id = pea_store._create(pea_arguments=pea_arguments)
         except PeaStartException as e:
             raise HTTPException(status_code=404,
-                                detail=f'Pea couldn\'t get started:  {repr(e)}')
+                                detail=f'Pea couldn\'t get started:  {e!r}')
         except Exception as e:
-            daemon_logger.error(f'Got an error while creating a pea {repr(e)}')
+            daemon_logger.error(f'Got an error while creating a pea {e!r}')
             raise HTTPException(status_code=404,
                                 detail=f'Something went wrong')
     return {
@@ -70,12 +70,12 @@ async def _create(
 
 @router.delete(
     path='/pea',
-    summary='Close Pea context',
+    summary='Terminate a running Pea',
 )
 async def _delete(
         pea_id: uuid.UUID
 ):
-    """Close Pea context
+    """Close Pea Context
     """
     with pea_store._session():
         try:

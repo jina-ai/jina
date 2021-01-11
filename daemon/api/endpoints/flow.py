@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import List, Union
+from typing import List, Union, Dict
 
 from fastapi import status, APIRouter, Body, Response, File, UploadFile
 from fastapi.exceptions import HTTPException
@@ -17,14 +17,13 @@ router = APIRouter()
 
 @router.put(
     path='/flow/pods',
-    summary='Build & start a Flow using Pods',
+    summary='Start a Flow from list of Pods',
 )
 async def _create_from_pods(
-        pods: Union[List[SinglePodModel]] = Body(...,
-                                                 example=json.loads(SinglePodModel().json()))
+        pods: Union[List[Dict]] = Body(..., example=json.loads(SinglePodModel().json()))
 ):
     """
-    Build a Flow using a list of `PodModel`
+    Build a Flow using a list of `SinglePodModel`
 
         [
             {
@@ -59,7 +58,7 @@ async def _create_from_pods(
 
 @router.put(
     path='/flow/yaml',
-    summary='Build & start a Flow using YAML',
+    summary='Start a Flow from a YAML config',
 )
 async def _create_from_yaml(
         yamlspec: UploadFile = File(...),
@@ -69,26 +68,24 @@ async def _create_from_yaml(
     """
     Build a flow using [Flow YAML](https://docs.jina.ai/chapters/yaml/yaml.html#flow-yaml-sytanx)
 
-    > Upload Flow yamlspec (`yamlspec`)
-
-    > Yamls that Pods use (`uses_files`) (Optional)
-
-    > Python modules (`pymodules_files`) that the Pods use (Optional)
+    - Upload Flow yamlspec (`yamlspec`)
+    - Yamls that Pods use (`uses_files`) (Optional)
+    - Python modules (`pymodules_files`) that the Pods use (Optional)
 
     **yamlspec**:
 
         !Flow
+        version: 1.0
         with:
-            rest_api: true
-            compress_hwm: 1024
+            restful: true
         pods:
-            encode:
-                uses: helloworld.encoder.yml
-                parallel: 2
-            index:
-                uses: helloworld.indexer.yml
-                shards: 2
-                separated_workspace: true
+            - name: encode
+              uses: helloworld.encoder.yml
+              parallel: 2
+            - name: index
+              uses: helloworld.indexer.yml
+              shards: 2
+              separated_workspace: true
 
     **uses_files**: `helloworld.encoder.yml`
 
@@ -145,7 +142,7 @@ async def _create_from_yaml(
                                 detail=f'Invalid yaml file.')
         except FlowStartException as e:
             raise HTTPException(status_code=404,
-                                detail=f'Flow couldn\'t get started:  {repr(e)}')
+                                detail=f'Flow couldn\'t get started:  {e!r}')
 
     return {
         'status_code': status.HTTP_200_OK,
@@ -158,7 +155,7 @@ async def _create_from_yaml(
 
 @router.get(
     path='/flow/{flow_id}',
-    summary='Get Flow information',
+    summary='Get the status of a running Flow',
 )
 async def _fetch(
         flow_id: uuid.UUID,
@@ -193,7 +190,7 @@ async def _fetch(
 
 @router.get(
     path='/ping',
-    summary='Connect to Flow gateway',
+    summary='Check if the Flow is alive',
 )
 async def _ping(
         host: str,
@@ -208,6 +205,7 @@ async def _ping(
     _, args, _ = ArgNamespace.get_parsed_args(kwargs, set_client_cli_parser())
     client = Client(args)
     try:
+        # TODO: this introduces side-effect, need to be refactored. (2020.01.10)
         client.index(input_fn=['abc'])
         return {
             'status_code': status.HTTP_200_OK,
@@ -220,13 +218,13 @@ async def _ping(
 
 @router.delete(
     path='/flow',
-    summary='Close Flow context',
+    summary='Terminate a running Flow',
 )
 async def _delete(
         flow_id: uuid.UUID
 ):
     """
-    Close Flow context
+    Close Flow Context
     """
     with flow_store._session():
         try:

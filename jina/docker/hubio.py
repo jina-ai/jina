@@ -6,7 +6,7 @@ import json
 import urllib.parse
 import urllib.request
 import webbrowser
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from docker import DockerClient
 
@@ -163,7 +163,7 @@ class HubIO:
                          image_type=self.args.type,
                          image_keywords=self.args.keywords)
 
-    def push(self, name: str = None, readme_path: str = None, build_result: Dict = None) -> None:
+    def push(self, name: Optional[str] = None, readme_path: Optional[str] = None, build_result: Optional[Dict] = None) -> None:
         """ A wrapper of docker push 
         - Checks for the tempfile, returns without push if it cannot find
         - Pushes to docker hub, returns withput writing to db if it fails
@@ -173,7 +173,7 @@ class HubIO:
         try:
             # check if image exists
             # fail if it does
-            if self.args.no_overwrite and self._image_version_exists(
+            if self.args.no_overwrite and build_result and self._image_version_exists(
                     build_result['manifest_info']['name'],
                     build_result['manifest_info']['version'],
                     jina_version
@@ -206,7 +206,7 @@ class HubIO:
                 if build_result.get('details', None) and build_result.get('build_history', None):
                     self._write_slack_message(build_result, build_result['details'], build_result['build_history'])
         except Exception as e:
-            self.logger.error(f'Error when trying to push image {name}: {repr(e)}')
+            self.logger.error(f'Error when trying to push image {name}: {e!r}')
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
@@ -263,7 +263,7 @@ class HubIO:
             self.logger.success(
                 f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
         except Exception as ex:
-            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry} due to {repr(ex)}')
+            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry} due to {ex!r}')
 
     def _check_docker_image(self, name: str) -> None:
         # check local image
@@ -273,12 +273,13 @@ class HubIO:
                 self.logger.warning(f'{r} is missing in your docker image labels, you may want to check it')
         try:
             image.labels['ai.jina.hub.jina_version'] = jina_version
-            if name != safe_url_name(
-                    f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
-                        **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})):
-                raise ValueError(f'image {name} does not match with label info in the image')
-        except KeyError:
-            self.logger.error('missing key in the label of the image')
+            label_info = f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
+                        **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})
+            safe_name = safe_url_name(label_info)
+            if name != safe_name:
+                raise ValueError(f'image {name} does not match with label info in the image. name should be {safe_name}')
+        except KeyError as e:
+            self.logger.error(f'missing key in the label of the image {repr(e)}')
             raise
 
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
@@ -383,7 +384,7 @@ class HubIO:
                             self.logger.warning(
                                 f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be due to the fact that the executor has non-installed external dependencies')
                     except Exception as ex:
-                        self.logger.error(f'something wrong while testing the build: {repr(ex)}')
+                        self.logger.error(f'something wrong while testing the build: {ex!r}')
                         ex = HubBuilderTestError(ex)
                         _except_strs.append(repr(ex))
                         _excepts.append(ex)

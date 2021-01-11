@@ -4,7 +4,6 @@ import pytest
 
 from ..helpers import create_flow, invoke_requests, get_results
 
-
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 flow_yml = os.path.join(cur_dir, 'flow.yml')
@@ -24,12 +23,12 @@ def test_index_query(docker_compose):
     assert text_indexed == 'text:hey, dude'
 
     r = invoke_requests(method='get',
-                        url=f'http://localhost:8000/v1/flow/{flow_id}')
+                        url=f'http://localhost:8000/flow/{flow_id}')
     assert r is not None
     assert r['status_code'] == 200
 
     r = invoke_requests(method='delete',
-                        url=f'http://localhost:8000/v1/flow?flow_id={flow_id}')
+                        url=f'http://localhost:8000/flow?flow_id={flow_id}')
     assert r is not None
     assert r['status_code'] == 200
 
@@ -41,12 +40,12 @@ def test_index_query(docker_compose):
     assert text_matched == 'text:hey, dude'
 
     r = invoke_requests(method='get',
-                        url=f'http://localhost:8000/v1/flow/{flow_id}')
+                        url=f'http://localhost:8000/flow/{flow_id}')
     assert r is not None
     assert r['status_code'] == 200
 
     r = invoke_requests(method='delete',
-                        url=f'http://localhost:8000/v1/flow?flow_id={flow_id}')
+                        url=f'http://localhost:8000/flow?flow_id={flow_id}')
     assert r is not None
     assert r['status_code'] == 200
     expected_text = 'text:hey, dude'
