@@ -55,10 +55,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             if self._running_avg:
                 evaluation.value = self.exec.mean
 
-            if getattr(self.exec, 'eval_at', None):
-                evaluation.op_name = f'{self.exec.__class__.__name__}@{self.exec.eval_at}'
-            else:
-                evaluation.op_name = self.exec.__class__.__name__
+            evaluation.op_name = self.exec.name
             evaluation.ref_id = groundtruth.id
 
     def extract(self, doc: 'Document') -> Any:

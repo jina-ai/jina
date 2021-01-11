@@ -17,6 +17,8 @@ class BaseEvaluator(BaseExecutor):
     def post_init(self):
         super().post_init()
         self._running_stats = RunningStats()
+        if getattr(self, 'eval_at', None):
+            self.name += f'@{self.eval_at}'
 
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
         raise NotImplementedError
