@@ -374,7 +374,8 @@ class HubIO:
                         p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
                                                                         self.config_yaml_path,
                                                                         self.args.timeout_ready,
-                                                                        self.args.daemon)
+                                                                        self.args.daemon,
+                                                                        self.logger)
                         if any(test_level in failed_test_levels for test_level in
                                [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
                             is_build_success = False
@@ -446,49 +447,58 @@ class HubIO:
                     test_level: 'BuildTestLevel',
                     config_yaml_path: str,
                     timeout_ready: int,
-                    daemon_arg: bool):
+                    daemon_arg: bool,
+                    logger: 'JinaLogger'):
         p_names = []
         failed_levels = []
 
         # test uses at executor level
         if test_level >= BuildTestLevel.EXECUTOR:
+            logger.warning(f'Testing executor in {config_yaml_path} at {str(BuildTestLevel.EXECUTOR)} level')
             try:
                 with BaseExecutor.load_config(config_yaml_path):
                     pass
-            except:
+            except Exception as exception:
+                logger.warning(f'{str(BuildTestLevel.EXECUTOR)} level fail caused by {repr(exception)}')
                 failed_levels.append(BuildTestLevel.EXECUTOR)
 
         # test uses at Pod level (no docker)
         if test_level >= BuildTestLevel.POD_NONDOCKER:
+            logger.warning(f'Testing executor in {config_yaml_path} at {str(BuildTestLevel.POD_NONDOCKER)} level')
             try:
                 with Pod(set_pod_parser().parse_args(
-                        ['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
+                        ['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready), '--show-exc-info'])):
                     pass
-            except:
+            except Exception as exception:
+                logger.warning(f'{str(BuildTestLevel.POD_NONDOCKER)} level fail caused by {repr(exception)}')
                 failed_levels.append(BuildTestLevel.POD_NONDOCKER)
 
         # test uses at Pod level (with docker)
         if test_level >= BuildTestLevel.POD_DOCKER:
+            logger.warning(f'Testing executor with image {image.tags[0]} at {str(BuildTestLevel.POD_DOCKER)} level')
             p_name = random_name()
             try:
                 with Pod(set_pod_parser().parse_args(
                         ['--uses', f'docker://{image.tags[0]}', '--name', p_name, '--timeout-ready',
-                         str(timeout_ready)] +
+                         str(timeout_ready), '--show-exc-info'] +
                         ['--daemon'] if daemon_arg else [])):
                     pass
                 p_names.append(p_name)
-            except:
+            except Exception as exception:
+                logger.warning(f'{str(BuildTestLevel.POD_DOCKER)} level fail caused by {repr(exception)}')
                 failed_levels.append(BuildTestLevel.POD_DOCKER)
 
         # test uses at Flow level
         if test_level >= BuildTestLevel.FLOW:
+            logger.warning(f'Testing executor with image {image.tags[0]} at {str(BuildTestLevel.FLOW)} level')
             p_name = random_name()
             try:
                 with Flow().add(name=random_name(), uses=f'docker://{image.tags[0]}', daemon=daemon_arg,
                                 timeout_ready=timeout_ready):
                     pass
                 p_names.append(p_name)
-            except:
+            except Exception as exception:
+                logger.warning(f'{str(BuildTestLevel.FLOW)} level fail caused by {repr(exception)}')
                 failed_levels.append(BuildTestLevel.FLOW)
 
         return p_names, failed_levels
