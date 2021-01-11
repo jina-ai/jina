@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 import pytest
 from unittest.mock import Mock
@@ -68,7 +68,7 @@ def test_optuna_result_processor(tmpdir):
     study.best_trial.params = {'a': 1}
     study.best_trial.duration = 3
 
-    filepath = Path(tmpdir / 'best_config.yml')
+    filepath = os.path.join(tmpdir, 'best_config.yml')
     proc = OptunaResultProcessor(study)
     proc.save_parameters(filepath)
     assert yaml.load(open(filepath), Loader=yaml.Loader) == {'a': 1}

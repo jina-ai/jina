@@ -2,7 +2,7 @@
 with:
   index_filename: tmp2
 metas:
-  workspace: $JINA_TEST_FLOW_RUNNER
+  workspace: ${{JINA_TEST_FLOW_RUNNER_WORKSPACE_VAR}}
 requests:
   on:
     SearchRequest:

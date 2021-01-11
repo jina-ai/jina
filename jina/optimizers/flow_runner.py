@@ -38,12 +38,24 @@ class FlowRunner:
         self.callback = callback
         self.overwrite_workspace = overwrite_workspace
 
-    @staticmethod
-    def clean_workdir(workspace):
-        if workspace.exists():
-            shutil.rmtree(workspace)
-            logger.warning(colored('Existing workspace deleted', 'red'))
-            logger.warning(colored('WORKSPACE: ' + str(workspace), 'red'))
+    def setup_workspace(self, workspace):
+        if os.path.exists(workspace):
+            if self.overwrite_workspace:
+                shutil.rmtree(workspace)
+                logger.warning(colored('Existing workspace deleted', 'red'))
+                logger.warning(colored('WORKSPACE: ' + str(workspace), 'red'))
+                logger.warning(
+                    colored('change overwrite_workspace to change this', 'red')
+                )
+            else:
+                logger.warning(
+                    colored(
+                        f'Workspace {workspace} already exists. Please set ``overwrite_workspace=True`` for replacing it.',
+                        'red',
+                    )
+                )
+
+        os.makedirs(workspace, exist_ok=True)
 
     def run(self, trial_parameters=None, workspace='workspace', **kwargs):
         """[summary]
@@ -55,30 +67,13 @@ class FlowRunner:
         if trial_parameters is None:
             trial_parameters = {}
 
-        if os.path.exists(workspace):
-            if self.overwrite_workspace:
-                FlowRunner.clean_workdir(workspace)
-                logger.warning(
-                    colored('change overwrite_workspace to change this', 'red')
-                )
-            else:
-                if self.task == 'index':
-                    logger.warning(
-                        colored(
-                            'Workspace already exists. Skipping indexing.',
-                            'cyan',
-                        )
-                    )
-                    return
-
-        os.makedirs(workspace, exist_ok=True)
-
+        self.setup_workspace(workspace)
         with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
             getattr(f, self.task)(
                 self.documents,
                 batch_size=self.batch_size,
                 on_done=self.callback,
-                **kwargs
+                **kwargs,
             )
 
 

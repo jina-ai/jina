@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 
 from jina.optimizers.parameters import (
     IntegerParameter,
@@ -12,8 +12,6 @@ from jina.optimizers.parameters import (
 
 import pytest
 
-
-cur_dir = Path(__file__).parent
 
 arg_dict = [
     (
@@ -113,7 +111,9 @@ def test_parameters(paramter_class, inputs, outputs):
 
 
 def test_parameter_file_loading():
-    params_loaded = load_optimization_parameters(cur_dir / 'parameters.yml')
+    params_loaded = load_optimization_parameters(
+        os.path.join(os.path.dirname(__file__), 'parameters.yml')
+    )
     expected = [
         IntegerParameter,
         FloatParameter,

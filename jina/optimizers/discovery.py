@@ -1,6 +1,5 @@
 import os
 import shutil
-from pathlib import Path
 
 from jina.executors import BaseExecutor
 from jina.logging import default_logger as logger
@@ -19,13 +18,13 @@ def _extract_executor_files(flows):
             stripped = line.strip()
             if stripped.startswith("uses"):
                 executor_file = stripped.split(":", 1)[1].strip()
-                executor_files.add(Path(executor_file))
+                executor_files.add(executor_file)
     return executor_files
 
 
 def _extract_parameters(executor_yml):
     try:
-        with BaseExecutor.load_config(str(executor_yml)) as executor:
+        with BaseExecutor.load_config(executor_yml) as executor:
             if hasattr(executor, "DEFAULT_OPTIMIZATION_PARAMETER"):
                 default_config = executor.DEFAULT_OPTIMIZATION_PARAMETER
             else:
@@ -78,7 +77,7 @@ def _write_optimization_parameter(
         parameter for config in executor_configurations.values() for parameter in config
     ]
 
-    if target_file.exists() and not overwrite_parameter_file:
+    if os.path.exists(target_file) and not overwrite_parameter_file:
         logger.warning(
             f"{target_file} already exists. Skip writing. Please remove it before parameter discovery."
         )
@@ -118,8 +117,8 @@ def main():
     config_global_environment()
 
     run_parameter_discovery(
-        flow_files=[Path("flows/index.yml"), Path("flows/evaluate.yml")],
-        target_file=Path("flows/parameter.yml"),
+        flow_files=["flows/index.yml", "flows/evaluate.yml"],
+        target_file="flows/parameter.yml",
         overwrite_parameter_file=True,
     )
 
