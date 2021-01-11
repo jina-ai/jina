@@ -140,6 +140,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: 'master'
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
