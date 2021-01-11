@@ -47,19 +47,7 @@ Use `-devel` image, if you want to use:
 - REST interface
 - Jina daemon (use `-daemon`)
 - Dashboard
-- Log-streaming
-
-### Image Size of Different Versions
-
-![](https://img.shields.io/docker/image-size/jinaai/jina/latest?label=jinaai%2Fjina%3Alatest&logo=docker)
-
-![](https://img.shields.io/docker/image-size/jinaai/jina/latest-devel?label=jinaai%2Fjina%3Alatest-devel&logo=docker)
-
-![](https://img.shields.io/docker/image-size/jinaai/jina/latest-daemon?label=jinaai%2Fjina%3Alatest-daemon&logo=docker)
-
-![](https://img.shields.io/docker/image-size/jinaai/jina/master?label=jinaai%2Fjina%3Amaster&logo=docker)
-
-The last update image is ![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?label=last%20update&logo=docker&sort=date)  
+- Log-streaming 
 
 ### Image Alias & Update
 
@@ -74,14 +62,24 @@ On every master merge, the following images got updated:
 
 On every `x.y.z` release, the following images got update:
 
-- latest{dependency}{python_version}{entrypoint}
-- x.y.z{dependency}{python_version}{entrypoint}
-- x.y{dependency}{python_version}{entrypoint},
+- `latest{dependency}{python_version}{entrypoint}`
+- `x.y.z{dependency}{python_version}{entrypoint}`
+- `x.y{dependency}{python_version}{entrypoint},`
 
 , `latest` & `x.y.z` & `x.y` are aliases, and where
   - dependency: `["", "-devel"]`
   - python_version: `["-py37", "-py38"]`
   - entrypoint: `["", "-daemon"]`
+  
+
+### Image Size of Different Versions
+
+![](https://img.shields.io/docker/image-size/jinaai/jina/latest?label=jinaai%2Fjina%3Alatest&logo=docker)
+![](https://img.shields.io/docker/image-size/jinaai/jina/latest-devel?label=jinaai%2Fjina%3Alatest-devel&logo=docker)
+![](https://img.shields.io/docker/image-size/jinaai/jina/latest-daemon?label=jinaai%2Fjina%3Alatest-daemon&logo=docker)
+![](https://img.shields.io/docker/image-size/jinaai/jina/master?label=jinaai%2Fjina%3Amaster&logo=docker)
+
+The last update image is ![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?label=last%20update&logo=docker&sort=date) 
 
 ## Master Update
 
