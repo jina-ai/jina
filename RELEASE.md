@@ -22,7 +22,7 @@ pip install jina==x.y.z
 The docker image name starts with `jinaai/jina` followed by a tag composed as four parts:
 
 ```text
-jinaai/jina:{version}{dependency}{python_version}{entrypoint}
+jinaai/jina:{version}{python_version}{extra}
 ```
 
 - `{version}`: The version of Jina. Possible values:
@@ -30,11 +30,11 @@ jinaai/jina:{version}{dependency}{python_version}{entrypoint}
     - `master`: the master branch of `jina-ai/jina` repository;
     - `x.y.z`: the release of a particular version;
     - `x.y`: the alias to the last `x.y.z` patch release;
-- `{dependency}`: the extra dependency installed along with Jina. Possible values:
+- `{python_version}`: The Python version of the image. Possible values: ` `, `-py37`, `-py38` for Python 3.7 and Python 3.8 respectively, where ` ` means Python 3.7.
+- `{extra}`: the extra dependency installed along with Jina. Possible values:
     - ` `: Jina is installed inside the image via `pip install jina`;
     - `-devel`: Jina is installed inside the image via `pip install jina[devel]`;
-- `{python-version}`: The Python version of the image. Possible values: ` `, `-py37`, `-py38` for Python 3.7 and Python 3.8 respectively, where ` ` means Python 3.7.
-- `{entrypoint}`: The entrypoint of the image. Possible values: ` `, `-daemon`, where ` ` means default Jina entrypoint.
+    - `-daemon`: Jina is installed inside the image via `pip install jina[dameon]`; and the entrypoint is set to `jinad`
 
 Examples:
 
@@ -53,7 +53,7 @@ Use `-devel` image, if you want to use:
 
 On every master merge, the following images got updated:
 
-- `jinaai/jina:master{dependency}{python_version}{entrypoint}`
+- `jinaai/jina:master{python_version}{extra}`
 
 , where:
   - dependency: `["", "-devel"]`
@@ -62,14 +62,13 @@ On every master merge, the following images got updated:
 
 On every `x.y.z` release, the following images got update:
 
-- `latest{dependency}{python_version}{entrypoint}`
-- `x.y.z{dependency}{python_version}{entrypoint}`
-- `x.y{dependency}{python_version}{entrypoint},`
+- `jinaai/jina:latest{python_version}{extra}`
+- `jinaai/jina:x.y.z{python_version}{extra}`
+- `jinaai/jina:x.y{python_version}{extra},`
 
 , `latest` & `x.y.z` & `x.y` are aliases, and where
-  - dependency: `["", "-devel"]`
   - python_version: `["-py37", "-py38"]`
-  - entrypoint: `["", "-daemon"]`
+  - extra: `["", "-devel", "-daemon"]`
   
 
 ### Image Size of Different Versions

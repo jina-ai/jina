@@ -12,7 +12,6 @@ FROM python:${PY_VERSION}-slim AS jina_base
 ARG VCS_REF
 ARG BUILD_DATE
 ARG JINA_VERSION
-ARG INSTALL_DEV
 ARG PIP_TAG
 
 LABEL org.opencontainers.image.created=${BUILD_DATE} \
@@ -39,15 +38,25 @@ ENV JINA_BUILD_BASE_DEP="python3-grpcio" \
 COPY . /jina/
 
 RUN apt-get update && apt-get install --no-install-recommends -y ${JINA_BUILD_BASE_DEP} && \
-    if [ -n "${INSTALL_DEV}" ]; then apt-get install --no-install-recommends -y ${JINA_BUILD_DEVEL_DEP}; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     ln -s locale.h /usr/include/xlocale.h && \
     cd /jina && \
     pip install . --compile && \
-    if [ -n "${INSTALL_DEV}" ]; then pip install .[devel] --compile; fi && \
     if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile; fi && \
-    rm -rf /tmp/* && rm -rf /jina && \
-    rm /usr/include/xlocale.h
+    rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
+
+ENTRYPOINT ["jina"]
+
+FROM jina_base AS jina_devel
+
+COPY . /jina/
+
+RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
+    apt-get install --no-install-recommends -y ${JINA_BUILD_DEVEL_DEP} && \
+    apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    ln -s locale.h /usr/include/xlocale.h && cd /jina && \
+    pip install .[devel] --compile && \
+    rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
 ENTRYPOINT ["jina"]
 
@@ -58,8 +67,8 @@ COPY . /jina/
 RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     gem install fluentd --no-doc && \
-    cd /jina && \
+    ln -s locale.h /usr/include/xlocale.h && cd /jina && \
     pip install .[daemon] --compile && \
-    rm -rf /tmp/* && rm -rf /jina
+    rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
 ENTRYPOINT ["jinad"]

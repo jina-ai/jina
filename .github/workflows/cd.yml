@@ -85,9 +85,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tag_dependency: ["", "-devel"]
+        tag_stage: ["", "-devel", "-daemon"]
         tag_pyversion: ["-py37", "-py38"]
-        tag_entrypoint: ["", "-daemon"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -98,19 +97,17 @@ jobs:
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
           echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master" >> $GITHUB_ENV
 
-          if [[ "${{ matrix.tag_dependency }}" == "-devel" ]]; then
-            echo "INSTALL_DEV=true" >> $GITHUB_ENV
-          fi
-
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=master${{ matrix.tag_dependency }}${{ matrix.tag_entrypoint }}" >> $GITHUB_ENV
+            echo "TAG_ALIAS=master${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
-          if [[ "${{ matrix.tag_entrypoint }}" == "-daemon" ]]; then
+          if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
             echo "BUILD_ARG=--target jina_daemon" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]
+            echo "BUILD_ARG=--target jina_devel" >> $GITHUB_ENV
           else
             echo "BUILD_ARG=--target jina_base" >> $GITHUB_ENV
           fi
@@ -121,9 +118,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
           buildoptions: ${{ env.BUILD_ARG }}
-          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
+          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
       - name: Upload to Github Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
@@ -132,9 +129,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
           buildoptions: ${{ env.BUILD_ARG }}
-          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
+          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
 
   docker-build:
     needs: update-doc
