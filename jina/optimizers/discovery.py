@@ -3,7 +3,7 @@ import shutil
 
 from jina.executors import BaseExecutor
 from jina.logging import default_logger as logger
-from jina.helper import yaml
+from jina.jaml import JAML
 
 
 def _read_file(filename):
@@ -13,12 +13,13 @@ def _read_file(filename):
 
 def _extract_executor_files(flows):
     executor_files = set()
-    for flow_definition in flows.values():
+    for flow_file, flow_definition in flows.items():
+        flow_directory = os.path.dirname(flow_file)
         for line in flow_definition:
             stripped = line.strip()
-            if stripped.startswith("uses"):
+            if stripped.startswith("uses") or stripped.startswith("- uses"):
                 executor_file = stripped.split(":", 1)[1].strip()
-                executor_files.add(executor_file)
+                executor_files.add(os.path.join(flow_directory, executor_file))
     return executor_files
 
 
@@ -83,7 +84,7 @@ def _write_optimization_parameter(
         )
     else:
         with open(target_file, "w") as outfile:
-            yaml.dump(output, outfile)
+            JAML.dump(output, outfile)
 
 
 def _write_to(filepath, content, create_backup=True):

@@ -26,6 +26,8 @@ def test_flow_runner(tmpdir, mocker):
     )
 
     flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace})
+    # Test overwriting
+    flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace})
 
     flow_runner = FlowRunner(
         flow_yaml='flow.yml',

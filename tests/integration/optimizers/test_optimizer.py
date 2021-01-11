@@ -1,8 +1,8 @@
+import yaml
+
 from jina import Document
 from jina.optimizers import OptunaOptimizer, EvaluationCallback
 from jina.optimizers.flow_runner import FlowRunner, MultiFlowRunner
-
-import yaml
 
 
 def test_optimizer(tmpdir):

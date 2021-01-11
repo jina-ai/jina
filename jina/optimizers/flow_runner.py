@@ -38,7 +38,7 @@ class FlowRunner:
         self.callback = callback
         self.overwrite_workspace = overwrite_workspace
 
-    def setup_workspace(self, workspace):
+    def _setup_workspace(self, workspace):
         if os.path.exists(workspace):
             if self.overwrite_workspace:
                 shutil.rmtree(workspace)
@@ -57,17 +57,19 @@ class FlowRunner:
 
         os.makedirs(workspace, exist_ok=True)
 
-    def run(self, trial_parameters=None, workspace='workspace', **kwargs):
+    def run(
+        self,
+        trial_parameters: dict,
+        workspace: str = 'workspace',
+        **kwargs,
+    ):
         """[summary]
 
         :param trial_parameters: flow env variable values
         :param workspace: directory to be used for artifacts generated
         """
 
-        if trial_parameters is None:
-            trial_parameters = {}
-
-        self.setup_workspace(workspace)
+        self._setup_workspace(workspace)
         with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
             getattr(f, self.task)(
                 self.documents,
@@ -87,11 +89,14 @@ class MultiFlowRunner:
         self.flows = flows
 
     def run(
-        self, trial_parameters: Optional[dict] = None, workspace: str = 'workspace'
+        self,
+        trial_parameters: dict,
+        workspace: str = 'workspace',
+        **kwargs,
     ):
         """
         :param trial_parameters: parameters to be used as environment variables
         :param workspace: directory to be used for the flows
         """
         for flow in self.flows:
-            flow.run(trial_parameters, workspace)
+            flow.run(trial_parameters, workspace, **kwargs)
