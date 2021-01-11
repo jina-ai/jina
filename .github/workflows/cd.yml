@@ -49,7 +49,7 @@ jobs:
           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
-          jina export-api --yaml-path "${{JINA_VERSION}}.yml" master.yml --json-path "${{JINA_VERSION}}.json" master.json master
+          jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
           mkdir -p jinad && cd jinad
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           cd -

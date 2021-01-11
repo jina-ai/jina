@@ -103,7 +103,7 @@ jobs:
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=latest${{ matrix.tag_stage }}, ${{JINA_VERSION}}${{ matrix.tag_stage }}, ${{JINA_MINOR_VERSION}}${{ matrix.tag_stage }}" >> $GITHUB_ENV
+            echo "TAG_ALIAS=latest${{ matrix.tag_stage }}, $JINA_VERSION${{ matrix.tag_stage }}, $JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
