@@ -6,10 +6,10 @@ Every time [jina-ai/jina](https://github.com/jina-ai/jina) is updated or release
 ## Schema URL
 
 - [`https://api.jina.ai/latest`](https://api.jina.ai/latest) gives you the latest stable API schema (corresponds to the last Sunday release) in JSON
-- [`https://api.jina.ai/devel`](https://api.jina.ai/devel) gives you the latest development API schema (corresponds to the last master update of [jina-ai/jina](https://github.com/jina-ai/jina) in JSON
+- [`https://api.jina.ai/master`](https://api.jina.ai/master) gives you the latest development API schema (corresponds to the last master update of [jina-ai/jina](https://github.com/jina-ai/jina) in JSON
 
 ```bash
-➜ curl https://api.jina.ai/devel
+➜ curl https://api.jina.ai/master
 
 {"authors": "dev-team@jina.ai", "description": "Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology", "docs": "https://docs.jina.ai", "license": "Apache 2.0", "methods": [{"name": "pod", "options": [{"choices": null, "default": null, "default_random": false, "help": "the name of this pea, used to identify the pod and its logs.", "name": "name", "option_strings": ["--name"], "required": false, "type": "str"},
 ```
