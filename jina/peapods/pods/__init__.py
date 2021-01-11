@@ -105,7 +105,7 @@ class BasePod(ExitStack):
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
-        elif getattr(args, 'uses_before', None) or getattr(args, 'uses_after', None):
+        else:
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
                 self.is_head_router = True
@@ -114,10 +114,6 @@ class BasePod(ExitStack):
                 self.is_tail_router = True
                 peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args.get('head', None), peas_args.get('tail', None))
-        else:
-            self.is_head_router = False
-            self.is_tail_router = False
-            peas_args['peas'] = [args]
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return peas_args
