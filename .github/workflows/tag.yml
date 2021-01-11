@@ -96,13 +96,14 @@ jobs:
           echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
-          echo "JINA_MINOR_VERSION=${JINA_VERSION%.*}" >> $GITHUB_ENV
+          JINA_MINOR_VERSION=${JINA_VERSION%.*}
+          echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=latest${{ matrix.tag_stage }}, ${{env.JINA_VERSION}}${{ matrix.tag_stage }}, ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_stage }}" >> $GITHUB_ENV
+            echo "TAG_ALIAS=latest${{ matrix.tag_stage }}, ${{JINA_VERSION}}${{ matrix.tag_stage }}, ${{JINA_MINOR_VERSION}}${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
@@ -154,7 +155,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag_name: ${{ github.ref }}
-          release_name: 🎉 Release ${{ github.ref }}
+          release_name: 💫 Patch ${{ github.ref }}
           body_path: 'tmp.md'
           draft: false
           prerelease: false

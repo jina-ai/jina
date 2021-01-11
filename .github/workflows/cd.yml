@@ -41,14 +41,15 @@ jobs:
       - run: |
           pip install .[daemon] --no-cache-dir
           jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
-          echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master" >> $GITHUB_ENV
+          JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
+          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
           pip install css-html-js-minify
           css-html-js-minify ./jina/resources/hub-builder-success
           cp ./jina/resources/hub-builder-success/index.html ./schema/hub
           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
-          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" master.yml --json-path "${{env.JINA_VERSION}}.json" master.json master
+          jina export-api --yaml-path "${{JINA_VERSION}}.yml" master.yml --json-path "${{JINA_VERSION}}.json" master.json master
           mkdir -p jinad && cd jinad
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           cd -
