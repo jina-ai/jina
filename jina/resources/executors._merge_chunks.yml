@@ -1,7 +1,7 @@
 !BaseExecutor
 with: {}
 metas:
-  name: merge
+  name: merge_chunks
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:

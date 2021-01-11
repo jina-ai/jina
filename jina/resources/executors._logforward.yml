@@ -1,7 +1,7 @@
 !BaseExecutor
 with: {}
 metas:
-  name: route
+  name: logforward
 requests:
   on:
     ControlRequest:

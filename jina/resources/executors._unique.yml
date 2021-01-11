@@ -1,8 +1,8 @@
 !DocIDCache
 with:
-  index_path: cache.tmp
+  index_path: unique.tmp
 metas:
-  name: cache
+  name: unique
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ControlRequest]:
