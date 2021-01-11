@@ -188,7 +188,8 @@ class Document:
         return self._document.content_hash
 
     def update_content_hash(self,
-                            exclude_fields: Optional[Tuple[str]] = ('id', 'chunks', 'matches', 'content_hash'),
+                            exclude_fields: Optional[Tuple[str]] = (
+                            'id', 'chunks', 'matches', 'content_hash', 'parent_id'),
                             include_fields: Optional[Tuple[str]] = None) -> None:
         """Update the document hash according to its content.
 
