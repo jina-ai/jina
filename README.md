@@ -32,7 +32,7 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 
 ⏱️ **Time Saver** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
-🌌 **Universal Search** - Large-scale indexing and querying of any kind of data: video, image, long/short text, music, source code, etc.
+🌌 **Universal Search** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
 
 🧠 **First-Class AI Models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
 
@@ -51,21 +51,13 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 
 ## Installation
 
-On Linux/macOS with Python 3.7/3.8:
+| 📦 | On Linux/macOS & Python 3.7/3.8 | Docker Users|
+| --- | --- | --- |
+| Standard | `pip install -U jina` | `docker run jinaai/jina:latest` |
+| <sub>With Extras</sub> | <sub>`pip install -U "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
+| <sub>Dev Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
 
-```bash
-pip install -U jina
-```
-
-To install Jina with extra dependencies, or install on Raspberry Pi [please refer to the documentation](https://docs.jina.ai/chapters/install/via-pip.html). Windows users can use Jina via the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
-
-#### In a Docker Container
-
-Our universal Docker image supports multiple architectures (including x64, x86, arm-64/v7/v6). They are ready-to-use:
-
-```bash
-docker run jinaai/jina --help
-```
+Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). To install Jina with extra dependencies [please refer to the docs](https://docs.jina.ai/chapters/install/via-pip.html). Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 ## Jina "Hello, World!" 👋🌍
 
