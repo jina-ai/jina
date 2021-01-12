@@ -13,12 +13,6 @@ def set_hw_parser(parser=None):
     gp.add_argument('--workdir', type=str, default=get_random_identity(),
                     help='the workdir for hello-world demo, '
                          'all data, indices, shards and outputs will be saved there')
-    gp.add_argument('--logserver', action='store_true', default=False,
-                    help='start a log server for the dashboard')
-    gp.add_argument('--logserver-config', type=str,
-                    default=resource_filename('jina',
-                                              '/'.join(('resources', 'logserver.default.yml'))),
-                    help='the yaml config of the log server')
     gp.add_argument('--download-proxy', type=str,
                     help='specify the proxy when downloading sample data')
 

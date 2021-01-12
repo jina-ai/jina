@@ -6,18 +6,14 @@ on:
 jobs:
   hub-test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7]
-
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.7
       - name: Test hubapp with hubpods
         run: |
           ./tests/jinahub/test_integration.sh

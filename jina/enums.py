@@ -9,7 +9,6 @@ To use these enums in YAML config, following the example below:
 
     !Flow
     with:
-      logserver_config: yaml/test-server-config.yml
       optimize_level: !FlowOptimizeLevel IGNORE_GATEWAY
       # or
       optimize_level: IGNORE_GATEWAY

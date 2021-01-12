@@ -43,7 +43,6 @@ def test_helloworld_flow(tmpdir):
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
-    os.environ['WITH_LOGSERVER'] = str(args.logserver)
 
     f = Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))))
 
@@ -74,7 +73,6 @@ def test_helloworld_flow_dry_run(tmpdir):
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
-    os.environ['WITH_LOGSERVER'] = str(args.logserver)
 
     # run it!
     with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml')))):

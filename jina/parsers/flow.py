@@ -13,13 +13,6 @@ def set_flow_parser(parser=None):
         parser = set_base_parser()
 
     parser.add_argument('--uses', type=str, help='a yaml file represents a flow')
-
-    parser.add_argument('--logserver', action='store_true', default=False,
-                        help='start a log server for the dashboard')
-    parser.add_argument('--logserver-config', type=str,
-                        default=resource_filename('jina',
-                                                  '/'.join(('resources', 'logserver.default.yml'))),
-                        help='the yaml config of the log server')
     parser.add_argument('--log-id', type=str, default=get_random_identity(),
                         help='the log id used to aggregate logs by fluentd' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     parser.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,

@@ -9,7 +9,7 @@ services:
       - "8000:8000"
       - "45678:45678"
     env_file:
-      - tests/jinad/integration/distributed/test_simple_distributed_with_shards/.env
+      - tests/jinad/integration/test_simple_distributed_with_shards/.env
     expose:
       - 10000-60000
   pod1:
@@ -18,11 +18,11 @@ services:
       - 8000
       - 10000-60000
     env_file:
-      - tests/jinad/integration/distributed/test_simple_distributed_with_shards/.env
+      - tests/jinad/integration/test_simple_distributed_with_shards/.env
   pod2:
     image: test_simple_distributed_with_shards
     expose:
       - 8000
       - 10000-60000
     env_file:
-      - tests/jinad/integration/distributed/test_simple_distributed_with_shards/.env
+      - tests/jinad/integration/test_simple_distributed_with_shards/.env

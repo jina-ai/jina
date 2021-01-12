@@ -2,9 +2,6 @@ import os
 
 import numpy as np
 import pytest
-import requests
-
-from jina import JINA_GLOBAL
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
@@ -160,7 +157,6 @@ def test_flow_identical():
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_no_container(restful):
-
     f = (Flow(restful=restful)
          .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
 
@@ -168,53 +164,9 @@ def test_flow_no_container(restful):
         f.index(input_fn=random_docs(10))
 
 
-def test_flow_log_server():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/test_log_server.yml'))
-    with f:
-        assert hasattr(JINA_GLOBAL.logserver, 'ready')
-
-        # Ready endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/status/ready',
-            timeout=5)
-        assert a.status_code == 200
-
-        # YAML endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/data/yaml',
-            timeout=5)
-        assert a.text.startswith('!Flow')
-        assert a.status_code == 200
-
-        # Pod endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/data/api/pod',
-            timeout=5)
-        assert 'pod' in a.json()
-        assert a.status_code == 200
-
-        # Shutdown endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/action/shutdown',
-            timeout=5)
-        assert a.status_code == 200
-
-        # Check ready endpoint after shutdown, check if server stopped
-        with pytest.raises((requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)):
-            requests.get(
-                JINA_GLOBAL.logserver.address +
-                '/status/ready',
-                timeout=5)
-
-
-@pytest.mark.parametrize('restful', [False, True])
-def test_shards(restful):
-    f = (Flow(restful=restful)
-         .add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3, separated_workspace=True))
+def test_shards():
+    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3,
+                   separated_workspace=True)
     with f:
         f.index(input_fn=random_docs(1000), random_doc_id=False)
     with f:

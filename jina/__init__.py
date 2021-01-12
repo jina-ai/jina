@@ -100,7 +100,6 @@ from jina.types.sets import DocumentSet, QueryLangSet
 # ADD GLOBAL NAMESPACE VARIABLES
 
 JINA_GLOBAL = _types.SimpleNamespace()
-JINA_GLOBAL.logserver = _types.SimpleNamespace()
 
 import jina.importer as _ji
 
