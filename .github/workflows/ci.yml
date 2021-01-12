@@ -71,7 +71,6 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
-
   prep-testbed:
     needs: lint-flake-8
     runs-on: ubuntu-latest
@@ -95,7 +94,7 @@ jobs:
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-test-paths.sh tests)"
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -131,7 +130,7 @@ jobs:
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
-          pip install ".[cicd,test]" --no-cache-dir
+          pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
         env:
@@ -155,12 +154,11 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
-          flags: core, ci
           fail_ci_if_error: false
 
   # just for blocking the merge until all parallel core-test are successful
-  end-of-ci:
-    needs: core-test
+  success-all-test:
+    needs: [core-test, daemon-test, docker-image-test]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Done"
+      - run: echo "All Done"
