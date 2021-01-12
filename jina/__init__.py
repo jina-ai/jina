@@ -161,5 +161,14 @@ from jina.flow.asyncio import AsyncFlow
 from jina.clients import Client
 from jina.clients.asyncio import AsyncClient
 
+# Executor
+from jina.executors.classifiers import BaseClassifier as Classifier
+from jina.executors.crafters import BaseCrafter as Crafter
+from jina.executors.encoders import BaseEncoder as Encoder
+from jina.executors.evaluators import BaseEvaluator as Evaluator
+from jina.executors.indexers import BaseIndexer as Indexer
+from jina.executors.rankers import BaseRanker as Ranker
+from jina.executors.segmenters import BaseSegmenter as Segmenter
+
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])
