@@ -83,7 +83,7 @@ def document_generator(num_docs, num_chunks, num_chunks_chunks):
 
 
 @pytest.mark.parametrize('request_batch_size', [8, 16, 32])
-@pytest.mark.parametrize('driver_batch_size', [8, 16, 64])
+@pytest.mark.parametrize('driver_batch_size', [3, 4, 13])
 def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
     num_docs = 137
     num_chunks = 0
