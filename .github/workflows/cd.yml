@@ -41,26 +41,27 @@ jobs:
       - run: |
           pip install .[daemon] --no-cache-dir
           jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
-          echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-devel" >> $GITHUB_ENV
+          JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
+          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
           pip install css-html-js-minify
           css-html-js-minify ./jina/resources/hub-builder-success
           cp ./jina/resources/hub-builder-success/index.html ./schema/hub
           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
-          jina export-api --yaml-path "${{env.JINA_VERSION}}.yml" devel.yml --json-path "${{env.JINA_VERSION}}.json" devel.json devel
-          mkdir -p jinad && cd jinad
+          jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           cd -
       - name: redoc-cli-jinad
         uses: seeebiii/redoc-cli-github-action@v10
         with:
-          args: 'bundle schema/jinad/schema.json -o jinad.html'
+          args: 'bundle schema/daemon.json -o jinad.html'
       - name: push-to-api-repo
         run: |
           mkdir -p schema/daemon/
-          cp jinad.html schema/daemon/${{env.JINA_VERSION}}.html
-          cp jinad.html schema/daemon/devel.html
+          cp jinad.html schema/daemon/master.html
+          rm schema/daemon.json
+          rm -rf schema/jinad
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
@@ -84,10 +85,10 @@ jobs:
     needs: update-doc
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        tag_dependency: ["", "-devel"]
+        tag_stage: ["", "-devel", "-daemon"]
         tag_pyversion: ["-py37", "-py38"]
-        tag_entrypoint: ["", "-daemon"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -96,45 +97,43 @@ jobs:
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-devel" >> $GITHUB_ENV
-
-          if [[ "${{ matrix.tag_dependency }}" == "-devel" ]]; then
-            echo "INSTALL_DEV=true" >> $GITHUB_ENV
-          fi
+          echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master" >> $GITHUB_ENV
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=master${{ matrix.tag_dependency }}${{ matrix.tag_entrypoint }}" >> $GITHUB_ENV
+            echo "TAG_ALIAS=master${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
-          if [[ "${{ matrix.tag_entrypoint }}" == "-daemon" ]]; then
+          if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
             echo "BUILD_ARG=--target jina_daemon" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
+            echo "BUILD_ARG=--target jina_devel" >> $GITHUB_ENV
           else
             echo "BUILD_ARG=--target jina_base" >> $GITHUB_ENV
           fi
       - name: Upload to Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           name: jinaai/jina
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
           dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
           buildoptions: ${{ env.BUILD_ARG }}
-          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
+          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
       - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           name: jina-ai/jina/jina
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
           dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, INSTALL_DEV, PY_VERSION
+          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
           buildoptions: ${{ env.BUILD_ARG }}
-          tags: "master${{ matrix.tag_dependency }}${{ matrix.tag_pyversion }}${{ matrix.tag_entrypoint }}, ${{env.TAG_ALIAS}}"
+          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
 
   docker-build:
     needs: update-doc
@@ -146,7 +145,7 @@ jobs:
       - run: |
           echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
       - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           name: jina-ai/jina/jina
           username: ${{ secrets.DOCKER_USERNAME }}

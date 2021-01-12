@@ -6,4 +6,4 @@ requests:
     [SearchRequest, TrainRequest, IndexRequest]:
     - !SegmentDriver
       with:
-        method: craft
+        method: segment

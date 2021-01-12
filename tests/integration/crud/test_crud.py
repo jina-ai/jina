@@ -15,10 +15,12 @@ random.seed(0)
 np.random.seed(0)
 
 
+TOPK = 9
+
 @pytest.fixture
 def config(tmpdir):
     os.environ['JINA_TOPK_DIR'] = str(tmpdir)
-    os.environ['JINA_TOPK'] = '9'
+    os.environ['JINA_TOPK'] = str(TOPK)
     yield
     del os.environ['JINA_TOPK_DIR']
     del os.environ['JINA_TOPK']
@@ -69,7 +71,7 @@ def test_delete_vector(config, mocker, flow_file, has_content):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
-                           output_fn=validate_result_factory(9))
+                           output_fn=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
@@ -130,7 +132,7 @@ def test_update_vector(config, mocker, flow_file):
             hash_set_before = [hash(d.embedding.tobytes()) for d in docs_before]
             hash_set_updated = [hash(d.embedding.tobytes()) for d in docs_updated]
             for doc in resp.docs:
-                assert len(doc.matches) == 9
+                assert len(doc.matches) == TOPK
                 for match in doc.matches:
                     h = hash(match.embedding.tobytes())
                     if has_changed:

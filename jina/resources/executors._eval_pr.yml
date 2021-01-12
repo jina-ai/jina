@@ -7,7 +7,7 @@ components:
     metas:
       name: recall  # a customized name
 metas:
-  name: evaluator  # a customized name
+  name: eval_pr  # a customized name
 requests:
   on:
     SearchRequest:

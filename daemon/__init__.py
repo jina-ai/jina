@@ -51,7 +51,7 @@ def _get_app():
     return app
 
 
-def _write_openapi_schema(filename='schema.json'):
+def _write_openapi_schema(filename='daemon.json'):
     app = _get_app()
     schema = app.openapi()
     with open(filename, 'w') as f:

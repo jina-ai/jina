@@ -1,0 +1,6 @@
+!Flow
+version: '1'
+env:
+  JINA_TEST_FLOW_RUNNER_WORKSPACE_VAR: ${{JINA_TEST_FLOW_RUNNER_WORKSPACE}}
+pods:
+  - uses: index.yml

@@ -1,0 +1,37 @@
+- !IntegerParameter
+  env_var: JINA_EXECUTOR_PARAM1
+  high: 1
+  low: 0
+  step_size: 1
+  parameter_name: param1
+- !FloatParameter
+  env_var: JINA_EXECUTOR_PARAM2
+  high: 1
+  low: 1
+  step_size: 1
+  parameter_name: param2
+- !UniformParameter
+  env_var: JINA_EXECUTOR_PARAM3
+  high: 2
+  low: 1
+  parameter_name: param3
+- !UniformParameter
+  env_var: JINA_EXECUTOR_PARAM4
+  high: 2
+  low: 1
+  parameter_name: param4
+- !LogUniformParameter
+  env_var: JINA_EXECUTOR_PARAM5
+  high: 2
+  low: 1
+  parameter_name: param5
+- !CategoricalParameter
+  env_var: JINA_EXECUTOR_PARAM6
+  choices: ['a']
+  parameter_name: param6
+- !DiscreteUniformParameter
+  env_var: JINA_EXECUTOR_PARAM7
+  high: 2
+  low: 1
+  q: 0.1
+  parameter_name: param7
