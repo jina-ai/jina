@@ -24,16 +24,6 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
 
     header = [colored(v, attrs=['bold']) for v in ('Pod', 'Time', 'Exception')]
 
-    # poor-man solution
-    table = []
-
-    def add_row(x):
-        for h, y in zip(header, x):
-            table.append(f'{h}\n{y}\n{"-" * 10}')
-
-    def visualize(x):
-        print('\n'.join(x))
-
     with ImportExtensions(required=False):
         from prettytable import PrettyTable, ALL
         table = PrettyTable(field_names=header, align='l', hrules=ALL)

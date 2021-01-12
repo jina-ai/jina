@@ -61,9 +61,7 @@ def test_convert_text_to_uri(converter):
                                            ('https://google.com/index.html', 'text/html')])
 def test_convert_uri_to_text(uri, mimetype):
     doc = Document(uri=uri, mime_type=mimetype)
-    intialiazed_buffer = doc.buffer 
     doc.convert_uri_to_text()
-    converted_buffer = doc.buffer
     if mimetype == 'text/html': 
         assert '<!doctype html>' in doc.text
     elif mimetype == 'text/x-python':
