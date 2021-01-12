@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from jina.executors import BaseExecutor
+from jina.types.document import UniqueId
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -208,29 +209,46 @@ def test_simple_indexer_workspace_move_to_docker(test_workspace_move, tmpdir, pe
 
 def test_compound_indexer_rw(test_workspace):
     all_vecs = np.random.random([6, 5])
+    executor_yml = f'''!CompoundExecutor
+components:
+  - !BinaryPbIndexer
+    with:
+      index_filename: metaproto
+    metas:
+      name: test_meta
+  - !NumpyIndexer
+    with:
+      metric: euclidean
+      index_filename: npidx
+    metas:
+      name: test_numpy
+metas:
+  name: real-compound
+  workspace: {tmpdir}
+    '''
     for j in range(3):
-        with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'), pea_id=j) as a:
-            assert a[0] == a['test_meta']
-            assert not a[0].is_updated
-            assert not a.is_updated
-            a[0].add([j, j * 2, j * 3], [bytes(j), bytes(j * 2), bytes(j * 3)])
-            a[0].add([j, j * 2, j * 3], [bytes(j), bytes(j * 2), bytes(j * 3)])
-            assert a[0].is_updated
-            assert a.is_updated
-            assert not a[1].is_updated
-            a[1].add(np.array([j * 2, j * 2 + 1]), all_vecs[(j * 2, j * 2 + 1), :])
-            assert a[1].is_updated
-            a.save()
+        with BaseExecutor.load_config(executor_yml, separated_workspace=True, pea_id=j) as indexer:
+            assert indexer[0] == indexer['test_meta']
+            assert not indexer[0].is_updated
+            assert not indexer.is_updated
+            indexer[0].add([UniqueId(j), UniqueId(j * 2), UniqueId(j * 3)], [bytes(j), bytes(j * 2), bytes(j * 3)])
+            indexer[0].add([j, j * 2, j * 3], [bytes(j), bytes(j * 2), bytes(j * 3)])
+            assert indexer[0].is_updated
+            assert indexer.is_updated
+            assert not indexer[1].is_updated
+            indexer[1].add(np.array([j * 2, j * 2 + 1]), all_vecs[(j * 2, j * 2 + 1), :])
+            assert indexer[1].is_updated
+            indexer.save()
             # the compound executor itself is not modified, therefore should not generate a save
-            assert not os.path.exists(a.save_abspath)
-            assert os.path.exists(a[0].save_abspath)
-            assert os.path.exists(a[0].index_abspath)
-            assert os.path.exists(a[1].save_abspath)
-            assert os.path.exists(a[1].index_abspath)
+            assert not os.path.exists(indexer.save_abspath)
+            assert os.path.exists(indexer[0].save_abspath)
+            assert os.path.exists(indexer[0].index_abspath)
+            assert os.path.exists(indexer[1].save_abspath)
+            assert os.path.exists(indexer[1].index_abspath)
 
     recovered_vecs = []
     for j in range(3):
-        with BaseExecutor.load_config(os.path.join('yaml/test-compound-indexer2.yml'), pea_id=j) as a:
-            recovered_vecs.append(a[1].query_handler)
+        with BaseExecutor.load_config(executor_yml, separated_workspace=True, pea_id=j) as indexer:
+            recovered_vecs.append(indexer[1].query_handler)
 
     np.testing.assert_almost_equal(all_vecs, np.concatenate(recovered_vecs))
