@@ -28,6 +28,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[cicd,daemon,test]" --no-cache-dir
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+      - name: Run tests
+        run: |
           export JINA_LOG_VERBOSITY="ERROR"
           pytest --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/jinad/${{ matrix.test-path }}
         timeout-minutes: 40
