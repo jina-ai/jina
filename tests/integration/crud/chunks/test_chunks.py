@@ -162,4 +162,3 @@ def test_update_vector(config, mocker, flow_file, content_same):
     mock.assert_called_once()
 
 
-
