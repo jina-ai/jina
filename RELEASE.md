@@ -39,14 +39,14 @@ pip install --pre jina
 
 The following example shows how Jina is released from 0.9 to 0.9.2 according to the schema we defined above.
 
-|Event `e` | After `e`, `pip install jina` | After `e`, `pip install --pre jina` | After `e`, master branch |
+|Event `e` | After `e`, `pip install jina` | After `e`, `pip install --pre jina` | After `e`, master `__init__.py` |
 |--- | ---  | --- | --- |
 | Release | 0.9.0 | 0.9.0 | 0.9.1.dev0 |
+| Master merging | 0.9.0 | 0.9.1.dev0 | 0.9.1.dev1 |
 | Master merging | 0.9.0 | 0.9.1.dev1 | 0.9.1.dev2 |
 | Master merging | 0.9.0 | 0.9.1.dev2 | 0.9.1.dev3 |
-| Master merging | 0.9.0 | 0.9.1.dev3 | 0.9.1.dev4 |
 | Release | 0.9.1 | 0.9.1 | 0.9.2.dev0 |
-| Master merging | 0.9.1 | 0.9.2.dev1 | 0.9.2.dev2 |
+| Master merging | 0.9.1 | 0.9.2.dev0 | 0.9.2.dev1 |
 
 ## Docker image versioning
 

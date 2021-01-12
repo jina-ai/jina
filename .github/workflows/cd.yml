@@ -80,6 +80,12 @@ jobs:
           directory: docs/_build/html
           force: true
           branch: master
+      - name: prerelease
+        run: ./scripts/release.sh
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
   update-docker:
     needs: update-doc
@@ -135,7 +141,7 @@ jobs:
           buildoptions: ${{ env.BUILD_ARG }}
           tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
 
-  docker-build:
+  prep-testbed:
     needs: update-doc
     runs-on: ubuntu-latest
     steps:
@@ -163,13 +169,13 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   core-test:
-    needs: docker-build
+    needs: prep-testbed
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: [3.7]
-        test-path: ${{fromJson(needs.docker-build.outputs.matrix)}}
+        test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -212,7 +218,7 @@ jobs:
           fail_ci_if_error: false
 
   daemon-test:
-    needs: docker-build
+    needs: prep-testbed
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

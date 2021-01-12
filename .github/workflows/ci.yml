@@ -72,7 +72,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
 
-  docker-build:
+  prep-testbed:
     needs: lint-flake-8
     runs-on: ubuntu-latest
     steps:
@@ -100,7 +100,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   docker-image-test:
-    needs: docker-build
+    needs: prep-testbed
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -111,12 +111,12 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   core-test:
-    needs: docker-build
+    needs: prep-testbed
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
-        test-path: ${{fromJson(needs.docker-build.outputs.matrix)}}
+        test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
         with:
