@@ -4,6 +4,7 @@ import pytest
 from fastapi import UploadFile
 
 from daemon.api.endpoints import pea
+from daemon.models import PeaModel
 
 _temp_id = uuid.uuid1()
 
@@ -14,6 +15,14 @@ def mock_pea_start_exception(**kwargs):
 
 def mock_key_error(**kwargs):
     raise KeyError
+
+
+@pytest.mark.asyncio
+async def test_fetch_pea_params(monkeypatch):
+    monkeypatch.setattr(PeaModel, 'schema', lambda *args: {'properties': {'a': 1, 'b': 2}})
+    response = await pea._fetch_pea_params()
+    assert response['a'] == 1
+    assert response['b'] == 2
 
 
 @pytest.mark.asyncio

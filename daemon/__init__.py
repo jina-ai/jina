@@ -11,9 +11,10 @@ from uvicorn import Config, Server
 from jina.logging import JinaLogger
 from .parser import get_main_parser
 
-daemon_logger = JinaLogger(context='👻', log_config=os.getenv('JINAD_LOG_CONFIG',
-                                                              pkg_resources.resource_filename('jina', '/'.join(
-                                                                  ('resources', 'logging.daemon.yml')))))
+daemon_logger = JinaLogger(context='👻',
+                           log_config=os.getenv('JINAD_LOG_CONFIG',
+                                                pkg_resources.resource_filename(
+                                                    'jina', '/'.join(('resources', 'logging.daemon.yml')))))
 
 
 def _get_app():
@@ -67,11 +68,11 @@ def _start_uvicorn(app: 'FastAPI'):
                     log_level='error')
     server = Server(config=config)
     server.run()
-    daemon_logger.info('Bye!')
+    daemon_logger.info('\tGoodbye!')
 
 
 def _start_fluentd():
-    daemon_logger.info('Starting fluentd')
+    daemon_logger.info('\tStarting fluentd')
     cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
     try:
         subprocess.Popen(['fluentd', '-qq', '-c', cfg])
