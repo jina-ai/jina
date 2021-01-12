@@ -398,40 +398,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
         self.logger.close()
 
-    def _stop_log_server(self):
-        import urllib.request
-        try:
-            # it may have been shutdown from the outside
-            urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
-        except Exception as ex:
-            self.logger.info(f'Failed to connect to shutdown log sse server: {ex!r}')
-
-    def _start_log_server(self):
-        try:
-            import urllib.request
-            import flask, flask_cors
-            try:
-                with open(self.args.logserver_config) as fp:
-                    log_config = JAML.load(fp)
-                self._sse_logger = threading.Thread(name='sentinel-sse-logger',
-                                                    target=start_sse_logger, daemon=True,
-                                                    args=(log_config,
-                                                          self.args.log_id,
-                                                          self.yaml_spec))
-                self._sse_logger.start()
-                time.sleep(1)
-                response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
-                if response.status == 200:
-                    self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
-            except Exception as ex:
-                self.logger.error(f'Could not start logserver because of {ex!r}')
-        except ModuleNotFoundError:
-            self.logger.error(
-                f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
-                f'use pip install "jina[http]" (with double quotes) to install the dependencies')
-        except Exception as ex:
-            self.logger.error(f'logserver fails to start: {ex!r}')
-
     def start(self):
         """Start to run all Pods in this Flow.
 
