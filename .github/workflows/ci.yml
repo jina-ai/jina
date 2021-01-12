@@ -158,7 +158,7 @@ jobs:
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
-    needs: [core-test, daemon-test, docker-image-test]
+    needs: [core-test, docker-image-test]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All Done"

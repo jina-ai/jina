@@ -167,7 +167,7 @@ jobs:
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-test-paths.sh tests)"
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh tests)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -193,7 +193,7 @@ jobs:
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
-          pip install ".[cicd,test]" --no-cache-dir
+          pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
         env:
@@ -217,50 +217,4 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
-          flags: core, cd
-          fail_ci_if_error: false
-
-  daemon-test:
-    needs: prep-testbed
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [3.7]
-        test-path: ['unit', 'integration']
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Prepare enviroment
-        run: |
-          docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
-          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
-          python -m pip install --upgrade pip
-          pip install ".[cicd,test,daemon]" --no-cache-dir
-          jina check
-          export JINA_LOG_VERBOSITY="ERROR"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Test
-        run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v tests/jinad/${{ matrix.test-path }}
-        timeout-minutes: 20
-        env:
-          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload coverage from test to Codecov
-        uses: codecov/codecov-action@v1
-        if: ${{ matrix.python-version }} == 3.7
-        with:
-          file: coverage.xml
-          name: jinad-${{ matrix.python-version }}-${{ matrix.test-path }}-codecov
-          flags: ${{ matrix.test-path }}, jinad, ci
           fail_ci_if_error: false
