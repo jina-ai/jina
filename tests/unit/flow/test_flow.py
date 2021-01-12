@@ -2,8 +2,6 @@ import os
 
 import numpy as np
 import pytest
-
-from jina import JINA_GLOBAL, AsyncFlow
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
@@ -164,49 +162,6 @@ def test_flow_no_container(restful):
 
     with f:
         f.index(input_fn=random_docs(10))
-
-
-def test_flow_log_server():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/test_log_server.yml'))
-    with f:
-        assert hasattr(JINA_GLOBAL.logserver, 'ready')
-
-        # Ready endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/status/ready',
-            timeout=5)
-        assert a.status_code == 200
-
-        # YAML endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/data/yaml',
-            timeout=5)
-        assert a.text.startswith('!Flow')
-        assert a.status_code == 200
-
-        # Pod endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/data/api/pod',
-            timeout=5)
-        assert 'pod' in a.json()
-        assert a.status_code == 200
-
-        # Shutdown endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/action/shutdown',
-            timeout=5)
-        assert a.status_code == 200
-
-        # Check ready endpoint after shutdown, check if server stopped
-        with pytest.raises((requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)):
-            requests.get(
-                JINA_GLOBAL.logserver.address +
-                '/status/ready',
-                timeout=5)
 
 
 def test_shards():
