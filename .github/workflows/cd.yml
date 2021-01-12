@@ -80,8 +80,10 @@ jobs:
           directory: docs/_build/html
           force: true
           branch: master
-      - name: prerelease
-        run: ./scripts/release.sh
+      - name: Pre-release
+        run: |
+          pip install twine wheel
+          ./scripts/release.sh
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
