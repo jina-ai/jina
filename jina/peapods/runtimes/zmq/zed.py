@@ -165,7 +165,7 @@ class ZEDRuntime(ZMQRuntime):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self._zmqlet.send_message(self._callback(msg))
-        except RuntimeTerminated as ex:
+        except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
             self._zmqlet.send_message(msg)
             self._zmqlet.close()

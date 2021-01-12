@@ -145,7 +145,7 @@ def test_from_chunks_granularity_2(chunk_5, chunk_6):
 
 def test_assert_granularity(chunk_1, chunk_6):
     with pytest.raises(BadDocType):
-        md = MultimodalDocument(chunks=[chunk_1, chunk_6])
+        _ = MultimodalDocument(chunks=[chunk_1, chunk_6])
 
 
 def test_from_chunks_fail_length_mismatch(chunk_1, chunk_2, chunk_3):

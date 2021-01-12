@@ -181,7 +181,7 @@ def eval_request_with_unmatching_struct():
         chunk_gt.granularity = 1
         add_matches(chunk_doc)
         add_matches(chunk_gt)
-        chunk_gt_wrong = gt.chunks.add()
+        _ = gt.chunks.add()
     return req
 
 

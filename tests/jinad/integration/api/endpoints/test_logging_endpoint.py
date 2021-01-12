@@ -1,15 +1,15 @@
 import json
-import uuid
-import time
-import random
 import pathlib
-from multiprocessing import Process, Event
+import random
+import time
+import uuid
 from datetime import datetime, timezone
+from multiprocessing import Process, Event
 
 import pytest
 
+from daemon.config import log_config
 from daemon.excepts import NoSuchFileException
-from daemon.config import log_config, fastapi_config
 
 LOG_MESSAGE = 'log message'
 TIMEOUT_ERROR_CODE = 4000
@@ -33,8 +33,8 @@ def feed_path_logs(filepath, total_lines, sleep, mp_event=None):
 @pytest.mark.asyncio
 async def test_logging_endpoint_invalid_id(fastapi_client):
     log_id = uuid.uuid1()
-    with pytest.raises(NoSuchFileException) as response:
-        with fastapi_client.websocket_connect(f'logstream/{log_id}') as websocket:
+    with pytest.raises(NoSuchFileException):
+        with fastapi_client.websocket_connect(f'logstream/{log_id}'):
             pass
 
 

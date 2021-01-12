@@ -116,7 +116,6 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
     assert doc1.content_hash == doc2.content_hash
 
     driver = MockBaseCacheDriver()
-    filename = None
 
     with DocIDCache(tmpdir, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         driver.attach(executor=executor, runtime=None)
