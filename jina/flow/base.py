@@ -12,7 +12,7 @@ from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
 from urllib.request import Request, urlopen
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
-from ..clients import Client
+from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import colored, \
@@ -144,6 +144,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                            read_only=True,
                            runtime_cls='GRPCRuntime',
+                           log_id=self.args.log_id,
                            pod_role=PodRoleType.GATEWAY))
 
         kwargs.update(self._common_kwargs)
@@ -375,6 +376,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.logger.warning(f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
                                 f'you may want to double check if it is intentional or some mistake')
         op_flow._build_level = FlowBuildLevel.GRAPH
+        self._update_client()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -396,6 +398,40 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             f'flow is closed and all resources should be released already, current build level is {self._build_level}')
         self.logger.close()
 
+    def _stop_log_server(self):
+        import urllib.request
+        try:
+            # it may have been shutdown from the outside
+            urllib.request.urlopen(JINA_GLOBAL.logserver.shutdown, timeout=5)
+        except Exception as ex:
+            self.logger.info(f'Failed to connect to shutdown log sse server: {ex!r}')
+
+    def _start_log_server(self):
+        try:
+            import urllib.request
+            import flask, flask_cors
+            try:
+                with open(self.args.logserver_config) as fp:
+                    log_config = JAML.load(fp)
+                self._sse_logger = threading.Thread(name='sentinel-sse-logger',
+                                                    target=start_sse_logger, daemon=True,
+                                                    args=(log_config,
+                                                          self.args.log_id,
+                                                          self.yaml_spec))
+                self._sse_logger.start()
+                time.sleep(1)
+                response = urllib.request.urlopen(JINA_GLOBAL.logserver.ready, timeout=5)
+                if response.status == 200:
+                    self.logger.success(f'logserver is started and available at {JINA_GLOBAL.logserver.address}')
+            except Exception as ex:
+                self.logger.error(f'Could not start logserver because of {ex!r}')
+        except ModuleNotFoundError:
+            self.logger.error(
+                f'sse logserver can not start because of "flask" and "flask_cors" are missing, '
+                f'use pip install "jina[http]" (with double quotes) to install the dependencies')
+        except Exception as ex:
+            self.logger.error(f'logserver fails to start: {ex!r}')
+
     def start(self):
         """Start to run all Pods in this Flow.
 
@@ -411,7 +447,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         # set env only before the pod get started
         if self._env:
             for k, v in self._env.items():
-                os.environ[k] = v
+                os.environ[k] = str(v)
 
         for v in self._pod_nodes.values():
             self.enter_context(v)
@@ -691,7 +727,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def block(self):
         """Block the process until user hits KeyboardInterrupt """
         try:
-            self._show_success_message()
             threading.Event().wait()
         except KeyboardInterrupt:
             pass
@@ -711,6 +746,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             return list(self._pod_nodes.values())[item]
         else:
             raise TypeError(f'{typename(item)} is not supported')
+
+    def _update_client(self):
+        if self._pod_nodes['gateway'].args.restful:
+            self._cls_client = WebSocketClient
 
     def index(self):
         raise NotImplementedError

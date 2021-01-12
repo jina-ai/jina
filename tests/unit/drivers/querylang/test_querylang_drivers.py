@@ -1,6 +1,6 @@
 from google.protobuf import json_format
 
-from jina.executors.crafters import BaseSegmenter
+from jina.executors.segmenters import BaseSegmenter
 from jina.flow import Flow
 from jina.proto import jina_pb2
 
@@ -45,13 +45,13 @@ def random_docs_with_tags():
 
 class DummySegmenter(BaseSegmenter):
 
-    def craft(self, text, *args, **kwargs):
+    def segment(self, text, *args, **kwargs):
         return [{'text': 'adasd' * (j + 1), 'tags': {'id': j}} for j in range(10)]
 
 
 class DummyModeIdSegmenter(BaseSegmenter):
 
-    def craft(self, text, *args, **kwargs):
+    def segment(self, text, *args, **kwargs):
         if 'chunk3' not in text:
             return [{'text': f'chunk{j + 1}', 'modality': f'mode{j + 1}'} for j in range(2)]
         elif 'chunk3' in text:

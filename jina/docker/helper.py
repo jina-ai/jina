@@ -44,7 +44,6 @@ def credentials_file():
     Path.home().joinpath('.jina').mkdir(parents=True, exist_ok=True)
     return Path.home().joinpath('.jina').joinpath('access.yml')
 
-
 class Waiter:
     def __init__(self, seconds, message=''):
         self.logger = JinaLogger(self.__class__.__name__)
@@ -64,5 +63,5 @@ class Waiter:
         self.logger.debug(f'sleeping for {seconds} seconds')
         time.sleep(seconds)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.logger.debug(f'took {self._seconds} seconds!')

@@ -1,9 +1,0 @@
-!DummySegment
-requests:
-  on:
-    ControlRequest:
-      - !ControlReqDriver {}
-    [SearchRequest, TrainRequest, IndexRequest]:
-    - !SegmentDriver
-      with:
-        method: craft

@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import pkgutil
@@ -12,6 +13,7 @@ from setuptools import find_packages
 
 from .helper import credentials_file
 from ..helper import colored
+from ..importer import ImportExtensions
 from ..jaml import JAML
 from ..logging import default_logger
 from ..logging.profile import TimeContext
@@ -117,6 +119,46 @@ def _list(logger, image_name: str = None, image_kind: str = None,
         return manifests
 
 
+def _docker_auth(logger) -> Optional[Dict[str, str]]:
+    """ Use Hub api to get docker creds
+
+    :return: a dict of specifying username and password
+    """
+    with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
+        hubapi_yml = JAML.load(fp)
+        hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
+
+    access_token = _fetch_access_token(logger)
+    if not access_token:
+        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        return
+
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': access_token
+    }
+
+    try:
+        with ImportExtensions(required=False,
+                              help_text='missing "requests" dependency, please do pip install "jina[http]"'):
+            import requests
+            response = requests.get(url=f'{hubapi_url}',
+                                    headers=headers)
+            if response.status_code == requests.codes.ok:
+                json_response = json.loads(response.text)
+                encoded_username = json_response['docker_username']
+                encoded_password = json_response['docker_password']
+                decoded_username = base64.b64decode(encoded_username).decode('ascii')
+                decoded_password = base64.b64decode(encoded_password).decode('ascii')
+                docker_creds = {'docker_username': decoded_username, 'docker_password': decoded_password}
+                logger.debug(f'Successfully fetched docker creds for user')
+                return docker_creds
+            else:
+                logger.error(f'failed to fetch docker credentials')
+    except Exception as exp:
+        logger.error(f'got an exception while fetching docker credentials {exp!r}')
+
+
 def _make_hub_table_with_local(manifests, local_manifests):
     info_table = [f'found {len(manifests)} matched hub images',
                   '{:<50s}{:<20s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
@@ -161,14 +203,6 @@ def _make_hub_table(manifests):
                               f'{desc:<30s}')
     return info_table
 
-def _fetch_access_token(logger):
-    if not credentials_file().is_file():
-        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
-        return
-    with open(credentials_file(), 'r') as cf:
-        cred_yml = JAML.load(cf)
-    access_token = cred_yml['access_token']
-    return access_token
 
 def _register_to_mongodb(logger, summary: Dict = None):
     """ Hub API Invocation to run `hub push` """
@@ -181,13 +215,15 @@ def _register_to_mongodb(logger, summary: Dict = None):
 
     access_token = _fetch_access_token(logger)
     if not access_token:
-        logger.error(f'user has not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        logger.error(
+            f'aborting push to mongodb. please login using command: {colored("jina hub login", attrs=["bold"])}')
         return
 
     headers = {
         'Accept': 'application/json',
         'authorizationToken': access_token
     }
+
     try:
         import requests
         response = requests.post(url=f'{hubapi_url}',
@@ -204,4 +240,18 @@ def _register_to_mongodb(logger, summary: Dict = None):
                              f'please login using command: {colored("jina hub login", attrs=["bold"])}')
             logger.error(f'got an error from the API: {response.text}')
     except Exception as exp:
-        logger.error(f'got an exception while invoking hubapi for push {repr(exp)}')
+        logger.error(f'got an exception while invoking hubapi for push {exp!r}')
+
+
+def _fetch_access_token(logger):
+    """ Fetch github access token from credentials file, return as a request header """
+    logger.info('fetching github access token...')
+
+    if not credentials_file().is_file():
+        return
+
+    with open(credentials_file(), 'r') as cf:
+        cred_yml = JAML.load(cf)
+    access_token = cred_yml['access_token']
+
+    return access_token

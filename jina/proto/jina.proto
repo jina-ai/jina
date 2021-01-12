@@ -109,9 +109,6 @@ message DocumentProto {
     // total number of siblings of this document (docs that are in the same granularity and parent_id)
     uint32 length = 6;
 
-    // some binary meta information of this Doc in bytes
-    bytes meta_info = 7;
-
     // the top-k matched Docs on the same level (recursive structure)
     repeated DocumentProto matches = 8;
 
@@ -356,9 +353,6 @@ message QueryLangProto {
 service JinaRPC {
     // Pass in a Request and a filled Request with matches will be returned.
     rpc Call (stream RequestProto) returns (stream RequestProto) {
-    }
-
-    rpc CallUnary (RequestProto) returns (RequestProto) {
     }
 }
 

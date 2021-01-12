@@ -49,7 +49,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.compress_level = compress_level
         self.key_bytes = b''
         self.key_dtype = None
-        self._ref_index_abspath = None
         self.valid_indices = np.array([], dtype=bool)
 
         if ref_indexer:
@@ -62,8 +61,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
-            self._ref_index_abspath = ref_indexer.index_abspath
             self.valid_indices = ref_indexer.valid_indices
+            self.index_filename = ref_indexer.index_filename
+            self.logger.warning(f'\n'
+                                f'num_dim extracted from `ref_indexer` to {ref_indexer.num_dim} \n'
+                                f'_size extracted from `ref_indexer` to {ref_indexer._size} \n'
+                                f'dtype extracted from `ref_indexer` to {ref_indexer.dtype} \n'
+                                f'compress_level overriden from `ref_indexer` to {ref_indexer.compress_level} \n'
+                                f'index_filename overriden from `ref_indexer` to {ref_indexer.index_filename}')
 
     @property
     def index_abspath(self) -> str:
@@ -121,26 +126,31 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]
 
-    def _check_keys(self, keys: Sequence[int]) -> None:
-        missed = []
-        for key in keys:
-            # if it never existed or if it's been marked as deleted in the current index
-            # using `is False` doesn't work
-            if key not in self.ext2int_id.keys() or self.valid_indices[self.ext2int_id[key]] == False:  # noqa
-                missed.append(key)
-        if missed:
-            raise KeyError(f'Key(s) {missed} were not found in {self.save_abspath}')
-
     def update(self, keys: Sequence[int], values: Sequence[bytes], *args, **kwargs) -> None:
-        self.delete(keys)
-        self.add(np.array(keys), np.array(values))
+        keys = self._filter_nonexistent_keys(keys, self.ext2int_id.keys(), self.save_abspath)
+        # could be empty
+        # please do not use "if keys:", it wont work on both sequence and ndarray
+        if getattr(keys, 'size', len(keys)):
+            # expects np array for computing shapes
+            keys = np.array(list(keys))
+            self._delete(keys)
+            self.add(np.array(keys), np.array(values))
+
+    def _delete(self, keys):
+        # could be empty
+        # please do not use "if keys:", it wont work on both sequence and ndarray
+        if getattr(keys, 'size', len(keys)):
+            # expects np array for computing shapes
+            keys = np.array(list(keys))
+            for key in keys:
+                # mark as `False` in mask
+                self.valid_indices[self.ext2int_id[key]] = False
+                self._size -= 1
 
     def delete(self, keys: Sequence[int], *args, **kwargs) -> None:
-        self._check_keys(keys)
-        for key in keys:
-            # mark as `False` in mask
-            self.valid_indices[self.ext2int_id[key]] = False
-            self._size -= 1
+        if kwargs.get('keys_precomputed') is not True:
+            keys = self._filter_nonexistent_keys(keys, self.ext2int_id.keys(), self.save_abspath)
+        self._delete(keys)
 
     def get_query_handler(self) -> Optional['np.ndarray']:
         """Open a gzip file and load it as a numpy ndarray
@@ -187,15 +197,18 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
                              shape=(self.size + deleted_keys, self.num_dim))
 
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> Optional['np.ndarray']:
         """
         Search the index by the external key (passed during `.add(`)
 
         :param ids: The list of keys to be queried
         """
-        self._check_keys(ids)
-        indices = [self.ext2int_id[key] for key in ids]
-        return self.raw_ndarray[indices]
+        ids = self._filter_nonexistent_keys(ids, self.ext2int_id.keys(), self.save_abspath)
+        if ids:
+            indices = [self.ext2int_id[key] for key in ids]
+            return self.raw_ndarray[indices]
+        else:
+            return None
 
     @cached_property
     def int2ext_id(self) -> Optional['np.ndarray']:

@@ -4,5 +4,5 @@ metas:
   name: clear
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ControlRequest]:
       *  # replace by drivers

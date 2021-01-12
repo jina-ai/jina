@@ -12,10 +12,6 @@ from jina.types.document.helper import DocGroundtruthPair
 
 class MockDiffEvaluator(BaseEvaluator):
 
-    @property
-    def metric(self):
-        return 'MockDiffEvaluator'
-
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
         return abs(len(actual) - len(desired))
 

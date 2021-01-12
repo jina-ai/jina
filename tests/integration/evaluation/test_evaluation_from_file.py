@@ -67,11 +67,16 @@ def random_workspace(tmpdir):
                           ('flow-index-gt-parallel.yml', 'flow-evaluate-from-file-parallel.yml'),
                           ('flow-index-gt-parallel.yml', 'flow-parallel-evaluate-from-file-parallel.yml')
                           ])
-def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs, index_yaml, search_yaml, mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs, index_yaml, search_yaml,
+                              restful, mocker, monkeypatch):
+    monkeypatch.setenv("RESTFUL", restful)
+
     with Flow.load_config(index_yaml) as index_gt_flow:
         index_gt_flow.index(input_fn=index_groundtruth, batch_size=10)
 
     m = mocker.Mock()
+
     def validate_evaluation_response(resp):
         m()
         assert len(resp.docs) == 97

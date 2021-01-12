@@ -270,9 +270,8 @@ def test_numpy_update_delete(compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
-        # this will fail cause the key doesn't exist
-        with pytest.raises(KeyError):
-            indexer.update(random_keys, random_data)
+        # NON-EXISTENT KEYS: this will log warning but not fail
+        indexer.update(random_keys, random_data)
         indexer.update([key_to_update], data_to_update)
         indexer.save()
 
@@ -296,9 +295,8 @@ def test_numpy_update_delete(compress_level, test_metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         assert indexer.size == len(vec_idx) - keys_to_delete
-        # this will fail. key doesn't exist
-        with pytest.raises(KeyError):
-            _ = indexer.query_by_id(vec_idx)
+        # random non-existent key
+        assert indexer.query_by_id([123861942]) is None
         query_results = indexer.query_by_id(vec_idx[keys_to_delete:])
         expected = vec[keys_to_delete:]
         np.testing.assert_allclose(query_results, expected, equal_nan=True)
@@ -361,3 +359,39 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
         assert idx.shape == dist.shape
         assert idx.shape == (len(queries), top_k)
         np.testing.assert_equal(indexer.query_by_id([6, 5]), vectors[[2, 1]])
+
+    # test query by nonexistent key
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, NumpyIndexer)
+        assert indexer.query_by_id([91237124]) is None
+
+
+@pytest.mark.parametrize('compress_level', [0, 1, 2, 3])
+def test_numpy_indexer_with_ref_indexer(compress_level, test_metas):
+    vectors = np.array([[1, 1, 1],
+                        [10, 10, 10],
+                        [100, 100, 100],
+                        [1000, 1000, 1000]])
+    keys = np.array([4, 5, 6, 7]).reshape(-1, 1)
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
+                      metas=test_metas) as indexer:
+        indexer.add(keys, vectors)
+        indexer.save()
+        assert os.path.exists(indexer.index_abspath)
+        index_filename = indexer.index_filename
+
+    queries = np.array([[1, 1, 1],
+                        [10, 10, 10],
+                        [100, 100, 100],
+                        [1000, 1000, 1000]])
+    with NumpyIndexer(metric='euclidean', ref_indexer=indexer, metas=test_metas) as new_indexer:
+        assert new_indexer.compress_level == compress_level
+        assert new_indexer.index_filename == index_filename
+        assert isinstance(indexer, NumpyIndexer)
+        if compress_level == 0:
+            assert isinstance(new_indexer.query_handler, np.memmap)
+        idx, dist = new_indexer.query(queries, top_k=2)
+        np.testing.assert_equal(idx, np.array([[4, 5], [5, 4], [6, 5], [7, 6]]))
+        assert idx.shape == dist.shape
+        assert idx.shape == (4, 2)
+        np.testing.assert_equal(new_indexer.query_by_id([7, 4]), vectors[[3, 0]])

@@ -16,7 +16,7 @@ def test_exec_type(tmpdir):
 
     BaseIndexer().save_config(os.path.join(tmpdir, 'tmp.yml'))
     with open(os.path.join(tmpdir, 'tmp.yml')) as fp:
-        s = JAML.load(fp)
+        _ = JAML.load(fp)
 
     def assert_bi():
         b = BaseIndexer(1)

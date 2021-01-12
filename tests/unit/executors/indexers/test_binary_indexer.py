@@ -14,6 +14,7 @@ from tests import random_docs
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_WORKSPACE_BINARY_PB'])
 def test_binarypb_in_flow(test_metas, mocker):
     docs = list(random_docs(10))
+
     def validate(req):
         mock()
         assert len(docs) == len(req.docs)
@@ -22,7 +23,6 @@ def test_binarypb_in_flow(test_metas, mocker):
                                            NdArray(d0.embedding).value)
 
     f = Flow(callback_on='body').add(uses='binarypb.yml')
-
 
     with f:
         f.index(docs)
@@ -50,14 +50,6 @@ def test_binarypb_update1(test_metas):
         assert idxer.query(1) == b'oldvalue'
 
     with BaseIndexer.load(save_abspath) as idxer:
-        # no update triggered AT ALL when encountering missing key
-        # atomic op. at indexer level
-        with pytest.raises(KeyError):
-            idxer.update([1, 2, 99], [b'newvalue', b'same', b'decoy'])
-
-        idxer.save()
-
-    with BaseIndexer.load(save_abspath) as idxer:
         assert idxer.query(1) == b'oldvalue'
         second_size = os.fstat(idxer.query_handler._body.fileno()).st_size
         assert second_size == first_size
@@ -73,6 +65,18 @@ def test_binarypb_update1(test_metas):
     with BaseIndexer.load(save_abspath) as idxer:
         assert idxer.query(1) == b'newvalue'
         assert idxer.query(2) == b'same'
+        assert idxer.query(3) == b'random'
+        assert idxer.query(99) is None
+
+    with BaseIndexer.load(save_abspath) as idxer:
+        # partial update when missing keys encountered
+        idxer.update([1, 2, 99], [b'newvalue2', b'newvalue3', b'decoy'])
+        idxer.save()
+        assert idxer.size == 3
+
+    with BaseIndexer.load(save_abspath) as idxer:
+        assert idxer.query(1) == b'newvalue2'
+        assert idxer.query(2) == b'newvalue3'
         assert idxer.query(3) == b'random'
         assert idxer.query(99) is None
 
@@ -117,8 +121,8 @@ def test_binarypb_delete(test_metas):
         assert idxer.size == 1
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query(1) == None
-        assert idxer.query(2) == None
+        assert idxer.query(1) is None
+        assert idxer.query(2) is None
         assert idxer.query(3) == b'random'
 
 

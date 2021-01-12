@@ -1,0 +1,5 @@
+!DummyCrafter
+with:
+  {}
+metas:
+  py_modules: dummy-crafter.py

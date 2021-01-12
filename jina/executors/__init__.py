@@ -112,7 +112,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id', 'delete', 'update']
+    exec_methods = ['encode', 'add', 'query', 'craft', 'segment', 'score', 'evaluate', 'predict', 'query_by_id', 'delete', 'update']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -293,7 +293,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._post_init_wrapper(fill_in_metas=False)
         except ModuleNotFoundError as ex:
             self.logger.warning(f'{typename(ex)} is often caused by a missing component, '
-                                f'which often can be solved by "pip install" relevant package: {repr(ex)}',
+                                f'which often can be solved by "pip install" relevant package: {ex!r}',
                                 exc_info=True)
 
     def train(self, *args, **kwargs) -> None:
@@ -426,7 +426,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 else:
                     raise UnattachedDriver(d)
         else:
-            raise NoDriverForRequest(req_type)
+            raise NoDriverForRequest(f'{req_type} for {self}')
 
     def __str__(self):
         return self.__class__.__name__

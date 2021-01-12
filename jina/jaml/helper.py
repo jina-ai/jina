@@ -10,6 +10,7 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
+import json
 from jina.excepts import BadConfigSource
 from jina.importer import PathImporter
 
@@ -75,27 +76,34 @@ JinaResolver.yaml_implicit_resolvers.pop('o')
 JinaResolver.yaml_implicit_resolvers.pop('O')
 
 
-def parse_config_source(path: Union[str, TextIO],
+def parse_config_source(path: Union[str, TextIO, Dict],
                         allow_stream: bool = True,
                         allow_yaml_file: bool = True,
                         allow_builtin_resource: bool = True,
                         allow_raw_yaml_content: bool = True,
                         allow_raw_driver_yaml_content: bool = True,
-                        allow_class_type: bool = True, *args, **kwargs) -> Tuple[TextIO, Optional[str]]:
+                        allow_class_type: bool = True,
+                        allow_dict: bool = True,
+                        allow_json: bool = True,
+                        *args, **kwargs) -> Tuple[TextIO, Optional[str]]:
     """ Check if the text or text stream is valid
 
     :return: a tuple, the first element is the text stream, the second element is the file path associate to it
             if available.
     """
     import io
-    from pkg_resources import resource_filename, resource_stream
+    from pkg_resources import resource_filename
     if not path:
         raise BadConfigSource
+    elif allow_dict and isinstance(path, dict):
+        from . import JAML
+        tmp = JAML.dump(path)
+        return io.StringIO(tmp), None
     elif allow_stream and hasattr(path, 'read'):
         # already a readable stream
         return path, None
     elif allow_yaml_file and (path.endswith('.yml') or path.endswith('.yaml')):
-        comp_path = _complete_path(path)
+        comp_path = complete_path(path)
         return open(comp_path, encoding='utf8'), comp_path
     elif allow_builtin_resource and path.startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
@@ -117,12 +125,20 @@ def parse_config_source(path: Union[str, TextIO],
     elif allow_class_type and path.isidentifier():
         # possible class name
         return io.StringIO(f'!{path}'), None
+    elif allow_json and isinstance(path, str):
+        try:
+            from . import JAML
+            tmp = json.loads(path)
+            tmp = JAML.dump(tmp)
+            return io.StringIO(tmp), None
+        except json.JSONDecodeError:
+            raise BadConfigSource
     else:
         raise BadConfigSource(f'{path} can not be resolved, it should be a readable stream,'
                               ' or a valid file path, or a supported class name.')
 
 
-def _complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
+def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
     _p = None
     if os.path.exists(path):
         # this checks both abs and relative paths already
@@ -174,5 +190,5 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) ->
 
     _finditem(d)
     if mod:
-        mod = [_complete_path(m, extra_search_paths) for m in mod]
+        mod = [complete_path(m, extra_search_paths) for m in mod]
         PathImporter.add_modules(*mod)

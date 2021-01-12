@@ -72,22 +72,22 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         self._current_section = section
 
     def _get_help_string(self, action):
-        help = action.help
+        help_string = action.help
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
                 from ..helper import colored
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
 
-                    help += colored(' (default: %s)' % (
+                    help_string += colored(' (default: %s)' % (
                         'enabled' if action.default else f'disabled, use "--{action.dest}" to enable it'),
                                     attrs=['dark'])
                 elif action.choices:
                     choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
-                    help += colored(' (choose from: ' + choices_str + '; default: %(default)s)', attrs=['dark'])
+                    help_string += colored(' (choose from: ' + choices_str + '; default: %(default)s)', attrs=['dark'])
                 elif action.option_strings or action.nargs in defaulting_nargs:
-                    help += colored(' (type: %(type)s; default: %(default)s)', attrs=['dark'])
-        return help
+                    help_string += colored(' (type: %(type)s; default: %(default)s)', attrs=['dark'])
+        return help_string
 
     def _get_default_metavar_for_optional(self, action):
         return ''
@@ -119,13 +119,13 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         else:
             result = default_metavar
 
-        def format(tuple_size):
+        def formatter(tuple_size):
             if isinstance(result, tuple):
                 return result
             else:
                 return (result,) * tuple_size
 
-        return format
+        return formatter
 
     def _fill_text(self, text, width, indent):
         return ''.join(indent + line for line in text.splitlines(keepends=True))

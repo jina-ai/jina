@@ -18,10 +18,10 @@
 
 scipy>=1.4.1:               index, numeric, cicd
 flask:                      devel, cicd, http, sse
-fastapi:                    devel, cicd, http
-uvicorn:                    devel, cicd, http
 flask_cors:                 devel, cicd, http, sse
-fluent-logger:              logging, http, sse, dashboard, devel, cicd, test
+fastapi:                    devel, cicd, http, test, daemon
+uvicorn>=0.12.1:            devel, cicd, http, test, daemon
+fluent-logger:              logging, http, sse, dashboard, devel, cicd, test, daemon
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, test
 torch>=1.1.0:               framework, cicd
@@ -50,19 +50,25 @@ uvloop:                     devel, cicd, perf
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
-grpcio:                     core
+grpcio>=1.33.1:             core
 pyyaml>=5.3.1:              core
 tornado>=5.1.0:             core
 cookiecutter:               hub, devel, cicd
 pytest:                     test
 pytest-xdist==1.34.0:       test
 pytest-timeout:             test
+pytest-mock:                test
 pytest-cov:                 test
 pytest-repeat:              test
 pytest-asyncio:             test
 flaky:                      test
 mock:                       test
-requests:                   http
+requests:                   http, devel, test, daemon
 prettytable:                devel, test
 sseclient-py:               test
-websockets:                 http
+optuna:                     test, optimizer
+websockets:                 http, devel, test, daemon, ws
+wsproto:                    http, devel, test, ws, daemon
+pydantic:                   http, devel, test, daemon
+python-multipart:           http, devel, test, daemon
+pytest-custom_exit_code:    cicd, test

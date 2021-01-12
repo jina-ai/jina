@@ -42,6 +42,9 @@ area/docker:
 area/cli:
   - cli/**/*
 
+area/daemon:
+  - daemon/**/*
+
 area/script:
   - script/**/*
 

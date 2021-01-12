@@ -70,10 +70,19 @@ def test_load_yaml2(test_metas):
 @pytest.mark.parametrize(
     'yaml_path, name, expected',
     [
-        ('executors._route.yml', 'route', 4),
-        ('executors._pass.yml', 'forward', 4),
-        ('executors._merge.yml', 'merge', 4),
-        ('executors._clear.yml', 'clear', 4)
+        ('executors._clear.yml', 'clear', 6),
+        ('executors._concat.yml', 'concat', 6),
+        ('executors._eval_pr.yml', 'eval_pr', 2),
+        ('executors._forward.yml', 'forward', 6),
+        ('executors._logforward.yml', 'logforward', 6),
+        ('executors._merge.yml', 'merge', 6),
+        ('executors._merge_chunks.yml', 'merge_chunks', 6),
+        ('executors._merge_eval.yml', 'merge_eval', 6),
+        ('executors._merge_matches.yml', 'merge_matches', 6),
+        ('executors._pass.yml', 'forward', 6),
+        ('executors._route.yml', 'route', 6),
+        ('executors._unique.yml', 'unique', 6),
+        ('executors._unique_content.yml', 'unique_content', 6),
     ]
 )
 def test_resource_executor(yaml_path, name, expected):
@@ -92,7 +101,7 @@ def test_multiple_executor():
         pass
 
     d1 = D1()
-    assert len(d1._drivers) == 4
+    assert len(d1._drivers) == 6
 
     class D2(BaseIndexer):
         pass
@@ -110,10 +119,10 @@ def test_multiple_executor():
         pass
 
     d4 = D4()
-    assert len(d4._drivers) == 4
+    assert len(d4._drivers) == 6
 
     class D5(BaseCrafter):
         pass
 
     d5 = D5()
-    assert len(d5._drivers) == 4
+    assert len(d5._drivers) == 6

@@ -1,13 +1,15 @@
 name: Nightly
 
-on:
-  schedule:
-    - cron: "0 0 * * *"
-
 #on:
-#  push:
-#    branches-ignore:
-#      - '**'  # temporally ignore all
+#  schedule:
+#    - cron: "0 0 * * *"
+
+# THIS JOB IS DEPRECIATED AS IT TIMESOUT WITHOUT PRECOMPILED GRPCIO AND NUMPY ON NON-X64 ARCH
+
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally ignore all
 
 
 jobs:
@@ -36,10 +38,11 @@ jobs:
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/386,linux/arm/v7,linux/arm/v6 \
             --output "type=registry" \
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION --build-arg INSTALL_DEV \
+            --target jina_base \
             -t jinaai/jina:devel -t jinaai/jina:${{env.JINA_VERSION}} \
             --file ./Dockerfiles/debianx.Dockerfile .
       - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@3.02
         with:
           name: jina-ai/jina/jina
           username: ${{ secrets.DOCKER_USERNAME }}

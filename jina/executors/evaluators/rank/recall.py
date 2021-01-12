@@ -8,8 +8,6 @@ class RecallEvaluator(BaseRankingEvaluator):
        It computes how many of the first given `eval_at` groundtruth are found in the matches
     """
 
-    metric = 'Recall@N'
-
     def __init__(self,
                  eval_at: Optional[int] = None,
                  *args, **kwargs):

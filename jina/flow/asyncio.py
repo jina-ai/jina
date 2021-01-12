@@ -1,7 +1,7 @@
 from typing import Union, List, Iterator
 
 from .base import BaseFlow
-from ..clients.asyncio import AsyncClient
+from ..clients.asyncio import AsyncClient, AsyncWebSocketClient
 from ..clients.base import InputFnType, CallbackFnType
 from ..enums import DataInputType
 from ..helper import deprecated_alias
@@ -70,6 +70,10 @@ class AsyncFlow(BaseFlow):
     One can think of :class:`Flow` as Jina-managed eventloop, whereas :class:`AsyncFlow` is self-managed eventloop.
     """
     _cls_client = AsyncClient  #: the type of the Client, can be changed to other class
+
+    def _update_client(self):
+        if self._pod_nodes['gateway'].args.restful:
+            self._cls_client = AsyncWebSocketClient
 
     @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def train(self, input_fn: InputFnType = None,

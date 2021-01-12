@@ -54,7 +54,7 @@ class ZEDRuntime(ZMQRuntime):
                 self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
                 break
             except zmq.error.ZMQError:
-                self.logger.warning(f'retry init socket {j+1}/{self.args.max_socket_retries}')
+                self.logger.warning(f'retry init socket {j + 1}/{self.args.max_socket_retries}')
 
         if not hasattr(self, '_zmqlet'):
             raise ZMQSocketError(f'can not open ZMQStreamlet after {self.args.max_socket_retries} retries, '
@@ -165,7 +165,7 @@ class ZEDRuntime(ZMQRuntime):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self._zmqlet.send_message(self._callback(msg))
-        except RuntimeTerminated as ex:
+        except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
             self._zmqlet.send_message(msg)
             self._zmqlet.close()
@@ -188,10 +188,16 @@ class ZEDRuntime(ZMQRuntime):
                 self._post_hook(msg)
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
-                self.logger.warning(f'{ex!r}')
+                self.logger.warning(f'{ex!r}' +
+                                    f'add "--show-exc-info" to see the exception stack in details'
+                                    if not self.args.show_exc_info else '',
+                                    exc_info=self.args.show_exc_info)
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
-                self.logger.error(f'{ex!r}')
+                self.logger.error(f'{ex!r}' +
+                                  f'add "--show-exc-info" to see the exception stack in details'
+                                  if not self.args.show_exc_info else '',
+                                  exc_info=self.args.show_exc_info)
             if 'JINA_RAISE_ERROR_EARLY' in os.environ:
                 raise
             self._zmqlet.send_message(msg)

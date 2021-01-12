@@ -8,8 +8,6 @@ class PrecisionEvaluator(BaseRankingEvaluator):
        It computes how many of the first given `eval_at` matches are found in the groundtruth
     """
 
-    metric = 'Precision@N'
-
     def __init__(self,
                  eval_at: Optional[int] = None,
                  *args, **kwargs):

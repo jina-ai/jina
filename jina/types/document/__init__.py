@@ -2,17 +2,18 @@ import base64
 import os
 import urllib.parse
 import urllib.request
-import warnings
-from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence
+from hashlib import blake2b
+from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tuple
 
 from google.protobuf import json_format
+from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import *
 from .uid import *
 from ..ndarray.generic import NdArray
+from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
-from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import is_url, typename
 from ...importer import ImportExtensions
@@ -186,9 +187,31 @@ class Document:
     def content_hash(self):
         return self._document.content_hash
 
-    def update_content_hash(self):
-        """Update the document hash according to its content."""
-        self._document.content_hash = get_content_hash(self._document)
+    def update_content_hash(self,
+                            exclude_fields: Optional[Tuple[str]] = (
+                            'id', 'chunks', 'matches', 'content_hash', 'parent_id'),
+                            include_fields: Optional[Tuple[str]] = None) -> None:
+        """Update the document hash according to its content.
+
+        :param exclude_fields: a tuple of field names that excluded when computing content hash
+        :param include_fields: a tuple of field names that included when computing content hash
+
+        .. note::
+            "exclude_fields" and "include_fields" are mutually exclusive, use one only
+        """
+        masked_d = jina_pb2.DocumentProto()
+        masked_d.CopyFrom(self._document)
+        empty_doc = jina_pb2.DocumentProto()
+        if include_fields and exclude_fields:
+            raise ValueError('"exclude_fields" and "exclude_fields" are mutually exclusive, use one only')
+
+        if include_fields is not None:
+            FieldMask(paths=include_fields).MergeMessage(masked_d, empty_doc)
+            masked_d = empty_doc
+        elif exclude_fields is not None:
+            FieldMask(paths=exclude_fields).MergeMessage(empty_doc, masked_d, replace_repeated_field=True)
+
+        self._document.content_hash = blake2b(masked_d.SerializeToString(), digest_size=uid._digest_size).hexdigest()
 
     @property
     def id(self) -> 'UniqueId':

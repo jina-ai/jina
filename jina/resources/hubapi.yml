@@ -9,3 +9,4 @@ hubapi:
   url: https://hubapi.jina.ai
   list: /list
   push: /push
+  docker_auth: /docker_auth

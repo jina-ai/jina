@@ -1,0 +1,24 @@
+!Flow
+with:
+  read_only: true
+pods:
+  crafter:
+    # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
+    uses: craft.yml
+    host: $JINA_CRAFTER_HOST
+    read_only: False
+    port_in: 45000
+    port_ctrl: 45001
+    port_expose: 8000
+  encoder:
+    show-exc-info: True
+    uses: encode.yml
+  indexer:
+    # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
+    uses: index.yml
+    read_only: False
+    host: $JINA_INDEXER_HOST
+    port_in: 45004
+    port_out: 45005
+    port_ctrl: 45006
+    port_expose: 8000

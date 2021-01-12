@@ -1,4 +1,6 @@
 !Flow
+with:
+  restful: $RESTFUL
 pods:
   pass_modality_1:
     uses: '- !FilterQL | {lookups: {modality__in: [modality1]}, traversal_paths: [c]}'

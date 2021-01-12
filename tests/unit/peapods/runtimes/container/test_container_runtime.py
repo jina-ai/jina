@@ -10,7 +10,6 @@ from jina.helper import random_name
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
-from jina.peapods.runtimes.container import ContainerRuntime
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -43,7 +42,6 @@ def test_simple_container(docker_image_built):
     Pea(args).start().close()
 
 
-@pytest.mark.skip(reason='flaky, will be refactored as part of #1539')
 def test_simple_container_with_ext_yaml(docker_image_built):
     args = set_pea_parser().parse_args(['--uses', f'docker://{img_name}',
                                         '--uses-internal',
@@ -124,6 +122,18 @@ def test_container_volume(docker_image_built, tmpdir):
     f = (Flow()
          .add(name=random_name(), uses=f'docker://{img_name}', volumes=abc_path,
               uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_upd.yml')))
+
+    with f:
+        f.index(random_docs(10))
+
+    assert os.path.exists(os.path.join(abc_path, 'ext-mwu-encoder.bin'))
+
+
+def test_container_volume_arbitrary(docker_image_built, tmpdir):
+    abc_path = os.path.join(tmpdir, 'abc')
+    f = (Flow()
+         .add(name=random_name(), uses=f'docker://{img_name}', volumes=abc_path + ':' + '/mapped/here/abc',
+              uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_volume_change.yml')))
 
     with f:
         f.index(random_docs(10))
