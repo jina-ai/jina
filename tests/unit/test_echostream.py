@@ -20,8 +20,19 @@ def test_simple_zmqlet():
         '--socket-out', 'PUSH_CONNECT',
         '--timeout-ctrl', '-1'])
 
+    args2 = set_pea_parser().parse_args([
+        '--host-in', '0.0.0.0',
+        '--host-out', '0.0.0.0',
+        '--port-in', '12347',
+        '--port-out', '12346',
+        '--socket-in', 'PULL_BIND',
+        '--socket-out', 'PUSH_BIND',
+        '--uses', '_logforward',
+        '--timeout-ctrl', '-1'
+    ])
+
     logger = logging.getLogger('zmq-test')
-    with Zmqlet(args, logger) as z:
+    with BasePea(args2), Zmqlet(args, logger) as z:
         req = jina_pb2.RequestProto()
         req.request_id = get_random_identity()
         d = req.index.docs.add()
