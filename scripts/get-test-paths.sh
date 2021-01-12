@@ -2,7 +2,7 @@
 
 set -ex
 
-declare -a array1=( "unit/*.py" "integration/*.py" )
-declare -a array2=( $(ls -d tests/{unit,integration}/*/ | cut -f2,3 -d'/' | grep -v '__pycache__' ))
+declare -a array1=( "${1}/unit/*.py" "${1}/integration/*.py" )
+declare -a array2=( $(ls -d ${1}/{unit,integration}/*/ | grep -v '__pycache__' ))
 dest=( "${array1[@]}" "${array2[@]}" )
 printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
