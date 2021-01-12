@@ -78,13 +78,11 @@ fi
 
 # release the current version
 export RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
-
+LAST_VER=$(git tag -l | sort -V | tail -n1)
+printf "last version: \e[1;32m$LAST_VER\e[0m\n"
 
 if [[ $1 == "final" ]]; then
   printf "this will be a final release: \e[1;33m$RELEASE_VER\e[0m\n"
-
-  LAST_VER=$(git tag -l | sort -V | tail -n1)
-  printf "last version: \e[1;32m$LAST_VER\e[0m\n"
 
   NEXT_VER=$(echo $RELEASE_VER | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{$NF=sprintf("%0*d", length($NF), ($NF+1)); print}')
   printf "bump master version to: \e[1;32m$NEXT_VER\e[0m\n"
@@ -101,7 +99,7 @@ if [[ $1 == "final" ]]; then
   slack_notif
 else
   # as a prerelease, pypi update only, no back commit etc.
-  COMMITS_SINCE_LAST_VER=$(git rev-list  `git rev-list --tags --no-walk --max-count=1`..HEAD --count)
+  COMMITS_SINCE_LAST_VER=$(git rev-list $LAST_VER..HEAD --count)
   NEXT_VER=$RELEASE_VER".dev"$COMMITS_SINCE_LAST_VER
   printf "this will be a developmental release: \e[1;33m$NEXT_VER\e[0m\n"
 
