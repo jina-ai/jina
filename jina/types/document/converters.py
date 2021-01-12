@@ -35,10 +35,10 @@ def png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
     return png_bytes
 
 
-def pillow_image_to_buffer(image, format: str) -> bytes:
+def pillow_image_to_buffer(image, image_format: str) -> bytes:
     import io
     img_byte_arr = io.BytesIO()
-    image.save(img_byte_arr, format=format)
+    image.save(img_byte_arr, format=image_format)
     img_byte_arr = img_byte_arr.getvalue()
     return img_byte_arr
 

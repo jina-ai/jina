@@ -26,8 +26,8 @@ def document():
     'type', ['float32', 'float64', 'uint8']
 )
 @pytest.mark.repeat(10)
-def test_array_protobuf_conversions(type):
-    random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(type)
+def test_array_protobuf_conversions(t):
+    random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(t)
     d = NdArray()
     d.value = random_array
     np.testing.assert_almost_equal(d.value, random_array)
@@ -37,8 +37,8 @@ def test_array_protobuf_conversions(type):
     'quantize, type', [('fp16', 'float32'), ('fp16', 'float64'), ('uint8', 'uint8')],
 )
 @pytest.mark.repeat(10)
-def test_array_protobuf_conversions_with_quantize(quantize, type):
-    random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(type)
+def test_array_protobuf_conversions_with_quantize(quantize, t):
+    random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(t)
     d = NdArray(quantize=quantize)
     d.value = random_array
     np.testing.assert_almost_equal(d.value, random_array, decimal=2)

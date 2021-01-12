@@ -114,7 +114,7 @@ class DocIDCache(BaseCache):
 
         for key in keys:
             key_idx = self.query_handler.ids.index(key)
-            self.query_handler.ids = [id for idx, id in enumerate(self.query_handler.ids) if idx != key_idx]
+            self.query_handler.ids = [query_id for idx, query_id in enumerate(self.query_handler.ids) if idx != key_idx]
             if self.field != ID_KEY:
                 self.query_handler.content_hash = [cached_field for idx, cached_field in
                                                    enumerate(self.query_handler.content_hash) if idx != key_idx]
