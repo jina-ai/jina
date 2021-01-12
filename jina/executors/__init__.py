@@ -257,7 +257,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: if ``separated_workspace`` is set to ``False`` then ``metas.workspace`` is returned,
                 otherwise the ``metas.pea_workspace`` is returned
         """
-        work_dir = self.pea_workspace if self.separated_workspace else self.workspace  # type: str
+
+        work_dir = self.pea_workspace if self.separated_workspace and self.pea_id > 1 else self.workspace  # type: str
         return work_dir
 
     def get_file_from_workspace(self, name: str) -> str:
@@ -388,7 +389,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if not filename: raise FileNotFoundError
         try:
             with open(filename, 'rb') as fp:
-                return pickle.load(fp)
+                executor = pickle.load(fp)
+                return executor
         except EOFError:
             raise BadPersistantFile(f'broken file {filename} can not be loaded')
 
