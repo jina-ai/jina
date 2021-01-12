@@ -48,29 +48,32 @@ def common_endpoints():
 @pytest.fixture(scope='session')
 def flow_endpoints():
     return [
-        ('_create_from_pods', f'/flow/pods'),
-        ('_create_from_yaml', f'/flow/yaml'),
+        ('_fetch_flow_params', '/flow/parameters'),
+        ('_create_from_pods', '/flow/pods'),
+        ('_create_from_yaml', '/flow/yaml'),
         ('_fetch', f'/flow/{{flow_id}}'),
-        ('_ping', f'/ping'),
-        ('_delete', f'/flow'),
+        ('_ping', '/ping'),
+        ('_delete', '/flow'),
     ]
 
 
 @pytest.fixture(scope='session')
 def pod_endpoints():
     return [
-        ('_upload', f'/upload'),
-        ('_create', f'/pod'),
-        ('_delete', f'/pod')
+        ('_fetch_pod_params', '/pod/parameters'),
+        ('_upload', '/upload'),
+        ('_create', '/pod'),
+        ('_delete', '/pod')
     ]
 
 
 @pytest.fixture(scope='session')
 def pea_endpoints():
     return [
-        ('_upload', f'/pea/upload'),
-        ('_create', f'/pea'),
-        ('_delete', f'/pea')
+        ('_fetch_pea_params', '/pea/parameters'),
+        ('_upload', '/pea/upload'),
+        ('_create', '/pea'),
+        ('_delete', '/pea')
     ]
 
 

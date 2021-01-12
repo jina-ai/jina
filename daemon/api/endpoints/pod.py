@@ -13,6 +13,15 @@ from ...store import pod_store
 router = APIRouter()
 
 
+@router.get(
+    path='/pod/parameters',
+    summary='Fetch all params that a Pod can accept'
+)
+async def _fetch_pod_params():
+    return SinglePodModel.schema()['properties']
+
+
+
 @router.put(
     path='/upload',
     summary='Upload YAML & py_modules required by a Pod',

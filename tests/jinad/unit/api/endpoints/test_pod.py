@@ -3,6 +3,7 @@ import uuid
 import pytest
 
 from daemon.api.endpoints import pod
+from daemon.models import SinglePodModel
 
 _temp_id = uuid.uuid1()
 
@@ -13,6 +14,14 @@ def mock_pod_start_exception(**kwargs):
 
 def mock_key_error(**kwargs):
     raise KeyError
+
+
+@pytest.mark.asyncio
+async def test_fetch_pod_params(monkeypatch):
+    monkeypatch.setattr(SinglePodModel, 'schema', lambda *args: {'properties': {'a': 1, 'b': 2}})
+    response = await pod._fetch_pod_params()
+    assert response['a'] == 1
+    assert response['b'] == 2
 
 
 @pytest.mark.asyncio
