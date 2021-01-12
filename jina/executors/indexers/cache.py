@@ -126,7 +126,7 @@ class DocIDCache(BaseCache):
         return 1
 
     def get_query_handler(self) -> CacheHandler:
-        return self.CacheHandler(self.index_abspath, self.logger)
+        return self.CacheHandler(self.save_abspath, self.logger)
 
     def get_create_handler(self):
         # not needed, as we use the queryhandler

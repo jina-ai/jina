@@ -1,0 +1,19 @@
+!Flow
+pods:
+  inc_doc:
+    uses: yml/cp_cache_kv.yml
+    shards: $JINA_SHARDS
+    separated_workspace: True
+    uses_after: '_merge_matches'
+    polling: 'all'
+    timeout_ready: '-1'
+  inc_vec:
+    uses: yml/cp_cache_vector.yml
+    shards: $JINA_SHARDS
+    separated_workspace: True
+    uses_after: '_merge_matches'
+    polling: 'all'
+    timeout_ready: '-1'
+    needs: $JINA_INDEXER_NEEDS
+  merger:
+    needs: $JINA_MERGER_NEEDS

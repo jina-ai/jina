@@ -1,3 +1,4 @@
+import itertools
 import os
 from pathlib import Path
 
@@ -6,6 +7,7 @@ import pytest
 
 from jina import Flow, Document
 from jina.executors.indexers import BaseIndexer
+from jina.executors.indexers.cache import DocIDCache
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 
@@ -15,54 +17,20 @@ KV_IDX_FILENAME = 'kv_idx.bin'
 VEC_IDX_FILENAME = 'vec_idx.bin'
 
 
-def config(field, tmp_workspace, shards):
+def config(field, tmp_workspace, shards, indexers):
     os.environ['JINA_SHARDS'] = str(shards)
     os.environ['JINA_CACHE_FIELD'] = field
     os.environ['JINA_TEST_CACHE_CRUD_WORKSPACE'] = str(tmp_workspace)
     os.environ['JINA_KV_IDX_NAME'] = KV_IDX_FILENAME.split('.bin')[0]
     os.environ['JINA_VEC_IDX_NAME'] = VEC_IDX_FILENAME.split('.bin')[0]
-
-
-def get_flow(indexers, shards):
-    vector_pod = dict(
-        uses=cur_dir / 'yml' / 'cp_cache_kv.yml',
-        name='inc_vec'
-    )
-    pb_pod = dict(
-        uses=cur_dir / 'yml' / 'cp_cache_vector.yml',
-        name='inc_doc'
-    )
-
-    if shards == 3:
-        sharding_config = dict(
-            shards=shards,
-            separated_workspace=True,
-            uses_after='_merge_matches',
-            polling='all',
-            timeout_ready='-1'
-        )
-        pb_pod.update(
-            sharding_config
-        )
-        vector_pod.update(
-            sharding_config
-        )
-
-    f: Flow = (Flow()
-               .add(**pb_pod)
-               .add(**vector_pod))
-
     if indexers == 'parallel':
-        vector_pod.update(
-            dict(
-                needs=['gateway']
-            )
-        )
-        f = (Flow()
-             .add(**pb_pod)
-             .add(**vector_pod)
-             .add(needs=['inc_vec', 'inc_doc']))
-    return f
+        # the second indexer will be directly connected to entry gateway
+        os.environ['JINA_INDEXER_NEEDS'] = 'gateway'
+        os.environ['JINA_MERGER_NEEDS'] = "[inc_vec, inc_doc]"
+    else:
+        # else it requires to be in serial connection, after the first indexer
+        os.environ['JINA_INDEXER_NEEDS'] = 'inc_doc'
+        os.environ['JINA_MERGER_NEEDS'] = ""
 
 
 np.random.seed(0)
@@ -96,26 +64,13 @@ def get_documents(chunks, same_content, nr=10, index_start=0):
         yield d
 
 
+docs_chunks = [0, 3, 5]
+docs_same_content = [False, True]
+docs_nr = [0, 10, 100]
+
+
 @pytest.mark.parametrize('chunks, same_content, nr',
-                         # cartesian product of possibilities
-                         [(0, False, 0),
-                          (0, False, 10),
-                          (0, False, 100),
-                          (0, True, 0),
-                          (0, True, 10),
-                          (0, True, 100),
-                          (3, False, 0),
-                          (3, False, 10),
-                          (3, False, 100),
-                          (3, True, 0),
-                          (3, True, 10),
-                          (3, True, 100),
-                          (5, False, 0),
-                          (5, False, 10),
-                          (5, False, 100),
-                          (5, True, 0),
-                          (5, True, 10),
-                          (5, True, 100)])
+                         itertools.product(docs_chunks, docs_same_content, docs_nr))
 def test_docs_generator(chunks, same_content, nr):
     chunk_content = None
     docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr))
@@ -167,8 +122,6 @@ def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=
 
 @pytest.mark.parametrize('indexers, field, shards, chunks, same_content',
                          [
-                             # cartesian product of the parameters
-                             # TODO prune these
                              ('sequential', 'id', 1, 5, False),
                              ('sequential', 'id', 3, 5, False),
                              ('sequential', 'id', 3, 5, True),
@@ -179,12 +132,6 @@ def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=
                              ('sequential', 'content_hash', 3, 5, True),
                              ('parallel', 'id', 3, 5, False),
                              ('parallel', 'id', 3, 5, True),
-                             # ('parallel', 'content_hash', 1, 0, False),
-                             # ('parallel', 'content_hash', 1, 0, True),
-                             # ('parallel', 'content_hash', 1, 5, False),
-                             # ('parallel', 'content_hash', 1, 5, True),
-                             # ('parallel', 'content_hash', 3, 0, False),
-                             # ('parallel', 'content_hash', 3, 0, True),
                              ('parallel', 'content_hash', 3, 5, False),
                              ('parallel', 'content_hash', 3, 5, True)
                          ])
@@ -196,8 +143,9 @@ def test_cache_crud(
         chunks,
         same_content
 ):
-    config(field, tmp_path, shards)
-    f = get_flow(indexers, shards)
+    config(field, tmp_path, shards, indexers)
+    print(f'{tmp_path=}')
+    f = Flow.load_config('yml/flow.yml')
 
     docs = list(get_documents(chunks=chunks, same_content=same_content))
 
@@ -217,6 +165,8 @@ def test_cache_crud(
 
     check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index2')
 
+    # TODO update
+
     docs.extend(new_docs)
     # delete
     with f:
@@ -227,45 +177,39 @@ def test_cache_crud(
 
 def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, post_op):
     for indexer_fname in [KV_IDX_FILENAME, VEC_IDX_FILENAME]:
-        if shards == 1:
-            with BaseIndexer.load(tmp_path / indexer_fname) as indexer:
+        for i in range(shards):
+            indexers_full_size = 0
+            cache_full_size = 0
+            indexer_folder = 'docindexer' if indexer_fname == KV_IDX_FILENAME else 'vecindexer'
+            # FIXME this shouldn't be necessary
+            indexer_folder = f'inc_{indexer_folder}-{i + 1}' if shards > 1 else f'inc_{indexer_folder}-{i}'
+
+            with BaseIndexer.load(tmp_path / indexer_folder / indexer_fname) as indexer:
                 if indexer_fname == KV_IDX_FILENAME:
                     assert isinstance(indexer, BinaryPbIndexer)
                 else:
                     assert isinstance(indexer, NumpyIndexer)
+                indexers_full_size += indexer.size
 
-                if post_op == 'delete':
-                    assert indexer.size == 0
+            # check cache size
+            with BaseIndexer.load(tmp_path / indexer_folder / 'cache.bin') as cache:
+                assert isinstance(cache, DocIDCache)
+                cache_full_size += cache.size
+
+            if post_op == 'delete':
+                assert indexers_full_size == 0
+                assert cache_full_size == 0
+            else:
+                if field == 'content_hash' and same_content:
+                    if chunks > 0:
+                        # one content from Doc, one from chunk
+                        assert indexers_full_size == 2 if post_op == 'index' else 4
+                        assert cache_full_size == 2
+                    else:
+                        assert indexers_full_size == 1
+                        assert cache_full_size == 1
                 else:
-                    if field == 'content_hash' and same_content:
-                        if chunks > 0:
-                            assert indexer.size == 2 if post_op == 'index' else 4
-                        else:
-                            assert indexer.size == 1
-                    else:
-                        assert indexer.size == (
-                                nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' else nr_docs + chunks * nr_docs
-
-        else:
-            for i in range(shards):
-                full_size = 0
-                indexer_folder = 'docindexer' if indexer_fname == KV_IDX_FILENAME else 'vecindexer'
-                with BaseIndexer.load(tmp_path / f'inc_{indexer_folder}-{i + 1}' / indexer_fname) as indexer:
-                    if indexer_fname == KV_IDX_FILENAME:
-                        assert isinstance(indexer, BinaryPbIndexer)
-                    else:
-                        assert isinstance(indexer, NumpyIndexer)
-                    full_size += indexer.size
-
-                if post_op == 'delete':
-                    assert full_size == 0
-                else:
-                    if field == 'content_hash' and same_content:
-                        if chunks > 0:
-                            # one content from Doc, one from chunk
-                            assert full_size == 2 if post_op == 'index' else 4
-                        else:
-                            assert full_size == 1
-                    else:
-                        assert full_size == (
-                                nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' else nr_docs + chunks * nr_docs
+                    nr_expected = (
+                            nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' else nr_docs + chunks * nr_docs
+                    assert indexers_full_size == nr_expected
+                    assert cache_full_size == nr_expected
