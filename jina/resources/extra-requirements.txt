@@ -17,8 +17,6 @@
 # 4. Tag `all` is reserved for representing all packages
 
 scipy>=1.4.1:               index, numeric, cicd
-flask:                      devel, cicd, http, sse
-flask_cors:                 devel, cicd, http, sse
 fastapi:                    devel, cicd, http, test, daemon
 uvicorn>=0.12.1:            devel, cicd, http, test, daemon
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, test, daemon
