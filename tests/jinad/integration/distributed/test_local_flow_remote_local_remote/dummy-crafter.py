@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 from jina.executors.crafters import BaseCrafter
 
 
-class DummyEncoder(BaseCrafter):
+class DummyCrafter(BaseCrafter):
     def __init__(self,
                  *args,
                  **kwargs):

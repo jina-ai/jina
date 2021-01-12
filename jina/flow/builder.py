@@ -86,6 +86,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
         # host_in and host_out is only set when corresponding socket is CONNECT
         start_node = flow._pod_nodes[start_node_name]
         end_node = flow._pod_nodes[end_node_name]
+
         first_socket_type = SocketType.PUSH_CONNECT
         if len(outgoing_map[start_node_name]) > 1:
             first_socket_type = SocketType.PUB_BIND
@@ -117,7 +118,9 @@ def _connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType
     elif first_socket_type == SocketType.PUSH_CONNECT:
         first.tail_args.host_out = _fill_in_host(connect_args=first.tail_args,
                                                  bind_args=second.head_args)
-        second.head_args.host_in = __default_host__
+        # (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)
+        # https://github.com/jina-ai/jina/pull/1654
+        #second.head_args.host_in = __default_host__
         first.tail_args.port_out = second.head_args.port_in
     elif first_socket_type == SocketType.PUB_BIND:
         first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
