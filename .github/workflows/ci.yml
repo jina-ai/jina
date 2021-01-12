@@ -157,3 +157,10 @@ jobs:
           name: ${{ matrix.test-path }}-codecov
           flags: core, ci
           fail_ci_if_error: false
+
+  # just for blocking the merge until all parallel core-test are successful
+  end-of-ci:
+    needs: core-test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Done"

@@ -36,6 +36,7 @@ jobs:
 
   daemon-test:
     runs-on: ubuntu-latest
+    needs: prep-testbed
     strategy:
       matrix:
         python-version: [3.7]
