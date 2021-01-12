@@ -128,17 +128,17 @@ jobs:
           buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
           buildoptions: ${{ env.BUILD_ARG }}
           tags: "latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
-      - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@3.02
-        with:
-          name: jina-ai/jina/jina
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
-          dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
-          buildoptions: ${{ env.BUILD_ARG }}
-          tags: "latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
+#      - name: Upload to Github Docker Registry
+#        uses: elgohr/Publish-Docker-Github-Action@3.02
+#        with:
+#          name: jina-ai/jina/jina
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_PASSWORD }}
+#          registry: docker.pkg.github.com
+#          dockerfile: Dockerfiles/debianx.Dockerfile
+#          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
+#          buildoptions: ${{ env.BUILD_ARG }}
+#          tags: "latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
 
   create-release:
     needs: update-doc
