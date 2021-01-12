@@ -63,5 +63,5 @@ class Waiter:
         self.logger.debug(f'sleeping for {seconds} seconds')
         time.sleep(seconds)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.logger.debug(f'took {self._seconds} seconds!')
