@@ -30,13 +30,14 @@ def test_unique_indexing_vecindexers(random_workspace, restful):
         assert vector_indexer.size == num_uniq_docs
 
 
+@pytest.mark.parametrize('separated_workspace', [False, True])
 @pytest.mark.parametrize('restful', [False, True])
-def test_unique_indexing_docindexers(random_workspace, restful):
+def test_unique_indexing_docindexers(random_workspace, restful, separated_workspace):
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     f = (Flow(restful=restful)
-         .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'), shards=1))
+         .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'), shards=1, separated_workspace=separated_workspace))
 
     with f:
         f.index(duplicate_docs)

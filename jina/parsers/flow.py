@@ -1,7 +1,5 @@
 import argparse
 
-from pkg_resources import resource_filename
-
 from .base import set_base_parser
 from .helper import _SHOW_ALL_ARGS
 from ..enums import FlowOutputType, FlowOptimizeLevel, FlowInspectType

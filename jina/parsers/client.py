@@ -6,7 +6,7 @@ def mixin_client_cli_parser(parser):
     gp = add_arg_group(parser, title='Client')
 
     # TODO (Joan): Remove `--batch-size` alias whenever the examples and documentations are updated
-    gp.add_argument('--request-size', aliases=['--batch-size'], type=int, default=100,
+    gp.add_argument('--request-size', '--batch-size', type=int, default=100,
                     help='the number of documents in each request')
     gp.add_argument('--mode', choices=list(RequestType), type=RequestType.from_string,
                     # required=True,
