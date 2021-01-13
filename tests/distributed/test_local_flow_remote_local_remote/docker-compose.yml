@@ -15,7 +15,7 @@ services:
       - "45005:45005"
       - "45006:45006"
     env_file:
-      - tests/jinad/integration/test_local_flow_remote_local_remote/.env
+      - tests/distributed/test_local_flow_remote_local_remote/.env
     expose:
       - 10000-60000
     networks:
@@ -27,7 +27,7 @@ services:
       - 8000
       - 10000-60000
     env_file:
-      - tests/jinad/integration/test_local_flow_remote_local_remote/.env
+      - tests/distributed/test_local_flow_remote_local_remote/.env
     networks:
       testing_net:
         ipv4_address: 172.28.1.2
