@@ -181,9 +181,6 @@ if __name__ == '__main__':
     jinad_port = '8000'
     flow_api = f'http://{host_ip}:{jinad_port}'
     flow_id = create_flow(flow_api, 'dummy_flow.yml')
-    if not flow_id:
-        print('failed to create a remote flow')
-        return
     print(f'flow is created: {flow_id}')
 ```
 
