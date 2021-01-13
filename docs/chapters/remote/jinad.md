@@ -22,13 +22,15 @@ docker pull jinaai/jina:latest-daemon
 
 ### Using PyPi package
 
+> Notes: As one part of the jina package, `jinad` follows the same [installation instructions of jina](https://docs.jina.ai/chapters/install/via-pip.html) and you only need to cherry pick `[daemon]`
+
 On Linux/Mac, simply run:
 
 ```bash
 pip install "jina[daemon]"
 ```
 
-## Install from the Master Branch
+### Install from the Master Branch
 
 If you want to keep track of the master branch of our development repository:
 
@@ -45,6 +47,10 @@ git clone https://github.com/jina-ai/jina
 cd jina && pip install -e ".[daemon]"
 ``` 
 
-For more information about PyPi installation, please refer to the [general PyPi installation instructions of jina](https://docs.jina.ai/chapters/install/via-pip.html) and replace ```
-
 ## Usage 
+
+### Creating a Remote Pod from Console
+
+### Creating a Remote Pod via Flow API 
+
+### Creating a Remote Flow
