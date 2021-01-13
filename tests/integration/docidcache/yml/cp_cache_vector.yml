@@ -59,4 +59,6 @@ requests:
       - !VectorSearchDriver
         with:
           executor: $JINA_VEC_IDX_NAME
-          traversal_paths: ['m']
+          top_k: $JINA_TOPK
+          fill_embedding: True
+          traversal_paths: ['r']

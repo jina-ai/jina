@@ -1,4 +1,6 @@
 !Flow
+with:
+  restful: true
 pods:
   inc_doc:
     uses: yml/cp_cache_kv.yml

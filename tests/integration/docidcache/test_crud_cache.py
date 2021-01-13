@@ -14,13 +14,14 @@ cur_dir = Path(os.path.dirname(os.path.abspath(__file__)))
 
 KV_IDX_FILENAME = 'kv_idx.bin'
 VEC_IDX_FILENAME = 'vec_idx.bin'
-
-pytest.register_assert_rewrite('check_indexers_size')
+DOCS_TO_SEARCH = 3
+TOP_K = 5
 
 
 def config_env(field, tmp_workspace, shards, indexers):
     os.environ['JINA_SHARDS'] = str(shards)
     os.environ['JINA_CACHE_FIELD'] = field
+    os.environ['JINA_TOPK'] = str(TOP_K)
     os.environ['JINA_TEST_CACHE_CRUD_WORKSPACE'] = str(tmp_workspace)
     os.environ['JINA_KV_IDX_NAME'] = KV_IDX_FILENAME.split('.bin')[0]
     os.environ['JINA_VEC_IDX_NAME'] = VEC_IDX_FILENAME.split('.bin')[0]
@@ -139,15 +140,24 @@ def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=
                          ])
 def test_cache_crud(
         tmp_path,
+        mocker,
         indexers,
         field,
         shards,
         chunks,
         same_content
 ):
+    def validate_result_factory(num_matches):
+        def validate_results(resp):
+            mock()
+            assert len(resp.docs) == DOCS_TO_SEARCH
+            for d in docs:
+                assert len(d.matches) == num_matches
+
+        return validate_results
+
     config_env(field, tmp_path, shards, indexers)
     print(f'{tmp_path=}')
-    # TODO maybe test restful=True for websocket
     f = Flow.load_config(os.path.abspath('yml/flow.yml'))
 
     docs = list(get_documents(chunks=chunks, same_content=same_content))
@@ -171,7 +181,6 @@ def test_cache_crud(
     docs.extend(new_docs)
     del new_docs
 
-    print(f'********* update')
     # id stays the same, we change the content
     for d in docs:
         d_content_hash_before = d.content_hash
@@ -187,12 +196,30 @@ def test_cache_crud(
     with f:
         f.update(docs)
 
-    check_indexers_size(chunks, len(docs)/2, field, tmp_path, same_content, shards, 'index2')
+    check_indexers_size(chunks, len(docs) / 2, field, tmp_path, same_content, shards, 'index2')
+
+    # query
+    mock = mocker.Mock()
+    with f:
+        f.search(
+            list(get_documents(0, same_content=False, nr=DOCS_TO_SEARCH)),
+            output_fn=validate_result_factory(TOP_K)
+        )
+    mock.assert_called_once()
 
     with f:
         f.delete(docs)
 
     check_indexers_size(chunks, 0, field, tmp_path, same_content, shards, 'delete')
+
+    # query
+    mock = mocker.Mock()
+    with f:
+        f.search(
+            list(get_documents(0, same_content=False, nr=DOCS_TO_SEARCH)),
+            output_fn=validate_result_factory(0)
+        )
+    mock.assert_called_once()
 
 
 def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, post_op):
@@ -229,6 +256,7 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
                         assert indexers_full_size == 1
                         assert cache_full_size == 1
                 else:
-                    nr_expected = (nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' else nr_docs + chunks * nr_docs
+                    nr_expected = (
+                                          nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' else nr_docs + chunks * nr_docs
                     assert indexers_full_size == nr_expected
                     assert cache_full_size == nr_expected
