@@ -19,7 +19,7 @@ def test_optimizer(tmpdir):
     eval_flow_runner = FlowRunner(
         flow_yaml='tests/integration/optimizers/flow.yml',
         documents=document_generator(10),
-        batch_size=1,
+        request_size=1,
         task='search',
         callback=EvaluationCallback(),
     )

@@ -62,7 +62,7 @@ def hello_world(args):
     # run it!
     with f:
         f.index(index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
-                batch_size=args.index_batch_size)
+                request_size=args.index_request_size)
 
     # wait for couple of seconds
     countdown(8, reason=colored('behold! im going to switch to query mode', 'cyan',
@@ -75,7 +75,7 @@ def hello_world(args):
         f.search(query_generator(num_docs=args.num_query, target=targets, with_groundtruth=True),
                  shuffle=True,
                  on_done=print_result,
-                 batch_size=args.query_batch_size,
+                 request_size=args.query_request_size,
                  top_k=args.top_k)
 
     # write result to html

@@ -135,7 +135,7 @@ class BaseClient:
                                       on_always=on_always,
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
-                        p_bar.update(self.args.batch_size)
+                        p_bar.update(self.args.request_size)
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.aio._call.AioRpcError as rpc_ex:

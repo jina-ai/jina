@@ -20,7 +20,7 @@ def test_flow_runner(tmpdir, mocker):
     flow_runner = FlowRunner(
         flow_yaml='flow.yml',
         documents=random_docs(5),
-        batch_size=1,
+        request_size=1,
         task='index',
         overwrite_workspace=True,
     )
@@ -32,7 +32,7 @@ def test_flow_runner(tmpdir, mocker):
     flow_runner = FlowRunner(
         flow_yaml='flow.yml',
         documents=random_docs(5),
-        batch_size=1,
+        request_size=1,
         task='search',
         callback=callback
     )
@@ -48,7 +48,7 @@ def test_wrong_task():
         _ = FlowRunner(
             flow_yaml='flow.yml',
             documents=random_docs(5),
-            batch_size=1,
+            request_size=1,
             task='query',
         )
         assert 'task can be either of index or search' == str(excinfo.value)
