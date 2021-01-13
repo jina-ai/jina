@@ -59,4 +59,4 @@ requests:
         with:
           executor: $JINA_KV_IDX_NAME
           top_k: $JINA_TOPK
-          traversal_paths: [r, m]
+          traversal_paths: [r]

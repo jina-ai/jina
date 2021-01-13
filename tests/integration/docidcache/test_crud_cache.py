@@ -37,8 +37,8 @@ def config_env(field, tmp_workspace, shards, indexers, polling):
 
 
 np.random.seed(0)
-d_embedding = np.random.random([9])
-c_embedding = np.random.random([9])
+d_embedding = np.array([1, 1, 1])
+c_embedding = np.array([2, 2, 2])
 
 
 def get_documents(chunks, same_content, nr=10, index_start=0):
@@ -51,7 +51,7 @@ def get_documents(chunks, same_content, nr=10, index_start=0):
                 d.embedding = d_embedding
             else:
                 d.text = f'hello world {i}'
-                d.embedding = np.random.random([9])
+                d.embedding = np.random.random(d_embedding.shape)
             for j in range(chunks):
                 with Document() as c:
                     c.id = next_chunk_id
@@ -60,7 +60,7 @@ def get_documents(chunks, same_content, nr=10, index_start=0):
                         c.embedding = c_embedding
                     else:
                         c.text = f'hello world from chunk {j}'
-                        c.embedding = np.random.random([9])
+                        c.embedding = np.random.random(d_embedding.shape)
 
                 next_chunk_id += 1
                 d.chunks.append(c)
@@ -74,7 +74,7 @@ docs_nr = [0, 10, 100]
 
 @pytest.mark.parametrize('chunks', [0, 3, 5])
 @pytest.mark.parametrize('same_content', [False, True])
-@pytest.mark.parametrize('nr', [0, 10, 100])
+@pytest.mark.parametrize('nr', [0, 10, 100, 201])
 def test_docs_generator(chunks, same_content, nr):
     chunk_content = None
     docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr))
@@ -126,18 +126,18 @@ def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=
 
 @pytest.mark.parametrize('indexers, field, shards, chunks, same_content',
                          [
-                             # ('sequential', 'id', 1, 5, False),
-                             # ('sequential', 'id', 3, 5, False),
+                             ('sequential', 'id', 1, 5, False),
+                             ('sequential', 'id', 3, 5, False),
                              ('sequential', 'id', 3, 5, True),
-                             # ('sequential', 'content_hash', 1, 0, False),
-                             # ('sequential', 'content_hash', 1, 0, True),
-                             # ('sequential', 'content_hash', 1, 5, False),
-                             # ('sequential', 'content_hash', 1, 5, True),
-                             # ('sequential', 'content_hash', 3, 5, True),
-                             # ('parallel', 'id', 3, 5, False),
-                             # ('parallel', 'id', 3, 5, True),
-                             # ('parallel', 'content_hash', 3, 5, False),
-                             # ('parallel', 'content_hash', 3, 5, True)
+                             ('sequential', 'content_hash', 1, 0, False),
+                             ('sequential', 'content_hash', 1, 0, True),
+                             ('sequential', 'content_hash', 1, 5, False),
+                             ('sequential', 'content_hash', 1, 5, True),
+                             ('sequential', 'content_hash', 3, 5, True),
+                             ('parallel', 'id', 3, 5, False),
+                             ('parallel', 'id', 3, 5, True),
+                             ('parallel', 'content_hash', 3, 5, False),
+                             ('parallel', 'content_hash', 3, 5, True)
                          ])
 def test_cache_crud(
         tmp_path,
@@ -157,7 +157,7 @@ def test_cache_crud(
 
         return validate_results
 
-    print(f'{tmp_path=}')
+    print(f'tmp path = {tmp_path}')
 
     config_env(field, tmp_path, shards, indexers, polling='any')
     f = Flow.load_config(os.path.abspath('yml/crud_cache_flow.yml'))
@@ -166,7 +166,7 @@ def test_cache_crud(
 
     # initial data index
     with f:
-        f.index(docs, batch_size=3)
+        f.index(docs, batch_size=4)
 
     check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index')
 
@@ -176,7 +176,7 @@ def test_cache_crud(
 
     new_docs = list(get_documents(chunks=chunks, same_content=same_content, index_start=index_start_new_docs))
     with f:
-        f.index(new_docs, batch_size=3)
+        f.index(new_docs, batch_size=4)
 
     check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index2')
 

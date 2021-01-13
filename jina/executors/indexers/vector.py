@@ -127,7 +127,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self._size += keys.shape[0]
 
     def update(self, keys: Sequence[int], values: Sequence[bytes], *args, **kwargs) -> None:
-        keys = self._filter_nonexistent_keys(keys, self.ext2int_id.keys(), self.save_abspath)
+        # noinspection PyTypeChecker
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self.ext2int_id.keys(), self.save_abspath)
         # could be empty
         # please do not use "if keys:", it wont work on both sequence and ndarray
         if getattr(keys, 'size', len(keys)):

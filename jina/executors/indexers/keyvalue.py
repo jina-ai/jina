@@ -55,6 +55,8 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        if len(keys) != len(values):
+            raise ValueError(f'Len of keys {len(keys)} did not match len of values {len(values)}')
         for key, value in zip(keys, values):
             l = len(value)  #: the length
             p = int(self._start / self._page_size) * self._page_size  #: offset of the page
@@ -78,7 +80,7 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys(), self.save_abspath)
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(), self.save_abspath)
         self._delete(keys)
         self.add(keys, values)
         return

@@ -67,8 +67,6 @@ class DocIDCache(BaseCache):
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
     def add(self, doc_id: 'UniqueId', *args, **kwargs):
-        # TODO
-        self._size += 1
         self.query_handler.ids.append(doc_id)
 
         # optimization. don't duplicate ids
@@ -77,6 +75,7 @@ class DocIDCache(BaseCache):
             if data is None:
                 raise ValueError(f'Got None from CacheDriver')
             self.query_handler.content_hash.append(data)
+        self._size += 1
 
     def query(self, data, *args, **kwargs) -> Optional[bool]:
         """
@@ -99,13 +98,15 @@ class DocIDCache(BaseCache):
         """
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document"""
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.ids, self.save_abspath)
+        # if we don't cache anything else, no need
+        if self.field != ID_KEY:
+            keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.ids, self.save_abspath)
 
-        for key, cached_field in zip(keys, values):
-            key_idx = self.query_handler.ids.index(key)
-            # optimization. don't duplicate ids
-            if self.field != ID_KEY:
-                self.query_handler.content_hash[key_idx] = cached_field
+            for key, cached_field in zip(keys, values):
+                key_idx = self.query_handler.ids.index(key)
+                # optimization. don't duplicate ids
+                if self.field != ID_KEY:
+                    self.query_handler.content_hash[key_idx] = cached_field
 
     def delete(self, keys: Iterator['UniqueId'], *args, **kwargs):
         """
