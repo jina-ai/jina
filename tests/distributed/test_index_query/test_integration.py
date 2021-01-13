@@ -13,7 +13,6 @@ pod_dir = os.path.join(cur_dir, 'pods')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_index_query(docker_compose):
     flow_id = create_flow(flow_yml, pod_dir)['flow_id']
-    print(f'Flow created with id {flow_id}')
 
     r = invoke_requests(method='post',
                         url='http://0.0.0.0:45678/api/index',

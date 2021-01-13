@@ -1,8 +1,9 @@
 import pytest
 import uuid
-from fastapi import UploadFile
+from fastapi import UploadFile, responses
 
 from daemon.api.endpoints import flow
+from daemon.models import FlowModel
 
 _temp_id = uuid.uuid1()
 
@@ -29,6 +30,14 @@ def mock_fetch_success(**kwargs):
 
 def mock_fetch_exception(**kwargs):
     raise KeyError
+
+
+@pytest.mark.asyncio
+async def test_fetch_flow_params(monkeypatch):
+    monkeypatch.setattr(FlowModel, 'schema', lambda *args: {'properties': {'a': 1, 'b': 2}})
+    response = await flow._fetch_flow_params()
+    assert response['a'] == 1
+    assert response['b'] == 2
 
 
 @pytest.mark.asyncio

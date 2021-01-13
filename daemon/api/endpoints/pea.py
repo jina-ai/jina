@@ -13,6 +13,15 @@ from ...store import pea_store
 router = APIRouter()
 
 
+@router.get(
+    path='/pea/parameters',
+    summary='Fetch all params that a Pea can accept'
+)
+async def _fetch_pea_params():
+    return PeaModel.schema()['properties']
+
+
+
 @router.put(
     path='/pea/upload',
     summary='Upload YAML & py_modules required by a Pea',

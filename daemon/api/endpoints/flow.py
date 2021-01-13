@@ -9,10 +9,18 @@ from jina.clients import Client
 from jina.helper import ArgNamespace
 from jina.parsers import set_client_cli_parser
 from ...excepts import FlowYamlParseException, FlowCreationException, FlowStartException
-from ...models import SinglePodModel
+from ...models import SinglePodModel, FlowModel
 from ...store import flow_store
 
 router = APIRouter()
+
+
+@router.get(
+    path='/flow/parameters',
+    summary='Fetch all params that a Flow can accept'
+)
+async def _fetch_flow_params():
+    return FlowModel.schema()['properties']
 
 
 @router.put(
@@ -20,7 +28,7 @@ router = APIRouter()
     summary='Start a Flow from list of Pods',
 )
 async def _create_from_pods(
-        pods: Union[List[Dict]] = Body(..., example=json.loads(SinglePodModel().json()))
+    pods: Union[List[Dict]] = Body(..., example=json.loads(SinglePodModel().json()))
 ):
     """
     Build a Flow using a list of `SinglePodModel`
@@ -61,9 +69,9 @@ async def _create_from_pods(
     summary='Start a Flow from a YAML config',
 )
 async def _create_from_yaml(
-        yamlspec: UploadFile = File(...),
-        uses_files: List[UploadFile] = File(()),
-        pymodules_files: List[UploadFile] = File(())
+    yamlspec: UploadFile = File(...),
+    uses_files: List[UploadFile] = File(()),
+    pymodules_files: List[UploadFile] = File(())
 ):
     """
     Build a flow using [Flow YAML](https://docs.jina.ai/chapters/yaml/yaml.html#flow-yaml-sytanx)
@@ -158,8 +166,8 @@ async def _create_from_yaml(
     summary='Get the status of a running Flow',
 )
 async def _fetch(
-        flow_id: uuid.UUID,
-        yaml_only: bool = False
+    flow_id: uuid.UUID,
+    yaml_only: bool = False
 ):
     """
     Get Flow information using `flow_id`.
@@ -193,8 +201,8 @@ async def _fetch(
     summary='Check if the Flow is alive',
 )
 async def _ping(
-        host: str,
-        port: int
+    host: str,
+    port: int
 ):
     """
     Ping to check if we can connect to gateway via gRPC `host:port`
@@ -221,7 +229,7 @@ async def _ping(
     summary='Terminate a running Flow',
 )
 async def _delete(
-        flow_id: uuid.UUID
+    flow_id: uuid.UUID
 ):
     """
     Close Flow Context

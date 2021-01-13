@@ -9,7 +9,7 @@ services:
       - "8000:8000"
       - "45678:45678"
     env_file:
-      - tests/jinad/integration/distributed/test_simple_hub_pods/.env
+      - tests/distributed/test_simple_hub_pods/.env
     expose:
       - 10000-60000
     volumes:
@@ -20,7 +20,7 @@ services:
       - 8000
       - 10000-60000
     env_file:
-      - tests/jinad/integration/distributed/test_simple_hub_pods/.env
+      - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   pod2:
@@ -29,6 +29,6 @@ services:
       - 8000
       - 10000-60000
     env_file:
-      - tests/jinad/integration/distributed/test_simple_hub_pods/.env
+      - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

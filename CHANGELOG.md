@@ -4,6 +4,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -133,6 +134,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.9.10`)](#release-note-0910)
 - [Release Note (`0.9.11`)](#release-note-0911)
 - [Release Note (`0.9.12`)](#release-note-0912)
+- [Release Note (`0.9.13`)](#release-note-0913)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -6633,4 +6635,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```b81e2749```](https://github.com/jina-ai/jina/commit/b81e2749044ec26f63d100e9e3b7c009c461056b)] __-__ hotfix cd tag (*Han Xiao*)
  - [[```03f19e66```](https://github.com/jina-ai/jina/commit/03f19e66a864a15ad799ddbaab6797caa1e2371d)] __-__ __version__: the next version will be 0.9.12 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-13></a>
+## Release Note (`0.9.13`)
+
+> Release time: 2021-01-12 20:03:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Deepankar Mahapatro,  Joan Fontanals,  Florian Hönicke,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```bec3aa74```](https://github.com/jina-ai/jina/commit/bec3aa74856e30bbd85df0311ed65912341a8cdf)] __-__ __daemon__: endpoints for params expose and logging public address (#1669) (*Deepankar Mahapatro*)
+
+### 🐞 Bug fixes
+
+ - [[```b488aca0```](https://github.com/jina-ai/jina/commit/b488aca0f2c280dc2d9c91050295d57af7319caf)] __-__ cd prerelease (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```45a7c74b```](https://github.com/jina-ai/jina/commit/45a7c74b18138b85fdf3fcc2288e1b9d9bb816f6)] __-__ __logs__: remove legacy SSE logserver from core (#1580) (*Han Xiao*)
+ - [[```e1114fb1```](https://github.com/jina-ai/jina/commit/e1114fb1853c196b724557a853daaef518754e5e)] __-__ unused definitions (#1660) (*Florian Hönicke*)
+ - [[```f14bfa98```](https://github.com/jina-ai/jina/commit/f14bfa98cd1786014144fdb3ec675d6a54ffc369)] __-__ shadowing built ins (#1658) (*Florian Hönicke*)
+
+### 📗 Documentation
+
+ - [[```e36343eb```](https://github.com/jina-ai/jina/commit/e36343eb62279f80b3c09aabcfc6ca6ba6d6191d)] __-__ __release__: update release &amp; version explain (#1662) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```8b3eb3a3```](https://github.com/jina-ai/jina/commit/8b3eb3a3e9c0ce7b95caa9c7777c07fd108fbc87)] __-__ add local-remote-local topology test (#1665) (*Joan Fontanals*)
+ - [[```a31ff02d```](https://github.com/jina-ai/jina/commit/a31ff02de6780c9194b91cc5d27f48f2e21d3f53)] __-__ separate install from run (#1664) (*Joan Fontanals*)
+ - [[```24179464```](https://github.com/jina-ai/jina/commit/24179464202967bf9e74993bf3addebf3f82b382)] __-__ add extra jinad distributed test (#1654) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```5b8c2679```](https://github.com/jina-ai/jina/commit/5b8c26790d118e4dac539e95102092ef0a099ebf)] __-__ hotfix release (*Han Xiao*)
+ - [[```3c53c172```](https://github.com/jina-ai/jina/commit/3c53c172ea13b0ecb1675ebff4cb574aa568c1d9)] __-__ update readme (*Han Xiao*)
+ - [[```0339e6df```](https://github.com/jina-ai/jina/commit/0339e6df9a048913d9f57ef032636cec1cdb5794)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7d89bd76```](https://github.com/jina-ai/jina/commit/7d89bd76e21e3a609ace7ce123997d32c576a552)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```0e00ac95```](https://github.com/jina-ai/jina/commit/0e00ac955fead3cfaddb0c5312e500d513798816)] __-__ __version__: the next version will be 0.9.13 (*Jina Dev Bot*)
 

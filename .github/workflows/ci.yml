@@ -71,8 +71,7 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
-
-  docker-build:
+  prep-testbed:
     needs: lint-flake-8
     runs-on: ubuntu-latest
     steps:
@@ -95,12 +94,12 @@ jobs:
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-test-paths.sh)"
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   docker-image-test:
-    needs: docker-build
+    needs: prep-testbed
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -111,12 +110,12 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   core-test:
-    needs: docker-build
+    needs: prep-testbed
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
-        test-path: ${{fromJson(needs.docker-build.outputs.matrix)}}
+        test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -131,14 +130,14 @@ jobs:
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
-          pip install ".[cicd,test]" --no-cache-dir
+          pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
           export JINA_LOG_VERBOSITY="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/${{ matrix.test-path }}
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
         timeout-minutes: 20
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
@@ -155,5 +154,11 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
-          flags: core, ci
           fail_ci_if_error: false
+
+  # just for blocking the merge until all parallel core-test are successful
+  success-all-test:
+    needs: [core-test, docker-image-test]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All Done"
