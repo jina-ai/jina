@@ -80,7 +80,7 @@ jinad
 ```
 
 ### Creating a Remote Pod from Console
-In the simplest case, you may want to create a Pod on the remote. The most naive way is to log into the remote machine and start a pod using `jina` CLI [link to run-remote-pod-console](). To avoid logging into the remote machine every time, we can use `jinad` to do the same thing. Furthermore, `jinad` offers a better session management for the running Pods on the remote.
+In the simplest case, you may want to create a Pod on the remote. The most naive way is to log into the remote machine and start a pod using `jina` CLI [link to run-remote-pod-console](). To avoid logging into the remote machine every time, we can use `jinad` to do the same thing. Furthermore, `jinad` offers a session management for the running Pods on the remote and saves you from manually creating and deleting Pods.
 
 Here we start a simple Pod with the default configuration `_logforward`. The Pod forwards received messages and print the messages out in the logs. On the local, you can run the following command to start a remote pod.
 
@@ -98,7 +98,7 @@ jina pod --uses _logforward --host 3.16.166.3 --port-expose 8000
       🌏 BasePea@68880[I]:ready and listening
 ```
 
-The logs starting with 🌏 are fetched from the remote Pod. Now we have already the Pod running remotely and we can check the connectivity.
+> Note: The logs starting with 🌏 are fetched from the remote Pod. Now we have already the Pod running remotely and we can check the connectivity.
 
 ```bash
 jina ping 3.16.166.3 49993
@@ -138,7 +138,6 @@ pod0/ZEDRuntime@69694[I]:input tcp://0.0.0.0:51317 (PULL_BIND) output tcp://3.16
 	🔒 Private network:	tcp://192.168.1.9:51327
 	🌐 Public address:	tcp://203.184.132.69:51327
          Client@69676[S]:connected to the gateway at 0.0.0.0:51327!
-index |█                   | 📃      0 ⏱️ 0.0s 🐎 0.0/s      0      batchindex ...	        gateway@69697[I]:input tcp://3.16.166.3:51322 (PULL_CONNECT) output tcp://0.0.0.0:51317 (PUSH_CONNECT) control over ipc:///var/folders/gw/d7zfntgd7z56bytfb2w662ww0000gn/T/tmp5t4ppsqz (PAIR_BIND)
 ...
         gateway@69697[I]:send: 1 recv: 0 pending: 1
 pod0/ZEDRuntime@69694[I]:recv IndexRequest  from gateway▸pod0/ZEDRuntime▸⚐
