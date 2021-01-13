@@ -222,7 +222,7 @@ def get_flow_info(flow_url, flow_id):
         print(f'Exception raised: {ex!r}')
 
 def main():
-    host_ip = '3.16.166.3'
+    host_ip = '12.34.56.78'
     jinad_port = '8000'
     flow_api = f'http://{host_ip}:{jinad_port}'
     flow_id = 'cdd53e16-5575-11eb-86b2-0ab9db700358'
@@ -247,7 +247,7 @@ def send_index_request(host, port):
         [Document(text='hello, jina'), ], on_done=print)
 
 def main():
-    host_ip = '3.16.166.3'
+    host_ip = '12.34.56.78'
     flow_port = '51871'
     send_index_request(host_ip, flow_port)
 ``` 
@@ -271,7 +271,7 @@ def delete_flow(flow_api, flow_id):
 
 
 def main():
-    host_ip = '3.16.166.3'
+    host_ip = '12.34.56.78'
     jinad_port = '8000'
     flow_id = 'cdd53e16-5575-11eb-86b2-0ab9db700358'
     flow_api = f'http://{host_ip}:{jinad_port}'
