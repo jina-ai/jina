@@ -11,7 +11,8 @@ flow_yml = os.path.join(cur_dir, 'flow.yml')
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_flow(docker_compose, mocker):
+@pytest.mark.parametrize('encoder_needs, indexer_needs', [('crafter', 'encoder'), ('gateway', '[encoder, crafter]')])
+def test_flow(docker_compose, mocker, encoder_needs, indexer_needs):
     text = 'cats rules'
     m = mocker.Mock()
 
@@ -22,6 +23,8 @@ def test_flow(docker_compose, mocker):
 
     os.environ['JINA_CRAFTER_HOST'] = '172.28.1.1'
     os.environ['JINA_INDEXER_HOST'] = '172.28.1.2'
+    os.environ['JINA_ENCODER_NEEDS'] = encoder_needs
+    os.environ['JINA_INDEXER_NEEDS'] = indexer_needs
 
     with Document() as doc:
         doc.content = text
