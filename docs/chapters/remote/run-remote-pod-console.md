@@ -79,5 +79,5 @@ If you have double checked the list and the problem is still not resolved, then 
 ## What's next?
 
 You many also want to checkout the following articles.
-[link to jinad]()
+[Using jina remotely with jinad](https://docs.jina.ai/chapters/remote/jinad.html)
 
