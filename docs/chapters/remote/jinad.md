@@ -19,7 +19,7 @@
 
 ### Using Docker Images (Recommended)
 
-The simplest way to use `jinad` is via Docker. There is no need to worry about fluent installation. You only need to have [Docker installed](https://docs.docker.com/install/) first. 
+The simplest way to use `jinad` is via Docker. There is no need to worry about [`fluentd`](https://github.com/fluent/fluentd) installation. You only need to have [Docker installed](https://docs.docker.com/install/) first. 
 
 In the command below, we use the tag `latest-daemon` which uses the latest release version of `jinad`. Of course, you can switch to other versions, and you can find all the available versions at [hub.docker.com](https://hub.docker.com/repository/docker/jinaai/jina/tags?page=1&ordering=last_updated&name=daemon). You can found more information about the versioning at [github.com/jina-ai/jina](https://github.com/jina-ai/jina/blob/master/RELEASE.md).
 
@@ -80,7 +80,7 @@ jinad
 ```
 
 ### Creating a Remote Pod from Console
-In the simplest case, you may want to create a Pod on the remote. The most naive way is to log into the remote machine and start a pod using `jina` CLI [link to run-remote-pod-console](). To avoid logging into the remote machine every time, we can use `jinad` to do the same thing. Furthermore, `jinad` offers a session management for the running Pods on the remote and saves you from manually creating and deleting Pods.
+In the simplest case, you may want to create a Pod on the remote. The most naive way is to log into the remote machine and [start a pod using `jina` CLI](https://docs.jina.ai/chapters/remote/run-remote-pod-console.html). To avoid logging into the remote machine every time, we can use `jinad` to do the same thing. Furthermore, `jinad` offers a session management for the running Pods on the remote and saves you from manually creating and deleting Pods.
 
 Here we start a simple Pod with the default configuration `_logforward`. The Pod forwards received messages and print the messages out in the logs. On the local, you can run the following command to start a remote pod.
 
@@ -158,7 +158,7 @@ pod0/ZEDRuntime@69694[I]:#sent: 0 #recv: 1 sent_size: 0 Bytes recv_size: 423 Byt
 One common use case in production is running the whole Flow on the remote with pods distributed on different machines. In this case, the very first thing is to ensure all the remote machines have `jinad` running properly. We will see how to create a remote Flow from the local machine.
 
 #### 1. Create a Flow 
-As `jinad` hosts a service on the remote, we can use the `jinad` API `/flow/yaml` to create a Flow via uploading a Flow configuration yaml file. Please refere to the full  [API specifications](https://api.jina.ai/daemon/) for more details.
+As `jinad` hosts a service on the remote, we can use the `jinad` API `/flow/yaml` to create a Flow via uploading a Flow configuration yaml file. Please refer to the full  [API specifications](https://api.jina.ai/daemon/) for more details.
 
 ```python
 import requests
@@ -198,14 +198,14 @@ pods:
     uses: _logforward
 ```
 
-After running the above codes, we print out the flow id and please write down this flow id for the next step. 
+After running the above codes, we print out the flow id and please note this flow id for the next step. 
 
 ```text
 flow is created: cdd53e16-5575-11eb-86b2-0ab9db700358
 ```
 
-#### 2. Check Flow StatusFlow 
-Before using the Flow we created, we need to get detail information about the Flow so that we can send queries to the Flow. To get the information of the Flow, we can use the following codes to retrieve the information from `/flow/cdd53e16-5575-11eb-86b2-0ab9db700358`
+#### 2. Check Flow Status
+Before using the Flow we created, we need to get detail information about the Flow so that we can send queries to the Flow. To get the information of the Flow, we can use the following scripts to retrieve the information from `/flow/cdd53e16-5575-11eb-86b2-0ab9db700358`
 
 ```python
 import requests
@@ -252,8 +252,8 @@ def main():
     send_index_request(host_ip, flow_port)
 ``` 
 
-#### 4. Close Flow
-After getting all the work done, we close the Flow by sending a `DELETE` request to the `/flow` API.
+#### 4. Terminate Flow
+After getting all the work done, we terminate the Flow by sending a `DELETE` request to the `/flow` API.
 
 ```python
 import requests
