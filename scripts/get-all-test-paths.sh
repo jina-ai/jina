@@ -2,8 +2,8 @@
 
 set -ex
 
-declare -a array1=( "tests/unit/*.py" "tests/integration/*.py" )
-declare -a array2=( $(ls -d tests/{unit,integration}/*/ | grep -v '__pycache__' ))
+declare -a array1=( "tests/unit/*.py" "tests/integration/*.py" "tests/distributed/*.py" )
+declare -a array2=( $(ls -d tests/{unit,integration,distributed}/*/ | grep -v '__pycache__' ))
 dest1=( "${array1[@]}" "${array2[@]}" )
 
 declare -a array1=( "tests/jinad/unit/*.py" "tests/jinad/integration/*.py" )

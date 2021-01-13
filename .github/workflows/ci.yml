@@ -78,19 +78,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - run: |
-          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
-      - name: Upload to Github Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@3.02
-        with:
-          name: jina-ai/jina/jina
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: docker.pkg.github.com
-          dockerfile: Dockerfiles/pip.Dockerfile
-          buildargs: PIP_TAG
-          buildoptions: ${{ matrix.build_option }}
-          tags: "test-pip"
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -99,13 +86,17 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   docker-image-test:
-    needs: prep-testbed
+    needs: commit-lint
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
       - run: |
-          docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
-          docker run docker.pkg.github.com/jina-ai/jina/jina:test-pip hello-world
+          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
+      - run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker run jinaai/jina:test-pip hello-world
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -126,9 +117,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Prepare enviroment
         run: |
-          docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
-          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check

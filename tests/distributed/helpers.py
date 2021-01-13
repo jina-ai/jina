@@ -18,6 +18,7 @@ def invoke_requests(method: str,
         print(f'got an exception while invoking request {e!r}')
         return
 
+
 def get_results(query: str,
                 url: str = 'http://0.0.0.0:45678/api/search',
                 method: str = 'post',

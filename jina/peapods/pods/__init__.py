@@ -227,6 +227,8 @@ class BasePod(ExitStack):
                 args.runtime_cls = 'RESTRuntime'
             else:
                 args.runtime_cls = 'GRPCRuntime'
+        if 'parallel' in args and args.parallel == 1:
+            args.separated_workspace = False
 
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """

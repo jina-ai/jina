@@ -12,7 +12,7 @@ class LegacyParser(VersionedYAMLParser):
     @staticmethod
     def _get_dump_path_from_config(meta_config: Dict):
         if 'name' in meta_config:
-            if meta_config.get('separated_workspace', False) is True:
+            if meta_config.get('separated_workspace', False) is True and meta_config['pea_id'] != -1:
                 if 'pea_id' in meta_config and isinstance(meta_config['pea_id'], int):
                     work_dir = meta_config['pea_workspace']
                     dump_path = os.path.join(work_dir, f'{meta_config["name"]}.{"bin"}')

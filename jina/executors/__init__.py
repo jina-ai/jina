@@ -112,7 +112,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = ['encode', 'add', 'query', 'craft', 'segment', 'score', 'evaluate', 'predict', 'query_by_id', 'delete', 'update']
+    exec_methods = ['encode', 'add', 'query', 'craft', 'segment', 'score', 'evaluate', 'predict', 'query_by_id',
+                    'delete', 'update']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -246,7 +247,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: if ``separated_workspace`` is set to ``False`` then ``metas.workspace`` is returned,
                 otherwise the ``metas.pea_workspace`` is returned
         """
-        work_dir = self.pea_workspace if self.separated_workspace else self.workspace  # type: str
+        work_dir = self.pea_workspace if self.separated_workspace and self.pea_id != -1 else self.workspace  # type: str
         return work_dir
 
     def get_file_from_workspace(self, name: str) -> str:
