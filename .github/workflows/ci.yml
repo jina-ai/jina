@@ -90,7 +90,7 @@ jobs:
           dockerfile: Dockerfiles/pip.Dockerfile
           buildargs: PIP_TAG
           buildoptions: ${{ matrix.build_option }}
-          tags: "test-pip"
+          tags: test-pip-${{ matrix.build_option }}
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -127,8 +127,8 @@ jobs:
       - name: Prepare enviroment
         run: |
           docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
-          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
+          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip-${{ matrix.build_option }}
+          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip-${{ matrix.build_option }} jinaai/jina:test-pip
           python -m pip install --upgrade pip
           pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
