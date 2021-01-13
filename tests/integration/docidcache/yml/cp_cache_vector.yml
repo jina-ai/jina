@@ -61,4 +61,4 @@ requests:
           executor: $JINA_VEC_IDX_NAME
           top_k: $JINA_TOPK
           fill_embedding: True
-          traversal_paths: ['r']
+          traversal_paths: [r, m]

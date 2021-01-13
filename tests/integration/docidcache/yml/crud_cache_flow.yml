@@ -7,17 +7,21 @@ pods:
     shards: $JINA_SHARDS
     separated_workspace: True
     uses_after: '_merge_matches'
-    polling: 'all'
+    polling: $JINA_POLLING
     timeout_ready: '-1'
+    show_exc_info: true
   inc_vec:
     uses: yml/cp_cache_vector.yml
     shards: $JINA_SHARDS
     separated_workspace: True
     uses_after: '_merge_matches'
-    polling: 'all'
+    polling: $JINA_POLLING
     timeout_ready: '-1'
     needs: $JINA_INDEXER_NEEDS
+    show_exc_info: true
   final:
+    uses: _pass
     needs: $JINA_MERGER_NEEDS
     workspace: $JINA_TEST_CACHE_CRUD_WORKSPACE
+    show_exc_info: true
 
