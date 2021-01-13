@@ -5,6 +5,7 @@ from typing import Any
 
 from .. import BaseExecutor
 from ..compound import CompoundExecutor
+from ...drivers.encode import EncodeDriver
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -22,6 +23,10 @@ class BaseEncoder(BaseExecutor):
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
         raise NotImplementedError
+
+    @classmethod
+    def default_drivers(cls):
+        return [EncodeDriver]
 
 
 class BaseNumericEncoder(BaseEncoder):

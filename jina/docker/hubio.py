@@ -371,7 +371,8 @@ class HubIO:
                     p_names = []
                     try:
                         is_build_success = False
-                        p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
+                        p_names, failed_test_levels = HubIO._test_build(image,
+                                                                        self.args.test_level,
                                                                         self.config_yaml_path,
                                                                         self.args.timeout_ready,
                                                                         self.args.daemon)

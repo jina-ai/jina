@@ -6,6 +6,7 @@ from typing import Sequence
 import numpy as np
 
 from ... import BaseExecutor
+from ....drivers.multimodal import MultiModalDriver
 
 
 class BaseMultiModalEncoder(BaseExecutor):
@@ -32,3 +33,7 @@ class BaseMultiModalEncoder(BaseExecutor):
         :return: a `B x D` numpy ``ndarray``
         """
         raise NotImplementedError
+
+    @classmethod
+    def default_drivers(cls):
+        return [MultiModalDriver]

@@ -6,6 +6,7 @@ from typing import Dict
 
 from .. import BaseExecutor
 from ...helper import typename
+from ...drivers.craft import CraftDriver
 
 
 class BaseCrafter(BaseExecutor):
@@ -28,3 +29,7 @@ class BaseCrafter(BaseExecutor):
         in the protobuf.
         """
         raise NotImplementedError
+
+    @classmethod
+    def default_drivers(cls):
+        return [CraftDriver]
