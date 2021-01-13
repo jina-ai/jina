@@ -1,4 +1,4 @@
-!UniqueVectorIndexer
+!CompoundIndexer
 components:
   - !DocIDCache
     with:

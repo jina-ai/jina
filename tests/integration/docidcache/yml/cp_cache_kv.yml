@@ -1,4 +1,4 @@
-!UniquePbIndexer
+!CompoundIndexer
 components:
   - !DocIDCache
     with:

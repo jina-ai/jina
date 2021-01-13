@@ -15,5 +15,7 @@ pods:
     polling: 'all'
     timeout_ready: '-1'
     needs: $JINA_INDEXER_NEEDS
-  merger:
+  final:
     needs: $JINA_MERGER_NEEDS
+    workspace: $JINA_TEST_CACHE_CRUD_WORKSPACE
+

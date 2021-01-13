@@ -67,6 +67,7 @@ class DocIDCache(BaseCache):
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
     def add(self, doc_id: 'UniqueId', *args, **kwargs):
+        # TODO
         self._size += 1
         self.query_handler.ids.append(doc_id)
 

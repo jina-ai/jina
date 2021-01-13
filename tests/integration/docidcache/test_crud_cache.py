@@ -1,4 +1,3 @@
-import itertools
 import os
 from pathlib import Path
 
@@ -16,8 +15,10 @@ cur_dir = Path(os.path.dirname(os.path.abspath(__file__)))
 KV_IDX_FILENAME = 'kv_idx.bin'
 VEC_IDX_FILENAME = 'vec_idx.bin'
 
+pytest.register_assert_rewrite('check_indexers_size')
 
-def config(field, tmp_workspace, shards, indexers):
+
+def config_env(field, tmp_workspace, shards, indexers):
     os.environ['JINA_SHARDS'] = str(shards)
     os.environ['JINA_CACHE_FIELD'] = field
     os.environ['JINA_TEST_CACHE_CRUD_WORKSPACE'] = str(tmp_workspace)
@@ -26,11 +27,11 @@ def config(field, tmp_workspace, shards, indexers):
     if indexers == 'parallel':
         # the second indexer will be directly connected to entry gateway
         os.environ['JINA_INDEXER_NEEDS'] = 'gateway'
-        os.environ['JINA_MERGER_NEEDS'] = "[inc_vec, inc_doc]"
+        os.environ['JINA_MERGER_NEEDS'] = '[inc_vec, inc_doc]'
     else:
         # else it requires to be in serial connection, after the first indexer
         os.environ['JINA_INDEXER_NEEDS'] = 'inc_doc'
-        os.environ['JINA_MERGER_NEEDS'] = ""
+        os.environ['JINA_MERGER_NEEDS'] = ''
 
 
 np.random.seed(0)
@@ -69,8 +70,9 @@ docs_same_content = [False, True]
 docs_nr = [0, 10, 100]
 
 
-@pytest.mark.parametrize('chunks, same_content, nr',
-                         itertools.product(docs_chunks, docs_same_content, docs_nr))
+@pytest.mark.parametrize('chunks', [0, 3, 5])
+@pytest.mark.parametrize('same_content', [False, True])
+@pytest.mark.parametrize('nr', [0, 10, 100])
 def test_docs_generator(chunks, same_content, nr):
     chunk_content = None
     docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr))
@@ -143,9 +145,10 @@ def test_cache_crud(
         chunks,
         same_content
 ):
-    config(field, tmp_path, shards, indexers)
+    config_env(field, tmp_path, shards, indexers)
     print(f'{tmp_path=}')
-    f = Flow.load_config('yml/flow.yml')
+    # TODO maybe test restful=True for websocket
+    f = Flow.load_config(os.path.abspath('yml/flow.yml'))
 
     docs = list(get_documents(chunks=chunks, same_content=same_content))
 
@@ -165,10 +168,27 @@ def test_cache_crud(
 
     check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index2')
 
-    # TODO update
-
     docs.extend(new_docs)
-    # delete
+    del new_docs
+
+    print(f'********* update')
+    # id stays the same, we change the content
+    for d in docs:
+        d_content_hash_before = d.content_hash
+        d.content = f'this is some new content for doc {d.id}'
+        d.update_content_hash()
+        assert d.content_hash != d_content_hash_before
+        for chunk in d.chunks:
+            c_content_hash_before = chunk.content_hash
+            chunk.content = f'this is some new content for chunk {chunk.id}'
+            chunk.update_content_hash()
+            assert chunk.content_hash != c_content_hash_before
+
+    with f:
+        f.update(docs)
+
+    check_indexers_size(chunks, len(docs)/2, field, tmp_path, same_content, shards, 'index2')
+
     with f:
         f.delete(docs)
 
@@ -209,7 +229,6 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
                         assert indexers_full_size == 1
                         assert cache_full_size == 1
                 else:
-                    nr_expected = (
-                            nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' else nr_docs + chunks * nr_docs
+                    nr_expected = (nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' else nr_docs + chunks * nr_docs
                     assert indexers_full_size == nr_expected
                     assert cache_full_size == nr_expected
