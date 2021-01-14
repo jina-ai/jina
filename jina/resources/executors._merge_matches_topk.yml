@@ -11,7 +11,7 @@ requests:
       - !SliceQL
         with:
           start: 0
-          end: $JINA_TOPK
+          end: 10 # is overwritten by the QueryLangDriver
           traversal_paths: ['m']
     ControlRequest:
       - !ControlReqDriver {}
