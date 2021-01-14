@@ -1,12 +1,5 @@
 !CompoundIndexer
 components:
-  - !DocIDCache
-    with:
-      field: $JINA_CACHE_FIELD
-      index_filename: cache
-    metas:
-      workspace: $JINA_TEST_CACHE_CRUD_WORKSPACE
-      name: cache
   - !NumpyIndexer
     with:
       index_filename: vec.gz
@@ -20,34 +13,18 @@ metas:
 requests:
   on:
     UpdateRequest:
-      - !BaseCacheDriver
-        with:
-          method: update
-          executor: cache
-          traversal_paths: [r, c]
       - !VectorIndexDriver
         with:
           method: update
           executor: $JINA_VEC_IDX_NAME
           traversal_paths: [r, c]
     DeleteRequest:
-      - !BaseCacheDriver
-        with:
-          method: delete
-          executor: cache
-          traversal_paths: [r, c]
       - !VectorIndexDriver
         with:
           method: delete
           executor: $JINA_VEC_IDX_NAME
           traversal_paths: [r, c]
     IndexRequest:
-      - !TaggingCacheDriver
-        with:
-          executor: cache
-          traversal_paths: [r, c]
-          tags:
-            is_indexed: true
       - !FilterQL
         with:
           lookups: {tags__is_indexed__neq: true}

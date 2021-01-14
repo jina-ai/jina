@@ -1,19 +1,19 @@
 !Flow
 pods:
-  cache_vector:
-    uses: yml/cp_cache_vector.yml
+  vector:
+    uses: yml/vector.yml
     shards: $JINA_SHARDS
     separated_workspace: True
     uses_after: 'yml/_merge_matches_topk.yml'
     polling: $JINA_POLLING
     timeout_ready: '-1'
     show_exc_info: true
-  cache_kv:
-    uses: yml/cp_cache_kv.yml
+  kv:
+    uses: yml/kv.yml
     shards: $JINA_SHARDS
     separated_workspace: True
     uses_after: 'yml/_merge_matches_topk.yml'
     polling: $JINA_POLLING
     timeout_ready: '-1'
     show_exc_info: true
-    needs: $JINA_INDEXER_NEEDS
+    needs: $JINA_KV_NEEDS

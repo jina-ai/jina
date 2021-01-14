@@ -2,23 +2,25 @@
 pods:
   cache:
     uses: yml/cache.yml
-  cache_vector:
-    uses: yml/cp_cache_vector.yml
+    show_exc_info: true
+  vector:
+    uses: yml/vector.yml
     shards: $JINA_SHARDS
     separated_workspace: True
     uses_after: '_merge_matches'
     polling: $JINA_POLLING
     timeout_ready: '-1'
     show_exc_info: true
-  cache_kv:
-    uses: yml/cp_cache_kv.yml
+    needs: cache
+  kv:
+    uses: yml/kv.yml
     shards: $JINA_SHARDS
     separated_workspace: True
     uses_after: '_merge_matches'
     polling: $JINA_POLLING
     timeout_ready: '-1'
     show_exc_info: true
-    needs: $JINA_INDEXER_NEEDS
+    needs: $JINA_KV_NEEDS
   final:
     needs: $JINA_MERGER_NEEDS
     workspace: $JINA_TEST_CACHE_CRUD_WORKSPACE
