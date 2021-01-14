@@ -134,7 +134,7 @@ jobs:
             -t latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
             -t ${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
             -t ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
-            $(echo ${TAG_ALIAS}) \
+            $(echo ${{env.TAG_ALIAS}}) \
             --file ./Dockerfiles/debianx.Dockerfile .
 #      - name: Upload to Docker Registry
 #        uses: elgohr/Publish-Docker-Github-Action@3.02
