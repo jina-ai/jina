@@ -25,7 +25,7 @@ class KVAppendAction(argparse.Action):
                 try:
                     (k, v) = value.split('=', 2)
                 except ValueError:
-                    raise argparse.ArgumentError(f'could not parse argument \"{values[0]}\" as k=v format')
+                    raise argparse.ArgumentTypeError(f'could not parse argument \"{values[0]}\" as k=v format')
                 d[k] = v
         setattr(args, self.dest, d)
 

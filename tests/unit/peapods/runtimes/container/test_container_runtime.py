@@ -7,6 +7,7 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
+from jina.peapods.runtimes.container import ContainerRuntime
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
@@ -155,7 +156,8 @@ def test_container_ping(docker_image_built):
 
 def test_tail_host_docker2local_parallel(docker_image_built):
     f = (Flow()
-         .add(name='d10', uses='docker://jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass', parallel=3)
+         .add(name='d10', uses='docker://jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass',
+              parallel=3)
          .add(name='d11'))
     with f:
         assert getattr(f._pod_nodes['d10'].peas_args['tail'], 'host_out') == defaulthost
@@ -167,3 +169,44 @@ def test_tail_host_docker2local(docker_image_built):
          .add(name='d13'))
     with f:
         assert getattr(f._pod_nodes['d12'].tail_args, 'host_out') == localhost
+
+
+def test_pass_arbitrary_kwargs(monkeypatch, mocker):
+    import docker
+    mock = mocker.Mock()
+
+    class MockContainers:
+        def __init__(self):
+            pass
+
+        def run(self, *args, **kwargs):
+            mock_kwargs = {k: kwargs[k] for k in ['hello', 'ports']}
+            mock(**mock_kwargs)
+            assert 'ports' in kwargs
+            assert kwargs['ports'] is None
+            assert 'hello' in kwargs
+            assert kwargs['hello'] == '0'
+
+    class MockClient:
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def close(self):
+            pass
+
+        @property
+        def networks(self):
+            return {'bridge': None}
+
+        @property
+        def containers(self):
+            return MockContainers()
+
+    monkeypatch.setattr(docker, 'from_env', MockClient)
+    args = set_pea_parser().parse_args(
+        ['--uses', 'docker://jinahub/pod', '--docker-kwargs', 'hello=0'])
+    runtime = ContainerRuntime(args)
+    runtime._docker_run(replay=False)
+    expected_args = {'hello': '0', 'ports': None}
+    mock.assert_called_with(**expected_args)
