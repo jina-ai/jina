@@ -6,6 +6,7 @@ from collections import namedtuple
 
 import pkg_resources
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
 from jina.logging import JinaLogger
@@ -37,6 +38,13 @@ def _get_app():
         title=fastapi_config.NAME,
         description=fastapi_config.DESCRIPTION,
         version=fastapi_config.VERSION
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=['*'],
+        allow_credentials=True,
+        allow_methods=['*'],
+        allow_headers=['*'],
     )
     app.include_router(router=common_router)
     app.include_router(router=logs.router)
