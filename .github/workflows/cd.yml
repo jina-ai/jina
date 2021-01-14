@@ -123,16 +123,32 @@ jobs:
           else
             echo "BUILD_ARG=--target jina_base" >> $GITHUB_ENV
           fi
-      - name: Upload to Docker Registry
-        uses: elgohr/Publish-Docker-Github-Action@3.02
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
         with:
-          name: jinaai/jina
-          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-          dockerfile: Dockerfiles/debianx.Dockerfile
-          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
-          buildoptions: ${{ env.BUILD_ARG }}
-          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
+          install: true
+      - name: Run Buildx and Upload to Docker Cloud
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_DEVBOT_USER }} -p ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+          docker build \
+            --platform linux/amd64,linux/arm/v7,linux/arm/v6 \
+            --output "type=registry" \
+            --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION --build-arg VCS_REF --build-arg PY_VERSION \
+            --target ${{ env.BUILD_ARG }} \
+            -t master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
+            -t ${{env.TAG_ALIAS}} \
+            --file ./Dockerfiles/debianx.Dockerfile .
+#      - name: Upload to Docker Registry
+#        uses: elgohr/Publish-Docker-Github-Action@3.02
+#        with:
+#          name: jinaai/jina
+#          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+#          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+#          dockerfile: Dockerfiles/debianx.Dockerfile
+#          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
+#          buildoptions: ${{ env.BUILD_ARG }}
+#          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
 #      - name: Upload to Github Docker Registry
 #        uses: elgohr/Publish-Docker-Github-Action@3.02
 #        with:
