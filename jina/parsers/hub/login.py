@@ -3,8 +3,8 @@ import os
 from ..helper import add_arg_group
 
 
-def mixin_hub_login_parser(parser):
-    gp = add_arg_group(parser, title='Login')
+def mixin_hub_docker_login_parser(parser):
+    gp = add_arg_group(parser, title='Docker login')
 
     gp.add_argument('--username', type=str, help='the Docker registry username',
                     default=os.environ.get('JINAHUB_USERNAME', ''))

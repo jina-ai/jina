@@ -6,10 +6,7 @@ import mock
 import pytest
 import requests
 
-from jina.docker import hubapi
-from jina.docker.hubapi import _docker_auth
-from jina.docker.hubapi import _fetch_access_token
-from jina.docker.hubapi import _list
+from jina.docker.hubapi import remote
 
 sample_manifest = {
     'manifest': [
@@ -39,14 +36,14 @@ sample_manifest = {
 }
 
 
-@mock.patch('jina.docker.hubapi.urlopen')
+@mock.patch('jina.docker.hubapi.remote.urlopen')
 def test_hubapi_list(mocker):
     mocker.return_value.__enter__.return_value.read.return_value = json.dumps(sample_manifest)
-    result = _list(logger=getLogger(),
-                   image_name='Dummy MWU Encoder',
-                   image_kind='encoder',
-                   image_type='pod',
-                   image_keywords=['toy'])
+    result = remote._list(logger=getLogger(),
+                          image_name='Dummy MWU Encoder',
+                          image_kind='encoder',
+                          image_type='pod',
+                          image_keywords=['toy'])
 
     mocker.assert_called_once()
     assert result[0]['name'] == 'Dummy MWU Encoder'
@@ -58,8 +55,8 @@ def test_fetch_access_token(mocker):
     target_val = 'dummy_token'
     from jina.docker.helper import credentials_file
     credentials_file().touch()
-    mocker.patch('jina.docker.hubapi.JAML.load', return_value={'access_token': target_val})
-    assert _fetch_access_token(logger=getLogger()) == target_val
+    mocker.patch('jina.docker.hubapi.remote.JAML.load', return_value={'access_token': target_val})
+    assert remote._fetch_access_token(logger=getLogger()) == target_val
 
 
 @pytest.fixture(scope='function')
@@ -70,10 +67,10 @@ def docker_jaml_token():
 
 
 def test_docker_auth_success(mocker, docker_jaml_token):
-    mock_load = mocker.patch.object(hubapi.JAML, 'load', autospec=True)
+    mock_load = mocker.patch.object(remote.JAML, 'load', autospec=True)
     mock_load.return_value = docker_jaml_token
 
-    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token = mocker.patch.object(remote, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = 'dummy_token'
 
     mock_response = mocker.patch.object(requests, 'get', autospec=True)
@@ -84,16 +81,16 @@ def test_docker_auth_success(mocker, docker_jaml_token):
     mock_response.return_value.text = json.dumps({'docker_username': encoded_usr, 'docker_password': encoded_psw})
 
     # Verify the fetched creds are as expected
-    fetch_cred = _docker_auth(logger=getLogger())
-    assert fetch_cred['docker_username'] == base64.b64decode(encoded_usr).decode('ascii')
-    assert fetch_cred['docker_password'] == base64.b64decode(encoded_psw).decode('ascii')
+    fetch_cred = remote._fetch_docker_auth(logger=getLogger())
+    assert fetch_cred[0] == base64.b64decode(encoded_usr).decode('ascii')
+    assert fetch_cred[1] == base64.b64decode(encoded_psw).decode('ascii')
 
 
 def test_docker_auth_failure(mocker, docker_jaml_token):
-    mock_load = mocker.patch.object(hubapi.JAML, 'load', autospec=True)
+    mock_load = mocker.patch.object(remote.JAML, 'load', autospec=True)
     mock_load.return_value = docker_jaml_token
 
-    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token = mocker.patch.object(remote, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = 'dummy_token'
 
     mock_response = mocker.patch.object(requests, 'get', autospec=True)
@@ -101,5 +98,5 @@ def test_docker_auth_failure(mocker, docker_jaml_token):
     mock_response.return_value.text = json.dumps({'message': 'Missing Authentication Token'})
 
     # If no token is fetched, docker auth fails
-    fetch_cred = _docker_auth(logger=getLogger())
+    fetch_cred = remote._fetch_docker_auth(logger=getLogger())
     assert fetch_cred is None
