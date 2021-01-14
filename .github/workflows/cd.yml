@@ -12,84 +12,84 @@ on:
 
 
 jobs:
-#  update-doc:
-#    if: |
-#      !startsWith(github.event.head_commit.message, 'chore') &&
-#      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
-#      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          submodules: true
-#          fetch-depth: 100
-#      - run: |
-#          truncate --size=24KB README.md > README-trunc.md
-#      - uses: peter-evans/dockerhub-description@v2.3.0
-#        env:
-#          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-#          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
-#          DOCKERHUB_REPOSITORY: jinaai/jina
-#          readme-filepath: ./README-trunc.md
-#      - uses: actions/checkout@v2
-#        with:
-#          repository: jina-ai/api
-#          path: schema
-#          token: ${{ secrets.JINA_DEV_BOT }}
-#      - uses: actions/setup-python@v1
-#        with:
-#          python-version: 3.7
-#      - run: |
-#          pip install .[daemon] --no-cache-dir
-#          jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
-#          JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
-#          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
-#          pip install css-html-js-minify
-#          css-html-js-minify ./jina/resources/hub-builder-success
-#          cp ./jina/resources/hub-builder-success/index.html ./schema/hub
-#          cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
-#          cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
-#          cd schema
-#          jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
-#          python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
-#          cd -
-#      - name: redoc-cli-jinad
-#        uses: seeebiii/redoc-cli-github-action@v10
-#        with:
-#          args: 'bundle schema/daemon.json -o jinad.html'
-#      - name: push-to-api-repo
-#        run: |
-#          mkdir -p schema/daemon/
-#          cp jinad.html schema/daemon/master.html
-#          rm schema/daemon.json
-#          rm -rf schema/jinad
-#          cd schema
-#          git config --local user.email "dev-bot@jina.ai"
-#          git config --local user.name "Jina Dev Bot"
-#          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
-#      - uses: actions/checkout@v2
-#        with:
-#          repository: jina-ai/jina-docs
-#          path: docs/_build/html
-#          token: ${{ secrets.JINA_DEV_BOT }}
-#      - run: |
-#          ./scripts/make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
-#      - uses: ad-m/github-push-action@v0.6.0
-#        with:
-#          github_token: ${{ secrets.JINA_DEV_BOT }}
-#          repository: jina-ai/jina-docs
-#          directory: docs/_build/html
-#          force: true
-#          branch: master
-#      - name: Pre-release
-#        run: |
-#          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-#          pip install twine wheel
-#          ./scripts/release.sh
-#        env:
-#          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
-#          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-#          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
+  update-doc:
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 100
+      - run: |
+          truncate --size=24KB README.md > README-trunc.md
+      - uses: peter-evans/dockerhub-description@v2.3.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+          DOCKERHUB_REPOSITORY: jinaai/jina
+          readme-filepath: ./README-trunc.md
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/api
+          path: schema
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          pip install .[daemon] --no-cache-dir
+          jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
+          JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
+          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
+          pip install css-html-js-minify
+          css-html-js-minify ./jina/resources/hub-builder-success
+          cp ./jina/resources/hub-builder-success/index.html ./schema/hub
+          cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
+          cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
+          cd schema
+          jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
+          python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
+          cd -
+      - name: redoc-cli-jinad
+        uses: seeebiii/redoc-cli-github-action@v10
+        with:
+          args: 'bundle schema/daemon.json -o jinad.html'
+      - name: push-to-api-repo
+        run: |
+          mkdir -p schema/daemon/
+          cp jinad.html schema/daemon/master.html
+          rm schema/daemon.json
+          rm -rf schema/jinad
+          cd schema
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/jina-docs
+          path: docs/_build/html
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - run: |
+          ./scripts/make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
+      - uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/jina-docs
+          directory: docs/_build/html
+          force: true
+          branch: master
+      - name: Pre-release
+        run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          pip install twine wheel
+          ./scripts/release.sh
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
   update-docker:
 #    needs: update-doc
@@ -140,114 +140,83 @@ jobs:
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
-          platforms: linux/armhf
+          platforms: linux/armhf,linux/amd64,linux/armv6
           push: true
           tags: jinaai/jina:master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
           target: ${{env.BUILD_ARG}}
-#      - name: Run Buildx and Upload to Docker Cloud
-#        run: |
-#          docker build \
-#            --platform linux/amd64,linux/arm/v7,linux/arm/v6 \
-#            --output "type=registry" \
-#            --build-arg BUILD_DATE --build-arg JINA_VERSION --build-arg VCS_REF --build-arg PY_VERSION \
-#            ${{ env.BUILD_ARG }} \
-#            -t master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
-#            $(echo "${{env.TAG_ALIAS}}") \
-#            --file ./Dockerfiles/debianx.Dockerfile .
-#      - name: Upload to Docker Registry
-#        uses: elgohr/Publish-Docker-Github-Action@3.02
-#        with:
-#          name: jinaai/jina
-#          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-#          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
-#          dockerfile: Dockerfiles/debianx.Dockerfile
-#          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
-#          buildoptions: ${{ env.BUILD_ARG }}
-#          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
-#      - name: Upload to Github Docker Registry
-#        uses: elgohr/Publish-Docker-Github-Action@3.02
-#        with:
-#          name: jina-ai/jina/jina
-#          username: ${{ secrets.DOCKER_USERNAME }}
-#          password: ${{ secrets.DOCKER_PASSWORD }}
-#          registry: docker.pkg.github.com
-#          dockerfile: Dockerfiles/debianx.Dockerfile
-#          buildargs: BUILD_DATE, VCS_REF, JINA_VERSION, PY_VERSION
-#          buildoptions: ${{ env.BUILD_ARG }}
-#          tags: "master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}"
 
-#  prep-testbed:
-#    needs: update-doc
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          submodules: true
-#      - run: |
-#          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
-#      - name: Upload to Github Docker Registry
-#        uses: elgohr/Publish-Docker-Github-Action@3.02
-#        with:
-#          name: jina-ai/jina/jina
-#          username: ${{ secrets.DOCKER_USERNAME }}
-#          password: ${{ secrets.DOCKER_PASSWORD }}
-#          registry: docker.pkg.github.com
-#          dockerfile: Dockerfiles/pip.Dockerfile
-#          buildargs: PIP_TAG
-#          buildoptions: ${{ matrix.build_option }}
-#          tags: "test-pip"
-#      - id: set-matrix
-#        run: |
-#          sudo apt-get install jq
-#          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh tests)"
-#    outputs:
-#      matrix: ${{ steps.set-matrix.outputs.matrix }}
-#
-#  core-test:
-#    needs: prep-testbed
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        python-version: [3.7]
-#        test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          submodules: true
-#      - name: Set up Python ${{ matrix.python-version }}
-#        uses: actions/setup-python@v1
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#      - name: Prepare enviroment
-#        run: |
-#          docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-#          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
-#          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
-#          python -m pip install --upgrade pip
-#          pip install ".[cicd,test,daemon]" --no-cache-dir
-#          jina check
-#          export JINA_LOG_VERBOSITY="ERROR"
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Test
-#        run: |
-#          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
-#        timeout-minutes: 20
-#        env:
-#          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
-#          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Check file existence
-#        id: check_files
-#        uses: andstor/file-existence-action@v1
-#        with:
-#          files: "coverage.xml"
-#      - name: Upload coverage from test to Codecov
-#        uses: codecov/codecov-action@v1
-#        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
-#        with:
-#          file: coverage.xml
-#          name: ${{ matrix.test-path }}-codecov
-#          fail_ci_if_error: false
+  prep-testbed:
+    needs: update-doc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: |
+          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
+      - name: Upload to Github Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@3.02
+        with:
+          name: jina-ai/jina/jina
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.pkg.github.com
+          dockerfile: Dockerfiles/pip.Dockerfile
+          buildargs: PIP_TAG
+          buildoptions: ${{ matrix.build_option }}
+          tags: "test-pip"
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh tests)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  core-test:
+    needs: prep-testbed
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+        test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Prepare enviroment
+        run: |
+          docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+          docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
+          docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
+          python -m pip install --upgrade pip
+          pip install ".[cicd,test,daemon]" --no-cache-dir
+          jina check
+          export JINA_LOG_VERBOSITY="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test
+        run: |
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+        timeout-minutes: 20
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          fail_ci_if_error: false
