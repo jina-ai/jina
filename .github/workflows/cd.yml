@@ -113,7 +113,7 @@ jobs:
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=master${{ matrix.tag_stage }}" >> $GITHUB_ENV
+            echo "TAG_ALIAS=-t master${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
@@ -137,7 +137,7 @@ jobs:
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION --build-arg VCS_REF --build-arg PY_VERSION \
             --target ${{ env.BUILD_ARG }} \
             -t master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
-            -t ${{env.TAG_ALIAS}} \
+            $(echo ${TAG_ALIAS}) \
             --file ./Dockerfiles/debianx.Dockerfile .
 #      - name: Upload to Docker Registry
 #        uses: elgohr/Publish-Docker-Github-Action@3.02
