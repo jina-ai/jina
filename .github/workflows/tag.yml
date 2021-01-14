@@ -135,7 +135,7 @@ jobs:
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
-          platforms: linux/armhf,linux/amd64,linux/armv6
+          platforms: linux/armhf,linux/amd64,linux/arm/v6
           push: true
           tags: |
             jinaai/jina:latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}
