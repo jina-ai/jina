@@ -130,11 +130,11 @@ jobs:
             --platform linux/amd64,linux/arm/v7,linux/arm/v6 \
             --output "type=registry" \
             --build-arg VCS_REF --build-arg BUILD_DATE --build-arg JINA_VERSION --build-arg VCS_REF --build-arg PY_VERSION \
-            --target ${{ env.BUILD_ARG }} \
+            ${{ env.BUILD_ARG }} \
             -t latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
             -t ${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
             -t ${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }} \
-            $(echo ${{env.TAG_ALIAS}}) \
+            $(echo "${{env.TAG_ALIAS}}") \
             --file ./Dockerfiles/debianx.Dockerfile .
 #      - name: Upload to Docker Registry
 #        uses: elgohr/Publish-Docker-Github-Action@3.02
