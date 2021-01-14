@@ -57,6 +57,7 @@ requests:
     SearchRequest:
       - !KVSearchDriver
         with:
+          is_merge: false
           executor: $JINA_KV_IDX_NAME
           top_k: $JINA_TOPK
-          traversal_paths: [r]
+          traversal_paths: [m]
