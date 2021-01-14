@@ -3,8 +3,6 @@ __license__ = "Apache-2.0"
 
 import time
 
-from google.protobuf.json_format import MessageToJson
-
 from . import BaseDriver
 from .querylang.queryset.dunderkey import dunder_get
 from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
@@ -24,7 +22,7 @@ class BaseControlDriver(BaseDriver):
 class LogInfoDriver(BaseControlDriver):
     """Log output the request info"""
 
-    def __init__(self, key: str = 'request', json=False, *args, **kwargs):
+    def __init__(self, key: str = 'request', *args, **kwargs):
         """
         :param key: (str) that represents a first level or nested key in the dict
         :param args:
@@ -32,18 +30,9 @@ class LogInfoDriver(BaseControlDriver):
         """
         super().__init__(*args, **kwargs)
         self.key = key
-        self.json = json
 
     def __call__(self, *args, **kwargs):
-        data = dunder_get(self.msg.as_pb_object, self.key)
-        if self.json:
-            self.logger.info(
-                MessageToJson(data)
-            )
-        else:
-            self.logger.info(
-                MessageToJson(data)
-            )
+        self.logger.info(dunder_get(self.msg.as_pb_object, self.key))
 
 
 class WaitDriver(BaseControlDriver):

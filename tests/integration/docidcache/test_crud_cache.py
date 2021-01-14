@@ -78,20 +78,20 @@ docs_nr = [0, 10, 100]
 
 def get_index_flow(field, tmp_path, shards, indexers):
     config_env(field, tmp_path, shards, indexers, polling='any')
-    f = Flow.load_config(os.path.abspath('yml/crud_cache_flow_index.yml'))
+    f = Flow.load_config(os.path.join(os.curdir, 'crud_cache_flow_index.yml'))
     return f
 
 
 def get_query_flow(field, tmp_path, shards):
     # searching must always be sequential
     config_env(field, tmp_path, shards, 'sequential', polling='all')
-    f = Flow.load_config(os.path.abspath('yml/crud_cache_flow_query.yml'))
+    f = Flow.load_config(os.path.join(os.curdir, 'crud_cache_flow_query.yml'))
     return f
 
 
 def get_delete_flow(field, tmp_path, shards, indexers):
     config_env(field, tmp_path, shards, indexers, polling='all')
-    f = Flow.load_config(os.path.abspath('yml/crud_cache_flow_index.yml'))
+    f = Flow.load_config(os.path.join(os.curdir, 'crud_cache_flow_index.yml'))
     return f
 
 

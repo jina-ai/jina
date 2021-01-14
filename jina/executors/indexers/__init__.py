@@ -182,10 +182,8 @@ class BaseIndexer(BaseExecutor):
             if key not in existent_keys:
                 indices_to_drop.append(key_index)
         if indices_to_drop:
-            # TODO
-            pass
-            # self.logger.warning(
-            #     f'Key(s) {[keys[i] for i in indices_to_drop]} were not found in {check_path}. Continuing anyway...')
+            self.logger.warning(
+                f'Key(s) {[keys[i] for i in indices_to_drop]} were not found in {check_path}. Continuing anyway...')
         return indices_to_drop
 
 
