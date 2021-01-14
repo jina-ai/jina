@@ -92,7 +92,7 @@ jobs:
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
   update-docker:
-#    needs: update-doc
+    needs: update-doc
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
