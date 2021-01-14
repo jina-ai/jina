@@ -13,6 +13,7 @@ ARG VCS_REF
 ARG BUILD_DATE
 ARG JINA_VERSION
 ARG PIP_TAG
+ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 
 LABEL org.opencontainers.image.created=${BUILD_DATE} \
       org.opencontainers.image.authors="dev-team@jina.ai" \
@@ -33,7 +34,8 @@ ENV JINA_BUILD_BASE_DEP="python3-grpcio" \
     JINA_VCS_VERSION=${VCS_REF} \
     JINA_BUILD_DATE=${BUILD_DATE} \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL}
 
 COPY . /jina/
 
@@ -41,8 +43,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y ${JINA_BUILD_BA
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     ln -s locale.h /usr/include/xlocale.h && \
     cd /jina && \
-    pip install . --compile && \
-    if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile; fi && \
+    pip install . --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
+    if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile --extra-index-url $PIP_EXTRA_INDEX_URL; fi && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
 ENTRYPOINT ["jina"]
@@ -55,7 +57,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-
     apt-get install --no-install-recommends -y ${JINA_BUILD_DEVEL_DEP} && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     ln -s locale.h /usr/include/xlocale.h && cd /jina && \
-    pip install .[devel] --compile && \
+    pip install .[devel] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
 ENTRYPOINT ["jina"]
@@ -68,7 +70,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     gem install fluentd --no-doc && \
     ln -s locale.h /usr/include/xlocale.h && cd /jina && \
-    pip install .[daemon] --compile && \
+    pip install .[daemon] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
 ENTRYPOINT ["jinad"]
