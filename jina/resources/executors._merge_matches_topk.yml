@@ -1,7 +1,7 @@
 !BaseExecutor
 with: {}
 metas:
-  name: merge_matches
+  name: merge_matches_topk
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
