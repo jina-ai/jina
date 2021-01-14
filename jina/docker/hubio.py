@@ -412,12 +412,15 @@ class HubIO:
                 self._raw_client.prune_images()
 
             # since db tracks `version` & `jina_version` on the top level, let's get rid of them in `manifest`
-            _version = self.manifest['version'] if is_build_success and 'version' in self.manifest else '0.0.1'
-            self.manifest.pop('version', None)
-            self.manifest.pop('jina_version', None)
+            if is_build_success:
+                _version = self.manifest['version']
+                self.manifest.pop('version', None)
+                self.manifest.pop('jina_version', None)
+            else:
+                _version = '0.0.1'
 
             result = {
-                'name': self.executor_name,
+                'name': self.executor_name if is_build_success else '',
                 'version': _version,
                 'jina_version': jina_version,
                 'path': self.args.path,
