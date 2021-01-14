@@ -42,10 +42,11 @@ class MockIndexer(BaseKVIndexer):
             self.db[int(doc.id)] = doc.SerializeToString()
 
 
-
 class SimpleKVSearchDriver(KVSearchDriver):
 
     def __init__(self, *args, **kwargs):
+        if kwargs.get('traversal_paths') is None:
+            kwargs['traversal_paths'] = ('r')
         super().__init__(*args, **kwargs)
 
     @property
