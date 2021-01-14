@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from jina.flow import Flow
