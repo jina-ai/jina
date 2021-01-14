@@ -594,7 +594,7 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
                 try:
                     sock.bind(f'tcp://{host}:{port}')
                 except zmq.error.ZMQError:
-                    default_logger.error(f'error when binding port {port} to {host}, this port is probably in used.')
+                    default_logger.error(f'error when binding port {port} to {host}, this port is occupied.')
                     raise
     else:
         if port is None:
