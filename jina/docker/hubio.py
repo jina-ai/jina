@@ -3,28 +3,28 @@ __license__ = "Apache-2.0"
 
 import glob
 import json
+import time
+import webbrowser
 import urllib.parse
 import urllib.request
-import webbrowser
 from typing import Dict, Any, Optional
 
-from docker import DockerClient
-
 from .checker import *
-from .helper import credentials_file
-from .hubapi import _list, _register_to_mongodb, _list_local, _docker_auth
-from .. import __version__ as jina_version
-from ..enums import BuildTestLevel
-from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
-from ..executors import BaseExecutor
 from ..flow import Flow
+from ..peapods import Pod
+from ..logging import JinaLogger
+from ..enums import BuildTestLevel
+from ..executors import BaseExecutor
+from .helper import credentials_file
+from ..parsers import set_pod_parser
+from .hubapi.local import _list_local
+from ..importer import ImportExtensions
+from .. import __version__ as jina_version
+from ..logging.profile import TimeContext, ProgressBar
+from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
+from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
     countdown
-from ..importer import ImportExtensions
-from ..logging import JinaLogger
-from ..logging.profile import TimeContext, ProgressBar
-from ..parsers import set_pod_parser
-from ..peapods import Pod
 
 if False:
     import argparse
@@ -56,7 +56,7 @@ class HubIO:
                               help_text='missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
                                         'to enable full CLI, please do pip install "jina[docker]"'):
             import docker
-            from docker import APIClient
+            from docker import APIClient, DockerClient
 
             self._client: DockerClient = docker.from_env()
 
@@ -114,16 +114,17 @@ class HubIO:
             verification_uri = code_response['verification_uri']
 
             try:
-                webbrowser.open(verification_uri, new=2)
-            except:
-                pass  # intentional pass, browser support isn't cross-platform
-            finally:
                 self.logger.info(f'You should see a "Device Activation" page open in your browser. '
                                  f'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}')
-                self.logger.info('Please follow the steps:\n'
+                self.logger.info('Please follow the steps:\n\n'
                                  f'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}\n'
                                  '2. Click "Continue"\n'
                                  '3. Come back to this terminal\n')
+                # allowing sometime for the user to view the message
+                time.sleep(0.5)
+                webbrowser.open(verification_uri, new=2)
+            except:
+                pass  # intentional pass, browser support isn't cross-platform
 
             access_request_body = {
                 'client_id': client_id,
@@ -139,9 +140,7 @@ class HubIO:
                     self.logger.warning('still waiting for authorization')
                     countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
                 elif 'access_token' in access_token_response:
-                    token = {
-                        'access_token': access_token_response['access_token']
-                    }
+                    token = {'access_token': access_token_response['access_token']}
                     with open(credentials_file(), 'w') as cf:
                         JAML.dump(token, cf)
                     self.logger.success(f'successfully logged in!')
@@ -164,7 +163,7 @@ class HubIO:
                          image_keywords=self.args.keywords)
 
     def push(self, name: Optional[str] = None, readme_path: Optional[str] = None, build_result: Optional[Dict] = None) -> None:
-        """ A wrapper of docker push 
+        """ A wrapper of docker push
         - Checks for the tempfile, returns without push if it cannot find
         - Pushes to docker hub, returns withput writing to db if it fails
         - Writes to the db
@@ -181,14 +180,8 @@ class HubIO:
                 raise ImageAlreadyExists(f'Image with name {name} already exists. Will NOT overwrite.')
             else:
                 self.logger.debug(f'Image with name {name} does not exist. Pushing now...')
-            docker_creds = _docker_auth(logger=self.logger)
-            if docker_creds and docker_creds['docker_username'] and docker_creds['docker_password']:
-                self.logger.info(f'Fetched docker credentials successfully. Pushing now...')
-                self._push_docker_hub(name, readme_path, docker_creds['docker_username'],
-                                      docker_creds['docker_password'])
-            else:
-                self.logger.error(f'Failed to fetch docker login creds. Aborting push.')
-                return
+
+            self._push_docker_hub(name, readme_path)
 
             if not build_result:
                 file_path = get_summary_path(name)
@@ -199,12 +192,15 @@ class HubIO:
                     self.logger.error(f'can not find the build summary file.'
                                       f'please use "jina hub build" to build the image first '
                                       f'before pushing.')
+                    return
 
             if build_result:
                 if build_result.get('is_build_success', False):
                     _register_to_mongodb(logger=self.logger, summary=build_result)
+
                 if build_result.get('details', None) and build_result.get('build_history', None):
                     self._write_slack_message(build_result, build_result['details'], build_result['build_history'])
+
         except Exception as e:
             self.logger.error(f'Error when trying to push image {name}: {e!r}')
             if isinstance(e, ImageAlreadyExists):
@@ -215,7 +211,7 @@ class HubIO:
         """ Helper push function """
         check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
-        self._docker_login(docker_username, docker_password)
+        self._docker_login()
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
             for line in self._client.images.push(name, stream=True, decode=True):
                 t.update(1)
@@ -284,21 +280,17 @@ class HubIO:
 
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
 
-    def _docker_login(self, docker_username: str = None, docker_password: str = None) -> None:
+    def _docker_login(self) -> None:
         """A wrapper of docker login """
         from docker.errors import APIError
-        login_username = docker_username
-        login_password = docker_password
-        if self.args.username and self.args.password:
-            login_username = self.args.username
-            login_password = self.args.password
-        if login_username and login_password:
-            try:
-                self._client.login(username=login_username, password=login_password,
-                                   registry=self.args.registry)
-                self.logger.debug(f'successfully logged in to docker hub')
-            except APIError:
-                raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
+        if not (self.args.username and self.args.password):
+            self.args.username, self.args.password = _fetch_docker_auth(logger=self.logger)
+        try:
+            self._client.login(username=self.args.username, password=self.args.password,
+                               registry=self.args.registry)
+            self.logger.debug(f'successfully logged in to docker hub')
+        except APIError:
+            raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
 
     def build(self) -> Dict:
         """A wrapper of docker build """
@@ -371,7 +363,8 @@ class HubIO:
                     p_names = []
                     try:
                         is_build_success = False
-                        p_names, failed_test_levels = HubIO._test_build(image, self.args.test_level,
+                        p_names, failed_test_levels = HubIO._test_build(image,
+                                                                        self.args.test_level,
                                                                         self.config_yaml_path,
                                                                         self.args.timeout_ready,
                                                                         self.args.daemon)
@@ -382,7 +375,8 @@ class HubIO:
                         else:
                             is_build_success = True
                             self.logger.warning(
-                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. This could be due to the fact that the executor has non-installed external dependencies')
+                                f'Build successful. Tests failed at : {str(failed_test_levels)} levels. '
+                                f'This could be due to the fact that the executor has non-installed external dependencies')
                     except Exception as ex:
                         self.logger.error(f'something wrong while testing the build: {ex!r}')
                         ex = HubBuilderTestError(ex)
@@ -397,7 +391,6 @@ class HubIO:
                                 pass  # suppress on purpose
                         self._raw_client.prune_containers()
 
-                _version = self.manifest['version'] if 'version' in self.manifest else '0.0.1'
                 info, env_info = get_full_version()
                 _host_info = {
                     'jina': info,
@@ -418,9 +411,18 @@ class HubIO:
                 self.logger.info('deleting unused images')
                 self._raw_client.prune_images()
 
+            # since db tracks `version` & `jina_version` on the top level, let's get rid of them in `manifest`
+            if is_build_success:
+                _version = self.manifest['version']
+                self.manifest.pop('version', None)
+                self.manifest.pop('jina_version', None)
+            else:
+                _version = '0.0.1'
+
             result = {
-                'name': getattr(self, 'canonical_name', ''),
-                'version': self.manifest['version'] if is_build_success and 'version' in self.manifest else '0.0.1',
+                'name': self.executor_name if is_build_success else '',
+                'version': _version,
+                'jina_version': jina_version,
                 'path': self.args.path,
                 'manifest_info': self.manifest if is_build_success else '',
                 'details': _details,
@@ -561,19 +563,16 @@ class HubIO:
             '\n'.join(f'{colored("✓", "green") if v else colored("✗", "red"):>4} {k:<20} {v}' for k, v in
                       completeness.items()) + '\n')
 
-        if completeness['Dockerfile'] and completeness['manifest.yml']:
-            pass
-        else:
+        if not (completeness['Dockerfile'] and completeness['manifest.yml']):
             self.logger.critical('Dockerfile or manifest.yml is not given, can not build')
             raise FileNotFoundError('Dockerfile or manifest.yml is not given, can not build')
 
         self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
         self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
-        tag_name = safe_url_name(
-            f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}:{self.manifest["version"]}-{jina_version}')
-        self.tag = tag_name
-        self.canonical_name = tag_name
+        self.executor_name = safe_url_name(
+            f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}')
+        self.tag = self.executor_name + f':{self.manifest["version"]}-{jina_version}'
         return completeness
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:

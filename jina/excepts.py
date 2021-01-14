@@ -197,3 +197,7 @@ class EventLoopError(Exception):
 
 class ZMQSocketError(Exception):
     """Exeception when ZMQlet/ZMQStreamlet can not be initialized """
+
+
+class HubLoginRequired(Exception):
+    """ Exception to raise for jina hub login """
