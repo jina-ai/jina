@@ -33,9 +33,10 @@ def set_hw_parser(parser=None):
     gp.add_argument('--index-labels-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz',
                     help='the url of index labels data (should be in idx3-ubyte.gz format)')
-    gp.add_argument('--index-batch-size', type=int,
+    gp.add_argument('--index-request-size', type=int,
                     default=1024,
-                    help='the batch size in indexing')
+                    help='the request size in indexing (the maximum number of documents that will be included in a '
+                         'Request before sending it)')
 
     gp = add_arg_group(parser, title='Search')
     gp.add_argument('--uses-query', type=str,
@@ -47,9 +48,10 @@ def set_hw_parser(parser=None):
     gp.add_argument('--query-labels-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz',
                     help='the url of query labels data (should be in idx3-ubyte.gz format)')
-    gp.add_argument('--query-batch-size', type=int,
+    gp.add_argument('--query-request-size', type=int,
                     default=32,
-                    help='the batch size in searching')
+                    help='the request size in searching (the maximum number of documents that will be included in a '
+                         'Request before sending it)')
     gp.add_argument('--num-query', type=int, default=128,
                     help='number of queries to visualize')
     gp.add_argument('--top-k', type=int, default=50,

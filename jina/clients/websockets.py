@@ -73,7 +73,7 @@ class WebSocketClientMixin(BaseClient):
                                       on_always=on_always,
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
-                        p_bar.update(self.args.batch_size)
+                        p_bar.update(self.args.request_size)
                         if self.args.return_results:
                             result.append(response)
                         self.num_responses += 1

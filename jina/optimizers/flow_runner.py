@@ -14,7 +14,7 @@ class FlowRunner:
         self,
         flow_yaml: str,
         documents: Iterator,
-        batch_size: int,
+        request_size: int,
         task: str,  # this can be only index or search as it is used to call the flow API
         callback: Optional = None,
         overwrite_workspace: bool = False,
@@ -22,7 +22,7 @@ class FlowRunner:
         """
         :param flow_yaml: path to flow yaml
         :param documents: iterator with list or generator for getting the documents
-        :param batch_size: batch size used in the flow
+        :param request_size: request size used in the flow
         :param task: task of the flow which can be `index` or `search`
         :param callback: callback to be passed to the flow's `on_done`
         :param overwrite_workspace: overwrite workspace created by the flow
@@ -30,7 +30,7 @@ class FlowRunner:
         self.flow_yaml = flow_yaml
         # TODO: Make changes for working with doc generator (Pratik, before v1.0)
         self.documents = documents if type(documents) == list else list(documents)
-        self.batch_size = batch_size
+        self.request_size = request_size
         if task in ('index', 'search'):
             self.task = task
         else:
@@ -73,7 +73,7 @@ class FlowRunner:
         with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
             getattr(f, self.task)(
                 self.documents,
-                batch_size=self.batch_size,
+                request_size=self.request_size,
                 on_done=self.callback,
                 **kwargs,
             )

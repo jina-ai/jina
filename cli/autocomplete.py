@@ -35,8 +35,8 @@ ac_table = {
     'commands': ['--help', '--version', '--version-full', 'hello-world', 'pod', 'flow', 'gateway', 'ping', 'check',
                  'hub', 'pea', 'log', 'client', 'export-api'], 'completions': {
         'hello-world': ['--help', '--workdir', '--download-proxy', '--shards', '--parallel', '--uses-index',
-                        '--index-data-url', '--index-labels-url', '--index-batch-size', '--uses-query',
-                        '--query-data-url', '--query-labels-url', '--query-batch-size', '--num-query', '--top-k'],
+                        '--index-data-url', '--index-labels-url', '--index-request-size', '--uses-query',
+                        '--query-data-url', '--query-labels-url', '--query-request-size', '--num-query', '--top-k'],
         'pod': ['--help', '--name', '--log-config', '--identity', '--log-id', '--show-exc-info', '--port-ctrl',
                 '--ctrl-with-ipc', '--timeout-ctrl', '--ssh-server', '--ssh-keyfile', '--ssh-password', '--uses',
                 '--py-modules', '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in', '--socket-out',
@@ -76,6 +76,6 @@ ac_table = {
                 '--host', '--port-expose', '--daemon', '--runtime-backend', '--runtime', '--runtime-cls',
                 '--timeout-ready', '--env', '--expose-public', '--pea-id', '--pea-role'],
         'log': ['--help', '--groupby-regex', '--refresh-time'],
-        'client': ['--help', '--batch-size', '--mode', '--top-k', '--mime-type', '--continue-on-error',
+        'client': ['--help', '--request-size', '--mode', '--top-k', '--mime-type', '--continue-on-error',
                    '--return-results', '--max-message-size', '--proxy', '--prefetch', '--prefetch-on-recv', '--restful',
                    '--rest-api', '--host', '--port-expose'], 'export-api': ['--help', '--yaml-path', '--json-path']}}

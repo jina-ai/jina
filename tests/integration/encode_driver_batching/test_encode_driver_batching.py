@@ -82,18 +82,18 @@ def document_generator(num_docs, num_chunks, num_chunks_chunks):
         yield doc
 
 
-@pytest.mark.parametrize('request_batch_size', [8, 16, 32])
+@pytest.mark.parametrize('request_size', [8, 16, 32])
 @pytest.mark.parametrize('driver_batch_size', [3, 4, 13])
-def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
+def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
     num_docs = 137
     num_chunks = 0
     num_chunks_chunks = 0
 
-    num_requests = int(num_docs / request_batch_size)
-    num_docs_last_req_batch = num_docs % (num_requests * request_batch_size)
+    num_requests = int(num_docs / request_size)
+    num_docs_last_req_batch = num_docs % (num_requests * request_size)
 
     def validate_response(resp):
-        valid_resp_length = (len(resp.search.docs) == request_batch_size) or (
+        valid_resp_length = (len(resp.search.docs) == request_size) or (
                     len(resp.search.docs) == num_docs_last_req_batch)
         assert valid_resp_length
         for doc in resp.search.docs:
@@ -103,7 +103,7 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
         assert False
 
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
-                          num_docs_in_same_request=request_batch_size,
+                          num_docs_in_same_request=request_size,
                           total_num_docs=num_docs)
 
     driver = EncodeDriver(batch_size=driver_batch_size,
@@ -117,23 +117,23 @@ def test_encode_driver_batching(request_batch_size, driver_batch_size, tmpdir):
 
     with Flow().add(uses=executor_yml_file) as f:
         f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
-                 batch_size=request_batch_size,
+                 request_size=request_size,
                  on_done=validate_response,
                  on_error=fail_if_error)
 
 
-@pytest.mark.parametrize('request_batch_size', [8, 16, 32])
-@pytest.mark.parametrize('driver_batch_size', [8, 32, 64])
+@pytest.mark.parametrize('request_size', [8, 16, 32])
+@pytest.mark.parametrize('driver_batch_size', [3, 4, 13])
 @pytest.mark.parametrize('num_chunks', [2, 8])
 @pytest.mark.parametrize('num_chunks_chunks', [2, 8])
-def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_size, num_chunks, num_chunks_chunks,
+def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num_chunks, num_chunks_chunks,
                                             tmpdir):
-    num_docs = 128
-    num_requests = int(num_docs / request_batch_size)
-    num_docs_last_req_batch = num_docs % (num_requests * request_batch_size)
+    num_docs = 137
+    num_requests = int(num_docs / request_size)
+    num_docs_last_req_batch = num_docs % (num_requests * request_size)
 
     def validate_response(resp):
-        valid_resp_length = (len(resp.search.docs) == request_batch_size) or (
+        valid_resp_length = (len(resp.search.docs) == request_size) or (
                     len(resp.search.docs) == num_docs_last_req_batch)
         assert valid_resp_length
         for doc in resp.search.docs:
@@ -147,7 +147,7 @@ def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_siz
         assert False
 
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
-                          num_docs_in_same_request=request_batch_size + request_batch_size*num_chunks + request_batch_size*num_chunks*num_chunks_chunks,
+                          num_docs_in_same_request=request_size + request_size*num_chunks + request_size*num_chunks*num_chunks_chunks,
                           total_num_docs=num_docs + num_docs*num_chunks + num_docs*num_chunks*num_chunks_chunks)
 
     driver = EncodeDriver(batch_size=driver_batch_size,
@@ -161,6 +161,6 @@ def test_encode_driver_batching_with_chunks(request_batch_size, driver_batch_siz
 
     with Flow().add(uses=executor_yml_file) as f:
         f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
-                 batch_size=request_batch_size,
+                 request_size=request_size,
                  on_done=validate_response,
                  on_error=fail_if_error)

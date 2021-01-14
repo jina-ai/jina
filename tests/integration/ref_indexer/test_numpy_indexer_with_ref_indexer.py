@@ -39,7 +39,7 @@ def random_workspace(tmpdir):
 def test_indexer_with_ref_indexer(random_workspace, parallel, index_docs, mocker):
     top_k = 10
     with Flow.load_config('index.yml') as index_flow:
-        index_flow.index(input_fn=index_docs, batch_size=10)
+        index_flow.index(input_fn=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
@@ -69,7 +69,7 @@ def random_workspace_move(tmpdir):
 def test_indexer_with_ref_indexer_move(random_workspace_move, parallel, index_docs, mocker):
     top_k = 10
     with Flow.load_config('index.yml') as index_flow:
-        index_flow.index(input_fn=index_docs, batch_size=10)
+        index_flow.index(input_fn=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
