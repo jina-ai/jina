@@ -417,6 +417,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         for v in self._pod_nodes.values():
             self.enter_context(v)
+            if not v.is_ready:
+                self.logger.error(f'Pod {v!r} can not be started, Flow is abort')
+                break
 
         self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
 

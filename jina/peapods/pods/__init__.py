@@ -262,3 +262,8 @@ class BasePod(ExitStack):
             self.deducted_tail = pod.head_args
         else:
             raise ValueError('the current pod has no tail router, deducting the tail is confusing')
+
+    @property
+    def is_ready(self) -> bool:
+        """A Pod is ready when all the Peas it contains are ready"""
+        return all(p.is_ready.is_set() for p in self.peas)

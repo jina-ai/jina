@@ -184,7 +184,7 @@ class JinadAPI:
                     async for log_line in websocket:
                         try:
                             log_line = json.loads(log_line)
-                            if 'code' in log_line and log_line['code'] == self.TIMEOUT_ERROR_CODE:
+                            if log_line.get('code', None) == self.TIMEOUT_ERROR_CODE:
                                 self.logger.info(f'Received timeout from the log server. Breaking')
                                 break
                             current_line_number = list(log_line.keys())[0]
