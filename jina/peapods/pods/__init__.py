@@ -209,6 +209,7 @@ class BasePod(ExitStack):
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
+        self.join()
 
     def join(self):
         """Wait until all peas exit"""
