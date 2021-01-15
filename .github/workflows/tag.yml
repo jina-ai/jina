@@ -97,7 +97,6 @@ jobs:
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          echo "PY_VERSION=${{matrix.py_ersion}}" >> $GITHUB_ENV
           echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
@@ -112,11 +111,11 @@ jobs:
           fi
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
-            echo "BUILD_ARG=--target jina_daemon" >> $GITHUB_ENV
+            echo "BUILD_ARG=jina_daemon" >> $GITHUB_ENV
           elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
-            echo "BUILD_ARG=--target jina_devel" >> $GITHUB_ENV
+            echo "BUILD_ARG=jina_devel" >> $GITHUB_ENV
           else
-            echo "BUILD_ARG=--target jina_base" >> $GITHUB_ENV
+            echo "BUILD_ARG=jina_base" >> $GITHUB_ENV
           fi
       - name: Set up Docker Buildx
         id: buildx
@@ -137,11 +136,7 @@ jobs:
           file: Dockerfiles/debianx.Dockerfile
           platforms: linux/armhf,linux/amd64,linux/arm/v6
           push: true
-          tags: |
-            jinaai/jina:latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}
-            jinaai/jina:${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}
-            jinaai/jina:${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}
-            ${{env.TAG_ALIAS}}
+          tags: jinaai/jina:latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
           target: ${{env.BUILD_ARG}}
 
