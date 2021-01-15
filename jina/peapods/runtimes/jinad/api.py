@@ -170,7 +170,7 @@ class JinadAPI:
         with ImportExtensions(required=True):
             import websockets
 
-        self.logger.info(f'🌏 Fetching streamed logs from remote id: {remote_id}')
+        self.logger.info(f'fetching streamed logs from remote id: {remote_id}')
         remote_loggers = {}
         try:
             # sleeping for few seconds to allow the logs to be written in remote
@@ -200,13 +200,13 @@ class JinadAPI:
                         except json.decoder.JSONDecodeError:
                             continue
         except websockets.exceptions.ConnectionClosedOK:
-            self.logger.error(f'🌏 Client got disconnected from server')
+            self.logger.error(f'client got disconnected from server')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(f'🌏 Got following error while streaming logs via websocket {e!r}')
+            self.logger.error(f'got following error while streaming logs via websocket {e!r}')
         except asyncio.CancelledError:
-            self.logger.info(f'🌏 Logging task cancelled successfully')
+            self.logger.info(f'logging task cancelled successfully')
         finally:
-            self.logger.info(f'🌏 Exiting from remote loggers')
+            self.logger.info(f'exiting from remote loggers')
             if remote_loggers:
                 for logger in remote_loggers.values():
                     logger.close()

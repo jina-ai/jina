@@ -1,5 +1,5 @@
 import argparse
-from typing import Union
+from typing import Union, Dict
 
 import requests
 from pydantic import create_model, validator, Field
@@ -14,7 +14,7 @@ def get_latest_api():
     return all_cli_args
 
 
-def get_module_args(all_args: list, module: str):
+def get_module_args(all_args: Dict, module: str):
     """Fetches the cli args for modules like `flow`, `pod`"""
     for current_module in all_args['methods']:
         if current_module['name'] == module:
@@ -94,7 +94,6 @@ def build_pydantic_model(kind: str = 'local',
         module_args = get_module_args(all_args=all_cli_args,
                                       module=module)
         all_fields, field_validators = get_pydantic_fields(config=module_args)
-
     elif kind == 'local':
         from jina.parsers import set_pea_parser, set_pod_parser
         from jina.parsers.flow import set_flow_parser
