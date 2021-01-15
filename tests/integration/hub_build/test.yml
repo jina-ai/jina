@@ -1,0 +1,7 @@
+!BaseImageEncoder
+with:
+  {}
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !EncodeDriver {}
