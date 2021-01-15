@@ -78,8 +78,9 @@ class ContainerRuntime(ZMQRuntime):
         # this prevent setting containerPea twice
         from ....parsers import set_pea_parser
         non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(),
-                                                          taboo={'uses', 'entrypoint',
-                                                                 'volumes', 'pull_latest', 'runtime_cls'})
+                                                          taboo={'uses', 'entrypoint', 'volumes',
+                                                                 'pull_latest', 'runtime_cls',
+                                                                 'docker_kwargs'})
 
         if self.args.pull_latest:
             self.logger.warning(f'pulling {uses_img}, this could take a while. if you encounter '
@@ -116,6 +117,9 @@ class ContainerRuntime(ZMQRuntime):
 
         _args = ArgNamespace.kwargs2list(non_defaults)
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
+
+        docker_kwargs = self.args.docker_kwargs or {}
+
         self._container = client.containers.run(uses_img,
                                                 _args,
                                                 detach=True,
@@ -124,7 +128,8 @@ class ContainerRuntime(ZMQRuntime):
                                                 name=slugify(self.name),
                                                 volumes=_volumes,
                                                 network_mode=self._net_mode,
-                                                entrypoint=self.args.entrypoint)
+                                                entrypoint=self.args.entrypoint,
+                                                **docker_kwargs)
 
         if replay:
             # when replay is on, it means last time it fails to start

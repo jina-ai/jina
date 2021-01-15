@@ -55,13 +55,13 @@ def get_pydantic_fields(config: Union[dict, argparse.ArgumentParser]):
                                   description=arg['help'])
             all_options[arg_key] = (arg_type, current_field)
 
-    # Issue: For all args that have a default value which comes from a function call (get_random_identity() or random_port()),
-    # 1st pydantic model invocation sets these default values, means build_pydantic_model(...) sets the args, not SinglePodModel()
-    # In case of multiple Pods, port conflict happens because of same port set as default in both.
-    # TODO(Deepankar): Add support for `default_factory` for default args that are functions
+    # Issue: For all args that have a default value which comes from a function call (get_random_identity() or
+    # random_port()), 1st pydantic model invocation sets these default values, means build_pydantic_model(...) sets
+    # the args, not SinglePodModel() In case of multiple Pods, port conflict happens because of same port set as
+    # default in both. TODO(Deepankar): Add support for `default_factory` for default args that are functions
     if isinstance(config, argparse.ArgumentParser):
         # Ignoring first 3 as they're generic args
-        from jina.parsers.helper import KVAppendAction
+        from jina.parsers.helper import KVAppendAction, DockerKwargsAppendAction
         for arg in config._actions[3:]:
             arg_key = arg.dest
             arg_type = arg.type
@@ -72,7 +72,7 @@ def get_pydantic_fields(config: Union[dict, argparse.ArgumentParser]):
             if hasattr(arg_type, '__self__'):
                 arg_type = type(arg.default) if arg.default else int
             arg_type = str if isinstance(arg_type, argparse.FileType) else arg_type
-            arg_type = dict if type(arg) == KVAppendAction else arg_type
+            arg_type = dict if isinstance(arg, (KVAppendAction, DockerKwargsAppendAction)) else arg_type
 
             current_field = Field(default=arg.default,
                                   example=arg.default,
