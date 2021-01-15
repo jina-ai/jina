@@ -6,6 +6,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6737,4 +6738,20 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```0bcd12f6```](https://github.com/jina-ai/jina/commit/0bcd12f62a4afe2421b433a0836f7d99998d2f35)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```0b024336```](https://github.com/jina-ai/jina/commit/0b0243369a69a7b39e3e486775c9f12aea0068f8)] __-__ re-layout binder badge (*Han Xiao*)
  - [[```d40aee59```](https://github.com/jina-ai/jina/commit/d40aee59615b34e39a8dbad538f50343d2bed46e)] __-__ __version__: the next version will be 0.9.14 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-15></a>
+## Release Note (`0.9.15`)
+
+> Release time: 2021-01-15 20:48:31
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```77906772```](https://github.com/jina-ai/jina/commit/779067724838d432fc2f99b65e26c3954ca3d514)] __-__ hotfix release (*Han Xiao*)
+ - [[```c1564183```](https://github.com/jina-ai/jina/commit/c1564183f83a182507872dec84207b0bf49fe073)] __-__ __version__: the next version will be 0.9.15 (*Jina Dev Bot*)
 
