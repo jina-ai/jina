@@ -228,7 +228,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             num_part=len(needs)
         ))
 
-
         parser = set_pod_parser()
         if pod_role == PodRoleType.GATEWAY:
             parser = set_gateway_parser()

@@ -30,6 +30,30 @@ class KVAppendAction(argparse.Action):
         setattr(args, self.dest, d)
 
 
+class DockerKwargsAppendAction(argparse.Action):
+    """
+    argparse action to split an argument into KEY: VALUE form
+    on the first : and append to a dictionary.
+    This is used for setting up arbitrary kwargs for docker sdk
+    """
+
+    def __call__(self, parser, args, values, option_string=None):
+        import json
+        d = getattr(args, self.dest) or {}
+
+        for value in values:
+            try:
+                d.update(json.loads(value))
+            except json.JSONDecodeError:
+                try:
+                    (k, v) = value.split(':', 1)
+                except ValueError:
+                    raise argparse.ArgumentTypeError(f'could not parse argument \"{values[0]}\" as k:v format')
+                # transform from text to actual type (int, list, etc...)
+                d[k] = json.loads(v)
+        setattr(args, self.dest, d)
+
+
 class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
     class _Section(object):
 

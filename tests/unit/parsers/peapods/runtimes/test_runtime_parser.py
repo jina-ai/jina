@@ -13,6 +13,11 @@ def test_runtime_parser():
     args = parser.parse_args([])
     assert args.docker_kwargs is None
 
-    args = parser.parse_args(['--docker-kwargs', 'hello=0', 'bye=1'])
+    args = parser.parse_args(['--docker-kwargs', 'hello: 0', 'bye: 1'])
+    assert args.docker_kwargs == {'hello': 0, 'bye': 1}
+
+    args = parser.parse_args(['--docker-kwargs', 'hello: "0"', 'bye: "1"'])
     assert args.docker_kwargs == {'hello': '0', 'bye': '1'}
 
+    args = parser.parse_args(['--docker-kwargs', 'environment: ["VAR1=BAR", "VAR2=FOO"]', 'hello: 0'])
+    assert args.docker_kwargs == {'environment': ['VAR1=BAR', 'VAR2=FOO'], 'hello': 0}
