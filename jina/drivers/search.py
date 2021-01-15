@@ -120,6 +120,10 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         if bad_docs:
             self.logger.warning(f'these bad docs can not be added: {bad_docs}')
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
+
+        if idx is None and dist is None:
+            return
+
         op_name = self.exec.__class__.__name__
         for doc, topks, scores in zip(doc_pts, idx, dist):
 
