@@ -70,11 +70,11 @@ def test_cache_driver_tmpfile(tmpdir, test_metas):
 
 
 def test_cache_driver_from_file(tmpdir, test_metas):
-    filename = 'test-tmp.bin'
+    filename = 'cache'
+    bin_full_path = os.path.join(test_metas["workspace"], filename)
     docs = list(random_docs(10, embedding=False))
-    pickle.dump([doc.id for doc in docs], open(f'{os.path.join(test_metas["workspace"], filename)}.ids', 'wb'))
-    pickle.dump([doc.content_hash for doc in docs],
-                open(f'{os.path.join(test_metas["workspace"], filename)}.cache', 'wb'))
+    pickle.dump([doc.id for doc in docs], open(f'{bin_full_path}.ids', 'wb'))
+    pickle.dump([doc.content_hash for doc in docs], open(f'{bin_full_path}.cache', 'wb'))
 
     driver = MockCacheDriver()
     with DocIDCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
@@ -169,3 +169,30 @@ def test_cache_content_driver_same_id(tmp_path, test_metas):
         driver._traverse_apply(docs1)
         driver._traverse_apply(docs2)
         assert executor.size == 2
+
+
+@pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
+@pytest.mark.parametrize('method_type', ['delete', 'update'])
+def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type, mocker):
+    driver = MockBaseCacheDriver(method=method_type, traversal_paths=['r'])
+
+    docs = [Document(text=f'doc_{i}') for i in range(5)]
+
+    def validate_delete(self, keys, *args, **kwargs):
+        assert len(keys) == len(docs)
+        assert all([k == d.id for k, d in zip(keys, docs)])
+
+    def validate_update(self, keys, values, *args, **kwargs):
+        assert len(keys) == len(docs)
+        assert len(values) == len(docs)
+        assert all([k == d.id for k, d in zip(keys, docs)])
+        if self.field == CONTENT_HASH_KEY:
+            assert all([v == d.content_hash for v, d in zip(values, docs)])
+        elif self.field == ID_KEY:
+            assert all([v == d.id for v, d in zip(values, docs)])
+
+    with DocIDCache(tmpdir, metas=test_metas, field=field_type) as e:
+        mocker.patch.object(DocIDCache, 'update', validate_update)
+        mocker.patch.object(DocIDCache, 'delete', validate_delete)
+        driver.attach(executor=e, runtime=None)
+        driver._apply_all(docs)

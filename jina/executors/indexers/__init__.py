@@ -162,17 +162,29 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys(self, keys: Iterator, existent_keys: Iterator, check_path: str):
-        indices_to_drop = []
+    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator, check_path: str) -> Tuple[List, List]:
         keys = list(keys)
+        values = list(values)
+        indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
+        keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
+        values = [values[i] for i in range(len(values)) if i not in indices_to_drop]
+        return keys, values
+
+    def _filter_nonexistent_keys(self, keys: Iterator, existent_keys: Iterator, check_path: str) -> List:
+        keys = list(keys)
+        indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
+        keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
+        return keys
+
+    def _get_indices_to_drop(self, keys: List, existent_keys: Iterator, check_path: str):
+        indices_to_drop = []
         for key_index, key in enumerate(keys):
             if key not in existent_keys:
                 indices_to_drop.append(key_index)
         if indices_to_drop:
             self.logger.warning(
                 f'Key(s) {[keys[i] for i in indices_to_drop]} were not found in {check_path}. Continuing anyway...')
-            keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
-        return keys
+        return indices_to_drop
 
 
 class BaseVectorIndexer(BaseIndexer):

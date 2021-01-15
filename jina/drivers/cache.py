@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from .index import BaseIndexDriver
-from ..executors.indexers.cache import DATA_FIELD, CONTENT_HASH_KEY
+from ..executors.indexers.cache import DATA_FIELD, CONTENT_HASH_KEY, ID_KEY
 
 if False:
     from .. import Document
@@ -26,15 +26,20 @@ class BaseCacheDriver(BaseIndexDriver):
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         self.field = self.exec.field
 
-        for d in docs:
-            data = d.id
-            if self.field == CONTENT_HASH_KEY:
-                data = d.content_hash
-            result = self.exec[data]
-            if result is None:
-                self.on_miss(d, data)
-            else:
-                self.on_hit(d, result)
+        if self._method_name == 'delete':
+            self.exec_fn([d.id for d in docs])
+        elif self._method_name == 'update':
+            self.exec_fn([d.id for d in docs], [d.id if self.field == ID_KEY else d.content_hash for d in docs])
+        else:
+            for d in docs:
+                data = d.id
+                if self.field == CONTENT_HASH_KEY:
+                    data = d.content_hash
+                result = self.exec[data]
+                if result is None:
+                    self.on_miss(d, data)
+                else:
+                    self.on_hit(d, result)
 
     def on_miss(self, doc: 'Document', data) -> None:
         """Function to call when doc is missing, the default behavior is add to cache when miss

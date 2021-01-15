@@ -1,0 +1,19 @@
+!Flow
+pods:
+  vector:
+    uses: vector.yml
+    shards: $JINA_SHARDS
+    separated_workspace: True
+    uses_after: '_merge_matches_topk.yml'
+    polling: $JINA_POLLING
+    timeout_ready: '-1'
+    show_exc_info: true
+  kv:
+    uses: kv.yml
+    shards: $JINA_SHARDS
+    separated_workspace: True
+    uses_after: '_merge_matches_topk.yml'
+    polling: $JINA_POLLING
+    timeout_ready: '-1'
+    show_exc_info: true
+    needs: $JINA_KV_NEEDS

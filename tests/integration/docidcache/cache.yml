@@ -1,0 +1,29 @@
+!DocIDCache
+with:
+  field: $JINA_CACHE_FIELD
+  index_filename: cache
+metas:
+  workspace: $JINA_TEST_CACHE_CRUD_WORKSPACE
+  name: cache
+requests:
+  on:
+    IndexRequest:
+      - !TaggingCacheDriver
+        with:
+          executor: cache
+          traversal_paths: [r, c]
+          tags:
+            is_indexed: true
+    UpdateRequest:
+      - !BaseCacheDriver
+        with:
+          method: update
+          executor: cache
+          traversal_paths: [r, c]
+    DeleteRequest:
+      - !BaseCacheDriver
+        with:
+          method: delete
+          executor: cache
+          traversal_paths: [r, c]
+
