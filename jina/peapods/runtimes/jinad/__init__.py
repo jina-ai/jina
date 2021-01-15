@@ -5,6 +5,7 @@ from typing import Optional
 from .api import get_jinad_api
 from ..asyncio.base import AsyncZMQRuntime
 from ...zmq import Zmqlet
+from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored
 
 
@@ -28,6 +29,14 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         if self._remote_id:
             self.logger.success(f'created remote {self.api.kind} with id {colored(self._remote_id, "cyan")}')
+        else:
+            self.logger.error(
+                f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
+                f'- is there a typo in {self.host}?\n'
+                f'- on {self.host}, are you running `docker run --network host jinaai/jina:latest-daemon`?\n'
+                f'- on {self.host}, have you set the security policy to public for all required ports?\n'
+                f'- on local, are you behind VPN or proxy?')
+            raise DaemonConnectivityError
 
     async def async_run_forever(self):
         """

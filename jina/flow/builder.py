@@ -75,7 +75,7 @@ def _hanging_pods(op_flow: 'Flow') -> List[str]:
 
 
 def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
-    def _build_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
+    def _connect_two_nodes(flow: 'Flow', start_node_name: str, end_node_name: str):
         # Rule
         # if a node has multiple income/outgoing peas,
         # then its socket_in/out must be PULL_BIND or PUB_BIND
@@ -92,12 +92,16 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             first_socket_type = SocketType.PUB_BIND
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
+        elif start_node.host != __default_host__ and end_node.host == __default_host__:
+            # first node is on remote, second is local. in this case, local node is often behind router/private
+            # network, there is no way that first node can send data "actively" (CONNECT) to it, it
+            first_socket_type = SocketType.PUSH_BIND
         _connect(start_node, end_node, first_socket_type=first_socket_type)
         flow.logger.debug(f'Connect {start_node_name} '
                           f'with {end_node_name} {str(end_node.role)} require '
                           f'{getattr(end_node.head_args, "num_part", 0)} messages')
 
-    return _traverse_graph(op_flow, outgoing_map, _build_two_connections)
+    return _traverse_graph(op_flow, outgoing_map, _connect_two_nodes)
 
 
 def _connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
@@ -120,7 +124,7 @@ def _connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType
                                                  bind_args=second.head_args)
         # (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)
         # https://github.com/jina-ai/jina/pull/1654
-        #second.head_args.host_in = __default_host__
+        # second.head_args.host_in = __default_host__
         first.tail_args.port_out = second.head_args.port_in
     elif first_socket_type == SocketType.PUB_BIND:
         first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0

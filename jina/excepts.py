@@ -201,3 +201,7 @@ class ZMQSocketError(Exception):
 
 class HubLoginRequired(Exception):
     """ Exception to raise for jina hub login """
+
+
+class DaemonConnectivityError(Exception):
+    """ Exception to raise when jina daemon is not connectable"""
