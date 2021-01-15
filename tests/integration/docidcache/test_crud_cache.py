@@ -16,10 +16,8 @@ KV_IDX_FILENAME = 'kv_idx.bin'
 VEC_IDX_FILENAME = 'vec_idx.bin'
 DOCS_TO_SEARCH = 1
 TOP_K = 5
-BATCH_SIZE = 4
+REQUEST_SIZE = 4
 DOCS_TO_INDEX = 10
-
-pytest.register_assert_rewrite('check_indexers_size')
 
 
 def config_env(field, tmp_workspace, shards, indexers, polling):
@@ -69,11 +67,6 @@ def get_documents(chunks, same_content, nr=10, index_start=0):
                 next_chunk_id += 1
                 d.chunks.append(c)
         yield d
-
-
-docs_chunks = [0, 3, 5]
-docs_same_content = [False, True]
-docs_nr = [0, 10, 100]
 
 
 def get_index_flow(field, tmp_path, shards, indexers):
@@ -245,7 +238,7 @@ def test_cache_crud(
 
     # INDEX
     with flow_index as f:
-        f.index(docs, batch_size=BATCH_SIZE)
+        f.index(docs, request_size=REQUEST_SIZE)
 
     check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index')
 
@@ -255,7 +248,7 @@ def test_cache_crud(
 
     new_docs = list(get_documents(chunks=chunks, same_content=same_content, index_start=index_start_new_docs))
     with flow_index as f:
-        f.index(new_docs, batch_size=BATCH_SIZE)
+        f.index(new_docs, request_size=REQUEST_SIZE)
 
     check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index2')
 

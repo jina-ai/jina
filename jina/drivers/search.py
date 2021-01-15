@@ -121,9 +121,6 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
             self.logger.warning(f'these bad docs can not be added: {bad_docs}')
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
 
-        if idx is None and dist is None:
-            return
-
         op_name = self.exec.__class__.__name__
         # can be None if index is size 0
         if idx is not None and dist is not None:
