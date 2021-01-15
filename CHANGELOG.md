@@ -5,6 +5,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6678,4 +6679,62 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```0339e6df```](https://github.com/jina-ai/jina/commit/0339e6df9a048913d9f57ef032636cec1cdb5794)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```7d89bd76```](https://github.com/jina-ai/jina/commit/7d89bd76e21e3a609ace7ce123997d32c576a552)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```0e00ac95```](https://github.com/jina-ai/jina/commit/0e00ac955fead3cfaddb0c5312e500d513798816)] __-__ __version__: the next version will be 0.9.13 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-14></a>
+## Release Note (`0.9.14`)
+
+> Release time: 2021-01-15 20:33:53
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  cristian,  Florian Hönicke,  Joan Fontanals,  Jina Dev Bot,  Deepankar Mahapatro,  Nan Wang,  Tadej Svetina,  🙇
+
+
+### 🆕 New Features
+
+ - [[```8410137c```](https://github.com/jina-ai/jina/commit/8410137cba099d622acd418fdd6ce0b2e8031f66)] __-__ merge matches topk (#1686) (*Florian Hönicke*)
+ - [[```cc619f9e```](https://github.com/jina-ai/jina/commit/cc619f9e0d610cd0e5c456bc8b42344b8c711bf3)] __-__ pass arbitrary kwargs to docker sdk (#1690) (*Joan Fontanals*)
+ - [[```c35296ef```](https://github.com/jina-ai/jina/commit/c35296eff654827d2f84fc2f7f3fd33ece2a67fa)] __-__ support json print in loginfo (#1693) (*cristian*)
+
+### 🐞 Bug fixes
+
+ - [[```da2be57d```](https://github.com/jina-ai/jina/commit/da2be57dfb92f6d4b5116fccbcdf2589673bf435)] __-__ is merge should be False by default (#1701) (*cristian*)
+ - [[```d51fe555```](https://github.com/jina-ai/jina/commit/d51fe55593eef799d96405927ad696cfaf05932c)] __-__ more detailed error msg (#1697) (*Han Xiao*)
+ - [[```321a890b```](https://github.com/jina-ai/jina/commit/321a890ba85cb8c0266b239bc0e7ea34bccf7ae0)] __-__ filtering missing keys accounts for values (#1694) (*cristian*)
+ - [[```fa47adb7```](https://github.com/jina-ai/jina/commit/fa47adb742ae1c7e11ae8f22556faf8a9999d286)] __-__ shard may be empty (#1689) (*Joan Fontanals*)
+ - [[```ccca7bbf```](https://github.com/jina-ai/jina/commit/ccca7bbf5b1e82e60f05dc8148d8778b78d22280)] __-__ cd docker build pipeline (*Han Xiao*)
+ - [[```122fdf4b```](https://github.com/jina-ai/jina/commit/122fdf4be3768450d8a07ec980c8155a2d8aade6)] __-__ __daemon__: add cors #1683 (#1687) (*Deepankar Mahapatro*)
+ - [[```7e24d127```](https://github.com/jina-ai/jina/commit/7e24d127f2dd26fe65e71314beb8a868e6a8a21b)] __-__ conditional args (#1682) (*Florian Hönicke*)
+ - [[```cd7d4ad1```](https://github.com/jina-ai/jina/commit/cd7d4ad1815ab4ce11d8ebeb8eb664c00facabff)] __-__ sharding parallel one (#1657) (*Florian Hönicke*)
+
+### 🚧 Code Refactoring
+
+ - [[```6605b2c4```](https://github.com/jina-ai/jina/commit/6605b2c4dcd94c9cdf35cf9b78d71a4b2d9cbf72)] __-__ __hubio__: push, login, docker auth (#1691) (*Deepankar Mahapatro*)
+ - [[```55307334```](https://github.com/jina-ai/jina/commit/55307334b865d556bfc6109bb37c520327448f2f)] __-__ change batch_size to request_size (#1677) (*Joan Fontanals*)
+ - [[```1fad5b6a```](https://github.com/jina-ai/jina/commit/1fad5b6a595db1294fcfe8d909060832be92ff55)] __-__ remove GPU check in Executor (#1674) (*Tadej Svetina*)
+
+### 📗 Documentation
+
+ - [[```7b60b8e3```](https://github.com/jina-ai/jina/commit/7b60b8e3f06c6db9bc3bb1c1d957358fd396cf62)] __-__ add binder snippet (#1673) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```63e8bfb0```](https://github.com/jina-ai/jina/commit/63e8bfb0781d460a86ac469e61fa5b6075d40971)] __-__ fix cd docker build pipeline (*Han Xiao*)
+ - [[```85a30ba1```](https://github.com/jina-ai/jina/commit/85a30ba168462b37e7771778a7a852e73a405cc2)] __-__ fix github run id (#1680) (*Joan Fontanals*)
+ - [[```a3d06b94```](https://github.com/jina-ai/jina/commit/a3d06b9437804c804539775e2d85955136301e27)] __-__ add test with different typologies with needs param (#1668) (*Joan Fontanals*)
+ - [[```bfef4f0e```](https://github.com/jina-ai/jina/commit/bfef4f0e56a4a4aaf964a1219eca6396a3695046)] __-__ tag docker image with github run id (#1679) (*Joan Fontanals*)
+ - [[```5e1a423d```](https://github.com/jina-ai/jina/commit/5e1a423d91786d4796bc7b408941c2ceba8456cb)] __-__ move distributed test (#1676) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```3a4a9d2b```](https://github.com/jina-ai/jina/commit/3a4a9d2b7c26a8372d2b61119485dd879c4114e5)] __-__ hotfix release (*Han Xiao*)
+ - [[```90b779d5```](https://github.com/jina-ai/jina/commit/90b779d5408aab3b83ed4704bf00497302a8a3b4)] __-__ crud intergration tests: docidcache-centric (#1613) (*cristian*)
+ - [[```c275cc88```](https://github.com/jina-ai/jina/commit/c275cc88b68bf43a2bc8f4bf0154d9c323fd874a)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f00cd02c```](https://github.com/jina-ai/jina/commit/f00cd02c18b0f53f52f2011885ffa38683357b38)] __-__ update cd yml (*Han Xiao*)
+ - [[```39d96983```](https://github.com/jina-ai/jina/commit/39d96983d4c5c174c963de781e38921d15f7cde3)] __-__ update docker image desc (*Han Xiao*)
+ - [[```ce83b81e```](https://github.com/jina-ai/jina/commit/ce83b81e2459a08ca5776c4300d5a488e08a0b2f)] __-__ add armv6/v7 docker build (#1692) (*Han Xiao*)
+ - [[```0bcd12f6```](https://github.com/jina-ai/jina/commit/0bcd12f62a4afe2421b433a0836f7d99998d2f35)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0b024336```](https://github.com/jina-ai/jina/commit/0b0243369a69a7b39e3e486775c9f12aea0068f8)] __-__ re-layout binder badge (*Han Xiao*)
+ - [[```d40aee59```](https://github.com/jina-ai/jina/commit/d40aee59615b34e39a8dbad538f50343d2bed46e)] __-__ __version__: the next version will be 0.9.14 (*Jina Dev Bot*)
 
