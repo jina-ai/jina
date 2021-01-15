@@ -47,7 +47,7 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def __init__(self, is_merge: bool = True, *args, **kwargs):
+    def __init__(self, is_merge: bool = False, *args, **kwargs):
         """
 
         :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
