@@ -55,7 +55,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        if len(keys) != len(values):
+        if len(list(keys)) != len(list(values)):
             raise ValueError(f'Len of keys {len(keys)} did not match len of values {len(values)}')
         for key, value in zip(keys, values):
             l = len(value)  #: the length

@@ -165,6 +165,8 @@ class BaseIndexer(BaseExecutor):
     def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator, check_path: str) -> Tuple[List, List]:
         keys = list(keys)
         values = list(values)
+        if len(keys) != len(values):
+            raise ValueError(f'Keys of length {len(keys)} did not match values of lenth {len(values)}')
         indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
         keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
         values = [values[i] for i in range(len(values)) if i not in indices_to_drop]
