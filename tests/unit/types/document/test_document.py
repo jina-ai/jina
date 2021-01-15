@@ -244,7 +244,7 @@ def test_doc_score():
     assert doc.score.ref_id == doc.id
 
 
-def test_content_hash_not_dependent_on_chunks():
+def test_content_hash_not_dependent_on_chunks_or_matches():
     doc1 = Document()
     doc1.content = 'one'
     doc1.update_content_hash()

@@ -212,7 +212,3 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace, re
             assert isinstance(doc_indexer, BinaryPbIndexer)
             doc_idx_size += doc_indexer._size
     assert doc_idx_size == num_uniq_docs
-
-
-# TODO chunks
-# TODO update / delete
