@@ -37,7 +37,7 @@ jobs:
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
+            echo "TAG_ALIAS=jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
@@ -66,6 +66,6 @@ jobs:
           file: Dockerfiles/debianx.Dockerfile
           platforms: linux/armhf,linux/amd64,linux/arm/v6
           push: true
-          tags: jinaai/jina:latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
+          tags: jinaai/jina:${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
           target: ${{env.BUILD_ARG}}
