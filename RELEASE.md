@@ -7,6 +7,7 @@ Jina is shipped from two package management systems, PyPi and Docker Hub. This a
 
 - [PyPi package versioning](#pypi-package-versioning)
 - [Docker image versioning](#docker-image-versioning)
+- [Manual Release Entrypoint](#manual-release-entrypoint)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
