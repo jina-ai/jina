@@ -37,7 +37,7 @@ annoy>=1.9.5:               index
 sklearn:                    numeric
 plyvel:                     index
 jieba:                      nlp
-lz4:                        devel, cicd, perf, network
+lz4<3.1.2:                  devel, cicd, perf, network
 gevent:                     http, devel, cicd
 python-magic:               http, devel, cicd
 pymilvus:                   index
