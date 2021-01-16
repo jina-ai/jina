@@ -15,5 +15,4 @@ requests:
       - !KVSearchDriver
         with:
           executor: docIndexer
-          is_merge: true
           traversal_paths: ['m']
