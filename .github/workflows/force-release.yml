@@ -11,7 +11,16 @@ on:
         required: true
 
 jobs:
+  token-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "success!"
+        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+
   regular-release:
+    needs: token-check
     if: "${{ github.event.inputs.release_token }} == ${{ secrets.JINA_CORE_RELEASE_TOKEN }}"
     runs-on: ubuntu-latest
     steps:

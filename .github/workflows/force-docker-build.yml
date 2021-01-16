@@ -35,10 +35,10 @@ jobs:
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-          echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-          JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
+          JINA_VERSION=${${{ github.event.inputs.git_tag }}/v/}
           JINA_MINOR_VERSION=${JINA_VERSION%.*}
+          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
+          echo "V_JINA_VERSION=${{ github.event.inputs.git_tag }}" >> $GITHUB_ENV
           echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
