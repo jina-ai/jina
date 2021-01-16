@@ -406,7 +406,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
-            self.logger = runtime.logger
+            self.logger = runtime._logger
 
     def __call__(self, req_type, *args, **kwargs):
         if req_type in self._drivers:

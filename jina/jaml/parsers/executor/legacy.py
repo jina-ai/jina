@@ -42,7 +42,7 @@ class LegacyParser(VersionedYAMLParser):
         load_from_dump = False
         if dump_path:
             obj = cls.load(dump_path)
-            obj.logger.success(f'restore {cls.__name__} from {dump_path}')
+            obj._logger.success(f'restore {cls.__name__} from {dump_path}')
             load_from_dump = True
         else:
             cls.init_from_yaml = True

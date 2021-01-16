@@ -8,8 +8,7 @@ from fastapi import APIRouter, WebSocket
 from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 
-from ... import daemon_logger
-from ...config import log_config
+from ... import daemon_logger, jinad_args
 from ...excepts import NoSuchFileException
 
 router = APIRouter()
@@ -65,7 +64,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         # Accessing path / query params from scope in ASGI
         # https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
         self.log_id = self.scope.get('path').split('/')[-1]
-        self.filepath = log_config.PATH % self.log_id
+        self.filepath = jinad_args.log_path % self.log_id
         query_string = self.scope.get('query_string').decode()
         self.timeout = float(dict(parse_qsl(query_string)).get('timeout', self.DEFAULT_TIMEOUT))
 

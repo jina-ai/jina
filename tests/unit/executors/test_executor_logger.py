@@ -16,9 +16,9 @@ def test_executor_logger(metas):
     from fluent import asynchandler as fluentasynchandler
     args = set_pea_parser().parse_args([])
     with BaseExecutor(args, metas=metas) as executor:
-        assert len(executor.logger.logger.handlers) == 3
+        assert len(executor.logger._logger.handlers) == 3
         has_fluent = False
-        for h in executor.logger.logger.handlers:
+        for h in executor.logger._logger.handlers:
             if isinstance(h, fluentasynchandler.FluentHandler):
                 has_fluent = True
         assert has_fluent
@@ -28,10 +28,10 @@ def test_executor_logger(metas):
         save_abspath = executor.save_abspath
 
     with BaseExecutor.load(save_abspath) as executor:
-        assert len(executor.logger.logger.handlers) == 3
+        assert len(executor._logger._logger.handlers) == 3
         has_fluent = False
-        for h in executor.logger.logger.handlers:
+        for h in executor._logger._logger.handlers:
             if isinstance(h, fluentasynchandler.FluentHandler):
                 has_fluent = True
         assert has_fluent
-        executor.logger.info('logging from executor')
+        executor._logger.info('logging from executor')

@@ -203,7 +203,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``"""
-        return self.runtime.logger
+        return self.runtime._logger
 
     def __call__(self, *args, **kwargs) -> None:
         raise NotImplementedError

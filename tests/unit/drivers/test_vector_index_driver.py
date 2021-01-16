@@ -113,7 +113,7 @@ def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simp
     simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     logger_mock = mocker.Mock()
     pea_mock = mocker.Mock()
-    pea_mock.logger = logger_mock
+    pea_mock._logger = logger_mock
     simple_vector_indexer_driver_add.runtime = pea_mock
     # TODO once https://github.com/jina-ai/jina/pull/1555 is merged union can be declared using '+'
     union = deepcopy(documents)
