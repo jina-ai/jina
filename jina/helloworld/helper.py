@@ -93,9 +93,9 @@ def write_html(html_path):
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
         t = t.replace('{% PRECISION_EVALUATION %}',
-                      '{:.2f}%'.format(evaluation_value['Precision@N'] * 100.0))
+                      '{:.2f}%'.format(evaluation_value['PrecisionEvaluator'] * 100.0))
         t = t.replace('{% RECALL_EVALUATION %}',
-                      '{:.2f}%'.format(evaluation_value['Recall@N'] * 100.0))
+                      '{:.2f}%'.format(evaluation_value['RecallEvaluator'] * 100.0))
         t = t.replace('{% TOP_K %}', str(top_k))
 
         fw.write(t)
