@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       git_tag:
-        description: 'The git tag version in vx.y.z format'
+        description: 'The git tag version in x.y.z'
         required: true
       release_token:
         description: 'Your release token'
@@ -30,15 +30,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.git_tag }}
+          ref: "v${{ github.event.inputs.git_tag }}"
       - name: Set envs and versions
         run: |
+          JINA_VERSION=${{ github.event.inputs.git_tag }}
+          JINA_MINOR_VERSION=${JINA_VERSION%.*}
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          JINA_VERSION=${${{ github.event.inputs.git_tag }}/v/}
-          JINA_MINOR_VERSION=${JINA_VERSION%.*}
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
-          echo "V_JINA_VERSION=${{ github.event.inputs.git_tag }}" >> $GITHUB_ENV
+          echo "V_JINA_VERSION=v${{ github.event.inputs.git_tag }}" >> $GITHUB_ENV
           echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
