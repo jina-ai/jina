@@ -66,3 +66,20 @@ def test_pod_remote_context(runtime):
         assert remote_pod.num_peas == 4  # head + tail + 2 peas
 
     Pod(remote_pod_args).start().close()
+
+
+@pytest.mark.parametrize('remove_uses_ba', [False, True])
+def test_pod_args_remove_uses_ba(remove_uses_ba):
+    if remove_uses_ba:
+        args = set_pod_parser().parse_args(['--remove-uses-ba', '--uses-before', '_pass', '--uses-after', '_pass'])
+    else:
+        args = set_pod_parser().parse_args(['--uses-before', '_pass', '--uses-after', '_pass'])
+
+    pod = Pod(args)
+
+    if remove_uses_ba:
+        assert pod.args.uses_before is None
+        assert pod.args.uses_after is None
+    else:
+        assert pod.args.uses_before == '_pass'
+        assert pod.args.uses_after == '_pass'

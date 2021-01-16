@@ -9,12 +9,15 @@ def mixin_base_pod_parser(parser):
     gp = add_arg_group(parser, title='Pod')
 
     gp.add_argument('--uses-before', type=str,
-                    help='the executor used before sending to all parallels, '
-                         'accepted type follows "--uses"')
+                    help='the executor attached after the Peas described by --uses, typically before sending to all '
+                         'parallels, accepted type follows "--uses"')
     gp.add_argument('--uses-after', type=str,
-                    help='the executor used after receiving from all parallels, '
-                         'accepted type follows "--uses"')
-
+                    help='the executor attached after the Peas described by --uses, typically used for receiving from '
+                         'all parallels, accepted type follows "--uses"')
+    gp.add_argument('--remove-uses-ba', action='store_true', default=False,
+                    help='a flag to disable `uses-before` or `uses-after` if parallel is equal to 1. Useful'
+                         'to parametrize parallelization and sharding without having `uses_after` or `uses_before` '
+                         'taking extra processes and network hops')
     gp.add_argument('--parallel', '--shards', type=int, default=1,
                     help='number of parallel peas in the pod running at the same time, '
                          '`port_in` and `port_out` will be set to random, '
