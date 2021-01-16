@@ -5,30 +5,28 @@ from typing import List, Union, Dict
 from fastapi import status, APIRouter, Body, Response, File, UploadFile
 from fastapi.exceptions import HTTPException
 
-from jina.clients import Client
-from jina.helper import ArgNamespace
-from jina.parsers import set_client_cli_parser
-from ...excepts import FlowYamlParseException, FlowCreationException, FlowStartException
+from .base import del_from_store, clear_store, add_store
 from ...models import SinglePodModel, FlowModel
-from ...store import flow_store
+from ...stores import flow_store as store
 
-router = APIRouter()
+router = APIRouter(prefix='/flow', tags=['flow'])
 
 
 @router.get(
-    path='/flow/parameters',
-    summary='Fetch all params that a Flow can accept'
+    path='/arguments',
+    summary='Get all accept arguments of a Flow'
 )
 async def _fetch_flow_params():
     return FlowModel.schema()['properties']
 
 
 @router.put(
-    path='/flow/pods',
-    summary='Start a Flow from list of Pods',
+    path='/from_pods',
+    summary='Create a Flow from list of Pods',
+    status_code=201
 )
 async def _create_from_pods(
-    pods: Union[List[Dict]] = Body(..., example=json.loads(SinglePodModel().json()))
+        pods: Union[List[Dict]] = Body(..., example=[SinglePodModel()])
 ):
     """
     Build a Flow using a list of `SinglePodModel`
@@ -46,32 +44,18 @@ async def _create_from_pods(
             }
         ]
     """
-    with flow_store._session():
-        try:
-            flow_id, host, port_expose = flow_store._create(config=pods)
-        except FlowCreationException:
-            raise HTTPException(status_code=404,
-                                detail=f'Bad pods args')
-        except FlowStartException:
-            raise HTTPException(status_code=404,
-                                detail=f'Flow couldn\'t get started')
-    return {
-        'status_code': status.HTTP_200_OK,
-        'flow_id': flow_id,
-        'host': host,
-        'port': port_expose,
-        'status': 'started'
-    }
+    return add_store(store, pods)
 
 
 @router.put(
-    path='/flow/yaml',
-    summary='Start a Flow from a YAML config',
+    path='/from_yaml',
+    summary='Creat a Flow from a YAML config',
+    status_code=201,
 )
 async def _create_from_yaml(
-    yamlspec: UploadFile = File(...),
-    uses_files: List[UploadFile] = File(()),
-    pymodules_files: List[UploadFile] = File(())
+        yamlspec: UploadFile = File(...),
+        uses_files: List[UploadFile] = File(()),
+        pymodules_files: List[UploadFile] = File(())
 ):
     """
     Build a flow using [Flow YAML](https://docs.jina.ai/chapters/yaml/yaml.html#flow-yaml-sytanx)
@@ -140,25 +124,21 @@ async def _create_from_yaml(
                 ...
 
     """
+    return add_store(store, config=yamlspec.file, files=list(uses_files) + list(pymodules_files))
 
-    with flow_store._session():
-        try:
-            flow_id, host, port_expose = flow_store._create(config=yamlspec.file,
-                                                            files=list(uses_files) + list(pymodules_files))
-        except FlowYamlParseException:
-            raise HTTPException(status_code=404,
-                                detail=f'Invalid yaml file.')
-        except FlowStartException as e:
-            raise HTTPException(status_code=404,
-                                detail=f'Flow couldn\'t get started:  {e!r}')
 
-    return {
-        'status_code': status.HTTP_200_OK,
-        'flow_id': flow_id,
-        'host': host,
-        'port': port_expose,
-        'status': 'started'
-    }
+@router.delete(
+    path='/{id}',
+    summary='Terminate a running Flow',
+    description='Terminate a running Flow and release its resources'
+)
+async def _delete(id: 'uuid.UUID'):
+    return del_from_store(store, id)
+
+
+@router.on_event('shutdown')
+def _shutdown():
+    return clear_store(store)
 
 
 @router.get(
@@ -166,8 +146,8 @@ async def _create_from_yaml(
     summary='Get the status of a running Flow',
 )
 async def _fetch(
-    flow_id: uuid.UUID,
-    yaml_only: bool = False
+        flow_id: uuid.UUID,
+        yaml_only: bool = False
 ):
     """
     Get Flow information using `flow_id`.
@@ -178,7 +158,7 @@ async def _fetch(
     - Gateway port
     """
     try:
-        with flow_store._session():
+        with flow_store.session():
             host, port_expose, yaml_spec = flow_store._get(flow_id=flow_id)
 
         if yaml_only:
@@ -194,58 +174,3 @@ async def _fetch(
     except KeyError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Flow ID {flow_id} not found! Please create a new Flow')
-
-
-@router.get(
-    path='/ping',
-    summary='Check if the Flow is alive',
-)
-async def _ping(
-    host: str,
-    port: int
-):
-    """
-    Ping to check if we can connect to gateway via gRPC `host:port`
-
-    Note: Make sure Flow is running
-    """
-    kwargs = {'port_expose': port, 'host': host}
-    _, args, _ = ArgNamespace.get_parsed_args(kwargs, set_client_cli_parser())
-    client = Client(args)
-    try:
-        # TODO: this introduces side-effect, need to be refactored. (2020.01.10)
-        client.index(input_fn=['abc'])
-        return {
-            'status_code': status.HTTP_200_OK,
-            'detail': 'connected'
-        }
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'Cannot connect to GRPC Server on {host}:{port}')
-
-
-@router.delete(
-    path='/flow',
-    summary='Terminate a running Flow',
-)
-async def _delete(
-    flow_id: uuid.UUID
-):
-    """
-    Close Flow Context
-    """
-    with flow_store._session():
-        try:
-            flow_store._delete(flow_id=flow_id)
-            return {
-                'status_code': status.HTTP_200_OK
-            }
-        except KeyError:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail=f'Flow ID {flow_id} not found! Please create a new Flow')
-
-
-@router.on_event('shutdown')
-def _shutdown():
-    with flow_store._session():
-        flow_store._delete_all()

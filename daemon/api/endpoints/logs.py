@@ -8,9 +8,7 @@ from fastapi import APIRouter, WebSocket
 from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 
-from ... import daemon_logger
-from ...config import log_config
-from ...excepts import NoSuchFileException
+from ... import daemon_logger, jinad_args
 
 router = APIRouter()
 
@@ -65,7 +63,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         # Accessing path / query params from scope in ASGI
         # https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
         self.log_id = self.scope.get('path').split('/')[-1]
-        self.filepath = log_config.PATH % self.log_id
+        self.filepath = jinad_args.log_path % self.log_id
         query_string = self.scope.get('query_string').decode()
         self.timeout = float(dict(parse_qsl(query_string)).get('timeout', self.DEFAULT_TIMEOUT))
 
@@ -78,7 +76,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         # The following `raise` raises `websockets.exceptions.ConnectionClosedError` (code = 1006)
         # TODO(Deepankar): This needs better handling.
         if not Path(self.filepath).is_file():
-            raise NoSuchFileException(f'File {self.filepath} not found locally')
+            raise FileNotFoundError(f'File {self.filepath} not found locally')
 
         self.active_clients.append(websocket)
         self.client_details = f'{websocket.client.host}:{websocket.client.port}'
@@ -86,7 +84,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
     async def on_receive(self, websocket: WebSocket, data: Any) -> None:
         if not Path(self.filepath).is_file():
-            raise NoSuchFileException(f'File {self.filepath} not found locally')
+            raise FileNotFoundError(f'File {self.filepath} not found locally')
 
         line_num_from = int(data.get('from', 0))
         with open(self.filepath) as fp:

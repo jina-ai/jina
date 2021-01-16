@@ -29,12 +29,12 @@ def flow_file_str():
 @pytest.mark.parametrize('config', [flow_file_str(), pod_list_one(), pod_list_multiple()])
 def test_flow_store(config):
     store = InMemoryFlowStore()
-    with store._session():
+    with store.session():
         flow_id, _, _ = store._create(config=config)
-        assert flow_id in store._store.keys()
-        assert isinstance(store._store[flow_id]['flow'], Flow)
+        assert flow_id in store._items.keys()
+        assert isinstance(store._items[flow_id]['flow'], Flow)
         store._delete(flow_id)
-        assert flow_id not in store._store.keys()
+        assert flow_id not in store._items.keys()
 
 
 def test_flow_store_with_files(tmpdir):
@@ -43,14 +43,14 @@ def test_flow_store_with_files(tmpdir):
     file_py = UploadFile(Path(tmpdir) / 'file1.py')
     files = [file_yml, file_py]
     store = InMemoryFlowStore()
-    with store._session():
+    with store.session():
         flow_id, _, _ = store._create(config=config, files=files)
         assert Path(file_yml.filename).exists()
         assert Path(file_py.filename).exists()
-        assert flow_id in store._store.keys()
-        assert isinstance(store._store[flow_id]['flow'], Flow)
+        assert flow_id in store._items.keys()
+        assert isinstance(store._items[flow_id]['flow'], Flow)
         store._delete(flow_id)
-        assert flow_id not in store._store.keys()
+        assert flow_id not in store._items.keys()
         assert not Path(file_yml.filename).exists()
         assert not Path(file_py.filename).exists()
 
@@ -58,20 +58,20 @@ def test_flow_store_with_files(tmpdir):
 def test_pod_store():
     args = set_pod_parser().parse_args([])
     store = InMemoryPodStore()
-    with store._session():
+    with store.session():
         pod_id = store._create(pod_arguments=args)
-        assert pod_id in store._store.keys()
-        assert isinstance(store._store[pod_id]['pod'], BasePod)
+        assert pod_id in store._items.keys()
+        assert isinstance(store._items[pod_id]['pod'], BasePod)
         store._delete(pod_id)
-        assert pod_id not in store._store.keys()
+        assert pod_id not in store._items.keys()
 
 
 def test_pea_store():
     args = set_pea_parser().parse_args([])
     store = InMemoryPeaStore()
-    with store._session():
+    with store.session():
         pea_id = store._create(pea_arguments=args)
-        assert pea_id in store._store.keys()
+        assert pea_id in store._items.keys()
         # assert isinstance(store._store[pea_id]['pea'], LocalRuntime)
         store._delete(pea_id)
-        assert pea_id not in store._store.keys()
+        assert pea_id not in store._items.keys()

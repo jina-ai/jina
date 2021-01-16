@@ -22,7 +22,7 @@ def mixin_base_ppr_parser(parser):
     # hidden CLI used for internal only
 
     gp.add_argument('--identity', type=str, default=get_random_identity(),
-                    help='the identity of the sockets, default a random string. Important for load balancing messages'
+                    help='a UUID1 string to represent the identity of this object'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp.add_argument('--log-id', type=str, default=get_random_identity(),
