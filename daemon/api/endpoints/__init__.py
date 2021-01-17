@@ -1,10 +1,7 @@
-from typing import List
-
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter
 
 from jina.helper import get_public_ip, get_internal_ip, get_full_version
 from jina.logging.profile import used_memory_readable
-from ...helper import create_meta_files_from_upload
 from ...models.status import DaemonStatus
 from ...stores import pea_store, pod_store, flow_store
 
@@ -48,18 +45,3 @@ async def _status():
         'flows': flow_store.status,
         'used_memory': used_memory_readable()
     }
-
-
-@router.put(
-    path='/upload',
-    summary='Upload YAML & py_modules file dependencies',
-)
-async def _upload(
-        uses_files: List[UploadFile] = File(()),
-        pymodules_files: List[UploadFile] = File(())
-):
-    if uses_files:
-        [create_meta_files_from_upload(current_file) for current_file in uses_files]
-
-    if pymodules_files:
-        [create_meta_files_from_upload(current_file) for current_file in pymodules_files]

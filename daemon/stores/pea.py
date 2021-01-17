@@ -1,17 +1,23 @@
 import uuid
 from argparse import Namespace
+from typing import Optional, List
+
+from fastapi import UploadFile
 
 from jina.peapods import Pea
 from .base import BaseStore
 
 
 class PeaStore(BaseStore):
-    """ Creates Pea/Pod on remote  """
-
     peapod_cls = Pea
 
-    def add(self, args: Namespace, **kwargs):
+    def add(self, args: Namespace,
+            dependencies: Optional[List[UploadFile]] = None,
+            **kwargs):
         try:
+            _workdir = self.get_temp_dir()
+            if dependencies:
+                self.create_files_from_upload(dependencies, _workdir)
             _id = uuid.UUID(args.identity)
             p = self.peapod_cls(args).start()
         except Exception as e:
@@ -20,6 +26,7 @@ class PeaStore(BaseStore):
         else:
             self[_id] = {
                 'object': p,
-                'arguments': vars(args)
+                'arguments': vars(args),
+                'workdir': _workdir
             }
             return _id

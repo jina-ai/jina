@@ -1,6 +1,7 @@
 import uuid
+from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
@@ -36,10 +37,11 @@ async def _fetch_pea_params():
     status_code=201,
     response_model=uuid.UUID
 )
-async def _create(pea: 'PeaModel'):
+async def _create(pea: 'PeaModel',
+                  dependencies: Optional[List[UploadFile]] = None):
     try:
         args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
-        return store.add(args)
+        return store.add(args, dependencies)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -66,6 +68,14 @@ async def _status(id: 'uuid.UUID'):
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.delete(
+    path='/all',
+    summary='Terminate all running Peas',
+)
+def _clear_all():
+    store.clear()
 
 
 @router.on_event('shutdown')

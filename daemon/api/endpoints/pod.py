@@ -1,6 +1,7 @@
 import uuid
+from typing import Optional, List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
@@ -37,11 +38,12 @@ async def _fetch_pod_params():
     response_model=uuid.UUID
 )
 async def _create(
-        pod: 'PodModel'
+        pod: 'PodModel',
+        dependencies: Optional[List[UploadFile]] = None
 ):
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
-        return store.add(args)
+        return store.add(args, dependencies)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -68,6 +70,14 @@ async def _status(id: 'uuid.UUID'):
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.delete(
+    path='/all',
+    summary='Terminate all running Pods',
+)
+def _clear_all():
+    store.clear()
 
 
 @router.on_event('shutdown')

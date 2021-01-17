@@ -8,6 +8,7 @@ from pydantic import BaseModel
 class StoreItemStatus(BaseModel):
     uptime: datetime
     arguments: Dict
+    workdir: str
 
 
 class FlowItemStatus(StoreItemStatus):

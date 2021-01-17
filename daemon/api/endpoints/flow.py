@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional, List
 
 from fastapi import APIRouter, File, UploadFile
 from fastapi.exceptions import HTTPException
@@ -35,10 +36,11 @@ async def _fetch_flow_params():
     response_model=uuid.UUID
 )
 async def _create(
-        flow: UploadFile = File(...)
+        flow: UploadFile = File(...),
+        dependencies: Optional[List[UploadFile]] = None
 ):
     try:
-        return store.add(config=flow.file)
+        return store.add(flow.file, dependencies)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -67,6 +69,14 @@ async def _status(
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.delete(
+    path='/all',
+    summary='Terminate all running Flows',
+)
+def _clear_all():
+    store.clear()
 
 
 @router.on_event('shutdown')
