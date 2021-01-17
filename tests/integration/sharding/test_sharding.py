@@ -13,10 +13,11 @@ from jina.flow import Flow
 random.seed(0)
 np.random.seed(0)
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def get_index_flow(yaml_file, num_shards):
     f = Flow().add(
-        uses='yaml/' + yaml_file,
+        uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
         separated_workspace=True,
     )
@@ -25,7 +26,7 @@ def get_index_flow(yaml_file, num_shards):
 
 def get_delete_flow(yaml_file, num_shards):
     f = Flow().add(
-        uses='yaml/' + yaml_file,
+        uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
         separated_workspace=True,
         polling='all',
@@ -35,7 +36,7 @@ def get_delete_flow(yaml_file, num_shards):
 
 def get_update_flow(yaml_file, num_shards):
     f = Flow().add(
-        uses='yaml/' + yaml_file,
+        uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
         separated_workspace=True,
         polling='all',
@@ -45,7 +46,7 @@ def get_update_flow(yaml_file, num_shards):
 
 def get_search_flow(yaml_file, num_shards):
     f = Flow(read_only=True).add(
-        uses='yaml/' + yaml_file,
+        uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
         separated_workspace=True,
         uses_after='_merge_matches_topk',
