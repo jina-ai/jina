@@ -118,24 +118,36 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards, expe
         return validate_results
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(input_fn=random_docs(0, 201))
+        index_flow.index(
+            input_fn=random_docs(0, 201),
+            request_size=100
+        )
 
     for index_name in index_names:
         validate_index_size(expected1, index_name)
 
     with get_delete_flow(index_conf, num_shards) as index_flow:
-        index_flow.delete(input_fn=random_docs(0, 30))
+        index_flow.delete(
+            input_fn=random_docs(0, 30),
+            request_size=100
+        )
 
     with get_delete_flow(index_conf, num_shards) as index_flow:
-        index_flow.delete(input_fn=random_docs(100, 150))
+        index_flow.delete(
+            input_fn=random_docs(100, 150),
+            request_size=100
+        )
 
     for index_name in index_names:
         validate_index_size(expected2, index_name)
 
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards) as search_flow:
-        search_flow.search(input_fn=random_docs(28, 35),
-                           output_fn=validate_result_factory(10))
+        search_flow.search(
+            input_fn=random_docs(28, 35),
+            output_fn=validate_result_factory(10),
+            request_size=100
+        )
     mock.assert_called_once()
 
 
@@ -159,15 +171,21 @@ def test_delete_kv(config, mocker, num_shards, expected1, expected2):
         return validate_results
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(input_fn=random_docs(0, 201))
+        index_flow.index(
+            input_fn=random_docs(0, 201),
+            request_size=100)
 
     validate_index_size(expected1, index_name)
 
     with get_delete_flow(index_conf, num_shards) as delete_flow:
-        delete_flow.delete(input_fn=random_docs(0, 30))
+        delete_flow.delete(
+            input_fn=random_docs(0, 30),
+            request_size=100)
 
     with get_delete_flow(index_conf, num_shards) as delete_flow:
-        delete_flow.delete(input_fn=random_docs(100, 150))
+        delete_flow.delete(
+            input_fn=random_docs(100, 150),
+            request_size=100)
 
     validate_index_size(expected2, index_name)
 
@@ -175,7 +193,8 @@ def test_delete_kv(config, mocker, num_shards, expected1, expected2):
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
             input_fn=random_docs(28, 35),
-            output_fn=validate_result_factory(5))
+            output_fn=validate_result_factory(5),
+            request_size=100)
     mock.assert_called_once()
 
 
@@ -211,13 +230,17 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards, expe
         return validate_results
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(input_fn=docs_before)
+        index_flow.index(
+            input_fn=docs_before,
+            request_size=100)
 
     for index_name in index_names:
         validate_index_size(expected_size_1, index_name)
 
     with get_update_flow(index_conf, num_shards) as update_flow:
-        update_flow.update(input_fn=docs_updated)
+        update_flow.update(
+            input_fn=docs_updated,
+            request_size=100)
 
     for index_name in index_names:
         validate_index_size(expected_size_2, index_name)
@@ -227,7 +250,8 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards, expe
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
             input_fn=random_docs(0, 1),
-            output_fn=validate_result_factory())
+            output_fn=validate_result_factory(),
+            request_size=100)
     assert mock.call_count == 1
 
 
@@ -235,7 +259,7 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards, expe
     'num_shards, expected_size_1, expected_size_2', (
             (1, [201], [201]),
             (2, [101, 100], [101, 100]),
-            (3, [100, 100, 1], [100, 100, 1]),  # Flaky
+            (3, [100, 100, 1], [100, 100, 1]),
             (10, [100, 100, 1], [100, 100, 1, 0, 0, 0, 0, 0, 0, 0]),
     )
 )
@@ -277,12 +301,16 @@ def test_update_kv(config, mocker, num_shards, expected_size_1, expected_size_2)
         assert h in hash_set_updated
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(input_fn=docs_before)
+        index_flow.index(
+            input_fn=docs_before,
+            request_size=100)
 
     validate_index_size(expected_size_1, index_name)
 
     with get_update_flow(index_conf, num_shards) as update_flow:
-        update_flow.update(input_fn=docs_updated)
+        update_flow.update(
+            input_fn=docs_updated,
+            request_size=100)
 
     validate_index_size(expected_size_2, index_name)
 
@@ -293,6 +321,8 @@ def test_update_kv(config, mocker, num_shards, expected_size_1, expected_size_2)
             (200, 201, validate_results_3)
     ):
         with get_search_flow(index_conf, num_shards) as search_flow:
-            search_flow.search(input_fn=random_docs(start, end),
-                               output_fn=validate_results)
+            search_flow.search(
+                input_fn=random_docs(start, end),
+                output_fn=validate_results,
+                request_size=100)
     assert mock.call_count == 3
