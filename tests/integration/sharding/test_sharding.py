@@ -172,54 +172,126 @@ def test_delete_kv(config, mocker, num_shards, expected1, expected2):
 
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards) as search_flow:
-        search_flow.search(input_fn=random_docs(28, 35),
-                           output_fn=validate_result_factory(5))
+        search_flow.search(
+            input_fn=random_docs(28, 35),
+            output_fn=validate_result_factory(5))
     mock.assert_called_once()
 
 
 @pytest.mark.parametrize(
-    'num_shards, expected_size, updated_intervals', (
-            (1, [201], [(190, 201)]),
-            (2, [101, 100], [(100, 101), (90, 100)]),
-            (3, [100, 100, 1], [(0, 0), (90, 100), (0, 1)]),
-            (10, [100, 100, 1], [(0, 0), (90, 100), (0, 1)]),
+    'num_shards, expected_size_1, expected_size_2', (
+            (1, [201], [201]),
+            (2, [101, 100], [101, 100]),
+            (3, [100, 100, 1], [100, 100, 1]),
+            (10, [100, 100, 1], [100, 100, 1]),
     )
 )
-def test_update_kv(config, mocker, num_shards, expected_size, updated_intervals):
+@pytest.mark.parametrize('index_conf, index_names', [
+    ['index.yml', ['kvidx', 'vecidx']],
+    ['index_vector.yml', ['vecidx']]
+])
+def test_update_vector(config, mocker, index_conf, index_names, num_shards, expected_size_1, expected_size_2):
+    docs_before = list(random_docs(0, 201))
+    docs_updated = list(random_docs(0, 210))
+    hash_set_before = [hash(d.embedding.tobytes()) for d in docs_before]
+    hash_set_updated = [hash(d.embedding.tobytes()) for d in docs_updated]
+
+    def validate_result_factory():
+        def validate_results(resp):
+            mock()
+            assert len(resp.docs) == 1
+            for doc in resp.docs:
+                assert len(doc.matches) == 10
+                for match in doc.matches:
+                    h = hash(match.embedding.tobytes())
+                    assert h not in hash_set_before
+                    assert h in hash_set_updated
+
+        return validate_results
+
+    with get_index_flow(index_conf, num_shards) as index_flow:
+        index_flow.index(input_fn=docs_before)
+
+    for index_name in index_names:
+        validate_index_size(expected_size_1, index_name)
+
+    with get_update_flow(index_conf, num_shards) as update_flow:
+        update_flow.update(input_fn=docs_updated)
+
+    for index_name in index_names:
+        validate_index_size(expected_size_2, index_name)
+
+    mock = mocker.Mock()
+
+    with get_search_flow(index_conf, num_shards) as search_flow:
+        search_flow.search(
+            input_fn=random_docs(0, 1),
+            output_fn=validate_result_factory())
+    assert mock.call_count == 1
+
+
+@pytest.mark.parametrize(
+    'num_shards, expected_size_1, expected_size_2', (
+            (1, [201], [201]),
+            (2, [101, 100], [101, 100]),
+            (3, [100, 100, 1], [100, 100, 1]),  # Flaky
+            (10, [100, 100, 1], [100, 100, 1, 0, 0, 0, 0, 0, 0, 0]),
+    )
+)
+def test_update_kv(config, mocker, num_shards, expected_size_1, expected_size_2):
     index_conf = 'index_kv.yml'
     index_name = 'kvidx'
 
     docs_before = list(random_docs(0, 201))
     docs_updated = list(random_docs(190, 210))
+    hash_set_before = [hash(d.embedding.tobytes()) for d in docs_before]
+    hash_set_updated = [hash(d.embedding.tobytes()) for d in docs_updated]
 
-    def validate_results(resp):
+    def validate_results_1(resp):
         mock()
-        hash_set_before = [hash(d.embedding.tobytes()) for d in docs_before]
-        hash_set_updated = [hash(d.embedding.tobytes()) for d in docs_updated]
-        assert len(resp.docs) == 201
+        assert len(resp.docs) == 100
         for i, doc in enumerate(resp.docs):
             h = hash(doc.embedding.tobytes())
-            if i < 190:
+
+            assert h in hash_set_before
+            assert h not in hash_set_updated
+
+    def validate_results_2(resp):
+        mock()
+        assert len(resp.docs) == 100
+        for i, doc in enumerate(resp.docs):
+            h = hash(doc.embedding.tobytes())
+            if i < 90:
                 assert h in hash_set_before
                 assert h not in hash_set_updated
             else:
-
                 assert h not in hash_set_before
                 assert h in hash_set_updated
+
+    def validate_results_3(resp):
+        mock()
+        assert len(resp.docs) == 1
+        h = hash(resp.docs[0].embedding.tobytes())
+        assert h not in hash_set_before
+        assert h in hash_set_updated
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(input_fn=docs_before)
 
-    validate_index_size(expected_size, index_name)
+    validate_index_size(expected_size_1, index_name)
 
     with get_update_flow(index_conf, num_shards) as update_flow:
         update_flow.update(input_fn=docs_updated)
 
-    validate_index_size(expected_size, index_name)
+    validate_index_size(expected_size_2, index_name)
 
     mock = mocker.Mock()
-    with get_search_flow(index_conf, num_shards) as search_flow:
-        search_flow.search(input_fn=random_docs(0, 220),
-                           output_fn=validate_results,
-                           request_size=300)
-    mock.assert_called_once()
+    for start, end, validate_results in (
+            (0, 100, validate_results_1),
+            (100, 200, validate_results_2),
+            (200, 201, validate_results_3)
+    ):
+        with get_search_flow(index_conf, num_shards) as search_flow:
+            search_flow.search(input_fn=random_docs(start, end),
+                               output_fn=validate_results)
+    assert mock.call_count == 3
