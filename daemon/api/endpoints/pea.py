@@ -2,8 +2,9 @@ import uuid
 
 from fastapi import APIRouter, HTTPException
 
+from jina.helper import ArgNamespace
+from jina.parsers import set_pea_parser
 from ... import Runtime400Exception
-from ...helper import pea_to_namespace
 from ...models import PeaModel
 from ...models.status import StoreStatus
 from ...stores import pea_store as store
@@ -35,9 +36,10 @@ async def _fetch_pea_params():
     status_code=201,
     response_model=uuid.UUID
 )
-async def _create(arguments: PeaModel):
+async def _create(pea: 'PeaModel'):
     try:
-        return store.add(pea_to_namespace(args=arguments))
+        args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
+        return store.add(args)
     except Exception as ex:
         raise Runtime400Exception from ex
 

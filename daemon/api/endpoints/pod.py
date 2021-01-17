@@ -1,11 +1,11 @@
 import uuid
-from typing import Union
 
 from fastapi import APIRouter, HTTPException
 
+from jina.helper import ArgNamespace
+from jina.parsers import set_pod_parser
 from ... import Runtime400Exception
-from ...helper import pod_to_namespace
-from ...models import PodModel, RawPodModel
+from ...models import PodModel
 from ...models.status import StoreStatus
 from ...stores import pod_store as store
 
@@ -33,13 +33,15 @@ async def _fetch_pod_params():
     path='',
     summary='Create a Pod',
     description='Create a Pod and add it to the store',
-    status_code=201
+    status_code=201,
+    response_model=uuid.UUID
 )
 async def _create(
-        arguments: Union[PodModel, RawPodModel]
+        pod: 'PodModel'
 ):
     try:
-        return store.add(pod_to_namespace(args=arguments))
+        args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
+        return store.add(args)
     except Exception as ex:
         raise Runtime400Exception from ex
 

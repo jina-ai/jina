@@ -13,11 +13,6 @@ def set_flow_parser(parser=None):
     mixin_base_ppr_parser(parser)
 
     parser.add_argument('--uses', type=str, help='a yaml file represents a flow')
-    parser.add_argument('--output-type', type=FlowOutputType.from_string,
-                        choices=list(FlowOutputType), default=FlowOutputType.SHELL_PROC,
-                        help='type of the output')
-    parser.add_argument('--output-path', type=argparse.FileType('w', encoding='utf8'),
-                        help='output path of the flow')
     parser.add_argument('--inspect', type=FlowInspectType.from_string,
                         choices=list(FlowInspectType), default=FlowInspectType.COLLECT,
                         help='strategy on those inspect pods in the flow. '

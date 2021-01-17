@@ -26,14 +26,14 @@ def api_to_dict():
 
     for p_name in parsers.keys():
         d = {'name': p_name, 'options': []}
-        for ddd in export_parser_args(lambda x: get_main_parser()._actions[-1].choices[p_name]):
+        for ddd in _export_parser_args(lambda x: get_main_parser()._actions[-1].choices[p_name]):
             d['options'].append(ddd)
         all_d['methods'].append(d)
 
     return all_d
 
 
-def export_parser_args(parser_fn):
+def _export_parser_args(parser_fn):
     from jina.enums import BetterEnum
     from argparse import _StoreAction, _StoreTrueAction
 

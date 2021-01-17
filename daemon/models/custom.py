@@ -3,7 +3,7 @@ from typing import Iterable, Callable
 
 from pydantic import create_model, validator, Field, BaseConfig
 
-from cli.export import export_parser_args
+from cli.export import _export_parser_args
 
 
 def _get_validator(field: str, choices: Iterable):
@@ -23,7 +23,7 @@ def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser']):
     all_options = {}
     choices_validators = {}
 
-    for a in export_parser_args(parser):
+    for a in _export_parser_args(parser):
         if a.get('choices', None):
             choices_validators[f'validator_for_{a["name"]}'] = _get_validator(field=a['name'],
                                                                               choices=set(a['choices']))
@@ -44,7 +44,7 @@ class _PydanticConfig(BaseConfig):
     arbitrary_types_allowed = True
 
 
-def build_pydantic_model(model_name: str, module: str = 'pod'):
+def build_pydantic_model(model_name: str, module: str):
     from jina.parsers import set_pea_parser, set_pod_parser
     from jina.parsers.flow import set_flow_parser
     if module == 'pod':
