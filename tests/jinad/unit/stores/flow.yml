@@ -1,8 +1,9 @@
 !Flow
+version: '1.0'
 pods:
-  pod1:
+  - name: pod1
     read_only: true
-  pod2:
+  - name: pod2
     read_only: true
-  pod3:
+  - name: pod3
     read_only: true

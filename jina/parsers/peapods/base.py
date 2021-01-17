@@ -12,7 +12,7 @@ def mixin_base_ppr_parser(parser):
 
     gp = add_arg_group(parser, title='Essential')
     gp.add_argument('--name', type=str,
-                    help='the name of this Pea, used to identify the pea/pod and its logs.')
+                    help='the name of this object.')
 
     gp.add_argument('--log-config', type=str,
                     default=resource_filename('jina',

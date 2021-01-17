@@ -1,5 +1,4 @@
 import json
-import os
 import subprocess
 import threading
 
@@ -12,21 +11,16 @@ from jina import __version__
 from jina.logging import JinaLogger
 from .parser import get_main_parser, _get_run_args
 
-daemon_logger = JinaLogger(context='👻',
-                           log_config=os.getenv('JINAD_LOG_CONFIG',
-                                                pkg_resources.resource_filename(
-                                                    'jina', '/'.join(('resources', 'logging.daemon.yml')))))
-
-jinad_args = None  # type: 'Namespace'
+jinad_args = get_main_parser().parse_args([])  # type: 'Namespace'
+daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
 
 def _get_app():
     from .api.endpoints import router, flow, pod, pea, logs
     app = FastAPI(
         titl='JinaD (Daemon)',
-        description='The REST API of the daemon for managing distributed Jina',
+        description='REST interface for managing distributed Jina',
         version=__version__,
-
         openapi_tags=[
             {
                 'name': 'daemon',

@@ -1,8 +1,7 @@
 import uuid
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from .base import del_from_store, clear_store, add_store
 from ...helper import pea_to_namespace
 from ...models import PeaModel
 from ...stores import pea_store as store
@@ -25,7 +24,10 @@ async def _fetch_pea_params():
     status_code=201
 )
 async def _create(arguments: PeaModel):
-    return add_store(store, pea_to_namespace(args=arguments))
+    try:
+        return store.add(pea_to_namespace(args=arguments))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'{e!r}')
 
 
 @router.delete(
@@ -34,9 +36,12 @@ async def _create(arguments: PeaModel):
     description='Terminate a running Pea and release its resources'
 )
 async def _delete(id: 'uuid.UUID'):
-    return del_from_store(store, id)
+    try:
+        del store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
 
 @router.on_event('shutdown')
 def _shutdown():
-    return clear_store(store)
+    store.clear()

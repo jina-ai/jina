@@ -1,11 +1,9 @@
-import json
 import uuid
 from typing import List, Union, Dict
 
 from fastapi import status, APIRouter, Body, Response, File, UploadFile
 from fastapi.exceptions import HTTPException
 
-from .base import del_from_store, clear_store, add_store
 from ...models import SinglePodModel, FlowModel
 from ...stores import flow_store as store
 
@@ -44,7 +42,10 @@ async def _create_from_pods(
             }
         ]
     """
-    return add_store(store, pods)
+    try:
+        return store.add(config=pods)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'{e!r}')
 
 
 @router.put(
@@ -124,7 +125,10 @@ async def _create_from_yaml(
                 ...
 
     """
-    return add_store(store, config=yamlspec.file, files=list(uses_files) + list(pymodules_files))
+    try:
+        return store.add(config=yamlspec.file, files=list(uses_files) + list(pymodules_files))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'{e!r}')
 
 
 @router.delete(
@@ -133,12 +137,15 @@ async def _create_from_yaml(
     description='Terminate a running Flow and release its resources'
 )
 async def _delete(id: 'uuid.UUID'):
-    return del_from_store(store, id)
+    try:
+        del store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
 
 @router.on_event('shutdown')
 def _shutdown():
-    return clear_store(store)
+    store.clear()
 
 
 @router.get(

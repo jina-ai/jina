@@ -1,11 +1,9 @@
 from typing import List
 
 from fastapi import APIRouter, File, UploadFile
-from fastapi import status
 
 from jina import __version__
 from jina.helper import get_public_ip, get_internal_ip
-from .base import del_from_store, clear_store, add_store
 from ... import daemon_logger, jinad_args
 from ...helper import create_meta_files_from_upload
 
@@ -25,14 +23,13 @@ Welcome to Jina daemon - the manager of distributed Jina
 @router.get(
     path='/status',
     summary='Get the status of the daemon',
-    status_code=status.HTTP_200_OK
+    status_code=200
 )
 async def _status():
     """
     Used to check if the api is running (returns 200 & jina version)
     """
     return {
-        'status_code': status.HTTP_200_OK,
         'version': __version__
     }
 

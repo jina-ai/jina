@@ -1,9 +1,8 @@
 import uuid
 from typing import Union
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from .base import add_store, del_from_store, clear_store
 from ...helper import pod_to_namespace
 from ...models import SinglePodModel, ParallelPodModel
 from ...stores import pod_store as store
@@ -28,7 +27,10 @@ async def _fetch_pod_params():
 async def _create(
         arguments: Union[SinglePodModel, ParallelPodModel]
 ):
-    return add_store(store, pod_to_namespace(args=arguments))
+    try:
+        return store.add(pod_to_namespace(args=arguments))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'{e!r}')
 
 
 @router.delete(
@@ -37,9 +39,12 @@ async def _create(
     description='Terminate a running Pod and release its resources'
 )
 async def _delete(id: 'uuid.UUID'):
-    return del_from_store(store, id)
+    try:
+        del store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
 
 @router.on_event('shutdown')
 def _shutdown():
-    return clear_store(store)
+    store.clear()

@@ -1,14 +1,18 @@
+import os
 import sys
+
+from pkg_resources import resource_filename
 
 from jina.parsers.base import set_base_parser
 from jina.parsers.helper import add_arg_group
+from jina.parsers.peapods.base import mixin_base_ppr_parser
 from jina.parsers.peapods.runtimes.remote import mixin_remote_parser
 
 
 def mixin_log_parser(parser):
     gp = add_arg_group(parser, title='Logging')
 
-    gp.add_argument('--log_path', type=str, default='/tmp/jinad/%s/log.log',
+    gp.add_argument('--log-path', type=str, default='/tmp/jinad/%s/log.log',
                     help='file path for storing the log')
 
     gp.add_argument('--no-fluentd',
@@ -20,9 +24,13 @@ def get_main_parser():
     parser = set_base_parser()
 
     mixin_remote_parser(parser)
+    mixin_base_ppr_parser(parser)
     mixin_log_parser(parser)
 
-    parser.set_defaults(port_expose=8000)
+    parser.set_defaults(port_expose=8000,
+                        log_config=os.getenv('JINAD_LOG_CONFIG',
+                                             resource_filename(
+                                                 'jina', '/'.join(('resources', 'logging.daemon.yml')))))
 
     return parser
 
