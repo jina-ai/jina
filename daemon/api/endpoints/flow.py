@@ -4,10 +4,11 @@ from typing import List, Union, Dict
 from fastapi import status, APIRouter, Body, Response, File, UploadFile
 from fastapi.exceptions import HTTPException
 
+from ... import Runtime400Exception
 from ...models import SinglePodModel, FlowModel
 from ...stores import flow_store as store
 
-router = APIRouter(prefix='/flow', tags=['flow'])
+router = APIRouter(prefix='/flows', tags=['flow'])
 
 
 @router.get(
@@ -44,8 +45,8 @@ async def _create_from_pods(
     """
     try:
         return store.add(config=pods)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'{e!r}')
+    except Exception as ex:
+        raise Runtime400Exception from ex
 
 
 @router.put(
@@ -127,8 +128,8 @@ async def _create_from_yaml(
     """
     try:
         return store.add(config=yamlspec.file, files=list(uses_files) + list(pymodules_files))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'{e!r}')
+    except Exception as ex:
+        raise Runtime400Exception from ex
 
 
 @router.delete(

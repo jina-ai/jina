@@ -9,6 +9,7 @@ from uvicorn import Config, Server
 
 from jina import __version__
 from jina.logging import JinaLogger
+from daemon.excepts import Runtime400Exception, daemon_runtime_exception_handler
 from .parser import get_main_parser, _get_run_args
 
 jinad_args = get_main_parser().parse_args([])  # type: 'Namespace'
@@ -51,11 +52,12 @@ def _get_app():
         allow_methods=['*'],
         allow_headers=['*'],
     )
-    app.include_router(router=router)
-    app.include_router(router=logs.router)
-    app.include_router(router=pea.router)
-    app.include_router(router=pod.router)
-    app.include_router(router=flow.router)
+    app.include_router(router)
+    app.include_router(logs.router)
+    app.include_router(pea.router)
+    app.include_router(pod.router)
+    app.include_router(flow.router)
+    app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
 
     return app
 

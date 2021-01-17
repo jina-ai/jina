@@ -2,16 +2,17 @@ from typing import List
 
 from fastapi import APIRouter, File, UploadFile
 
-from jina import __version__
-from jina.helper import get_public_ip, get_internal_ip
-from ... import daemon_logger, jinad_args
+from jina.helper import get_public_ip, get_internal_ip, get_full_version
+from jina.logging.profile import used_memory_readable
 from ...helper import create_meta_files_from_upload
+from ...stores import pea_store, pod_store, flow_store
 
 router = APIRouter(tags=['daemon'])
 
 
 @router.on_event('startup')
 async def startup():
+    from ... import daemon_logger, jinad_args
     daemon_logger.info(f'''
 Welcome to Jina daemon - the manager of distributed Jina
 📚 Docs address:\thttp://localhost:8000/redoc
@@ -21,16 +22,29 @@ Welcome to Jina daemon - the manager of distributed Jina
 
 
 @router.get(
+    path='/',
+)
+async def _home():
+    """
+    The instruction HTML when user visits `/` directly
+    """
+    return {}
+
+
+@router.get(
     path='/status',
     summary='Get the status of the daemon',
-    status_code=200
 )
 async def _status():
     """
     Used to check if the api is running (returns 200 & jina version)
     """
     return {
-        'version': __version__
+        'jina': get_full_version(),
+        'peas': pea_store.status(),
+        'pods': pod_store.status(),
+        'flows': flow_store.status(),
+        'memory': used_memory_readable()
     }
 
 

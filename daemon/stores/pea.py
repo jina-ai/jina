@@ -18,5 +18,8 @@ class PeaStore(BaseStore):
             self._logger.error(f'{e!r}')
             raise
         else:
-            self._items[_id] = {'object': p}
+            self[_id] = {
+                'object': p,
+                'arguments': vars(args)
+            }
             return _id

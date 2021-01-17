@@ -3,11 +3,20 @@ from typing import Union
 
 from fastapi import APIRouter, HTTPException
 
+from ... import Runtime400Exception
 from ...helper import pod_to_namespace
 from ...models import SinglePodModel, ParallelPodModel
 from ...stores import pod_store as store
 
-router = APIRouter(prefix='/pod', tags=['pod'])
+router = APIRouter(prefix='/pods', tags=['pod'])
+
+
+@router.get(
+    path='',
+    summary='Get all alive peas in the store'
+)
+async def _get_items():
+    return store.status()
 
 
 @router.get(
@@ -19,7 +28,7 @@ async def _fetch_pod_params():
 
 
 @router.put(
-    path='/',
+    path='',
     summary='Create a Pod',
     description='Create a Pod and add it to the store',
     status_code=201
@@ -29,8 +38,8 @@ async def _create(
 ):
     try:
         return store.add(pod_to_namespace(args=arguments))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f'{e!r}')
+    except Exception as ex:
+        raise Runtime400Exception from ex
 
 
 @router.delete(
