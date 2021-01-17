@@ -24,7 +24,7 @@ def _get_app():
         openapi_tags=[
             {
                 'name': 'daemon',
-                'description': 'API to manage Daemon',
+                'description': 'API to manage this Daemon',
             },
             {
                 'name': 'flow',
@@ -32,7 +32,7 @@ def _get_app():
             },
             {
                 'name': 'pod',
-                'description': 'API to manage Pods (__should be used by Flow APIs only__)',
+                'description': 'API to manage Pods',
             },
             {
                 'name': 'pea',

@@ -36,7 +36,7 @@ async def _status():
 
 @router.put(
     path='/upload',
-    summary='Upload YAML & py_modules required',
+    summary='Upload YAML & py_modules file dependencies',
 )
 async def _upload(
         uses_files: List[UploadFile] = File(()),
