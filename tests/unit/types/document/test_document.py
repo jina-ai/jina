@@ -334,3 +334,9 @@ def test_get_attr():
     assert res['tags_name'] == 'name'
     assert res['text'] == 'document'
     assert 'tags_a' not in res
+
+    res2 = d.get_attrs(*['tags', 'text'])
+    assert 'tags_id' not in res2
+    assert res2['text'] == 'document'
+    assert res2['tags'] == d.tags
+

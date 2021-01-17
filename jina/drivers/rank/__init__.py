@@ -7,7 +7,6 @@ from ...types.document import Document
 from ...types.document.uid import UniqueId
 from ...types.score import NamedScore
 
-
 if False:
     from ...types.sets import DocumentSet
 
@@ -49,9 +48,9 @@ class Matches2DocRankDriver(BaseRankDriver):
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
 
-        query_meta = context_doc.get_attrs(*self.exec.required_keys)
+        query_meta = context_doc.get_attrs(*self.exec.required_keys) if hasattr(self.exec, 'required_keys') else None
         old_match_scores = {int(match.id): match.score.value for match in docs}
-        match_meta = {int(match.id): match.get_attrs(*self.exec.required_keys) for match in docs}
+        match_meta = {int(match.id): match.get_attrs(*self.exec.required_keys) for match in docs} if hasattr(self.exec, 'required_keys') else None
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return

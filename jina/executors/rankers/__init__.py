@@ -30,7 +30,6 @@ class Chunk2DocRanker(BaseRanker):
 
     """
 
-    required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
     COL_MATCH_PARENT_HASH = 'match_parent_hash'
     COL_MATCH_PARENT_ID = 'match_parent_hash'
     COL_MATCH_HASH = 'match_hash'
@@ -38,6 +37,14 @@ class Chunk2DocRanker(BaseRanker):
     COL_DOC_CHUNK_HASH = 'doc_chunk_hash'
     COL_DOC_CHUNK_ID = 'doc_chunk_hash'
     COL_SCORE = 'score'
+
+    required_keys = {'text'}
+    """
+    Set of required keys to be extracted from matches and query to fill the information of `query` and `chunk` meta information.
+    These are the set of keys to be extracted from `Document`.
+
+    Keys prefixed with `tags` will be directly extracted from `Document tags` as if they were direct arguments from documents.
+    """
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
         """Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
