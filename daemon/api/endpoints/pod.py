@@ -6,15 +6,15 @@ from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
 from ... import Runtime400Exception
 from ...models import PodModel
-from ...models.status import StoreStatus
+from ...models.status import StoreStatus, StorePeaPodStatus
 from ...stores import pod_store as store
 
-router = APIRouter(prefix='/pods', tags=['pod'])
+router = APIRouter(prefix='/pods', tags=['pods'])
 
 
 @router.get(
     path='',
-    summary='Get all alive Pods in the store',
+    summary='Get all alive Pods\' status',
     response_model=StoreStatus
 )
 async def _get_items():
@@ -54,6 +54,18 @@ async def _create(
 async def _delete(id: 'uuid.UUID'):
     try:
         del store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.get(
+    path='/{id}',
+    summary='Get status of a running Pod',
+    response_model=StorePeaPodStatus
+)
+async def _status(id: 'uuid.UUID'):
+    try:
+        return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 

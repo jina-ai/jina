@@ -5,6 +5,7 @@ from fastapi import APIRouter, File, UploadFile
 from jina.helper import get_public_ip, get_internal_ip, get_full_version
 from jina.logging.profile import used_memory_readable
 from ...helper import create_meta_files_from_upload
+from ...models.status import DaemonStatus
 from ...stores import pea_store, pod_store, flow_store
 
 router = APIRouter(tags=['daemon'])
@@ -35,6 +36,7 @@ async def _home():
 @router.get(
     path='/status',
     summary='Get the status of the daemon',
+    response_model=DaemonStatus
 )
 async def _status():
     """

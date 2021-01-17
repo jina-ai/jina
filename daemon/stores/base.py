@@ -59,7 +59,7 @@ class BaseStore(MutableMapping):
     def __setitem__(self, key: 'uuid.UUID', value: Dict) -> None:
         self._items[key] = value
         t = datetime.now()
-        value.update({'time_start': t})
+        value.update({'uptime': t})
         self._last_update = t
         self._logger.success(f'add {value!r} with id {colored(str(key), "cyan")} to the store')
         self._num_add += 1
@@ -73,5 +73,5 @@ class BaseStore(MutableMapping):
             'last_update': self._last_update,
             'num_add': self._num_add,
             'num_del': self._num_del,
-            'items': list(self._items.keys())
+            'items': self._items
         }

@@ -22,6 +22,10 @@ def test_add_success(api, fastapi_client):
     assert response.status_code == 200
     assert response.json()['num_add'] == 1
 
+    response = fastapi_client.get(f'{api}/{_id}')
+    assert response.status_code == 200
+    assert 'uptime' in response.json()
+
     response = fastapi_client.delete(f'{api}/{_id}')
     assert response.status_code == 200
 

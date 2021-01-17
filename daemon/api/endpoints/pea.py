@@ -6,15 +6,15 @@ from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
 from ... import Runtime400Exception
 from ...models import PeaModel
-from ...models.status import StoreStatus
+from ...models.status import StoreStatus, StorePeaPodStatus
 from ...stores import pea_store as store
 
-router = APIRouter(prefix='/peas', tags=['pea'])
+router = APIRouter(prefix='/peas', tags=['peas'])
 
 
 @router.get(
     path='',
-    summary='Get all alive Peas in the store',
+    summary='Get all alive Pea\' status',
     response_model=StoreStatus
 )
 async def _get_items():
@@ -52,6 +52,18 @@ async def _create(pea: 'PeaModel'):
 async def _delete(id: 'uuid.UUID'):
     try:
         del store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.get(
+    path='/{id}',
+    summary='Get status of a running Pea',
+    response_model=StorePeaPodStatus
+)
+async def _status(id: 'uuid.UUID'):
+    try:
+        return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 

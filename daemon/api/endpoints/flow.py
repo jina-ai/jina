@@ -9,12 +9,12 @@ from ...models import PodModel, FlowModel
 from ...models.status import StoreStatus
 from ...stores import flow_store as store
 
-router = APIRouter(prefix='/flows', tags=['flow'])
+router = APIRouter(prefix='/flows', tags=['flows'])
 
 
 @router.get(
     path='',
-    summary='Get all alive Flows in the store',
+    summary='Get all alive Flows\' status',
     response_model=StoreStatus
 )
 async def _get_items():
@@ -160,7 +160,7 @@ def _shutdown():
 
 
 @router.get(
-    path='/flow/{flow_id}',
+    path='/{flow_id}',
     summary='Get the status of a running Flow',
 )
 async def _fetch(

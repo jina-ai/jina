@@ -28,15 +28,15 @@ def _get_app():
                 'description': 'API to manage this Daemon',
             },
             {
-                'name': 'flow',
+                'name': 'flows',
                 'description': 'API to manage Flows',
             },
             {
-                'name': 'pod',
+                'name': 'pods',
                 'description': 'API to manage Pods',
             },
             {
-                'name': 'pea',
+                'name': 'peas',
                 'description': 'API to manage Peas',
             },
             {
