@@ -333,8 +333,18 @@ class Document:
         .. seealso::
             :meth:`update` for bulk set/update attributes
 
+        .. warning::
+            Arguments prefixed with `tags` will be directly extracted from `tags` as if they were direct arguments from documents.
+            This is specially intended to allow RankDrivers to access features and meta info from documents inside tags.
+
         """
-        return {k: getattr(self, k) for k in args if hasattr(self, k)}
+        # TODO (Joan): Refactor `queryset` into types to have access to `dunder` logic in types module.
+        from itertools import chain
+        tags_prefix = 'tags_'
+        tags_args = list(filter(lambda x: tags_prefix in x, list(args)))
+        attr_no_tags = {k: getattr(self, k) for k in args if hasattr(self, k)}
+        attr_tags = {k: self.tags[k.lstrip(tags_prefix)] for k in tags_args}
+        return dict(chain.from_iterable(d.items() for d in (attr_no_tags, attr_tags)))
 
     @property
     def as_pb_object(self) -> 'jina_pb2.DocumentProto':

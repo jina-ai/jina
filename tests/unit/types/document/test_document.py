@@ -229,7 +229,6 @@ def test_doc_setattr():
 
 
 def test_doc_score():
-    from jina import Document
     from jina.types.score import NamedScore
     with Document() as doc:
         doc.text = 'text'
@@ -317,3 +316,21 @@ def test_include_repeated_fields():
     d2.chunks.clear()
     d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
     assert d1.content_hash != d2.content_hash
+
+
+def test_get_attr():
+    d = Document()
+    with d:
+        d.tags['id'] = 123
+        d.tags['feature1'] = 121
+        d.tags['name'] = 'name'
+        d.tags['a'] = 'b'
+        d.text = 'document'
+
+    res = d.get_attrs(*['tags_id', 'text', 'tags_name', 'tags_feature1'])
+
+    assert res['tags_id'] == 123
+    assert res['tags_feature1'] == 121
+    assert res['tags_name'] == 'name'
+    assert res['text'] == 'document'
+    assert 'tags_a' not in res
