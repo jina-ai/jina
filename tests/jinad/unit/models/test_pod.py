@@ -1,17 +1,17 @@
-from daemon.models import SinglePodModel, ParallelPodModel
+from daemon.models import PodModel, RawPodModel
 
 
 def test_single_no_exceptions():
-    SinglePodModel()
+    PodModel()
     # this gets executed while verifying inputs
-    SinglePodModel().dict()
+    PodModel().dict()
     # this gets executed while creating docs
-    SinglePodModel().schema()
+    PodModel().schema()
 
 
 def test_parallel_no_exceptions():
-    ParallelPodModel()
+    RawPodModel()
     # this gets executed while verifying inputs
-    ParallelPodModel().dict()
+    RawPodModel().dict()
     # this gets executed while creating docs
-    ParallelPodModel().schema()
+    RawPodModel().schema()

@@ -8,12 +8,12 @@ from jina.enums import PodRoleType
 from jina.flow import Flow
 from .base import BaseStore
 from ..helper import create_meta_files_from_upload
-from ..models import SinglePodModel, build_pydantic_model
+from ..models import PodModel, build_pydantic_model
 
 
 class FlowStore(BaseStore):
 
-    def add(self, config: Union[str, SpooledTemporaryFile, List[SinglePodModel]] = None,
+    def add(self, config: Union[str, SpooledTemporaryFile, List[PodModel]] = None,
             files: List[UploadFile] = None):
         """ Creates Flow using List[PodModel] or yaml spec """
 

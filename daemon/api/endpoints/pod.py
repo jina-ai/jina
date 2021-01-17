@@ -5,7 +5,8 @@ from fastapi import APIRouter, HTTPException
 
 from ... import Runtime400Exception
 from ...helper import pod_to_namespace
-from ...models import SinglePodModel, ParallelPodModel
+from ...models import PodModel, RawPodModel
+from ...models.status import StoreStatus
 from ...stores import pod_store as store
 
 router = APIRouter(prefix='/pods', tags=['pod'])
@@ -13,10 +14,11 @@ router = APIRouter(prefix='/pods', tags=['pod'])
 
 @router.get(
     path='',
-    summary='Get all alive peas in the store'
+    summary='Get all alive Pods in the store',
+    response_model=StoreStatus
 )
 async def _get_items():
-    return store.status()
+    return store.status
 
 
 @router.get(
@@ -24,7 +26,7 @@ async def _get_items():
     summary='Get all accept arguments of a Pod'
 )
 async def _fetch_pod_params():
-    return SinglePodModel.schema()['properties']
+    return PodModel.schema()['properties']
 
 
 @router.put(
@@ -34,7 +36,7 @@ async def _fetch_pod_params():
     status_code=201
 )
 async def _create(
-        arguments: Union[SinglePodModel, ParallelPodModel]
+        arguments: Union[PodModel, RawPodModel]
 ):
     try:
         return store.add(pod_to_namespace(args=arguments))

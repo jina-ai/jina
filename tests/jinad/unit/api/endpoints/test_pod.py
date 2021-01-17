@@ -1,70 +1,38 @@
-import uuid
-
 import pytest
+from fastapi.testclient import TestClient
 
-from daemon.api.endpoints import pod
-from daemon.models import SinglePodModel
+from daemon import _get_app
 
-_temp_id = uuid.uuid1()
-
-
-def mock_pod_start_exception(**kwargs):
-    raise pod.PodStartException
+client = TestClient(_get_app())
 
 
-def mock_key_error(**kwargs):
-    raise KeyError
+@pytest.mark.parametrize('api', ['/peas', '/pods'])
+def test_add_success(api):
+    response = client.put(api, json={'name': 'my_pod'})
+    assert response.status_code == 201
+    _id = response.json()
+
+    response = client.get(api)
+    assert response.status_code == 200
+    assert response.json()['num_add'] == 1
+
+    response = client.delete(f'{api}/{_id}')
+    assert response.status_code == 200
+
+    response = client.get(api)
+    assert response.status_code == 200
+    assert response.json()['num_del'] == 1
+    assert response.json()['size'] == 0
 
 
-@pytest.mark.asyncio
-async def test_fetch_pod_params(monkeypatch):
-    monkeypatch.setattr(SinglePodModel, 'schema', lambda *args: {'properties': {'a': 1, 'b': 2}})
-    response = await pod._fetch_pod_params()
-    assert response['a'] == 1
-    assert response['b'] == 2
+@pytest.mark.parametrize('api', ['/peas', '/pods'])
+def test_add_fail(api):
+    response = client.put(api, json={'name': 'my_pod', 'uses': 'badUses'})
+    assert response.status_code == 400
+    for k in ('body', 'detail'):
+        assert k in response.json()
 
-
-@pytest.mark.asyncio
-async def test_create_success(monkeypatch):
-    monkeypatch.setattr(pod.pod_store, '_create', lambda **args: _temp_id)
-    monkeypatch.setattr(pod, 'pod_to_namespace', lambda **args: {})
-    response = await pod._create({})
-    assert response['status_code'] == 200
-    assert response['pod_id'] == _temp_id
-    assert response['status'] == 'started'
-
-
-@pytest.mark.asyncio
-async def test_create_pod_start_exception(monkeypatch):
-    monkeypatch.setattr(pod.pod_store, '_create', mock_pod_start_exception)
-    monkeypatch.setattr(pod, 'pod_to_namespace', lambda **args: {})
-    with pytest.raises(pod.HTTPException) as response:
-        await pod._create({})
-    assert response.value.status_code == 404
-    assert 'Pod couldn\'t get started' in response.value.detail
-
-
-@pytest.mark.asyncio
-async def test_create_any_exception(monkeypatch):
-    monkeypatch.setattr(pod.pod_store, '_create', mock_key_error)
-    monkeypatch.setattr(pod, 'pod_to_namespace', lambda **args: {})
-    with pytest.raises(pod.HTTPException) as response:
-        await pod._create({})
-    assert response.value.status_code == 404
-    assert response.value.detail == 'Something went wrong'
-
-
-@pytest.mark.asyncio
-async def test_delete_success(monkeypatch):
-    monkeypatch.setattr(pod.pod_store, '_delete', lambda **kwargs: None)
-    response = await pod._delete(_temp_id)
-    assert response['status_code'] == 200
-
-
-@pytest.mark.asyncio
-async def test_delete_exception(monkeypatch):
-    monkeypatch.setattr(pod.pod_store, '_delete', mock_key_error)
-    with pytest.raises(pod.HTTPException) as response:
-        await pod._delete(_temp_id)
-    assert response.value.status_code == 404
-    assert response.value.detail == f'Pod ID {_temp_id} not found! Please create a new Pod'
+    response = client.get(api)
+    assert response.status_code == 200
+    assert response.json()['num_add'] == 0
+    assert response.json()['size'] == 0

@@ -64,6 +64,7 @@ class BaseStore(MutableMapping):
         self._logger.success(f'add {value!r} with id {colored(str(key), "cyan")} to the store')
         self._num_add += 1
 
+    @property
     def status(self) -> Dict:
         """Return the status of this store as a dict"""
         return {

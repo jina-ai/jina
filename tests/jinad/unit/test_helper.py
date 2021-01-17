@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 import pytest
 
 from daemon.helper import get_enum_defaults, handle_enums, pod_to_namespace, pea_to_namespace
-from daemon.models import PeaModel, SinglePodModel, ParallelPodModel
+from daemon.models import PeaModel, PodModel, RawPodModel
 from jina import __default_host__
 from jina.enums import BetterEnum, RuntimeBackendType, PeaRoleType
 
@@ -40,7 +40,7 @@ def test_handle_enums():
 
 def test_single_pod_to_namespace():
     pod_args = pod_to_namespace(
-        SinglePodModel(
+        PodModel(
             name='mypod',
             pea_role=3,
             runtime_backend=0,
@@ -75,16 +75,16 @@ def test_single_pod_to_namespace():
 
 def test_parallel_pod_to_namespace():
     pod_args = pod_to_namespace(
-        ParallelPodModel(
-            head=SinglePodModel(),
-            tail=SinglePodModel(),
+        RawPodModel(
+            head=PodModel(),
+            tail=PodModel(),
             peas=[
-                SinglePodModel(
+                PodModel(
                     name='pod0',
                     host='3.19.298.2',
                     log_config='blah0'
                 ),
-                SinglePodModel(
+                PodModel(
                     name='pod1',
                     host='3.19.298.2',
                     log_config='blah1'

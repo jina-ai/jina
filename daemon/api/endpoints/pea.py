@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from ... import Runtime400Exception
 from ...helper import pea_to_namespace
 from ...models import PeaModel
+from ...models.status import StoreStatus
 from ...stores import pea_store as store
 
 router = APIRouter(prefix='/peas', tags=['pea'])
@@ -12,15 +13,16 @@ router = APIRouter(prefix='/peas', tags=['pea'])
 
 @router.get(
     path='',
-    summary='Get all alive peas in the store'
+    summary='Get all alive Peas in the store',
+    response_model=StoreStatus
 )
 async def _get_items():
-    return store.status()
+    return store.status
 
 
 @router.get(
     path='/arguments',
-    summary='Get all accept arguments of a Pea'
+    summary='Get all accept arguments of a Pea',
 )
 async def _fetch_pea_params():
     return PeaModel.schema()['properties']
@@ -30,7 +32,8 @@ async def _fetch_pea_params():
     path='',
     summary='Create a Pea',
     description='Create a Pea and add it to the store',
-    status_code=201
+    status_code=201,
+    response_model=uuid.UUID
 )
 async def _create(arguments: PeaModel):
     try:

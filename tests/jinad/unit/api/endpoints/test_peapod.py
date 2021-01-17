@@ -6,8 +6,13 @@ from daemon import _get_app
 client = TestClient(_get_app())
 
 
-def test_args():
-    response = client.get('/peas/arguments')
+@pytest.mark.parametrize('api', ['/peas', '/pods'])
+def test_args_status(api):
+    response = client.get(f'{api}/arguments')
+    assert response.status_code == 200
+    assert response.json()
+
+    response = client.get(f'{api}')
     assert response.status_code == 200
     assert response.json()
 

@@ -5,10 +5,20 @@ from fastapi import status, APIRouter, Body, Response, File, UploadFile
 from fastapi.exceptions import HTTPException
 
 from ... import Runtime400Exception
-from ...models import SinglePodModel, FlowModel
+from ...models import PodModel, FlowModel
+from ...models.status import StoreStatus
 from ...stores import flow_store as store
 
 router = APIRouter(prefix='/flows', tags=['flow'])
+
+
+@router.get(
+    path='',
+    summary='Get all alive Flows in the store',
+    response_model=StoreStatus
+)
+async def _get_items():
+    return store.status
 
 
 @router.get(
@@ -25,7 +35,7 @@ async def _fetch_flow_params():
     status_code=201
 )
 async def _create_from_pods(
-        pods: Union[List[Dict]] = Body(..., example=[SinglePodModel()])
+        pods: Union[List[Dict]] = Body(..., example=[PodModel()])
 ):
     """
     Build a Flow using a list of `SinglePodModel`

@@ -6,7 +6,7 @@ from fastapi import UploadFile
 
 from jina import __default_host__
 from jina.helper import get_random_identity
-from .models import PeaModel, SinglePodModel, ParallelPodModel
+from .models import PeaModel, PodModel, RawPodModel
 
 
 def get_enum_defaults(parser: argparse.ArgumentParser):
@@ -59,11 +59,11 @@ def handle_remote_args(args: Dict, parser):
     return _args
 
 
-def pod_to_namespace(args: Union[SinglePodModel, ParallelPodModel]):
+def pod_to_namespace(args: Union[PodModel, RawPodModel]):
     from jina.parsers import set_pod_parser
     parser = set_pod_parser()
 
-    if isinstance(args, ParallelPodModel):
+    if isinstance(args, RawPodModel):
         pod_args = {}
         args = args.dict()
         for pea_type, pea_args in args.items():
@@ -87,7 +87,7 @@ def pod_to_namespace(args: Union[SinglePodModel, ParallelPodModel]):
 
         return pod_args
 
-    if isinstance(args, SinglePodModel):
+    if isinstance(args, PodModel):
         pod_args = handle_remote_args(args=args.dict(),
                                       parser=parser)
         return argparse.Namespace(**pod_args)
