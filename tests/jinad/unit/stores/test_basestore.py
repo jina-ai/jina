@@ -1,11 +1,14 @@
+import uuid
+
 import pytest
 
 from daemon.stores.base import BaseStore
 
+keys = [uuid.uuid1() for _ in range(3)]
 store_items = {
-    '123': {'object': 'abc'},
-    '456': {'object': 'hij'},
-    '789': {}
+    keys[0]: {'object': 'abc'},
+    keys[1]: {'object': 'hij'},
+    keys[2]: {}
 }
 
 
@@ -26,13 +29,13 @@ def test_base_store_del():
     assert s._last_update
     s._items.update(store_items)
     assert len(s) == 3
-    del s['789']
+    del s[keys[0]]
     assert len(s) == 2
-    s.pop('123')
+    s.pop(keys[1])
     assert len(s) == 1
     assert old_update < s._last_update
 
     old_update = s._last_update
     with pytest.raises(KeyError):
-        del s['12345']
+        del s[uuid.uuid1()]
     assert old_update == s._last_update

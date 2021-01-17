@@ -29,6 +29,7 @@ class FlowStoreStatus(StoreStatus):
 
 class DaemonStatus(BaseModel):
     jina: Dict
+    envs: Dict
     peas: StoreStatus
     pods: StoreStatus
     flows: StoreStatus

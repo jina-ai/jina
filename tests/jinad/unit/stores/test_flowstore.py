@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pytest
 from fastapi import UploadFile
 
 from daemon.stores import FlowStore
@@ -23,10 +22,9 @@ def flow_file_str():
     return config_str
 
 
-@pytest.mark.parametrize('config', [flow_file_str(), pod_list_one(), pod_list_multiple()])
-def test_flow_store(config):
+def test_flow_store():
     store = FlowStore()
-    flow_id = store.add(config=config)
+    flow_id = store.add(config=open(str(cur_dir / 'flow.yml'), 'rb'))
     assert len(store) == 1
     assert flow_id in store
     assert isinstance(store[flow_id]['object'], Flow)

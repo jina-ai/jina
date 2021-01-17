@@ -1,7 +1,7 @@
 import uuid
 from collections.abc import MutableMapping
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 from jina.helper import colored
 from jina.logging import JinaLogger
@@ -30,12 +30,12 @@ class BaseStore(MutableMapping):
     def __len__(self):
         return len(self._items)
 
-    def __getitem__(self, key: 'uuid.UUID'):
+    def __getitem__(self, key: Union['uuid.UUID', str]):
         if isinstance(key, str):
             key = uuid.UUID(key)
         return self._items[key]
 
-    def __delitem__(self, key: 'uuid.UUID'):
+    def __delitem__(self, key: Union['uuid.UUID', str]):
         """ Release a Pea/Pod/Flow object from the store """
         if isinstance(key, str):
             key = uuid.UUID(key)

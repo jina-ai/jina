@@ -39,11 +39,10 @@ async def _home():
     response_model=DaemonStatus
 )
 async def _status():
-    """
-    Used to check if the api is running (returns 200 & jina version)
-    """
+    _info = get_full_version()
     return {
-        'jina': get_full_version(),
+        'jina': _info[0],
+        'envs': _info[1],
         'peas': pea_store.status,
         'pods': pod_store.status,
         'flows': flow_store.status,

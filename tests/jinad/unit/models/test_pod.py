@@ -1,4 +1,4 @@
-from daemon.models import PodModel, RawPodModel
+from daemon.models import PodModel
 
 
 def test_single_no_exceptions():
@@ -7,11 +7,3 @@ def test_single_no_exceptions():
     PodModel().dict()
     # this gets executed while creating docs
     PodModel().schema()
-
-
-def test_parallel_no_exceptions():
-    RawPodModel()
-    # this gets executed while verifying inputs
-    RawPodModel().dict()
-    # this gets executed while creating docs
-    RawPodModel().schema()
