@@ -8,6 +8,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6777,4 +6778,27 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```c56f3484```](https://github.com/jina-ai/jina/commit/c56f34843e4a56325be7a536aba2d668a54bd36a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```e07cb083```](https://github.com/jina-ai/jina/commit/e07cb08339171857813e7d492b3146b448ed6501)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```5df3541a```](https://github.com/jina-ai/jina/commit/5df3541a706fd9dbf18196e317a8fdadba160e4e)] __-__ __version__: the next version will be 0.9.16 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-17></a>
+## Release Note (`0.9.17`)
+
+> Release time: 2021-01-17 23:37:23
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Deepankar Mahapatro,  Jina Dev Bot,  Joan Fontanals,  Han Xiao,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```5162a8c7```](https://github.com/jina-ai/jina/commit/5162a8c7e6729da030d8de8d04ca114270041e81)] __-__ fix helloworld (#1710) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```a648a0eb```](https://github.com/jina-ai/jina/commit/a648a0eb6dd207787090113fe1f12f994886bb01)] __-__ __hubapi__: add init file (#1715) (*Deepankar Mahapatro*)
+ - [[```89e9c880```](https://github.com/jina-ai/jina/commit/89e9c8800edebe3a571c40edac097b675d4f409c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```14ab8b80```](https://github.com/jina-ai/jina/commit/14ab8b80e788d1f6d3ce42cddf65b67fa6dc636b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```ad920955```](https://github.com/jina-ai/jina/commit/ad92095541d9f99f84c2dca2f6b366830d835768)] __-__ add manual release dispatch (*Han Xiao*)
+ - [[```fe935425```](https://github.com/jina-ai/jina/commit/fe9354255a22bc6a99685645507cbe1f15090f49)] __-__ __version__: the next version will be 0.9.17 (*Jina Dev Bot*)
 
