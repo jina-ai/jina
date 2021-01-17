@@ -5,7 +5,7 @@ from fastapi.exceptions import HTTPException
 
 from ... import Runtime400Exception
 from ...models import FlowModel
-from ...models.status import StoreStatus
+from ...models.status import FlowStoreStatus, FlowItemStatus
 from ...stores import flow_store as store
 
 router = APIRouter(prefix='/flows', tags=['flows'])
@@ -14,7 +14,7 @@ router = APIRouter(prefix='/flows', tags=['flows'])
 @router.get(
     path='',
     summary='Get all alive Flows\' status',
-    response_model=StoreStatus
+    response_model=FlowStoreStatus
 )
 async def _get_items():
     return store.status
@@ -32,6 +32,7 @@ async def _fetch_flow_params():
     path='',
     summary='Creat a Flow from a YAML config',
     status_code=201,
+    response_model=uuid.UUID
 )
 async def _create(
         flow: UploadFile = File(...)
@@ -57,6 +58,7 @@ async def _delete(id: 'uuid.UUID'):
 @router.get(
     path='/{id}',
     summary='Get the status of a running Flow',
+    response_model=FlowItemStatus
 )
 async def _status(
         id: 'uuid.UUID',

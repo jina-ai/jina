@@ -6,7 +6,7 @@ from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
 from ... import Runtime400Exception
 from ...models import PodModel
-from ...models.status import StoreStatus, StorePeaPodStatus
+from ...models.status import StoreStatus, StoreItemStatus
 from ...stores import pod_store as store
 
 router = APIRouter(prefix='/pods', tags=['pods'])
@@ -61,7 +61,7 @@ async def _delete(id: 'uuid.UUID'):
 @router.get(
     path='/{id}',
     summary='Get status of a running Pod',
-    response_model=StorePeaPodStatus
+    response_model=StoreItemStatus
 )
 async def _status(id: 'uuid.UUID'):
     try:

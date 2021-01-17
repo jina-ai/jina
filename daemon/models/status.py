@@ -5,9 +5,13 @@ from typing import Dict
 from pydantic import BaseModel
 
 
-class StorePeaPodStatus(BaseModel):
+class StoreItemStatus(BaseModel):
     uptime: datetime
     arguments: Dict
+
+
+class FlowItemStatus(StoreItemStatus):
+    yaml_source: str
 
 
 class StoreStatus(BaseModel):
@@ -16,7 +20,11 @@ class StoreStatus(BaseModel):
     last_update: datetime
     num_add: int
     num_del: int
-    items: Dict[uuid.UUID, StorePeaPodStatus]
+    items: Dict[uuid.UUID, StoreItemStatus]
+
+
+class FlowStoreStatus(StoreStatus):
+    items: Dict[uuid.UUID, FlowItemStatus]
 
 
 class DaemonStatus(BaseModel):
