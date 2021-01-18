@@ -7,12 +7,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
+from daemon.excepts import Runtime400Exception, daemon_runtime_exception_handler
 from jina import __version__
 from jina.logging import JinaLogger
-from daemon.excepts import Runtime400Exception, daemon_runtime_exception_handler
 from .parser import get_main_parser, _get_run_args
 
-jinad_args = get_main_parser().parse_args([])  # type: 'Namespace'
+jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
 
