@@ -1,7 +1,7 @@
 import uuid
-from typing import List, Optional
+from typing import Optional
 
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, HTTPException, Body
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
@@ -38,7 +38,7 @@ async def _fetch_pea_params():
     response_model=uuid.UUID
 )
 async def _create(pea: 'PeaModel',
-                  workspace_id: Optional['uuid.UUID'] = None):
+                  workspace_id: Optional[uuid.UUID] = Body(None)):
     try:
         args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
         return store.add(args, workspace_id)

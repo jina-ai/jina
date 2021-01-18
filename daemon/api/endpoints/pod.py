@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional, List
 
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, HTTPException, UploadFile, Body
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
@@ -39,7 +39,7 @@ async def _fetch_pod_params():
 )
 async def _create(
         pod: 'PodModel',
-        workspace_id: Optional['uuid.UUID'] = None
+        workspace_id: Optional['uuid.UUID'] = Body(None)
 ):
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())

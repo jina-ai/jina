@@ -64,8 +64,6 @@ class ZEDRuntime(ZMQRuntime):
         """Load the executor to this runtime, specified by ``uses`` CLI argument.
         """
         try:
-            print('hello!')
-            print(os.getcwd())
             self._executor = BaseExecutor.load_config(self.args.uses,
                                                       separated_workspace=self.args.separated_workspace,
                                                       pea_id=self.args.pea_id,

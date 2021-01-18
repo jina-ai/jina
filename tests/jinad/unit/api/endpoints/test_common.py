@@ -24,16 +24,13 @@ def test_status(api, fastapi_client):
 @pytest.mark.parametrize('api, payload', [
     ('/peas', {
         'json': {'pea': {'name': 'my_pea'}},
-        # 'files': [(d, open(str(cur_dir / d), 'rb')) for d in deps]
     }),
     ('/pods', {
         'json': {'pod': {'name': 'my_pod'}},
-        # 'files': {'dependencies': [(d, open(str(cur_dir / d), 'rb')) for d in deps]}
     }),
     ('/flows', {
         'files': {
             'flow': ('good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb')),
-            # 'dependencies': [(d, open(str(cur_dir / d), 'rb')) for d in deps]
         }
     })])
 def test_add_success(api, payload, fastapi_client):

@@ -1,7 +1,7 @@
 import uuid
-from typing import Optional, List
+from typing import Optional
 
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, Body
 from fastapi.exceptions import HTTPException
 
 from ... import Runtime400Exception
@@ -37,7 +37,7 @@ async def _fetch_flow_params():
 )
 async def _create(
         flow: UploadFile = File(...),
-        workspace_id: Optional['uuid.UUID'] = None
+        workspace_id: Optional['uuid.UUID'] = Body(None)
 ):
     try:
         return store.add(flow.file, workspace_id)

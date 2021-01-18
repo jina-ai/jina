@@ -1,9 +1,8 @@
 import os
 import uuid
 from argparse import Namespace
-from typing import Optional, List
-
-from fastapi import UploadFile
+from pathlib import Path
+from typing import Optional
 
 from jina.helper import change_cwd
 from jina.peapods import Pea
@@ -15,13 +14,18 @@ class PeaStore(BaseStore):
     peapod_cls = Pea
 
     def add(self, args: Namespace,
-            workspace_id: uuid.UUID,
+            workspace_id: Optional[uuid.UUID] = None,
             **kwargs):
         try:
-            _id = uuid.UUID(args.identity)
+            if not workspace_id:
+                workspace_id = uuid.uuid1()
             _workdir = os.path.join(jinad_args.workspace, str(workspace_id))
+            Path(_workdir).mkdir(parents=True, exist_ok=True)
+
             with change_cwd(_workdir):
                 p = self.peapod_cls(args).start()
+
+            _id = uuid.UUID(args.identity)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise

@@ -48,7 +48,8 @@ class BaseStore(MutableMapping):
             v = self._items[key]
             if 'object' in v and hasattr(v['object'], 'close'):
                 v['object'].close()
-            shutil.rmtree(v['workdir'])
+            if v.get('workdir', None):
+                shutil.rmtree(v['workdir'])
             self._items.pop(key)
             self._last_update = datetime.now()
             self._logger.success(f'{key} is released')
@@ -56,12 +57,17 @@ class BaseStore(MutableMapping):
         else:
             raise KeyError(f'{key} not found in store.')
 
+    def clear(self) -> None:
+        keys = list(self._items.keys())
+        for k in keys:
+            self.pop(k)
+
     def __setitem__(self, key: 'uuid.UUID', value: Dict) -> None:
         self._items[key] = value
         t = datetime.now()
         value.update({'uptime': t})
         self._last_update = t
-        self._logger.success(f'add {value!r} with id {colored(str(key), "cyan")} to the store')
+        self._logger.success(f'add {colored(str(key), "cyan")} to the store: {value!r}')
         self._num_add += 1
 
     @property
