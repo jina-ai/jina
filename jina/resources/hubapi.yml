@@ -7,6 +7,6 @@ github:
   login_max_retry: 10
 hubapi:
   url: https://hubapi.jina.ai
-  list: /list
+  list: /images
   push: /push
   docker_auth: /docker_auth
