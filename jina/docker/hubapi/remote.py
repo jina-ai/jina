@@ -18,13 +18,12 @@ def _list(logger, image_name: str = None, image_kind: str = None,
     """ Use Hub api to get the list of filtered images
 
     :param logger: logger to use
-    :param image_name:
-    :param image_kind:
-    :param image_type:
-    :param image_keywords:
+    :param image_name: name of hub image
+    :param image_kind: kind of hub image (indexer/encoder/segmenter/crafter/evaluator/ranker etc)
+    :param image_type: type of hub image (pod/app)
+    :param image_keywords: keywords added in the manifest yml
     :return: a dict of manifest specifications, each coresponds to a hub image
     """
-    # TODO: Shouldn't pass a default argument for keywords. Need to handle after lambda function gets fixed
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['list']
@@ -33,11 +32,11 @@ def _list(logger, image_name: str = None, image_kind: str = None,
         'name': image_name,
         'kind': image_kind,
         'type': image_type,
-        'keywords': ','.join(image_keywords) if image_keywords else None
+        'keywords': image_keywords
     }
     params = {k: v for k, v in params.items() if v}
     if params:
-        data = urlencode(params)
+        data = urlencode(params, doseq=True)
         request = Request(f'{hubapi_url}?{data}')
         with TimeContext('searching', logger):
             try:
@@ -52,14 +51,13 @@ def _list(logger, image_name: str = None, image_kind: str = None,
                     logger.error(f'unknown error: {err.reason}')
                 return
 
-        manifests = response['manifest']
         local_manifest = _load_local_hub_manifest()
         if local_manifest:
-            tb = _make_hub_table_with_local(manifests, local_manifest)
+            tb = _make_hub_table_with_local(response, local_manifest)
         else:
-            tb = _make_hub_table(manifests)
+            tb = _make_hub_table(response)
         logger.info('\n'.join(tb))
-        return manifests
+        return response
 
 
 def _fetch_docker_auth(logger) -> Optional[Dict[str, str]]:

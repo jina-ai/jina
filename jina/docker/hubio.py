@@ -438,7 +438,8 @@ class HubIO:
 
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
-            result['build_history'].pop('logs')
+            if 'build_history' in result:
+                result['build_history'].pop('logs', None)
             raise HubBuilderError(_excepts)
 
         return result
