@@ -47,13 +47,13 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def __init__(self, is_merge: bool = True, *args, **kwargs):
+    def __init__(self, is_merge: bool = True, traversal_paths: Tuple[str] = ('m'), *args, **kwargs):
         """
 
         :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
             otherwise, it overrides the current message using :meth:`CopyFrom`
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_merge = is_merge
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:

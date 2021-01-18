@@ -8,32 +8,30 @@ import requests
 
 from jina.docker.hubapi import remote
 
-sample_manifest = {
-    'manifest': [
-        {
-            'name': 'Dummy MWU Encoder',
-            'description': 'a minimum working unit of a containerized encoder, used for tutorial only',
-            'type': 'pod',
-            'author': 'Jina AI Dev-Team (dev-team@jina.ai)',
-            'url': 'https://jina.ai',
-            'documentation': 'https://github.com/jina-ai/jina-hub',
-            'version': '0.0.52',
-            'vendor': 'Jina AI Limited',
-            'license': 'apache-2.0',
-            'avatar': None,
-            'platform': [
-                'linux/amd64'
-            ],
-            'keywords': [
-                'toy',
-                'example'
-            ],
-            'manifest_version': 1,
-            'update': 'nightly',
-            'kind': 'encoder'
-        }
-    ]
-}
+sample_manifest = [
+    {
+        'name': 'Dummy MWU Encoder',
+        'description': 'a minimum working unit of a containerized encoder, used for tutorial only',
+        'type': 'pod',
+        'author': 'Jina AI Dev-Team (dev-team@jina.ai)',
+        'url': 'https://jina.ai',
+        'documentation': 'https://github.com/jina-ai/jina-hub',
+        'version': '0.0.52',
+        'vendor': 'Jina AI Limited',
+        'license': 'apache-2.0',
+        'avatar': None,
+        'platform': [
+            'linux/amd64'
+        ],
+        'keywords': [
+            'toy',
+            'example'
+        ],
+        'manifest_version': 1,
+        'update': 'nightly',
+        'kind': 'encoder'
+    }
+]
 
 
 @mock.patch('jina.docker.hubapi.remote.urlopen')
