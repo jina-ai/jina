@@ -39,7 +39,7 @@ async def _fetch_pod_params():
 )
 async def _create(
         pod: 'PodModel',
-        workspace_id: Optional['uuid.UUID'] = Body(None)
+        workspace_id: Optional[uuid.UUID] = Body(None)
 ):
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())

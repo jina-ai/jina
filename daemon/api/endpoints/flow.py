@@ -37,7 +37,7 @@ async def _fetch_flow_params():
 )
 async def _create(
         flow: UploadFile = File(...),
-        workspace_id: Optional['uuid.UUID'] = Body(None)
+        workspace_id: Optional[uuid.UUID] = Body(None)
 ):
     try:
         return store.add(flow.file, workspace_id)
