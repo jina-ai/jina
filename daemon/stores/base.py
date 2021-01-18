@@ -52,10 +52,10 @@ class BaseStore(MutableMapping):
                 shutil.rmtree(v['workdir'])
             self._items.pop(key)
             self._last_update = datetime.now()
-            self._logger.success(f'{key} is released')
+            self._logger.success(f'{colored(str(key), "cyan")} is released from the store.')
             self._num_del += 1
         else:
-            raise KeyError(f'{key} not found in store.')
+            raise KeyError(f'{colored(str(key), "cyan")} not found in store.')
 
     def clear(self) -> None:
         keys = list(self._items.keys())
@@ -67,7 +67,7 @@ class BaseStore(MutableMapping):
         t = datetime.now()
         value.update({'uptime': t})
         self._last_update = t
-        self._logger.success(f'add {colored(str(key), "cyan")} to the store: {value!r}')
+        self._logger.success(f'{colored(str(key), "cyan")} is added to the store: {value!r}')
         self._num_add += 1
 
     @property

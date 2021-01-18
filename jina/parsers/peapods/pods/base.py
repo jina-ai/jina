@@ -32,7 +32,7 @@ def mixin_base_pod_parser(parser):
                     type=RemoteAccessType.from_string,
                     help=f'the way of managing remote runtime')
     gp.add_argument('--remote-type', choices=list(RemotePeapodType),
-                    default=RemotePeapodType.POD,
+                    default=RemotePeapodType.PEA,
                     type=RemotePeapodType.from_string,
                     help=f'the way of managing remote runtime')
 

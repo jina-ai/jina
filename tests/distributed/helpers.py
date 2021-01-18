@@ -16,7 +16,6 @@ def invoke_requests(method: str,
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f'got an exception while invoking request {e!r}')
-        return
 
 
 def get_results(query: str,

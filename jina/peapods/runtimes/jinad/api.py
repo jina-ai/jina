@@ -101,7 +101,6 @@ class JinadAPI:
         with ImportExtensions(required=True):
             import websockets
 
-        self.logger.info(f'Fetching streamed logs from remote id: {remote_id}')
         try:
             async with websockets.connect(f'{self.log_url}/{remote_id}') as websocket:
                 async for log_line in websocket:
@@ -113,13 +112,11 @@ class JinadAPI:
                     except json.decoder.JSONDecodeError:
                         continue
         except websockets.exceptions.ConnectionClosedOK:
-            self.logger.error(f'Client got disconnected from server')
+            self.logger.warning(f'log streaming is disconnected')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(f'Got following error while streaming logs via websocket {e!r}')
+            self.logger.error(f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}')
         except asyncio.CancelledError:
-            self.logger.info(f'Logging task cancelled successfully')
-        finally:
-            self.logger.info(f'Exiting from remote loggers')
+            self.logger.info(f'log streaming is cancelled')
 
     def delete(self, remote_id: str, **kwargs) -> bool:
         """ Delete a remote pea/pod
