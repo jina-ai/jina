@@ -1,6 +1,6 @@
 import asyncio
+import json
 from pathlib import Path
-from typing import Any
 
 from fastapi import APIRouter, WebSocket
 from starlette.endpoints import WebSocketEndpoint
@@ -15,35 +15,29 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
     def __init__(self, scope: Scope, receive: Receive, send: Send) -> None:
         super().__init__(scope, receive, send)
-
         # Accessing path / query params from scope in ASGI
         # https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
-        self.log_id = self.scope.get('path').split('/')[-1]
-        self.filepath = jinad_args.log_path % self.log_id
+        log_id = self.scope.get('path').split('/')[-1]
+        self.filepath = jinad_args.log_path.replace('${log_id}', log_id)
         self.active_clients = []
 
     async def on_connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
-        # FastAPI & Starlette still don't have a generic WebSocketException
-        # https://github.com/encode/starlette/pull/527
-        # The following `raise` raises `websockets.exceptions.ConnectionClosedError` (code = 1006)
-        # TODO(Deepankar): This needs better handling.
-        if not Path(self.filepath).is_file():
-            raise FileNotFoundError(f'File {self.filepath} not found locally')
-
         self.active_clients.append(websocket)
         self.client_details = f'{websocket.client.host}:{websocket.client.port}'
-        daemon_logger.info(f'Client {self.client_details} got connected to stream Fluentd logs!')
+        daemon_logger.info(f'{self.client_details} is connected to stream logs!')
 
-    async def on_receive(self, websocket: WebSocket, data: Any) -> None:
-        if not Path(self.filepath).is_file():
-            raise FileNotFoundError(f'File {self.filepath} not found locally')
+        # on connection the fluentd file may not flushed (aka exist) yet
+        while not Path(self.filepath).is_file():
+            daemon_logger.info(f'still waiting {self.filepath} to be ready...')
+            await asyncio.sleep(1)
 
         with open(self.filepath) as fp:
             fp.seek(0, 2)
+            daemon_logger.success(f'{self.filepath} is ready for streaming')
             while True:
                 readline = fp.readline()
-                line = readline.strip()
+                line = json.loads(readline.strip().split('\t')[-1])
                 if line:
                     await websocket.send_json(line)
                 else:
@@ -51,7 +45,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
     async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
         self.active_clients.remove(websocket)
-        daemon_logger.info(f'Client {self.client_details} got disconnected!')
+        daemon_logger.info(f'{self.client_details} is disconnected!')
 
 
 # TODO: adding websocket in this way do not generate any docs

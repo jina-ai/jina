@@ -1,12 +1,10 @@
 import argparse
 import asyncio
-import copy
 from typing import Optional
 
 from .client import PeaDaemonClient
 from ..asyncio.base import AsyncZMQRuntime
 from ...zmq import Zmqlet
-from .... import __default_host__
 from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored
 
@@ -60,5 +58,3 @@ class JinadRuntime(AsyncZMQRuntime):
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
             return self.api.create(self.args)
-
-

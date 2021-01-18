@@ -81,7 +81,7 @@ def _start_uvicorn(app: 'FastAPI'):
 
 
 def _start_fluentd():
-    daemon_logger.info('Starting fluentd')
+    daemon_logger.info('starting fluentd...')
     cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
     try:
         fluentd_proc = subprocess.Popen(['fluentd', '-c', cfg], stdout=subprocess.PIPE, stdin=subprocess.PIPE,

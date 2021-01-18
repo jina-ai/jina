@@ -10,9 +10,9 @@ from jina.parsers.peapods.runtimes.remote import mixin_remote_parser
 
 
 def mixin_log_parser(parser):
-    gp = add_arg_group(parser, title='Logging')
+    gp = add_arg_group(parser, title='Fluentd')
 
-    gp.add_argument('--log-path', type=str, default='/tmp/jinad/%s/log.log',
+    gp.add_argument('--log-path', type=str, default='/tmp/jina/logging/${log_id}/log.log',
                     help='file path for storing the log')
 
     gp.add_argument('--no-fluentd',
