@@ -26,10 +26,10 @@ def test_simple_hub_pods(docker_compose):
 
     r = invoke_requests(method='get',
                         url=f'http://0.0.0.0:8000/flow/{flow_id}')
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     r = invoke_requests(method='delete',
                         url=f'http://0.0.0.0:8000/flow?flow_id={flow_id}')
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     assert expected_text == text_matched

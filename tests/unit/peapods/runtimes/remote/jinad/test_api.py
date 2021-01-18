@@ -1,8 +1,11 @@
+import argparse
 import os
 
 import mock
+import pytest
+
 from jina.logging import JinaLogger
-from jina.peapods.runtimes.jinad.api import JinadAPI, PodJinadAPI, PeaJinadAPI, fetch_files_from_yaml
+from jina.peapods.runtimes.jinad.api import JinadAPI, PodJinadAPI, PeaJinadAPI
 
 logger = JinaLogger(context='test-remote')
 yaml_path = os.path.dirname(os.path.abspath(__file__))
@@ -60,60 +63,23 @@ def test_jinad_is_alive(mocker):
     assert not jinad_api.is_alive
 
 
-@mock.patch('requests.put')
-def test_jinad_create(mocker):
-    mocker.return_value.status_code = 200
-    mocker.return_value.json.return_value = {'blah_id': 'abcd'}
-    jinad_api.kind = 'blah'
-    assert jinad_api.create({}) == 'abcd'
-
-    mocker.return_value.status_code = 404
-    assert not jinad_api.create({})
-
-
 @mock.patch('requests.delete')
-def test_jinad_delete(mocker):
+@pytest.mark.parametrize('api', [pea_api, pod_api, jinad_api])
+def test_podapi_delete(mocker, api):
     mocker.return_value.status_code = 200
-    jinad_api.kind = 'blah'
-    assert jinad_api.delete(remote_id='abcd')
+    assert api.delete(remote_id='abcd')
 
     mocker.return_value.status_code = 404
-    assert not jinad_api.delete(remote_id='abcd')
+    assert not api.delete(remote_id='abcd')
 
 
-@mock.patch('requests.put')
-def test_podapi_create(mocker):
-    mocker.return_value.status_code = 200
-    mocker.return_value.json.return_value = {'pod_id': 'abcd'}
-    assert pod_api.create({}) == 'abcd'
-
-    mocker.return_value.status_code = 404
-    assert not pod_api.create({})
-
-
-@mock.patch('requests.delete')
-def test_podapi_delete(mocker):
-    mocker.return_value.status_code = 200
-    assert pod_api.delete(remote_id='abcd')
+@mock.patch('requests.post')
+@pytest.mark.parametrize('api', [pea_api, pod_api, jinad_api])
+def test_peapod_create(mocker, api):
+    args = argparse.Namespace()
+    mocker.return_value.status_code = 201
+    mocker.return_value.json.return_value = 'abcd'
+    assert api.create(args) == 'abcd'
 
     mocker.return_value.status_code = 404
-    assert not pod_api.delete(remote_id='abcd')
-
-
-@mock.patch('requests.put')
-def test_peaapi_create(mocker):
-    mocker.return_value.status_code = 200
-    mocker.return_value.json.return_value = {'pea_id': 'abcd'}
-    assert pea_api.create({}) == 'abcd'
-
-    mocker.return_value.status_code = 404
-    assert not pea_api.create({})
-
-
-@mock.patch('requests.delete')
-def test_peaapi_delete(mocker):
-    mocker.return_value.status_code = 200
-    assert pea_api.delete(remote_id='abcd')
-
-    mocker.return_value.status_code = 404
-    assert not pea_api.delete(remote_id='abcd')
+    assert not api.create(args)

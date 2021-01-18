@@ -34,9 +34,7 @@ class BasePea(metaclass=PeaType):
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
-        self.logger = JinaLogger(self.name,
-                                 log_id=self.args.identity,
-                                 log_config=self.args.log_config)
+        self.logger = JinaLogger(self.name, **vars(self.args))
 
         self._envs = {'JINA_POD_NAME': self.name,
                       'JINA_LOG_ID': self.args.identity}

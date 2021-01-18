@@ -121,9 +121,8 @@ class JinadAPI:
         finally:
             self.logger.info(f'Exiting from remote loggers')
 
-    def delete(self, remote_id: 'str', **kwargs) -> bool:
+    def delete(self, remote_id: str, **kwargs) -> bool:
         """ Delete a remote pea/pod
-        :param kind: pea/pod
         :param remote_id: the identity of that pea/pod
         :return: True if the deletion is successful
         """

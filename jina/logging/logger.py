@@ -93,7 +93,7 @@ class JinaLogger:
                  context: str,
                  name: Optional[str] = None,
                  log_config: Optional[str] = None,
-                 log_id: Optional[str] = None, **kwargs):
+                 identity: Optional[str] = None, **kwargs):
         """Build a logger for a context
         :param context: The context identifier of the class, module or method
         :param log_config: the configuration file for the logger
@@ -106,8 +106,8 @@ class JinaLogger:
             log_config = os.getenv('JINA_LOG_CONFIG',
                                    resource_filename('jina', '/'.join(
                                        ('resources', 'logging.default.yml'))))
-        if log_id is None:
-            log_id = os.getenv('JINA_LOG_ID', None)
+        if identity is None:
+            identity = os.getenv('JINA_LOG_ID', None)
 
         if name is None:
             name = os.getenv('JINA_POD_NAME', context)
@@ -122,8 +122,8 @@ class JinaLogger:
         context_vars = {'name': name,
                         'uptime': __uptime__,
                         'context': context}
-        if log_id:
-            context_vars['log_id'] = log_id
+        if identity:
+            context_vars['log_id'] = identity
         self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there

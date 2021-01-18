@@ -22,14 +22,15 @@ def test_index_query(docker_compose):
     assert text_indexed == 'text:hey, dude'
 
     r = invoke_requests(method='get',
-                        url=f'http://localhost:8000/flow/{flow_id}')
+                        url=f'http://localhost:8000/flows/{flow_id}')
+
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     r = invoke_requests(method='delete',
-                        url=f'http://localhost:8000/flow?flow_id={flow_id}')
+                        url=f'http://localhost:8000/flows/{flow_id}')
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     flow_id = create_flow(flow_yml, pod_dir)['flow_id']
     assert flow_id is not None
@@ -39,13 +40,13 @@ def test_index_query(docker_compose):
     assert text_matched == 'text:hey, dude'
 
     r = invoke_requests(method='get',
-                        url=f'http://localhost:8000/flow/{flow_id}')
+                        url=f'http://localhost:8000/flows/{flow_id}')
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     r = invoke_requests(method='delete',
-                        url=f'http://localhost:8000/flow?flow_id={flow_id}')
+                        url=f'http://localhost:8000/flows/{flow_id}')
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
     expected_text = 'text:hey, dude'
     assert expected_text == text_matched

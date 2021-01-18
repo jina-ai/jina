@@ -29,12 +29,12 @@ def test_flow(docker_compose):
     r = invoke_requests(method='get',
                         url=f'http://localhost:8000/flow/{flow_id}')
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     r = invoke_requests(method='delete',
                         url=f'http://localhost:8000/flow?flow_id={flow_id}')
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     r = create_flow(flow_yml, pod_dir)
     assert r is not None
@@ -47,9 +47,9 @@ def test_flow(docker_compose):
     r = invoke_requests(method='get',
                         url=f'http://localhost:8000/flow/{flow_id}')
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
 
     r = invoke_requests(method='delete',
                         url=f'http://localhost:8000/flow?flow_id={flow_id}')
     assert r is not None
-    assert r['status_code'] == 200
+    assert r.status_code == 200
