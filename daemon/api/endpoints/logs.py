@@ -36,10 +36,16 @@ class LogStreamingEndpoint(WebSocketEndpoint):
             fp.seek(0, 2)
             daemon_logger.success(f'{self.filepath} is ready for streaming')
             while True:
-                readline = fp.readline()
-                line = json.loads(readline.strip().split('\t')[-1])
-                if line:
-                    await websocket.send_json(line)
+                line = fp.readline()
+                last_part = line.strip().split('\t')[-1]
+                try:
+                    payload = json.loads(last_part)
+                except json.decoder.JSONDecodeError:
+                    payload = None
+                    daemon_logger.warning(f'JSON decode error on {last_part}')
+
+                if payload:
+                    await websocket.send_json(payload)
                 else:
                     await asyncio.sleep(0.1)
 
