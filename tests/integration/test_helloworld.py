@@ -56,6 +56,7 @@ def test_helloworld_execution(tmpdir):
                                      'probably hello-world wasn\'t executed'
 
 
+@pytest.mark.skip('This test is flaky')
 @pytest.mark.timeout(360)
 def test_helloworld_py(tmpdir):
     from jina.helloworld import hello_world
