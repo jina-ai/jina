@@ -51,7 +51,7 @@ async def _create(pea: 'PeaModel',
     summary='Terminate a running Pea',
     description='Terminate a running Pea and release its resources'
 )
-async def _delete(id: 'uuid.UUID'):
+async def _delete(id: uuid.UUID):
     try:
         del store[id]
     except KeyError:
@@ -63,7 +63,7 @@ async def _delete(id: 'uuid.UUID'):
     summary='Get status of a running Pea',
     response_model=StoreItemStatus
 )
-async def _status(id: 'uuid.UUID'):
+async def _status(id: uuid.UUID):
     try:
         return store[id]
     except KeyError:

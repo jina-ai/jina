@@ -1,7 +1,7 @@
 import uuid
-from typing import Optional, List
+from typing import Optional
 
-from fastapi import APIRouter, HTTPException, UploadFile, Body
+from fastapi import APIRouter, HTTPException, Body
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
@@ -53,7 +53,7 @@ async def _create(
     summary='Terminate a running Pod',
     description='Terminate a running Pod and release its resources'
 )
-async def _delete(id: 'uuid.UUID'):
+async def _delete(id: uuid.UUID):
     try:
         del store[id]
     except KeyError:
@@ -65,7 +65,7 @@ async def _delete(id: 'uuid.UUID'):
     summary='Get status of a running Pod',
     response_model=StoreItemStatus
 )
-async def _status(id: 'uuid.UUID'):
+async def _status(id: uuid.UUID):
     try:
         return store[id]
     except KeyError:
