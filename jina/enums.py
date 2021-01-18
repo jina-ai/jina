@@ -338,3 +338,12 @@ class DataInputType(BetterEnum):
 class RuntimeBackendType(BetterEnum):
     THREAD = 0
     PROCESS = 1
+
+
+def replace_enum_to_str(obj):
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            obj[k] = replace_enum_to_str(v)
+        elif isinstance(v, BetterEnum):
+            obj[k] = str(v)
+    return obj

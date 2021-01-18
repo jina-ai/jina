@@ -4,6 +4,7 @@ from typing import Iterable, Callable
 from pydantic import create_model, validator, Field, BaseConfig
 
 from cli.export import _export_parser_args
+from jina.helper import typename
 
 
 def _get_validator(field: str, choices: Iterable):
@@ -11,7 +12,7 @@ def _get_validator(field: str, choices: Iterable):
 
     def validate_arg_choices(v, values):
         if v not in choices:
-            raise ValueError(f'Invalid value {v} for field {field}'
+            raise ValueError(f'Invalid value {v}({typename(v)} for field {field}. '
                              f'Valid choices are {choices}')
         return v
 

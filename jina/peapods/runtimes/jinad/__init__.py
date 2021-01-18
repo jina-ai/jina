@@ -45,7 +45,7 @@ class JinadRuntime(AsyncZMQRuntime):
         Streams log messages using websocket from remote server
         """
         self._logging_task = asyncio.create_task(
-            self.api.logstream(remote_id=self._remote_id, log_id=self.args.log_id)
+            self.api.logstream(remote_id=self._remote_id)
         )
 
     async def async_cancel(self):
@@ -63,9 +63,7 @@ class JinadRuntime(AsyncZMQRuntime):
     @cached_property
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
-            _args_dict = vars(self._reset_to_local(self.args))
-            if self.api.upload(_args_dict):
-                return self.api.create(_args_dict)
+            return self.api.create(self._reset_to_local(self.args))
 
     @staticmethod
     def _reset_to_local(args: 'argparse.Namespace'):
@@ -77,3 +75,4 @@ class JinadRuntime(AsyncZMQRuntime):
         # reset the host default host
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         _args.host = __default_host__
+        return _args

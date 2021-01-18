@@ -26,14 +26,14 @@ def api_to_dict():
 
     for p_name in parsers.keys():
         d = {'name': p_name, 'options': []}
-        for ddd in _export_parser_args(lambda x: get_main_parser()._actions[-1].choices[p_name]):
+        for ddd in _export_parser_args(lambda *x: get_main_parser()._actions[-1].choices[p_name], type_as_str=True):
             d['options'].append(ddd)
         all_d['methods'].append(d)
 
     return all_d
 
 
-def _export_parser_args(parser_fn):
+def _export_parser_args(parser_fn, type_as_str: bool = False):
     from jina.enums import BetterEnum
     from argparse import _StoreAction, _StoreTrueAction
 
@@ -48,7 +48,7 @@ def _export_parser_args(parser_fn):
         if isinstance(a, (_StoreAction, _StoreTrueAction)) and a.help != argparse.SUPPRESS:
             ddd = {p: getattr(a, p) for p in port_attr}
             if isinstance(a, _StoreTrueAction):
-                ddd['type'] = 'bool'
+                ddd['type'] = bool
             else:
                 ddd['type'] = a.type
             if ddd['choices']:
@@ -56,10 +56,12 @@ def _export_parser_args(parser_fn):
                 ddd['type'] = str
             if isinstance(ddd['default'], BetterEnum):
                 ddd['default'] = str(ddd['default'])
-                ddd['type'] = 'str'
+                ddd['type'] = str
             if a.dest in random_dest:
                 ddd['default_random'] = True
             else:
                 ddd['default_random'] = False
+            if type_as_str:
+                ddd['type'] = ddd['type'].__name__
             ddd['name'] = ddd.pop('dest')
             yield ddd

@@ -1,3 +1,4 @@
+import json
 import subprocess
 
 import pytest
@@ -5,13 +6,17 @@ import pytest
 from cli.autocomplete import ac_table
 from cli.export import api_to_dict
 from jina.checker import NetworkChecker
+from jina.jaml import JAML
 from jina.parsers import set_pod_parser, set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
 
 
-def test_export_api():
-    assert api_to_dict()
+def test_export_api(tmpdir):
+    with open(tmpdir / 'test.yml', 'w', encoding='utf8') as fp:
+        JAML.dump(api_to_dict(), fp)
+    with open(tmpdir / 'test.json', 'w', encoding='utf8') as fp:
+        json.dump(api_to_dict(), fp)
 
 
 def test_main_cli():
