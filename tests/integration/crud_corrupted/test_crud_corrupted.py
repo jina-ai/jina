@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from jina import Document
 from jina.executors.indexers import BaseIndexer
@@ -93,21 +94,25 @@ np.random.seed(0)
 EMBEDDING_SHAPE = (7)
 
 
-def random_docs_only_embedding(nr_docs, start=0):
+def random_docs_only_embedding(nr_docs, mime_type='plain/text', start=0):
     for i in range(start, nr_docs + start):
         d = Document()
         d.embedding = np.random.random(EMBEDDING_SHAPE)
+        d.mime_type = mime_type
         yield d
 
 
-def test_only_embedding(tmp_path, mocker):
+@pytest.mark.parametrize('mime_type',
+                         ['text/plain', 'image/jpeg', 'text/x-python'])
+def test_only_embedding_and_mime_type(tmp_path, mocker, mime_type):
     config_environ(path=tmp_path)
     flow_file = 'flow.yml'
-    docs = list(random_docs_only_embedding(NR_DOCS_INDEX))
-    docs_update = list(random_docs_only_embedding(NR_DOCS_INDEX, start=len(docs) + 1))
+    docs = list(random_docs_only_embedding(NR_DOCS_INDEX, mime_type=mime_type))
+    docs_update = list(random_docs_only_embedding(NR_DOCS_INDEX, mime_type=mime_type, start=len(docs) + 1))
     all_docs_indexed = docs.copy()
     all_docs_indexed.extend(docs_update)
-    docs_search = list(random_docs_only_embedding(NUMBER_OF_SEARCHES, start=len(docs) + len(docs_update) + 1))
+    docs_search = list(
+        random_docs_only_embedding(NUMBER_OF_SEARCHES, mime_type=mime_type, start=len(docs) + len(docs_update) + 1))
     f = Flow.load_config(flow_file)
 
     def validate_result_factory(num_matches):
@@ -116,6 +121,8 @@ def test_only_embedding(tmp_path, mocker):
             assert len(resp.docs) == NUMBER_OF_SEARCHES
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
+                for m in doc.matches:
+                    assert m.mime_type == mime_type
 
         return validate_results
 
