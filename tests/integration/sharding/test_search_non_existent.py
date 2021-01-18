@@ -50,6 +50,7 @@ def test_search_non_existent(config, mocker):
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
             separated_workspace=True,
+            uses_after='_merge',
             polling='all',
     ) as search_flow:
         search_flow.search(input_fn=random_docs(0, 220),
