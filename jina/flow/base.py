@@ -144,7 +144,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                            read_only=True,
                            runtime_cls='GRPCRuntime',
-                           log_id=self.args.log_id,
                            pod_role=PodRoleType.GATEWAY))
 
         kwargs.update(self._common_kwargs)
@@ -224,7 +223,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(dict(
             name=pod_name,
             pod_role=pod_role,
-            log_id=self.args.log_id,
             num_part=len(needs)
         ))
 

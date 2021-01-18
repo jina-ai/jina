@@ -115,5 +115,5 @@ class BaseRuntime:
         else:
             self.name = self.__class__.__name__
         self.logger = JinaLogger(self.name,
-                                 log_id=self.args.log_id,
+                                 log_id=self.args.identity,
                                  log_config=self.args.log_config)
