@@ -138,12 +138,10 @@ def test_incremental_indexing_sequential_indexers_with_shards(random_workspace, 
     f = (Flow(restful=restful)
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
-              shards=num_shards,
-              separated_workspace=True)
+              shards=num_shards)
          .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_doc.yml'),
-              shards=num_shards,
-              separated_workspace=True))
+              shards=num_shards))
 
     with f:
         f.index(duplicate_docs[:500])
@@ -181,14 +179,12 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace, re
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
               shards=num_shards,
-              name='inc_vec',
-              separated_workspace=True)
+              name='inc_vec')
          .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_doc.yml'),
               shards=num_shards,
               name='inc_doc',
-              needs=['gateway'],
-              separated_workspace=True)
+              needs=['gateway'])
          .add(needs=['inc_vec', 'inc_doc']))
 
     with f:

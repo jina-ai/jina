@@ -165,8 +165,7 @@ def test_flow_no_container(restful):
 
 
 def test_shards():
-    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3,
-                   separated_workspace=True)
+    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3)
     with f:
         f.index(input_fn=random_docs(1000), random_doc_id=False)
     with f:

@@ -8,5 +8,4 @@ warn_unamed: false
 max_snapshot: 0
 py_modules:
 pea_id: 1
-separated_workspace: false
 pea_workspace: '{root.workspace}/{root.name}-{this.pea_id}'

@@ -261,7 +261,6 @@ class CompoundExecutor(BaseExecutor):
     def _set_comp_workspace(self) -> None:
         # overrider the workspace setting for all components
         for c in self.components:
-            c.separated_workspace = self.separated_workspace
             c.workspace = self.workspace
             c.pea_workspace = self.current_workspace
 

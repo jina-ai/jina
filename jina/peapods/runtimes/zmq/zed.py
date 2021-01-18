@@ -65,7 +65,6 @@ class ZEDRuntime(ZMQRuntime):
         """
         try:
             self._executor = BaseExecutor.load_config(self.args.uses,
-                                                      separated_workspace=self.args.separated_workspace,
                                                       pea_id=self.args.pea_id,
                                                       read_only=self.args.read_only)
             self._executor.attach(runtime=self)

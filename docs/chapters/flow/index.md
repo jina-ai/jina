@@ -269,7 +269,6 @@ pods:
   chunk_idx:
     uses: index/chunk.yml
     replicas: $SHARDS
-    separated_workspace: true
   join_all:
     uses: _pass
     needs: [doc_idx, chunk_idx]
