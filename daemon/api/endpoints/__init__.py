@@ -1,7 +1,13 @@
-from fastapi import APIRouter
+import os
+import uuid
+from pathlib import Path
+from typing import List
+
+from fastapi import APIRouter, UploadFile, File
 
 from jina.helper import get_public_ip, get_internal_ip, get_full_version
 from jina.logging.profile import used_memory_readable
+from ... import jinad_args
 from ...models.status import DaemonStatus
 from ...stores import pea_store, pod_store, flow_store
 
@@ -45,3 +51,20 @@ async def _status():
         'flows': flow_store.status,
         'used_memory': used_memory_readable()
     }
+
+
+@router.post(
+    path='/upload',
+    summary='Upload dependencies into a workspace',
+    description='Return a UUID to the workspace, which can be used later when create Pea/Pod/Flow',
+    response_model=uuid.UUID
+)
+async def _upload(files: List[UploadFile] = File(())):
+    _id = uuid.uuid1()
+    _workdir = os.path.join(jinad_args.workspace, str(_id))
+    Path(_workdir).mkdir(parents=True, exist_ok=False)
+    for f in files:
+        with open(os.path.join(_workdir, f.filename), 'wb') as fp:
+            content = f.file.read()
+            fp.write(content)
+    return _id

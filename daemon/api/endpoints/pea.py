@@ -38,10 +38,10 @@ async def _fetch_pea_params():
     response_model=uuid.UUID
 )
 async def _create(pea: 'PeaModel',
-                  dependencies: Optional[List[UploadFile]] = None):
+                  workspace_id: Optional['uuid.UUID'] = None):
     try:
         args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
-        return store.add(args, dependencies)
+        return store.add(args, workspace_id)
     except Exception as ex:
         raise Runtime400Exception from ex
 

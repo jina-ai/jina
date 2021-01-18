@@ -14,6 +14,7 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
+from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
@@ -703,3 +704,16 @@ def slugify(value):
     """
     s = str(value).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
+
+
+@contextmanager
+def change_cwd(path):
+    """
+    Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.
+    """
+    curdir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(curdir)

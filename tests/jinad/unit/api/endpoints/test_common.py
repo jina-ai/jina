@@ -4,6 +4,8 @@ import pytest
 
 cur_dir = Path(__file__).parent
 
+deps = ['mwu_encoder.py', 'mwu_encoder.yml']
+
 
 @pytest.mark.parametrize('api', ['/peas', '/pods', '/flows'])
 def test_args(api, fastapi_client):
@@ -19,11 +21,21 @@ def test_status(api, fastapi_client):
     assert response.json()
 
 
-@pytest.mark.parametrize('api, payload', [('/peas', {'json': {'pea':{'name': 'my_pea'}}}),
-                                          ('/pods', {'json': {'pod': {'name': 'my_pod'}}}),
-                                          ('/flows',
-                                           {'files': {'flow': (
-                                           'good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb'))}})])
+@pytest.mark.parametrize('api, payload', [
+    ('/peas', {
+        'json': {'pea': {'name': 'my_pea'}},
+        # 'files': [(d, open(str(cur_dir / d), 'rb')) for d in deps]
+    }),
+    ('/pods', {
+        'json': {'pod': {'name': 'my_pod'}},
+        # 'files': {'dependencies': [(d, open(str(cur_dir / d), 'rb')) for d in deps]}
+    }),
+    ('/flows', {
+        'files': {
+            'flow': ('good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb')),
+            # 'dependencies': [(d, open(str(cur_dir / d), 'rb')) for d in deps]
+        }
+    })])
 def test_add_success(api, payload, fastapi_client):
     response = fastapi_client.post(api, **payload)
     print(response.json())
@@ -49,10 +61,10 @@ def test_add_success(api, payload, fastapi_client):
 
 @pytest.mark.parametrize('api, payload', [('/peas', {'json': {'pea': {'name': 'my_pea', 'uses': 'BAD'}}}),
                                           ('/pods', {'json': {'pod': {'name': 'my_pod', 'uses': 'BAD'}}}),
-                                          (
-                                                  '/flows',
-                                                  {'files': {'flow': (
-                                                  'bad_flow.yml', open(str(cur_dir / 'bad_flow.yml'), 'rb'))}})])
+                                          ('/flows',
+                                           {'files': {'flow': (
+                                                   'bad_flow.yml',
+                                                   open(str(cur_dir / 'bad_flow.yml'), 'rb'))}})])
 def test_add_fail(api, payload, fastapi_client):
     response = fastapi_client.get(api)
     assert response.status_code == 200

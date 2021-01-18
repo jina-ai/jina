@@ -39,11 +39,11 @@ async def _fetch_pod_params():
 )
 async def _create(
         pod: 'PodModel',
-        dependencies: Optional[List[UploadFile]] = None
+        workspace_id: Optional['uuid.UUID'] = None
 ):
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
-        return store.add(args, dependencies)
+        return store.add(args, workspace_id)
     except Exception as ex:
         raise Runtime400Exception from ex
 

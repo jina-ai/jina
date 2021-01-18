@@ -2,8 +2,5 @@
 version: '1.0'
 pods:
   - name: pod1
-    read_only: true
-  - name: pod2
-    read_only: true
-  - name: pod3
+    uses: mwu_encoder.yml
     read_only: true

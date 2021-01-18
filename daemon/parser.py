@@ -19,6 +19,9 @@ def mixin_log_parser(parser):
                     action='store_true', default=False,
                     help='do not start fluentd, no log streaming')
 
+    gp.add_argument('--workspace', type=str, default='/tmp/jinad/',
+                    help='the directory for storing all uploaded dependencies')
+
 
 def get_main_parser():
     parser = set_base_parser()

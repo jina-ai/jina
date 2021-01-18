@@ -1,25 +1,27 @@
+import os
 import uuid
 from argparse import Namespace
 from typing import Optional, List
 
 from fastapi import UploadFile
 
+from jina.helper import change_cwd
 from jina.peapods import Pea
 from .base import BaseStore
+from .. import jinad_args
 
 
 class PeaStore(BaseStore):
     peapod_cls = Pea
 
     def add(self, args: Namespace,
-            dependencies: Optional[List[UploadFile]] = None,
+            workspace_id: uuid.UUID,
             **kwargs):
         try:
-            _workdir = self.get_temp_dir()
-            if dependencies:
-                self.create_files_from_upload(dependencies, _workdir)
             _id = uuid.UUID(args.identity)
-            p = self.peapod_cls(args).start()
+            _workdir = os.path.join(jinad_args.workspace, str(workspace_id))
+            with change_cwd(_workdir):
+                p = self.peapod_cls(args).start()
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise

@@ -37,10 +37,10 @@ async def _fetch_flow_params():
 )
 async def _create(
         flow: UploadFile = File(...),
-        dependencies: Optional[List[UploadFile]] = None
+        workspace_id: Optional['uuid.UUID'] = None
 ):
     try:
-        return store.add(flow.file, dependencies)
+        return store.add(flow.file, workspace_id)
     except Exception as ex:
         raise Runtime400Exception from ex
 

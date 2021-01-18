@@ -1,25 +1,26 @@
 import uuid
-from tempfile import SpooledTemporaryFile
-from typing import Optional, List
+from typing import Optional, List, BinaryIO
 
 from fastapi import UploadFile
-
+import os
 from jina.flow import Flow
+from jina.helper import change_cwd
 from .base import BaseStore
+from .. import jinad_args
 
 
 class FlowStore(BaseStore):
 
-    def add(self, config: SpooledTemporaryFile,
-            dependencies: Optional[List[UploadFile]] = None,
+    def add(self, config: BinaryIO,
+            workspace_id: uuid.UUID,
             **kwargs):
         try:
-            _workdir = self.get_temp_dir()
-            if dependencies:
-                self.create_files_from_upload(dependencies, _workdir)
             y_spec = config.read().decode()
-            f = Flow.load_config(y_spec).start()
+            f = Flow.load_config(y_spec)
             _id = uuid.UUID(f.args.identity)
+            _workdir = os.path.join(jinad_args.workspace, str(workspace_id))
+            with change_cwd(_workdir):
+                f.start()
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise

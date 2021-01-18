@@ -3,7 +3,9 @@ import shutil
 import tempfile
 import uuid
 from collections.abc import MutableMapping
+from contextlib import contextmanager
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, Union
 
 from jina.helper import colored
@@ -46,6 +48,7 @@ class BaseStore(MutableMapping):
             v = self._items[key]
             if 'object' in v and hasattr(v['object'], 'close'):
                 v['object'].close()
+            shutil.rmtree(v['workdir'])
             self._items.pop(key)
             self._last_update = datetime.now()
             self._logger.success(f'{key} is released')
@@ -72,13 +75,3 @@ class BaseStore(MutableMapping):
             'num_del': self._num_del,
             'items': self._items
         }
-
-    @staticmethod
-    def create_files_from_upload(files, workdir):
-        for f in files:
-            with open(os.path.join(workdir, f.filename), 'wb') as fp:
-                fp.write(f.file.read())
-
-    @staticmethod
-    def get_temp_dir():
-        return tempfile.gettempdir()
