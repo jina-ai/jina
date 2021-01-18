@@ -93,7 +93,6 @@ async def _create_from_yaml(
             - name: index
               uses: helloworld.indexer.yml
               shards: 2
-              separated_workspace: true
 
     **uses_files**: `helloworld.encoder.yml`
 

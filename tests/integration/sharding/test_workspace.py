@@ -31,11 +31,7 @@ def random_docs(start, end, embed_dim=10):
         yield d
 
 
-@pytest.mark.parametrize('is_separated_workspace', [
-    True,  # works
-    False,  # fails TODO fix related issue
-])
-def test_simple_index_workspace(config, is_separated_workspace):
+def test_simple_index(config):
     yaml_file = 'index_kv_simple.yml'
     index_name = 'kvidx'
 
@@ -48,8 +44,7 @@ def test_simple_index_workspace(config, is_separated_workspace):
 
     with Flow().add(
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
-            shards=2,
-            separated_workspace=is_separated_workspace,
+            shards=2
     ) as index_flow:
         index_flow.index(input_fn=generate_docs(), request_size=1)
 

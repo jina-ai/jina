@@ -59,7 +59,7 @@ def test_yaml_expand3():
 
     b = expand_dict(a)
     assert b['max_snapshot'] == 0
-    assert b['pea_workspace'] != '{root.workspace}/{root.name}-{this.pea_id}'
+    assert b['pea_workspace'] == '{root.workspace}/{root.name}-{this.pea_id}'
 
 
 def test_yaml_expand4():

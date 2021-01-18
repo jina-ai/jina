@@ -1,5 +1,4 @@
 !BaseExecutor
 metas:
   name: test1
-  separated_workspace: true
   pea_id: 0
