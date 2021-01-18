@@ -46,7 +46,6 @@ class BaseStore(MutableMapping):
             v = self._items[key]
             if 'object' in v and hasattr(v['object'], 'close'):
                 v['object'].close()
-            shutil.rmtree(v['workdir'])
             self._items.pop(key)
             self._last_update = datetime.now()
             self._logger.success(f'{key} is released')

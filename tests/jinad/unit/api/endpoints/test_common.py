@@ -19,8 +19,8 @@ def test_status(api, fastapi_client):
     assert response.json()
 
 
-@pytest.mark.parametrize('api, payload', [('/peas', {'json': {'name': 'my_pea'}}),
-                                          ('/pods', {'json': {'name': 'my_pod'}}),
+@pytest.mark.parametrize('api, payload', [('/peas', {'json': {'pea':{'name': 'my_pea'}}}),
+                                          ('/pods', {'json': {'pod': {'name': 'my_pod'}}}),
                                           ('/flows',
                                            {'files': {'flow': (
                                            'good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb'))}})])
@@ -47,8 +47,8 @@ def test_add_success(api, payload, fastapi_client):
     assert response.json()['size'] == 0
 
 
-@pytest.mark.parametrize('api, payload', [('/peas', {'json': {'name': 'my_pea', 'uses': 'BAD'}}),
-                                          ('/pods', {'json': {'name': 'my_pod', 'uses': 'BAD'}}),
+@pytest.mark.parametrize('api, payload', [('/peas', {'json': {'pea': {'name': 'my_pea', 'uses': 'BAD'}}}),
+                                          ('/pods', {'json': {'pod': {'name': 'my_pod', 'uses': 'BAD'}}}),
                                           (
                                                   '/flows',
                                                   {'files': {'flow': (
