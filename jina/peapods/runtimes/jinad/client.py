@@ -5,12 +5,12 @@ from argparse import Namespace
 from contextlib import ExitStack
 from typing import Tuple, List, Optional, Sequence
 
-from ....enums import RemotePeapodType, replace_enum_to_str
+from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
 from ....logging import JinaLogger
 
 
-class JinadAPI:
+class DaemonClient:
     kind = 'pea'  # select from pea/pod, TODO: enum
 
     def __init__(self,
@@ -135,20 +135,11 @@ class JinadAPI:
             return False
 
 
-class PeaJinadAPI(JinadAPI):
+class PeaDaemonClient(DaemonClient):
     """Pea API, we might have different endpoints for peas & pods later"""
     kind = 'pea'
 
 
-class PodJinadAPI(JinadAPI):
+class PodDaemonClient(DaemonClient):
     """Pod API, we might have different endpoints for peas & pods later"""
     kind = 'pod'
-
-
-def get_jinad_api(kind: str, host: str, port: int, logger: JinaLogger, **kwargs):
-    if kind == RemotePeapodType.PEA:
-        return PeaJinadAPI(host=host, port=port, logger=logger, **kwargs)
-    elif kind == RemotePeapodType.POD:
-        return PodJinadAPI(host=host, port=port, logger=logger, **kwargs)
-    else:
-        raise ValueError(f'kind must be pea/pod but it is {kind}')

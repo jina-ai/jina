@@ -5,13 +5,13 @@ import mock
 import pytest
 
 from jina.logging import JinaLogger
-from jina.peapods.runtimes.jinad.api import JinadAPI, PodJinadAPI, PeaJinadAPI
+from jina.peapods.runtimes.jinad.client import DaemonClient, PodDaemonClient, PeaDaemonClient
 
 logger = JinaLogger(context='test-remote')
 yaml_path = os.path.dirname(os.path.abspath(__file__))
-jinad_api = JinadAPI(host='0.0.0.0', port=8000, logger=logger)
-pod_api = PodJinadAPI(host='0.0.0.0', port=8000, logger=logger)
-pea_api = PeaJinadAPI(host='0.0.0.0', port=8000, logger=logger)
+jinad_api = DaemonClient(host='0.0.0.0', port=8000, logger=logger)
+pod_api = PodDaemonClient(host='0.0.0.0', port=8000, logger=logger)
+pea_api = PeaDaemonClient(host='0.0.0.0', port=8000, logger=logger)
 
 
 def test_fetch_files_from_yaml_pods():

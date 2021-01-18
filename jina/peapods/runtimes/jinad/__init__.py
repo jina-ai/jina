@@ -3,7 +3,7 @@ import asyncio
 import copy
 from typing import Optional
 
-from .api import get_jinad_api
+from .client import PeaDaemonClient
 from ..asyncio.base import AsyncZMQRuntime
 from ...zmq import Zmqlet
 from .... import __default_host__
@@ -19,11 +19,7 @@ class JinadRuntime(AsyncZMQRuntime):
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
-        self.remote_type = args.remote_type
-        self.api = get_jinad_api(kind=self.remote_type,
-                                 host=self.host,
-                                 port=self.port_expose,
-                                 logger=self.logger)
+        self.api = PeaDaemonClient(host=self.host, port=self.port_expose, logger=self.logger)
 
     def setup(self):
         """
