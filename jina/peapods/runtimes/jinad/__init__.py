@@ -59,16 +59,6 @@ class JinadRuntime(AsyncZMQRuntime):
     @cached_property
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
-            return self.api.create(self._reset_to_local(self.args))
+            return self.api.create(self.args)
 
-    @staticmethod
-    def _reset_to_local(args: 'argparse.Namespace'):
-        _args = copy.deepcopy(args)
-        # reset the runtime to ZEDRuntime
-        # TODO:/NOTE this prevents to run ContainerRuntime via JinaD (Han: 2021.1.17)
-        if _args.runtime_cls == 'JinadRuntime':
-            _args.runtime_cls = 'ZEDRuntime'
-        # reset the host default host
-        # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
-        _args.host = __default_host__
-        return _args
+

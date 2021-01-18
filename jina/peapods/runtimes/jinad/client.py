@@ -1,10 +1,13 @@
+import argparse
 import asyncio
+import copy
 import json
 import os
 from argparse import Namespace
 from contextlib import ExitStack
 from typing import Tuple, List, Optional, Sequence
 
+from .... import __default_host__
 from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
 from ....logging import JinaLogger
@@ -84,10 +87,19 @@ class DaemonClient:
             import requests
 
         try:
-            payload = replace_enum_to_str(vars(args))
+            payload = replace_enum_to_str(vars(self._mask_args(args)))
             r = requests.post(url=self.peapod_url, json={self.kind: payload}, timeout=self.timeout)
             if r.status_code == 201:
                 return r.json()
+            elif r.status_code == 400:
+                # known internal error
+                rj = r.json()
+                rj_body = '\n'.join(j for j in rj['body'])
+                self.logger.error(f'{rj["detail"]}\n{rj_body}')
+                raise requests.exceptions.RequestException(r.json())
+            elif r.status_code == 422:
+                self.logger.error('your payload is not correct')
+                raise requests.exceptions.RequestException(r.json())
             else:
                 raise requests.exceptions.RequestException(r.json())
         except requests.exceptions.RequestException as ex:
@@ -133,6 +145,19 @@ class DaemonClient:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'couldn\'t connect with remote jinad url {ex!r}')
             return False
+
+    @staticmethod
+    def _mask_args(args: 'argparse.Namespace'):
+        _args = copy.deepcopy(args)
+        # reset the runtime to ZEDRuntime
+        # TODO:/NOTE this prevents to run ContainerRuntime via JinaD (Han: 2021.1.17)
+        if _args.runtime_cls == 'JinadRuntime':
+            _args.runtime_cls = 'ZEDRuntime'
+        # reset the host default host
+        # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
+        _args.host = __default_host__
+        _args.log_config = ''
+        return _args
 
 
 class PeaDaemonClient(DaemonClient):

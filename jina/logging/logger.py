@@ -102,14 +102,14 @@ class JinaLogger:
         :return: an executor object
         """
         from .. import __uptime__
-        if log_config is None:
+        if not log_config:
             log_config = os.getenv('JINA_LOG_CONFIG',
                                    resource_filename('jina', '/'.join(
                                        ('resources', 'logging.default.yml'))))
-        if identity is None:
+        if not identity:
             identity = os.getenv('JINA_LOG_ID', None)
 
-        if name is None:
+        if not name:
             name = os.getenv('JINA_POD_NAME', context)
 
         # Remove all handlers associated with the root logger object.
