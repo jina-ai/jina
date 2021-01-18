@@ -91,7 +91,7 @@ def test_helloworld_flow(tmpdir):
 
     # run it!
     with f:
-        f.index(_input_ndarray(targets['index']['data']), batch_size=args.index_batch_size)
+        f.index(_input_ndarray(targets['index']['data']), request_size=args.index_request_size)
 
 
 def test_helloworld_flow_dry_run(tmpdir):
