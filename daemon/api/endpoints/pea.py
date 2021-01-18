@@ -30,7 +30,7 @@ async def _fetch_pea_params():
     return PeaModel.schema()['properties']
 
 
-@router.put(
+@router.post(
     path='',
     summary='Create a Pea',
     description='Create a Pea and add it to the store',

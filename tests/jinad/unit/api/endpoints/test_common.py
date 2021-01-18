@@ -25,7 +25,7 @@ def test_status(api, fastapi_client):
                                            {'files': {'flow': (
                                            'good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb'))}})])
 def test_add_success(api, payload, fastapi_client):
-    response = fastapi_client.put(api, **payload)
+    response = fastapi_client.post(api, **payload)
     print(response.json())
     assert response.status_code == 201
     _id = response.json()
@@ -59,7 +59,7 @@ def test_add_fail(api, payload, fastapi_client):
     old_add = response.json()['num_add']
     old_size = response.json()['size']
 
-    response = fastapi_client.put(api, **payload)
+    response = fastapi_client.post(api, **payload)
     assert response.status_code == 400
     for k in ('body', 'detail'):
         assert k in response.json()

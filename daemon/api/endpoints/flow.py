@@ -29,7 +29,7 @@ async def _fetch_flow_params():
     return FlowModel.schema()['properties']
 
 
-@router.put(
+@router.post(
     path='',
     summary='Creat a Flow from a YAML config',
     status_code=201,

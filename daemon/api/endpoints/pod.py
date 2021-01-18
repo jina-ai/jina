@@ -30,7 +30,7 @@ async def _fetch_pod_params():
     return PodModel.schema()['properties']
 
 
-@router.put(
+@router.post(
     path='',
     summary='Create a Pod',
     description='Create a Pod and add it to the store',
