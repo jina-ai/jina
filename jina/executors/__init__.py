@@ -30,7 +30,6 @@ AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 _ref_desolve_map = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'] = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
-_ref_desolve_map.__dict__['metas'].__dict__['separated_workspace'] = False
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -244,10 +243,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def current_workspace(self) -> str:
         """ Get the path of the current workspace.
 
-        :return: if ``separated_workspace`` is set to ``False`` then ``metas.workspace`` is returned,
+        :return: if ``pea_id`` is defined then ``metas.workspace`` is returned,
                 otherwise the ``metas.pea_workspace`` is returned
         """
-        work_dir = self.pea_workspace if self.separated_workspace and self.pea_id != -1 else self.workspace  # type: str
+        work_dir = self.pea_workspace if self.pea_id != -1 else self.workspace  # type: str
         return work_dir
 
     def get_file_from_workspace(self, name: str) -> str:
@@ -255,7 +254,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :param name: the name of the file
 
-        :return depending on ``metas.separated_workspace`` the file could be located in ``metas.workspace`` or ``metas.pea_workspace``
+        :return file path
         """
         Path(self.current_workspace).mkdir(parents=True, exist_ok=True)
         return os.path.join(self.current_workspace, name)
@@ -344,23 +343,19 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     @classmethod
     def inject_config(cls: Type[AnyExecutor],
                       raw_config: Dict,
-                      separated_workspace: bool = False,
                       pea_id: int = 0,
                       read_only: bool = False,
                       *args, **kwargs) -> Dict:
         """Inject config into the raw_config before loading into an object.
 
         :param raw_config: raw config to work on
-        :param separated_workspace: the dump and data files associated to this executor will be stored separately for
-                each parallel pea, which will be indexed by the ``pea_id``
-        :param pea_id: the id of the storage of this parallel pea, only effective when ``separated_workspace=True``
+        :param pea_id: the id of the storage of this parallel pea
         :param read_only: if the executor should be readonly
         :return: an executor object
         """
         if 'metas' not in raw_config:
             raw_config['metas'] = {}
         tmp = fill_metas_with_defaults(raw_config)
-        tmp['metas']['separated_workspace'] = separated_workspace
         tmp['metas']['pea_id'] = pea_id
         tmp['metas']['read_only'] = read_only
 

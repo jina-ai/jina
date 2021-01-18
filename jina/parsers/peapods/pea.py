@@ -38,7 +38,7 @@ def mixin_pea_parser(parser):
     # hidden CLI used for internal only
 
     gp.add_argument('--pea-id', type=int, default=-1,
-                    help='the id of the storage of this pea, only effective when `separated_workspace=True`'
+                    help='the id of the storage of this pea`'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp.add_argument('--pea-role', type=PeaRoleType.from_string, choices=list(PeaRoleType),

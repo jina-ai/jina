@@ -23,7 +23,6 @@ To use these enums in YAML config, following the example below:
       chunk_idx:
         uses: index/chunk.yml
         parallel: ${{PARALLEL}}
-        separated_workspace: true
         parallel_type: !PollingType ANY
         # or
         parallel_type: ANY

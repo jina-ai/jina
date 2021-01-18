@@ -45,8 +45,7 @@ def test_shards_insufficient_data(mocker, restful):
     f = (Flow(restful=restful)
          .add(name='doc_pb',
               uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
-              parallel=parallel,
-              separated_workspace=True))
+              parallel=parallel))
     with f:
         f.index(input_fn=random_docs(index_docs))
 
@@ -58,7 +57,6 @@ def test_shards_insufficient_data(mocker, restful):
          .add(name='doc_pb',
               uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
               parallel=parallel,
-              separated_workspace=True,
               polling='all',
               uses_after='_merge_chunks'))
     with f:
