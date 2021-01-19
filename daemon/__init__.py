@@ -19,13 +19,13 @@ daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 def _get_app():
     from .api.endpoints import router, flow, pod, pea, logs, workspace
     app = FastAPI(
-        titl='JinaD (Daemon)',
+        title='JinaD (Daemon)',
         description='REST interface for managing distributed Jina',
         version=__version__,
         openapi_tags=[
             {
                 'name': 'daemon',
-                'description': 'API to manage this Daemon',
+                'description': 'API to manage the Daemon',
             },
             {
                 'name': 'flows',
@@ -41,11 +41,11 @@ def _get_app():
             },
             {
                 'name': 'logs',
-                'description': 'API to manage logs',
+                'description': 'API to stream Logs',
             },
             {
                 'name': 'workspaces',
-                'description': 'API to manage workspaces',
+                'description': 'API to manage Workspaces',
             }
         ],
     )
