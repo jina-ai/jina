@@ -1,7 +1,6 @@
 import uuid
-from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
@@ -37,13 +36,10 @@ async def _fetch_pod_params():
     status_code=201,
     response_model=uuid.UUID
 )
-async def _create(
-        pod: 'PodModel',
-        workspace_id: Optional[uuid.UUID] = Body(None)
-):
+async def _create(pod: 'PodModel'):
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
-        return store.add(args, workspace_id)
+        return store.add(args)
     except Exception as ex:
         raise Runtime400Exception from ex
 

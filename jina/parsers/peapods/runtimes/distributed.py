@@ -1,8 +1,8 @@
-from ...helper import add_arg_group
-from ....enums import RemoteAccessType
+from jina.parsers.helper import add_arg_group
+from jina.enums import RemoteAccessType
 
 
-def mixin_remote_feature_parser(parser):
+def mixin_distributed_feature_parser(parser):
     """Mixing in arguments required by :class:`BasePod` into the given parser. """
     gp = add_arg_group(parser, title='Distributed')
 
@@ -24,7 +24,7 @@ def mixin_remote_feature_parser(parser):
                          '(3) Uploaded files are by default isolated across the runs. To ensure files are submitted '
                          'to the same workspace across different runs, use `--workspace-id`.')
 
-    gp.add_argument('--workspace-id', type=str, default=None,
+    gp.add_argument('--workspace-id', type=str,
                     help='the UUID for identifying the workspace on remote. When not given then remote will assign a '
                          'random one. Multiple Pea/Pod/Flow will work under the same workspace if they share the same '
                          '`workspace-id`.')

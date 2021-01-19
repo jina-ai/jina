@@ -95,8 +95,7 @@ class DaemonClient:
             import requests
 
         try:
-            payload = {self.kind: replace_enum_to_str(vars(self._mask_args(args)))}
-            payload.update(kwargs)
+            payload = replace_enum_to_str(vars(self._mask_args(args)))
             r = requests.post(url=self.create_api, json=payload, timeout=self.timeout)
             rj = r.json()
             if r.status_code == 201:
@@ -162,17 +161,29 @@ class DaemonClient:
             self.logger.error(f'fail to delete {remote_id} as {ex!r}')
             return False
 
-    @staticmethod
-    def _mask_args(args: 'argparse.Namespace'):
+    def _mask_args(self, args: 'argparse.Namespace'):
         _args = copy.deepcopy(args)
+
         # reset the runtime to ZEDRuntime
         # TODO:/NOTE this prevents to run ContainerRuntime via JinaD (Han: 2021.1.17)
         if _args.runtime_cls == 'JinadRuntime':
             _args.runtime_cls = 'ZEDRuntime'
+
         # reset the host default host
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         _args.host = __default_host__
-        _args.log_config = ''
+
+        _args.log_config = ''  # do not use local log_config
+        _args.upload_files = ''  # reset upload files
+
+        changes = []
+        for k, v in vars(_args).items():
+            if v != getattr(args, k):
+                changes.append(f'{k:>30s}: {str(getattr(args, k)):30s} -> {str(v):30s}')
+        if changes:
+            changes = ['note the following arguments have been masked or altered for remote purpose:'] + changes
+            self.logger.warning('\n'.join(changes))
+
         return _args
 
 

@@ -1,7 +1,6 @@
 import uuid
 from argparse import Namespace
 from pathlib import Path
-from typing import Optional
 
 from jina.helper import change_cwd
 from jina.peapods import Pea
@@ -13,11 +12,12 @@ class PeaStore(BaseStore):
     peapod_cls = Pea
 
     def add(self, args: Namespace,
-            workspace_id: Optional[uuid.UUID] = None,
             **kwargs):
         try:
+            workspace_id = args.workspace_id
             if not workspace_id:
                 workspace_id = uuid.uuid1()
+
             _workdir = get_workspace_path(workspace_id)
             Path(_workdir).mkdir(parents=True, exist_ok=True)
 

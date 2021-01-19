@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from jina.parsers.peapods.pods.remote import mixin_remote_feature_parser
+from jina.parsers.peapods.runtimes.distributed import mixin_distributed_feature_parser
 
 
 def set_pea_parser(parser=None):
@@ -21,6 +21,7 @@ def set_pea_parser(parser=None):
     mixin_zed_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_parser(parser)
+    mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
 
     return parser
@@ -33,10 +34,9 @@ def set_pod_parser(parser=None):
 
     set_pea_parser(parser)
 
-    from .peapods.pods.base import mixin_base_pod_parser
+    from .peapods.pod import mixin_base_pod_parser
 
     mixin_base_pod_parser(parser)
-    mixin_remote_feature_parser(parser)
 
     return parser
 

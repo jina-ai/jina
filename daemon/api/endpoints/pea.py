@@ -1,7 +1,6 @@
 import uuid
-from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
@@ -37,11 +36,10 @@ async def _fetch_pea_params():
     status_code=201,
     response_model=uuid.UUID
 )
-async def _create(pea: 'PeaModel',
-                  workspace_id: Optional[uuid.UUID] = Body(None)):
+async def _create(pea: 'PeaModel'):
     try:
         args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
-        return store.add(args, workspace_id)
+        return store.add(args)
     except Exception as ex:
         raise Runtime400Exception from ex
 

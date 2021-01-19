@@ -1,7 +1,7 @@
 import argparse
 
-from ...helper import add_arg_group, _SHOW_ALL_ARGS
-from ....enums import PollingType, SchedulerType, PodRoleType
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.enums import PollingType, SchedulerType, PodRoleType
 
 
 def mixin_base_pod_parser(parser):
