@@ -8,16 +8,33 @@ from ..logging import default_logger as logger
 
 
 class FlowRunner:
+    def run(
+            self,
+            trial_parameters: dict,
+            workspace: str = 'workspace',
+            **kwargs,
+    ):
+        """
+        :param trial_parameters: parameters to be used as environment variables
+        :param workspace: directory to be used for the flows
+        """
+        raise NotImplementedError
+
+    def get_evaluations(self):
+        raise NotImplementedError
+
+
+class SingleFlowRunner(FlowRunner):
     """Module to define and run a flow."""
 
     def __init__(
-        self,
-        flow_yaml: str,
-        documents: Iterator,
-        request_size: int,
-        task: str,  # this can be only index or search as it is used to call the flow API
-        callback: Optional = None,
-        overwrite_workspace: bool = False,
+            self,
+            flow_yaml: str,
+            documents: Iterator,
+            request_size: int,
+            task: str,  # this can be only index or search as it is used to call the flow API
+            callback: Optional = None,
+            overwrite_workspace: bool = False,
     ):
         """
         :param flow_yaml: path to flow yaml
@@ -58,10 +75,10 @@ class FlowRunner:
         os.makedirs(workspace, exist_ok=True)
 
     def run(
-        self,
-        trial_parameters: dict,
-        workspace: str = 'workspace',
-        **kwargs,
+            self,
+            trial_parameters: dict,
+            workspace: str = 'workspace',
+            **kwargs,
     ):
         """[summary]
 
@@ -70,6 +87,8 @@ class FlowRunner:
         """
 
         self._setup_workspace(workspace)
+        self._reset_callback()
+
         with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
             getattr(f, self.task)(
                 self.documents,
@@ -78,8 +97,14 @@ class FlowRunner:
                 **kwargs,
             )
 
+    def _reset_callback(self):
+        self.callback = self.callback.get_fresh_callback()
 
-class MultiFlowRunner:
+    def get_evaluations(self):
+        return self.callback.get_mean_evaluation()
+
+
+class MultiFlowRunner(FlowRunner):
     """Chain and run multiple flows"""
 
     def __init__(self, *flows):
@@ -89,10 +114,10 @@ class MultiFlowRunner:
         self.flows = flows
 
     def run(
-        self,
-        trial_parameters: dict,
-        workspace: str = 'workspace',
-        **kwargs,
+            self,
+            trial_parameters: dict,
+            workspace: str = 'workspace',
+            **kwargs,
     ):
         """
         :param trial_parameters: parameters to be used as environment variables
@@ -100,3 +125,7 @@ class MultiFlowRunner:
         """
         for flow in self.flows:
             flow.run(trial_parameters, workspace, **kwargs)
+
+    def get_evaluations(self):
+        for flow in self.flows:
+            yield flow.callback.get_mean_evaluation()

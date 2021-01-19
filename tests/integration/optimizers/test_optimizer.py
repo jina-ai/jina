@@ -2,7 +2,7 @@ import yaml
 
 from jina import Document
 from jina.optimizers import OptunaOptimizer, EvaluationCallback
-from jina.optimizers.flow_runner import FlowRunner, MultiFlowRunner
+from jina.optimizers.flow_runner import SingleFlowRunner
 
 
 def test_optimizer(tmpdir):
@@ -16,7 +16,7 @@ def test_optimizer(tmpdir):
             groundtruth_doc = Document(content='hello')
         yield doc, groundtruth_doc
 
-    eval_flow_runner = FlowRunner(
+    eval_flow_runner = SingleFlowRunner(
         flow_yaml='tests/integration/optimizers/flow.yml',
         documents=document_generator(10),
         request_size=1,
@@ -24,10 +24,8 @@ def test_optimizer(tmpdir):
         callback=EvaluationCallback(),
     )
 
-    multi_flow = MultiFlowRunner(eval_flow_runner)
-
     opt = OptunaOptimizer(
-        multi_flow=multi_flow,
+        multi_flow=eval_flow_runner,
         parameter_yaml='tests/integration/optimizers/parameter.yml',
         workspace_base_dir=str(tmpdir)
     )

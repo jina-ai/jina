@@ -11,7 +11,7 @@ from .parameters import load_optimization_parameters
 
 
 if False:
-    from .flow_runner import MultiFlowRunner
+    from .flow_runner import MultiFlowRunner, FlowRunner
     import optuna
 
 
@@ -80,7 +80,7 @@ class OptunaOptimizer:
 
     def __init__(
         self,
-        multi_flow: 'MultiFlowRunner',
+        multi_flow: 'FlowRunner',
         parameter_yaml: str,
         workspace_base_dir: str = '',
         workspace_env: str = 'JINA_WORKSPACE',
@@ -113,11 +113,12 @@ class OptunaOptimizer:
         return trial_parameters
 
     def _objective(self, trial):
-        eval_flow = self.multi_flow.flows[self.eval_flow_index]
-        eval_flow.callback = eval_flow.callback.get_fresh_callback()
+
+        # eval_flow = self.multi_flow.flows[self.eval_flow_index]
+        # eval_flow.callback = eval_flow.callback.get_fresh_callback()
         trial_parameters = self._trial_parameter_sampler(trial)
         self.multi_flow.run(trial_parameters, workspace=trial.workspace)
-        evaluation = eval_flow.callback.get_mean_evaluation()
+        evaluation = self.multi_flow.get_evaluations()
         op_name = list(evaluation)[0]
         eval_score = evaluation[op_name]
         logger.info(colored(f'Avg {op_name}: {eval_score}', 'green'))
