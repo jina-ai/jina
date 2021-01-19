@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pytest
+
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.flow import Flow
@@ -525,3 +526,15 @@ def test_return_results_sync_flow(return_results, restful):
             assert isinstance(r[0], Response)
         else:
             assert r is None
+
+
+@pytest.mark.parametrize('input, expect_host, expect_port',
+                         [('0.0.0.0', '0.0.0.0', None),
+                          ('0.0.0.0:12345', '0.0.0.0', 12345),
+                          ('123.456.789.0:45678', '123.456.789.0', 45678),
+                          ('api.jina.ai:45678', 'api.jina.ai', 45678)])
+def test_flow_host_expose_shortcut(input, expect_host, expect_port):
+    f = Flow().add(host=input).build()
+    assert f['pod0'].args.host == expect_host
+    if expect_port is not None:
+        assert f['pod0'].args.port_expose == expect_port

@@ -5,6 +5,7 @@ import argparse
 import base64
 import copy
 import os
+import re
 import threading
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
@@ -12,6 +13,7 @@ from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
 from urllib.request import Request, urlopen
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
+from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
@@ -30,6 +32,9 @@ FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
     pass
+
+
+_regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
 
 class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -200,6 +205,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
+        # pod naming logic
         pod_name = kwargs.get('name', None)
 
         if pod_name in op_flow._pod_nodes:
@@ -214,12 +220,21 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             # hyphen - can not be used in the name
             raise ValueError(f'name: {pod_name} is invalid, please follow the python variable name conventions')
 
+        # needs logic
         needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
 
+        # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
             if key not in kwargs:
                 kwargs[key] = value
 
+        # check if host is set to remote:port
+        m = re.match(_regex_port, kwargs['host'])
+        if kwargs.get('host', __default_host__) != __default_host__ and m and 'port_expose' not in kwargs:
+            kwargs['port_expose'] = m.group(2)
+            kwargs['host'] = m.group(1)
+
+        # update kwargs of this pod
         kwargs.update(dict(
             name=pod_name,
             pod_role=pod_role,
