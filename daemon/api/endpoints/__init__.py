@@ -1,15 +1,9 @@
-import os
-import uuid
-from pathlib import Path
-from typing import List
-
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter
 
 from jina.helper import get_public_ip, get_internal_ip, get_full_version
 from jina.logging.profile import used_memory_readable
-from ... import jinad_args, daemon_logger
 from ...models.status import DaemonStatus
-from ...stores import pea_store, pod_store, flow_store
+from ...stores import pea_store, pod_store, flow_store, workspace_store
 
 router = APIRouter(tags=['daemon'])
 
@@ -49,25 +43,6 @@ async def _status():
         'peas': pea_store.status,
         'pods': pod_store.status,
         'flows': flow_store.status,
+        'workspaces': workspace_store.status,
         'used_memory': used_memory_readable()
     }
-
-
-@router.post(
-    path='/upload',
-    summary='Upload dependencies into a workspace',
-    description='Return a UUID to the workspace, which can be used later when create Pea/Pod/Flow',
-    response_model=uuid.UUID
-)
-async def _upload(files: List[UploadFile] = File(...)):
-    if files:
-        _id = uuid.uuid1()
-        _workdir = os.path.join(jinad_args.workspace, str(_id))
-        Path(_workdir).mkdir(parents=True, exist_ok=False)
-        for f in files:
-            dest = os.path.join(_workdir, f.filename)
-            with open(dest, 'wb') as fp:
-                content = f.file.read()
-                fp.write(content)
-            daemon_logger.info(f'save uploads to {dest}')
-        return _id

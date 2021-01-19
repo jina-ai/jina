@@ -45,6 +45,16 @@ async def _create(
         raise Runtime400Exception from ex
 
 
+# order matters! this must be put in front of del {id}
+#  https://fastapi.tiangolo.com/tutorial/path-params/?h=+path#order-matters
+@router.delete(
+    path='/all',
+    summary='Terminate all running Flows',
+)
+async def _clear_all():
+    store.clear()
+
+
 @router.delete(
     path='/{id}',
     summary='Terminate a running Flow',
@@ -69,14 +79,6 @@ async def _status(
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
-
-
-@router.delete(
-    path='/all',
-    summary='Terminate all running Flows',
-)
-def _clear_all():
-    store.clear()
 
 
 @router.on_event('shutdown')

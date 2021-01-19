@@ -14,11 +14,18 @@ def test_args(api, fastapi_client):
     assert response.json()
 
 
-@pytest.mark.parametrize('api', ['/peas', '/pods', '/flows'])
+@pytest.mark.parametrize('api', ['/peas', '/pods', '/flows', '/workspaces'])
 def test_status(api, fastapi_client):
     response = fastapi_client.get(f'{api}')
     assert response.status_code == 200
     assert response.json()
+
+
+@pytest.mark.parametrize('api', ['/peas', '/pods', '/flows', '/workspaces'])
+def test_status(api, fastapi_client):
+    response = fastapi_client.delete(f'{api}/all')
+    print(response.json())
+    assert response.status_code == 200
 
 
 @pytest.mark.parametrize('api, payload', [
@@ -32,6 +39,12 @@ def test_status(api, fastapi_client):
         'files': {
             'flow': ('good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb')),
         }
+    }),
+    ('/workspaces', {
+        'files': [
+            ('files', open(str(cur_dir / 'good_flow.yml'), 'rb')),
+            ('files', open(str(cur_dir / 'good_flow_dep.yml'), 'rb')),
+        ]
     })])
 def test_add_success(api, payload, fastapi_client):
     response = fastapi_client.post(api, **payload)
@@ -61,7 +74,12 @@ def test_add_success(api, payload, fastapi_client):
                                           ('/flows',
                                            {'files': {'flow': (
                                                    'bad_flow.yml',
-                                                   open(str(cur_dir / 'bad_flow.yml'), 'rb'))}})])
+                                                   open(str(cur_dir / 'bad_flow.yml'), 'rb'))}}),
+                                          ('/workspaces',
+                                           {'files': [(
+                                                   'bad_flow.yml',
+                                                   open(str(cur_dir / 'bad_flow.yml'), 'rb'))]})
+                                          ])
 def test_add_fail(api, payload, fastapi_client):
     response = fastapi_client.get(api)
     assert response.status_code == 200
@@ -69,9 +87,10 @@ def test_add_fail(api, payload, fastapi_client):
     old_size = response.json()['size']
 
     response = fastapi_client.post(api, **payload)
-    assert response.status_code == 400
-    for k in ('body', 'detail'):
-        assert k in response.json()
+    assert response.status_code != 201
+    if response.status_code == 400:
+        for k in ('body', 'detail'):
+            assert k in response.json()
 
     response = fastapi_client.get(api)
     assert response.status_code == 200

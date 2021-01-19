@@ -1,13 +1,13 @@
 import uuid
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Union, List
 
 from pydantic import BaseModel
 
 
 class StoreItemStatus(BaseModel):
     uptime: datetime
-    arguments: Dict
+    arguments: Union[Dict, List]
     workdir: str
 
 

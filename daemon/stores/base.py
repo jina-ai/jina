@@ -1,11 +1,7 @@
-import os
 import shutil
-import tempfile
 import uuid
 from collections.abc import MutableMapping
-from contextlib import contextmanager
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, Any, Union
 
 from jina.helper import colored
@@ -67,7 +63,7 @@ class BaseStore(MutableMapping):
         t = datetime.now()
         value.update({'uptime': t})
         self._last_update = t
-        self._logger.success(f'{colored(str(key), "cyan")} is added to the store: {value["object"]!r}')
+        self._logger.success(f'{colored(str(key), "cyan")} is added')
         self._num_add += 1
 
     @property

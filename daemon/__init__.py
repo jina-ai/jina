@@ -17,7 +17,7 @@ daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
 
 def _get_app():
-    from .api.endpoints import router, flow, pod, pea, logs
+    from .api.endpoints import router, flow, pod, pea, logs, workspace
     app = FastAPI(
         titl='JinaD (Daemon)',
         description='REST interface for managing distributed Jina',
@@ -42,6 +42,10 @@ def _get_app():
             {
                 'name': 'logs',
                 'description': 'API to manage logs',
+            },
+            {
+                'name': 'logs',
+                'description': 'API to manage workspaces',
             }
         ],
     )
@@ -57,6 +61,7 @@ def _get_app():
     app.include_router(pea.router)
     app.include_router(pod.router)
     app.include_router(flow.router)
+    app.include_router(workspace.router)
     app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
 
     return app

@@ -37,7 +37,7 @@ class DaemonClient:
         base_url = f'{host}:{port}'
         rest_url = f'http://{base_url}'
         self.alive_api = f'{rest_url}/'
-        self.upload_api = f'{rest_url}/upload'
+        self.upload_api = f'{rest_url}/workspaces'
         self.upload_api_arg = 'files'  # this is defined in Daemon API upload interface
         if self.kind == 'pea':
             self.create_api = f'{rest_url}/peas'
@@ -78,7 +78,7 @@ class DaemonClient:
                     self.logger.info(f'uploading {len(files)} file(s): {dependencies}')
                     r = requests.post(url=self.upload_api, files=files, timeout=self.timeout)
                     rj = r.json()
-                    if r.status_code == 200:
+                    if r.status_code == 201:
                         return rj
                     else:
                         raise requests.exceptions.RequestException(rj)

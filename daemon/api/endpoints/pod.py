@@ -49,6 +49,14 @@ async def _create(
 
 
 @router.delete(
+    path='/all',
+    summary='Terminate all running Pods',
+)
+async def _clear_all():
+    store.clear()
+
+
+@router.delete(
     path='/{id}',
     summary='Terminate a running Pod',
     description='Terminate a running Pod and release its resources'
@@ -70,14 +78,6 @@ async def _status(id: uuid.UUID):
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
-
-
-@router.delete(
-    path='/all',
-    summary='Terminate all running Pods',
-)
-def _clear_all():
-    store.clear()
 
 
 @router.on_event('shutdown')
