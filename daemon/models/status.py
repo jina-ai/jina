@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class StoreItemStatus(BaseModel):
-    uptime: datetime
+    time_created: datetime
     arguments: Union[Dict, List]
     workdir: str
 
@@ -17,8 +17,8 @@ class FlowItemStatus(StoreItemStatus):
 
 class StoreStatus(BaseModel):
     size: int
-    uptime: datetime
-    last_update: datetime
+    time_created: datetime
+    time_updated: datetime
     num_add: int
     num_del: int
     items: Dict[uuid.UUID, StoreItemStatus]

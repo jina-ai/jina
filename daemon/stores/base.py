@@ -18,8 +18,8 @@ class BaseStore(MutableMapping):
 
     def _init_stats(self):
         """Initialize the stats """
-        self._uptime = datetime.now()
-        self._last_update = self._uptime
+        self._time_created = datetime.now()
+        self._time_updated = self._time_created
         self._num_add = 0
         self._num_del = 0
 
@@ -50,7 +50,7 @@ class BaseStore(MutableMapping):
             if v.get('workdir', None):
                 shutil.rmtree(v['workdir'])
             self._items.pop(key)
-            self._last_update = datetime.now()
+            self._time_updated = datetime.now()
             self._logger.success(f'{colored(str(key), "cyan")} is released from the store.')
             self._num_del += 1
         else:
@@ -69,8 +69,8 @@ class BaseStore(MutableMapping):
     def __setitem__(self, key: 'uuid.UUID', value: Dict) -> None:
         self._items[key] = value
         t = datetime.now()
-        value.update({'uptime': t})
-        self._last_update = t
+        value.update({'time_created': t})
+        self._time_updated = t
         self._logger.success(f'{colored(str(key), "cyan")} is added')
         self._num_add += 1
 
@@ -79,8 +79,8 @@ class BaseStore(MutableMapping):
         """Return the status of this store as a dict"""
         return {
             'size': len(self._items),
-            'uptime': self._uptime,
-            'last_update': self._last_update,
+            'time_created': self._time_created,
+            'time_updated': self._time_updated,
             'num_add': self._num_add,
             'num_del': self._num_del,
             'items': self._items

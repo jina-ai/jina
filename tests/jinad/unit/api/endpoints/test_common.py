@@ -90,7 +90,7 @@ def test_add_success(api, payload, fastapi_client):
 
     response = fastapi_client.get(f'{api}/{_id}')
     assert response.status_code == 200
-    assert 'uptime' in response.json()
+    assert 'time_created' in response.json()
 
     response = fastapi_client.delete(f'{api}/{_id}')
     assert response.status_code == 200

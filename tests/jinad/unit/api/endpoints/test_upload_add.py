@@ -25,7 +25,7 @@ def test_upload_then_add_success(api, payload, fastapi_client):
 
     response = fastapi_client.get(f'{api}/{_id}')
     assert response.status_code == 200
-    assert 'uptime' in response.json()
+    assert 'time_created' in response.json()
     workdir = response.json()['workdir']
     assert os.path.exists(workdir)
     for d in deps:
@@ -58,7 +58,7 @@ def test_upload_then_add_flow_success(fastapi_client):
 
     response = fastapi_client.get(f'/flows/{_id}')
     assert response.status_code == 200
-    assert 'uptime' in response.json()
+    assert 'time_created' in response.json()
     workdir = response.json()['workdir']
     assert os.path.exists(workdir)
     for d in deps:

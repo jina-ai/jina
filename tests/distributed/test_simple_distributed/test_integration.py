@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from..helpers import create_flow, invoke_requests
+from ..helpers import create_flow, invoke_requests
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -17,17 +17,16 @@ def test_flow(docker_compose):
 
     r = invoke_requests(method='post',
                         url='http://0.0.0.0:45678/api/search',
-                        payload={'top_k': 10, 'data': ['text:cats rulessss']})
-    assert r is not None
+                        payload={'top_k': 10, 'data': ['text:cats rulessss']},
+                        expect_rcode=200)
     text_indexed = r['search']['docs'][0]['text']
     print(f'Got response text_indexed: {text_indexed}')
     assert text_indexed == 'text:cats rulessss'
 
-    r = invoke_requests(method='get', url=f'http://localhost:8000/flows/{flow_id}')
-    assert r.json() is not None
-    assert r.status_code == 200
+    invoke_requests(method='get',
+                    url=f'http://localhost:8000/flows/{flow_id}',
+                    expect_rcode=200)
 
-    r = invoke_requests(method='delete',
-                        url=f'http://localhost:8000/flows/{flow_id}')
-    assert r is not None
-    assert r.status_code == 200
+    invoke_requests(method='delete',
+                    url=f'http://localhost:8000/flows/{flow_id}',
+                    expect_rcode=200)
