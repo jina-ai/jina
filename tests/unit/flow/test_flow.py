@@ -1,10 +1,12 @@
 import os
+import uuid
 
 import numpy as np
 import pytest
+
+from jina import Flow
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
-from jina.flow import Flow
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from tests import random_docs, rm_files
@@ -525,3 +527,32 @@ def test_return_results_sync_flow(return_results, restful):
             assert isinstance(r[0], Response)
         else:
             assert r is None
+
+
+@pytest.mark.parametrize('input, expect_host, expect_port',
+                         [('0.0.0.0', '0.0.0.0', None),
+                          ('0.0.0.0:12345', '0.0.0.0', 12345),
+                          ('123.456.789.0:45678', '123.456.789.0', 45678),
+                          ('api.jina.ai:45678', 'api.jina.ai', 45678)])
+def test_flow_host_expose_shortcut(input, expect_host, expect_port):
+    f = Flow().add(host=input).build()
+    assert f['pod0'].args.host == expect_host
+    if expect_port is not None:
+        assert f['pod0'].args.port_expose == expect_port
+
+
+def test_flow_workspace_id():
+    f = Flow().add().add().add().build()
+    assert len(f.workspace_id) == 3
+    assert len(set(f.workspace_id.values())) == 1
+    assert not list(f.workspace_id.values())[0]
+
+    with pytest.raises(ValueError):
+        f.workspace_id = 'hello'
+
+    new_id = str(uuid.uuid1())
+    f.workspace_id = new_id
+    assert len(set(f.workspace_id.values())) == 1
+    assert list(f.workspace_id.values())[0] == new_id
+
+

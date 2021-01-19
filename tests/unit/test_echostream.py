@@ -6,7 +6,7 @@ from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.proto import jina_pb2
 from jina.types.message import Message
-from jina.helper import get_random_identity
+from jina.helper import random_identity
 from tests import random_docs
 
 
@@ -34,7 +34,7 @@ def test_simple_zmqlet():
     logger = logging.getLogger('zmq-test')
     with BasePea(args2), Zmqlet(args, logger) as z:
         req = jina_pb2.RequestProto()
-        req.request_id = get_random_identity()
+        req.request_id = random_identity()
         d = req.index.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')

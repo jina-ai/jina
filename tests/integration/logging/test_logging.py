@@ -25,7 +25,7 @@ def test_logging(monkeypatch, flow_log_id):
 
     monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
 
-    with Flow(log_id='identity_flow', show_exc_info=True).add(name='pod1'). \
+    with Flow(identity='identity_flow', show_exc_info=True).add(name='pod1'). \
             add(name='pod2'):
         pass
 
@@ -44,6 +44,6 @@ def test_logging_pod(monkeypatch):
 
     monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
 
-    args = set_pod_parser().parse_args(['--log-id', 'logging_id'])
+    args = set_pod_parser().parse_args(['--identity', 'logging_id'])
     with BasePod(args):
         pass

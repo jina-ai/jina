@@ -2,7 +2,7 @@ from pkg_resources import resource_filename
 
 from .base import set_base_parser
 from .helper import add_arg_group
-from ..helper import get_random_identity
+from ..helper import random_identity
 
 
 def set_hw_parser(parser=None):
@@ -10,7 +10,7 @@ def set_hw_parser(parser=None):
         parser = set_base_parser()
 
     gp = add_arg_group(parser, title='General')
-    gp.add_argument('--workdir', type=str, default=get_random_identity(),
+    gp.add_argument('--workdir', type=str, default=random_identity(),
                     help='the workdir for hello-world demo, '
                          'all data, indices, shards and outputs will be saved there')
     gp.add_argument('--download-proxy', type=str,

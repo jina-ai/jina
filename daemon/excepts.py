@@ -1,29 +1,18 @@
-from websockets.exceptions import WebSocketException
+import traceback
+
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
 
-class FlowYamlParseException(Exception):
-    """ Exception during loading yaml file for Flow creation"""
+class Runtime400Exception(Exception):
+    """Exception when daemon FastAPI app is running"""
 
 
-class FlowCreationException(Exception):
-    """ Exception during flow creation via pods"""
-
-
-class FlowBadInputException(Exception):
-    """ Exception during loading Flow, no valid configuration"""
-
-
-class FlowStartException(Exception):
-    """ Exception during flow start"""
-
-
-class PodStartException(Exception):
-    """ Exception during pod start """
-
-
-class PeaStartException(Exception):
-    """ Exception during pod start """
-
-
-class NoSuchFileException(WebSocketException):
-    """ Exception during log streaming if no file is found """
+async def daemon_runtime_exception_handler(request: Request, ex: 'Runtime400Exception'):
+    return JSONResponse(
+        status_code=400,
+        content={
+            'detail': repr(ex),
+            'body': traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__)
+        },
+    )

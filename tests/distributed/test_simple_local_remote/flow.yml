@@ -9,6 +9,8 @@ pods:
     port_in: 45000
     port_ctrl: 45002
     port_expose: 8000
+    upload_files:
+      - encode.yml
   indexer:
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: index.yml
