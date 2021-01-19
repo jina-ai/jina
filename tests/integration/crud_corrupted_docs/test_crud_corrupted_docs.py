@@ -94,28 +94,43 @@ np.random.seed(0)
 
 EMBEDDING_SHAPE = (7)
 
+ORIGINAL_MIME_TYPE = 'image/jpeg'
 
-def random_docs_only_embedding(nr_docs, text=False, mime_type='plain/text', start=0):
+
+def random_docs_content_field(nr_docs, field, start=0):
     for i in range(start, nr_docs + start):
-        d = Document()
-        if text:
-            d.text = 'some text here'
-        d.embedding = np.random.random(EMBEDDING_SHAPE)
-        d.mime_type = mime_type
+        with Document() as d:
+            d.id = i
+            d.embedding = np.random.random(EMBEDDING_SHAPE)
+            d.mime_type = ORIGINAL_MIME_TYPE
+            if field == 'content':
+                # mime type will be overridden because it's `str`
+                d.content = 'I am text'
+            elif field == 'buffer':
+                # mime type will be detected and overridden
+                d.buffer = b'hidden text in bytes'
+            elif field == 'blob':
+                # mime type is ignored and preserved
+                d.blob = np.random.random(EMBEDDING_SHAPE)
+
         yield d
 
 
-@pytest.mark.parametrize('mime_type',
-                         ['text/plain', 'image/jpeg', 'text/x-python'])
-def test_only_embedding_and_mime_type(tmp_path, mocker, mime_type):
+@pytest.mark.parametrize('field',
+                         [
+                             'content',
+                             'buffer',
+                             'blob'
+                         ])
+def test_only_embedding_and_mime_type(tmp_path, mocker, field):
     config_environ(path=tmp_path)
     flow_file = 'flow.yml'
-    docs = list(random_docs_only_embedding(NR_DOCS_INDEX, mime_type=mime_type))
-    docs_update = list(random_docs_only_embedding(NR_DOCS_INDEX, mime_type=mime_type, start=len(docs) + 1))
+    docs = list(random_docs_content_field(NR_DOCS_INDEX, field=field))
+    docs_update = list(random_docs_content_field(NR_DOCS_INDEX, field=field, start=len(docs) + 1))
     all_docs_indexed = docs.copy()
     all_docs_indexed.extend(docs_update)
     docs_search = list(
-        random_docs_only_embedding(NUMBER_OF_SEARCHES, mime_type=mime_type, start=len(docs) + len(docs_update) + 1))
+        random_docs_content_field(NUMBER_OF_SEARCHES, field=field, start=len(docs) + len(docs_update) + 1))
     f = Flow.load_config(flow_file)
 
     def validate_result_factory(num_matches):
@@ -125,7 +140,15 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, mime_type):
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
                 for m in doc.matches:
-                    assert m.mime_type == mime_type
+                    if field == 'content':
+                        assert m.content == 'I am text'
+                        assert m.mime_type == 'text/plain'
+                    elif field == 'buffer':
+                        assert m.buffer == b'hidden text in bytes'
+                        assert m.mime_type == 'text/plain'
+                    elif field == 'blob':
+                        assert m.blob.shape == (EMBEDDING_SHAPE,)
+                        assert m.mime_type == ORIGINAL_MIME_TYPE
 
         return validate_results
 
@@ -161,18 +184,27 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, mime_type):
     mock.assert_called_once()
 
 
-def test_malformed(tmp_path, mocker):
-    """we assign text to .text but the image mime type"""
+def random_docs_image_mime_text_content(nr_docs, start=0):
+    for i in range(start, nr_docs + start):
+        with Document() as d:
+            d.embedding = np.random.random(EMBEDDING_SHAPE)
+            d.mime_type = 'image/jpeg'
+            d.text = f'document {i}'
+        yield d
+
+
+def test_wrong_mime_type(tmp_path, mocker):
+    """we assign text to .text, 'image/jpeg' to .mime_type"""
     config_environ(path=tmp_path)
     flow_file = 'flow-parallel.yml'
     flow_query_file = 'flow.yml'
-    mime_type = 'image/jpeg'
-    docs = list(random_docs_only_embedding(NR_DOCS_INDEX, text=True, mime_type=mime_type))
-    docs_update = list(random_docs_only_embedding(NR_DOCS_INDEX, text=True, mime_type=mime_type, start=len(docs) + 1))
+    docs = list(random_docs_image_mime_text_content(NR_DOCS_INDEX))
+    docs_update = list(random_docs_image_mime_text_content(NR_DOCS_INDEX, start=len(docs) + 1))
     all_docs_indexed = docs.copy()
     all_docs_indexed.extend(docs_update)
     docs_search = list(
-        random_docs_only_embedding(NUMBER_OF_SEARCHES, text=True, mime_type=mime_type, start=len(docs) + len(docs_update) + 1))
+        random_docs_image_mime_text_content(NUMBER_OF_SEARCHES,
+                                            start=len(docs) + len(docs_update) + 1))
     f_index = Flow.load_config(flow_file)
     f_query = Flow.load_config(flow_query_file)
 
@@ -183,7 +215,7 @@ def test_malformed(tmp_path, mocker):
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
                 for m in doc.matches:
-                    assert m.mime_type == mime_type
+                    assert m.mime_type == 'text/plain'
 
         return validate_results
 
@@ -194,7 +226,7 @@ def test_malformed(tmp_path, mocker):
     mock = mocker.Mock()
     with f_query:
         f_query.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(TOPK))
+                       output_fn=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     # this won't increase the index size as the ids are new
@@ -205,7 +237,7 @@ def test_malformed(tmp_path, mocker):
     mock = mocker.Mock()
     with f_query:
         f_query.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(TOPK))
+                       output_fn=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     with f_index:
@@ -215,5 +247,5 @@ def test_malformed(tmp_path, mocker):
     mock = mocker.Mock()
     with f_query:
         f_query.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(0))
+                       output_fn=validate_result_factory(0))
     mock.assert_called_once()
