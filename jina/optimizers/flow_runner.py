@@ -60,10 +60,7 @@ class SingleFlowRunner(FlowRunner):
             raise TypeError(f"documents is of wrong type: {type(documents)}")
 
         self.request_size = request_size
-        if task in ('index', 'search'):
-            self.task = task
-        else:
-            raise ValueError('task can be either of index or search')
+        self.task = task
         self.callback = callback
         self.overwrite_workspace = overwrite_workspace
 

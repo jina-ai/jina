@@ -465,6 +465,7 @@ class Document:
         elif isinstance(value, np.ndarray):
             self.blob = value
         else:
+            print(value)
             # ``None`` is also considered as bad type
             raise TypeError(f'{typename(value)} is not recognizable')
 

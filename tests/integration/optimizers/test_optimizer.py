@@ -53,7 +53,7 @@ def test_yaml(tmpdir):
     flow_yaml: 'tests/integration/optimizers/flow.yml'
     documents: {jsonlines_file}
     request_size: 1
-    task: 'search'
+    task: 'search_lines'
     callback: !EvaluationCallback
       eval_name: None
   parameter_yaml: 'tests/integration/optimizers/parameter.yml'
@@ -63,17 +63,19 @@ def test_yaml(tmpdir):
 
     with open(jsonlines_file, 'w') as f:
         for document, groundtruth_doc in documents:
+            document.id = ""
+            groundtruth_doc.id = ""
             json.dump(
                 {
-                    'document': MessageToJson(document).replace('\n', ''),
-                    'groundtruth': MessageToJson(groundtruth_doc).replace('\n', ''),
+                    'document': json.loads(MessageToJson(document).replace('\n', '')),
+                    'groundtruth': json.loads(MessageToJson(groundtruth_doc).replace('\n', '')),
                 },
                 f,
             )
             f.write('\n')
 
     optimizer = JAML.load(optimizer_yaml)
-    result = optimizer.optimize_flow(n_trials=10)
+    result = optimizer.optimize_flow(n_trials=5)
 
     result_path = str(tmpdir) + '/results/best_parameters.yml'
     result.save_parameters(result_path)
