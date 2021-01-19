@@ -13,7 +13,7 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import typename, get_random_identity
+from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -176,7 +176,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             elif type(getattr(self, k)) == type(v):
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
-            _id = get_random_identity().split('-')[0]
+            _id = random_identity().split('-')[0]
             _name = f'{typename(self)}-{_id}'
             if getattr(self, 'warn_unnamed', False):
                 self.logger.warning(

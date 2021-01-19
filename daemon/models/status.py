@@ -33,5 +33,6 @@ class DaemonStatus(BaseModel):
     envs: Dict
     peas: StoreStatus
     pods: StoreStatus
-    flows: StoreStatus
+    flows: FlowStoreStatus
+    workspaces: StoreStatus
     used_memory: str

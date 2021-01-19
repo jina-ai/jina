@@ -14,7 +14,10 @@ class BaseStore(MutableMapping):
     def __init__(self):
         self._items = {}  # type: Dict['uuid.UUID', Dict[str, Any]]
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
+        self._init_stats()
 
+    def _init_stats(self):
+        """Initialize the stats """
         self._uptime = datetime.now()
         self._last_update = self._uptime
         self._num_add = 0
@@ -57,6 +60,11 @@ class BaseStore(MutableMapping):
         keys = list(self._items.keys())
         for k in keys:
             self.pop(k)
+
+    def reset(self) -> None:
+        """Calling :meth:`clear` and reset all stats """
+        self.clear()
+        self._init_stats()
 
     def __setitem__(self, key: 'uuid.UUID', value: Dict) -> None:
         self._items[key] = value

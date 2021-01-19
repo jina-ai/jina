@@ -62,3 +62,8 @@ async def _list(id: uuid.UUID):
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.on_event('shutdown')
+def _shutdown():
+    store.reset()

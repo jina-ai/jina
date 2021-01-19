@@ -17,7 +17,7 @@ def test_main(fastapi_client):
 def test_status(fastapi_client):
     response = fastapi_client.get('/status')
     assert response.status_code == 200
-    for k in ('jina', 'envs', 'workspaces' 'peas', 'pods', 'flows', 'used_memory'):
+    for k in ('jina', 'envs', 'workspaces', 'peas', 'pods', 'flows', 'used_memory'):
         assert k in response.json()
 
 

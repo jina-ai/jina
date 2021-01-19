@@ -59,6 +59,11 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
                 ddd['type'] = str
             if a.dest in random_dest:
                 ddd['default_random'] = True
+                from jina.helper import random_identity, random_port
+                if isinstance(a.default, str):
+                    ddd['default_factory'] = random_identity.__name__
+                elif isinstance(a.default, int):
+                    ddd['default_factory'] = random_port.__name__
             else:
                 ddd['default_random'] = False
             if type_as_str:

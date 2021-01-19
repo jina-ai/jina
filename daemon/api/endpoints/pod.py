@@ -82,4 +82,4 @@ async def _status(id: uuid.UUID):
 
 @router.on_event('shutdown')
 def _shutdown():
-    store.clear()
+    store.reset()

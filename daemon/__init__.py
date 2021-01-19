@@ -44,7 +44,7 @@ def _get_app():
                 'description': 'API to manage logs',
             },
             {
-                'name': 'logs',
+                'name': 'workspaces',
                 'description': 'API to manage workspaces',
             }
         ],

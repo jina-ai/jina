@@ -35,6 +35,39 @@ def test_status(api, fastapi_client):
     ('/pods', {
         'json': {'pod': {'name': 'my_pod'}},
     }),
+    ('/workspaces', {
+        'files': [
+            ('files', open(str(cur_dir / 'good_flow.yml'), 'rb')),
+        ]
+    })])
+def test_add_same_del_all(api, payload, fastapi_client):
+    for _ in range(3):
+        # this test the random default_factory
+        response = fastapi_client.post(api, **payload)
+        print(response.json())
+        assert response.status_code == 201
+        _id = response.json()
+
+    response = fastapi_client.get(api)
+    assert response.status_code == 200
+    num_add = response.json()['num_add']
+
+    response = fastapi_client.delete(f'{api}/all')
+    assert response.status_code == 200
+
+    response = fastapi_client.get(api)
+    assert response.status_code == 200
+    assert response.json()['num_del'] == num_add
+    assert response.json()['size'] == 0
+
+
+@pytest.mark.parametrize('api, payload', [
+    ('/peas', {
+        'json': {'pea': {'name': 'my_pea'}},
+    }),
+    ('/pods', {
+        'json': {'pod': {'name': 'my_pod'}},
+    }),
     ('/flows', {
         'files': {
             'flow': ('good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb')),
@@ -54,7 +87,6 @@ def test_add_success(api, payload, fastapi_client):
 
     response = fastapi_client.get(api)
     assert response.status_code == 200
-    assert response.json()['num_add'] == 1
 
     response = fastapi_client.get(f'{api}/{_id}')
     assert response.status_code == 200
@@ -65,7 +97,6 @@ def test_add_success(api, payload, fastapi_client):
 
     response = fastapi_client.get(api)
     assert response.status_code == 200
-    assert response.json()['num_del'] == 1
     assert response.json()['size'] == 0
 
 

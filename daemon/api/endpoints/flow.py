@@ -83,4 +83,4 @@ async def _status(
 
 @router.on_event('shutdown')
 def _shutdown():
-    store.clear()
+    store.reset()

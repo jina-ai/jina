@@ -24,7 +24,7 @@ import numpy as np
 
 __all__ = ['batch_iterator',
            'parse_arg',
-           'random_port', 'get_random_identity', 'expand_env_var',
+           'random_port', 'random_identity', 'expand_env_var',
            'colored', 'ArgNamespace', 'is_valid_local_config_source',
            'cached_property', 'is_url',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
@@ -203,7 +203,7 @@ def random_port() -> Optional[int]:
     return _port
 
 
-def get_random_identity() -> str:
+def random_identity() -> str:
     return str(uuid.uuid1())
 
 

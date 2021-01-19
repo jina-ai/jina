@@ -3,7 +3,7 @@ import argparse
 from pkg_resources import resource_filename
 
 from ..helper import add_arg_group, _SHOW_ALL_ARGS
-from ...helper import get_random_identity
+from ...helper import random_identity
 
 
 def mixin_base_ppr_parser(parser):
@@ -21,7 +21,7 @@ def mixin_base_ppr_parser(parser):
 
     # hidden CLI used for internal only
 
-    gp.add_argument('--identity', type=str, default=get_random_identity(),
+    gp.add_argument('--identity', type=str, default=random_identity(),
                     help='a UUID1 string to represent the identity of this object'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
