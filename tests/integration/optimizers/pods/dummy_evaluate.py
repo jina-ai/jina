@@ -11,7 +11,6 @@ class DummyTextEvaluator(BaseTextEvaluator):
         super().__init__(*args, **kwargs)
 
     def evaluate(self, actual: str, desired: str, *args, **kwargs) -> float:
-        print('---', actual, desired)
         if actual == desired:
             return 1.0
         else:

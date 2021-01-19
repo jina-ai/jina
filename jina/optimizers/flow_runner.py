@@ -11,10 +11,10 @@ from ..jaml import JAMLCompatibleSimple
 
 class FlowRunner(JAMLCompatibleSimple):
     def run(
-            self,
-            trial_parameters: dict,
-            workspace: str = 'workspace',
-            **kwargs,
+        self,
+        trial_parameters: dict,
+        workspace: str = 'workspace',
+        **kwargs,
     ):
         """
         :param trial_parameters: parameters to be used as environment variables
@@ -30,13 +30,13 @@ class SingleFlowRunner(FlowRunner):
     """Module to define and run a flow."""
 
     def __init__(
-            self,
-            flow_yaml: str,
-            documents: Iterator,
-            request_size: int,
-            task: str,  # this can be only index or search as it is used to call the flow API
-            callback: Optional = None,
-            overwrite_workspace: bool = False,
+        self,
+        flow_yaml: str,
+        documents: Iterator,
+        request_size: int,
+        task: str,  # this can be only index or search as it is used to call the flow API
+        callback: Optional = None,
+        overwrite_workspace: bool = False,
     ):
         """
         :param flow_yaml: path to flow yaml
@@ -84,10 +84,10 @@ class SingleFlowRunner(FlowRunner):
         os.makedirs(workspace, exist_ok=True)
 
     def run(
-            self,
-            trial_parameters: dict,
-            workspace: str = 'workspace',
-            **kwargs,
+        self,
+        trial_parameters: dict,
+        workspace: str = 'workspace',
+        **kwargs,
     ):
         """[summary]
 
@@ -127,10 +127,10 @@ class MultiFlowRunner(FlowRunner):
         self.eval_flow_index = eval_flow_index
 
     def run(
-            self,
-            trial_parameters: dict,
-            workspace: str = 'workspace',
-            **kwargs,
+        self,
+        trial_parameters: dict,
+        workspace: str = 'workspace',
+        **kwargs,
     ):
         """
         :param trial_parameters: parameters to be used as environment variables

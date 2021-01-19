@@ -83,18 +83,15 @@ class OptunaOptimizer(JAMLCompatibleSimple):
         flow_runner: 'FlowRunner',
         parameter_yaml: str,
         workspace_base_dir: str = '',
-        workspace_env: str = 'JINA_WORKSPACE',
     ):
         """
         :param flow_runner: `FlowRunner` object which contains the flows to be run.
         :param parameter_yaml: yaml container the parameters to be optimized
-        :param workspace_env: workspace env name as referred in pods and flows yaml
         """
         super().__init__()
         self._version = '1'
         self.flow_runner = flow_runner
         self.parameter_yaml = parameter_yaml
-        self.workspace_env = workspace_env.lstrip('$')
         self.workspace_base_dir = workspace_base_dir
 
     def _trial_parameter_sampler(self, trial):
@@ -105,10 +102,8 @@ class OptunaOptimizer(JAMLCompatibleSimple):
                 **param.to_optuna_args()
             )
 
-        trial_workspace = self.workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
+        trial.workspace = self.workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
 
-        trial_parameters[self.workspace_env] = trial_workspace
-        trial.workspace = trial_workspace
         return trial_parameters
 
     def _objective(self, trial):
