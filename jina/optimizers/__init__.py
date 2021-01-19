@@ -8,14 +8,14 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
-from ..jaml import JAML, JAMLCompatible
+from ..jaml import JAMLCompatibleSimple
 
 if False:
     from .flow_runner import FlowRunner
     import optuna
 
 
-class EvaluationCallback:
+class EvaluationCallback(JAMLCompatibleSimple):
     """Callback for storing and calculating evaluation metric."""
 
     def __init__(self, eval_name: Optional[str] = None):
@@ -75,7 +75,7 @@ class OptunaResultProcessor:
         yaml.dump(self.best_parameters, open(filepath, 'w'))
 
 
-class OptunaOptimizer(JAMLCompatible):
+class OptunaOptimizer(JAMLCompatibleSimple):
     """Optimizer which uses Optuna to run flows and choose best parameters."""
 
     def __init__(
@@ -96,10 +96,6 @@ class OptunaOptimizer(JAMLCompatible):
         self.parameter_yaml = parameter_yaml
         self.workspace_env = workspace_env.lstrip('$')
         self.workspace_base_dir = workspace_base_dir
-
-    @property
-    def yaml_spec(self):
-        return JAML.dump(self)
 
     def _trial_parameter_sampler(self, trial):
         trial_parameters = {}
@@ -149,3 +145,13 @@ class OptunaOptimizer(JAMLCompatible):
         study = optuna.create_study(direction=direction, sampler=sampler)
         study.optimize(self._objective, n_trials=n_trials)
         return result_processor(study)
+
+
+# def run_yaml_optimizer(yaml_file):
+#     optimizer = JAML.load(optimizer_yaml)
+#     result = optimizer.optimize_flow(n_trials=10)
+
+#     result_path = str(tmpdir) + '/results/best_parameters.yml'
+#     result.save_parameters(result_path)
+#     parameters = result.best_parameters
+

@@ -404,3 +404,31 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
         """
         return raw_config
+
+
+class JAMLCompatibleSimple(metaclass=JAMLCompatibleType):
+
+    @classmethod
+    def _to_yaml(cls, representer, data):
+        """Required by :mod:`pyyaml` """
+        tmp = data._dump_instance_to_yaml(data)
+        representer.sort_base_mapping_type_on_output = False
+        return representer.represent_mapping('!' + cls.__name__, tmp)
+
+    @staticmethod
+    def _dump_instance_to_yaml(instance):
+        import inspect
+
+        attributes = inspect.getmembers(instance, lambda a: not (inspect.isroutine(a)))
+        return {
+            a[0]: a[1]
+            for a in attributes
+            if not (a[0].startswith('__') and a[0].endswith('__'))
+        }
+
+    @classmethod
+    def _from_yaml(cls, constructor, node):
+        """Required by :mod:`pyyaml` """
+        data = constructor.construct_mapping(node, deep=True)
+        return cls(**data)
+

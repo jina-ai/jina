@@ -1,14 +1,15 @@
 import os
 import shutil
+from collections.abc import Iterable
 from typing import Iterator, Optional
 
 from ..flow import Flow
 from ..helper import colored
 from ..logging import default_logger as logger
-from ..jaml import JAMLCompatible
+from ..jaml import JAMLCompatibleSimple
 
 
-class FlowRunner:
+class FlowRunner(JAMLCompatibleSimple):
     def run(
             self,
             trial_parameters: dict,
@@ -25,7 +26,7 @@ class FlowRunner:
         raise NotImplementedError
 
 
-class SingleFlowRunner(JAMLCompatible, FlowRunner):
+class SingleFlowRunner(FlowRunner):
     """Module to define and run a flow."""
 
     def __init__(
@@ -48,7 +49,16 @@ class SingleFlowRunner(JAMLCompatible, FlowRunner):
         super().__init__()
         self.flow_yaml = flow_yaml
         # TODO: Make changes for working with doc generator (Pratik, before v1.0)
-        self.documents = documents if type(documents) == list else list(documents)
+
+        if type(documents) is list:
+            self.documents = documents
+        elif type(documents) is str:
+            self.documents = documents
+        elif isinstance(documents, Iterable):
+            self.documents = list(documents)
+        else:
+            raise TypeError(f"documents is of wrong type: {type(documents)}")
+
         self.request_size = request_size
         if task in ('index', 'search'):
             self.task = task
@@ -106,7 +116,7 @@ class SingleFlowRunner(JAMLCompatible, FlowRunner):
         return self.callback.get_mean_evaluation()
 
 
-class MultiFlowRunner(JAMLCompatible, FlowRunner):
+class MultiFlowRunner(FlowRunner):
     """Chain and run multiple flows"""
 
     def __init__(self, *flows, eval_flow_index=-1):

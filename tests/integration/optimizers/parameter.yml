@@ -5,7 +5,6 @@
   step_size: 1
   parameter_name: param1
   log: False
-  optuna_method: suggest_int
 - !IntegerParameter
   env_var: JINA_DUMMYCRAFTER_PARAM2
   high: 1
@@ -13,7 +12,6 @@
   step_size: 1
   parameter_name: param2
   log: False
-  optuna_method: suggest_int
 - !IntegerParameter
   env_var: JINA_DUMMYCRAFTER_PARAM3
   high: 2
@@ -21,4 +19,3 @@
   step_size: 1
   parameter_name: param3
   log: False
-  optuna_method: suggest_int

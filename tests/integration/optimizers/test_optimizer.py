@@ -7,6 +7,7 @@ from google.protobuf.json_format import MessageToJson
 from jina import Document
 from jina.optimizers import OptunaOptimizer, EvaluationCallback
 from jina.optimizers.flow_runner import SingleFlowRunner
+from jina.jaml import JAML
 
 BEST_PARAMETERS = {
     'JINA_DUMMYCRAFTER_PARAM1': 0,
@@ -47,17 +48,16 @@ def test_optimizer(tmpdir):
 
 def test_yaml(tmpdir):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
-    optimizer_yaml = f'''
-!OptunaOptimizer:
-flow_runner:
-  !SingleFlowRunner:
+    optimizer_yaml = f'''!OptunaOptimizer
+  flow_runner: !SingleFlowRunner
     flow_yaml: 'tests/integration/optimizers/flow.yml'
     documents: {jsonlines_file}
     request_size: 1
     task: 'search'
     callback: !EvaluationCallback
-parameter_yaml: 'tests/integration/optimizers/parameter.yml'
-workspace_base_dir: {tmpdir}
+      eval_name: None
+  parameter_yaml: 'tests/integration/optimizers/parameter.yml'
+  workspace_base_dir: {tmpdir}
 '''
     documents = document_generator(10)
 
@@ -72,12 +72,12 @@ workspace_base_dir: {tmpdir}
             )
             f.write('\n')
 
-    with OptunaOptimizer.load_config(optimizer_yaml) as optimizer:
-        result = optimizer.optimize_flow(n_trials=10)
+    optimizer = JAML.load(optimizer_yaml)
+    result = optimizer.optimize_flow(n_trials=10)
 
-        result_path = str(tmpdir) + '/results/best_parameters.yml'
-        result.save_parameters(result_path)
-        parameters = result.best_parameters
+    result_path = str(tmpdir) + '/results/best_parameters.yml'
+    result.save_parameters(result_path)
+    parameters = result.best_parameters
 
-        assert parameters == BEST_PARAMETERS
-        assert yaml.load(open(result_path)) == BEST_PARAMETERS
+    assert parameters == BEST_PARAMETERS
+    assert yaml.load(open(result_path)) == BEST_PARAMETERS
