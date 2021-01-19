@@ -21,3 +21,4 @@ def mixin_remote_feature_parser(parser):
                          'Note that currently only flatten structure is supported, which means if you upload '
                          '`[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on '
                          'the remote, losing all hierarchies.')
+

@@ -8,6 +8,7 @@ from pydantic import BaseModel
 class StoreItemStatus(BaseModel):
     time_created: datetime
     arguments: Union[Dict, List]
+    workspace_id: uuid.UUID
     workdir: str
 
 

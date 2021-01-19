@@ -5,10 +5,10 @@ from typing import Optional, Dict
 import requests
 
 
-def invoke_requests(method: str,
-                    url: str,
-                    payload: Optional[Dict] = None,
-                    expect_rcode: int = 200):
+def assert_request(method: str,
+                   url: str,
+                   payload: Optional[Dict] = None,
+                   expect_rcode: int = 200):
     try:
         if method in ('get', 'delete'):
             response = getattr(requests, method)(url)
@@ -27,14 +27,15 @@ def get_results(query: str,
                 url: str = 'http://0.0.0.0:45678/api/search',
                 method: str = 'post',
                 top_k: int = 10):
-    return invoke_requests(method=method,
-                           url=url,
-                           payload={'top_k': top_k, 'data': [query]})
+    return assert_request(method=method,
+                          url=url,
+                          payload={'top_k': top_k, 'data': [query]})
 
 
 def create_flow(flow_yaml: str,
                 pod_dir: Optional[str] = None,
-                url: str = 'http://localhost:8000') -> str:
+                url: str = 'http://localhost:8000',
+                workspace_id: str = None) -> str:
     with ExitStack() as file_stack:
         pymodules_files = []
         uses_files = []
@@ -52,7 +53,6 @@ def create_flow(flow_yaml: str,
             *uses_files,
             *pymodules_files,
         ]
-        workspace_id = None
         if files:
             print(f'will upload {files}')
             r = requests.post(f'{url}/workspaces', files=files)

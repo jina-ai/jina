@@ -1,4 +1,3 @@
-import os
 import uuid
 from pathlib import Path
 from typing import Optional, BinaryIO
@@ -6,7 +5,7 @@ from typing import Optional, BinaryIO
 from jina.flow import Flow
 from jina.helper import change_cwd
 from .base import BaseStore
-from .. import jinad_args
+from .helper import get_workspace_path
 
 
 class FlowStore(BaseStore):
@@ -17,7 +16,7 @@ class FlowStore(BaseStore):
         try:
             if not workspace_id:
                 workspace_id = uuid.uuid1()
-            _workdir = os.path.join(jinad_args.workspace, str(workspace_id))
+            _workdir = get_workspace_path(workspace_id)
             Path(_workdir).mkdir(parents=True, exist_ok=True)
 
             y_spec = config.read().decode()
@@ -35,6 +34,7 @@ class FlowStore(BaseStore):
                 'object': f,
                 'arguments': vars(f.args),
                 'yaml_source': y_spec,
-                'workdir': _workdir
+                'workdir': _workdir,
+                'workspace_id': workspace_id
             }
             return _id
