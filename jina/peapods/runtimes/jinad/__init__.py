@@ -74,6 +74,7 @@ class JinadRuntime(AsyncZMQRuntime):
                     self.logger.success(f'uploaded to workspace: {workspace_id}')
                 else:
                     raise RuntimeError('can not upload required files to remote')
+            self.args.workspace_id = workspace_id
             return self.api.create(self.args, workspace_id=workspace_id)
 
     async def _sleep_forever(self):
