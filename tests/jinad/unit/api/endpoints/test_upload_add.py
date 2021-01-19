@@ -10,8 +10,8 @@ deps = ['mwu_encoder.py', 'mwu_encoder.yml']
 
 @pytest.mark.parametrize('api, payload', [('/peas', 'pea'), ('/pods', 'pod')])
 def test_upload_then_add_success(api, payload, fastapi_client):
-    response = fastapi_client.post('/upload', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
-    assert response.status_code == 200
+    response = fastapi_client.post('/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
+    assert response.status_code == 201
     workspace_id = response.json()
 
     response = fastapi_client.post(api, json={payload: {'uses': 'mwu_encoder.yml'},
@@ -42,8 +42,8 @@ def test_upload_then_add_success(api, payload, fastapi_client):
 
 
 def test_upload_then_add_flow_success(fastapi_client):
-    response = fastapi_client.post('/upload', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
-    assert response.status_code == 200
+    response = fastapi_client.post('/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
+    assert response.status_code == 201
     workspace_id = response.json()
 
     response = fastapi_client.post('/flows',
