@@ -67,7 +67,7 @@ class BaseStore(MutableMapping):
         t = datetime.now()
         value.update({'uptime': t})
         self._last_update = t
-        self._logger.success(f'{colored(str(key), "cyan")} is added to the store: {value!r}')
+        self._logger.success(f'{colored(str(key), "cyan")} is added to the store: {value["object"]!r}')
         self._num_add += 1
 
     @property

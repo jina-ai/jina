@@ -7,6 +7,8 @@ from argparse import Namespace
 from contextlib import ExitStack
 from typing import Tuple, List, Optional, Sequence
 
+from pkg_resources import resource_filename
+
 from .... import __default_host__
 from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
@@ -57,7 +59,7 @@ class DaemonClient:
             r = requests.get(url=self.alive_url, timeout=self.timeout)
             return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'something wrong on remote: {ex!r}')
+            self.logger.error(f'remote manager is not alive: {ex!r}')
             return False
 
     def upload(self, dependencies: Sequence[str]):
@@ -75,7 +77,7 @@ class DaemonClient:
                 try:
                     requests.post(url=self.upload_url, files=files, timeout=self.timeout)
                 except requests.exceptions.RequestException as ex:
-                    self.logger.error(f'something wrong on remote: {ex!r}')
+                    self.logger.error(f'fail to upload as {ex!r}')
 
     def create(self, args: 'Namespace', **kwargs) -> Optional[str]:
         """ Create a remote pea/pod
@@ -89,21 +91,18 @@ class DaemonClient:
         try:
             payload = replace_enum_to_str(vars(self._mask_args(args)))
             r = requests.post(url=self.peapod_url, json={self.kind: payload}, timeout=self.timeout)
+            rj = r.json()
             if r.status_code == 201:
-                return r.json()
+                return rj
             elif r.status_code == 400:
                 # known internal error
-                rj = r.json()
                 rj_body = '\n'.join(j for j in rj['body'])
                 self.logger.error(f'{rj["detail"]}\n{rj_body}')
-                raise requests.exceptions.RequestException(r.json())
             elif r.status_code == 422:
-                self.logger.error('your payload is not correct')
-                raise requests.exceptions.RequestException(r.json())
-            else:
-                raise requests.exceptions.RequestException(r.json())
+                self.logger.error('your payload is not correct, please follow the error message and double check')
+            raise requests.exceptions.RequestException(rj)
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t create on remote jinad: {ex!r}')
+            self.logger.error(f'fail to create as {ex!r}')
 
     async def logstream(self, remote_id: str):
         """ websocket log stream from remote pea/pod
@@ -113,14 +112,20 @@ class DaemonClient:
         with ImportExtensions(required=True):
             import websockets
 
+        remote_log_config = resource_filename('jina', '/'.join(
+            ('resources', 'logging.remote.yml')))
+        all_remote_loggers = {}
         try:
             async with websockets.connect(f'{self.log_url}/{remote_id}') as websocket:
                 async for log_line in websocket:
                     try:
                         ll = json.loads(log_line)
                         name = ll['name']
-                        msg = ll['message'].strip()
-                        self.logger.info(f'🌏 {name} {msg}')
+                        if name not in all_remote_loggers:
+                            all_remote_loggers[name] = JinaLogger(context=ll['host'],
+                                                                  log_config=remote_log_config)
+
+                        all_remote_loggers[name].info('{host} {name} {type} {message}'.format_map(ll))
                     except json.decoder.JSONDecodeError:
                         continue
         except websockets.exceptions.ConnectionClosedOK:
@@ -141,9 +146,9 @@ class DaemonClient:
         try:
             url = f'{self.peapod_url}/{remote_id}'
             r = requests.delete(url=url, timeout=self.timeout)
-            return r.status_code == requests.codes.ok
+            return r.status_code == 200
         except requests.exceptions.RequestException as ex:
-            self.logger.error(f'couldn\'t connect with remote jinad url {ex!r}')
+            self.logger.error(f'fail to delete {remote_id} as {ex!r}')
             return False
 
     @staticmethod

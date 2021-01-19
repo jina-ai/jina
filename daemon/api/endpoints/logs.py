@@ -37,21 +37,24 @@ class LogStreamingEndpoint(WebSocketEndpoint):
             daemon_logger.success(f'{self.filepath} is ready for streaming')
             while True:
                 line = fp.readline()
-                last_part = line.strip().split('\t')[-1]
-                try:
-                    payload = json.loads(last_part)
-                except json.decoder.JSONDecodeError:
+                if line:
                     payload = None
-                    daemon_logger.warning(f'JSON decode error on {last_part}')
-
-                if payload:
-                    await websocket.send_json(payload)
+                    try:
+                        payload = json.loads(line)
+                    except json.decoder.JSONDecodeError:
+                        daemon_logger.warning(f'JSON decode error on {line}')
+                    if payload:
+                        from websockets import ConnectionClosedOK
+                        try:
+                            await websocket.send_json(payload)
+                        except ConnectionClosedOK:
+                            break
                 else:
                     await asyncio.sleep(0.1)
 
     async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
         self.active_clients.remove(websocket)
-        daemon_logger.info(f'{self.client_details} is disconnected!')
+        daemon_logger.info(f'{self.client_details} is disconnected')
 
 
 # TODO: adding websocket in this way do not generate any docs

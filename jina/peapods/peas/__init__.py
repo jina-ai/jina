@@ -61,6 +61,7 @@ class BasePea(metaclass=PeaType):
         """
         self._set_envs()
 
+        self.logger.info(f'starting {typename(self.runtime)}...')
         try:
             self.runtime.setup()
         except Exception as ex:
@@ -179,9 +180,9 @@ class BasePea(metaclass=PeaType):
         v = self.runtime_cls
         if not self.runtime_cls:
             if self.args.host != __default_host__:
-                if self.args.remote_access == RemoteAccessType.JINAD:
+                if self.args.remote_manager == RemoteAccessType.JINAD:
                     self.args.runtime_cls = 'JinadRuntime'
-                elif self.args.remote_access == RemoteAccessType.SSH:
+                elif self.args.remote_manager == RemoteAccessType.SSH:
                     self.args.runtime_cls = 'SSHRuntime'
 
             if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith('docker://'):
