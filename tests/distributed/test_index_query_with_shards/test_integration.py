@@ -10,6 +10,7 @@ flow_yml = os.path.join(cur_dir, 'flow.yml')
 pod_dir = os.path.join(cur_dir, 'pods')
 
 
+@pytest.mark.skip('skip until `workspace-id` is fully implemented')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose):
     flow_id = create_flow(flow_yml, pod_dir)
