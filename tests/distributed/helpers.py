@@ -52,19 +52,28 @@ def create_flow(flow_yaml: str,
             *uses_files,
             *pymodules_files,
         ]
-        print(f'will upload {files}')
-        r = requests.post(f'{url}/workspaces', files=files)
-        print(f'Checking if the upload is succeeded: {r.json()}')
-        assert r.status_code == 201
-        workspace_id = r.json()
+        workspace_id = None
+        if files:
+            print(f'will upload {files}')
+            r = requests.post(f'{url}/workspaces', files=files)
+            print(f'Checking if the upload is succeeded: {r.json()}')
+            assert r.status_code == 201
+            workspace_id = r.json()
 
-        r = requests.get(f'{url}/workspaces/{workspace_id}')
-        print(f'Listing upload files: {r.json()}')
-        assert r.status_code == 200
+            r = requests.get(f'{url}/workspaces/{workspace_id}')
+            print(f'Listing upload files: {r.json()}')
+            assert r.status_code == 200
+        else:
+            print('nothing to upload')
 
-        r = requests.post(f'{url}/flows',
-                          files={'flow': ('good_flow.yml', file_stack.enter_context(open(flow_yaml, 'rb'))),
-                                 'workspace_id': (None, workspace_id)})
+        if workspace_id:
+            r = requests.post(f'{url}/flows',
+                              files={'flow': ('good_flow.yml', file_stack.enter_context(open(flow_yaml, 'rb'))),
+                                     'workspace_id': (None, workspace_id)})
+        else:
+            r = requests.post(f'{url}/flows',
+                              files={'flow': ('good_flow.yml', file_stack.enter_context(open(flow_yaml, 'rb')))})
+
         print(f'Checking if the flow creation is succeeded: {r.json()}')
         assert r.status_code == 201
         return r.json()

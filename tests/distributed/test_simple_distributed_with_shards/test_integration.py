@@ -12,7 +12,7 @@ pod_dir = os.path.join(cur_dir, 'pods')
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose):
-    flow_id = create_flow(flow_yml, pod_dir)['flow_id']
+    flow_id = create_flow(flow_yml, pod_dir)
     print(f'Flow created with id {flow_id}')
 
     r = invoke_requests(method='post',
@@ -23,12 +23,8 @@ def test_flow(docker_compose):
     print(f'Got response text_indexed: {text_indexed}')
     assert text_indexed == 'text:cats rulessss'
 
-    r = invoke_requests(method='get',
-                        url=f'http://localhost:8000/flow/{flow_id}')
-    assert r is not None
-    assert r.status_code == 200
+    invoke_requests(method='get',
+                    url=f'http://localhost:8000/flows/{flow_id}')
 
-    r = invoke_requests(method='delete',
-                        url=f'http://localhost:8000/flow?flow_id={flow_id}')
-    assert r is not None
-    assert r.status_code == 200
+    invoke_requests(method='delete',
+                    url=f'http://localhost:8000/flows/{flow_id}')
