@@ -229,10 +229,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 kwargs[key] = value
 
         # check if host is set to remote:port
-        m = re.match(_regex_port, kwargs['host'])
-        if kwargs.get('host', __default_host__) != __default_host__ and m and 'port_expose' not in kwargs:
-            kwargs['port_expose'] = m.group(2)
-            kwargs['host'] = m.group(1)
+        if 'host' in kwargs:
+            m = re.match(_regex_port, kwargs['host'])
+            if kwargs.get('host', __default_host__) != __default_host__ and m and 'port_expose' not in kwargs:
+                kwargs['port_expose'] = m.group(2)
+                kwargs['host'] = m.group(1)
 
         # update kwargs of this pod
         kwargs.update(dict(

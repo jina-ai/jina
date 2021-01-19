@@ -2,8 +2,7 @@ from pathlib import PosixPath
 
 import pytest
 
-from jina.docker.helper import credentials_file, handle_dot_in_keys, Waiter
-
+from jina.docker.helper import credentials_file, handle_dot_in_keys
 
 
 def test_credentials_file():
