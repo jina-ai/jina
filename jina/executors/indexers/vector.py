@@ -134,11 +134,13 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         if getattr(keys, 'size', len(keys)):
             # expects np array for computing shapes
             keys = np.array(list(keys))
-            self._delete(keys)
+            self._delete(keys, keys_precomputed=True)
             self.add(np.array(keys), np.array(values))
 
-    def _delete(self, keys):
+    def _delete(self, keys, keys_precomputed):
         # could be empty
+        if keys_precomputed is not True:
+            keys = self._filter_nonexistent_keys(keys, self.ext2int_id.keys(), self.save_abspath)
         # please do not use "if keys:", it wont work on both sequence and ndarray
         if getattr(keys, 'size', len(keys)):
             # expects np array for computing shapes
@@ -149,9 +151,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 self._size -= 1
 
     def delete(self, keys: Sequence[int], *args, **kwargs) -> None:
-        if kwargs.get('keys_precomputed') is not True:
-            keys = self._filter_nonexistent_keys(keys, self.ext2int_id.keys(), self.save_abspath)
-        self._delete(keys)
+        self._delete(keys, keys_precomputed=False)
 
     def get_query_handler(self) -> Optional['np.ndarray']:
         """Open a gzip file and load it as a numpy ndarray
