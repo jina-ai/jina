@@ -52,7 +52,7 @@ def test_logging_file():
 @pytest.mark.parametrize('log_config', [os.path.join(cur_dir, 'yaml/fluent.yml'), None])
 def test_logging_fluentd(monkeypatch, log_config):
     from fluent import asynchandler as fluentasynchandler
-    with JinaLogger('test_logger', log_config=log_config, log_id='test_log_id') as logger:
+    with JinaLogger('test_logger', log_config=log_config, identity='test_log_id') as logger:
         def mock_emit(obj, record):
             msg = obj.format(record)
             assert msg['log_id'] == 'test_log_id'

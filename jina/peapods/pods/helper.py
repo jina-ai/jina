@@ -4,7 +4,7 @@ from typing import List
 
 from ... import __default_host__
 from ...enums import SchedulerType, SocketType, PeaRoleType
-from ...helper import random_port, get_random_identity, get_public_ip, get_internal_ip, is_valid_local_config_source
+from ...helper import random_port, random_identity, get_public_ip, get_internal_ip, is_valid_local_config_source
 
 
 def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Namespace = None) -> List[Namespace]:
@@ -17,8 +17,7 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
         if tail_args:
             _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
-        _args.identity = get_random_identity()
-        _args.log_id = args.log_id
+        _args.identity = random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:

@@ -14,7 +14,7 @@ from zmq.ssh import tunnel_connection
 
 from ... import __default_host__, Request
 from ...enums import SocketType
-from ...helper import colored, get_random_identity, get_readable_size, get_or_reuse_loop
+from ...helper import colored, random_identity, get_readable_size, get_or_reuse_loop
 from ...importer import ImportExtensions
 from ...logging import default_logger, profile_logger, JinaLogger
 from ...types.message import Message
@@ -547,7 +547,7 @@ def _get_random_ipc() -> str:
         tmp = os.environ['JINA_IPC_SOCK_TMP']
         if not os.path.exists(tmp):
             raise ValueError(f'This directory for sockets ({tmp}) does not seems to exist.')
-        tmp = os.path.join(tmp, get_random_identity())
+        tmp = os.path.join(tmp, random_identity())
     except KeyError:
         tmp = tempfile.NamedTemporaryFile().name
     return f'ipc://{tmp}'
