@@ -36,25 +36,25 @@ def test_search_non_existent(config, mocker):
 
     def validate_results(resp):
         mock()
-        assert len(resp.docs) == 201
+        assert len(resp.docs) == 3
 
     with Flow().add(
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
             separated_workspace=True,
     ) as index_flow:
-        index_flow.index(input_fn=random_docs(0, 201))
+        index_flow.index(input_fn=random_docs(0, 3), request_size=1)
 
     mock = mocker.Mock()
     with Flow(read_only=True).add(
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
             separated_workspace=True,
-            uses_after='_merge',
-            polling='all',
+            uses_after=os.path.join(cur_dir, 'yaml', 'merge_root.yml'),
+            polling='all'
     ) as search_flow:
-        search_flow.search(input_fn=random_docs(0, 220),
+        search_flow.search(input_fn=random_docs(0, 5),
                            output_fn=validate_results,
-                           request_size=300
+                           request_size=5
                            )
     mock.assert_called_once()

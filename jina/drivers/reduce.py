@@ -6,6 +6,7 @@ from typing import Tuple, Dict, Any
 import numpy as np
 
 from . import BaseRecursiveDriver
+from . import BaseDriver
 
 if False:
     from ..types.document import Document
@@ -40,6 +41,16 @@ class ReduceAllDriver(BaseRecursiveDriver):
             self.doc_pointers[context_doc.id] = context_doc
         else:
             getattr(self.doc_pointers[context_doc.id], field).extend(docs)
+
+
+class ReduceRequestDriver(BaseDriver):
+
+    def __call__(self, *args, **kwargs):
+        docs = []
+        for doc in self.docs:
+            docs.append(doc)
+        self.msg.request.body.ClearField('docs')
+        self.msg.request.docs.extend(docs)
 
 
 class CollectEvaluationDriver(ReduceAllDriver):
