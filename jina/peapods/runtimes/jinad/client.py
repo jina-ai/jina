@@ -2,10 +2,9 @@ import argparse
 import asyncio
 import copy
 import json
-import os
 from argparse import Namespace
 from contextlib import ExitStack
-from typing import Tuple, List, Optional, Sequence
+from typing import Tuple, List, Optional, Sequence, BinaryIO
 
 from pkg_resources import resource_filename
 
@@ -37,15 +36,16 @@ class DaemonClient:
         # as requests does ssl verfication. we'd need to add some exception handling logic though
         base_url = f'{host}:{port}'
         rest_url = f'http://{base_url}'
-        self.alive_url = f'{rest_url}/'
-        self.upload_url = f'{rest_url}/upload'
+        self.alive_api = f'{rest_url}/'
+        self.upload_api = f'{rest_url}/upload'
+        self.upload_api_arg = 'files'  # this is defined in Daemon API upload interface
         if self.kind == 'pea':
-            self.peapod_url = f'{rest_url}/peas'
+            self.create_api = f'{rest_url}/peas'
         elif self.kind == 'pod':
-            self.peapod_url = f'{rest_url}/pods'
+            self.create_api = f'{rest_url}/pods'
         else:
             raise ValueError(f'{self.kind} is not supported')
-        self.log_url = f'ws://{base_url}/logstream'
+        self.logstream_api = f'ws://{base_url}/logstream'
 
     @property
     def is_alive(self) -> bool:
@@ -56,26 +56,32 @@ class DaemonClient:
             import requests
 
         try:
-            r = requests.get(url=self.alive_url, timeout=self.timeout)
+            r = requests.get(url=self.alive_api, timeout=self.timeout)
             return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'remote manager is not alive: {ex!r}')
             return False
 
-    def upload(self, dependencies: Sequence[str]):
+    def upload(self, dependencies: Sequence[str]) -> str:
         """ Upload local file dependencies to remote server by extracting from the pea_args
         :param args: the arguments in dict that pea can accept
-        :return: if upload is successful
+        :return: the workspace id
         """
         import requests
 
         with ExitStack() as file_stack:
-            files = [(os.path.basename(fname), file_stack.enter_context(open(fname, 'rb')))
-                     for fname in dependencies]  # type: List[Tuple[str, bytes]]
+            files = [(self.upload_api_arg, file_stack.enter_context(open(f, 'rb')))
+                     for f in dependencies]  # type: List[Tuple[str, BinaryIO]]
 
             if files:
                 try:
-                    requests.post(url=self.upload_url, files=files, timeout=self.timeout)
+                    self.logger.info(f'uploading {len(files)} file(s): {dependencies}')
+                    r = requests.post(url=self.upload_api, files=files, timeout=self.timeout)
+                    rj = r.json()
+                    if r.status_code == 200:
+                        return rj
+                    else:
+                        raise requests.exceptions.RequestException(rj)
                 except requests.exceptions.RequestException as ex:
                     self.logger.error(f'fail to upload as {ex!r}')
 
@@ -89,8 +95,9 @@ class DaemonClient:
             import requests
 
         try:
-            payload = replace_enum_to_str(vars(self._mask_args(args)))
-            r = requests.post(url=self.peapod_url, json={self.kind: payload}, timeout=self.timeout)
+            payload = {self.kind: replace_enum_to_str(vars(self._mask_args(args)))}
+            payload.update(kwargs)
+            r = requests.post(url=self.create_api, json=payload, timeout=self.timeout)
             rj = r.json()
             if r.status_code == 201:
                 return rj
@@ -105,7 +112,8 @@ class DaemonClient:
             self.logger.error(f'fail to create as {ex!r}')
 
     async def logstream(self, remote_id: str):
-        """ websocket log stream from remote pea/pod
+        """Websocket log stream from remote pea/pod
+
         :param remote_id: the identity of that pea/pod
         :return:
         """
@@ -116,7 +124,7 @@ class DaemonClient:
             ('resources', 'logging.remote.yml')))
         all_remote_loggers = {}
         try:
-            async with websockets.connect(f'{self.log_url}/{remote_id}') as websocket:
+            async with websockets.connect(f'{self.logstream_api}/{remote_id}') as websocket:
                 async for log_line in websocket:
                     try:
                         ll = json.loads(log_line)
@@ -134,6 +142,9 @@ class DaemonClient:
             self.logger.error(f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}')
         except asyncio.CancelledError:
             self.logger.info(f'log streaming is cancelled')
+        finally:
+            for l in all_remote_loggers.values():
+                l.close()
 
     def delete(self, remote_id: str, **kwargs) -> bool:
         """ Delete a remote pea/pod
@@ -144,7 +155,7 @@ class DaemonClient:
             import requests
 
         try:
-            url = f'{self.peapod_url}/{remote_id}'
+            url = f'{self.create_api}/{remote_id}'
             r = requests.delete(url=url, timeout=self.timeout)
             return r.status_code == 200
         except requests.exceptions.RequestException as ex:

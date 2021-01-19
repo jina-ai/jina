@@ -24,7 +24,7 @@ class JinadRuntime(AsyncZMQRuntime):
         Uploads Pod/Pea context to remote & Creates remote Pod/Pea using :class:`JinadAPI`
         """
         if self._remote_id:
-            self.logger.success(f'created remote {self.api.kind} with id {colored(self._remote_id, "cyan")}')
+            self.logger.success(f'created a remote {self.api.kind}: {colored(self._remote_id, "cyan")}')
         else:
             self.logger.error(
                 f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
@@ -39,6 +39,7 @@ class JinadRuntime(AsyncZMQRuntime):
         Streams log messages using websocket from remote server
         """
         self._logging_task = asyncio.create_task(
+            self._sleep_forever() if self.args.silent_remote_logs else
             self.api.logstream(remote_id=self._remote_id)
         )
 
@@ -57,4 +58,25 @@ class JinadRuntime(AsyncZMQRuntime):
     @cached_property
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
-            return self.api.create(self.args)
+            workspace_id = None
+            upload_files = []
+            if self.args.uses.endswith('.yml') or self.args.uses.endswith('.yaml'):
+                upload_files.append(self.args.uses)
+                if not self.args.upload_files:
+                    self.logger.warning(f'will upload {self.args.uses} to remote, to include more local file '
+                                        f'dependencies, please use `--upload-files`')
+            if self.args.upload_files:
+                upload_files.extend(self.args.upload_files)
+
+            if upload_files:
+                workspace_id = self.api.upload(list(set(upload_files)))
+                if workspace_id:
+                    self.logger.success(f'uploaded to workspace: {workspace_id}')
+                else:
+                    raise RuntimeError('can not upload required files to remote')
+            return self.api.create(self.args, workspace_id=workspace_id)
+
+    async def _sleep_forever(self):
+        """Sleep forever, no prince will come.
+        """
+        await asyncio.sleep(1e10)

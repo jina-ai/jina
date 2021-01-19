@@ -90,6 +90,7 @@ def _start_fluentd():
             daemon_logger.debug(f'fluentd: {line.strip()}')
     except FileNotFoundError:
         daemon_logger.warning('Fluentd not found locally, Jinad cannot stream logs!')
+        jinad_args.no_fluentd = True
 
 
 def main():

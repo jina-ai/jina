@@ -22,7 +22,7 @@ def test_status(fastapi_client):
 
 
 def test_upload(fastapi_client):
-    response = fastapi_client.post('/upload', files=[(d, open(str(cur_dir / d), 'rb')) for d in deps])
+    response = fastapi_client.post('/upload', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
     assert response.status_code == 200
     for d in deps:
         os.path.exists(os.path.join(jinad_args.workspace, response.json(), d))

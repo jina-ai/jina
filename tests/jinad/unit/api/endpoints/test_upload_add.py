@@ -10,7 +10,7 @@ deps = ['mwu_encoder.py', 'mwu_encoder.yml']
 
 @pytest.mark.parametrize('api, payload', [('/peas', 'pea'), ('/pods', 'pod')])
 def test_upload_then_add_success(api, payload, fastapi_client):
-    response = fastapi_client.post('/upload', files=[(d, open(str(cur_dir / d), 'rb')) for d in deps])
+    response = fastapi_client.post('/upload', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
     assert response.status_code == 200
     workspace_id = response.json()
 
@@ -28,6 +28,8 @@ def test_upload_then_add_success(api, payload, fastapi_client):
     assert 'uptime' in response.json()
     workdir = response.json()['workdir']
     assert os.path.exists(workdir)
+    for d in deps:
+        assert os.path.exists(os.path.join(workdir, d))
 
     response = fastapi_client.delete(f'{api}/{_id}')
 
@@ -40,7 +42,7 @@ def test_upload_then_add_success(api, payload, fastapi_client):
 
 
 def test_upload_then_add_flow_success(fastapi_client):
-    response = fastapi_client.post('/upload', files=[(d, open(str(cur_dir / d), 'rb')) for d in deps])
+    response = fastapi_client.post('/upload', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
     assert response.status_code == 200
     workspace_id = response.json()
 
@@ -59,6 +61,8 @@ def test_upload_then_add_flow_success(fastapi_client):
     assert 'uptime' in response.json()
     workdir = response.json()['workdir']
     assert os.path.exists(workdir)
+    for d in deps:
+        assert os.path.exists(os.path.join(workdir, d))
 
     response = fastapi_client.delete(f'/flows/{_id}')
 

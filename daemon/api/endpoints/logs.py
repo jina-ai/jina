@@ -23,9 +23,14 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
     async def on_connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
-        self.active_clients.append(websocket)
+
         self.client_details = f'{websocket.client.host}:{websocket.client.port}'
+        self.active_clients.append(websocket)
         daemon_logger.info(f'{self.client_details} is connected to stream logs!')
+
+        if jinad_args.no_fluentd:
+            daemon_logger.warning(f'{self.client_details} asks for logstreaming but fluentd is not available')
+            return
 
         # on connection the fluentd file may not flushed (aka exist) yet
         while not Path(self.filepath).is_file():
@@ -36,13 +41,14 @@ class LogStreamingEndpoint(WebSocketEndpoint):
             fp.seek(0, 2)
             daemon_logger.success(f'{self.filepath} is ready for streaming')
             while True:
-                line = fp.readline()
+                line = fp.readline()  # also possible to read an empty line
                 if line:
                     payload = None
                     try:
                         payload = json.loads(line)
                     except json.decoder.JSONDecodeError:
                         daemon_logger.warning(f'JSON decode error on {line}')
+
                     if payload:
                         from websockets import ConnectionClosedOK
                         try:
