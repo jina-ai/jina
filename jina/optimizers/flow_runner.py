@@ -5,6 +5,7 @@ from typing import Iterator, Optional
 from ..flow import Flow
 from ..helper import colored
 from ..logging import default_logger as logger
+from ..jaml import JAMLCompatible
 
 
 class FlowRunner:
@@ -24,7 +25,7 @@ class FlowRunner:
         raise NotImplementedError
 
 
-class SingleFlowRunner(FlowRunner):
+class SingleFlowRunner(JAMLCompatible, FlowRunner):
     """Module to define and run a flow."""
 
     def __init__(
@@ -44,6 +45,7 @@ class SingleFlowRunner(FlowRunner):
         :param callback: callback to be passed to the flow's `on_done`
         :param overwrite_workspace: overwrite workspace created by the flow
         """
+        super().__init__()
         self.flow_yaml = flow_yaml
         # TODO: Make changes for working with doc generator (Pratik, before v1.0)
         self.documents = documents if type(documents) == list else list(documents)
@@ -104,14 +106,18 @@ class SingleFlowRunner(FlowRunner):
         return self.callback.get_mean_evaluation()
 
 
-class MultiFlowRunner(FlowRunner):
+class MultiFlowRunner(JAMLCompatible, FlowRunner):
     """Chain and run multiple flows"""
 
-    def __init__(self, *flows):
+    def __init__(self, *flows, eval_flow_index=-1):
         """
         :param flows: flows to be executed in sequence
+        :param eval_flow_index: index of the evaluation flow in the sequence of flows in `MultiFlowRunner`
+
         """
+        super().__init__()
         self.flows = flows
+        self.eval_flow_index = eval_flow_index
 
     def run(
             self,
@@ -127,5 +133,4 @@ class MultiFlowRunner(FlowRunner):
             flow.run(trial_parameters, workspace, **kwargs)
 
     def get_evaluations(self):
-        for flow in self.flows:
-            yield flow.callback.get_mean_evaluation()
+        return self.flows[self.eval_flow_index].get_evaluations()

@@ -8,10 +8,10 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
-
+from ..jaml import JAML, JAMLCompatible
 
 if False:
-    from .flow_runner import MultiFlowRunner, FlowRunner
+    from .flow_runner import FlowRunner
     import optuna
 
 
@@ -75,28 +75,31 @@ class OptunaResultProcessor:
         yaml.dump(self.best_parameters, open(filepath, 'w'))
 
 
-class OptunaOptimizer:
+class OptunaOptimizer(JAMLCompatible):
     """Optimizer which uses Optuna to run flows and choose best parameters."""
 
     def __init__(
         self,
-        multi_flow: 'FlowRunner',
+        flow_runner: 'FlowRunner',
         parameter_yaml: str,
         workspace_base_dir: str = '',
         workspace_env: str = 'JINA_WORKSPACE',
-        eval_flow_index: int = -1,
     ):
         """
-        :param multi_flow: `MultiFlowRunner` object which contains the flows to be run.
+        :param flow_runner: `FlowRunner` object which contains the flows to be run.
         :param parameter_yaml: yaml container the parameters to be optimized
         :param workspace_env: workspace env name as referred in pods and flows yaml
-        :param eval_flow_index: index of the evaluation flow in the sequence of flows in `MultiFlowRunner`
         """
-        self.multi_flow = multi_flow
+        super().__init__()
+        self._version = '1'
+        self.flow_runner = flow_runner
         self.parameter_yaml = parameter_yaml
         self.workspace_env = workspace_env.lstrip('$')
-        self.eval_flow_index = eval_flow_index
         self.workspace_base_dir = workspace_base_dir
+
+    @property
+    def yaml_spec(self):
+        return JAML.dump(self)
 
     def _trial_parameter_sampler(self, trial):
         trial_parameters = {}
@@ -113,12 +116,9 @@ class OptunaOptimizer:
         return trial_parameters
 
     def _objective(self, trial):
-
-        # eval_flow = self.multi_flow.flows[self.eval_flow_index]
-        # eval_flow.callback = eval_flow.callback.get_fresh_callback()
         trial_parameters = self._trial_parameter_sampler(trial)
-        self.multi_flow.run(trial_parameters, workspace=trial.workspace)
-        evaluation = self.multi_flow.get_evaluations()
+        self.flow_runner.run(trial_parameters, workspace=trial.workspace)
+        evaluation = self.flow_runner.get_evaluations()
         op_name = list(evaluation)[0]
         eval_score = evaluation[op_name]
         logger.info(colored(f'Avg {op_name}: {eval_score}', 'green'))
