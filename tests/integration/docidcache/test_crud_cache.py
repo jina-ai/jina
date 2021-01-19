@@ -257,7 +257,7 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            output_fn=validate_result_factory(TOP_K)
+            on_done=validate_result_factory(TOP_K)
         )
     mock.assert_called_once()
 
@@ -287,7 +287,7 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            output_fn=validate_result_factory(TOP_K)
+            on_done=validate_result_factory(TOP_K)
         )
     mock.assert_called_once()
 
@@ -302,6 +302,6 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            output_fn=validate_result_factory(0)
+            on_done=validate_result_factory(0)
         )
     mock.assert_called_once()
