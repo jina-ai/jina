@@ -201,6 +201,13 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
             return []
 
     @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
+
+    @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``"""
         return self.runtime.logger
@@ -254,13 +261,6 @@ class BaseRecursiveDriver(BaseDriver):
         :param context_doc: the owner of ``docs``
         :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
         """
-
-    @property
-    def docs(self):
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
 
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)

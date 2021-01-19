@@ -1,0 +1,10 @@
+!BaseExecutor
+with: {}
+metas:
+  name: merge_root
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+      - !ReduceRequestDriver {}
+    ControlRequest:
+      - !ControlReqDriver {}
