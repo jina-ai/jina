@@ -54,8 +54,7 @@ def test_yaml(tmpdir):
     documents: {jsonlines_file}
     request_size: 1
     task: 'search_lines'
-    callback: !EvaluationCallback
-      eval_name: None
+    callback: !EvaluationCallback {{}}
   parameter_yaml: 'tests/integration/optimizers/parameter.yml'
   workspace_base_dir: {tmpdir}
 '''
