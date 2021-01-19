@@ -249,3 +249,77 @@ def test_wrong_mime_type(tmp_path, mocker):
         f_query.search(input_fn=docs_search,
                        output_fn=validate_result_factory(0))
     mock.assert_called_once()
+
+
+START_SHAPE = (7)
+INDEX2_SHAPE = (6)
+UPDATE_SHAPE = (7)
+
+
+def random_docs_with_shapes(nr_docs, emb_shape, start=0):
+    for i in range(start, nr_docs + start):
+        with Document() as d:
+            d.id = i
+            d.embedding = np.random.random(emb_shape)
+        yield d
+
+
+def test_dimensionality_search_wrong(tmp_path, mocker):
+    """will fail because search docs have diff shape in embedding"""
+    config_environ(path=tmp_path)
+    flow_file = 'flow.yml'
+    flow_query_file = 'flow.yml'
+    docs = list(random_docs_with_shapes(NR_DOCS_INDEX, START_SHAPE))
+    docs_update = list(random_docs_with_shapes(NR_DOCS_INDEX, INDEX2_SHAPE, start=len(docs) + 1))
+    all_docs_indexed = docs.copy()
+    all_docs_indexed.extend(docs_update)
+    docs_search = list(
+        random_docs_with_shapes(
+            NUMBER_OF_SEARCHES,
+            INDEX2_SHAPE,
+            start=len(docs) + len(docs_update) + 1)
+    )
+    f_index = Flow.load_config(flow_file)
+    f_query = Flow.load_config(flow_query_file)
+
+    def validate_result_factory(num_matches):
+        def validate_results(resp):
+            mock()
+            assert len(resp.docs) == NUMBER_OF_SEARCHES
+            for doc in resp.docs:
+                assert len(doc.matches) == num_matches
+
+        return validate_results
+
+    with f_index:
+        f_index.index(input_fn=docs)
+    validate_index_size(NR_DOCS_INDEX, expected_indices=2)
+
+    mock = mocker.Mock()
+    with f_query:
+        f_query.search(input_fn=docs_search,
+                       # 0 because search docs have wrong shape
+                       output_fn=validate_result_factory(0))
+    mock.assert_called_once()
+
+    # this won't increase the index size as the ids are new
+    with f_index:
+        f_index.update(input_fn=docs_update)
+    validate_index_size(NR_DOCS_INDEX, expected_indices=2)
+
+    mock = mocker.Mock()
+    with f_query:
+        f_query.search(input_fn=docs_search,
+                       # 0 because search docs have wrong shape
+                       output_fn=validate_result_factory(0))
+    mock.assert_called_once()
+
+    with f_index:
+        f_index.delete(input_fn=all_docs_indexed)
+    validate_index_size(0, expected_indices=2)
+
+    mock = mocker.Mock()
+    with f_query:
+        f_query.search(input_fn=docs_search,
+                       output_fn=validate_result_factory(0))
+    mock.assert_called_once()
