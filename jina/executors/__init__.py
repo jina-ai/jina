@@ -62,13 +62,15 @@ class ExecutorType(type(JAMLCompatible), type):
         aggregate_funcs = ['evaluate']
 
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
+
+        cls_id = f'{cls.__module__}.{cls.__name__}'
+        if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
             wrap_func(cls, ['__init__'], store_init_kwargs)
             wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
             wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
-            reg_cls_set.add(cls.__name__)
+            reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
         return cls
 
