@@ -1,7 +1,7 @@
 import argparse
 
-from ...helper import add_arg_group, _SHOW_ALL_ARGS
-from ....enums import PollingType, SchedulerType, RemoteAccessType, RemotePeapodType, PodRoleType
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.enums import PollingType, SchedulerType, PodRoleType
 
 
 def mixin_base_pod_parser(parser):
@@ -29,15 +29,6 @@ def mixin_base_pod_parser(parser):
     gp.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                     default=SchedulerType.LOAD_BALANCE,
                     help='the strategy of scheduling workload among peas')
-
-    gp.add_argument('--remote-access', choices=list(RemoteAccessType),
-                    default=RemoteAccessType.JINAD,
-                    type=RemoteAccessType.from_string,
-                    help=f'the way of managing remote runtime')
-    gp.add_argument('--remote-type', choices=list(RemotePeapodType),
-                    default=RemotePeapodType.POD,
-                    type=RemotePeapodType.from_string,
-                    help=f'the way of managing remote runtime')
 
     # hidden CLI used for internal only
 
