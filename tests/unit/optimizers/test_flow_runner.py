@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from jina.optimizers.flow_runner import FlowRunner
+from jina.optimizers.flow_runner import SingleFlowRunner
 from tests import random_docs
 
 
@@ -17,7 +17,7 @@ def test_flow_runner(tmpdir, mocker):
 
     workspace = os.path.join(tmpdir, 'test_flow_runner')
 
-    flow_runner = FlowRunner(
+    flow_runner = SingleFlowRunner(
         flow_yaml='flow.yml',
         documents=random_docs(5),
         request_size=1,
@@ -29,7 +29,7 @@ def test_flow_runner(tmpdir, mocker):
     # Test overwriting
     flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace})
 
-    flow_runner = FlowRunner(
+    flow_runner = SingleFlowRunner(
         flow_yaml='flow.yml',
         documents=random_docs(5),
         request_size=1,
@@ -45,7 +45,7 @@ def test_flow_runner(tmpdir, mocker):
 
 def test_wrong_task():
     with pytest.raises(ValueError) as excinfo:
-        _ = FlowRunner(
+        _ = SingleFlowRunner(
             flow_yaml='flow.yml',
             documents=random_docs(5),
             request_size=1,

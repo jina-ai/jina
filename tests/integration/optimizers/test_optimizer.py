@@ -5,7 +5,7 @@ import yaml
 from google.protobuf.json_format import MessageToJson
 
 from jina import Document
-from jina.optimizers import OptunaOptimizer, EvaluationCallback
+from jina.optimizers import OptunaOptimizer, MeanEvaluationCallback
 from jina.optimizers.flow_runner import SingleFlowRunner
 from jina.jaml import JAML
 
@@ -29,15 +29,15 @@ def test_optimizer(tmpdir):
         documents=document_generator(10),
         request_size=1,
         task='search',
-        callback=EvaluationCallback(),
     )
 
     opt = OptunaOptimizer(
         flow_runner=eval_flow_runner,
         parameter_yaml='tests/integration/optimizers/parameter.yml',
+        evaluation_callback=MeanEvaluationCallback(),
         workspace_base_dir=str(tmpdir),
     )
-    result = opt.optimize_flow(n_trials=10)
+    result = opt.optimize_flow(n_trials=5)
     result_path = str(tmpdir) + '/results/best_parameters.yml'
     result.save_parameters(result_path)
     parameters = result.best_parameters
@@ -49,12 +49,15 @@ def test_optimizer(tmpdir):
 def test_yaml(tmpdir):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
     optimizer_yaml = f'''!OptunaOptimizer
+version: 1
+with:
   flow_runner: !SingleFlowRunner
-    flow_yaml: 'tests/integration/optimizers/flow.yml'
-    documents: {jsonlines_file}
-    request_size: 1
-    task: 'search_lines'
-    callback: !EvaluationCallback {{}}
+    with:
+      flow_yaml: 'tests/integration/optimizers/flow.yml'
+      documents: {jsonlines_file}
+      request_size: 1
+      task: 'search_lines'
+  evaluation_callback: !MeanEvaluationCallback {{}}
   parameter_yaml: 'tests/integration/optimizers/parameter.yml'
   workspace_base_dir: {tmpdir}
 '''

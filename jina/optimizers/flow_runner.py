@@ -1,28 +1,26 @@
 import os
 import shutil
 from collections.abc import Iterable
-from typing import Iterator, Optional
+from typing import Iterator
 
 from ..flow import Flow
 from ..helper import colored
 from ..logging import default_logger as logger
-from ..jaml import JAMLCompatibleSimple
+from ..jaml import JAMLCompatible
 
 
-class FlowRunner(JAMLCompatibleSimple):
+class FlowRunner(JAMLCompatible):
     def run(
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
+        callback=None,
         **kwargs,
     ):
         """
         :param trial_parameters: parameters to be used as environment variables
         :param workspace: directory to be used for the flows
         """
-        raise NotImplementedError
-
-    def get_evaluations(self):
         raise NotImplementedError
 
 
@@ -35,7 +33,6 @@ class SingleFlowRunner(FlowRunner):
         documents: Iterator,
         request_size: int,
         task: str,  # this can be only index or search as it is used to call the flow API
-        callback: Optional = None,
         overwrite_workspace: bool = False,
     ):
         """
@@ -43,7 +40,6 @@ class SingleFlowRunner(FlowRunner):
         :param documents: iterator with list or generator for getting the documents
         :param request_size: request size used in the flow
         :param task: task of the flow which can be `index` or `search`
-        :param callback: callback to be passed to the flow's `on_done`
         :param overwrite_workspace: overwrite workspace created by the flow
         """
         super().__init__()
@@ -61,7 +57,6 @@ class SingleFlowRunner(FlowRunner):
 
         self.request_size = request_size
         self.task = task
-        self.callback = callback
         self.overwrite_workspace = overwrite_workspace
 
     def _setup_workspace(self, workspace):
@@ -87,6 +82,7 @@ class SingleFlowRunner(FlowRunner):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
+        callback=None,
         **kwargs,
     ):
         """[summary]
@@ -96,21 +92,14 @@ class SingleFlowRunner(FlowRunner):
         """
 
         self._setup_workspace(workspace)
-        self._reset_callback()
 
         with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
             getattr(f, self.task)(
                 self.documents,
                 request_size=self.request_size,
-                on_done=self.callback,
+                on_done=callback,
                 **kwargs,
             )
-
-    def _reset_callback(self):
-        self.callback = self.callback.get_fresh_callback()
-
-    def get_evaluations(self):
-        return self.callback.get_mean_evaluation()
 
 
 class MultiFlowRunner(FlowRunner):
@@ -119,7 +108,7 @@ class MultiFlowRunner(FlowRunner):
     def __init__(self, *flows, eval_flow_index=-1):
         """
         :param flows: flows to be executed in sequence
-        :param eval_flow_index: index of the evaluation flow in the sequence of flows in `MultiFlowRunner`
+        :param eval_flow_index: index of the evaluation Flow in the sequence of flows in `MultiFlowRunner`
 
         """
         super().__init__()
@@ -130,6 +119,7 @@ class MultiFlowRunner(FlowRunner):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
+        callback=None,
         **kwargs,
     ):
         """
@@ -137,7 +127,4 @@ class MultiFlowRunner(FlowRunner):
         :param workspace: directory to be used for the flows
         """
         for flow in self.flows:
-            flow.run(trial_parameters, workspace, **kwargs)
-
-    def get_evaluations(self):
-        return self.flows[self.eval_flow_index].get_evaluations()
+            flow.run(trial_parameters, workspace, callback, **kwargs)

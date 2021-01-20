@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock
 import yaml
 
-from jina.optimizers import EvaluationCallback, OptunaResultProcessor
+from jina.optimizers import MeanEvaluationCallback, OptunaResultProcessor
 
 
 @pytest.fixture
@@ -35,11 +35,11 @@ def responses():
 
 def test_evaluation_callback_no_name(responses):
     # test with no metric name given to callback
-    cb = EvaluationCallback()
+    cb = MeanEvaluationCallback()
     cb(responses)
     cb(responses)
 
-    evaluation = cb.get_mean_evaluation()
+    evaluation = cb.get_final_evaluation()
     eval_name = list(evaluation)[0]
     assert eval_name == 'metric1'
 
@@ -50,11 +50,11 @@ def test_evaluation_callback_no_name(responses):
 def test_evaluation_callback_with_name(responses):
     # test with metric name given to callback
     evaluation_metric = 'metric2'
-    cb = EvaluationCallback(evaluation_metric)
+    cb = MeanEvaluationCallback(evaluation_metric)
     cb(responses)
     cb(responses)
 
-    evaluation = cb.get_mean_evaluation()
+    evaluation = cb.get_final_evaluation()
     eval_name = list(evaluation)[0]
     assert eval_name == evaluation_metric
 

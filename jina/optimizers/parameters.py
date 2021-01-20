@@ -1,23 +1,20 @@
 from typing import Optional, Sequence, Union
 
-import inspect
-
-from ..jaml import JAML, JAMLCompatibleSimple
+from ..jaml import JAML, JAMLCompatible
 
 
-class OptimizationParameter(JAMLCompatibleSimple):
+class OptimizationParameter(JAMLCompatible):
     def __init__(
         self,
-        parameter_name: str,
+        parameter_name: str = "",
         executor_name: Optional[str] = None,
         prefix: str = 'JINA',
-        env_var: Optional[str] = None,
+        jaml_variable: Optional[str] = None,
     ):
-        if env_var is None:
-            self.env_var = f'{prefix}_{executor_name}_{parameter_name}'.upper()
+        if jaml_variable is None:
+            self.jaml_variable = f'{prefix}_{executor_name}_{parameter_name}'.upper()
         else:
-            self.env_var = env_var
-        self.parameter_name = parameter_name
+            self.jaml_variable = jaml_variable
 
 
 class IntegerParameter(OptimizationParameter):
@@ -41,7 +38,7 @@ class IntegerParameter(OptimizationParameter):
 
     def to_optuna_args(self):
         return {
-            'name': self.env_var,
+            'name': self.jaml_variable,
             'low': self.low,
             'high': self.high,
             'step': self.step_size,
@@ -68,7 +65,7 @@ class FloatParameter(OptimizationParameter):
 
     def to_optuna_args(self):
         return {
-            'name': self.env_var,
+            'name': self.jaml_variable,
             'low': self.low,
             'high': self.high,
             'step': self.step_size,
@@ -85,7 +82,7 @@ class UniformParameter(OptimizationParameter):
 
     def to_optuna_args(self):
         return {
-            'name': self.env_var,
+            'name': self.jaml_variable,
             'low': self.low,
             'high': self.high,
         }
@@ -100,7 +97,7 @@ class LogUniformParameter(OptimizationParameter):
 
     def to_optuna_args(self):
         return {
-            'name': self.env_var,
+            'name': self.jaml_variable,
             'low': self.low,
             'high': self.high,
         }
@@ -115,7 +112,7 @@ class CategoricalParameter(OptimizationParameter):
         self.optuna_method = 'suggest_categorical'
 
     def to_optuna_args(self):
-        return {'name': self.env_var, 'choices': self.choices}
+        return {'name': self.jaml_variable, 'choices': self.choices}
 
 
 class DiscreteUniformParameter(OptimizationParameter):
@@ -128,7 +125,7 @@ class DiscreteUniformParameter(OptimizationParameter):
 
     def to_optuna_args(self):
         return {
-            'name': self.env_var,
+            'name': self.jaml_variable,
             'low': self.low,
             'high': self.high,
             'q': self.q,

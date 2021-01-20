@@ -8,14 +8,14 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
-from ..jaml import JAMLCompatibleSimple
+from ..jaml import JAMLCompatible
 
 if False:
     from .flow_runner import FlowRunner
     import optuna
 
 
-class EvaluationCallback(JAMLCompatibleSimple):
+class MeanEvaluationCallback(JAMLCompatible):
     """Callback for storing and calculating evaluation metric."""
 
     def __init__(self, eval_name: Optional[str] = None):
@@ -26,31 +26,26 @@ class EvaluationCallback(JAMLCompatibleSimple):
         self.evaluation_values = defaultdict(float)
         self.n_docs = 0
 
-    def get_fresh_callback(self):
-        """Creates a new callback"""
-        return EvaluationCallback(self.eval_name)
+    def get_empty_copy(self):
+        return MeanEvaluationCallback(self.eval_name)
 
-    def get_mean_evaluation(self):
+    def get_final_evaluation(self):
         """Returns mean evaluation value on the eval_name."""
-        if self.eval_name:
-            evaluation = {self.eval_name: self.evaluation_values[self.eval_name] / self.n_docs}
+        if self.eval_name is not None:
+            evaluation_name = self.eval_name
         else:
-            evaluation = {metric: val / self.n_docs for metric, val in self.evaluation_values.items()}
+            evaluation_name = list(self.evaluation_values)[0]
+            if len(self.evaluation_values) > 1:
+                logger.warning(f'More than one evaluation metric found. Please define the right eval_name. Currently {evaluation_name} is used')
 
-        if (len(evaluation.keys()) > 1) and (self.eval_name is None):
-            logger.warning(f'More than one evaluation metric found. Please use the right eval_name. Currently {list(evaluation)[0]} is used')
-
-        return evaluation
+        return self.evaluation_values[evaluation_name] / self.n_docs
 
     def __call__(self, response):
         self.n_docs += len(response.search.docs)
         logger.info(f'Num of docs evaluated: {self.n_docs}')
         for doc in response.search.docs:
             for evaluation in doc.evaluations:
-                self.evaluation_values[evaluation.op_name] = (
-                    self.evaluation_values.get(evaluation.op_name, 0.0)
-                    + evaluation.value
-                )
+                self.evaluation_values[evaluation.op_name] += evaluation.value
 
 
 class OptunaResultProcessor:
@@ -75,13 +70,14 @@ class OptunaResultProcessor:
         yaml.dump(self.best_parameters, open(filepath, 'w'))
 
 
-class OptunaOptimizer(JAMLCompatibleSimple):
+class OptunaOptimizer(JAMLCompatible):
     """Optimizer which uses Optuna to run flows and choose best parameters."""
 
     def __init__(
         self,
         flow_runner: 'FlowRunner',
         parameter_yaml: str,
+        evaluation_callback,
         workspace_base_dir: str = '',
     ):
         """
@@ -93,12 +89,13 @@ class OptunaOptimizer(JAMLCompatibleSimple):
         self.flow_runner = flow_runner
         self.parameter_yaml = parameter_yaml
         self.workspace_base_dir = workspace_base_dir
+        self.evaluation_callback = evaluation_callback
 
     def _trial_parameter_sampler(self, trial):
         trial_parameters = {}
         parameters = load_optimization_parameters(self.parameter_yaml)
         for param in parameters:
-            trial_parameters[param.env_var] = getattr(trial, param.optuna_method)(
+            trial_parameters[param.jaml_variable] = getattr(trial, param.optuna_method)(
                 **param.to_optuna_args()
             )
 
@@ -108,11 +105,10 @@ class OptunaOptimizer(JAMLCompatibleSimple):
 
     def _objective(self, trial):
         trial_parameters = self._trial_parameter_sampler(trial)
-        self.flow_runner.run(trial_parameters, workspace=trial.workspace)
-        evaluation = self.flow_runner.get_evaluations()
-        op_name = list(evaluation)[0]
-        eval_score = evaluation[op_name]
-        logger.info(colored(f'Avg {op_name}: {eval_score}', 'green'))
+        evaluation_callback = self.evaluation_callback.get_empty_copy()
+        self.flow_runner.run(trial_parameters, workspace=trial.workspace, callback=evaluation_callback)
+        eval_score = evaluation_callback.get_final_evaluation()
+        logger.info(colored(f'Evaluation Score: {eval_score}', 'green'))
         return eval_score
 
     def optimize_flow(
