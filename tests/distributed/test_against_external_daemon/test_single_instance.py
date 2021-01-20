@@ -8,7 +8,7 @@ NUM_DOCS = 100
 
 
 @pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 3])
+@pytest.mark.parametrize('parallels', [1, 2])
 def test_r_l_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
     f = (Flow(expose_public=True, parallel=parallels)
@@ -23,7 +23,7 @@ def test_r_l_simple(silent_log, parallels, mocker):
 
 
 @pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 3])
+@pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
@@ -39,7 +39,7 @@ def test_l_r_simple(silent_log, parallels, mocker):
 
 
 @pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 3])
+@pytest.mark.parametrize('parallels', [1, 2])
 def test_r_l_r_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
@@ -58,7 +58,7 @@ def test_r_l_r_simple(silent_log, parallels, mocker):
 
 
 @pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 3])
+@pytest.mark.parametrize('parallels', [1, 2])
 def test_r_r_r_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
@@ -79,7 +79,7 @@ def test_r_r_r_simple(silent_log, parallels, mocker):
 
 
 @pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 3])
+@pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_l_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
@@ -96,7 +96,7 @@ def test_l_r_l_simple(silent_log, parallels, mocker):
 
 
 @pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 3])
+@pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_l_with_upload(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
     f = (Flow()
