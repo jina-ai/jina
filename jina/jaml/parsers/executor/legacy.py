@@ -40,7 +40,7 @@ class LegacyParser(VersionedYAMLParser):
             obj.logger.success(f'restore {cls.__name__} from {dump_path}')
             load_from_dump = True
         else:
-            cls.init_from_yaml = True
+            cls._init_from_yaml = True
 
             if cls.store_args_kwargs:
                 p = data.get('with', {})  # type: Dict[str, Any]
@@ -55,8 +55,8 @@ class LegacyParser(VersionedYAMLParser):
             else:
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
+            cls._init_from_yaml = False
             obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
-            cls.init_from_yaml = False
 
         # if node.tag in {'!CompoundExecutor'}:
         #     os.environ['JINA_WARN_UNNAMED'] = 'YES'

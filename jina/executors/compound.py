@@ -248,7 +248,9 @@ class CompoundExecutor(BaseExecutor):
         if not callable(comps):
             raise TypeError('components must be a callable function that returns '
                             'a List[BaseExecutor]')
-        if not getattr(self, 'init_from_yaml', False):
+
+        # Important to handle when loading a CompoundExecutor when `inner` executors have not been loaded from yaml
+        if not getattr(self, '_init_from_yaml', False):
             self._components = comps()
             if not isinstance(self._components, list):
                 raise TypeError(f'components expect a list of executors, receiving {type(self._components)!r}')
@@ -259,11 +261,13 @@ class CompoundExecutor(BaseExecutor):
             self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
 
     def _set_comp_workspace(self) -> None:
+        # overrides the workspace setting for all components
         import os
-        # overrider the workspace setting for all components
         for c in self.components:
-            extra_path = f'{self.name}-{self.pea_id}' if self.pea_id > 0 else self.name
-            c.workspace = os.path.join(self.workspace, extra_path)
+            # this has to be thought about. PROBLEM DESCRIPTION. This will work to reload Components when
+            # `CompoundExecutor` is also dumped, but not when `CompoundExecutor` is not dumped, but the components are
+            c.workspace = BaseExecutor.get_shard_workspace(self.workspace, self.name, self.pea_id) if self.pea_id > 0 else\
+                os.path.join(self.workspace, self.name)
 
     def _resolve_routes(self) -> None:
         if self._routes:

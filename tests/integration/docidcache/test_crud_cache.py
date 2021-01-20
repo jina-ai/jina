@@ -152,7 +152,7 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
         indexers_full_size = 0
         for i in range(shards):
             indexer_path = os.path.join(BaseIndexer.get_shard_workspace(workspace_folder=tmp_path,
-                                                                        exec_name=indexer_fname.rstrip('.bin'),
+                                                                        workspace_name=indexer_fname.rstrip('.bin'),
                                                                         pea_id=i + 1 if shards > 1 else 0),
                                         f'{indexer_fname}')
 

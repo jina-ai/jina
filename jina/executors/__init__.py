@@ -242,9 +242,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         return self.get_file_from_workspace(f'{self.name}.yml')
 
     @staticmethod
-    def get_shard_workspace(workspace_folder: str, exec_name: str, pea_id: int) -> str:
+    def get_shard_workspace(workspace_folder: str, workspace_name: str, pea_id: int, in_compound_executor: bool = False) -> str:
         # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
-        return os.path.join(workspace_folder, f'{exec_name}-{pea_id}') if pea_id > 0 else os.path.join(workspace_folder)
+        if not in_compound_executor:
+            return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}') if pea_id > 0 else os.path.join(workspace_folder)
+        else:
+            return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}') if pea_id > 0 else os.path.join(workspace_folder, workspace_name)
 
     @property
     def workspace_name(self):

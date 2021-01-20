@@ -1,4 +1,5 @@
 !BaseExecutor
 metas:
   name: test1
-  pea_id: 0
+  workspace: $JINA_TEST_WORKSPACE
+
