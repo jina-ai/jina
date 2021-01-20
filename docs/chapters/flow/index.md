@@ -70,6 +70,7 @@ Besides the file path, in Flow API `uses` can accept other types:
 | Inline YAML | `'!DataURICrafter\nwith: {mimetype: png}'` | don't forget `!` in the beginning |
 | The name of an executor [listed here](../all_exec.html) | `TransformerTorchEncoder` | only the executors that have full default values can be directly used |
 | Built-in simple executors [listed here](../simple_exec.html) | `_clear` | Always starts with `_` |
+| Docker image | `docker://jinahub/pod.encoder.dummy_mwu_encoder:0.0.6-0.9.3` | Add `docker://` before the image name |
  
 #### Add a Containerized Pod into the Flow
 
