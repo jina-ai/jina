@@ -717,3 +717,19 @@ def change_cwd(path):
         yield
     finally:
         os.chdir(curdir)
+
+@contextmanager
+def change_env(key, val):
+    """
+    Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.
+    """
+    old_var = os.environ.get(key, None)
+    os.environ[key] = val
+    try:
+        yield
+    finally:
+        if old_var:
+            os.environ[key] = old_var
+        else:
+            os.environ.pop(key)
+

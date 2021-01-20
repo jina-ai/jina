@@ -103,7 +103,6 @@ def _start_fluentd():
 def main():
     global jinad_args
     jinad_args = _get_run_args()
-    os.environ['JINA_LOG_WORKSPACE'] = jinad_args.workspace
     if not jinad_args.no_fluentd:
         threading.Thread(target=_start_fluentd, daemon=True).start()
     _start_uvicorn(app=_get_app())

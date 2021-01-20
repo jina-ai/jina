@@ -1,11 +1,9 @@
 import uuid
 from argparse import Namespace
-from pathlib import Path
 
-from jina.helper import change_cwd
 from jina.peapods import Pea
 from .base import BaseStore
-from .helper import get_workspace_path
+from .helper import jina_workspace
 
 
 class PeaStore(BaseStore):
@@ -18,10 +16,7 @@ class PeaStore(BaseStore):
             if not workspace_id:
                 workspace_id = uuid.uuid1()
 
-            _workdir = get_workspace_path(workspace_id)
-            Path(_workdir).mkdir(parents=True, exist_ok=True)
-
-            with change_cwd(_workdir):
+            with jina_workspace(workspace_id) as _workdir:
                 p = self.peapod_cls(args).start()
 
             _id = uuid.UUID(args.identity)

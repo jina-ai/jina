@@ -16,7 +16,7 @@ def mixin_daemon_parser(parser):
                     action='store_true', default=False,
                     help='do not start fluentd, no log streaming')
 
-    gp.add_argument('--workspace', type=str, default='/tmp/jinad/',
+    gp.add_argument('--workspace', type=str, default='/tmp/jinad',
                     help='the directory for storing all uploaded dependencies')
 
 
