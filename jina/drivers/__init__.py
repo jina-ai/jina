@@ -277,7 +277,7 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec(docs, self.msg.request, 'docs', [], *args, **kwargs)
+                self._apply_root(docs, self.msg.request, 'docs', *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(
                     [doc],
@@ -301,10 +301,7 @@ class BaseRecursiveDriver(BaseDriver):
                         doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
                     )
         else:
-            if parent_edge_type == 'docs':
-                self._apply_root(docs, parent_doc, parent_edge_type, *args, **kwargs)
-            else:
-                self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
+            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
