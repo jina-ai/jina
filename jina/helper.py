@@ -208,7 +208,7 @@ def random_identity() -> str:
 
 
 def random_uuid() -> uuid.UUID:
-    return random_uuid()
+    return uuid.uuid4()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
