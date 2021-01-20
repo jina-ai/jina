@@ -40,6 +40,7 @@ class Zmqlet:
         :param logger: the logger to use
         """
         self.args = args
+        self.identity = random_identity()
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
@@ -141,14 +142,14 @@ class Zmqlet:
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
             in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                            self.args.identity,
+                                            self.identity,
                                             ssh_server=self.args.ssh_server,
                                             ssh_keyfile=self.args.ssh_keyfile,
                                             ssh_password=self.args.ssh_password)
             self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                              self.args.identity,
+                                              self.identity,
                                               ssh_server=self.args.ssh_server,
                                               ssh_keyfile=self.args.ssh_keyfile,
                                               ssh_password=self.args.ssh_password
@@ -224,7 +225,7 @@ class Zmqlet:
 
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.args.identity)
+        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
