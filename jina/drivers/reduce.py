@@ -10,6 +10,7 @@ from . import BaseDriver
 
 if False:
     from ..types.document import Document
+    from ..types.request import Request
     from ..types.sets import DocumentSet
 
 
@@ -30,6 +31,13 @@ class ReduceAllDriver(BaseRecursiveDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
         self.doc_pointers.clear()
 
+    def _apply_root(self, docs: 'DocumentSet', context_doc: 'Request', field: 'docs', *args, **kwargs):
+        docs = []
+        for doc in self.docs:
+            docs.append(doc)
+        context_doc.body.ClearField(field)
+        getattr(context_doc, field).extend(docs)
+
     def _apply_all(
             self,
             docs: 'DocumentSet',
@@ -37,6 +45,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
             field: str,
             *args,
             **kwargs) -> None:
+
         if context_doc.id not in self.doc_pointers:
             self.doc_pointers[context_doc.id] = context_doc
         else:

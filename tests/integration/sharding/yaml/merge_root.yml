@@ -5,6 +5,8 @@ metas:
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
-      - !ReduceRequestDriver {}
+      - !ReduceAllDriver
+        with:
+          traversal_paths: ['r']
     ControlRequest:
       - !ControlReqDriver {}
