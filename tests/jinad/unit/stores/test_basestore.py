@@ -3,8 +3,12 @@ import uuid
 import pytest
 
 from daemon.stores.base import BaseStore
+from jina.helper import random_identity, random_uuid
 
-keys = [uuid.uuid1() for _ in range(3)]
+keys = [uuid.UUID(random_identity()) for _ in range(3)]
+
+
+
 store_items = {
     keys[0]: {'object': 'abc'},
     keys[1]: {'object': 'hij'},
@@ -13,6 +17,7 @@ store_items = {
 
 
 def test_base_store_clear():
+    print(keys)
     s = BaseStore()
     old_update = s._time_updated
     assert s._time_updated
@@ -37,5 +42,5 @@ def test_base_store_del():
 
     old_update = s._time_updated
     with pytest.raises(KeyError):
-        del s[uuid.uuid1()]
+        del s[random_uuid()]
     assert old_update == s._time_updated
