@@ -37,8 +37,8 @@ def test_compound_indexer(tmpdir, pea_id):
             component_dir = tmpdir.join(f'{e.name}-{pea_id}-{c.name}.bin')
             c.save(component_dir)
             assert os.path.exists(c.index_abspath)
-            assert c.save_abspath.startswith(e.current_workspace)
-            assert c.index_abspath.startswith(e.current_workspace)
+            assert c.save_abspath.startswith(e.shard_workspace)
+            assert c.index_abspath.startswith(e.shard_workspace)
 
         e.touch()
         executor_dir = tmpdir.join(f'{e.name}-{pea_id}-{e.name}.bin')

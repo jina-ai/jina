@@ -7,5 +7,4 @@ def test_numpy_indexer_defaults(test_metas):
     assert indexer.pea_id == 0
     assert indexer.workspace == './'
     assert indexer.py_modules is None
-    assert indexer.pea_workspace == './/None-0'
     assert indexer.name.startswith('jina.executors.indexers')

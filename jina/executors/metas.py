@@ -111,18 +111,10 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. confval:: pea_id
 
-        the integer index used for distinguish each parallel pea of this executor, useful in :attr:`pea_workspace`
+        the integer index used for distinguish each parallel pea of this executor, required in :attr:`shard_workspace`
 
         :type: int
         :default: ``'${{root.metas.pea_id}}'``
-        
-    .. confval:: pea_workspace
-
-        the workspace of each parallel pea. All data and IO operations
-        related to this parallel pea will be conducted under this workspace. It is often set as the sub-directory of :attr:`workspace`.
-
-        :type: str
-        :default: ``'${{root.metas.workspace}}/${{root.metas.name}}-${{root.metas.pea_id}}'``
 
     .. confval:: read_only
 
@@ -136,7 +128,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. note::
 
-        ``pea_workspace`` and ``pea_id`` is set in a way that when the executor ``A`` is used as
+        ``pea_id`` is set in a way that when the executor ``A`` is used as
         a component of a :class:`jina.executors.compound.CompoundExecutor` ``B``, then ``A``'s setting will be overrided by B's counterpart.
 
     These **meta** fields can be accessed via `self.is_trained` or loaded from a YAML config via :func:`load_config`:

@@ -50,6 +50,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.key_bytes = b''
         self.key_dtype = None
         self.valid_indices = np.array([], dtype=bool)
+        self.ref_indexer_workspace_name = None
 
         if ref_indexer:
             # copy the header info of the binary file
@@ -69,6 +70,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                                 f'dtype extracted from `ref_indexer` to {ref_indexer.dtype} \n'
                                 f'compress_level overriden from `ref_indexer` to {ref_indexer.compress_level} \n'
                                 f'index_filename overriden from `ref_indexer` to {ref_indexer.index_filename}')
+            self.ref_indexer_workspace_name = ref_indexer.workspace_name
+
+    @property
+    def workspace_name(self):
+        return self.name if self.ref_indexer_workspace_name is None else self.ref_indexer_workspace_name
 
     @property
     def index_abspath(self) -> str:
@@ -77,7 +83,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         Use index_abspath
 
         """
-        return getattr(self, '_ref_index_abspath', None) or self.get_file_from_workspace(self.index_filename)
+        return self.get_file_from_workspace(self.index_filename)
 
     def get_add_handler(self):
         """Open a binary gzip file for adding new vectors

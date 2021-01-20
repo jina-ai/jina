@@ -1,4 +1,6 @@
 !Flow
+with:
+  show_exc_info: true
 pods:
   indexer:
     uses: pods/indexer.yml

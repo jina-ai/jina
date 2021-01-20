@@ -8,5 +8,4 @@ warn_unnamed: false
 max_snapshot: 0
 py_modules:
 pea_id: ${{root.metas.pea_id}}  # this may result in self-referred
-pea_workspace: ${{root.metas.workspace}}/${{root.metas.name}}-${{root.metas.pea_id}}
 read_only: false
