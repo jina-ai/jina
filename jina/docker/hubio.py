@@ -304,7 +304,7 @@ class HubIO:
 
             with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
                 try:
-                    self._check_completeness()
+                    dockerfile_path = self._check_completeness()['Dockerfile']
                     self._freeze_jina_version()
 
                     streamer = self._raw_client.build(
@@ -312,7 +312,8 @@ class HubIO:
                         path=self.args.path,
                         tag=self.tag,
                         pull=self.args.pull,
-                        dockerfile=self.dockerfile_path_revised,
+                        dockerfile=dockerfile_path,
+                        labels={k: str(v) for k, v in self.manifest.items()},
                         rm=True
                     )
 
@@ -339,7 +340,8 @@ class HubIO:
                 image, log = self._client.images.build(path=self.args.path,
                                                        tag=self.tag,
                                                        pull=self.args.pull,
-                                                       dockerfile=self.dockerfile_path_revised,
+                                                       dockerfile=dockerfile_path,
+                                                       labels={k: str(v) for k, v in self.manifest.items()},
                                                        rm=True)
 
                 # success
@@ -570,7 +572,6 @@ class HubIO:
 
         self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
-        self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
         self.executor_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}')
         self.tag = self.executor_name + f':{self.manifest["version"]}-{jina_version}'
@@ -622,25 +623,6 @@ class HubIO:
         # show manifest key-values
         for k, v in manifest.items():
             self.logger.debug(f'{k}: {v}')
-
-    def _get_revised_dockerfile(self, dockerfile_path: str, manifest: Dict) -> str:
-        # modify dockerfile
-        revised_dockerfile = []
-        with open(dockerfile_path) as fp:
-            for l in fp:
-                revised_dockerfile.append(l)
-                if l.startswith('FROM'):
-                    revised_dockerfile.append('LABEL ')
-                    revised_dockerfile.append(
-                        ' \\      \n'.join(f'{_label_prefix}{k}="{v}"' for k, v in manifest.items()))
-
-        f = tempfile.NamedTemporaryFile('w', delete=False).name
-        with open(f, 'w', encoding='utf8') as fp:
-            fp.writelines(revised_dockerfile)
-
-        for k in revised_dockerfile:
-            self.logger.debug(k)
-        return f
 
     def _write_slack_message(self, *args):
         def _expand_fn(v):
