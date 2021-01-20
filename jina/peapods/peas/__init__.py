@@ -34,12 +34,10 @@ class BasePea(metaclass=PeaType):
         self.is_ready = _get_event(self)
         self.is_shutdown = _get_event(self)
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
-        self.logger = JinaLogger(self.name,
-                                 log_id=self.args.log_id,
-                                 log_config=self.args.log_config)
+        self.logger = JinaLogger(self.name, **vars(self.args))
 
         self._envs = {'JINA_POD_NAME': self.name,
-                      'JINA_LOG_ID': self.args.log_id}
+                      'JINA_LOG_ID': self.args.identity}
         if self.args.env:
             self._envs.update(self.args.env)
 
@@ -63,6 +61,7 @@ class BasePea(metaclass=PeaType):
         """
         self._set_envs()
 
+        self.logger.info(f'starting {typename(self.runtime)}...')
         try:
             self.runtime.setup()
         except Exception as ex:
@@ -181,9 +180,9 @@ class BasePea(metaclass=PeaType):
         v = self.runtime_cls
         if not self.runtime_cls:
             if self.args.host != __default_host__:
-                if self.args.remote_access == RemoteAccessType.JINAD:
+                if self.args.remote_manager == RemoteAccessType.JINAD:
                     self.args.runtime_cls = 'JinadRuntime'
-                elif self.args.remote_access == RemoteAccessType.SSH:
+                elif self.args.remote_manager == RemoteAccessType.SSH:
                     self.args.runtime_cls = 'SSHRuntime'
 
             if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith('docker://'):

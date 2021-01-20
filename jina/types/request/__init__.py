@@ -6,7 +6,7 @@ from google.protobuf.json_format import MessageToJson
 from ..sets import QueryLangSet, DocumentSet
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
-from ...helper import get_random_identity, typename
+from ...helper import random_identity, typename
 from ...proto import jina_pb2
 
 _body_type = set(str(v).lower() for v in RequestType)
@@ -61,7 +61,7 @@ class Request:
                 self._request = None
             elif request is None:
                 # make sure every new request has a request id
-                self._request.request_id = get_random_identity()
+                self._request.request_id = random_identity()
             elif request is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(request)} is not recognizable')

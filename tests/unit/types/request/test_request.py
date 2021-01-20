@@ -2,7 +2,7 @@ import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
 from jina.excepts import BadRequestType
-from jina.helper import get_random_identity
+from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina.types.request import Request
 from jina.types.sets.document import DocumentSet
@@ -12,7 +12,7 @@ from jina.types.sets.querylang import QueryLangSet
 @pytest.fixture(scope='function')
 def req():
     r = jina_pb2.RequestProto()
-    r.request_id = get_random_identity()
+    r.request_id = random_identity()
     r.index.docs.add()
     return r
 

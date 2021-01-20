@@ -309,13 +309,6 @@ class RemoteAccessType(BetterEnum):
     JINAD = 1  # using rest api via jinad
 
 
-class RemotePeapodType(BetterEnum):
-    """Remote access type when connect to the host """
-
-    PEA = 0
-    POD = 1
-
-
 class BuildTestLevel(BetterEnum):
     """Test level in :command:`jina hub build`, higher level includes lower levels """
 
@@ -337,3 +330,12 @@ class DataInputType(BetterEnum):
 class RuntimeBackendType(BetterEnum):
     THREAD = 0
     PROCESS = 1
+
+
+def replace_enum_to_str(obj):
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            obj[k] = replace_enum_to_str(v)
+        elif isinstance(v, BetterEnum):
+            obj[k] = str(v)
+    return obj

@@ -21,7 +21,6 @@ jobs:
 
   regular-release:
     needs: token-check
-    if: "${{ github.event.inputs.release_token }} == ${{ secrets.JINA_CORE_RELEASE_TOKEN }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

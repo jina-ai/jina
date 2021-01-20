@@ -13,7 +13,7 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import typename, get_random_identity
+from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -61,13 +61,15 @@ class ExecutorType(type(JAMLCompatible), type):
         aggregate_funcs = ['evaluate']
 
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
+
+        cls_id = f'{cls.__module__}.{cls.__name__}'
+        if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
             wrap_func(cls, ['__init__'], store_init_kwargs)
             wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
             wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
-            reg_cls_set.add(cls.__name__)
+            reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
         return cls
 
@@ -175,7 +177,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             elif type(getattr(self, k)) == type(v):
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
-            _id = get_random_identity().split('-')[0]
+            _id = random_identity().split('-')[0]
             _name = f'{typename(self)}-{_id}'
             if getattr(self, 'warn_unnamed', False):
                 self.logger.warning(

@@ -23,6 +23,7 @@ class BasePod(ExitStack):
         """
         super().__init__()
         self.args = args
+        BasePod._set_conditional_args(self.args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.peas = []  # type: List['BasePea']
@@ -38,7 +39,7 @@ class BasePod(ExitStack):
             self.peas_args = self._parse_args(args)
 
         for a in self.all_args:
-            self._set_conditional_args(a)
+            BasePod._set_conditional_args(a)
 
     @property
     def role(self) -> 'PodRoleType':
@@ -223,11 +224,15 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _set_conditional_args(args):
-        if args.pod_role == PodRoleType.GATEWAY:
+        if 'pod_role' in args and args.pod_role == PodRoleType.GATEWAY:
             if args.restful:
                 args.runtime_cls = 'RESTRuntime'
             else:
                 args.runtime_cls = 'GRPCRuntime'
+        if 'parallel' in args and args.parallel == 1:
+            if args.remove_uses_ba:
+                args.uses_after = None
+                args.uses_before = None
 
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """

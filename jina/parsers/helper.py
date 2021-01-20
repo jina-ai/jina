@@ -1,11 +1,18 @@
 import argparse
 import os
+import uuid
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
 def add_arg_group(parser, title):
     return parser.add_argument_group(f'{title} arguments')
+
+
+def UUIDString(astring):
+    """argparse type to check if a string is a valid UUID string"""
+    uuid.UUID(astring)
+    return astring
 
 
 class KVAppendAction(argparse.Action):
@@ -105,7 +112,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
                     help_string += colored(' (default: %s)' % (
                         'enabled' if action.default else f'disabled, use "--{action.dest}" to enable it'),
-                                    attrs=['dark'])
+                                           attrs=['dark'])
                 elif action.choices:
                     choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
                     help_string += colored(' (choose from: ' + choices_str + '; default: %(default)s)', attrs=['dark'])
