@@ -5,7 +5,7 @@ import pytest
 
 from jina import Flow
 
-CLOUD_HOST = 'cloud.jina.ai:8000'  # consider it as the staged version
+CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
@@ -13,7 +13,7 @@ NUM_DOCS = 100
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_r_l_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
-    f = (Flow(expose_public=True, parallel=parallels)
+    f = (Flow()
          .add(host=CLOUD_HOST,
               parallel=parallels,
               silent_remote_logs=silent_log)
@@ -29,7 +29,7 @@ def test_r_l_simple(silent_log, parallels, mocker):
 def test_l_r_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
-    f = (Flow(expose_public=True, parallel=parallels)
+    f = (Flow()
          .add(parallel=parallels)
          .add(host=CLOUD_HOST,
               parallel=parallels,
@@ -45,7 +45,7 @@ def test_l_r_simple(silent_log, parallels, mocker):
 def test_r_l_r_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
-    f = (Flow(expose_public=True)
+    f = (Flow()
          .add(host=CLOUD_HOST,
               parallel=parallels,
               silent_remote_logs=silent_log)
@@ -64,7 +64,7 @@ def test_r_l_r_simple(silent_log, parallels, mocker):
 def test_r_r_r_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
-    f = (Flow(expose_public=True)
+    f = (Flow()
          .add(host=CLOUD_HOST,
               parallel=parallels,
               silent_remote_logs=silent_log)
@@ -85,7 +85,7 @@ def test_r_r_r_simple(silent_log, parallels, mocker):
 def test_l_r_l_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
 
-    f = (Flow(expose_public=True)
+    f = (Flow()
          .add()
          .add(host=CLOUD_HOST,
               parallel=parallels,

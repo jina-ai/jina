@@ -31,14 +31,14 @@ class Zmqlet:
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr:str=None):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr: str = None):
         """
 
         :param args: the parsed arguments from the CLI
         :param logger: the logger to use
         """
         self.args = args
-        self.identity = random_identity()
+        self.identity = self.args.identity
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)

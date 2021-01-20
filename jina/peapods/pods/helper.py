@@ -63,6 +63,7 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = random_port()
     _head_args.port_out = random_port()
+    _head_args.identity = random_identity()
     _head_args.uses = None
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
@@ -99,6 +100,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args = copy.deepcopy(args)
     _tail_args.port_in = random_port()
     _tail_args.port_ctrl = random_port()
+    _tail_args.identity = random_identity()
     _tail_args.socket_in = SocketType.PULL_BIND
     _tail_args.uses = None
 
