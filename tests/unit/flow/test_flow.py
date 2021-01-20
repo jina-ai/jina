@@ -550,7 +550,7 @@ def test_flow_workspace_id():
     with pytest.raises(ValueError):
         f.workspace_id = 'hello'
 
-    new_id = str(uuid.uuid1())
+    new_id = str(random_identity())
     f.workspace_id = new_id
     assert len(set(f.workspace_id.values())) == 1
     assert list(f.workspace_id.values())[0] == new_id

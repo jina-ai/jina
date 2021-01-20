@@ -1,6 +1,7 @@
 import uuid
 from argparse import Namespace
 
+from jina.helper import random_uuid
 from jina.peapods import Pea
 from .base import BaseStore
 from .helper import jina_workspace
@@ -14,7 +15,7 @@ class PeaStore(BaseStore):
         try:
             workspace_id = args.workspace_id
             if not workspace_id:
-                workspace_id = uuid.uuid1()
+                workspace_id = random_uuid()
 
             with jina_workspace(workspace_id) as _workdir:
                 p = self.peapod_cls(args).start()

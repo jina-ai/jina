@@ -2,6 +2,7 @@ import uuid
 from typing import Optional, BinaryIO
 
 from jina.flow import Flow
+from jina.helper import random_uuid
 from .base import BaseStore
 from .helper import jina_workspace
 
@@ -13,7 +14,7 @@ class FlowStore(BaseStore):
             **kwargs):
         try:
             if not workspace_id:
-                workspace_id = uuid.uuid1()
+                workspace_id = random_uuid()
 
             with jina_workspace(workspace_id) as _workdir:
                 y_spec = config.read().decode()

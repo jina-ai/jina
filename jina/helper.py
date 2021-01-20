@@ -24,7 +24,7 @@ import numpy as np
 
 __all__ = ['batch_iterator',
            'parse_arg',
-           'random_port', 'random_identity', 'expand_env_var',
+           'random_port', 'random_identity', 'random_uuid', 'expand_env_var',
            'colored', 'ArgNamespace', 'is_valid_local_config_source',
            'cached_property', 'is_url',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
@@ -204,7 +204,11 @@ def random_port() -> Optional[int]:
 
 
 def random_identity() -> str:
-    return str(uuid.uuid1())
+    return str(random_uuid())
+
+
+def random_uuid() -> uuid.UUID:
+    return random_uuid()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
@@ -718,6 +722,7 @@ def change_cwd(path):
     finally:
         os.chdir(curdir)
 
+
 @contextmanager
 def change_env(key, val):
     """
@@ -732,4 +737,3 @@ def change_env(key, val):
             os.environ[key] = old_var
         else:
             os.environ.pop(key)
-
