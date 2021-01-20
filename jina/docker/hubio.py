@@ -312,7 +312,8 @@ class HubIO:
                         path=self.args.path,
                         tag=self.tag,
                         pull=self.args.pull,
-                        dockerfile=self.dockerfile_path_revised,
+                        dockerfile=self.dockerfile_path,
+                        labels={k: str(v) for k, v in self.manifest.items()},
                         rm=True
                     )
 
@@ -339,7 +340,8 @@ class HubIO:
                 image, log = self._client.images.build(path=self.args.path,
                                                        tag=self.tag,
                                                        pull=self.args.pull,
-                                                       dockerfile=self.dockerfile_path_revised,
+                                                       dockerfile=self.dockerfile_path,
+                                                       labels={k: str(v) for k, v in self.manifest.items()},
                                                        rm=True)
 
                 # success
@@ -532,7 +534,7 @@ class HubIO:
                     fp.write('\n'.join(new_requirements))
 
     def _check_completeness(self) -> Dict:
-        dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
+        self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
@@ -549,7 +551,7 @@ class HubIO:
         test_glob = glob.glob(os.path.join(self.args.path, 'tests/test_*.py'))
 
         completeness = {
-            'Dockerfile': dockerfile_path,
+            'Dockerfile': self.dockerfile_path,
             'manifest.yml': manifest_path,
             'config.yml': self.config_yaml_path,
             'README.md': self.readme_path,
@@ -570,7 +572,6 @@ class HubIO:
 
         self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
-        self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
         self.executor_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}')
         self.tag = self.executor_name + f':{self.manifest["version"]}-{jina_version}'
@@ -622,25 +623,6 @@ class HubIO:
         # show manifest key-values
         for k, v in manifest.items():
             self.logger.debug(f'{k}: {v}')
-
-    def _get_revised_dockerfile(self, dockerfile_path: str, manifest: Dict) -> str:
-        # modify dockerfile
-        revised_dockerfile = []
-        with open(dockerfile_path) as fp:
-            for l in fp:
-                revised_dockerfile.append(l)
-                if l.startswith('FROM'):
-                    revised_dockerfile.append('LABEL ')
-                    revised_dockerfile.append(
-                        ' \\      \n'.join(f'{_label_prefix}{k}="{v}"' for k, v in manifest.items()))
-
-        f = tempfile.NamedTemporaryFile('w', delete=False).name
-        with open(f, 'w', encoding='utf8') as fp:
-            fp.writelines(revised_dockerfile)
-
-        for k in revised_dockerfile:
-            self.logger.debug(k)
-        return f
 
     def _write_slack_message(self, *args):
         def _expand_fn(v):
