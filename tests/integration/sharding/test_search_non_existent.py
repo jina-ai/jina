@@ -47,6 +47,7 @@ def test_search_non_existent(config, mocker):
 
     mock = mocker.Mock()
     with Flow(read_only=True).add(
+            show_exc_info=True,
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
             separated_workspace=True,
