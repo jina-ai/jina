@@ -19,14 +19,14 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         # Accessing path / query params from scope in ASGI
         # https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
         log_id = self.scope.get('path').split('/')[-1]
-        self.filepath = get_workspace_path(log_id) + 'logging.log'
-        self.active_clients = set()
+        self.filepath = get_workspace_path(log_id, 'logging.log')
+        self.active_clients = []
 
     async def on_connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
 
         self.client_details = f'{websocket.client.host}:{websocket.client.port}'
-        self.active_clients.add(websocket)
+        self.active_clients.append(websocket)
         daemon_logger.info(f'{self.client_details} is connected to stream logs!')
 
         if jinad_args.no_fluentd:
