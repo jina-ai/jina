@@ -252,16 +252,18 @@ class CompoundExecutor(BaseExecutor):
             self._components = comps()
             if not isinstance(self._components, list):
                 raise TypeError(f'components expect a list of executors, receiving {type(self._components)!r}')
-            # self._set_comp_workspace()
+            self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
         else:
             self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
 
     def _set_comp_workspace(self) -> None:
+        import os
         # overrider the workspace setting for all components
         for c in self.components:
-            c.workspace = self.workspace
+            extra_path = f'{self.name}-{self.pea_id}' if self.pea_id > 0 else self.name
+            c.workspace = os.path.join(self.workspace, extra_path)
 
     def _resolve_routes(self) -> None:
         if self._routes:
