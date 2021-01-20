@@ -9,6 +9,9 @@ CLOUD_HOST = 'cloud.jina.ai:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
+@pytest.mark.skip(
+    'Flaky test since it depends on external cloud host, to be enabled once '
+    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_r_l_simple(silent_log, parallels, mocker):
@@ -24,6 +27,9 @@ def test_r_l_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
+@pytest.mark.skip(
+    'Flaky test since it depends on external cloud host, to be enabled once '
+    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_simple(silent_log, parallels, mocker):
@@ -40,6 +46,9 @@ def test_l_r_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
+@pytest.mark.skip(
+    'Flaky test since it depends on external cloud host, to be enabled once '
+    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_r_l_r_simple(silent_log, parallels, mocker):
@@ -59,6 +68,9 @@ def test_r_l_r_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
+@pytest.mark.skip(
+    'Flaky test since it depends on external cloud host, to be enabled once '
+    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_r_r_r_simple(silent_log, parallels, mocker):
@@ -80,6 +92,9 @@ def test_r_r_r_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
+@pytest.mark.skip(
+    'Flaky test since it depends on external cloud host, to be enabled once '
+    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_l_simple(silent_log, parallels, mocker):
