@@ -19,13 +19,13 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         # https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
         log_id = self.scope.get('path').split('/')[-1]
         self.filepath = jinad_args.log_path.replace('${log_id}', log_id)
-        self.active_clients = []
+        self.active_clients = set()
 
     async def on_connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
 
         self.client_details = f'{websocket.client.host}:{websocket.client.port}'
-        self.active_clients.append(websocket)
+        self.active_clients.add(websocket)
         daemon_logger.info(f'{self.client_details} is connected to stream logs!')
 
         if jinad_args.no_fluentd:
@@ -40,7 +40,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         with open(self.filepath) as fp:
             fp.seek(0, 2)
             daemon_logger.success(f'{self.filepath} is ready for streaming')
-            while True:
+            while websocket in self.active_clients:
                 line = fp.readline()  # also possible to read an empty line
                 if line:
                     payload = None
