@@ -28,7 +28,7 @@ To prevent indexing duplicates, one needs to add ``_unique`` for the ``uses_befo
         with f:
             f.index(
                 [doc_0, doc_0, doc_1],
-                output_fn=lambda rsp: assert_num_docs(rsp, num_docs=2))
+                on_done=lambda rsp: assert_num_docs(rsp, num_docs=2))
 
 Under the hood, the configuration yaml file, :file:``executors._unique.yml``, under the :file:``jina/resources`` is used. The yaml file is defined as below
 

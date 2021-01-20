@@ -64,7 +64,7 @@ def test_only_tags(tmp_path, mocker):
     mock = mocker.Mock()
     with f:
         f.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
+                 on_done=validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
     mock.assert_called_once()
 
     # this won't increase the index size as the ids are new
@@ -75,7 +75,7 @@ def test_only_tags(tmp_path, mocker):
     mock = mocker.Mock()
     with f:
         f.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
+                 on_done=validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
     mock.assert_called_once()
 
     with f:
@@ -86,7 +86,7 @@ def test_only_tags(tmp_path, mocker):
     mock = mocker.Mock()
     with f:
         f.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(0))
+                 on_done=validate_result_factory(0))
     mock.assert_called_once()
 
 
@@ -159,7 +159,7 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
     mock = mocker.Mock()
     with f:
         f.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(TOPK))
+                 on_done=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     # this won't increase the index size as the ids are new
@@ -170,7 +170,7 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
     mock = mocker.Mock()
     with f:
         f.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(TOPK))
+                 on_done=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     with f:
@@ -180,7 +180,7 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
     mock = mocker.Mock()
     with f:
         f.search(input_fn=docs_search,
-                 output_fn=validate_result_factory(0))
+                 on_done=validate_result_factory(0))
     mock.assert_called_once()
 
 
@@ -226,7 +226,7 @@ def test_wrong_mime_type(tmp_path, mocker):
     mock = mocker.Mock()
     with f_query:
         f_query.search(input_fn=docs_search,
-                       output_fn=validate_result_factory(TOPK))
+                       on_done=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     # this won't increase the index size as the ids are new
@@ -237,7 +237,7 @@ def test_wrong_mime_type(tmp_path, mocker):
     mock = mocker.Mock()
     with f_query:
         f_query.search(input_fn=docs_search,
-                       output_fn=validate_result_factory(TOPK))
+                       on_done=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     with f_index:
@@ -247,7 +247,7 @@ def test_wrong_mime_type(tmp_path, mocker):
     mock = mocker.Mock()
     with f_query:
         f_query.search(input_fn=docs_search,
-                       output_fn=validate_result_factory(0))
+                       on_done=validate_result_factory(0))
     mock.assert_called_once()
 
 
@@ -299,7 +299,7 @@ def test_dimensionality_search_wrong(tmp_path, mocker):
     with f_query:
         f_query.search(input_fn=docs_search,
                        # 0 because search docs have wrong shape
-                       output_fn=validate_result_factory(0))
+                       on_done=validate_result_factory(0))
     mock.assert_called_once()
 
     # this won't increase the index size as the ids are new
@@ -311,7 +311,7 @@ def test_dimensionality_search_wrong(tmp_path, mocker):
     with f_query:
         f_query.search(input_fn=docs_search,
                        # 0 because search docs have wrong shape
-                       output_fn=validate_result_factory(0))
+                       on_done=validate_result_factory(0))
     mock.assert_called_once()
 
     with f_index:
@@ -321,5 +321,5 @@ def test_dimensionality_search_wrong(tmp_path, mocker):
     mock = mocker.Mock()
     with f_query:
         f_query.search(input_fn=docs_search,
-                       output_fn=validate_result_factory(0))
+                       on_done=validate_result_factory(0))
     mock.assert_called_once()

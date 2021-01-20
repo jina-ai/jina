@@ -205,7 +205,7 @@ with f:
 
 ```python
 with f:
-    f.search(input_fn, top_k=50, output_fn=print)
+    f.search(input_fn, top_k=50, on_done=print)
 ```
 
 - `input_fn` is an `Iterator[bytes]`, each of which corresponds to the representation of a Document with bytes.
