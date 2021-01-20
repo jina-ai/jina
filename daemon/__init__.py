@@ -94,7 +94,7 @@ def _start_fluentd():
         fluentd_proc = subprocess.Popen(['fluentd', '-c', cfg], stdout=subprocess.PIPE, stdin=subprocess.PIPE,
                                         bufsize=0, universal_newlines=True)
         for line in fluentd_proc.stdout:
-            daemon_logger.debug(f'fluentd: {line.strip()}')
+            daemon_logger.info(f'fluentd: {line.strip()}')
     except FileNotFoundError:
         daemon_logger.warning('Fluentd not found locally, Jinad cannot stream logs!')
         jinad_args.no_fluentd = True
