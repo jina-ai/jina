@@ -223,7 +223,7 @@ Note that more than one `queryset` can be passed with any request.
 
 ```python
     with Flow.load_config('flow.yml') as search_flow:
-        search_flow.search(input_fn=docs, output_fn=print_results, queryset=[top_k_queryset])
+        search_flow.search(input_fn=docs, on_done=print_results, queryset=[top_k_queryset])
 ```
 
 ## The Score Field
