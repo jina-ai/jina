@@ -31,7 +31,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
         self.doc_pointers.clear()
 
-    def _apply_root(self, docs: 'DocumentSet', context_doc: 'Request', field: 'docs', *args, **kwargs):
+    def _apply_root(self, docs: 'DocumentSet', context_doc: 'Request', field: str, *args, **kwargs):
         docs = []
         for doc in self.docs:
             docs.append(doc)
