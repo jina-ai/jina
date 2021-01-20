@@ -20,6 +20,6 @@ pods:
     polling: all
     parallel: 1
   ranker:
-    uses: MinRanker
+    uses: _pass
   doc_indexer:
     parallel: 1
