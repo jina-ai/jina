@@ -72,8 +72,7 @@ def test_cache_driver_tmpfile(tmpdir, test_metas):
 def test_cache_driver_from_file(tmpdir, test_metas):
     test_metas['name'] = 'cachename'
     filename = 'cache'
-    folder = os.path.join(test_metas["workspace"], test_metas['name'] + '-0')
-    os.makedirs(folder)
+    folder = os.path.join(test_metas["workspace"])
     bin_full_path = os.path.join(folder, filename)
     docs = list(random_docs(10, embedding=False))
     pickle.dump([doc.id for doc in docs], open(f'{bin_full_path}.ids', 'wb'))

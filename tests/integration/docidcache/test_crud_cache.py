@@ -151,9 +151,10 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
     for indexer_fname in [KV_IDX_FILENAME, VEC_IDX_FILENAME]:
         indexers_full_size = 0
         for i in range(shards):
-            indexer_folder = 'docindexer' if indexer_fname == KV_IDX_FILENAME else 'vecindexer'
-            indexer_folder = f'inc_{indexer_folder}-{i + 1}'
-            indexer_path = tmp_path / indexer_folder / indexer_fname if shards > 1 else tmp_path / indexer_fname
+            indexer_path = os.path.join(BaseIndexer.get_shard_workspace(workspace_folder=tmp_path,
+                                                                        exec_name=indexer_fname.rstrip('.bin'),
+                                                                        pea_id=i + 1 if shards > 1 else 0),
+                                        f'{indexer_fname}')
 
             # in the configuration of content-hash / same_content=True
             # there aren't enough docs to satisfy batch size, only 1 shard will have it

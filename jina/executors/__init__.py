@@ -241,15 +241,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """
         return self.get_file_from_workspace(f'{self.name}.yml')
 
-    @property
-    def current_workspace(self) -> str:
-        """ Get the path of the current workspace.
+    @staticmethod
+    def get_shard_workspace(workspace_folder: str, exec_name: str, pea_id: int) -> str:
+        # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
+        return os.path.join(workspace_folder, f'{exec_name}-{pea_id}') if pea_id > 0 else os.path.join(workspace_folder)
 
-        :return: if ``pea_id`` is defined then ``metas.workspace`` is returned,
-                otherwise the ``metas.pea_workspace`` is returned
+    @property
+    def workspace_name(self):
+        return self.name
+
+    @property
+    def shard_workspace(self) -> str:
+        """ Get the path of the current shard.
+
+        :return: otherwise a subfolder ``metas.workspace/metas.name-metas.pea_id`` is returned
         """
-        work_dir = self.pea_workspace if self.pea_id != -1 else self.workspace  # type: str
-        return work_dir
+        return BaseExecutor.get_shard_workspace(self.workspace, self.workspace_name, self.pea_id)
 
     def get_file_from_workspace(self, name: str) -> str:
         """Get a usable file path under the current workspace
@@ -258,13 +265,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return file path
         """
-        Path(self.current_workspace).mkdir(parents=True, exist_ok=True)
-        return os.path.join(self.current_workspace, name)
+        Path(self.shard_workspace).mkdir(parents=True, exist_ok=True)
+        return os.path.join(self.shard_workspace, name)
 
     @property
     def physical_size(self) -> int:
         """Return the size of the current workspace in bytes"""
-        root_directory = Path(self.current_workspace)
+        root_directory = Path(self.shard_workspace)
         return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
     def __getstate__(self):
@@ -299,7 +306,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def save(self, filename: str = None):
         """
-        Persist data of this executor to the :attr:`workspace` (or :attr:`pea_workspace`). The data could be
+        Persist data of this executor to the :attr:`shard_workspace`. The data could be
         a file or collection of files produced/used during an executor run.
 
         These are some of the common data that you might want to persist:

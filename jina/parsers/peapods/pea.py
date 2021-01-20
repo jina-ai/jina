@@ -37,7 +37,7 @@ def mixin_pea_parser(parser):
 
     # hidden CLI used for internal only
 
-    gp.add_argument('--pea-id', type=int, default=-1,
+    gp.add_argument('--pea-id', type=int, default=0,
                     help='the id of the storage of this pea`'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 

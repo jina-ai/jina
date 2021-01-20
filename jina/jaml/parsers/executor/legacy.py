@@ -2,7 +2,6 @@ import os
 from typing import Dict, Any, Type
 
 from ..base import VersionedYAMLParser
-from ....excepts import BadWorkspace
 from ....executors import BaseExecutor, get_default_metas
 
 
@@ -12,19 +11,15 @@ class LegacyParser(VersionedYAMLParser):
     @staticmethod
     def _get_dump_path_from_config(meta_config: Dict):
         if 'name' in meta_config:
-            if meta_config['pea_id'] != -1:
-                if 'pea_id' in meta_config and isinstance(meta_config['pea_id'], int):
-                    work_dir = meta_config['pea_workspace']
-                    dump_path = os.path.join(work_dir, f'{meta_config["name"]}.{"bin"}')
-                    if os.path.exists(dump_path):
-                        return dump_path
-                else:
-                    raise BadWorkspace('pea_id is unset or set to a bad value')
-            else:
-                dump_path = os.path.join(meta_config.get('workspace', os.getcwd()),
-                                         f'{meta_config["name"]}.{"bin"}')
-                if os.path.exists(dump_path):
-                    return dump_path
+            work_dir = meta_config['workspace']
+            name = meta_config['name']
+            pea_id = meta_config['pea_id']
+
+            dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
+
+            bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
+            if os.path.exists(bin_dump_path):
+                return bin_dump_path
 
     def parse(self, cls: Type['BaseExecutor'], data: Dict) -> 'BaseExecutor':
         """Return the Flow YAML parser given the syntax version number
