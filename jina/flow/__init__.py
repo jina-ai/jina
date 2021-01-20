@@ -6,11 +6,10 @@ import numpy as np
 from .base import BaseFlow
 from ..clients.base import InputFnType, CallbackFnType
 from ..enums import DataInputType
-from ..helper import deprecated_alias
 
 
 class Flow(BaseFlow):
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+
     def train(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -43,7 +42,6 @@ class Flow(BaseFlow):
         """
         return self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                       on_done: CallbackFnType = None,
                       on_error: CallbackFnType = None,
@@ -62,7 +60,6 @@ class Flow(BaseFlow):
         return self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        on_done: CallbackFnType = None,
                        on_error: CallbackFnType = None,
@@ -83,7 +80,6 @@ class Flow(BaseFlow):
         self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
                     on_done: CallbackFnType = None,
@@ -106,7 +102,6 @@ class Flow(BaseFlow):
         return self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
                     on_done: CallbackFnType = None,
@@ -130,7 +125,6 @@ class Flow(BaseFlow):
         return self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
                      on_done: CallbackFnType = None,
@@ -155,7 +149,6 @@ class Flow(BaseFlow):
                                                  on_done, on_error, on_always, data_type=DataInputType.CONTENT,
                                                  **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
                      on_done: CallbackFnType = None,
@@ -179,7 +172,6 @@ class Flow(BaseFlow):
                                                  on_done, on_error, on_always, data_type=DataInputType.CONTENT,
                                                  **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def index(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -211,7 +203,6 @@ class Flow(BaseFlow):
         """
         return self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def update(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -243,7 +234,6 @@ class Flow(BaseFlow):
         """
         self._get_client(**kwargs).update(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def delete(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -275,7 +265,6 @@ class Flow(BaseFlow):
         """
         self._get_client(**kwargs).delete(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def search(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
