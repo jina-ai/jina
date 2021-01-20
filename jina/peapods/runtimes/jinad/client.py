@@ -4,7 +4,7 @@ import copy
 import json
 from argparse import Namespace
 from contextlib import ExitStack
-from typing import Tuple, List, Optional, Sequence, BinaryIO
+from typing import Tuple, List, Optional, Sequence, BinaryIO, Dict
 
 from pkg_resources import resource_filename
 
@@ -40,9 +40,9 @@ class DaemonClient:
         self.upload_api = f'{rest_url}/workspaces'
         self.upload_api_arg = 'files'  # this is defined in Daemon API upload interface
         if self.kind == 'pea':
-            self.create_api = f'{rest_url}/peas'
+            self.store_api = f'{rest_url}/peas'
         elif self.kind == 'pod':
-            self.create_api = f'{rest_url}/pods'
+            self.store_api = f'{rest_url}/pods'
         else:
             raise ValueError(f'{self.kind} is not supported')
         self.logstream_api = f'ws://{base_url}/logstream'
@@ -61,6 +61,19 @@ class DaemonClient:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'remote manager is not alive: {ex!r}')
             return False
+
+    def get_status(self, identity: str) -> Dict:
+        with ImportExtensions(required=True):
+            import requests
+
+        try:
+            r = requests.get(url=f'{self.store_api}/{identity}', timeout=self.timeout)
+            rj = r.json()
+            if r.status_code == 200:
+                return rj
+            raise requests.exceptions.RequestException(rj)
+        except requests.exceptions.RequestException as ex:
+            self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')
 
     def upload(self, dependencies: Sequence[str]) -> str:
         """ Upload local file dependencies to remote server by extracting from the pea_args
@@ -85,7 +98,7 @@ class DaemonClient:
                 except requests.exceptions.RequestException as ex:
                     self.logger.error(f'fail to upload as {ex!r}')
 
-    def create(self, args: 'Namespace', **kwargs) -> Optional[str]:
+    def create(self, args: 'Namespace') -> Optional[str]:
         """ Create a remote pea/pod
         :param args: the arguments in dict that pea can accept.
                      (convert argparse.Namespace to Dict before passing to this method)
@@ -96,7 +109,7 @@ class DaemonClient:
 
         try:
             payload = replace_enum_to_str(vars(self._mask_args(args)))
-            r = requests.post(url=self.create_api, json=payload, timeout=self.timeout)
+            r = requests.post(url=self.store_api, json=payload, timeout=self.timeout)
             rj = r.json()
             if r.status_code == 201:
                 return rj
@@ -110,10 +123,11 @@ class DaemonClient:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'fail to create as {ex!r}')
 
-    async def logstream(self, remote_id: str):
+    async def logstream(self, workspace_id: str, log_id: str):
         """Websocket log stream from remote pea/pod
 
-        :param remote_id: the identity of that pea/pod
+        :param workspace_id: the identity of the workspace
+        :param log_id: the identity of that pea/pod
         :return:
         """
         with ImportExtensions(required=True):
@@ -123,7 +137,7 @@ class DaemonClient:
             ('resources', 'logging.remote.yml')))
         all_remote_loggers = {}
         try:
-            async with websockets.connect(f'{self.logstream_api}/{remote_id}') as websocket:
+            async with websockets.connect(f'{self.logstream_api}/{workspace_id}/{log_id}') as websocket:
                 async for log_line in websocket:
                     try:
                         ll = json.loads(log_line)
@@ -154,7 +168,7 @@ class DaemonClient:
             import requests
 
         try:
-            url = f'{self.create_api}/{remote_id}'
+            url = f'{self.store_api}/{remote_id}'
             r = requests.delete(url=url, timeout=self.timeout)
             return r.status_code == 200
         except requests.exceptions.RequestException as ex:

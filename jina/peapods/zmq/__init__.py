@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import argparse
 import asyncio
 import os
 import tempfile
@@ -20,9 +21,6 @@ from ...logging import default_logger, profile_logger, JinaLogger
 from ...types.message import Message
 from ...types.message.common import ControlMessage
 
-if False:
-    import argparse
-
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
@@ -33,13 +31,14 @@ class Zmqlet:
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr:str=None):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr: str = None):
         """
 
         :param args: the parsed arguments from the CLI
         :param logger: the logger to use
         """
         self.args = args
+        self.identity = self.args.identity
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
@@ -141,14 +140,14 @@ class Zmqlet:
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
             in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                            self.args.identity,
+                                            self.identity,
                                             ssh_server=self.args.ssh_server,
                                             ssh_keyfile=self.args.ssh_keyfile,
                                             ssh_password=self.args.ssh_password)
             self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                              self.args.identity,
+                                              self.identity,
                                               ssh_server=self.args.ssh_server,
                                               ssh_keyfile=self.args.ssh_keyfile,
                                               ssh_password=self.args.ssh_password
@@ -224,7 +223,7 @@ class Zmqlet:
 
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.args.identity)
+        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug('idle and i told the router')
@@ -554,7 +553,7 @@ def _get_random_ipc() -> str:
 
 
 def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
-                 socket_type: 'SocketType', identity: 'str' = None,
+                 socket_type: 'SocketType', identity: str = None,
                  use_ipc: bool = False, ssh_server: str = None,
                  ssh_keyfile: str = None, ssh_password: str = None) -> Tuple['zmq.Socket', str]:
     sock = {

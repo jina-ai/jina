@@ -93,12 +93,15 @@ class JinaLogger:
                  context: str,
                  name: Optional[str] = None,
                  log_config: Optional[str] = None,
-                 identity: Optional[str] = None, **kwargs):
+                 identity: Optional[str] = None,
+                 workspace_path: Optional[str] = None,
+                 **kwargs):
         """Build a logger for a context
         :param context: The context identifier of the class, module or method
         :param log_config: the configuration file for the logger
-        :param log_id: the id of the group the messages from this logger will belong, used by fluentd default configuration
+        :param identity: the id of the group the messages from this logger will belong, used by fluentd default configuration
         to group logs by pod
+        :param workspace_path: the workspace path where the log will be stored at (only apply to fluentd)
         :return: an executor object
         """
         from .. import __uptime__
@@ -119,11 +122,16 @@ class JinaLogger:
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
 
+        if workspace_path is None:
+            workspace_path = os.getenv('JINA_LOG_WORKSPACE', '/tmp/jina/')
+
         context_vars = {'name': name,
                         'uptime': __uptime__,
-                        'context': context}
+                        'context': context,
+                        'workspace_path': workspace_path}
         if identity:
             context_vars['log_id'] = identity
+
         self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there

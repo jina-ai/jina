@@ -40,7 +40,7 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         self._logging_task = asyncio.create_task(
             self._sleep_forever() if self.args.silent_remote_logs else
-            self.api.logstream(remote_id=self._remote_id)
+            self.api.logstream(self._workspace_id, self._remote_id)
         )
 
     async def async_cancel(self):
@@ -74,8 +74,14 @@ class JinadRuntime(AsyncZMQRuntime):
                     self.logger.success(f'uploaded to workspace: {workspace_id}')
                 else:
                     raise RuntimeError('can not upload required files to remote')
+
+            # if there is a workspace_id (upload is called), then use it
             self.args.workspace_id = workspace_id
-            return self.api.create(self.args, workspace_id=workspace_id)
+            _id = self.api.create(self.args)
+
+            # if there is a new workspace_id, then use it
+            self._workspace_id = self.api.get_status(_id)['workspace_id']
+            return _id
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come.

@@ -7,6 +7,7 @@ from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 
 from ... import daemon_logger, jinad_args
+from ...stores.helper import get_workspace_path
 
 router = APIRouter()
 
@@ -17,8 +18,10 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         super().__init__(scope, receive, send)
         # Accessing path / query params from scope in ASGI
         # https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
-        log_id = self.scope.get('path').split('/')[-1]
-        self.filepath = jinad_args.log_path.replace('${log_id}', log_id)
+        info = self.scope.get('path').split('/')
+        workspace_id = info[-2]
+        log_id = info[-1]
+        self.filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
         self.active_clients = []
 
     async def on_connect(self, websocket: WebSocket) -> None:
@@ -40,7 +43,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         with open(self.filepath) as fp:
             fp.seek(0, 2)
             daemon_logger.success(f'{self.filepath} is ready for streaming')
-            while True:
+            while websocket in self.active_clients:
                 line = fp.readline()  # also possible to read an empty line
                 if line:
                     payload = None
@@ -65,5 +68,5 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
 # TODO: adding websocket in this way do not generate any docs
 #  see: https://github.com/tiangolo/fastapi/issues/1983
-router.add_websocket_route(path='/logstream/{log_id}',
+router.add_websocket_route(path='/logstream/{workspace_id}/{log_id}',
                            endpoint=LogStreamingEndpoint)

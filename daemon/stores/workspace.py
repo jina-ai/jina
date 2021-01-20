@@ -5,6 +5,7 @@ from typing import List
 
 from fastapi import UploadFile
 
+from jina.helper import random_uuid
 from .base import BaseStore
 from .helper import get_workspace_path
 
@@ -13,7 +14,7 @@ class WorkspaceStore(BaseStore):
 
     def add(self, files: List[UploadFile], **kwargs):
         try:
-            workspace_id = uuid.uuid1()
+            workspace_id = random_uuid()
             _workdir = get_workspace_path(workspace_id)
             Path(_workdir).mkdir(parents=True, exist_ok=False)
             for f in files:
