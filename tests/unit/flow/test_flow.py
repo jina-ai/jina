@@ -7,6 +7,7 @@ import pytest
 from jina import Flow
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
+from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from tests import random_docs, rm_files
@@ -550,7 +551,7 @@ def test_flow_workspace_id():
     with pytest.raises(ValueError):
         f.workspace_id = 'hello'
 
-    new_id = str(random_identity())
+    new_id = random_identity()
     f.workspace_id = new_id
     assert len(set(f.workspace_id.values())) == 1
     assert list(f.workspace_id.values())[0] == new_id

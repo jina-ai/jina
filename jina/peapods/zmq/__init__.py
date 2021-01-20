@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import argparse
 import asyncio
 import os
 import tempfile
@@ -19,9 +20,6 @@ from ...importer import ImportExtensions
 from ...logging import default_logger, profile_logger, JinaLogger
 from ...types.message import Message
 from ...types.message.common import ControlMessage
-
-if False:
-    import argparse
 
 
 class Zmqlet:
@@ -555,7 +553,7 @@ def _get_random_ipc() -> str:
 
 
 def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
-                 socket_type: 'SocketType', identity: 'str' = None,
+                 socket_type: 'SocketType', identity: str = None,
                  use_ipc: bool = False, ssh_server: str = None,
                  ssh_keyfile: str = None, ssh_password: str = None) -> Tuple['zmq.Socket', str]:
     sock = {
