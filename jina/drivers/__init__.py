@@ -28,6 +28,7 @@ if False:
     from ..logging.logger import JinaLogger
     from ..types.message import Message
     from ..types.document import Document
+    from ..types.request import Request
     from ..types.sets import QueryLangSet, DocumentSet
 
 
