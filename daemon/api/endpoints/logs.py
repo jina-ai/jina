@@ -7,6 +7,7 @@ from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 
 from ... import daemon_logger, jinad_args
+from ...stores.helper import get_workspace_path
 
 router = APIRouter()
 
@@ -18,7 +19,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         # Accessing path / query params from scope in ASGI
         # https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
         log_id = self.scope.get('path').split('/')[-1]
-        self.filepath = jinad_args.log_path.replace('${log_id}', log_id)
+        self.filepath = get_workspace_path(log_id) + 'logging.log'
         self.active_clients = set()
 
     async def on_connect(self, websocket: WebSocket) -> None:

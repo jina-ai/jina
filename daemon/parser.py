@@ -9,11 +9,8 @@ from jina.parsers.peapods.base import mixin_base_ppr_parser
 from jina.parsers.peapods.runtimes.remote import mixin_remote_parser
 
 
-def mixin_log_parser(parser):
-    gp = add_arg_group(parser, title='Fluentd')
-
-    gp.add_argument('--log-path', type=str, default='/tmp/jina/logging/${log_id}/log.log',
-                    help='file path for storing the log')
+def mixin_daemon_parser(parser):
+    gp = add_arg_group(parser, title='Daemon')
 
     gp.add_argument('--no-fluentd',
                     action='store_true', default=False,
@@ -28,7 +25,7 @@ def get_main_parser():
 
     mixin_remote_parser(parser)
     mixin_base_ppr_parser(parser)
-    mixin_log_parser(parser)
+    mixin_daemon_parser(parser)
 
     parser.set_defaults(port_expose=8000,
                         log_config=os.getenv('JINAD_LOG_CONFIG',
