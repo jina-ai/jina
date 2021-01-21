@@ -43,7 +43,7 @@ class Chunk2DocRanker(BaseRanker):
     Set of required keys to be extracted from matches and query to fill the information of `query` and `chunk` meta information.
     These are the set of keys to be extracted from `Document`.
 
-    Keys prefixed with `tags` will be directly extracted from `Document tags` as if they were direct arguments from documents.
+    Keys prefixed with `tags_` will be directly extracted from `Document.tags` as if they were direct arguments from documents.
     """
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
