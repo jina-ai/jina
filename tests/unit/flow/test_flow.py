@@ -1,5 +1,4 @@
 import os
-import uuid
 
 import numpy as np
 import pytest
@@ -555,5 +554,3 @@ def test_flow_workspace_id():
     f.workspace_id = new_id
     assert len(set(f.workspace_id.values())) == 1
     assert list(f.workspace_id.values())[0] == new_id
-
-
