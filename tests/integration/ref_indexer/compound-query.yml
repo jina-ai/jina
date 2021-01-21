@@ -1,0 +1,7 @@
+!Flow
+with:
+  show_exc_info: true
+pods:
+  indexer:
+    uses: pods/compound-indexer-with-ref.yml
+    parallel: $JINA_TEST_REF_INDEXER_PARALLEL
