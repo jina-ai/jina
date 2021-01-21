@@ -158,8 +158,72 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
         return formatter
 
+    def _split_lines(self, text, width):
+        return self._para_reformat(text, width)
+
     def _fill_text(self, text, width, indent):
-        return ''.join(indent + line for line in text.splitlines(keepends=True))
+        lines = self._para_reformat(text, width)
+        return "\n".join(lines)
+
+    def _indents(self, line):
+        """Return line indent level and "sub_indent" for bullet list text."""
+        import re
+        indent = len(re.match(r"( *)", line).group(1))
+        list_match = re.match(r"( *)(([*-+>]+|\w+\)|\w+\.) +)", line)
+        if list_match:
+            sub_indent = indent + len(list_match.group(2))
+        else:
+            sub_indent = indent
+
+        return (indent, sub_indent)
+
+    def _split_paragraphs(self, text):
+        """Split text in to paragraphs of like-indented lines."""
+
+        import textwrap, re
+
+        text = textwrap.dedent(text).strip()
+        text = re.sub("\n\n[\n]+", "\n\n", text)
+
+        last_sub_indent = None
+        paragraphs = list()
+        for line in text.splitlines():
+            (indent, sub_indent) = self._indents(line)
+            is_text = len(line.strip()) > 0
+
+            if is_text and indent == sub_indent == last_sub_indent:
+                paragraphs[-1] += " " + line
+            else:
+                paragraphs.append(line)
+
+            if is_text:
+                last_sub_indent = sub_indent
+            else:
+                last_sub_indent = None
+
+        return paragraphs
+
+    def _para_reformat(self, text, width):
+        """Reformat text, by paragraph."""
+
+        import textwrap
+
+        lines = list()
+        for paragraph in self._split_paragraphs(text):
+            (indent, sub_indent) = self._indents(paragraph)
+
+            paragraph = self._whitespace_matcher.sub(" ", paragraph).strip()
+            new_lines = textwrap.wrap(
+                text=paragraph,
+                width=width,
+                initial_indent=" " * indent,
+                subsequent_indent=" " * sub_indent,
+            )
+
+            # Blank lines get eaten by textwrap, put it back
+            lines.extend(new_lines or [""])
+
+        return lines
 
 
 _chf = _ColoredHelpFormatter
