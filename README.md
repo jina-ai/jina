@@ -153,7 +153,7 @@ def beep(*args):
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
     f.index(numpy.random.random([4,5,2]),
-            on_done=print, on_error=beep, on_always=fp.write)
+            on_done=print, on_error=beep, on_always=lambda x: fp.write(x.to_json()))
 ```
 
 
