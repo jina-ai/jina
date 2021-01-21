@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path

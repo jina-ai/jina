@@ -7,3 +7,6 @@ pods:
     uses_internal: $JINA_QUERY_USES_COMPOUND_INTERNAL
     parallel: $JINA_TEST_REF_INDEXER_PARALLEL
     volumes: $JINA_VOLUMES
+    docker_kwargs:
+      environment:
+        JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY: $JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY

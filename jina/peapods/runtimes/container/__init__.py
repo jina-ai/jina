@@ -93,7 +93,6 @@ class ContainerRuntime(ZMQRuntime):
         if self.args.uses_internal:
             full_path = complete_path(self.args.uses_internal)
             if os.path.exists(full_path):
-                print(f' uses_internal  {full_path}!!')
                 # external YAML config, need to be volumed into the container
                 # uses takes value from uses_internal
                 non_defaults['uses'] = '/' + os.path.basename(full_path)
@@ -121,12 +120,7 @@ class ContainerRuntime(ZMQRuntime):
         _args = ArgNamespace.kwargs2list(non_defaults)
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
 
-        print(f' self.args.volumes {self.args.volumes}')
-        print(f' volumes {_volumes}')
-        print(f' uses_internal {self.args.uses_internal}')
-
         docker_kwargs = self.args.docker_kwargs or {}
-
         self._container = client.containers.run(uses_img,
                                                 _args,
                                                 detach=True,
