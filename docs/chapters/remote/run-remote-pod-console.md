@@ -78,6 +78,6 @@ If you have double checked the list and the problem is still not resolved, then 
 
 ## What's next?
 
-You many also want to checkout the following articles.
+You many also want to check out the following articles.
 [Using jina remotely with jinad](https://docs.jina.ai/chapters/remote/jinad.html)
 

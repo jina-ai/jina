@@ -93,23 +93,26 @@ class JinaLogger:
                  context: str,
                  name: Optional[str] = None,
                  log_config: Optional[str] = None,
-                 log_id: Optional[str] = None, **kwargs):
+                 identity: Optional[str] = None,
+                 workspace_path: Optional[str] = None,
+                 **kwargs):
         """Build a logger for a context
         :param context: The context identifier of the class, module or method
         :param log_config: the configuration file for the logger
-        :param log_id: the id of the group the messages from this logger will belong, used by fluentd default configuration
+        :param identity: the id of the group the messages from this logger will belong, used by fluentd default configuration
         to group logs by pod
+        :param workspace_path: the workspace path where the log will be stored at (only apply to fluentd)
         :return: an executor object
         """
         from .. import __uptime__
-        if log_config is None:
+        if not log_config:
             log_config = os.getenv('JINA_LOG_CONFIG',
                                    resource_filename('jina', '/'.join(
                                        ('resources', 'logging.default.yml'))))
-        if log_id is None:
-            log_id = os.getenv('JINA_LOG_ID', None)
+        if not identity:
+            identity = os.getenv('JINA_LOG_ID', None)
 
-        if name is None:
+        if not name:
             name = os.getenv('JINA_POD_NAME', context)
 
         # Remove all handlers associated with the root logger object.
@@ -119,11 +122,16 @@ class JinaLogger:
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
 
+        if workspace_path is None:
+            workspace_path = os.getenv('JINA_LOG_WORKSPACE', '/tmp/jina/')
+
         context_vars = {'name': name,
                         'uptime': __uptime__,
-                        'context': context}
-        if log_id:
-            context_vars['log_id'] = log_id
+                        'context': context,
+                        'workspace_path': workspace_path}
+        if identity:
+            context_vars['log_id'] = identity
+
         self.add_handlers(log_config, **context_vars)
 
         # note logger.success isn't default there
@@ -208,4 +216,6 @@ class JinaLogger:
                 self.logger.addHandler(handler)
 
         verbose_level = LogVerbosity.from_string(config['level'])
+        if 'JINA_LOG_VERBOSITY' in os.environ:
+            verbose_level = LogVerbosity.from_string(os.environ['JINA_LOG_VERBOSITY'])
         self.logger.setLevel(verbose_level.value)

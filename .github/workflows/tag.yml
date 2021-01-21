@@ -22,10 +22,11 @@ jobs:
         with:
           python-version: 3.7
       - run: |
-          echo "JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-          echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
           JINA_MINOR_VERSION=${JINA_VERSION%.*}
+          V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}
+          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
+          echo "V_JINA_VERSION=${V_JINA_VERSION}" >> $GITHUB_ENV
           echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
           pip install .[daemon] --no-cache-dir
           cd schema

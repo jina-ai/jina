@@ -7,6 +7,7 @@ Jina is shipped from two package management systems, PyPi and Docker Hub. This a
 
 - [PyPi package versioning](#pypi-package-versioning)
 - [Docker image versioning](#docker-image-versioning)
+- [Manual Release Entrypoint](#manual-release-entrypoint)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -115,3 +116,25 @@ Six images are built, i.e. taking the combination of:
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-daemon?label=jinaai%2Fjina%3Amaster-daemon&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38-devel?label=jinaai%2Fjina%3Amaster-py38-devel&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38-daemon?label=jinaai%2Fjina%3Amaster-py38-daemon&logo=docker)|
+
+## Manual Release Entrypoint
+
+Manual release entrypoint is designed for authroized core developers of Jina. 
+
+### Trigger weekly release manually
+
+One can release a hotfix immediately without waiting for the weekly release. Here are the steps:
+
+1. [Go to here](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Manual+Release%22)
+2. Click on "Run Workflow" dropdown button on the right and input the release token and the release reason.
+3. Click on "Run Workflow" green button.
+
+### Rebuild all Docker images for certain `git tag` manually
+
+1. [Go to here](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Manual+Docker+Build%22)
+2. Click on "Run Workflow" dropdown button on the right and input the release token and the release reason.
+3. Click on "Run Workflow" green button.
+
+![Rebuild all Docker images](.github/images/manual-docker-build.png)
+
+Note, the manual rebuild on Docker images will *NOT* update `:latest-*` and `:x.y-*` aliases.

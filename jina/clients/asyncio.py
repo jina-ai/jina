@@ -1,7 +1,6 @@
 from .base import InputFnType, BaseClient, CallbackFnType
 from .websockets import WebSocketClientMixin
 from ..enums import RequestType
-from ..helper import deprecated_alias
 
 
 class AsyncClient(BaseClient):
@@ -45,7 +44,6 @@ class AsyncClient(BaseClient):
     One can think of :class:`Client` as Jina-managed eventloop, whereas :class:`AsyncClient` is self-managed eventloop.
     """
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def train(self, input_fn: InputFnType = None,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
@@ -63,7 +61,6 @@ class AsyncClient(BaseClient):
         self.mode = RequestType.TRAIN
         return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def search(self, input_fn: InputFnType = None,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
@@ -81,7 +78,6 @@ class AsyncClient(BaseClient):
         self.mode = RequestType.SEARCH
         return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     async def index(self, input_fn: InputFnType = None,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,

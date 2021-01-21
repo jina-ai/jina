@@ -80,21 +80,24 @@ def _fetch_access_token(logger):
                      f'please re-login using command: {colored("jina hub login", attrs=["bold"])}')
         raise HubLoginRequired
 
-def _make_hub_table_with_local(manifests, local_manifests):
-    info_table = [f'found {len(manifests)} matched hub images',
-                  '{:<50s}{:<20s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
-                                                        colored('Version', attrs=_header_attrs),
-                                                        colored('Local', attrs=_header_attrs),
-                                                        colored('Description', attrs=_header_attrs))]
-    for index, manifest in enumerate(manifests):
-        image_name = manifest.get('name', '')
-        ver = manifest.get('version', '')
-        desc = manifest.get('description', '')[:60].strip() + '...'
+def _make_hub_table_with_local(images, local_images):
+    info_table = [f'found {len(images)} matched hub images',
+                  '{:<50s}{:<25s}{:<25s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
+                                                               colored('Kind', attrs=_header_attrs),
+                                                               colored('Version', attrs=_header_attrs),
+                                                               colored('Local', attrs=_header_attrs),
+                                                               colored('Description', attrs=_header_attrs))]
+    images = sorted(images, key=lambda k: k['name'].lower())
+    for image in images:
+        image_name = image.get('name', '')
+        kind = image.get('kind', '')
+        ver = image.get('version', '')
+        desc = image.get('description', '')[:60].strip() + '...'
         if image_name and ver and desc:
             local_ver = ''
             color = 'white'
-            if image_name in local_manifests:
-                local_ver = local_manifests[image_name].get('version', '')
+            if image_name in local_images:
+                local_ver = local_images[image_name].get('version', '')
                 _v1, _v2 = parse_version(ver), parse_version(local_ver)
                 if _v1 > _v2:
                     color = 'red'
@@ -103,23 +106,28 @@ def _make_hub_table_with_local(manifests, local_manifests):
                 else:
                     color = 'yellow'
             info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
+                              f'{colored(kind, color="yellow"):<25s}'
                               f'{colored(ver, color="green"):<20s}'
                               f'{colored(local_ver, color=color):<20s}'
                               f'{desc:<30s}')
     return info_table
 
 
-def _make_hub_table(manifests):
-    info_table = [f'found {len(manifests)} matched hub images',
-                  '{:<50s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
-                                                 colored('Version', attrs=_header_attrs),
-                                                 colored('Description', attrs=_header_attrs))]
-    for index, manifest in enumerate(manifests):
-        image_name = manifest.get('name', '')
-        ver = manifest.get('version', '')
-        desc = manifest.get('description', '')[:60].strip() + '...'
+def _make_hub_table(images):
+    info_table = [f'found {len(images)} matched hub images',
+                  '{:<50s}{:<25s}{:<25s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
+                                                        colored('Kind', attrs=_header_attrs),
+                                                        colored('Version', attrs=_header_attrs),
+                                                        colored('Description', attrs=_header_attrs))]
+    images = sorted(images, key=lambda k: k['name'].lower())
+    for image in images:
+        image_name = image.get('name', '')
+        kind = image.get('kind', '')
+        ver = image.get('version', '')
+        desc = image.get('description', '')[:60].strip() + '...'
         if image_name and ver and desc:
             info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
-                              f'{colored(ver, color="green"):<20s}'
+                              f'{colored(kind, color="yellow"):<25s}'
+                              f'{colored(ver, color="green"):<25s}'
                               f'{desc:<30s}')
     return info_table

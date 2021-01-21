@@ -1,4 +1,7 @@
-!MinRanker
+!SimpleAggregateRanker
+with:
+  aggregate_function: 'min'
+  is_reversed_score: True
 requests:
   on:
     SearchRequest:

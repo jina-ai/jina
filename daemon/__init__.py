@@ -2,42 +2,54 @@ import json
 import os
 import subprocess
 import threading
-from collections import namedtuple
 
 import pkg_resources
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
+from daemon.excepts import Runtime400Exception, daemon_runtime_exception_handler
+from jina import __version__
 from jina.logging import JinaLogger
-from .parser import get_main_parser
+from .parser import get_main_parser, _get_run_args
 
-daemon_logger = JinaLogger(context='👻',
-                           log_config=os.getenv('JINAD_LOG_CONFIG',
-                                                pkg_resources.resource_filename(
-                                                    'jina', '/'.join(('resources', 'logging.daemon.yml')))))
+jinad_args = get_main_parser().parse_args([])
+daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
+
 
 
 def _get_app():
-    from .api.endpoints import common_router, flow, pod, pea, logs
-    from .config import jinad_config, fastapi_config, openapitags_config
-
-    context = namedtuple('context', ['router', 'openapi_tags', 'tags'])
-    _all_routers = {
-        'flow': context(router=flow.router,
-                        openapi_tags=openapitags_config.FLOW_API_TAGS,
-                        tags=[openapitags_config.FLOW_API_TAGS[0]['name']]),
-        'pod': context(router=pod.router,
-                       openapi_tags=openapitags_config.POD_API_TAGS,
-                       tags=[openapitags_config.POD_API_TAGS[0]['name']]),
-        'pea': context(router=pea.router,
-                       openapi_tags=openapitags_config.PEA_API_TAGS,
-                       tags=[openapitags_config.PEA_API_TAGS[0]['name']])
-    }
+    from .api.endpoints import router, flow, pod, pea, logs, workspace
     app = FastAPI(
-        title=fastapi_config.NAME,
-        description=fastapi_config.DESCRIPTION,
-        version=fastapi_config.VERSION
+        title='JinaD (Daemon)',
+        description='REST interface for managing distributed Jina',
+        version=__version__,
+        openapi_tags=[
+            {
+                'name': 'daemon',
+                'description': 'API to manage the Daemon',
+            },
+            {
+                'name': 'flows',
+                'description': 'API to manage Flows',
+            },
+            {
+                'name': 'pods',
+                'description': 'API to manage Pods',
+            },
+            {
+                'name': 'peas',
+                'description': 'API to manage Peas',
+            },
+            {
+                'name': 'logs',
+                'description': 'API to stream Logs',
+            },
+            {
+                'name': 'workspaces',
+                'description': 'API to manage Workspaces',
+            }
+        ],
     )
     app.add_middleware(
         CORSMiddleware,
@@ -46,17 +58,14 @@ def _get_app():
         allow_methods=['*'],
         allow_headers=['*'],
     )
-    app.include_router(router=common_router)
-    app.include_router(router=logs.router)
-    if jinad_config.CONTEXT == 'all':
-        for _current_router in _all_routers.values():
-            app.include_router(router=_current_router.router,
-                               tags=_current_router.tags)
-    else:
-        _current_router = _all_routers[jinad_config.CONTEXT]
-        app.openapi_tags = _current_router.openapi_tags
-        app.include_router(router=_current_router.router,
-                           tags=_current_router.tags)
+    app.include_router(router)
+    app.include_router(logs.router)
+    app.include_router(pea.router)
+    app.include_router(pod.router)
+    app.include_router(flow.router)
+    app.include_router(workspace.router)
+    app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
+
     return app
 
 
@@ -68,34 +77,32 @@ def _write_openapi_schema(filename='daemon.json'):
 
 
 def _start_uvicorn(app: 'FastAPI'):
-    from .config import server_config
     config = Config(app=app,
-                    host=server_config.HOST,
-                    port=server_config.PORT,
+                    host=jinad_args.host,
+                    port=jinad_args.port_expose,
                     loop='uvloop',
                     log_level='error')
     server = Server(config=config)
     server.run()
-    daemon_logger.info('\tGoodbye!')
+    daemon_logger.info('Goodbye!')
 
 
 def _start_fluentd():
-    daemon_logger.info('\tStarting fluentd')
+    daemon_logger.info('starting fluentd...')
     cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
     try:
-        subprocess.Popen(['fluentd', '-qq', '-c', cfg])
+        fluentd_proc = subprocess.Popen(['fluentd', '-c', cfg], stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+                                        bufsize=0, universal_newlines=True)
+        for line in fluentd_proc.stdout:
+            daemon_logger.info(f'fluentd: {line.strip()}')
     except FileNotFoundError:
         daemon_logger.warning('Fluentd not found locally, Jinad cannot stream logs!')
-
-
-def _parse_arg():
-    from .config import server_config
-    args = get_main_parser().parse_args()
-    server_config.HOST = args.host
-    server_config.PORT = args.port_expose
+        jinad_args.no_fluentd = True
 
 
 def main():
-    _parse_arg()
-    threading.Thread(target=_start_fluentd, daemon=True).start()
+    global jinad_args
+    jinad_args = _get_run_args()
+    if not jinad_args.no_fluentd:
+        threading.Thread(target=_start_fluentd, daemon=True).start()
     _start_uvicorn(app=_get_app())

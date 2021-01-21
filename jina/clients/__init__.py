@@ -7,7 +7,7 @@ from .websockets import WebSocketClientMixin
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
-from ..helper import run_async, deprecated_alias
+from ..helper import run_async
 
 
 class Client(BaseClient):
@@ -15,7 +15,6 @@ class Client(BaseClient):
     It manages the asyncio eventloop internally, so all interfaces are synchronous from the outside.
     """
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def train(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -33,7 +32,6 @@ class Client(BaseClient):
         self.mode = RequestType.TRAIN
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def search(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -51,7 +49,6 @@ class Client(BaseClient):
         self.mode = RequestType.SEARCH
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def index(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -69,7 +66,6 @@ class Client(BaseClient):
         self.mode = RequestType.INDEX
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def update(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -87,7 +83,6 @@ class Client(BaseClient):
         self.mode = RequestType.UPDATE
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def delete(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
