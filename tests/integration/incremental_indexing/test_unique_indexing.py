@@ -25,7 +25,7 @@ def test_unique_indexing_vecindexers(random_workspace, restful):
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load((random_workspace / 'vec_idx.bin')) as vector_indexer:
+    with BaseExecutor.load((random_workspace / 'inc_vecindexer' / 'vec_idx.bin')) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer.size == num_uniq_docs
 
@@ -41,7 +41,7 @@ def test_unique_indexing_docindexers(random_workspace, restful):
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load((random_workspace / 'doc_idx.bin')) as doc_indexer:
+    with BaseExecutor.load((random_workspace / 'inc_docindexer' / 'doc_idx.bin')) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer.size == num_uniq_docs
 

@@ -151,7 +151,12 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
     for indexer_fname in [KV_IDX_FILENAME, VEC_IDX_FILENAME]:
         indexers_full_size = 0
         for i in range(shards):
-            indexer_path = os.path.join(BaseIndexer.get_shard_workspace(workspace_folder=tmp_path,
+            from jina.executors.compound import CompoundExecutor
+            compound_name = 'inc_docindexer' if KV_IDX_FILENAME in indexer_fname else 'inc_vecindexer'
+            workspace_folder = CompoundExecutor.get_component_workspace_from_compound_workspace(tmp_path,
+                                                                                                compound_name,
+                                                                                                i + 1 if shards > 1 else 0 )
+            indexer_path = os.path.join(BaseIndexer.get_shard_workspace(workspace_folder=workspace_folder,
                                                                         workspace_name=indexer_fname.rstrip('.bin'),
                                                                         pea_id=i + 1 if shards > 1 else 0),
                                         f'{indexer_fname}')
