@@ -1,24 +1,25 @@
 !Flow
+version: '1'
 pods:
-  loader:
+  - name loader:
     read_only: true
-  normalizer:
+  - name normalizer:
     read_only: true
-  image_encoder:
+  - name image_encoder:
     read_only: true
     parallel: 4
-  image_vector_indexer:
+  - name image_vector_indexer:
     read_only: true
-  image_kv_indexer:
+  - name image_kv_indexer:
     needs: [gateway]
-  text_encoder:
+  - name text_encoder:
     timeout_ready: 600000
     read_only: true
     parallel: 4
     needs: [gateway]
-  text_indexer:
+  - name text_indexer:
     read_only: true
-  join_all:
+  - name  join_all:
     uses: _pass
     needs: [image_vector_indexer, image_kv_indexer, text_indexer]
     read_only: true
