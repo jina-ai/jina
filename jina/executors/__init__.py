@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -126,8 +125,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
-        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
-        self._attached_pea = None
+
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True) -> None:
         with TimeContext('post_init may take some time', self.logger):
@@ -147,6 +145,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def _fill_requests(self, _requests):
+        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
 
         if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
             # if control request is forget in YAML, then fill it

@@ -132,7 +132,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         async def handle_send(self, websocket: WebSocket) -> None:
 
             def handle_route(msg: 'Message') -> 'Request':
-                msg.add_route(self.name, self.args.identity)
+                msg.add_route(self.name, hex(id(self)))
                 return msg.response
 
             try:

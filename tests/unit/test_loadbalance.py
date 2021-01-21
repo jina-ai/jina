@@ -6,7 +6,7 @@ from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from tests import random_docs
 
-os.environ['JINA_LOG_VERBOSITY'] = 'DEBUG'
+os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 
 class SlowWorker(BaseCrafter):
