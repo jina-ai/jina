@@ -3,6 +3,7 @@ with:
   restful: $RESTFUL
 pods:
   gt_indexer:
+    show_exc_info: true
     uses: yaml/index-gt.yml
     polling: 'all'
     needs: gateway

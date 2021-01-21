@@ -15,9 +15,15 @@ class LegacyParser(VersionedYAMLParser):
             work_dir = meta_config['workspace']
             name = meta_config['name']
             pea_id = meta_config['pea_id']
+            if work_dir:
+                # then try to see if it can be loaded from its regular expected workspace (ref_indexer)
+                dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
+                bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
+                if os.path.exists(bin_dump_path):
+                    return bin_dump_path
+
             root_work_dir = meta_config['root_workspace']
             root_name = meta_config['root_name']
-
             if root_name != name:
                 # try to load from the corresponding file as if it was a CompoundExecutor, if the `.bin` does not exist,
                 # we should try to see if from its workspace can be loaded as it may be a `ref_indexer`
@@ -28,11 +34,6 @@ class LegacyParser(VersionedYAMLParser):
                 bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
                 if os.path.exists(bin_dump_path):
                     return bin_dump_path
-            # then try to see if it can be loaded from its regular expected workspace (ref_indexer)
-            dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
-            bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
-            if os.path.exists(bin_dump_path):
-                return bin_dump_path
 
     def parse(self, cls: Type['BaseExecutor'], data: Dict) -> 'BaseExecutor':
         """Return the Flow YAML parser given the syntax version number

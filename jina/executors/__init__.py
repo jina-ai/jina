@@ -250,12 +250,27 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         return self.name
 
     @property
+    def _workspace(self):
+        """ Property to access `workspace` if existing or default to `./`. Useful to provide good interface when
+        using executors directly in python.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            with NumpyIndexer() as indexer:
+                indexer.touch()
+
+        :return: returns the workspace property of the executor or default to './'
+        """
+        return self.workspace or './'
+
+    @property
     def shard_workspace(self) -> str:
         """ Get the path of the current shard.
 
         :return: returns the workspace of the shard of this Executor
         """
-        return BaseExecutor.get_shard_workspace(self.workspace, self.workspace_name, self.pea_id)
+        return BaseExecutor.get_shard_workspace(self._workspace, self.workspace_name, self.pea_id)
 
     def get_file_from_workspace(self, name: str) -> str:
         """Get a usable file path under the current workspace

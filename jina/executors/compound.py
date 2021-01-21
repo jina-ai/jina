@@ -273,7 +273,10 @@ class CompoundExecutor(BaseExecutor):
     def _set_comp_workspace(self) -> None:
         # overrides the workspace setting for all components
         for c in self.components:
-            c.workspace = CompoundExecutor.get_component_workspace_from_compound_workspace(self.workspace, self.name, self.pea_id)
+            if not c.workspace and self.workspace:
+                c_workspace = CompoundExecutor.get_component_workspace_from_compound_workspace(self.workspace, self.name, self.pea_id)
+                self.logger.warning(f'Setting workspace of {c.name} to {c_workspace}')
+                c.workspace = c_workspace
 
     def _resolve_routes(self) -> None:
         if self._routes:

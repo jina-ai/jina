@@ -44,8 +44,14 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         the working directory, for persisting the artifacts of the executor. An artifact is a file or collection of files
         used during a workflow run.
 
+        By default it is not set, if you expect your executor to be persisted or to persist any data, remember to set it
+        to the desired value.
+
+        When a `BaseExecutor` is a component of a `CompoundExecutor`, its `workspace` value will be overriden by the `workspace`
+        coming from the `CompoundExecutor` unless a particular `workspace` value is set for the component `BaseExecutor`.
+
         :type: str
-        :default: environment variable :confval:`JINA_EXECUTOR_WORKDIR`, if not set then using current working dir, aka ``cwd``.
+        :default: None
 
     .. confval:: name
 
@@ -119,7 +125,10 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
     .. confval:: root_workspace
 
         the workspace of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used,
-        or when a `BaseNumpyIndexer` is used with a `ref_indexer`
+        or when a `BaseNumpyIndexer` is used with a `ref_indexer`.
+
+        By default, jina will try to find if a `dump` of the executor can be found in `workspace`, otherwise it will try to find it under `root_workspace`
+        assuming it may be part of a `CompoundExecutor`.
 
         :type: str
         :default: ``'${{root.metas.workspace}}'``

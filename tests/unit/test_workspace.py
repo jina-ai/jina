@@ -77,7 +77,7 @@ def test_compound_indexer_no_workspace_in_components(test_workspace, pea_id, dum
 
 
 @pytest.mark.parametrize('dump_compound', [True, False])
-@pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
+@pytest.mark.parametrize('pea_id', [-1, 0])
 def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id, dump_compound):
     # the workspace in components will be ignored in compound
     tmpdir = os.environ['JINA_TEST_WORKSPACE']
@@ -106,13 +106,13 @@ def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id, d
     else:
         assert not os.path.exists(compound_bin_expected)
 
-    for component in executor:
+    for i, component in enumerate(executor):
         if pea_id > 0:
             assert os.path.exists(
-                os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{component.name}-{component.pea_id}',
+                os.path.join(comp1_dir if i == 0 else comp2_dir, f'{component.name}-{component.pea_id}',
                              f'{component.name}.bin'))
         else:
-            assert os.path.exists(os.path.join(tmpdir, f'{executor.name}', f'{component.name}.bin'))
+            assert os.path.exists(os.path.join(comp1_dir if i == 0 else comp2_dir, f'{component.name}.bin'))
 
     with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer-components-with-workspace.yml'),
                                   pea_id=pea_id) as executor:

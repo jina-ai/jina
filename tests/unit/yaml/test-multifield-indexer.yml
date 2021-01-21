@@ -8,13 +8,11 @@ components:
       index_filename: vec.gz
     metas:
       name: vecidx  # a customized name
-      workspace: $TMP_WORKSPACE
   - !BinaryPbIndexer
     with:
       index_filename: chunk.gz
     metas:
       name: kvidx  # a customized name
-      workspace: $TMP_WORKSPACE
 requests:
   on:
     IndexRequest:
