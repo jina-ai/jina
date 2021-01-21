@@ -55,7 +55,7 @@ def test_search_non_existent(config, mocker):
             polling='all'
     ) as search_flow:
         search_flow.search(input_fn=random_docs(0, 5),
-                           output_fn=validate_results,
+                           on_done=validate_results,
                            request_size=5
                            )
     mock.assert_called_once()
