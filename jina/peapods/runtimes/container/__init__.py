@@ -8,6 +8,7 @@ from pathlib import Path
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from ....helper import ArgNamespace, is_valid_local_config_source, slugify
+from ....jaml.helper import complete_path
 
 
 class ContainerRuntime(ZMQRuntime):
@@ -90,11 +91,13 @@ class ContainerRuntime(ZMQRuntime):
 
         _volumes = {}
         if self.args.uses_internal:
-            if os.path.exists(self.args.uses_internal):
+            full_path = complete_path(self.args.uses_internal)
+            if os.path.exists(full_path):
+                print(f' uses_internal  {full_path}!!')
                 # external YAML config, need to be volumed into the container
                 # uses takes value from uses_internal
-                non_defaults['uses'] = '/' + os.path.basename(self.args.uses_internal)
-                _volumes[os.path.abspath(self.args.uses_internal)] = {'bind': non_defaults['uses'], 'mode': 'ro'}
+                non_defaults['uses'] = '/' + os.path.basename(full_path)
+                _volumes[full_path] = {'bind': non_defaults['uses'], 'mode': 'ro'}
             elif not is_valid_local_config_source(self.args.uses_internal):
                 raise FileNotFoundError(
                     f'"uses_internal" {self.args.uses_internal} is not like a path, please check it')
@@ -117,6 +120,10 @@ class ContainerRuntime(ZMQRuntime):
 
         _args = ArgNamespace.kwargs2list(non_defaults)
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
+
+        print(f' self.args.volumes {self.args.volumes}')
+        print(f' volumes {_volumes}')
+        print(f' uses_internal {self.args.uses_internal}')
 
         docker_kwargs = self.args.docker_kwargs or {}
 
