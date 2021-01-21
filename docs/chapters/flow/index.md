@@ -82,7 +82,7 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ``` 
 
-This will run `p2` in a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using containerized Pod can be found in [our documentation](https://docs.jina.ai). 
+This will run `p2` in a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using containerized Pod can be found [here](https://docs.jina.ai/chapters/hub/index.html). 
 
 #### Add a Remote Pod into the Flow
 
@@ -96,7 +96,7 @@ f = (Flow().add(name='p1')
 
 This will start `p2` remotely on `192.168.0.100`, whereas `p1` and `p3` run locally.
 
-To use remote Pods, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pods can be found in [our documentation](https://docs.jina.ai).  
+To use remote Pods, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pods can be found [here](https://docs.jina.ai/chapters/remote/index.html).  
 
 
 #### Add a Remote Containerized Pod into the Flow
@@ -111,7 +111,7 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ```
 
-This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pods can be found in [our documentation](https://docs.jina.ai). 
+This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pods can be found [here](https://docs.jina.ai/chapters/remote/index.html). 
 
 
 
