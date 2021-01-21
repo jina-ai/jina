@@ -95,7 +95,7 @@ class ZEDRuntime(ZMQRuntime):
     #: Private methods required by run_forever
     def _pre_hook(self, msg: 'Message') -> 'ZEDRuntime':
         """Pre-hook function, what to do after first receiving the message """
-        msg.add_route(self.name, self.args.identity)
+        msg.add_route(self.name, hex(id(self)))
         self._request = msg.request
         self._message = msg
 
