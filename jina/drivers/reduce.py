@@ -6,11 +6,9 @@ from typing import Tuple, Dict, Any
 import numpy as np
 
 from . import BaseRecursiveDriver
-from . import BaseDriver
 
 if False:
     from ..types.document import Document
-    from ..types.request import Request
     from ..types.sets import DocumentSet
 
 
@@ -31,12 +29,13 @@ class ReduceAllDriver(BaseRecursiveDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
         self.doc_pointers.clear()
 
-    def _apply_root(self, docs: 'DocumentSet', context_doc: 'Request', field: str, *args, **kwargs):
+    def _apply_root(self, docs: 'DocumentSet', field: str, *args, **kwargs):
         docs = []
         for doc in self.docs:
             docs.append(doc)
-        context_doc.body.ClearField(field)
-        getattr(context_doc, field).extend(docs)
+        request = self.msg.request
+        request.body.ClearField(field)
+        request.docs.extend(docs)
 
     def _apply_all(
             self,
@@ -50,16 +49,6 @@ class ReduceAllDriver(BaseRecursiveDriver):
             self.doc_pointers[context_doc.id] = context_doc
         else:
             getattr(self.doc_pointers[context_doc.id], field).extend(docs)
-
-
-class ReduceRequestDriver(BaseDriver):
-
-    def __call__(self, *args, **kwargs):
-        docs = []
-        for doc in self.docs:
-            docs.append(doc)
-        self.msg.request.body.ClearField('docs')
-        self.msg.request.docs.extend(docs)
 
 
 class CollectEvaluationDriver(ReduceAllDriver):

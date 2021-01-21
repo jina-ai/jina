@@ -105,10 +105,6 @@ class Request:
             raise ValueError(f'{value} is not valid, must be one of {_body_type}')
 
     @property
-    def id(self):
-        return self._request.request_id
-
-    @property
     def docs(self) -> 'DocumentSet':
         self.is_used = True
         return DocumentSet(self.body.docs)
