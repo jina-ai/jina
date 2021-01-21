@@ -40,11 +40,7 @@ def test_evaluation_callback_no_name(responses):
     cb(responses)
 
     evaluation = cb.get_final_evaluation()
-    eval_name = list(evaluation)[0]
-    assert eval_name == 'metric1'
-
-    score = evaluation[eval_name]
-    assert score == 0.75
+    assert evaluation == 0.75
 
 
 def test_evaluation_callback_with_name(responses):
@@ -55,11 +51,7 @@ def test_evaluation_callback_with_name(responses):
     cb(responses)
 
     evaluation = cb.get_final_evaluation()
-    eval_name = list(evaluation)[0]
-    assert eval_name == evaluation_metric
-
-    score = evaluation[eval_name]
-    assert score == 0.5
+    assert evaluation == 0.5
 
 
 def test_optuna_result_processor(tmpdir):
