@@ -11,3 +11,5 @@ requests:
       - !EncodeDriver
         with:
           traversal_paths: ['r']
+    DeleteRequest:
+      - !ForwardDriver {}

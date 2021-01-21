@@ -3,7 +3,7 @@ with:
   index_filename: doc.gzip
 metas:
   name: docIndexer
-  workspace: $JINA_TEST_LEVEL_DEPTH_WORKSPACE
+  workspace: $JINA_CRUD_ADVANCED_WORKSPACE
 requests:
   on:
     IndexRequest:
@@ -16,3 +16,10 @@ requests:
         with:
           executor: docIndexer
           traversal_paths: ['m']
+    DeleteRequest:
+      - !KVIndexDriver
+        with:
+          method: delete
+          executor: docIndexer
+          traversal_paths: ['r']
+

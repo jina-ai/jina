@@ -11,3 +11,5 @@ requests:
   on:
     [SearchRequest, IndexRequest]:
       - !SegmentDriver {}
+    DeleteRequest:
+      - !ForwardDriver {}
