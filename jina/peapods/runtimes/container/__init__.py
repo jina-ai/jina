@@ -91,8 +91,12 @@ class ContainerRuntime(ZMQRuntime):
 
         _volumes = {}
         if self.args.uses_internal:
-            full_path = complete_path(self.args.uses_internal)
-            if os.path.exists(full_path):
+            full_path = None
+            try:
+                full_path = complete_path(self.args.uses_internal)
+            except FileNotFoundError:
+                pass
+            if full_path and os.path.exists(full_path):
                 # external YAML config, need to be volumed into the container
                 # uses takes value from uses_internal
                 non_defaults['uses'] = '/' + os.path.basename(full_path)
