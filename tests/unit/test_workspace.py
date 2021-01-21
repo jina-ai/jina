@@ -123,6 +123,25 @@ def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id, d
             assert executor._attached_pea == 'hey'
 
 
+@pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
+def test_indexer_ref_indexer(test_workspace, pea_id):
+    tmpdir = os.environ['JINA_TEST_WORKSPACE']
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-indexer-workspace.yml'),
+                                  pea_id=pea_id) as ref_indexer:
+        ref_indexer.num_dim = 512
+        ref_indexer.touch()
+
+    if pea_id > 0:
+        assert os.path.exists(
+            os.path.join(tmpdir, f'{ref_indexer.name}-{ref_indexer.pea_id}', f'{ref_indexer.name}.bin'))
+    else:
+        assert os.path.exists(os.path.join(tmpdir, f'{ref_indexer.name}.bin'))
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-refindexer-workspace.yml'),
+                                  pea_id=pea_id) as indexer:
+        assert indexer.num_dim == 512
+
+
 def test_compound_indexer_rw(test_workspace):
     all_vecs = np.random.random([6, 5])
     for j in range(3):
