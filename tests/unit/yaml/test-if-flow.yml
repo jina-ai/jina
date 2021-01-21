@@ -1,8 +1,8 @@
 !Flow
 version: '1'
 pods:
-  - name encode1:
+  - name: encode1
     uses: test-if-encode1.yml
-  - name encode2:
+  - name: encode2
     uses: test-if-encode2.yml
     needs: gateway

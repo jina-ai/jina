@@ -4,23 +4,23 @@ with:
   read_only: true  # better add this in the query time
   port_expose: 5555
 pods:
-  - name loader:
+  - name: loader
     read_only: true
     parallel: 4
-  - name flipper:
+  - name: flipper
     parallel: 4
     read_only: true
-  - name normalizer:
+  - name: normalizer
     read_only: true
     parallel: 4
-  - name encoder:
+  - name: encoder
     timeout_ready: 600000
     parallel: 4
     read_only: true
-  - name chunk_indexer:
+  - name: chunk_indexer
     polling: all
     parallel: 1
-  - name ranker:
+  - name: ranker
     uses: MinRanker
-  - name doc_indexer:
+  - name: doc_indexer
     parallel: 1

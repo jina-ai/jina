@@ -3,15 +3,15 @@ version: '1'
 with:
   read_only: true
 pods:
-  - name crafter:
+  - name: crafter
     parallel: 4
-  - name encoder:
+  - name: encoder
     parallel: 4
-  - name faiss_indexer:
+  - name: faiss_indexer
     parallel: 1
     timeout_ready: 10000
     volumes: './workspace'
-  - name ranker:
+  - name: ranker
     uses: MinRanker
-  - name doc_indexer:
+  - name: doc_indexer
     parallel: 1

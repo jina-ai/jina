@@ -4,10 +4,10 @@ with:
   logserver: false
   compress_hwm: 1024
 pods:
-  - name encode:
+  - name: encode
     uses: yamls/encoder.yml
     parallel: 2
-  - name index:
+  - name: index
     uses: yamls/indexer.yml
     shards: 2
     separated_workspace: true

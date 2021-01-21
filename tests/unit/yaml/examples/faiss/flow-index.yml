@@ -3,15 +3,15 @@ version: '1'
 metas:
   prefetch: 10
 pods:
-  - name crafter:
+  - name: crafter
     parallel: 4
-  - name encoder:
+  - name: encoder
     parallel: 4
-  - name faiss_indexer:
+  - name: faiss_indexer
     parallel: 1
-  - name doc_indexer:
+  - name: doc_indexer
     needs: crafter
-  - name join_all:
+  - name: join_all
     uses: _pass
     needs: [doc_indexer, faiss_indexer]
     read_only: true
