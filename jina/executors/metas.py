@@ -139,14 +139,6 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         :type: bool
         :default: ``False``
 
-    .. confval:: ref_indexer
-
-        indicate the user that this executor is going to be used as a `ref_indexer`, therefore it has to be loaded without taking into account
-        `root_workspace` whose usage is for `CompoundExecutor`
-
-        :type: bool
-        :default: ``False``
-
     .. warning::
         ``name`` and ``workspace`` must be set if you want to serialize/deserialize this executor.
 

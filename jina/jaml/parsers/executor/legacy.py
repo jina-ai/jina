@@ -18,14 +18,18 @@ class LegacyParser(VersionedYAMLParser):
             root_work_dir = meta_config['root_workspace']
             root_name = meta_config['root_name']
 
-            if not meta_config['ref_indexer'] and root_name != name:
-                # need to tell if this case corresponds to a CompoundExecutor or to a ref_indexer
-                # this means that the executor that we are trying to load comes from a CompoundExecutor
-                work_dir = CompoundExecutor.get_component_workspace_from_compound_workspace(root_work_dir, root_name, pea_id)
-                dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
-            else:
-                dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
-
+            if root_name != name:
+                # try to load from the corresponding file as if it was a CompoundExecutor, if the `.bin` does not exist,
+                # we should try to see if from its workspace can be loaded as it may be a `ref_indexer`
+                compound_work_dir = CompoundExecutor.get_component_workspace_from_compound_workspace(root_work_dir,
+                                                                                                     root_name,
+                                                                                                     pea_id)
+                dump_path = BaseExecutor.get_shard_workspace(compound_work_dir, name, pea_id)
+                bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
+                if os.path.exists(bin_dump_path):
+                    return bin_dump_path
+            # then try to see if it can be loaded from its regular expected workspace (ref_indexer)
+            dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
             bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
             if os.path.exists(bin_dump_path):
                 return bin_dump_path

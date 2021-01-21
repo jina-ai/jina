@@ -7,7 +7,6 @@ with:
     metas:
       workspace: $JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY
       name: wrapidx
-      ref_indexer: true
 metas:
   name: indexer
   workspace: $JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY
