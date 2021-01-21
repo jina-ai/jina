@@ -70,6 +70,7 @@ Besides the file path, in Flow API `uses` can accept other types:
 | Inline YAML | `'!DataURICrafter\nwith: {mimetype: png}'` | don't forget `!` in the beginning |
 | The name of an executor [listed here](../all_exec.html) | `TransformerTorchEncoder` | only the executors that have full default values can be directly used |
 | Built-in simple executors [listed here](../simple_exec.html) | `_clear` | Always starts with `_` |
+| Docker image | `docker://jinahub/pod.encoder.dummy_mwu_encoder:0.0.6-0.9.3` | Add `docker://` before the image name |
  
 #### Add a Containerized Pod into the Flow
 
@@ -81,7 +82,7 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ``` 
 
-This will run `p2` in a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using containerized Pod can be found in [our documentation](https://docs.jina.ai). 
+This will run `p2` in a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. More information on using containerized Pod can be found [here](https://docs.jina.ai/chapters/hub/index.html). 
 
 #### Add a Remote Pod into the Flow
 
@@ -95,7 +96,7 @@ f = (Flow().add(name='p1')
 
 This will start `p2` remotely on `192.168.0.100`, whereas `p1` and `p3` run locally.
 
-To use remote Pods, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pods can be found in [our documentation](https://docs.jina.ai).  
+To use remote Pods, you need to start a `gateway` on `192.168.0.100` in advance. More information on using remote Pods can be found [here](https://docs.jina.ai/chapters/remote/index.html).  
 
 
 #### Add a Remote Containerized Pod into the Flow
@@ -110,7 +111,7 @@ f = (Flow().add(name='p1')
            .add(name='p3'))
 ```
 
-This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pods can be found in [our documentation](https://docs.jina.ai). 
+This will start `p2` remotely on `192.168.0.100` running a Docker container equipped with the image `jinaai/hub.executors.encoders.bidaf:latest`. Of course Docker is required on `192.168.0.100`. More information on using remote Pods can be found [here](https://docs.jina.ai/chapters/remote/index.html). 
 
 
 
@@ -205,11 +206,11 @@ with f:
 
 ```python
 with f:
-    f.search(input_fn, top_k=50, output_fn=print)
+    f.search(input_fn, top_k=50, on_done=print)
 ```
 
 - `input_fn` is an `Iterator[bytes]`, each of which corresponds to the representation of a Document with bytes.
-- `output_fn` is the callback function after each request, and takes a `Request` protobuf as its only input.
+- `on_done` is the callback function after each request, and takes a `Request` protobuf as its only input.
 
 A simple `input_fn` is defined as follows:
 
@@ -223,7 +224,7 @@ def input_fn():
 input_fn = (b's' for _ in range(10))
 ```
 
-> Please note that the current Flow API does not support using `index()` and `search()` together in the same `with` scope. This is because the workflow of `index()` and `search()` are usually different and you cannot use one workflow for both tasks.
+> Please note that the current Flow API does not support using `index()` and `search()` together in the same `with` scope. This is because the workflow of `index()` and `search()` are usually different, and you cannot use one workflow for both tasks.
 
 #### Feed Data to the Flow from Other Clients
 
@@ -235,8 +236,6 @@ import threading
 with f:
     f.block()
 ```
-
-Please check out our [hello world in client-server architecture](https://github.com/jina-ai/examples/tree/master/helloworld-in-cs) for a complete example.
 
 **WARNING**: don't use a while loop to do the waiting, it is extremely inefficient:
 

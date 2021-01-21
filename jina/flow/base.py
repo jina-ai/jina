@@ -408,7 +408,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
-            f'flow is closed and all resources should be released already, current build level is {self._build_level}')
+            f'flow is closed and all resources are released, current build level is {self._build_level}')
         self.logger.close()
 
     def start(self):

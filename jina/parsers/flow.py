@@ -3,7 +3,7 @@ import argparse
 from .base import set_base_parser
 from .helper import _SHOW_ALL_ARGS
 from .peapods.base import mixin_base_ppr_parser
-from ..enums import FlowOutputType, FlowOptimizeLevel, FlowInspectType
+from ..enums import FlowOptimizeLevel, FlowInspectType
 
 
 def set_flow_parser(parser=None):
@@ -12,11 +12,14 @@ def set_flow_parser(parser=None):
 
     mixin_base_ppr_parser(parser)
 
-    parser.add_argument('--uses', type=str, help='a yaml file represents a flow')
+    parser.add_argument('--uses', type=str, help='The YAML file represents a flow')
     parser.add_argument('--inspect', type=FlowInspectType.from_string,
                         choices=list(FlowInspectType), default=FlowInspectType.COLLECT,
-                        help='strategy on those inspect pods in the flow. '
-                             'if REMOVE is given then all inspect pods are removed when building the flow')
+                        help='''
+The strategy on those inspect pods in the flow.
+
+If `REMOVE` is given then all inspect pods are removed when building the flow.
+''')
 
     parser.add_argument('--optimize-level', type=FlowOptimizeLevel.from_string, default=FlowOptimizeLevel.NONE,
                         help='removing redundant routers from the flow. Note, this may change the gateway zmq socket to BIND \

@@ -7,8 +7,8 @@ def set_logger_parser(parser=None):
 
     parser.add_argument('--groupby-regex', type=str,
                         default=r'(.*@\d+)\[',
-                        help='the regular expression for grouping logs')
+                        help='The regular expression for grouping logs')
     parser.add_argument('--refresh-time', type=int,
                         default=5,
-                        help='refresh time interval in seconds, set to -1 to persist all grouped logs')
+                        help='The refresh time interval in seconds, set to -1 to persist all grouped logs')
     return parser

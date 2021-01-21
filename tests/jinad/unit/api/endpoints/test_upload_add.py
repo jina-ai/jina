@@ -17,7 +17,7 @@ def test_upload_then_add_success(api, payload, fastapi_client):
     workspace_id = response.json()
     assert os.path.exists(get_workspace_path(workspace_id))
     for d in deps:
-        assert os.path.exists(os.path.join(get_workspace_path(workspace_id), d))
+        assert os.path.exists(get_workspace_path(workspace_id, d))
 
     response = fastapi_client.post(api, json={'uses': 'mwu_encoder.yml',
                                               'workspace_id': workspace_id,

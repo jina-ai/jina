@@ -25,4 +25,4 @@ def test_upload(fastapi_client):
     response = fastapi_client.post('/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
     assert response.status_code == 201
     for d in deps:
-        os.path.exists(os.path.join(get_workspace_path(response.json()), d))
+        os.path.exists(get_workspace_path(response.json(), d))

@@ -1,11 +1,10 @@
 import uuid
-from pathlib import Path
 from typing import Optional, BinaryIO
 
 from jina.flow import Flow
-from jina.helper import change_cwd
+from jina.helper import random_uuid
 from .base import BaseStore
-from .helper import get_workspace_path
+from .helper import jina_workspace
 
 
 class FlowStore(BaseStore):
@@ -15,14 +14,11 @@ class FlowStore(BaseStore):
             **kwargs):
         try:
             if not workspace_id:
-                workspace_id = uuid.uuid1()
-            _workdir = get_workspace_path(workspace_id)
-            Path(_workdir).mkdir(parents=True, exist_ok=True)
+                workspace_id = random_uuid()
 
-            y_spec = config.read().decode()
-            f = Flow.load_config(y_spec)
-
-            with change_cwd(_workdir):
+            with jina_workspace(workspace_id) as _workdir:
+                y_spec = config.read().decode()
+                f = Flow.load_config(y_spec)
                 f.start()
 
             _id = uuid.UUID(f.args.identity)
