@@ -210,7 +210,7 @@ with f:
 ```
 
 - `input_fn` is an `Iterator[bytes]`, each of which corresponds to the representation of a Document with bytes.
-- `output_fn` is the callback function after each request, and takes a `Request` protobuf as its only input.
+- `on_done` is the callback function after each request, and takes a `Request` protobuf as its only input.
 
 A simple `input_fn` is defined as follows:
 
@@ -224,7 +224,7 @@ def input_fn():
 input_fn = (b's' for _ in range(10))
 ```
 
-> Please note that the current Flow API does not support using `index()` and `search()` together in the same `with` scope. This is because the workflow of `index()` and `search()` are usually different and you cannot use one workflow for both tasks.
+> Please note that the current Flow API does not support using `index()` and `search()` together in the same `with` scope. This is because the workflow of `index()` and `search()` are usually different, and you cannot use one workflow for both tasks.
 
 #### Feed Data to the Flow from Other Clients
 
@@ -236,8 +236,6 @@ import threading
 with f:
     f.block()
 ```
-
-Please check out our [hello world in client-server architecture](https://github.com/jina-ai/examples/tree/master/helloworld-in-cs) for a complete example.
 
 **WARNING**: don't use a while loop to do the waiting, it is extremely inefficient:
 

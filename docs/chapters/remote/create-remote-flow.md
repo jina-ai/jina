@@ -128,6 +128,6 @@ def main():
 ```
 ## What's next?
 
-You many also want to checkout the following articles.
+You many also want to check out the following articles.
 [Creating a Remote Pod from Console](https://docs.jina.ai/chapters/remote/create-remote-pod-console-jinad.html)
 [Creating a Remote Pod via Flow APIs](https://docs.jina.ai/chapters/remote/create-remote-pod-flow.html) 
