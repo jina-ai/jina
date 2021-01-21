@@ -248,12 +248,11 @@ class BaseRecursiveDriver(BaseDriver):
     def _apply_root(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
             field: str,
             *args,
             **kwargs,
     ) -> None:
-        return self._apply_all(docs, context_doc, field, *args, **kwargs)
+        return self._apply_all(docs, None, field, *args, **kwargs)
 
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
@@ -278,7 +277,7 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
-                self._apply_root(docs, self.msg.request, 'docs', *args, **kwargs)
+                self._apply_root(docs, 'docs', *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(
                     [doc],
