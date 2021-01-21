@@ -9,28 +9,31 @@ def mixin_base_pod_parser(parser):
     gp = add_arg_group(parser, title='Pod')
 
     gp.add_argument('--uses-before', type=str,
-                    help='the executor attached after the Peas described by --uses, typically before sending to all '
+                    help='The executor attached after the Peas described by --uses, typically before sending to all '
                          'parallels, accepted type follows "--uses"')
     gp.add_argument('--uses-after', type=str,
-                    help='the executor attached after the Peas described by --uses, typically used for receiving from '
+                    help='The executor attached after the Peas described by --uses, typically used for receiving from '
                          'all parallels, accepted type follows "--uses"')
     gp.add_argument('--remove-uses-ba', action='store_true', default=False,
-                    help='a flag to disable `uses-before` or `uses-after` if parallel is equal to 1. Useful'
+                    help='If set, disable `uses-before` or `uses-after` if parallel is equal to 1. Useful'
                          'to parametrize parallelization and sharding without having `uses_after` or `uses_before` '
                          'taking extra processes and network hops')
     gp.add_argument('--parallel', '--shards', type=int, default=1,
-                    help='number of parallel peas in the pod running at the same time, '
+                    help='The number of parallel peas in the pod running at the same time, '
                          '`port_in` and `port_out` will be set to random, '
                          'and routers will be added automatically when necessary')
     gp.add_argument('--polling', type=PollingType.from_string, choices=list(PollingType),
                     default=PollingType.ANY,
-                    help='ANY: only one (whoever is idle) replica polls the message; '
-                         'ALL: all workers poll the message (like a broadcast)')
+                    help='''
+The polling strategy of the Pod (when `parallel>1`) 
+- ANY: only one (whoever is idle) Pea polls the message
+- ALL: all Peas poll the message (like a broadcast)
+''')
     gp.add_argument('--scheduling', type=SchedulerType.from_string, choices=list(SchedulerType),
                     default=SchedulerType.LOAD_BALANCE,
-                    help='the strategy of scheduling workload among peas')
+                    help='The strategy of scheduling workload among Peas')
 
     # hidden CLI used for internal only
 
     gp.add_argument('--pod-role', type=PodRoleType.from_string, choices=list(PodRoleType),
-                    help='the role of this pod in the flow' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+                    help='The role of this pod in the flow' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
