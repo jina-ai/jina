@@ -1,0 +1,13 @@
+!OneHotTextEncoder
+metas:
+  name: encoder
+requests:
+  on:
+    IndexRequest:
+      - !EncodeDriver
+        with:
+          traversal_paths: ['c']
+    SearchRequest:
+      - !EncodeDriver
+        with:
+          traversal_paths: ['r']
