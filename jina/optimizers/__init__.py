@@ -78,11 +78,20 @@ class OptunaOptimizer(JAMLCompatible):
         flow_runner: 'FlowRunner',
         parameter_yaml: str,
         evaluation_callback,
+        n_trials: int,
         workspace_base_dir: str = '',
+        sampler: str = 'TPESampler',
+        direction: str = 'maximize',
+        seed: int = 42,
+
     ):
         """
         :param flow_runner: `FlowRunner` object which contains the flows to be run.
         :param parameter_yaml: yaml container the parameters to be optimized
+        :param n_trials: evaluation trials to be run
+        :param sampler: optuna sampler
+        :param direction: direction of the optimization from either of `maximize` or `minimize`
+        :param seed: random seed for reproducibility
         """
         super().__init__()
         self._version = '1'
@@ -90,6 +99,10 @@ class OptunaOptimizer(JAMLCompatible):
         self.parameter_yaml = parameter_yaml
         self.workspace_base_dir = workspace_base_dir
         self.evaluation_callback = evaluation_callback
+        self.n_trials = n_trials
+        self.sampler = sampler
+        self.direction = direction
+        self.seed = seed
 
     def _trial_parameter_sampler(self, trial):
         trial_parameters = {}
@@ -113,28 +126,20 @@ class OptunaOptimizer(JAMLCompatible):
 
     def optimize_flow(
         self,
-        n_trials: int,
-        sampler: str = 'TPESampler',
-        direction: str = 'maximize',
-        seed: int = 42,
         result_processor: 'OptunaResultProcessor' = OptunaResultProcessor,
         **kwargs
     ):
         """
-        :param n_trials: evaluation trials to be run
-        :param sampler: optuna sampler
-        :param direction: direction of the optimization from either of `maximize` or `minimize`
-        :param seed: random seed for reproducibility
         :param kwargs: extra parameters for optuna sampler
         """
         with ImportExtensions(required=True):
             import optuna
-        if sampler == 'GridSampler':
-            sampler = getattr(optuna.samplers, sampler)(**kwargs)
+        if self.sampler == 'GridSampler':
+            sampler = getattr(optuna.samplers, self.sampler)(**kwargs)
         else:
-            sampler = getattr(optuna.samplers, sampler)(seed=seed, **kwargs)
-        study = optuna.create_study(direction=direction, sampler=sampler)
-        study.optimize(self._objective, n_trials=n_trials)
+            sampler = getattr(optuna.samplers, self.sampler)(seed=self.seed, **kwargs)
+        study = optuna.create_study(direction=self.direction, sampler=sampler)
+        study.optimize(self._objective, n_trials=self.n_trials)
         return result_processor(study)
 
 

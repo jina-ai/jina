@@ -36,8 +36,10 @@ def test_optimizer(tmpdir):
         parameter_yaml='tests/integration/optimizers/parameter.yml',
         evaluation_callback=MeanEvaluationCallback(),
         workspace_base_dir=str(tmpdir),
+        n_trials=5,
     )
-    result = opt.optimize_flow(n_trials=5)
+
+    result = opt.optimize_flow()
     result_path = str(tmpdir) + '/results/best_parameters.yml'
     result.save_parameters(result_path)
     parameters = result.best_parameters
@@ -60,6 +62,7 @@ with:
   evaluation_callback: !MeanEvaluationCallback {{}}
   parameter_yaml: 'tests/integration/optimizers/parameter.yml'
   workspace_base_dir: {tmpdir}
+  n_trials: 5
 '''
     documents = document_generator(10)
 
@@ -77,7 +80,7 @@ with:
             f.write('\n')
 
     optimizer = JAML.load(optimizer_yaml)
-    result = optimizer.optimize_flow(n_trials=5)
+    result = optimizer.optimize_flow()
 
     result_path = str(tmpdir) + '/results/best_parameters.yml'
     result.save_parameters(result_path)
