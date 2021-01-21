@@ -103,22 +103,28 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         self._current_section = section
 
     def _get_help_string(self, action):
-        help_string = action.help
+        help_string = ''
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
                 from ..helper import colored
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
 
-                    help_string += colored(' (default: %s)' % (
+                    help_string = colored('default: %s' % (
                         'enabled' if action.default else f'disabled, use "--{action.dest}" to enable it'),
                                            attrs=['dark'])
                 elif action.choices:
                     choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
-                    help_string += colored(' (choose from: ' + choices_str + '; default: %(default)s)', attrs=['dark'])
+                    help_string = colored('choose from: ' + choices_str + '; default: %(default)s', attrs=['dark'])
                 elif action.option_strings or action.nargs in defaulting_nargs:
-                    help_string += colored(' (type: %(type)s; default: %(default)s)', attrs=['dark'])
-        return help_string
+                    help_string = colored('type: %(type)s; default: %(default)s', attrs=['dark'])
+        return f'''
+        
+        {help_string}
+        
+        {action.help}
+        
+        '''
 
     def _get_default_metavar_for_optional(self, action):
         return ''
@@ -169,7 +175,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         """Return line indent level and "sub_indent" for bullet list text."""
         import re
         indent = len(re.match(r'( *)', line).group(1))
-        list_match = re.match(r'( *)(([*-+>]+|\w+\)|\w+\.) +)', line)
+        list_match = re.match(r'( *)(([*\-+>]+|\w+\)|\w+\.) +)', line)
         if list_match:
             sub_indent = indent + len(list_match.group(2))
         else:
