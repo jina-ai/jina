@@ -307,13 +307,14 @@ class HubIO:
                     dockerfile_path = self._check_completeness()['Dockerfile']
                     self._freeze_jina_version()
 
+                    labels = {_label_prefix + k: str(v) for k, v in self.manifest.items()}
                     streamer = self._raw_client.build(
                         decode=True,
                         path=self.args.path,
                         tag=self.tag,
                         pull=self.args.pull,
                         dockerfile=dockerfile_path,
-                        labels={k: str(v) for k, v in self.manifest.items()},
+                        labels=labels,
                         rm=True
                     )
 
@@ -341,7 +342,7 @@ class HubIO:
                                                        tag=self.tag,
                                                        pull=self.args.pull,
                                                        dockerfile=dockerfile_path,
-                                                       labels={k: str(v) for k, v in self.manifest.items()},
+                                                       labels=labels,
                                                        rm=True)
 
                 # success
@@ -534,7 +535,7 @@ class HubIO:
                     fp.write('\n'.join(new_requirements))
 
     def _check_completeness(self) -> Dict:
-        self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
+        dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
@@ -551,7 +552,7 @@ class HubIO:
         test_glob = glob.glob(os.path.join(self.args.path, 'tests/test_*.py'))
 
         completeness = {
-            'Dockerfile': self.dockerfile_path,
+            'Dockerfile': dockerfile_path,
             'manifest.yml': manifest_path,
             'config.yml': self.config_yaml_path,
             'README.md': self.readme_path,
