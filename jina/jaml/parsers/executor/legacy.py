@@ -3,6 +3,7 @@ from typing import Dict, Any, Type
 
 from ..base import VersionedYAMLParser
 from ....executors import BaseExecutor, get_default_metas
+from ....executors.compound import CompoundExecutor
 
 
 class LegacyParser(VersionedYAMLParser):
@@ -14,8 +15,15 @@ class LegacyParser(VersionedYAMLParser):
             work_dir = meta_config['workspace']
             name = meta_config['name']
             pea_id = meta_config['pea_id']
+            compound_work_dir = meta_config['compound_workspace']
+            compound_name = meta_config['compound_name']
 
-            dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
+            if compound_name != name:
+                # this means that the executor that we are trying to load comes from a CompoundExecutor
+                work_dir = CompoundExecutor.get_component_workspace_from_compound_workspace(compound_work_dir, compound_name, pea_id)
+                dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
+            else:
+                dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
 
             bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
             if os.path.exists(bin_dump_path):

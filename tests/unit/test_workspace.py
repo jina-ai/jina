@@ -34,8 +34,9 @@ def test_shard_workspace(test_workspace, pea_id):
         assert executor.index_filename == 'index_filename'
 
 
+@pytest.mark.parametrize('dump_compound', [True, False])
 @pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
-def test_compound_indexer_no_workspace_in_components(test_workspace, pea_id):
+def test_compound_indexer_no_workspace_in_components(test_workspace, pea_id, dump_compound):
     tmpdir = os.environ['JINA_TEST_WORKSPACE']
     with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer.yml'), pea_id=pea_id) as executor:
         assert executor.pea_id == pea_id
@@ -45,12 +46,19 @@ def test_compound_indexer_no_workspace_in_components(test_workspace, pea_id):
             component.index_filename = f'index_filename-component-{i}'
             component.touch()
         executor._attached_pea = 'hey'
-        executor.touch()
+        if dump_compound:
+            executor.touch()
 
+    compound_bin_expected = None
     if pea_id > 0:
-        assert os.path.exists(os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin'))
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin')
     else:
-        assert os.path.exists(os.path.join(tmpdir, f'{executor.name}.bin'))
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}.bin')
+
+    if dump_compound:
+        assert os.path.exists(compound_bin_expected)
+    else:
+        assert not os.path.exists(compound_bin_expected)
 
     for component in executor:
         if pea_id > 0:
@@ -64,16 +72,19 @@ def test_compound_indexer_no_workspace_in_components(test_workspace, pea_id):
         assert len(executor.components) == 2
         for i, component in enumerate(executor):
             assert component.index_filename == f'index_filename-component-{i}'
-        assert executor._attached_pea == 'hey'
+        if dump_compound:
+            assert executor._attached_pea == 'hey'
 
 
+@pytest.mark.parametrize('dump_compound', [True, False])
 @pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
-def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id):
+def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id, dump_compound):
     # the workspace in components will be ignored in compound
     tmpdir = os.environ['JINA_TEST_WORKSPACE']
     comp1_dir = os.environ['JINA_TEST_WORKSPACE_COMP1']
     comp2_dir = os.environ['JINA_TEST_WORKSPACE_COMP2']
-    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer-components-with-workspace.yml'), pea_id=pea_id) as executor:
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer-components-with-workspace.yml'),
+                                  pea_id=pea_id) as executor:
         assert len(executor.components) == 2
         assert executor.pea_id == pea_id
         for i, component in enumerate(executor):
@@ -81,12 +92,19 @@ def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id):
             component.index_filename = f'index_filename-component-{i}'
             component.touch()
         executor._attached_pea = 'hey'
-        executor.touch()
+        if dump_compound:
+            executor.touch()
 
+    compound_bin_expected = None
     if pea_id > 0:
-        assert os.path.exists(os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin'))
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin')
     else:
-        assert os.path.exists(os.path.join(tmpdir, f'{executor.name}.bin'))
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}.bin')
+
+    if dump_compound:
+        assert os.path.exists(compound_bin_expected)
+    else:
+        assert not os.path.exists(compound_bin_expected)
 
     for component in executor:
         if pea_id > 0:
@@ -96,11 +114,13 @@ def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id):
         else:
             assert os.path.exists(os.path.join(tmpdir, f'{executor.name}', f'{component.name}.bin'))
 
-    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer-components-with-workspace.yml'), pea_id=pea_id) as executor:
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer-components-with-workspace.yml'),
+                                  pea_id=pea_id) as executor:
         assert len(executor.components) == 2
         for i, component in enumerate(executor):
             assert component.index_filename == f'index_filename-component-{i}'
-        assert executor._attached_pea == 'hey'
+        if dump_compound:
+            assert executor._attached_pea == 'hey'
 
 
 def test_compound_indexer_rw(test_workspace):
@@ -125,14 +145,9 @@ def test_compound_indexer_rw(test_workspace):
             assert os.path.exists(a[1].save_abspath)
             assert os.path.exists(a[1].index_abspath)
 
-    print(f' heeey heereee')
-
     recovered_vecs = []
     for j in range(3):
         with BaseExecutor.load_config(os.path.join('yaml/test-compound-indexer2.yml'), pea_id=j) as a:
-            print(f' a => {a[1]}')
-            print(f' a => {a[1].shard_workspace}')
-            print(f' a => {a[1].query_handler}')
             recovered_vecs.append(a[1].query_handler)
 
     np.testing.assert_almost_equal(all_vecs, np.concatenate(recovered_vecs))

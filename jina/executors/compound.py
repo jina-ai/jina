@@ -192,6 +192,10 @@ class CompoundExecutor(BaseExecutor):
                 - dummyB-e3acc910
                 - say
 
+        .. warning::
+
+            When setting inner `executors` in `components` the `workspace` configuration will not be used and will be overriden
+            by a workspace extracted considering the name of the `CompoundExecutor`, the name of each internal `Component` and the `pea_id`
         """
         super().__init__(*args, **kwargs)
         self._components = None  # type: List[AnyExecutor]
@@ -260,14 +264,16 @@ class CompoundExecutor(BaseExecutor):
         else:
             self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
 
+    @staticmethod
+    def get_component_workspace_from_compound_workspace(compound_workspace: str, compound_name: str, pea_id: int) -> str:
+        import os
+        return BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id) if pea_id > 0 else \
+            os.path.join(compound_workspace, compound_name)
+
     def _set_comp_workspace(self) -> None:
         # overrides the workspace setting for all components
-        import os
         for c in self.components:
-            # this has to be thought about. PROBLEM DESCRIPTION. This will work to reload Components when
-            # `CompoundExecutor` is also dumped, but not when `CompoundExecutor` is not dumped, but the components are
-            c.workspace = BaseExecutor.get_shard_workspace(self.workspace, self.name, self.pea_id) if self.pea_id > 0 else\
-                os.path.join(self.workspace, self.name)
+            c.workspace = CompoundExecutor.get_component_workspace_from_compound_workspace(self.workspace, self.name, self.pea_id)
 
     def _resolve_routes(self) -> None:
         if self._routes:

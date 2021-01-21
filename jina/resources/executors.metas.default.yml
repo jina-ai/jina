@@ -7,5 +7,7 @@ on_gpu: false
 warn_unnamed: false
 max_snapshot: 0
 py_modules:
+compound_workspace: ${{root.metas.workspace}} # needed to extract the `dump path` for inner executor of CompoundExecutors
+compound_name: ${{root.metas.name}} # needed to extract the `dump path` for inner executor of CompoundExecutors
 pea_id: ${{root.metas.pea_id}}  # this may result in self-referred
 read_only: false

@@ -116,6 +116,21 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         :type: int
         :default: ``'${{root.metas.pea_id}}'``
 
+
+    .. confval:: compound_workspace
+
+        the workspace of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used.
+
+        :type: str
+        :default: ``'${{root.metas.workspace}}'``
+
+    .. confval:: compound_name
+
+        the name of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used.
+
+        :type: str
+        :default: ``'${{root.metas.name}}'``
+
     .. confval:: read_only
 
         do not allow the pod to modify the model, save calls will be ignored. If set to true no serialization of the executor
