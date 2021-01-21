@@ -47,6 +47,6 @@ pod0/ZEDRuntime@69694[I]:#sent: 0 #recv: 1 sent_size: 0 Bytes recv_size: 423 Byt
 ```
 ## What's next?
 
-You many also want to checkout the following articles.
+You many also want to check out the following articles.
 [Creating a Remote Pod from Console](https://docs.jina.ai/chapters/remote/create-remote-pod-console-jinad.html)
 [Creating a Remote Flow](https://docs.jina.ai/chapters/remote/create-remote-flow.html) 

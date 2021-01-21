@@ -3,3 +3,12 @@ with:
   index_filename: test-docs
 metas:
   workspace: $JINA_TEST_WORKSPACE_BINARY_PB
+requests:
+  on:
+    [ SearchRequest ]:
+      - !KVSearchDriver
+        with:
+          is_merge: true
+          traversal_paths: [ 'r' ]
+    [IndexRequest]:
+      - !KVIndexDriver {}

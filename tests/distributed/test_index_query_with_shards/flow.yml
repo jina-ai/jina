@@ -10,6 +10,8 @@ pods:
     uses: encode.yml
     host: $JINA_ENCODER_HOST
     port_expose: 8000
+    upload_files:
+      - dummy-encoder.py
   - name: indexer
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: index.yml

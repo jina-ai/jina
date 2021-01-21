@@ -9,6 +9,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -143,6 +144,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.9.15`)](#release-note-0915)
 - [Release Note (`0.9.16`)](#release-note-0916)
 - [Release Note (`0.9.17`)](#release-note-0917)
+- [Release Note (`0.9.18`)](#release-note-0918)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -6802,4 +6804,39 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```14ab8b80```](https://github.com/jina-ai/jina/commit/14ab8b80e788d1f6d3ce42cddf65b67fa6dc636b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```ad920955```](https://github.com/jina-ai/jina/commit/ad92095541d9f99f84c2dca2f6b366830d835768)] __-__ add manual release dispatch (*Han Xiao*)
  - [[```fe935425```](https://github.com/jina-ai/jina/commit/fe9354255a22bc6a99685645507cbe1f15090f49)] __-__ __version__: the next version will be 0.9.17 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-18></a>
+## Release Note (`0.9.18`)
+
+> Release time: 2021-01-20 00:49:31
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  cristian,  Yongxuanzhang,  Joan Fontanals,  Deepankar Mahapatro,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```8e9fd91b```](https://github.com/jina-ai/jina/commit/8e9fd91b2f5877f488ecd1caef060bae5d3e2ee6)] __-__ __hubapi__: cli changes for new get images invocation (#1721) (*Deepankar Mahapatro*)
+ - [[```7a454990```](https://github.com/jina-ai/jina/commit/7a4549901cd30aad1cf217f8dd1442e056c0b341)] __-__ kv default traversal (#1685) (*cristian*)
+
+### 🚧 Code Refactoring
+
+ - [[```d8b9952c```](https://github.com/jina-ai/jina/commit/d8b9952c46d0ed01efb64c444b66aece37173f1b)] __-__ __daemon__: api redesign, new endpoint, jinadruntime refactor (#1713) (*Han Xiao*)
+ - [[```1d5df921```](https://github.com/jina-ai/jina/commit/1d5df92184cf8177ebd1a86e3ce76fe152f09829)] __-__ optional disable uses_b/a if parallel is 1 (#1711) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```5a783555```](https://github.com/jina-ai/jina/commit/5a783555c29b2fa3e58addc3c4a1bdd769196f6c)] __-__ __daemon__: add distribute tests (#1727) (*Han Xiao*)
+ - [[```23f1ac8c```](https://github.com/jina-ai/jina/commit/23f1ac8c1632a1ddeab892325af52fd2816268d6)] __-__ empty or corrupt docs (#1700) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```6c9a2432```](https://github.com/jina-ai/jina/commit/6c9a2432631492f2cb74f9ae59c57791d28f8f45)] __-__ fix manual release workflow (*Han Xiao*)
+ - [[```6d20552f```](https://github.com/jina-ai/jina/commit/6d20552fc8652d8e4e02b61ace54879ba8451b60)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```fb84d632```](https://github.com/jina-ai/jina/commit/fb84d632f6a06828d3c371fb14d3f398c3dca0a3)] __-__ __ci__: revert fail-fast to true (*Han Xiao*)
+ - [[```5f557e54```](https://github.com/jina-ai/jina/commit/5f557e54ae439f48207e0b58095506747dfcad24)] __-__ update add() use case in readme (#1723) (*Yongxuanzhang*)
+ - [[```e098cdd7```](https://github.com/jina-ai/jina/commit/e098cdd74e4b2747ac34b74ca19c47f2032a562c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7134a435```](https://github.com/jina-ai/jina/commit/7134a435be9a63be53fb25f53e5515aabb45064b)] __-__ __version__: the next version will be 0.9.18 (*Jina Dev Bot*)
 

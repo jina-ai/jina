@@ -3,7 +3,6 @@ from subprocess import Popen, PIPE
 
 from ..zmq.base import ZMQManyRuntime
 from ....helper import ArgNamespace
-from ....enums import RemotePeapodType
 
 
 class SSHRuntime(ZMQManyRuntime):
@@ -20,7 +19,7 @@ class SSHRuntime(ZMQManyRuntime):
 
     def setup(self):
         self._ssh_proc = Popen(['ssh', self.args.host], stdout=PIPE, stdin=PIPE, bufsize=0, universal_newlines=True)
-        self._ssh_proc.stdin.write(self._remote_command + '\n')
+        self._ssh_proc.stdin.write(self._pea_command + '\n')
         while self._ssh_proc.poll() is None and not self.is_ready:
             time.sleep(1)
 
@@ -43,19 +42,3 @@ class SSHRuntime(ZMQManyRuntime):
         non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(), taboo={'host'})
         _args = ArgNamespace.kwargs2list(non_defaults)
         return f'jina pea {" ".join(_args)}'
-
-    @property
-    def _pod_command(self) -> str:
-        from jina.parsers import set_pod_parser
-        non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pod_parser(), taboo={'host'})
-        _args = ArgNamespace.kwargs2list(non_defaults)
-        return f'jina pod {" ".join(_args)}'
-
-    @property
-    def _remote_command(self) -> str:
-        if self.remote_type == RemotePeapodType.PEA:
-            return self._pea_command
-        elif self.remote_type == RemotePeapodType.POD:
-            return self._pod_command
-        else:
-            raise ValueError(f'kind must be pea/pod but it is {self.remote_type}')

@@ -1,0 +1,9 @@
+!Flow
+pods:
+  vector:
+    uses: vector.yml
+  kv:
+    uses: kv.yml
+    needs: [gateway]
+  last:
+    needs: [kv, vector]
