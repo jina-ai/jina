@@ -534,7 +534,7 @@ class HubIO:
                     fp.write('\n'.join(new_requirements))
 
     def _check_completeness(self) -> Dict:
-        dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
+        self.dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
         manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
@@ -551,7 +551,7 @@ class HubIO:
         test_glob = glob.glob(os.path.join(self.args.path, 'tests/test_*.py'))
 
         completeness = {
-            'Dockerfile': dockerfile_path,
+            'Dockerfile': self.dockerfile_path,
             'manifest.yml': manifest_path,
             'config.yml': self.config_yaml_path,
             'README.md': self.readme_path,
