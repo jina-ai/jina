@@ -47,12 +47,10 @@ class ZEDRuntime(ZMQRuntime):
 
     def _load_zmqlet(self):
         """Load ZMQStreamlet to this runtime"""
-        try:
-            # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
-            # process/thread
-            self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
-        except zmq.error.ZMQError:
-            self.logger.warning(f'retry init socket {j + 1}/{self.args.max_socket_retries}')
+
+        # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
+        # process/thread
+        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument.
