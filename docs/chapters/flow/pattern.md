@@ -134,6 +134,7 @@ with:
     !NumpyIndexer
     metas:
       name: wrapidx
+      ref_indexer: true
     with:
       index_filename: 'vec.gz'
 ```

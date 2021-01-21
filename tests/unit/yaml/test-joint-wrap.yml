@@ -10,6 +10,7 @@ components:
         metas:
           name: vecidx  # a customized name
           workspace: $TEST_WORKDIR
+          ref_indexer: true
   - !BinaryPbIndexer
     with:
       index_filename: chunk.gz

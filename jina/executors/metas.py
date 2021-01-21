@@ -116,17 +116,18 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         :type: int
         :default: ``'${{root.metas.pea_id}}'``
 
+    .. confval:: root_workspace
 
-    .. confval:: compound_workspace
-
-        the workspace of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used.
+        the workspace of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used,
+        or when a `BaseNumpyIndexer` is used with a `ref_indexer`
 
         :type: str
         :default: ``'${{root.metas.workspace}}'``
 
-    .. confval:: compound_name
+    .. confval:: root_name
 
-        the name of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used.
+        the name of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used,
+        or when a `BaseNumpyIndexer` is used with a `ref_indexer`
 
         :type: str
         :default: ``'${{root.metas.name}}'``
@@ -134,6 +135,14 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
     .. confval:: read_only
 
         do not allow the pod to modify the model, save calls will be ignored. If set to true no serialization of the executor
+
+        :type: bool
+        :default: ``False``
+
+    .. confval:: ref_indexer
+
+        indicate the user that this executor is going to be used as a `ref_indexer`, therefore it has to be loaded without taking into account
+        `root_workspace` whose usage is for `CompoundExecutor`
 
         :type: bool
         :default: ``False``

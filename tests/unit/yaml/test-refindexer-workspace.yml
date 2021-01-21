@@ -5,5 +5,7 @@ with:
     metas:
       name: ref_indexer
       workspace: $JINA_TEST_WORKSPACE
+      ref_indexer: true
 metas:
   name: outer_indexer
+  workspace: $JINA_TEST_WORKSPACE

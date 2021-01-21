@@ -15,12 +15,13 @@ class LegacyParser(VersionedYAMLParser):
             work_dir = meta_config['workspace']
             name = meta_config['name']
             pea_id = meta_config['pea_id']
-            compound_work_dir = meta_config['compound_workspace']
-            compound_name = meta_config['compound_name']
+            root_work_dir = meta_config['root_workspace']
+            root_name = meta_config['root_name']
 
-            if compound_name != name:
+            if not meta_config['ref_indexer'] and root_name != name:
+                # need to tell if this case corresponds to a CompoundExecutor or to a ref_indexer
                 # this means that the executor that we are trying to load comes from a CompoundExecutor
-                work_dir = CompoundExecutor.get_component_workspace_from_compound_workspace(compound_work_dir, compound_name, pea_id)
+                work_dir = CompoundExecutor.get_component_workspace_from_compound_workspace(root_work_dir, root_name, pea_id)
                 dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
             else:
                 dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
