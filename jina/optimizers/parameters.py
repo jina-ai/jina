@@ -11,6 +11,7 @@ class OptimizationParameter(JAMLCompatible):
         prefix: str = 'JINA',
         jaml_variable: Optional[str] = None,
     ):
+        self.parameter_name = parameter_name
         if jaml_variable is None:
             self.jaml_variable = f'{prefix}_{executor_name}_{parameter_name}'.upper()
         else:
