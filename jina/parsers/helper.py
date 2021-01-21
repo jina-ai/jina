@@ -80,7 +80,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
                 self.formatter._dedent()
 
             # return nothing if the section was empty
-            if not item_help:
+            if not item_help.strip():
                 return ''
 
             # add the heading if the section was non-empty
@@ -112,7 +112,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
                     help_string = colored('default: %s' % (
                         'enabled' if action.default else f'disabled, use "--{action.dest}" to enable it'),
-                                           attrs=['dark'])
+                                          attrs=['dark'])
                 elif action.choices:
                     choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
                     help_string = colored('choose from: ' + choices_str + '; default: %(default)s', attrs=['dark'])
@@ -125,6 +125,11 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         {action.help}
         
         '''
+
+    def _join_parts(self, part_strings):
+        return '\n' + ''.join([part
+                               for part in part_strings
+                               if part and part is not argparse.SUPPRESS])
 
     def _get_default_metavar_for_optional(self, action):
         return ''

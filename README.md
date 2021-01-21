@@ -163,7 +163,9 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 `Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. It can be recurred both vertically and horizontally to have nested documents and matched documents. To construct a Document, one can use:
 
 ```python
+import numpy
 from jina import Document
+
 doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
 doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
 doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
