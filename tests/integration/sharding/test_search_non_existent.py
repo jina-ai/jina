@@ -30,7 +30,6 @@ def random_docs(start, end, embed_dim=10):
         yield d
 
 
-# fails #TODO fix related issue
 def test_search_non_existent(config, mocker):
     yaml_file = 'index_kv_simple.yml'
 
@@ -51,7 +50,7 @@ def test_search_non_existent(config, mocker):
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
             separated_workspace=True,
-            uses_after=os.path.join(cur_dir, 'yaml', 'merge_root.yml'),
+            uses_after='_merge_root',
             polling='all'
     ) as search_flow:
         search_flow.search(input_fn=random_docs(0, 5),
