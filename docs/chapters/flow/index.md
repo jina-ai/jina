@@ -251,8 +251,6 @@ You can also write a Flow in YAML:
 
 ```yaml
 !Flow
-with:
-  logserver: true
 pods:
   chunk_seg:
     uses: craft/index-craft.yml
