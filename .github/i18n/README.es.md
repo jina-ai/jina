@@ -142,8 +142,7 @@ from jina.flow import Flow
 
 f = (Flow()
         .add(uses='encoder.yml', parallel=2)
-        .add(uses='indexer.yml', shards=2,
-             separated_workspace=True))
+        .add(uses='indexer.yml', shards=2))
 
 with f:
     f.index(fashion_mnist, batch_size=1024)
@@ -161,7 +160,6 @@ pods:
   index:
     uses: indexer.yml
     shards: 2
-    separated_workspace: true
 ```
 
 </td>
@@ -182,7 +180,7 @@ pods:
 from jina.flow import Flow
 
 f = (Flow().add(uses='encoder.yml', parallel=2)
-           .add(uses='indexer.yml', shards=2, separated_workspace=True))
+           .add(uses='indexer.yml', shards=2))
 ```
 
 #### [Distribuyendo Flow](https://docs.jina.ai/chapters/remote/index.html)

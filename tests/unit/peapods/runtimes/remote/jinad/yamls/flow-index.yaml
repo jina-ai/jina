@@ -10,4 +10,3 @@ pods:
   - name: index
     uses: yamls/indexer.yml
     shards: 2
-    separated_workspace: true

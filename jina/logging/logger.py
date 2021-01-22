@@ -216,6 +216,6 @@ class JinaLogger:
                 self.logger.addHandler(handler)
 
         verbose_level = LogVerbosity.from_string(config['level'])
-        if 'JINA_LOG_VERBOSITY' in os.environ:
-            verbose_level = LogVerbosity.from_string(os.environ['JINA_LOG_VERBOSITY'])
+        if 'JINA_LOG_LEVEL' in os.environ:
+            verbose_level = LogVerbosity.from_string(os.environ['JINA_LOG_LEVEL'])
         self.logger.setLevel(verbose_level.value)

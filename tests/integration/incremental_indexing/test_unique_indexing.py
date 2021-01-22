@@ -25,24 +25,23 @@ def test_unique_indexing_vecindexers(random_workspace, restful):
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load((random_workspace / 'vec_idx.bin')) as vector_indexer:
+    with BaseExecutor.load((random_workspace / 'inc_vecindexer' / 'vec_idx.bin')) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer.size == num_uniq_docs
 
 
-@pytest.mark.parametrize('separated_workspace', [False, True])
 @pytest.mark.parametrize('restful', [False, True])
-def test_unique_indexing_docindexers(random_workspace, restful, separated_workspace):
+def test_unique_indexing_docindexers(random_workspace, restful):
     total_docs = 10
     duplicate_docs, num_uniq_docs = get_duplicate_docs(num_docs=total_docs)
 
     f = (Flow(restful=restful)
-         .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'), shards=1, separated_workspace=separated_workspace))
+         .add(uses=os.path.join(cur_dir, 'uniq_docindexer.yml'), shards=1))
 
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load((random_workspace / 'doc_idx.bin')) as doc_indexer:
+    with BaseExecutor.load((random_workspace / 'inc_docindexer' / 'doc_idx.bin')) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer.size == num_uniq_docs
 

@@ -6,13 +6,11 @@ components:
       metric: cosine
     metas:
       name: vecidx
-      workspace: $JINA_TOPK_DIR
   - !BinaryPbIndexer
     with:
       index_filename: doc.gz
     metas:
       name: docidx
-      workspace: $JINA_TOPK_DIR
 metas:
   name: chunk_indexer
   workspace: $JINA_TOPK_DIR

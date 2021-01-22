@@ -1,13 +1,30 @@
 import os
 import shutil
-from typing import Iterator, Optional
+from collections.abc import Iterable
+from typing import Iterator
 
 from ..flow import Flow
 from ..helper import colored
 from ..logging import default_logger as logger
+from ..jaml import JAMLCompatible
 
 
-class FlowRunner:
+class FlowRunner(JAMLCompatible):
+    def run(
+        self,
+        trial_parameters: dict,
+        workspace: str = 'workspace',
+        callback=None,
+        **kwargs,
+    ):
+        """
+        :param trial_parameters: parameters to be used as environment variables
+        :param workspace: directory to be used for the flows
+        """
+        raise NotImplementedError
+
+
+class SingleFlowRunner(FlowRunner):
     """Module to define and run a flow."""
 
     def __init__(
@@ -16,7 +33,6 @@ class FlowRunner:
         documents: Iterator,
         request_size: int,
         task: str,  # this can be only index or search as it is used to call the flow API
-        callback: Optional = None,
         overwrite_workspace: bool = False,
     ):
         """
@@ -24,18 +40,23 @@ class FlowRunner:
         :param documents: iterator with list or generator for getting the documents
         :param request_size: request size used in the flow
         :param task: task of the flow which can be `index` or `search`
-        :param callback: callback to be passed to the flow's `on_done`
         :param overwrite_workspace: overwrite workspace created by the flow
         """
+        super().__init__()
         self.flow_yaml = flow_yaml
         # TODO: Make changes for working with doc generator (Pratik, before v1.0)
-        self.documents = documents if type(documents) == list else list(documents)
-        self.request_size = request_size
-        if task in ('index', 'search'):
-            self.task = task
+
+        if type(documents) is list:
+            self.documents = documents
+        elif type(documents) is str:
+            self.documents = documents
+        elif isinstance(documents, Iterable):
+            self.documents = list(documents)
         else:
-            raise ValueError('task can be either of index or search')
-        self.callback = callback
+            raise TypeError(f"documents is of wrong type: {type(documents)}")
+
+        self.request_size = request_size
+        self.task = task
         self.overwrite_workspace = overwrite_workspace
 
     def _setup_workspace(self, workspace):
@@ -61,6 +82,7 @@ class FlowRunner:
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
+        callback=None,
         **kwargs,
     ):
         """[summary]
@@ -70,28 +92,31 @@ class FlowRunner:
         """
 
         self._setup_workspace(workspace)
+
         with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
             getattr(f, self.task)(
                 self.documents,
                 request_size=self.request_size,
-                on_done=self.callback,
+                on_done=callback,
                 **kwargs,
             )
 
 
-class MultiFlowRunner:
+class MultiFlowRunner(FlowRunner):
     """Chain and run multiple flows"""
 
     def __init__(self, *flows):
         """
         :param flows: flows to be executed in sequence
         """
+        super().__init__()
         self.flows = flows
 
     def run(
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
+        callback=None,
         **kwargs,
     ):
         """
@@ -99,4 +124,4 @@ class MultiFlowRunner:
         :param workspace: directory to be used for the flows
         """
         for flow in self.flows:
-            flow.run(trial_parameters, workspace, **kwargs)
+            flow.run(trial_parameters, workspace, callback, **kwargs)

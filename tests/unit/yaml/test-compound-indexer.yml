@@ -12,3 +12,4 @@ components:
       name: test2
 metas:
   name: compound1
+  workspace: $JINA_TEST_WORKSPACE

@@ -197,7 +197,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
-          export JINA_LOG_VERBOSITY="ERROR"
+          export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test

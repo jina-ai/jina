@@ -33,11 +33,13 @@ def test_incremental_indexing_sequential_indexers(random_workspace, restful):
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load(random_workspace / 'vec_idx.bin') as vector_indexer:
+    print(f' random_workspace {random_workspace}')
+
+    with BaseExecutor.load(random_workspace / 'inc_vecindexer' / 'vec_idx.bin') as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
-    with BaseExecutor.load(random_workspace / 'doc_idx.bin') as doc_indexer:
+    with BaseExecutor.load(random_workspace / 'inc_docindexer' / 'doc_idx.bin') as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
 
@@ -62,11 +64,11 @@ def test_incremental_indexing_sequential_indexers_content_hash_same_content(rand
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load(random_workspace / 'vec_idx.bin') as vector_indexer:
+    with BaseExecutor.load(random_workspace / 'inc_vecindexer' / 'vec_idx.bin') as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
-    with BaseExecutor.load(random_workspace / 'doc_idx.bin') as doc_indexer:
+    with BaseExecutor.load(random_workspace / 'inc_docindexer' / 'doc_idx.bin') as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
 
@@ -91,11 +93,11 @@ def test_incremental_indexing_sequential_indexers_content_hash(random_workspace,
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load(random_workspace / 'vec_idx.bin') as vector_indexer:
+    with BaseExecutor.load(random_workspace / 'inc_vecindexer' / 'vec_idx.bin') as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
-    with BaseExecutor.load(random_workspace / 'doc_idx.bin') as doc_indexer:
+    with BaseExecutor.load(random_workspace / 'inc_docindexer' / 'doc_idx.bin') as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
 
@@ -119,11 +121,11 @@ def test_incremental_indexing_parallel_indexers(random_workspace, restful):
     with f:
         f.index(duplicate_docs)
 
-    with BaseExecutor.load((random_workspace / 'vec_idx.bin')) as vector_indexer:
+    with BaseExecutor.load((random_workspace / 'inc_vecindexer' / 'vec_idx.bin')) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
-    with BaseExecutor.load((random_workspace / 'doc_idx.bin')) as doc_indexer:
+    with BaseExecutor.load((random_workspace / 'inc_docindexer' / 'doc_idx.bin')) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
 
@@ -139,11 +141,11 @@ def test_incremental_indexing_sequential_indexers_with_shards(random_workspace, 
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
               shards=num_shards,
-              separated_workspace=True)
+              show_exc_info=True)
          .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_doc.yml'),
               shards=num_shards,
-              separated_workspace=True))
+              show_exc_info=True))
 
     with f:
         f.index(duplicate_docs[:500])
@@ -181,14 +183,12 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace, re
          .add(uses=os.path.join(cur_dir, 'vectorindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_vec.yml'),
               shards=num_shards,
-              name='inc_vec',
-              separated_workspace=True)
+              name='inc_vec')
          .add(uses=os.path.join(cur_dir, 'docindexer.yml'),
               uses_before=os.path.join(cur_dir, '_unique_doc.yml'),
               shards=num_shards,
               name='inc_doc',
-              needs=['gateway'],
-              separated_workspace=True)
+              needs=['gateway'])
          .add(needs=['inc_vec', 'inc_doc']))
 
     with f:
