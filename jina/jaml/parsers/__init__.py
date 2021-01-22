@@ -22,7 +22,7 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     elif issubclass(cls, BaseExecutor):
         return _get_exec_parser()
     else:
-        raise NotImplementedError(f'{cls!r} does not implement YAML parser')
+        return _get_default_parser()
 
 
 def _get_flow_parser():
@@ -39,6 +39,11 @@ def _get_exec_parser():
 def _get_driver_parser():
     from .driver.legacy import LegacyParser
     return [LegacyParser], LegacyParser
+
+
+def _get_default_parser():
+    from .default.v1 import V1Parser
+    return [V1Parser], V1Parser
 
 
 def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'VersionedYAMLParser':
