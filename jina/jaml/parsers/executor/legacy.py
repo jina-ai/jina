@@ -2,8 +2,8 @@ import os
 from typing import Dict, Any, Type
 
 from ..base import VersionedYAMLParser
-from ....excepts import BadWorkspace
 from ....executors import BaseExecutor, get_default_metas
+from ....executors.compound import CompoundExecutor
 
 
 class LegacyParser(VersionedYAMLParser):
@@ -12,19 +12,28 @@ class LegacyParser(VersionedYAMLParser):
     @staticmethod
     def _get_dump_path_from_config(meta_config: Dict):
         if 'name' in meta_config:
-            if meta_config.get('separated_workspace', False) is True and meta_config['pea_id'] != -1:
-                if 'pea_id' in meta_config and isinstance(meta_config['pea_id'], int):
-                    work_dir = meta_config['pea_workspace']
-                    dump_path = os.path.join(work_dir, f'{meta_config["name"]}.{"bin"}')
-                    if os.path.exists(dump_path):
-                        return dump_path
-                else:
-                    raise BadWorkspace('separated_workspace=True but pea_id is unset or set to a bad value')
-            else:
-                dump_path = os.path.join(meta_config.get('workspace', os.getcwd()),
-                                         f'{meta_config["name"]}.{"bin"}')
-                if os.path.exists(dump_path):
-                    return dump_path
+            work_dir = meta_config['workspace']
+            name = meta_config['name']
+            pea_id = meta_config['pea_id']
+            if work_dir:
+                # then try to see if it can be loaded from its regular expected workspace (ref_indexer)
+                dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
+                bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
+                if os.path.exists(bin_dump_path):
+                    return bin_dump_path
+
+            root_work_dir = meta_config['root_workspace']
+            root_name = meta_config['root_name']
+            if root_name != name:
+                # try to load from the corresponding file as if it was a CompoundExecutor, if the `.bin` does not exist,
+                # we should try to see if from its workspace can be loaded as it may be a `ref_indexer`
+                compound_work_dir = CompoundExecutor.get_component_workspace_from_compound_workspace(root_work_dir,
+                                                                                                     root_name,
+                                                                                                     pea_id)
+                dump_path = BaseExecutor.get_shard_workspace(compound_work_dir, name, pea_id)
+                bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
+                if os.path.exists(bin_dump_path):
+                    return bin_dump_path
 
     def parse(self, cls: Type['BaseExecutor'], data: Dict) -> 'BaseExecutor':
         """Return the Flow YAML parser given the syntax version number
@@ -45,7 +54,7 @@ class LegacyParser(VersionedYAMLParser):
             obj.logger.success(f'restore {cls.__name__} from {dump_path}')
             load_from_dump = True
         else:
-            cls.init_from_yaml = True
+            cls._init_from_yaml = True
 
             if cls.store_args_kwargs:
                 p = data.get('with', {})  # type: Dict[str, Any]
@@ -60,8 +69,8 @@ class LegacyParser(VersionedYAMLParser):
             else:
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
+            cls._init_from_yaml = False
             obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
-            cls.init_from_yaml = False
 
         # if node.tag in {'!CompoundExecutor'}:
         #     os.environ['JINA_WARN_UNNAMED'] = 'YES'

@@ -84,7 +84,6 @@ def test_index_remote(test_workspace):
     f = Flow().add(
         uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
         parallel=3,
-        separated_workspace=True,
         host='0.0.0.0',
         port_expose=f_args.port_expose
     )
@@ -115,7 +114,6 @@ def test_index_remote_rpi(test_workspace):
     f = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(
         uses=os.path.join(cur_dir, 'yaml/test-index-remote.yml'),
         parallel=3,
-        separated_workspace=True,
         host='0.0.0.0',
         port_expose=random_port())
 

@@ -11,7 +11,7 @@ from .... import Message
 from .... import Request
 from ....enums import SkipOnErrorType
 from ....excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
-    BadConfigSource, RuntimeTerminated, ZMQSocketError
+    BadConfigSource, RuntimeTerminated
 from ....executors import BaseExecutor
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
@@ -47,25 +47,16 @@ class ZEDRuntime(ZMQRuntime):
 
     def _load_zmqlet(self):
         """Load ZMQStreamlet to this runtime"""
-        for j in range(self.args.max_socket_retries):
-            try:
-                # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
-                # process/thread
-                self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
-                break
-            except zmq.error.ZMQError:
-                self.logger.warning(f'retry init socket {j + 1}/{self.args.max_socket_retries}')
 
-        if not hasattr(self, '_zmqlet'):
-            raise ZMQSocketError(f'can not open ZMQStreamlet after {self.args.max_socket_retries} retries, '
-                                 f'seems sockets are pretty occupied?')
+        # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
+        # process/thread
+        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument.
         """
         try:
             self._executor = BaseExecutor.load_config(self.args.uses,
-                                                      separated_workspace=self.args.separated_workspace,
                                                       pea_id=self.args.pea_id,
                                                       read_only=self.args.read_only)
             self._executor.attach(runtime=self)
@@ -104,7 +95,7 @@ class ZEDRuntime(ZMQRuntime):
     #: Private methods required by run_forever
     def _pre_hook(self, msg: 'Message') -> 'ZEDRuntime':
         """Pre-hook function, what to do after first receiving the message """
-        msg.add_route(self.name, self.args.identity)
+        msg.add_route(self.name, hex(id(self)))
         self._request = msg.request
         self._message = msg
 

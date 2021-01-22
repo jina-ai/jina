@@ -13,3 +13,4 @@ components:
       name: test_numpy
 metas:
   name: real-compound
+  workspace: $JINA_TEST_WORKSPACE

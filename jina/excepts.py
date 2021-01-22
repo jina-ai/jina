@@ -188,7 +188,7 @@ class BadFlowYAMLVersion(Exception):
 
 
 class LookupyError(Exception):
-    """Base exception class for all exceptions raised by lookupy"""
+    """ Base exception class for all exceptions raised by lookupy"""
 
 
 class EventLoopError(Exception):
@@ -196,7 +196,7 @@ class EventLoopError(Exception):
 
 
 class ZMQSocketError(Exception):
-    """Exeception when ZMQlet/ZMQStreamlet can not be initialized """
+    """ Exception when ZMQlet/ZMQStreamlet can not be initialized """
 
 
 class HubLoginRequired(Exception):

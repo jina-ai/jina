@@ -228,12 +228,13 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.__class__ == other.__class__
 
     def __getstate__(self) -> Dict[str, Any]:
-        """Do not save the BasePea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
-        file is always unattached."""
-        d = dict(self.__dict__)
-        if 'runtime' in d:
-            del d['runtime']
-        d['attached'] = False
+        """
+        Unlike `Executor`, driver is stateless.
+
+        Therefore, on every save, it creates a new & empty driver object and save it.
+        """
+
+        d = dict(self.__class__(**self._init_kwargs_dict).__dict__)
         return d
 
 
