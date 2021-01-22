@@ -5,53 +5,170 @@ import pytest
 
 from jina.executors import BaseExecutor
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-@pytest.mark.parametrize('pea_id', [1, 2, 3])
-def test_share_workspace(tmpdir, pea_id):
-    with BaseExecutor.load_config('yaml/test-workspace.yml', separated_workspace=True, pea_id=pea_id) as executor:
+
+@pytest.fixture()
+def test_workspace(tmpdir):
+    os.environ['JINA_TEST_WORKSPACE'] = str(tmpdir)
+    os.environ['JINA_TEST_WORKSPACE_COMP1'] = os.path.join(str(tmpdir), 'component-1')
+    os.environ['JINA_TEST_WORKSPACE_COMP2'] = os.path.join(str(tmpdir), 'component-2')
+    yield
+    del os.environ['JINA_TEST_WORKSPACE']
+    del os.environ['JINA_TEST_WORKSPACE_COMP1']
+    del os.environ['JINA_TEST_WORKSPACE_COMP2']
+
+
+@pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
+def test_shard_workspace(test_workspace, pea_id):
+    tmpdir = os.environ['JINA_TEST_WORKSPACE']
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-workspace.yml'), pea_id=pea_id) as executor:
+        executor.index_filename = 'index_filename'
         executor.touch()
-        executor_dir = tmpdir.join(f'{executor.name}-{pea_id}-{executor.name}.bin')
-        executor.save(executor_dir)
-        assert os.path.exists(executor_dir)
+    if pea_id > 0:
+        assert os.path.exists(os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin'))
+    else:
+        assert os.path.exists(os.path.join(tmpdir, f'{executor.name}.bin'))
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-workspace.yml'), pea_id=pea_id) as executor:
+        assert executor.index_filename == 'index_filename'
 
 
-@pytest.mark.parametrize('pea_id', [1, 2, 3])
-def test_compound_workspace(tmpdir, pea_id):
-    with BaseExecutor.load_config('yaml/test-compound-workspace.yml', separated_workspace=True,
+@pytest.mark.parametrize('dump_compound', [True, False])
+@pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
+def test_compound_indexer_no_workspace_in_components(test_workspace, pea_id, dump_compound):
+    tmpdir = os.environ['JINA_TEST_WORKSPACE']
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer.yml'), pea_id=pea_id) as executor:
+        assert executor.pea_id == pea_id
+        assert len(executor.components) == 2
+        for i, component in enumerate(executor):
+            assert component.pea_id == executor.pea_id
+            component.index_filename = f'index_filename-component-{i}'
+            component.touch()
+        executor._attached_pea = 'hey'
+        if dump_compound:
+            executor.touch()
+
+    compound_bin_expected = None
+    if pea_id > 0:
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin')
+    else:
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}.bin')
+
+    if dump_compound:
+        assert os.path.exists(compound_bin_expected)
+    else:
+        assert not os.path.exists(compound_bin_expected)
+
+    for component in executor:
+        if pea_id > 0:
+            assert os.path.exists(
+                os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{component.name}-{component.pea_id}',
+                             f'{component.name}.bin'))
+        else:
+            assert os.path.exists(os.path.join(tmpdir, f'{executor.name}', f'{component.name}.bin'))
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer.yml'), pea_id=pea_id) as executor:
+        assert len(executor.components) == 2
+        for i, component in enumerate(executor):
+            assert component.index_filename == f'index_filename-component-{i}'
+        if dump_compound:
+            assert executor._attached_pea == 'hey'
+
+
+@pytest.mark.parametrize('dump_compound', [True, False])
+@pytest.mark.parametrize('pea_id', [-1, 0])
+def test_compound_indexer_with_workspace_in_components(test_workspace, pea_id, dump_compound):
+    # the workspace in components will be ignored in compound
+    tmpdir = os.environ['JINA_TEST_WORKSPACE']
+    comp1_dir = os.environ['JINA_TEST_WORKSPACE_COMP1']
+    comp2_dir = os.environ['JINA_TEST_WORKSPACE_COMP2']
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer-components-with-workspace.yml'),
                                   pea_id=pea_id) as executor:
-        for c in executor.components:
-            c.touch()
-            component_dir = tmpdir.join(f'{executor.name}-{pea_id}-{c.name}.bin')
-            c.save(component_dir)
-            assert os.path.exists(component_dir)
-        executor.touch()
-        executor_dir = tmpdir.join(f'{executor.name}-{pea_id}-{executor.name}.bin')
-        executor.save(executor_dir)
-        assert os.path.exists(executor_dir)
+        assert len(executor.components) == 2
+        assert executor.pea_id == pea_id
+        for i, component in enumerate(executor):
+            assert component.pea_id == executor.pea_id
+            component.index_filename = f'index_filename-component-{i}'
+            component.touch()
+        executor._attached_pea = 'hey'
+        if dump_compound:
+            executor.touch()
+
+    compound_bin_expected = None
+    if pea_id > 0:
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin')
+    else:
+        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}.bin')
+
+    if dump_compound:
+        assert os.path.exists(compound_bin_expected)
+    else:
+        assert not os.path.exists(compound_bin_expected)
+
+    for i, component in enumerate(executor):
+        if pea_id > 0:
+            assert os.path.exists(
+                os.path.join(comp1_dir if i == 0 else comp2_dir, f'{component.name}-{component.pea_id}',
+                             f'{component.name}.bin'))
+        else:
+            assert os.path.exists(os.path.join(comp1_dir if i == 0 else comp2_dir, f'{component.name}.bin'))
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer-components-with-workspace.yml'),
+                                  pea_id=pea_id) as executor:
+        assert len(executor.components) == 2
+        for i, component in enumerate(executor):
+            assert component.index_filename == f'index_filename-component-{i}'
+        if dump_compound:
+            assert executor._attached_pea == 'hey'
 
 
-@pytest.mark.parametrize('pea_id', [1, 2, 3])
-def test_compound_indexer(tmpdir, pea_id):
-    with BaseExecutor.load_config('yaml/test-compound-indexer.yml',
-                                  separated_workspace=True, pea_id=pea_id) as e:
-        for c in e:
-            c.touch()
-            component_dir = tmpdir.join(f'{e.name}-{pea_id}-{c.name}.bin')
-            c.save(component_dir)
-            assert os.path.exists(c.index_abspath)
-            assert c.save_abspath.startswith(e.current_workspace)
-            assert c.index_abspath.startswith(e.current_workspace)
+@pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
+def test_indexer_ref_indexer(test_workspace, pea_id):
+    tmpdir = os.environ['JINA_TEST_WORKSPACE']
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-indexer-workspace.yml'),
+                                  pea_id=pea_id) as ref_indexer:
+        ref_indexer.num_dim = 512
+        ref_indexer.touch()
 
-        e.touch()
-        executor_dir = tmpdir.join(f'{e.name}-{pea_id}-{e.name}.bin')
-        e.save(executor_dir)
-        assert os.path.exists(executor_dir)
+    if pea_id > 0:
+        assert os.path.exists(
+            os.path.join(tmpdir, f'{ref_indexer.name}-{ref_indexer.pea_id}', f'{ref_indexer.name}.bin'))
+    else:
+        assert os.path.exists(os.path.join(tmpdir, f'{ref_indexer.name}.bin'))
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-refindexer-workspace.yml'),
+                                  pea_id=pea_id) as indexer:
+        assert indexer.num_dim == 512
 
 
-def test_compound_indexer_rw(tmpdir):
+@pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
+def test_compound_indexer_ref_indexer(test_workspace, pea_id):
+    tmpdir = os.environ['JINA_TEST_WORKSPACE']
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'),
+                                  pea_id=pea_id) as compound_indexer:
+        ref_indexer = compound_indexer[1]
+        ref_indexer.num_dim = 512
+        ref_indexer.touch()
+
+    if pea_id > 0:
+        assert os.path.exists(
+            os.path.join(tmpdir, f'{compound_indexer.name}-{compound_indexer.pea_id}',
+                         f'{ref_indexer.name}-{ref_indexer.pea_id}',
+                         f'{ref_indexer.name}.bin'))
+    else:
+        assert os.path.exists(os.path.join(tmpdir, f'{compound_indexer.name}', f'{ref_indexer.name}.bin'))
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test_compount_indexer2-ref-indexer.yml'),
+                                  pea_id=pea_id) as compound_indexer:
+        indexer = compound_indexer[1]
+        assert indexer.num_dim == 512
+
+
+def test_compound_indexer_rw(test_workspace):
     all_vecs = np.random.random([6, 5])
     for j in range(3):
-        with BaseExecutor.load_config('yaml/test-compound-indexer2.yml', separated_workspace=True, pea_id=j) as a:
+        with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'), pea_id=j) as a:
             assert a[0] == a['test_meta']
             assert not a[0].is_updated
             assert not a.is_updated
@@ -72,7 +189,7 @@ def test_compound_indexer_rw(tmpdir):
 
     recovered_vecs = []
     for j in range(3):
-        with BaseExecutor.load_config('yaml/test-compound-indexer2.yml', separated_workspace=True, pea_id=j) as a:
+        with BaseExecutor.load_config(os.path.join('yaml/test-compound-indexer2.yml'), pea_id=j) as a:
             recovered_vecs.append(a[1].query_handler)
 
     np.testing.assert_almost_equal(all_vecs, np.concatenate(recovered_vecs))

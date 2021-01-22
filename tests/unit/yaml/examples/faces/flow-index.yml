@@ -17,7 +17,6 @@ pods:
     read_only: true
   chunk_indexer:
     parallel: 1
-    separated_workspace: true
   doc_indexer:
     needs: loader
   join_all:

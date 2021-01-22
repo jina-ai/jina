@@ -412,7 +412,7 @@ c.components = lambda: [a, b]
 Now let's add our indexer YAML file to the Flow with `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
 
 ```python
-f = Flow().add(uses='MyEncoder', parallel=2).add(uses='myindexer.yml', shards=2, separated_workspace=True).plot()
+f = Flow().add(uses='MyEncoder', parallel=2).add(uses='myindexer.yml', shards=2).plot()
 ```
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow1.svg?raw=true"/>
@@ -429,7 +429,6 @@ pods:
   - name:index
     uses: myindexer.yml
     shards: 2
-    separated_workspace: true
 ```
 
 And then load it in Python:

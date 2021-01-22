@@ -84,7 +84,6 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
         else:
             _head_args.name = f'head'
 
-
     # in any case, if header is present, it represent this Pod to consume `num_part`
     # the following peas inside the pod will have num_part=1
     args.num_part = 1

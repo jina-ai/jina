@@ -93,7 +93,7 @@ class CompoundExecutor(BaseExecutor):
         c[0].add(obj)
 
     .. note::
-        All components ``workspace`` and ``pea_workspace`` are overrided by their :class:`CompoundExecutor` counterparts.
+        Component ``workspace`` and ``pea_id`` are overriden by their :class:`CompoundExecutor` counterparts.
 
     .. warning::
 
@@ -192,6 +192,10 @@ class CompoundExecutor(BaseExecutor):
                 - dummyB-e3acc910
                 - say
 
+        .. warning::
+
+            When setting inner `executors` in `components` the `workspace` configuration will not be used and will be overriden
+            by a workspace extracted considering the name of the `CompoundExecutor`, the name of each internal `Component` and the `pea_id`
         """
         super().__init__(*args, **kwargs)
         self._components = None  # type: List[AnyExecutor]
@@ -248,22 +252,31 @@ class CompoundExecutor(BaseExecutor):
         if not callable(comps):
             raise TypeError('components must be a callable function that returns '
                             'a List[BaseExecutor]')
-        if not getattr(self, 'init_from_yaml', False):
+
+        # Important to handle when loading a CompoundExecutor when `inner` executors have not been loaded from yaml
+        if not getattr(self, '_init_from_yaml', False):
             self._components = comps()
             if not isinstance(self._components, list):
                 raise TypeError(f'components expect a list of executors, receiving {type(self._components)!r}')
-            # self._set_comp_workspace()
+            self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
         else:
             self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
 
+    @staticmethod
+    def get_component_workspace_from_compound_workspace(compound_workspace: str, compound_name: str, pea_id: int) -> str:
+        import os
+        return BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id) if pea_id > 0 else \
+            os.path.join(compound_workspace, compound_name)
+
     def _set_comp_workspace(self) -> None:
-        # overrider the workspace setting for all components
+        # overrides the workspace setting for all components
         for c in self.components:
-            c.separated_workspace = self.separated_workspace
-            c.workspace = self.workspace
-            c.pea_workspace = self.current_workspace
+            if not c.workspace and self.workspace:
+                c_workspace = CompoundExecutor.get_component_workspace_from_compound_workspace(self.workspace, self.name, self.pea_id)
+                self.logger.warning(f'Setting workspace of {c.name} to {c_workspace}')
+                c.workspace = c_workspace
 
     def _resolve_routes(self) -> None:
         if self._routes:
