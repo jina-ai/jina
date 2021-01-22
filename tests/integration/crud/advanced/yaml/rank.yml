@@ -1,4 +1,4 @@
-!DummyRanker
+!DummyMinRanker
 metas:
   name: ranker
   py_modules:

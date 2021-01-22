@@ -1,6 +1,8 @@
-!OneHotTextEncoder
+!DummyOneHotTextEncoder
 metas:
   name: encoder
+  py_modules:
+    - custom_executor.py
 requests:
   on:
     IndexRequest:
