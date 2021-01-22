@@ -36,7 +36,6 @@ def test_bad_import():
     assert not ie._tags
 
 
-
 def test_no_suppress_other_exception():
     with pytest.raises(Exception):
         with ImportExtensions(required=False, logger=default_logger):
@@ -45,3 +44,8 @@ def test_no_suppress_other_exception():
     with pytest.raises(Exception):
         with ImportExtensions(required=True, logger=default_logger):
             raise Exception
+
+
+def test_bad_import_classes():
+    from jina.importer import import_classes
+    import_classes('jina.executors')
