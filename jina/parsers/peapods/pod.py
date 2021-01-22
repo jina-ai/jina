@@ -15,7 +15,7 @@ def mixin_base_pod_parser(parser):
                     help='The executor attached after the Peas described by --uses, typically used for receiving from '
                          'all parallels, accepted type follows "--uses"')
     gp.add_argument('--remove-uses-ba', action='store_true', default=False,
-                    help='If set, disable `uses-before` or `uses-after` if parallel is equal to 1. Useful'
+                    help='If set, disable `uses-before` or `uses-after` if parallel is equal to 1. Useful '
                          'to parametrize parallelization and sharding without having `uses_after` or `uses_before` '
                          'taking extra processes and network hops')
     gp.add_argument('--parallel', '--shards', type=int, default=1,
