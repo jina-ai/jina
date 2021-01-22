@@ -1,17 +1,15 @@
 import warnings
-from typing import TypeVar, Dict, Optional, Type
+from typing import TypeVar, Dict, Optional, Tuple
 
 from google.protobuf import json_format
 
-from ...drivers import BaseDriver
 from ...excepts import BadQueryLangType
 from ...helper import typename
-from ...importer import import_classes
 from ...proto import jina_pb2
 
 
 QueryLangSourceType = TypeVar('QueryLangSourceType',
-                              jina_pb2.QueryLangProto, bytes, str, Dict, BaseDriver)
+                              jina_pb2.QueryLangProto, bytes, str, Dict, Tuple[str, int, dict])
 
 __all__ = ['QueryLang']
 
@@ -23,7 +21,8 @@ class QueryLang:
     It offers a Pythonic interface to allow users access and manipulate
     :class:`jina.jina_pb2.QueryLangProto` object without working with Protobuf itself.
 
-    To create a :class:`QueryLang` object from a :class:`BaseDriver` object, simply:
+    To create a :class:`QueryLang` object from a Tuple containing the name of a :class:`BaseDriver`,
+     and the parameters to override, simply:
 
         .. highlight:: python
         .. code-block:: python
@@ -32,12 +31,15 @@ class QueryLang:
             from jina.drivers.querylang.slice import SliceQL
 
             s = SliceQL(start=3, end=4)
-            ql = QueryLang(s)
+            ql = QueryLang('SliceQL', 1, {'start': 3, 'end': 1, 'priority': 1})
+
+    .. warning::
+        The `BaseDriver` needs to be a `QuerySetReader` to be able to read the `QueryLang`
 
     One can also build a :class`QueryLang` from JSON string, bytes, dict or directly from a protobuf object.
 
     A :class:`QueryLang` object (no matter how it is constructed) can be converted to
-    protobuf object or back to driver object by using:
+    protobuf object by using:
 
         .. highlight:: python
         .. code-block:: python
@@ -45,18 +47,13 @@ class QueryLang:
             # to protobuf object
             s.as_pb_object
 
-            # to driver object
-            s.as_driver_object
-
-    To get the class name of the associated driver, one can use :attr:`driver`.
-
     """
 
     def __init__(self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False):
         """
 
         :param querylang: the query language source to construct from, acceptable types include:
-            :class:`jina_pb2.QueryLangProto`, :class:`bytes`, :class:`str`, :class:`Dict`, :class:`BaseDriver`.
+            :class:`jina_pb2.QueryLangProto`, :class:`bytes`, :class:`str`, :class:`Dict`, Tuple.
         :param copy: when ``querylang`` is given as a :class:`QueryLangProto` object, build a
                 view (i.e. weak reference) from it or a deep copy from it.
         """
@@ -84,10 +81,9 @@ class QueryLang:
                         self._querylang.ParseFromString(querylang)
                     except RuntimeWarning as ex:
                         raise BadQueryLangType('fail to construct a query language') from ex
-            elif isinstance(querylang, BaseDriver):
-                self.driver = querylang
-                self.priority = querylang._priority
-                self._querylang.parameters.update(querylang._init_kwargs_dict)
+            elif isinstance(querylang, Tuple):
+                self.name = querylang[0]
+                self._querylang.parameters.update(querylang[1])
             elif querylang is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(querylang)} is not recognizable')
@@ -114,21 +110,6 @@ class QueryLang:
         """Set the name of the driver that the query language attached to """
         self._querylang.name = value
 
-    @property
-    def driver(self) -> Type['BaseDriver']:
-        """Get the driver class that the query language attached to
-
-        ..warning::
-            This browses all module trees and can be costly,
-            do not frequently call it.
-        """
-        return import_classes('jina.drivers', targets=[self.name])
-
-    @driver.setter
-    def driver(self, value: 'BaseDriver'):
-        """Set the driver class that the query language attached to """
-        self._querylang.name = value.__class__.__name__
-
     def __getattr__(self, name: str):
         return getattr(self._querylang, name)
 
@@ -136,8 +117,3 @@ class QueryLang:
     def as_pb_object(self) -> 'jina_pb2.QueryLangProto':
         """Return a protobuf :class:`jina_pb2.QueryLangProto` object """
         return self._querylang
-
-    @property
-    def as_driver_object(self) -> 'BaseDriver':
-        """Return a :class:`BaseDriver` object """
-        return self.driver(**self._querylang.parameters)

@@ -5,7 +5,6 @@ import pytest
 
 from jina import Request, QueryLang, Document
 from jina.clients.request import _generate
-from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto
 from jina.types.message import Message
@@ -131,8 +130,8 @@ def test_lazy_request_fields():
 
 
 def test_request_extend_queryset():
-    q1 = SliceQL(start=3, end=4)
-    q2 = QueryLang(SliceQL(start=3, end=4, priority=1))
+    q1 = ('SliceQ', {'start': 3, 'end': 4})
+    q2 = QueryLang(('SliceQL', {'start': 3, 'end': 4, 'priority': 1}))
     q3 = jina_pb2.QueryLangProto()
     q3.name = 'SliceQL'
     q3.parameters['start'] = 3
@@ -141,6 +140,7 @@ def test_request_extend_queryset():
     r = Request()
     r.queryset.extend([q1, q2, q3])
     assert isinstance(r.queryset, Sequence)
+    assert len(r.queryset) == 3
     for idx, q in enumerate(r.queryset):
         assert q.priority == idx
         assert q.parameters['start'] == 3
@@ -179,6 +179,7 @@ def test_empty_request_type(typ, pb_typ):
     r.request_type = typ
     assert r._request_type == typ
     assert isinstance(r.body, pb_typ)
+
 
 @pytest.mark.parametrize('typ,pb_typ', [('index', jina_pb2.RequestProto.IndexRequestProto),
                                         ('search', jina_pb2.RequestProto.SearchRequestProto)])
