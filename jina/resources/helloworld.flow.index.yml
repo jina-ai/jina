@@ -1,7 +1,6 @@
 !Flow
 version: '1.0'
 with:
-  logserver: $WITH_LOGSERVER
   compress_hwm: 1024
 pods:
   - name: encode

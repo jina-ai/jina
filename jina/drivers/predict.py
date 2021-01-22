@@ -4,7 +4,6 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from ..helper import typename
-from ..types.document import Document
 
 if False:
     from ..types.sets import DocumentSet
@@ -32,8 +31,6 @@ class BaseLabelPredictDriver(BasePredictDriver):
     def _apply_all(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
             *args,
             **kwargs,
     ) -> None:
@@ -147,8 +144,6 @@ class Prediction2DocBlobDriver(BasePredictDriver):
     def _apply_all(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
             *args,
             **kwargs,
     ) -> None:

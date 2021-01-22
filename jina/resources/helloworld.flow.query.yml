@@ -2,7 +2,6 @@
 version: '1.0'
 with:
   read_only: true  # better add this in the query time
-  logserver: $WITH_LOGSERVER
   compress_hwm: 1024
 pods:
   - name: encode

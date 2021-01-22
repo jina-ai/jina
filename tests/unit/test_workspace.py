@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import numpy as np
 import pytest
@@ -163,6 +164,46 @@ def test_compound_indexer_ref_indexer(test_workspace, pea_id):
                                   pea_id=pea_id) as compound_indexer:
         indexer = compound_indexer[1]
         assert indexer.num_dim == 512
+
+
+@pytest.fixture()
+def test_workspace_move(tmpdir):
+    os.environ['JINA_TEST_WORKSPACE'] = os.path.join(str(tmpdir), 'host')
+    yield
+    del os.environ['JINA_TEST_WORKSPACE']
+
+
+# This test tries to simulate the situation where an executor workspace is mapped to a docker container, and therefore
+# its workspace has changed.
+@pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
+def test_simple_indexer_workspace_move_to_docker(test_workspace_move, tmpdir, pea_id):
+    keys = [0, 1]
+    content = [b'a', b'b']
+    old_tmpdir = os.environ['JINA_TEST_WORKSPACE']
+    docker_tmpdir = os.path.join(tmpdir, 'docker')
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-kvindexer-workspace.yml'),
+                                  pea_id=pea_id) as indexer:
+        indexer.add(keys, content)
+
+    if pea_id > 0:
+        assert os.path.exists(
+            os.path.join(old_tmpdir, f'{indexer.name}-{indexer.pea_id}', f'{indexer.name}.bin'))
+    else:
+        assert os.path.exists(os.path.join(old_tmpdir, f'{indexer.name}.bin'))
+
+    shutil.copytree(os.environ['JINA_TEST_WORKSPACE'],
+                    docker_tmpdir)
+
+    shutil.rmtree(os.environ['JINA_TEST_WORKSPACE'])
+
+    os.environ['JINA_TEST_WORKSPACE'] = str(docker_tmpdir)
+
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-kvindexer-workspace.yml'),
+                                  pea_id=pea_id) as indexer:
+        assert indexer.query(keys[0]) == content[0]
+        assert indexer.query(keys[1]) == content[1]
+        assert indexer.workspace == docker_tmpdir
 
 
 def test_compound_indexer_rw(test_workspace):
