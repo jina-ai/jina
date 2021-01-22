@@ -7,6 +7,7 @@ import copy
 import os
 import re
 import threading
+import uuid
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
@@ -732,6 +733,22 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def _update_client(self):
         if self._pod_nodes['gateway'].args.restful:
             self._cls_client = WebSocketClient
+
+    @property
+    def workspace_id(self) -> Dict[str, str]:
+        """Get all Pods' ``workspace_id`` values in a dict """
+        return {k: p.args.workspace_id for k, p in self if hasattr(p.args, 'workspace_id')}
+
+    @workspace_id.setter
+    def workspace_id(self, value: str):
+        """Set all Pods' ``workspace_id`` to ``value``
+
+        :param value: a hexadecimal UUID string
+        """
+        uuid.UUID(value)
+        for k, p in self:
+            if hasattr(p.args, 'workspace_id'):
+                p.args.workspace_id = value
 
     def index(self):
         raise NotImplementedError

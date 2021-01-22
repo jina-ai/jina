@@ -8,8 +8,8 @@ from cli import _is_latest_version
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
-from jina.excepts import BadClientCallback
-from jina.helper import cached_property, convert_tuple_to_list
+from jina.excepts import BadClientCallback, NotSupportedError
+from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
@@ -192,3 +192,20 @@ def test_complete_path_success():
 def test_complete_path_not_found():
     with pytest.raises(FileNotFoundError):
         assert complete_path('unknown.yaml')
+
+
+def test_deprecated_decor():
+    @deprecated_alias(barbar=('bar', 0), foofoo=('foo', 1))
+    def dummy(bar, foo):
+        return bar, foo
+
+    # normal
+    assert dummy(bar=1, foo=2) == (1, 2)
+
+    # deprecated warn
+    with pytest.deprecated_call():
+        assert dummy(barbar=1, foo=2) == (1, 2)
+
+    # deprecated HARD
+    with pytest.raises(NotSupportedError):
+        dummy(bar=1, foofoo=2)
