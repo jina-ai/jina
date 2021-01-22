@@ -511,8 +511,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
 
 def format_full_version_info(info: Dict, env_info: Dict) -> str:
-    version_info = '\n'.join(f'{k:30s}{v}' for k, v in info.items())
-    env_info = '\n'.join(f'{k:30s}{v}' for k, v in env_info.items())
+    version_info = '\n'.join(f'- {k:30s}{v}' for k, v in info.items())
+    env_info = '\n'.join(f'* {k:30s}{v}' for k, v in env_info.items())
     return version_info + '\n' + env_info
 
 
