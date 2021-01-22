@@ -42,8 +42,6 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
     This test indexes documents into an example flow and updates one document.
     The update is implemented as delete & index.
     '''
-    monkeypatch.setenv("RESTFUL", 'False')
-    monkeypatch.setenv("JINA_CRUD_ADVANCED_WORKSPACE", str(tmpdir))
 
     # generate documents to index
     index_data = get_docs_to_index([

@@ -1,4 +1,8 @@
-!MinRanker
+!DummyRanker
+metas:
+  name: ranker
+  py_modules:
+    - custom_executor.py
 requests:
   on:
     SearchRequest:
