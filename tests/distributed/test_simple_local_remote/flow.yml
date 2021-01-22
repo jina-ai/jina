@@ -1,8 +1,9 @@
 !Flow
+version: '1'
 with:
   read_only: true
 pods:
-  encoder:
+  - name: encoder
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: encode.yml
     host: $JINA_ENCODER_HOST
@@ -11,7 +12,7 @@ pods:
     port_expose: 8000
     upload_files:
       - encode.yml
-  indexer:
+  - name: indexer
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: index.yml
     read_only: False

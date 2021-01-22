@@ -1,15 +1,16 @@
 !Flow
+version: '1'
 with:
   sse_logger: false
 pods:
-  chunk_seg:
+  - name: chunk_seg
     parallel: 3
-  wqncode1:
+  - name: wqncode1
     parallel: 2
     needs: chunk_seg
-  encode2:
+  - name: encode2
     parallel: 2
     needs: chunk_seg
-  joiner:
+  - name: joiner
     uses: _pass
     needs: [wqncode1, encode2]

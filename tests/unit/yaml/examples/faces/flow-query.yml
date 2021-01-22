@@ -1,25 +1,26 @@
 !Flow
+version: '1'
 with:
   read_only: true  # better add this in the query time
   port_expose: 5555
 pods:
-  loader:
+  - name: loader
     read_only: true
     parallel: 4
-  flipper:
+  - name: flipper
     parallel: 4
     read_only: true
-  normalizer:
+  - name: normalizer
     read_only: true
     parallel: 4
-  encoder:
+  - name: encoder
     timeout_ready: 600000
     parallel: 4
     read_only: true
-  chunk_indexer:
+  - name: chunk_indexer
     polling: all
     parallel: 1
-  ranker:
+  - name: ranker
     uses: _pass
-  doc_indexer:
+  - name: doc_indexer
     parallel: 1
