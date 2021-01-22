@@ -98,8 +98,8 @@ jina hello-world --help
 
 |     |   |
 | --- |---|
-| 🐣  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
-| 🚀  | [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐣  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🚀  | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### Create
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -270,6 +270,61 @@ f = (Flow().add(name='p1', needs='gateway')
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
 
+#### Decentralized Flow
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=decentralized-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
+
+A Flow does not have to be local-only, one can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod` is put to a remote machine for parallelization, whereas other pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword. 
+
+<table>
+  <tr>
+    <td width="50%">
+    Local
+    </td>
+    <td width="50%">
+    123.456.78.9
+    </td>
+</tr>
+  <tr>
+    <td width="50%">
+
+```python
+import numpy as np
+from jina import Flow
+
+f = (Flow()
+     .add()
+     .add(name='gpu_pod',
+          uses='mwu_encoder.yml',
+          host='123.456.78.9:8000',
+          parallel=2,
+          upload_files=['mwu_encoder.py'])
+     .add())
+
+with f:
+    f.index_ndarray(np.random.random([10, 100]), output=print)
+```
+
+</pre>
+    </td>
+    <td width="50%">
+
+```bash
+docker run --network=host jinaai/jina:latest-daemon --port-expose 8000
+```
+
+</td>
+</tr>
+</table>
+
+We provide a demo server on `cloud.jina.ai:8000`, give the following snippet a try!
+
+```python
+from jina import Flow
+
+with Flow().add().add(host='cloud.jina.ai:8000') as f:
+    f.index(['hello', 'world'])
+```
+
 #### Asynchronous Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
@@ -310,8 +365,8 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 |     |   |
 | --- |---|
-| 🐣   | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Asynchronous Flow](#asynchronous-flow) |
-| 🚀   | [Customize Encoder](#customize-encoder) • [Test Encoder in Flow](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐣   | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🚀   | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 
 #### Customize Encoder
@@ -477,10 +532,10 @@ f.search(query_iterator, ...)
 
 #### REST Interface
 
-In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `rest_api=True`:
+In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `restful=True`:
 
 ```python
-f = Flow(port_expose=45678, rest_api=True)
+f = Flow(port_expose=45678, restful=True)
 
 with f:
     f.block()

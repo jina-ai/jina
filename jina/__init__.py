@@ -160,6 +160,7 @@ from jina.clients import Client
 from jina.clients.asyncio import AsyncClient
 
 # Executor
+from jina.executors import BaseExecutor as Executor
 from jina.executors.classifiers import BaseClassifier as Classifier
 from jina.executors.crafters import BaseCrafter as Crafter
 from jina.executors.encoders import BaseEncoder as Encoder
