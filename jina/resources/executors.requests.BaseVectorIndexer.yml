@@ -1,9 +1,9 @@
 on:
   ControlRequest:
     - !ControlReqDriver {}
-  [SearchRequest]:
+  SearchRequest:
     - !VectorSearchDriver {}
-  IndexRequest:
+  [IndexRequest, UpdateRequest, DeleteRequest]:
     - !ExcludeQL
       with:
         fields:

@@ -1,3 +1,5 @@
+import pytest
+
 from jina.docker.hubio import HubIO
 from jina.parsers.hub import set_hub_list_parser
 

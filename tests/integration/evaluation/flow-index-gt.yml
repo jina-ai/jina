@@ -1,4 +1,6 @@
 !Flow
+with:
+  restful: $RESTFUL
 pods:
   gt_indexer:
     uses: yaml/index-gt.yml

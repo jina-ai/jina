@@ -188,7 +188,8 @@ class Document:
         return self._document.content_hash
 
     def update_content_hash(self,
-                            exclude_fields: Optional[Tuple[str]] = ('id', 'chunks', 'matches', 'content_hash'),
+                            exclude_fields: Optional[Tuple[str]] = (
+                            'id', 'chunks', 'matches', 'content_hash', 'parent_id'),
                             include_fields: Optional[Tuple[str]] = None) -> None:
         """Update the document hash according to its content.
 
@@ -196,7 +197,7 @@ class Document:
         :param include_fields: a tuple of field names that included when computing content hash
 
         .. note::
-            "exclude_fields" and "exclude_fields" are mutually exclusive, use one only
+            "exclude_fields" and "include_fields" are mutually exclusive, use one only
         """
         masked_d = jina_pb2.DocumentProto()
         masked_d.CopyFrom(self._document)

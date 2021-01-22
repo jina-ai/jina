@@ -72,7 +72,7 @@ jobs:
           COMMIT_NAME: Jina Dev Bot
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: ''
-          TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md'
+          TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md,RELEASE.md'
           CHECK_ONLY_DEFAULT_BRANCH: true
       - uses: ad-m/github-push-action@v0.6.0
         with:

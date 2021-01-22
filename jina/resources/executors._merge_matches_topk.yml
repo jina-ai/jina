@@ -1,0 +1,17 @@
+!BaseExecutor
+with: {}
+metas:
+  name: merge_matches_topk
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+      - !ReduceAllDriver
+        with:
+          traversal_paths: ['m']
+      - !SliceQL
+        with:
+          start: 0
+          end: 10 # is overwritten by the QueryLangDriver
+          traversal_paths: ['m']
+    ControlRequest:
+      - !ControlReqDriver {}

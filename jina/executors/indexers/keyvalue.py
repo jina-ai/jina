@@ -55,6 +55,8 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        if len(list(keys)) != len(list(values)):
+            raise ValueError(f'Len of keys {len(keys)} did not match len of values {len(values)}')
         for key, value in zip(keys, values):
             l = len(value)  #: the length
             p = int(self._start / self._page_size) * self._page_size  #: offset of the page
@@ -78,22 +80,14 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        # check: hard fail (raises) on key not found
-        missed = []
-        for key in keys:
-            if self.query_handler.header.get(key) is None:
-                missed.append(key)
-        if missed:
-            raise KeyError(f'Key(s) {missed} were not found in {self.save_abspath}')
-
-        # hack
-        self.query_handler.close()
-        self.handler_mutex = False
-        self.delete(keys)
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(), self.save_abspath)
+        self._delete(keys)
         self.add(keys, values)
         return
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def _delete(self, keys: Iterator[int]):
+        self.query_handler.close()
+        self.handler_mutex = False
         for key in keys:
             self.write_handler.header.write(
                 np.array(
@@ -102,8 +96,12 @@ class BinaryPbIndexer(BaseKVIndexer):
                 ).tobytes()
             )
             if self.query_handler:
-                self.query_handler.header[key] = None
+                del self.query_handler.header[key]
             self._size -= 1
+
+    def delete(self, keys: Iterator[int], *args, **kwargs):
+        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys(), self.save_abspath)
+        self._delete(keys)
 
 
 class DataURIPbIndexer(BinaryPbIndexer):

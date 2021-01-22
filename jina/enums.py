@@ -9,7 +9,6 @@ To use these enums in YAML config, following the example below:
 
     !Flow
     with:
-      logserver_config: yaml/test-server-config.yml
       optimize_level: !FlowOptimizeLevel IGNORE_GATEWAY
       # or
       optimize_level: IGNORE_GATEWAY
@@ -65,7 +64,7 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         try:
             return cls[s.upper()]
         except KeyError:
-            raise ValueError(f'{s.upper()} is not a valid enum for {cls}')
+            raise ValueError(f'{s.upper()} is not a valid enum for {cls!r}, must be one of {list(cls)}')
 
     @classmethod
     def _to_yaml(cls, representer, data):
@@ -311,13 +310,6 @@ class RemoteAccessType(BetterEnum):
     JINAD = 1  # using rest api via jinad
 
 
-class RemotePeapodType(BetterEnum):
-    """Remote access type when connect to the host """
-
-    PEA = 0
-    POD = 1
-
-
 class BuildTestLevel(BetterEnum):
     """Test level in :command:`jina hub build`, higher level includes lower levels """
 
@@ -339,3 +331,12 @@ class DataInputType(BetterEnum):
 class RuntimeBackendType(BetterEnum):
     THREAD = 0
     PROCESS = 1
+
+
+def replace_enum_to_str(obj):
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            obj[k] = replace_enum_to_str(v)
+        elif isinstance(v, BetterEnum):
+            obj[k] = str(v)
+    return obj

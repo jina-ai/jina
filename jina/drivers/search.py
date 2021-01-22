@@ -47,13 +47,13 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def __init__(self, is_merge: bool = True, *args, **kwargs):
+    def __init__(self, is_merge: bool = True, traversal_paths: Tuple[str] = ('m'), *args, **kwargs):
         """
 
         :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
             otherwise, it overrides the current message using :meth:`CopyFrom`
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_merge = is_merge
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
@@ -120,14 +120,17 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         if bad_docs:
             self.logger.warning(f'these bad docs can not be added: {bad_docs}')
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
-        op_name = self.exec.__class__.__name__
-        for doc, topks, scores in zip(doc_pts, idx, dist):
 
-            topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
-            for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
-                m = Document(id=int(numpy_match_id))
-                m.score = NamedScore(op_name=op_name,
-                                     value=score)
-                r = doc.matches.append(m)
-                if vec is not None:
-                    r.embedding = vec
+        op_name = self.exec.__class__.__name__
+        # can be None if index is size 0
+        if idx is not None and dist is not None:
+            for doc, topks, scores in zip(doc_pts, idx, dist):
+
+                topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
+                for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
+                    m = Document(id=int(numpy_match_id))
+                    m.score = NamedScore(op_name=op_name,
+                                         value=score)
+                    r = doc.matches.append(m)
+                    if vec is not None:
+                        r.embedding = vec

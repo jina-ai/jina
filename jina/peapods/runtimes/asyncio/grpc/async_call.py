@@ -21,7 +21,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
     async def Call(self, request_iterator, context):
 
         def handle(msg: 'Message') -> 'Request':
-            msg.add_route(self.name, self.args.identity)
+            msg.add_route(self.name, hex(id(self)))
             return msg.response
 
         with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
@@ -56,7 +56,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
 
             with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
                 self.logger.warning('if this takes too long, you may want to take smaller "--prefetch" or '
-                                    'ask client to reduce "--batch-size"')
+                                    'ask client to reduce "--request-size"')
                 is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
                 if is_req_empty and not prefetch_task:
                     self.logger.error('receive an empty stream from the client! '

@@ -2,12 +2,11 @@ import os
 
 import numpy as np
 import pytest
-import requests
 
-from jina import JINA_GLOBAL, Request, AsyncFlow
+from jina import Flow
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
-from jina.flow import Flow
+from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from tests import random_docs, rm_files
@@ -73,15 +72,15 @@ def test_flow_with_jump():
     rm_files(['tmp.yml'])
 
 
-def test_simple_flow():
+@pytest.mark.parametrize('restful', [False, True])
+def test_simple_flow(restful):
     bytes_gen = (b'aaa' for _ in range(10))
 
     def bytes_fn():
         for _ in range(100):
             yield b'aaa'
 
-    f = (Flow()
-         .add())
+    f = Flow(restful=restful).add()
 
     with f:
         f.index(input_fn=bytes_gen)
@@ -158,56 +157,13 @@ def test_flow_identical():
     rm_files(['test2.yml'])
 
 
-def test_flow_no_container():
-
-    f = (Flow()
+@pytest.mark.parametrize('restful', [False, True])
+def test_flow_no_container(restful):
+    f = (Flow(restful=restful)
          .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
 
     with f:
         f.index(input_fn=random_docs(10))
-
-
-def test_flow_log_server():
-    f = Flow.load_config(os.path.join(cur_dir, '../yaml/test_log_server.yml'))
-    with f:
-        assert hasattr(JINA_GLOBAL.logserver, 'ready')
-
-        # Ready endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/status/ready',
-            timeout=5)
-        assert a.status_code == 200
-
-        # YAML endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/data/yaml',
-            timeout=5)
-        assert a.text.startswith('!Flow')
-        assert a.status_code == 200
-
-        # Pod endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/data/api/pod',
-            timeout=5)
-        assert 'pod' in a.json()
-        assert a.status_code == 200
-
-        # Shutdown endpoint
-        a = requests.get(
-            JINA_GLOBAL.logserver.address +
-            '/action/shutdown',
-            timeout=5)
-        assert a.status_code == 200
-
-        # Check ready endpoint after shutdown, check if server stopped
-        with pytest.raises((requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)):
-            requests.get(
-                JINA_GLOBAL.logserver.address +
-                '/status/ready',
-                timeout=5)
 
 
 def test_shards():
@@ -278,7 +234,8 @@ def test_py_client():
 
 
 def test_dry_run_with_two_pathways_diverging_at_gateway():
-    f = (Flow().add(name='r2')
+    f = (Flow()
+         .add(name='r2')
          .add(name='r3', needs='gateway')
          .join(['r2', 'r3']))
 
@@ -301,7 +258,8 @@ def test_dry_run_with_two_pathways_diverging_at_gateway():
 
 
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
-    f = (Flow().add(name='r1')
+    f = (Flow()
+         .add(name='r1')
          .add(name='r2')
          .add(name='r3', needs='r1')
          .join(['r2', 'r3']))
@@ -329,7 +287,8 @@ def test_dry_run_with_two_pathways_diverging_at_non_gateway():
 
 
 def test_refactor_num_part():
-    f = (Flow().add(name='r1', uses='_logforward', needs='gateway')
+    f = (Flow()
+         .add(name='r1', uses='_logforward', needs='gateway')
          .add(name='r2', uses='_logforward', needs='gateway')
          .join(['r1', 'r2']))
 
@@ -352,7 +311,8 @@ def test_refactor_num_part():
 
 
 def test_refactor_num_part_proxy():
-    f = (Flow().add(name='r1', uses='_logforward')
+    f = (Flow()
+         .add(name='r1', uses='_logforward')
          .add(name='r2', uses='_logforward', needs='r1')
          .add(name='r3', uses='_logforward', needs='r1')
          .join(['r2', 'r3']))
@@ -379,8 +339,10 @@ def test_refactor_num_part_proxy():
             assert node.peas_args['peas'][0] == node.tail_args
 
 
-def test_refactor_num_part_proxy_2():
-    f = (Flow().add(name='r1', uses='_logforward')
+@pytest.mark.parametrize('restful', [False, True])
+def test_refactor_num_part_proxy_2(restful):
+    f = (Flow(restful=restful)
+         .add(name='r1', uses='_logforward')
          .add(name='r2', uses='_logforward', needs='r1', parallel=2)
          .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
          .needs(['r2', 'r3']))
@@ -389,21 +351,23 @@ def test_refactor_num_part_proxy_2():
         f.index_lines(lines=['abbcs', 'efgh'])
 
 
-def test_refactor_num_part_2():
-    f = (Flow()
+@pytest.mark.parametrize('restful', [False, True])
+def test_refactor_num_part_2(restful):
+    f = (Flow(restful=restful)
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3, polling='ALL'))
 
     with f:
         f.index_lines(lines=['abbcs', 'efgh'])
 
-    f = (Flow()
+    f = (Flow(restful=restful)
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3))
 
     with f:
         f.index_lines(lines=['abbcs', 'efgh'])
 
 
-def test_index_text_files(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_index_text_files(mocker, restful):
     def validate(req):
         assert len(req.docs) > 0
         for d in req.docs:
@@ -411,7 +375,8 @@ def test_index_text_files(mocker):
 
     response_mock = mocker.Mock(wrap=validate)
 
-    f = (Flow(read_only=True).add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
+    f = (Flow(restful=restful, read_only=True)
+         .add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
 
     with f:
         f.index_files('*.py', on_done=response_mock, callback_on='body')
@@ -420,14 +385,16 @@ def test_index_text_files(mocker):
     response_mock.assert_called()
 
 
-def test_flow_with_publish_driver(mocker):
+# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
+@pytest.mark.parametrize('restful', [False])
+def test_flow_with_publish_driver(mocker, restful):
     def validate(req):
         for d in req.docs:
             assert d.embedding is not None
 
     response_mock = mocker.Mock(wrap=validate)
 
-    f = (Flow()
+    f = (Flow(restful=restful)
          .add(name='r2', uses='!OneHotTextEncoder')
          .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
          .join(needs=['r2', 'r3']))
@@ -438,7 +405,8 @@ def test_flow_with_publish_driver(mocker):
     response_mock.assert_called()
 
 
-def test_flow_with_modalitys_simple(mocker):
+@pytest.mark.parametrize('restful', [False, True])
+def test_flow_with_modalitys_simple(mocker, restful):
     def validate(req):
         for d in req.index.docs:
             assert d.modality in ['mode1', 'mode2']
@@ -454,9 +422,10 @@ def test_flow_with_modalitys_simple(mocker):
 
     response_mock = mocker.Mock(wrap=validate)
 
-    flow = Flow().add(name='chunk_seg', parallel=3). \
-        add(name='encoder12', parallel=2,
-            uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}')
+    flow = (Flow(restful=restful)
+            .add(name='chunk_seg', parallel=3)
+            .add(name='encoder12', parallel=2,
+                 uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}'))
     with flow:
         flow.index(input_fn=input_fn, on_done=response_mock)
 
@@ -471,8 +440,10 @@ def test_flow_arguments_priorities():
     assert f._pod_nodes['test'].args.port_expose == 12345
 
 
-def test_flow_arbitrary_needs():
-    f = (Flow().add(name='p1').add(name='p2', needs='gateway')
+@pytest.mark.parametrize('restful', [False])
+def test_flow_arbitrary_needs(restful):
+    f = (Flow(restful=restful)
+         .add(name='p1').add(name='p2', needs='gateway')
          .add(name='p3', needs='gateway')
          .add(name='p4', needs='gateway')
          .add(name='p5', needs='gateway')
@@ -485,12 +456,15 @@ def test_flow_arbitrary_needs():
         f.index_lines(['abc', 'def'])
 
 
-def test_flow_needs_all():
-    f = (Flow().add(name='p1', needs='gateway')
+@pytest.mark.parametrize('restful', [False])
+def test_flow_needs_all(restful):
+    f = (Flow(restful=restful)
+         .add(name='p1', needs='gateway')
          .needs_all(name='r1'))
     assert f._pod_nodes['r1'].needs == {'p1'}
 
-    f = (Flow().add(name='p1', needs='gateway')
+    f = (Flow(restful=restful)
+         .add(name='p1', needs='gateway')
          .add(name='p2', needs='gateway')
          .add(name='p3', needs='gateway')
          .needs(needs=['p1', 'p2'], name='r1')
@@ -500,7 +474,8 @@ def test_flow_needs_all():
     with f:
         f.index_ndarray(np.random.random([10, 10]))
 
-    f = (Flow().add(name='p1', needs='gateway')
+    f = (Flow(restful=restful)
+         .add(name='p1', needs='gateway')
          .add(name='p2', needs='gateway')
          .add(name='p3', needs='gateway')
          .needs(needs=['p1', 'p2'], name='r1')
@@ -543,8 +518,9 @@ def test_flow_with_pod_envs():
 
 
 @pytest.mark.parametrize('return_results', [False, True])
-def test_return_results_sync_flow(return_results):
-    with Flow(return_results=return_results).add() as f:
+@pytest.mark.parametrize('restful', [False, True])
+def test_return_results_sync_flow(return_results, restful):
+    with Flow(restful=restful, return_results=return_results).add() as f:
         r = f.index_ndarray(np.random.random([10, 2]))
         if return_results:
             assert isinstance(r, list)
@@ -553,13 +529,40 @@ def test_return_results_sync_flow(return_results):
             assert r is None
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize('return_results', [False, True])
-async def test_return_results_async_flow(return_results):
-    with AsyncFlow(return_results=return_results).add() as f:
-        r = await f.index_ndarray(np.random.random([10, 2]))
-        if return_results:
-            assert isinstance(r, list)
-            assert isinstance(r[0], Response)
-        else:
-            assert r is None
+@pytest.mark.parametrize('input, expect_host, expect_port',
+                         [('0.0.0.0', '0.0.0.0', None),
+                          ('0.0.0.0:12345', '0.0.0.0', 12345),
+                          ('123.456.789.0:45678', '123.456.789.0', 45678),
+                          ('api.jina.ai:45678', 'api.jina.ai', 45678)])
+def test_flow_host_expose_shortcut(input, expect_host, expect_port):
+    f = Flow().add(host=input).build()
+    assert f['pod0'].args.host == expect_host
+    if expect_port is not None:
+        assert f['pod0'].args.port_expose == expect_port
+
+
+def test_flow_workspace_id():
+    f = Flow().add().add().add().build()
+    assert len(f.workspace_id) == 3
+    assert len(set(f.workspace_id.values())) == 1
+    assert not list(f.workspace_id.values())[0]
+
+    with pytest.raises(ValueError):
+        f.workspace_id = 'hello'
+
+    new_id = random_identity()
+    f.workspace_id = new_id
+    assert len(set(f.workspace_id.values())) == 1
+    assert list(f.workspace_id.values())[0] == new_id
+
+
+def test_flow_identity_override():
+    f = Flow().add().add(parallel=2).add(parallel=2)
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == f.num_pods
+
+    f = Flow(identity='123456').add().add(parallel=2).add(parallel=2)
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == 1

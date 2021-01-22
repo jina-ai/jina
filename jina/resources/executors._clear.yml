@@ -19,5 +19,15 @@ requests:
         with:
           fields:
             - index
+    DeleteRequest:
+      - !ExcludeReqQL
+        with:
+          fields:
+            - delete
+    UpdateRequest:
+      - !ExcludeReqQL
+        with:
+          fields:
+            - update
     ControlRequest:
       - !ControlReqDriver {}

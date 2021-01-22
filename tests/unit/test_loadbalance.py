@@ -6,7 +6,7 @@ from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from tests import random_docs
 
-os.environ['JINA_LOG_VERBOSITY'] = 'DEBUG'
+os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 
 class SlowWorker(BaseCrafter):
@@ -30,7 +30,7 @@ def test_lb():
         uses='SlowWorker',
         parallel=10)
     with f:
-        f.index(input_fn=random_docs(100), batch_size=10)
+        f.index(input_fn=random_docs(100), request_size=10)
 
 
 def test_roundrobin():
@@ -39,4 +39,4 @@ def test_roundrobin():
         uses='SlowWorker',
         parallel=10, scheduling=SchedulerType.ROUND_ROBIN)
     with f:
-        f.index(input_fn=random_docs(100), batch_size=10)
+        f.index(input_fn=random_docs(100), request_size=10)

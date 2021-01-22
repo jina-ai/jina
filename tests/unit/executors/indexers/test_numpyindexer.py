@@ -270,9 +270,8 @@ def test_numpy_update_delete(compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
-        # this will fail cause the key doesn't exist
-        with pytest.raises(KeyError):
-            indexer.update(random_keys, random_data)
+        # NON-EXISTENT KEYS: this will log warning but not fail
+        indexer.update(random_keys, random_data)
         indexer.update([key_to_update], data_to_update)
         indexer.save()
 
@@ -296,9 +295,8 @@ def test_numpy_update_delete(compress_level, test_metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         assert indexer.size == len(vec_idx) - keys_to_delete
-        # this will fail. key doesn't exist
-        with pytest.raises(KeyError):
-            _ = indexer.query_by_id(vec_idx)
+        # random non-existent key
+        assert indexer.query_by_id([123861942]) is None
         query_results = indexer.query_by_id(vec_idx[keys_to_delete:])
         expected = vec[keys_to_delete:]
         np.testing.assert_allclose(query_results, expected, equal_nan=True)
@@ -361,6 +359,11 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
         assert idx.shape == dist.shape
         assert idx.shape == (len(queries), top_k)
         np.testing.assert_equal(indexer.query_by_id([6, 5]), vectors[[2, 1]])
+
+    # test query by nonexistent key
+    with BaseIndexer.load(save_abspath) as indexer:
+        assert isinstance(indexer, NumpyIndexer)
+        assert indexer.query_by_id([91237124]) is None
 
 
 @pytest.mark.parametrize('compress_level', [0, 1, 2, 3])

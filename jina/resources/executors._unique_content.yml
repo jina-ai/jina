@@ -1,11 +1,11 @@
 !DocIDCache
 with:
-  index_path: cache.tmp
+  index_path: unique_content.tmp
 metas:
-  name: cache
+  name: unique_content
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ControlRequest]:
       - !RouteDriver {}
     IndexRequest:
       - !TaggingCacheDriver

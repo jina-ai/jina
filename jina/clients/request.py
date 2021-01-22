@@ -42,7 +42,7 @@ def _build_doc(data, data_type: DataInputType, **kwargs) -> Tuple['Document', 'D
 
 
 def _generate(data: GeneratorSourceType,
-              batch_size: int = 0,
+              request_size: int = 0,
               mode: RequestType = RequestType.INDEX,
               mime_type: str = None,
               queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
@@ -55,10 +55,10 @@ def _generate(data: GeneratorSourceType,
     :return:
     """
 
-    _kwargs = dict(mime_type=mime_type, length=batch_size, weight=1.0)
+    _kwargs = dict(mime_type=mime_type, length=request_size, weight=1.0)
 
     try:
-        for batch in batch_iterator(data, batch_size):
+        for batch in batch_iterator(data, request_size):
             req = Request()
             req.request_type = str(mode)
             for content in batch:
@@ -82,16 +82,18 @@ def _generate(data: GeneratorSourceType,
             yield req
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception
-        default_logger.critical(f'input_fn is not valid! {repr(ex)}', exc_info=True)
+        default_logger.critical(f'input_fn is not valid! {ex!r}', exc_info=True)
 
 
 def index(*args, **kwargs):
     """Generate a indexing request"""
     yield from _generate(*args, **kwargs)
 
+
 def update(*args, **kwargs):
     """Generate a update request"""
     yield from _generate(*args, **kwargs)
+
 
 def delete(*args, **kwargs):
     """Generate a delete request"""

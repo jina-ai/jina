@@ -27,11 +27,11 @@ class MockCacheDriver(BaseCacheDriver):
         return DocumentSet(list(random_docs(10)))
 
 
-def test_cache_driver_twice(tmpdir):
+def test_cache_driver_twice(tmpdir, test_metas):
     docs = DocumentSet(list(random_docs(10)))
     driver = MockCacheDriver()
     # FIXME DocIdCache doesn't use tmpdir, it saves in curdir
-    with DocIDCache(tmpdir) as executor:
+    with DocIDCache(tmpdir, metas=test_metas) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs)
@@ -49,10 +49,10 @@ def test_cache_driver_twice(tmpdir):
     assert os.path.exists(filename)
 
 
-def test_cache_driver_tmpfile():
+def test_cache_driver_tmpfile(tmpdir, test_metas):
     docs = list(random_docs(10, embedding=False))
     driver = MockCacheDriver()
-    with DocIDCache(field=ID_KEY) as executor:
+    with DocIDCache(tmpdir, field=ID_KEY, metas=test_metas) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
 
@@ -69,14 +69,15 @@ def test_cache_driver_tmpfile():
     assert os.path.exists(executor.index_abspath)
 
 
-def test_cache_driver_from_file(tmp_path):
-    filename = 'test-tmp.bin'
+def test_cache_driver_from_file(tmpdir, test_metas):
+    filename = 'cache'
+    bin_full_path = os.path.join(test_metas["workspace"], filename)
     docs = list(random_docs(10, embedding=False))
-    pickle.dump([doc.id for doc in docs], open(f'{filename}.ids', 'wb'))
-    pickle.dump([doc.content_hash for doc in docs], open(f'{filename}.cache', 'wb'))
+    pickle.dump([doc.id for doc in docs], open(f'{bin_full_path}.ids', 'wb'))
+    pickle.dump([doc.content_hash for doc in docs], open(f'{bin_full_path}.cache', 'wb'))
 
     driver = MockCacheDriver()
-    with DocIDCache(filename, field=CONTENT_HASH_KEY) as executor:
+    with DocIDCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
 
@@ -102,7 +103,7 @@ class MockBaseCacheDriver(BaseCacheDriver):
         raise NotImplementedError
 
 
-def test_cache_content_driver_same_content(tmpdir):
+def test_cache_content_driver_same_content(tmpdir, test_metas):
     doc1 = Document(id=1)
     doc1.text = 'blabla'
     doc1.update_content_hash()
@@ -115,9 +116,8 @@ def test_cache_content_driver_same_content(tmpdir):
     assert doc1.content_hash == doc2.content_hash
 
     driver = MockBaseCacheDriver()
-    filename = None
 
-    with DocIDCache(tmpdir, field=CONTENT_HASH_KEY) as executor:
+    with DocIDCache(tmpdir, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
 
@@ -150,7 +150,7 @@ def test_cache_content_driver_same_content(tmpdir):
         assert executor.query(doc1.content_hash) is None
 
 
-def test_cache_content_driver_same_id(tmp_path):
+def test_cache_content_driver_same_id(tmp_path, test_metas):
     filename = tmp_path / 'docidcache.bin'
     doc1 = Document(id=1)
     doc1.text = 'blabla'
@@ -164,8 +164,35 @@ def test_cache_content_driver_same_id(tmp_path):
 
     driver = MockBaseCacheDriver()
 
-    with DocIDCache(filename, field=CONTENT_HASH_KEY) as executor:
+    with DocIDCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
         driver._traverse_apply(docs2)
         assert executor.size == 2
+
+
+@pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
+@pytest.mark.parametrize('method_type', ['delete', 'update'])
+def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type, mocker):
+    driver = MockBaseCacheDriver(method=method_type, traversal_paths=['r'])
+
+    docs = [Document(text=f'doc_{i}') for i in range(5)]
+
+    def validate_delete(self, keys, *args, **kwargs):
+        assert len(keys) == len(docs)
+        assert all([k == d.id for k, d in zip(keys, docs)])
+
+    def validate_update(self, keys, values, *args, **kwargs):
+        assert len(keys) == len(docs)
+        assert len(values) == len(docs)
+        assert all([k == d.id for k, d in zip(keys, docs)])
+        if self.field == CONTENT_HASH_KEY:
+            assert all([v == d.content_hash for v, d in zip(values, docs)])
+        elif self.field == ID_KEY:
+            assert all([v == d.id for v, d in zip(values, docs)])
+
+    with DocIDCache(tmpdir, metas=test_metas, field=field_type) as e:
+        mocker.patch.object(DocIDCache, 'update', validate_update)
+        mocker.patch.object(DocIDCache, 'delete', validate_delete)
+        driver.attach(executor=e, runtime=None)
+        driver._apply_all(docs)

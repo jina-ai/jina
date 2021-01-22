@@ -24,16 +24,6 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
 
     header = [colored(v, attrs=['bold']) for v in ('Pod', 'Time', 'Exception')]
 
-    # poor-man solution
-    table = []
-
-    def add_row(x):
-        for h, y in zip(header, x):
-            table.append(f'{h}\n{y}\n{"-" * 10}')
-
-    def visualize(x):
-        print('\n'.join(x))
-
     with ImportExtensions(required=False):
         from prettytable import PrettyTable, ALL
         table = PrettyTable(field_names=header, align='l', hrules=ALL)
@@ -61,7 +51,7 @@ def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
         try:
             return func(*args, **kwargs)
         except Exception as ex:
-            err_msg = f'uncaught exception in callback {func.__name__}(): {repr(ex)}'
+            err_msg = f'uncaught exception in callback {func.__name__}(): {ex!r}'
             if continue_on_error:
                 logger.error(err_msg)
             else:

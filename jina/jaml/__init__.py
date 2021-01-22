@@ -380,15 +380,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 no_tag_yml = cls.inject_config(no_tag_yml, **kwargs)
             else:
                 raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
-
             if substitute:
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
-
             if allow_py_modules:
                 # also add YAML parent path to the search paths
                 load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(s_path),) if s_path else None)
-
             # revert yaml's tag and load again, this time with substitution
             revert_tag_yml = JAML.dump(no_tag_yml).replace('__cls: ', '!')
 

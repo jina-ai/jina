@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -13,7 +12,7 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import typename, get_random_identity
+from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -62,13 +61,15 @@ class ExecutorType(type(JAMLCompatible), type):
         aggregate_funcs = ['evaluate']
 
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
+
+        cls_id = f'{cls.__module__}.{cls.__name__}'
+        if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
             wrap_func(cls, ['__init__'], store_init_kwargs)
             wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
             wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
-            reg_cls_set.add(cls.__name__)
+            reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
         return cls
 
@@ -112,7 +113,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = ['encode', 'add', 'query', 'craft', 'score', 'evaluate', 'predict', 'query_by_id', 'delete', 'update']
+    exec_methods = ['encode', 'add', 'query', 'craft', 'segment', 'score', 'evaluate', 'predict', 'query_by_id',
+                    'delete', 'update']
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -123,18 +125,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
-        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
-        self._attached_pea = None
 
-    def _check_on_gpu(self):
-        if self.on_gpu:
-            try:
-                cuda_version = subprocess.check_output(['nvcc', '--version']).decode()
-                self.logger.success(f'CUDA compiler version: {cuda_version}')
-            except OSError:
-                self.logger.warning(
-                    'on_gpu=True, but you dont have CUDA compatible GPU, i will reset on_gpu=False ')
-                self.on_gpu = False
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True) -> None:
         with TimeContext('post_init may take some time', self.logger):
@@ -149,12 +140,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 self._fill_metas(_metas)
                 self._fill_requests(_requests)
 
-            self._check_on_gpu()
             _before = set(list(vars(self).keys()))
             self.post_init()
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def _fill_requests(self, _requests):
+        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
 
         if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
             # if control request is forget in YAML, then fill it
@@ -186,7 +177,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             elif type(getattr(self, k)) == type(v):
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
-            _id = get_random_identity().split('-')[0]
+            _id = random_identity().split('-')[0]
             _name = f'{typename(self)}-{_id}'
             if getattr(self, 'warn_unnamed', False):
                 self.logger.warning(
@@ -257,7 +248,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: if ``separated_workspace`` is set to ``False`` then ``metas.workspace`` is returned,
                 otherwise the ``metas.pea_workspace`` is returned
         """
-        work_dir = self.pea_workspace if self.separated_workspace else self.workspace  # type: str
+        work_dir = self.pea_workspace if self.separated_workspace and self.pea_id != -1 else self.workspace  # type: str
         return work_dir
 
     def get_file_from_workspace(self, name: str) -> str:
@@ -293,7 +284,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._post_init_wrapper(fill_in_metas=False)
         except ModuleNotFoundError as ex:
             self.logger.warning(f'{typename(ex)} is often caused by a missing component, '
-                                f'which often can be solved by "pip install" relevant package: {repr(ex)}',
+                                f'which often can be solved by "pip install" relevant package: {ex!r}',
                                 exc_info=True)
 
     def train(self, *args, **kwargs) -> None:
@@ -426,7 +417,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 else:
                     raise UnattachedDriver(d)
         else:
-            raise NoDriverForRequest(req_type)
+            raise NoDriverForRequest(f'{req_type} for {self}')
 
     def __str__(self):
         return self.__class__.__name__

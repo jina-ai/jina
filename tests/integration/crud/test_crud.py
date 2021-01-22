@@ -15,10 +15,12 @@ random.seed(0)
 np.random.seed(0)
 
 
+TOPK = 9
+
 @pytest.fixture
 def config(tmpdir):
     os.environ['JINA_TOPK_DIR'] = str(tmpdir)
-    os.environ['JINA_TOPK'] = '9'
+    os.environ['JINA_TOPK'] = str(TOPK)
     yield
     del os.environ['JINA_TOPK_DIR']
     del os.environ['JINA_TOPK']
@@ -69,7 +71,7 @@ def test_delete_vector(config, mocker, flow_file, has_content):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
-                           output_fn=validate_result_factory(9))
+                           on_done=validate_result_factory(TOPK))
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
@@ -79,7 +81,7 @@ def test_delete_vector(config, mocker, flow_file, has_content):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
-                           output_fn=validate_result_factory(0))
+                           on_done=validate_result_factory(0))
     mock.assert_called_once()
 
 
@@ -100,7 +102,7 @@ def test_delete_kv(config, mocker, has_content):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=chain(random_docs(2, 5), random_docs(100, 120)),
-                           output_fn=validate_result_factory(3))
+                           on_done=validate_result_factory(3))
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
@@ -110,7 +112,7 @@ def test_delete_kv(config, mocker, has_content):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(2, 4),
-                           output_fn=validate_result_factory(1))
+                           on_done=validate_result_factory(1))
     mock.assert_called_once()
 
 
@@ -130,7 +132,7 @@ def test_update_vector(config, mocker, flow_file):
             hash_set_before = [hash(d.embedding.tobytes()) for d in docs_before]
             hash_set_updated = [hash(d.embedding.tobytes()) for d in docs_updated]
             for doc in resp.docs:
-                assert len(doc.matches) == 9
+                assert len(doc.matches) == TOPK
                 for match in doc.matches:
                     h = hash(match.embedding.tobytes())
                     if has_changed:
@@ -152,7 +154,7 @@ def test_update_vector(config, mocker, flow_file):
     with Flow.load_config(flow_file) as search_flow:
         search_docs = list(random_docs(0, NUMBER_OF_SEARCHES))
         search_flow.search(input_fn=search_docs,
-                           output_fn=validate_result_factory(has_changed=False))
+                           on_done=validate_result_factory(has_changed=False))
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
@@ -162,7 +164,7 @@ def test_update_vector(config, mocker, flow_file):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
-                           output_fn=validate_result_factory(has_changed=True))
+                           on_done=validate_result_factory(has_changed=True))
     mock.assert_called_once()
 
 
@@ -186,7 +188,7 @@ def test_update_kv(config, mocker):
     with Flow.load_config(flow_file) as search_flow:
         search_docs = list(random_docs(0, NUMBER_OF_SEARCHES))
         search_flow.search(input_fn=search_docs,
-                           output_fn=validate_results)
+                           on_done=validate_results)
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
@@ -196,5 +198,5 @@ def test_update_kv(config, mocker):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
-                           output_fn=validate_results)
+                           on_done=validate_results)
     mock.assert_called_once()

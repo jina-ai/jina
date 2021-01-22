@@ -137,11 +137,13 @@ def eval_request():
     return req
 
 
+@pytest.mark.parametrize('eval_at', [None, 2])
 def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_driver,
-                                                   eval_request):
+                                                   eval_request,
+                                                   eval_at):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
-    simple_chunk_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
+    simple_chunk_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=eval_at), runtime=None)
     simple_chunk_rank_evaluate_driver.eval_request = eval_request
     simple_chunk_rank_evaluate_driver()
 
@@ -152,7 +154,10 @@ def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_dr
         assert len(doc.chunks) == 1
         chunk = doc.chunks[0]
         assert len(chunk.evaluations) == 1  # evaluation done at chunk level
-        assert chunk.evaluations[0].op_name == 'PrecisionEvaluator@2'
+        if eval_at:
+            assert chunk.evaluations[0].op_name == 'PrecisionEvaluator@2'
+        else:
+            assert chunk.evaluations[0].op_name == 'PrecisionEvaluator'
         assert chunk.evaluations[0].value == 1.0
 
 
@@ -176,7 +181,7 @@ def eval_request_with_unmatching_struct():
         chunk_gt.granularity = 1
         add_matches(chunk_doc)
         add_matches(chunk_gt)
-        chunk_gt_wrong = gt.chunks.add()
+        _ = gt.chunks.add()
     return req
 
 

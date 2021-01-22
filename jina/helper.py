@@ -14,6 +14,7 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
+from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
@@ -23,7 +24,7 @@ import numpy as np
 
 __all__ = ['batch_iterator',
            'parse_arg',
-           'random_port', 'get_random_identity', 'expand_env_var',
+           'random_port', 'random_identity', 'random_uuid', 'expand_env_var',
            'colored', 'ArgNamespace', 'is_valid_local_config_source',
            'cached_property', 'is_url',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
@@ -176,15 +177,17 @@ def random_name() -> str:
 
 def random_port() -> Optional[int]:
     import threading
+    import multiprocessing
     from contextlib import closing
     import socket
 
     def _get_port(port=0):
-        with threading.Lock():
-            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                s.bind(('', port))
-                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                return s.getsockname()[1]
+        with multiprocessing.Lock():
+            with threading.Lock():
+                with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+                    s.bind(('', port))
+                    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                    return s.getsockname()[1]
 
     _port = None
     if 'JINA_RANDOM_PORTS' in os.environ:
@@ -200,8 +203,12 @@ def random_port() -> Optional[int]:
     return _port
 
 
-def get_random_identity() -> str:
-    return str(uuid.uuid1())
+def random_identity() -> str:
+    return str(random_uuid())
+
+
+def random_uuid() -> uuid.UUID:
+    return uuid.uuid4()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
@@ -685,20 +692,13 @@ def run_async(func, *args, **kwargs):
                 from .excepts import BadClient
                 raise BadClient('something wrong when running the eventloop, result can not be retrieved')
         else:
+
             raise RuntimeError('you have an eventloop running but not using Jupyter/ipython, '
                                'this may mean you are using Jina with other integration? if so, then you '
                                'may want to use AsyncClient/AsyncFlow instead of Client/Flow. If not, then '
                                'please report this issue here: https://github.com/jina-ai/jina')
     else:
         return asyncio.run(func(*args, **kwargs))
-
-
-def check_keys_exist(keys_to_check, existing_keys):
-    missed = []
-    for k in keys_to_check:
-        if k not in existing_keys:
-            missed.append(k)
-    return missed
 
 
 def slugify(value):
@@ -708,3 +708,32 @@ def slugify(value):
     """
     s = str(value).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
+
+
+@contextmanager
+def change_cwd(path):
+    """
+    Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.
+    """
+    curdir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(curdir)
+
+
+@contextmanager
+def change_env(key, val):
+    """
+    Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.
+    """
+    old_var = os.environ.get(key, None)
+    os.environ[key] = val
+    try:
+        yield
+    finally:
+        if old_var:
+            os.environ[key] = old_var
+        else:
+            os.environ.pop(key)

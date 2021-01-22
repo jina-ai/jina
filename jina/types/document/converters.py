@@ -35,10 +35,10 @@ def png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
     return png_bytes
 
 
-def pillow_image_to_buffer(image, format: str) -> bytes:
+def pillow_image_to_buffer(image, image_format: str) -> bytes:
     import io
     img_byte_arr = io.BytesIO()
-    image.save(img_byte_arr, format=format)
+    image.save(img_byte_arr, format=image_format)
     img_byte_arr = img_byte_arr.getvalue()
     return img_byte_arr
 
@@ -52,12 +52,12 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
         from PIL import Image
         im = Image.fromarray(arr).convert('L')
         im = im.resize((width, height), getattr(Image, resize_method))
-        png_bytes = pillow_image_to_buffer(im, format='PNG')
+        png_bytes = pillow_image_to_buffer(im, image_format='PNG')
     elif arr.ndim == 3:
         from PIL import Image
         im = Image.fromarray(arr).convert('RGB')
         im = im.resize((width, height), getattr(Image, resize_method))
-        png_bytes = pillow_image_to_buffer(im, format='PNG')
+        png_bytes = pillow_image_to_buffer(im, image_format='PNG')
     else:
         raise ValueError(f'ndim={len(arr.shape)} array is not supported')
 

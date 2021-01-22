@@ -43,25 +43,3 @@ def handle_dot_in_keys(document: Dict[str, Union[Dict, List]]) -> Union[Dict, Li
 def credentials_file():
     Path.home().joinpath('.jina').mkdir(parents=True, exist_ok=True)
     return Path.home().joinpath('.jina').joinpath('access.yml')
-
-class Waiter:
-    def __init__(self, seconds, message=''):
-        self.logger = JinaLogger(self.__class__.__name__)
-        self._seconds = seconds
-        self._message = message
-
-    def __enter__(self):
-        self.logger.info(f'waiting for {self._seconds} seconds {self._message}')
-        self._wait_until = time.time() + self._seconds
-        return self
-
-    @property
-    def is_time_up(self):
-        return time.time() > self._wait_until
-
-    def sleep(self, seconds=5):
-        self.logger.debug(f'sleeping for {seconds} seconds')
-        time.sleep(seconds)
-
-    def __exit__(self, type, value, traceback):
-        self.logger.debug(f'took {self._seconds} seconds!')

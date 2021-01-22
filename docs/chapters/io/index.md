@@ -18,7 +18,7 @@ with f:
 
 ```python
 with f:
-    f.search(input_fn, top_k=50, output_fn=print)
+    f.search(input_fn, top_k=50, on_done=print)
 ```
 
 `input_fn` is `Iterator[bytes]`, each of which corresponds to a bytes representation of a Document.
@@ -346,7 +346,7 @@ For example, the following will print the request after a `IndexRequest` is fini
 
 ```python
 with f:
-    f.index(input_fn, output_fn=print)
+    f.index(input_fn, on_done=print)
 ```  
 
 This is quite useful when debugging.
@@ -367,5 +367,5 @@ def print_html(resp):
 
 ```python
 f.search(input_fn,
-                 output_fn=print_html, top_k=args.top_k, batch_size=args.query_batch_size)
+                 on_done=print_html, top_k=args.top_k, batch_size=args.query_batch_size)
 ```

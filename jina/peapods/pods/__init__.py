@@ -23,6 +23,7 @@ class BasePod(ExitStack):
         """
         super().__init__()
         self.args = args
+        BasePod._set_conditional_args(self.args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.peas = []  # type: List['BasePea']
@@ -38,7 +39,7 @@ class BasePod(ExitStack):
             self.peas_args = self._parse_args(args)
 
         for a in self.all_args:
-            self._set_conditional_args(a)
+            BasePod._set_conditional_args(a)
 
     @property
     def role(self) -> 'PodRoleType':
@@ -209,6 +210,7 @@ class BasePod(ExitStack):
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
+        self.join()
 
     def join(self):
         """Wait until all peas exit"""
@@ -222,11 +224,16 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _set_conditional_args(args):
-        if args.pod_role == PodRoleType.GATEWAY:
+        if 'pod_role' in args and args.pod_role == PodRoleType.GATEWAY:
             if args.restful:
                 args.runtime_cls = 'RESTRuntime'
             else:
                 args.runtime_cls = 'GRPCRuntime'
+        if 'parallel' in args and args.parallel == 1:
+            args.separated_workspace = False
+            if args.remove_uses_ba:
+                args.uses_after = None
+                args.uses_before = None
 
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
@@ -260,3 +267,8 @@ class BasePod(ExitStack):
             self.deducted_tail = pod.head_args
         else:
             raise ValueError('the current pod has no tail router, deducting the tail is confusing')
+
+    @property
+    def is_ready(self) -> bool:
+        """A Pod is ready when all the Peas it contains are ready"""
+        return all(p.is_ready.is_set() for p in self.peas)

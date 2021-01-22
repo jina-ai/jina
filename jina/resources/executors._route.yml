@@ -4,5 +4,5 @@ metas:
   name: route
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ControlRequest]:
       - !RouteDriver {}

@@ -1,9 +1,7 @@
 import os
-import subprocess
 from pathlib import Path
 
 import pytest
-
 from jina import __version__ as jina_version
 from jina.docker import hubapi
 from jina.docker.hubio import HubIO
@@ -69,7 +67,6 @@ def test_use_executor_pretrained_model_except():
         HubIO(args).build()
 
 
-
 def test_build_timeout_ready():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'dummyhub_slow'), '--timeout-ready', '20000', '--test-uses', '--raise-error'])
@@ -78,7 +75,7 @@ def test_build_timeout_ready():
                     timeout_ready=20000):
         pass
 
-
+@pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
 @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
@@ -112,6 +109,7 @@ def test_hub_build_push(monkeypatch, mocker):
     assert manifests[0]['name'] == summary['manifest_info']['name']
 
 
+@pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
 @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push_push_again(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)

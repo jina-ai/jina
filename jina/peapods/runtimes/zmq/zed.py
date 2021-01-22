@@ -11,7 +11,7 @@ from .... import Message
 from .... import Request
 from ....enums import SkipOnErrorType
 from ....excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
-    BadConfigSource, RuntimeTerminated, ZMQSocketError
+    BadConfigSource, RuntimeTerminated
 from ....executors import BaseExecutor
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
@@ -47,18 +47,10 @@ class ZEDRuntime(ZMQRuntime):
 
     def _load_zmqlet(self):
         """Load ZMQStreamlet to this runtime"""
-        for j in range(self.args.max_socket_retries):
-            try:
-                # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
-                # process/thread
-                self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
-                break
-            except zmq.error.ZMQError:
-                self.logger.warning(f'retry init socket {j+1}/{self.args.max_socket_retries}')
 
-        if not hasattr(self, '_zmqlet'):
-            raise ZMQSocketError(f'can not open ZMQStreamlet after {self.args.max_socket_retries} retries, '
-                                 f'seems sockets are pretty occupied?')
+        # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
+        # process/thread
+        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument.
@@ -104,7 +96,7 @@ class ZEDRuntime(ZMQRuntime):
     #: Private methods required by run_forever
     def _pre_hook(self, msg: 'Message') -> 'ZEDRuntime':
         """Pre-hook function, what to do after first receiving the message """
-        msg.add_route(self.name, self.args.identity)
+        msg.add_route(self.name, hex(id(self)))
         self._request = msg.request
         self._message = msg
 
@@ -165,7 +157,7 @@ class ZEDRuntime(ZMQRuntime):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             self._zmqlet.send_message(self._callback(msg))
-        except RuntimeTerminated as ex:
+        except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
             self._zmqlet.send_message(msg)
             self._zmqlet.close()
@@ -188,10 +180,16 @@ class ZEDRuntime(ZMQRuntime):
                 self._post_hook(msg)
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
-                self.logger.warning(f'{ex!r}')
+                self.logger.warning(f'{ex!r}' +
+                                    f'add "--show-exc-info" to see the exception stack in details'
+                                    if not self.args.show_exc_info else '',
+                                    exc_info=self.args.show_exc_info)
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
-                self.logger.error(f'{ex!r}')
+                self.logger.error(f'{ex!r}' +
+                                  f'add "--show-exc-info" to see the exception stack in details'
+                                  if not self.args.show_exc_info else '',
+                                  exc_info=self.args.show_exc_info)
             if 'JINA_RAISE_ERROR_EARLY' in os.environ:
                 raise
             self._zmqlet.send_message(msg)

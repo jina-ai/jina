@@ -293,28 +293,27 @@ def test_include_scalar():
 
 
 def test_include_repeated_fields():
-    d1 = Document()
-    dd1 = Document()
-    d1.chunks.append(dd1)
-    d1.chunks[0].update_content_hash(exclude_fields=('parent_id', 'id', 'content_hash'))
-    d1.chunks[0].parent_id = 0
-    d1.update_content_hash(include_fields=('chunks',), exclude_fields=None)
+    def build_document(chunk=None):
+        d = Document()
+        d.chunks.append(chunk)
+        d.chunks[0].update_content_hash(exclude_fields=('parent_id', 'id', 'content_hash'))
+        d.chunks[0].parent_id = 0
+        d.update_content_hash(include_fields=('chunks',), exclude_fields=None)
+        return d
 
-    d2 = Document()
-    d2.chunks.append(dd1)
-    d2.chunks[0].update_content_hash(exclude_fields=('parent_id', 'id', 'content_hash'))
-    d2.chunks[0].parent_id = 0
-    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
+    c = Document()
+    d1 = build_document(chunk=c)
+    d2 = build_document(chunk=c)
 
     assert d1.chunks[0].content_hash == d2.chunks[0].content_hash
     assert d1.content_hash == d2.content_hash
 
-    # change text should result in same harsh
+    # change text should result in same hash
     d2.text = 'world'
     d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
     assert d1.content_hash == d2.content_hash
 
-    # change chunks should result in diff harsh
+    # change chunks should result in diff hash
     d2.chunks.clear()
     d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
     assert d1.content_hash != d2.content_hash
