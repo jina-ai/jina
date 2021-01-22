@@ -1,10 +1,13 @@
 !Flow
 with:
+  show_exc_info: true
   read_only: true
   rest_api: true
   port_expose: 45678
 pods:
   pod1:
+    show_exc_info: true
     uses: docker://hubpod:test
   pod2:
+    show_exc_info: true
     uses: docker://hubpod:test

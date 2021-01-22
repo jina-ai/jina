@@ -3,8 +3,8 @@ with:
   restful: $RESTFUL
 pods:
   gt_indexer:
+    show_exc_info: true
     uses: yaml/index-gt.yml
-    separated_workspace: True
     polling: 'all'
     needs: gateway
     shards: 2

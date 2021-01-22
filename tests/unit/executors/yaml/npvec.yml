@@ -8,13 +8,13 @@ components:
       index_filename: vec.idx
     metas:
       name: my_vec_indexer  # a customized name
-      workspace: 'test-workspace'
+      workspace: $JINA_TEST_COMPOUND_FROM_YAML
   - !BinaryPbIndexer
     with:
       index_filename: chunk.gzip
     metas:
       name: chunk_meta_indexer
-      workspace: 'test-workspace'
+      workspace: $JINA_TEST_COMPOUND_FROM_YAML
 with:
   routes:
     meta_add:

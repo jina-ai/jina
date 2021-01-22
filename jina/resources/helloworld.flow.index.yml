@@ -10,4 +10,3 @@ pods:
   - name: index
     uses: $RESOURCE_DIR/helloworld.indexer.yml
     shards: $SHARDS
-    separated_workspace: true

@@ -11,6 +11,7 @@ components:
       name: length-evaluator
 metas:
   name: file-based-evaluation
+  workspace: $JINA_TEST_EVALUATION_FROM_FILE
 requests:
   on:
     SearchRequest:

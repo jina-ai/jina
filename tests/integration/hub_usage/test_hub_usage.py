@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
+
 from jina import __version__ as jina_version
 from jina.docker import hubapi
 from jina.docker.hubio import HubIO

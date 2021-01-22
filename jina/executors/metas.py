@@ -44,8 +44,14 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         the working directory, for persisting the artifacts of the executor. An artifact is a file or collection of files
         used during a workflow run.
 
+        By default it is not set, if you expect your executor to be persisted or to persist any data, remember to set it
+        to the desired value.
+
+        When a `BaseExecutor` is a component of a `CompoundExecutor`, its `workspace` value will be overriden by the `workspace`
+        coming from the `CompoundExecutor` unless a particular `workspace` value is set for the component `BaseExecutor`.
+
         :type: str
-        :default: environment variable :confval:`JINA_EXECUTOR_WORKDIR`, if not set then using current working dir, aka ``cwd``.
+        :default: None
 
     .. confval:: name
 
@@ -111,26 +117,29 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. confval:: pea_id
 
-        the integer index used for distinguish each parallel pea of this executor, useful in :attr:`pea_workspace`
+        the integer index used for distinguish each parallel pea of this executor, required in :attr:`shard_workspace`
 
         :type: int
         :default: ``'${{root.metas.pea_id}}'``
 
-    .. confval:: separated_workspace
+    .. confval:: root_workspace
 
-        whether to isolate the data of the parallel of this executor. If ``True``, then each parallel pea works in its own
-        workspace specified in :attr:`pea_workspace`
+        the workspace of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used,
+        or when a `BaseNumpyIndexer` is used with a `ref_indexer`.
 
-        :type: bool
-        :default: ``'${{root.metas.separated_workspace}}'``
-        
-    .. confval:: pea_workspace
-
-        the workspace of each parallel pea, useful when :attr:`separated_workspace` is set to True. All data and IO operations
-        related to this parallel pea will be conducted under this workspace. It is often set as the sub-directory of :attr:`workspace`.
+        By default, jina will try to find if a `dump` of the executor can be found in `workspace`, otherwise it will try to find it under `root_workspace`
+        assuming it may be part of a `CompoundExecutor`.
 
         :type: str
-        :default: ``'${{root.metas.workspace}}/${{root.metas.name}}-${{root.metas.pea_id}}'``
+        :default: ``'${{root.metas.workspace}}'``
+
+    .. confval:: root_name
+
+        the name of the root executor. It will be the same as `executor` except in the case when an `Executor` inside a `CompoundExecutor` is used,
+        or when a `BaseNumpyIndexer` is used with a `ref_indexer`
+
+        :type: str
+        :default: ``'${{root.metas.name}}'``
 
     .. confval:: read_only
 
@@ -144,7 +153,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
 
     .. note::
 
-        ``separated_workspace``, ``pea_workspace`` and ``pea_id`` is set in a way that when the executor ``A`` is used as
+        ``pea_id`` is set in a way that when the executor ``A`` is used as
         a component of a :class:`jina.executors.compound.CompoundExecutor` ``B``, then ``A``'s setting will be overrided by B's counterpart.
 
     These **meta** fields can be accessed via `self.is_trained` or loaded from a YAML config via :func:`load_config`:

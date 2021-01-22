@@ -171,7 +171,6 @@ pods:
   chunk_idx:
     uses: helloworld.indexer.chunk.yml
     replicas: $SHARDS
-    separated_workspace: true
   join_all:
     uses: _pass
     needs: [doc_idx, chunk_idx]
