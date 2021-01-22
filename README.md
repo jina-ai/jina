@@ -276,16 +276,23 @@ f = (Flow().add(name='p1', needs='gateway')
 A Flow does not have to be local-only, one can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod` is put to a remote machine for parallelization, whereas other pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword. 
 
 <table>
-  <tr>
-    <td width="50%">
-    Local
-    </td>
-    <td width="50%">
-    123.456.78.9
-    </td>
+    <tr>
+    <td>123.456.78.9</td>
+    <td>
+
+```bash
+# have docker installed
+
+docker run --network=host jinaai/jina:latest-daemon --port-expose 8000
+```
+
+</td>
 </tr>
   <tr>
-    <td width="50%">
+    <td>
+    Local
+    </td>
+    <td>
 
 ```python
 import numpy as np
@@ -303,17 +310,8 @@ f = (Flow()
 with f:
     f.index_ndarray(np.random.random([10, 100]), output=print)
 ```
-
-</pre>
-    </td>
-    <td width="50%">
-
-```bash
-docker run --network=host jinaai/jina:latest-daemon --port-expose 8000
-```
-
-</td>
 </tr>
+
 </table>
 
 We provide a demo server on `cloud.jina.ai:8000`, give the following snippet a try!
