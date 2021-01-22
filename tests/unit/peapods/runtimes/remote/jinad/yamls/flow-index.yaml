@@ -1,6 +1,5 @@
 !Flow
 with:
-  logserver: false
   compress_hwm: 1024
 pods:
   encode:
