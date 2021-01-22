@@ -195,9 +195,6 @@ def test_complete_path_not_found():
 
 
 def test_deprecated_decor():
-    v1 = 0
-    v2 = 0
-
     @deprecated_alias(barbar=('bar', 0), foofoo=('foo', 1))
     def dummy(bar, foo):
         return bar, foo
