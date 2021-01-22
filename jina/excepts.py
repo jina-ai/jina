@@ -205,3 +205,7 @@ class HubLoginRequired(Exception):
 
 class DaemonConnectivityError(Exception):
     """ Exception to raise when jina daemon is not connectable"""
+
+
+class NotSupportedError(Exception):
+    """ Exeception when user accidentally using a retired argument """

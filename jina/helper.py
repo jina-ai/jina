@@ -30,17 +30,37 @@ __all__ = ['batch_iterator',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
            'run_async', 'deprecated_alias']
 
+from jina.excepts import NotSupportedError
+
 
 def deprecated_alias(**aliases):
+    """
+    Usage, kwargs with key as the deprecated arg name and value be a tuple,
+     (new_name, deprecate_level). With level 0 means warning, level 1 means exception
+
+    Example:
+
+        @deprecated_alias(buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+    """
+
     def rename_kwargs(func_name: str, kwargs, aliases):
-        for alias, new in aliases.items():
+        for alias, new_arg in aliases.items():
+            if not isinstance(new_arg, tuple):
+                raise ValueError(f'{new_arg} must be a tuple, with first element as the new name, '
+                                 f'second element as the deprecated level: 0 as warning, 1 as exception')
             if alias in kwargs:
-                if new in kwargs:
-                    raise TypeError(f'{func_name} received both {alias} and {new}')
-                warnings.warn(
-                    f'"{alias}" is renamed to {new}" in "{func_name}()" '
-                    f'and "{alias}" will be removed in the next version', DeprecationWarning)
-                kwargs[new] = kwargs.pop(alias)
+                new_name, dep_level = new_arg
+                if new_name in kwargs:
+                    raise NotSupportedError(f'{func_name} received both {alias} and {new_name}')
+
+                if dep_level == 0:
+                    warnings.warn(
+                        f'`{alias}` is renamed to `{new_name}` in `{func_name}()`, the usage of `{alias}` is '
+                        f'deprecated and will be removed in the next version.',
+                        DeprecationWarning)
+                    kwargs[new_name] = kwargs.pop(alias)
+                elif dep_level == 1:
+                    raise NotSupportedError(f'{alias} has been renamed to `{new_name}`')
 
     def deco(f):
         @functools.wraps(f)
