@@ -6,7 +6,6 @@ pods:
   vector:
     uses: vector.yml
     shards: $JINA_SHARDS
-    separated_workspace: True
     uses_after: '_merge_matches'
     polling: $JINA_POLLING
     timeout_ready: '-1'
@@ -15,7 +14,6 @@ pods:
   kv:
     uses: kv.yml
     shards: $JINA_SHARDS
-    separated_workspace: True
     uses_after: '_merge_matches'
     polling: $JINA_POLLING
     timeout_ready: '-1'

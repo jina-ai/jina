@@ -230,7 +230,6 @@ class BasePod(ExitStack):
             else:
                 args.runtime_cls = 'GRPCRuntime'
         if 'parallel' in args and args.parallel == 1:
-            args.separated_workspace = False
             if args.remove_uses_ba:
                 args.uses_after = None
                 args.uses_before = None

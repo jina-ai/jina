@@ -4,7 +4,7 @@ from typing import Type
 
 from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__, __default_host__
-from ...enums import PeaRoleType, RuntimeBackendType, RemoteAccessType
+from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -180,11 +180,7 @@ class BasePea(metaclass=PeaType):
         v = self.runtime_cls
         if not self.runtime_cls:
             if self.args.host != __default_host__:
-                if self.args.remote_manager == RemoteAccessType.JINAD:
-                    self.args.runtime_cls = 'JinadRuntime'
-                elif self.args.remote_manager == RemoteAccessType.SSH:
-                    self.args.runtime_cls = 'SSHRuntime'
-
+                self.args.runtime_cls = 'JinadRuntime'
             if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith('docker://'):
                 self.args.runtime_cls = 'ContainerRuntime'
 

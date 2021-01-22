@@ -38,7 +38,7 @@ class Zmqlet:
         :param logger: the logger to use
         """
         self.args = args
-        self.identity = self.args.identity
+        self.identity = hex(id(self))
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
@@ -226,7 +226,7 @@ class Zmqlet:
         msg = ControlMessage('IDLE', pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
-        self.logger.debug('idle and i told the router')
+        self.logger.debug(f'idle and i {self.identity} told the router')
 
     def recv_message(self, callback: Callable[['Message'], 'Message'] = None) -> 'Message':
         """Receive a protobuf message from the input socket
@@ -593,7 +593,9 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
                 try:
                     sock.bind(f'tcp://{host}:{port}')
                 except zmq.error.ZMQError:
-                    default_logger.error(f'error when binding port {port} to {host}, this port is occupied.')
+                    default_logger.error(f'error when binding port {port} to {host}, this port is occupied. '
+                                         f'If you are using Linux, try `lsof -i :{port}` to see which process '
+                                         f'occupies the port.')
                     raise
     else:
         if port is None:

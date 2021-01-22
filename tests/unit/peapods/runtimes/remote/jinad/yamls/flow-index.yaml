@@ -1,6 +1,5 @@
 !Flow
 with:
-  logserver: false
   compress_hwm: 1024
 pods:
   encode:
@@ -9,4 +8,3 @@ pods:
   index:
     uses: yamls/indexer.yml
     shards: 2
-    separated_workspace: true

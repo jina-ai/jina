@@ -8,14 +8,26 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
-
+from ..jaml import JAMLCompatible
 
 if False:
-    from .flow_runner import MultiFlowRunner
+    from .flow_runner import FlowRunner
     import optuna
 
 
-class EvaluationCallback:
+class OptimizerCallback(JAMLCompatible):
+
+    def get_empty_cops(self) -> 'OptimizerCallback':
+        raise NotImplementedError
+
+    def get_final_evaluation(self) -> float:
+        raise NotImplementedError
+
+    def __call__(self, response):
+        raise NotImplementedError
+
+
+class MeanEvaluationCallback(OptimizerCallback):
     """Callback for storing and calculating evaluation metric."""
 
     def __init__(self, eval_name: Optional[str] = None):
@@ -26,31 +38,26 @@ class EvaluationCallback:
         self.evaluation_values = defaultdict(float)
         self.n_docs = 0
 
-    def get_fresh_callback(self):
-        """Creates a new callback"""
-        return EvaluationCallback(self.eval_name)
+    def get_empty_copy(self):
+        return MeanEvaluationCallback(self.eval_name)
 
-    def get_mean_evaluation(self):
+    def get_final_evaluation(self):
         """Returns mean evaluation value on the eval_name."""
-        if self.eval_name:
-            evaluation = {self.eval_name: self.evaluation_values[self.eval_name] / self.n_docs}
+        if self.eval_name is not None:
+            evaluation_name = self.eval_name
         else:
-            evaluation = {metric: val / self.n_docs for metric, val in self.evaluation_values.items()}
+            evaluation_name = list(self.evaluation_values)[0]
+            if len(self.evaluation_values) > 1:
+                logger.warning(f'More than one evaluation metric found. Please define the right eval_name. Currently {evaluation_name} is used')
 
-        if (len(evaluation.keys()) > 1) and (self.eval_name is None):
-            logger.warning(f'More than one evaluation metric found. Please use the right eval_name. Currently {list(evaluation)[0]} is used')
-
-        return evaluation
+        return self.evaluation_values[evaluation_name] / self.n_docs
 
     def __call__(self, response):
         self.n_docs += len(response.search.docs)
         logger.info(f'Num of docs evaluated: {self.n_docs}')
         for doc in response.search.docs:
             for evaluation in doc.evaluations:
-                self.evaluation_values[evaluation.op_name] = (
-                    self.evaluation_values.get(evaluation.op_name, 0.0)
-                    + evaluation.value
-                )
+                self.evaluation_values[evaluation.op_name] += evaluation.value
 
 
 class OptunaResultProcessor:
@@ -75,76 +82,84 @@ class OptunaResultProcessor:
         yaml.dump(self.best_parameters, open(filepath, 'w'))
 
 
-class OptunaOptimizer:
+class OptunaOptimizer(JAMLCompatible):
     """Optimizer which uses Optuna to run flows and choose best parameters."""
 
     def __init__(
         self,
-        multi_flow: 'MultiFlowRunner',
+        flow_runner: 'FlowRunner',
         parameter_yaml: str,
+        evaluation_callback: 'OptimizerCallback',
+        n_trials: int,
         workspace_base_dir: str = '',
-        workspace_env: str = 'JINA_WORKSPACE',
-        eval_flow_index: int = -1,
+        sampler: str = 'TPESampler',
+        direction: str = 'maximize',
+        seed: int = 42,
+
     ):
         """
-        :param multi_flow: `MultiFlowRunner` object which contains the flows to be run.
+        :param flow_runner: `FlowRunner` object which contains the flows to be run.
         :param parameter_yaml: yaml container the parameters to be optimized
-        :param workspace_env: workspace env name as referred in pods and flows yaml
-        :param eval_flow_index: index of the evaluation flow in the sequence of flows in `MultiFlowRunner`
+        :param n_trials: evaluation trials to be run
+        :param sampler: optuna sampler
+        :param direction: direction of the optimization from either of `maximize` or `minimize`
+        :param seed: random seed for reproducibility
         """
-        self.multi_flow = multi_flow
+        super().__init__()
+        self._version = '1'
+        self.flow_runner = flow_runner
         self.parameter_yaml = parameter_yaml
-        self.workspace_env = workspace_env.lstrip('$')
-        self.eval_flow_index = eval_flow_index
         self.workspace_base_dir = workspace_base_dir
+        self.evaluation_callback = evaluation_callback
+        self.n_trials = n_trials
+        self.sampler = sampler
+        self.direction = direction
+        self.seed = seed
 
     def _trial_parameter_sampler(self, trial):
         trial_parameters = {}
         parameters = load_optimization_parameters(self.parameter_yaml)
         for param in parameters:
-            trial_parameters[param.env_var] = getattr(trial, param.optuna_method)(
+            trial_parameters[param.jaml_variable] = getattr(trial, param.optuna_method)(
                 **param.to_optuna_args()
             )
 
-        trial_workspace = self.workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
+        trial.workspace = self.workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
 
-        trial_parameters[self.workspace_env] = trial_workspace
-        trial.workspace = trial_workspace
         return trial_parameters
 
     def _objective(self, trial):
-        eval_flow = self.multi_flow.flows[self.eval_flow_index]
-        eval_flow.callback = eval_flow.callback.get_fresh_callback()
         trial_parameters = self._trial_parameter_sampler(trial)
-        self.multi_flow.run(trial_parameters, workspace=trial.workspace)
-        evaluation = eval_flow.callback.get_mean_evaluation()
-        op_name = list(evaluation)[0]
-        eval_score = evaluation[op_name]
-        logger.info(colored(f'Avg {op_name}: {eval_score}', 'green'))
+        evaluation_callback = self.evaluation_callback.get_empty_copy()
+        self.flow_runner.run(trial_parameters, workspace=trial.workspace, callback=evaluation_callback)
+        eval_score = evaluation_callback.get_final_evaluation()
+        logger.info(colored(f'Evaluation Score: {eval_score}', 'green'))
         return eval_score
 
     def optimize_flow(
         self,
-        n_trials: int,
-        sampler: str = 'TPESampler',
-        direction: str = 'maximize',
-        seed: int = 42,
         result_processor: 'OptunaResultProcessor' = OptunaResultProcessor,
         **kwargs
     ):
         """
-        :param n_trials: evaluation trials to be run
-        :param sampler: optuna sampler
-        :param direction: direction of the optimization from either of `maximize` or `minimize`
-        :param seed: random seed for reproducibility
         :param kwargs: extra parameters for optuna sampler
         """
         with ImportExtensions(required=True):
             import optuna
-        if sampler == 'GridSampler':
-            sampler = getattr(optuna.samplers, sampler)(**kwargs)
+        if self.sampler == 'GridSampler':
+            sampler = getattr(optuna.samplers, self.sampler)(**kwargs)
         else:
-            sampler = getattr(optuna.samplers, sampler)(seed=seed, **kwargs)
-        study = optuna.create_study(direction=direction, sampler=sampler)
-        study.optimize(self._objective, n_trials=n_trials)
+            sampler = getattr(optuna.samplers, self.sampler)(seed=self.seed, **kwargs)
+        study = optuna.create_study(direction=self.direction, sampler=sampler)
+        study.optimize(self._objective, n_trials=self.n_trials)
         return result_processor(study)
+
+
+# def run_yaml_optimizer(yaml_file):
+#     optimizer = JAML.load(optimizer_yaml)
+#     result = optimizer.optimize_flow(n_trials=10)
+
+#     result_path = str(tmpdir) + '/results/best_parameters.yml'
+#     result.save_parameters(result_path)
+#     parameters = result.best_parameters
+

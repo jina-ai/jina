@@ -6,6 +6,8 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !DummyEncodeDriver {} # cannot be found in dummy_encode_driver.py
+      - !DummyEncodeDriver
+        with:
+          traversal_paths: ['c'] # cannot be found in dummy_encode_driver.py
     SearchRequest:
       - !EncodeDriver {}

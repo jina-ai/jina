@@ -6,7 +6,7 @@ def set_check_parser(parser=None):
         parser = set_base_parser()
 
     parser.add_argument('--summary-exec', type=str,
-                        help='the markdown file path for all executors summary')
+                        help='The markdown file path for all executors summary')
     parser.add_argument('--summary-driver', type=str,
-                        help='the markdown file path for all drivers summary')
+                        help='The markdown file path for all drivers summary')
     return parser

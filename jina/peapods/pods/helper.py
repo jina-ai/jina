@@ -17,7 +17,6 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
         if tail_args:
             _args.port_out = tail_args.port_in
         _args.port_ctrl = random_port()
-        _args.identity = random_identity()
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:
@@ -63,7 +62,6 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = random_port()
     _head_args.port_out = random_port()
-    _head_args.identity = random_identity()
     _head_args.uses = None
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
@@ -86,7 +84,6 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
         else:
             _head_args.name = f'head'
 
-
     # in any case, if header is present, it represent this Pod to consume `num_part`
     # the following peas inside the pod will have num_part=1
     args.num_part = 1
@@ -100,7 +97,6 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     _tail_args = copy.deepcopy(args)
     _tail_args.port_in = random_port()
     _tail_args.port_ctrl = random_port()
-    _tail_args.identity = random_identity()
     _tail_args.socket_in = SocketType.PULL_BIND
     _tail_args.uses = None
 

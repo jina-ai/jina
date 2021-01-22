@@ -100,7 +100,7 @@ class Flow(BaseFlow):
         """
         from ..clients.sugary_io import _input_lines
         return self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                                on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
@@ -169,8 +169,7 @@ class Flow(BaseFlow):
         """
         from ..clients.sugary_io import _input_lines
         return self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT,
-                                                 **kwargs)
+                                                 on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
     def index(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,

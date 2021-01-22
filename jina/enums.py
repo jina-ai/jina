@@ -23,7 +23,6 @@ To use these enums in YAML config, following the example below:
       chunk_idx:
         uses: index/chunk.yml
         parallel: ${{PARALLEL}}
-        separated_workspace: true
         parallel_type: !PollingType ANY
         # or
         parallel_type: ANY
@@ -64,7 +63,7 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         try:
             return cls[s.upper()]
         except KeyError:
-            raise ValueError(f'{s.upper()} is not a valid enum for {cls}')
+            raise ValueError(f'{s.upper()} is not a valid enum for {cls!r}, must be one of {list(cls)}')
 
     @classmethod
     def _to_yaml(cls, representer, data):
