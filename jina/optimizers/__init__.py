@@ -15,7 +15,19 @@ if False:
     import optuna
 
 
-class MeanEvaluationCallback(JAMLCompatible):
+class OptimizerCallback(JAMLCompatible):
+
+    def get_empty_cops(self) -> 'OptimizerCallback':
+        raise NotImplementedError
+
+    def get_final_evaluation(self) -> float:
+        raise NotImplementedError
+
+    def __call__(self, response):
+        raise NotImplementedError
+
+
+class MeanEvaluationCallback(OptimizerCallback):
     """Callback for storing and calculating evaluation metric."""
 
     def __init__(self, eval_name: Optional[str] = None):
@@ -77,7 +89,7 @@ class OptunaOptimizer(JAMLCompatible):
         self,
         flow_runner: 'FlowRunner',
         parameter_yaml: str,
-        evaluation_callback,
+        evaluation_callback: 'OptimizerCallback',
         n_trials: int,
         workspace_base_dir: str = '',
         sampler: str = 'TPESampler',

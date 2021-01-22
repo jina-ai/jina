@@ -105,15 +105,12 @@ class SingleFlowRunner(FlowRunner):
 class MultiFlowRunner(FlowRunner):
     """Chain and run multiple flows"""
 
-    def __init__(self, *flows, eval_flow_index=-1):
+    def __init__(self, *flows):
         """
         :param flows: flows to be executed in sequence
-        :param eval_flow_index: index of the evaluation Flow in the sequence of flows in `MultiFlowRunner`
-
         """
         super().__init__()
         self.flows = flows
-        self.eval_flow_index = eval_flow_index
 
     def run(
         self,
