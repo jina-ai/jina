@@ -204,7 +204,7 @@ def test_deprecated_decor():
 
     # deprecated warn
     with pytest.deprecated_call():
-        dummy(barbar=1, foo=2)
+        assert dummy(barbar=1, foo=2) == (1, 2)
 
     # deprecated HARD
     with pytest.raises(NotSupportedError):
