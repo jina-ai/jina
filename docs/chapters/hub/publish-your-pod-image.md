@@ -83,6 +83,6 @@ Here is the checklist to help you locate the problem.
 - [ ] The pod bundle is badly placed.
 - [ ] The build is success but it fails on [three basic usage tests](./use-your-pod.html#use-your-pod-image).
 
-Click "Details" and checkout the log of the CICD pipeline:
+Click "Details" and check out the log of the CICD pipeline:
 
 ![](img/5f4181e9.png)

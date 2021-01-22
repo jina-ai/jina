@@ -1,5 +1,4 @@
 import os
-import uuid
 
 import numpy as np
 import pytest
@@ -557,3 +556,13 @@ def test_flow_workspace_id():
     assert list(f.workspace_id.values())[0] == new_id
 
 
+def test_flow_identity_override():
+    f = Flow().add().add(parallel=2).add(parallel=2)
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == f.num_pods
+
+    f = Flow(identity='123456').add().add(parallel=2).add(parallel=2)
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == 1

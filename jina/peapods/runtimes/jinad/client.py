@@ -11,6 +11,7 @@ from pkg_resources import resource_filename
 from .... import __default_host__
 from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
+from ....jaml.helper import complete_path
 from ....logging import JinaLogger
 
 
@@ -83,8 +84,8 @@ class DaemonClient:
         import requests
 
         with ExitStack() as file_stack:
-            files = [(self.upload_api_arg, file_stack.enter_context(open(f, 'rb')))
-                     for f in dependencies]  # type: List[Tuple[str, BinaryIO]]
+            files = [(self.upload_api_arg, file_stack.enter_context(open(complete_path(f), 'rb')))
+                     for f in dependencies]
 
             if files:
                 try:

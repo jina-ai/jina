@@ -116,7 +116,7 @@ class RouteDriver(ControlReqDriver):
             # where some dealer is broken/fails to start, so `idle_dealer_ids` is empty
         elif self.req.command == 'IDLE':
             self.idle_dealer_ids.add(self.envelope.receiver_id)
-            self.logger.debug(f'{self.envelope.receiver_id} is idle')
+            self.logger.debug(f'{self.envelope.receiver_id} is idle, now I know these idle peas {self.idle_dealer_ids}')
             if self.is_pollin_paused:
                 self.runtime._zmqlet.resume_pollin()
                 self.is_pollin_paused = False

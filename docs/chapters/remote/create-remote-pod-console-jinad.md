@@ -38,6 +38,6 @@ jina ping 3.16.166.3 49993
 
 ## What's next?
 
-You many also want to checkout the following articles.
+You many also want to check out the following articles.
 [Creating a Remote Pod via Flow APIs](https://docs.jina.ai/chapters/remote/create-remote-pod-flow.html) 
 [Creating a Remote Flow](https://docs.jina.ai/chapters/remote/create-remote-flow.html) 
