@@ -88,6 +88,10 @@ def flow(args):
         from jina.logging import default_logger
         default_logger.critical('start a flow from CLI requires a valid "--uses"')
 
+def optimizer(args):
+    from jina.optimizers import run_optimizer
+    run_optimizer(args)
+
 
 def hub(args):
     """Start a hub builder for build, push, pull"""

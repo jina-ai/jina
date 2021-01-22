@@ -1,13 +1,14 @@
 import json
 import os
-import yaml
 
+import yaml
 from google.protobuf.json_format import MessageToJson
 
 from jina import Document
-from jina.optimizers import OptunaOptimizer, MeanEvaluationCallback
-from jina.optimizers.flow_runner import SingleFlowRunner
 from jina.jaml import JAML
+from jina.optimizers import OptunaOptimizer, MeanEvaluationCallback, run_optimizer
+from jina.optimizers.flow_runner import SingleFlowRunner
+from jina.parsers.optimizer import set_optimizer_parser
 
 BEST_PARAMETERS = {
     'JINA_DUMMYCRAFTER_PARAM1': 0,
@@ -88,3 +89,7 @@ with:
 
     assert parameters == BEST_PARAMETERS
     assert yaml.load(open(result_path)) == BEST_PARAMETERS
+
+
+def test_cli():
+    run_optimizer(set_optimizer_parser().parse_args(['--uses', 'tests/integration/optimizers/optimizer_conf.yml']))

@@ -8,7 +8,7 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
-from ..jaml import JAMLCompatible
+from ..jaml import JAMLCompatible, JAML
 
 if False:
     from .flow_runner import FlowRunner
@@ -153,6 +153,13 @@ class OptunaOptimizer(JAMLCompatible):
         study = optuna.create_study(direction=self.direction, sampler=sampler)
         study.optimize(self._objective, n_trials=self.n_trials)
         return result_processor(study)
+
+
+def run_optimizer(args):
+    from .flow_runner import SingleFlowRunner
+    with open(args.uses) as f:
+        optimizer = JAML.load(f)
+    result = optimizer.optimize_flow()
 
 
 # def run_yaml_optimizer(yaml_file):
