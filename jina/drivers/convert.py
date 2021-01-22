@@ -2,7 +2,6 @@ from ..drivers import BaseRecursiveDriver
 
 if False:
     from ..types.sets import DocumentSet
-    from ..types.document import Document
 
 
 class ConvertDriver(BaseRecursiveDriver):
@@ -14,8 +13,6 @@ class ConvertDriver(BaseRecursiveDriver):
     def _apply_all(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
             *args,
             **kwargs,
     ) -> None:

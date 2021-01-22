@@ -42,8 +42,6 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     def _apply_all(
             self,
             docs: Iterator['DocGroundtruthPair'],
-            context_doc: 'DocGroundtruthPair' = None,
-            field: str = None,
             *args,
             **kwargs
     ) -> None:
