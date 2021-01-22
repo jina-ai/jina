@@ -1,4 +1,0 @@
-!Flow
-with:
-  runtime: process
-  logserver: true

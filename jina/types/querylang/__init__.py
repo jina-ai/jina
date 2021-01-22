@@ -83,6 +83,7 @@ class QueryLang:
                         raise BadQueryLangType('fail to construct a query language') from ex
             elif isinstance(querylang, Tuple):
                 self.name = querylang[0]
+                self._querylang.priority = querylang[1]['priority'] if 'priority' in querylang[1] else 0
                 self._querylang.parameters.update(querylang[1])
             elif querylang is not None:
                 # note ``None`` is not considered as a bad type

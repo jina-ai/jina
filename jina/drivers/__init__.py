@@ -27,8 +27,8 @@ if False:
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
     from ..types.message import Message
-    from ..types.request import Request
     from ..types.document import Document
+    from ..types.request import Request
     from ..types.sets import QueryLangSet, DocumentSet
 
 
@@ -201,6 +201,13 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
             return []
 
     @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
+
+    @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``"""
         return self.runtime.logger
@@ -239,6 +246,15 @@ class BaseRecursiveDriver(BaseDriver):
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
+    def _apply_root(
+        self,
+        docs: 'DocumentSet',
+        field: str,
+        *args,
+        **kwargs,
+    ) -> None:
+        return self._apply_all(docs, None, field, *args, **kwargs)
+
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
     def _apply_all(
@@ -256,20 +272,13 @@ class BaseRecursiveDriver(BaseDriver):
         :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
         """
 
-    @property
-    def docs(self):
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
-
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec(docs, None, None, [], *args, **kwargs)
+                self._apply_root(docs, 'docs', *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(
                     [doc],

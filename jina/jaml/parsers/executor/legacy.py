@@ -18,7 +18,7 @@ class LegacyParser(VersionedYAMLParser):
             if work_dir:
                 # then try to see if it can be loaded from its regular expected workspace (ref_indexer)
                 dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
-                bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
+                bin_dump_path = os.path.join(dump_path, f'{name}.bin')
                 if os.path.exists(bin_dump_path):
                     return bin_dump_path
 
@@ -52,6 +52,12 @@ class LegacyParser(VersionedYAMLParser):
         if dump_path:
             obj = cls.load(dump_path)
             obj.logger.success(f'restore {cls.__name__} from {dump_path}')
+            # consider the case where `dump_path` is not based on `obj.workspace`. This is needed
+            # for
+            workspace_loaded_from = data.get('metas', {})['workspace']
+            workspace_in_dump = getattr(obj, 'workspace', None)
+            if workspace_in_dump != workspace_loaded_from:
+                obj.workspace = workspace_loaded_from
             load_from_dump = True
         else:
             cls._init_from_yaml = True
