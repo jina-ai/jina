@@ -200,3 +200,34 @@ def test_update_kv(config, mocker):
         search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
                            on_done=validate_results)
     mock.assert_called_once()
+
+
+@pytest.mark.parametrize('has_content', [True, False])
+def test_delete_kv(config, mocker, has_content):
+    flow_file = 'flow_kv.yml'
+
+    def validate_result_factory(num_matches):
+        def validate_results(resp):
+            mock()
+            assert len(resp.docs) == num_matches
+
+        return validate_results
+
+    with Flow.load_config(flow_file) as index_flow:
+        index_flow.index(input_fn=random_docs(0, 10))
+    validate_index_size(10)
+    mock = mocker.Mock()
+    with Flow.load_config(flow_file) as search_flow:
+        search_flow.search(input_fn=chain(random_docs(2, 5), random_docs(100, 120)),
+                           output_fn=validate_result_factory(3))
+    mock.assert_called_once()
+
+    with Flow.load_config(flow_file) as index_flow:
+        index_flow.delete(input_fn=random_docs(0, 3, has_content=has_content))
+    validate_index_size(7)
+
+    mock = mocker.Mock()
+    with Flow.load_config(flow_file) as search_flow:
+        search_flow.search(input_fn=random_docs(2, 4),
+                           output_fn=validate_result_factory(1))
+    mock.assert_called_once()
