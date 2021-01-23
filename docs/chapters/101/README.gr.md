@@ -38,9 +38,9 @@
   </tr>
 </table>
 
-Θέλετε μια γενική εισαγωγή σχετικά με την νευρωνική αναζήτηση και για πώς το πως διαφέρει από την συμβατική παλιά συμβολική αναζήτηση;[Δείτε αυτό το επεξηγηματικό άρθρο](https://medium.com/@jina_ai/what-is-jina-and-neural-search-7a9e166608ab) και μάθετε περισσότερα!
+Θέλετε μια γενική εισαγωγή σχετικά με την νευρωνική αναζήτηση και για πώς το πως διαφέρει από την συμβατική παλιά συμβολική αναζήτηση; [Δείτε αυτό το επεξηγηματικό άρθρο](https://medium.com/@jina_ai/what-is-jina-and-neural-search-7a9e166608ab) και μάθετε περισσότερα!
 
-<h2 align="center">Document & Chunks</h2>
+<h2 align="center">Document & Chunks (Έγγραφο & Τμήματα)</h2>
 
 <img align="left" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -62,7 +62,7 @@
 
 <br/><br/><br/><br/><br/><br/>
 
-<h2 align="center">Executors</h2>
+<h2 align="center">Executors (Εκτελεστές)</h2>
 
 <img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -88,7 +88,7 @@ The **Executors** are a big family. Κάθε μέλος της οικογένε�
 
 <br/><br/>
 
-<h2 align="center">Drivers (Drivers)</h2>
+<h2 align="center">Drivers (Οδηγοί)</h2>
 
 <img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -156,7 +156,7 @@ Now we've got a garden full of Pods, with each Pod full of Peas. That's a lot to
 </p>
 <br><br><br>
 <p align="center">
-    ✨<b>Αφήστε ελεύθερη την περιέργεια σας και καλή αναζήτηση!</b>🔍s
+    ✨<b>Αφήστε ελεύθερη την περιέργεια σας και καλή αναζήτηση!</b>🔍
 </p>
 <br><br><br>
 <p align="center">
