@@ -65,7 +65,6 @@ And the implementation behind it? It's simple:
           index:
             uses: helloworld.indexer.yml
             shards: 2
-            separated_workspace: true
 
 
 .. confval:: Flow in Dashboard

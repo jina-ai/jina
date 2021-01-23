@@ -92,7 +92,7 @@ Here is the list of environment variables that ``jina`` respects during runtime.
 
     :default: unset
 
-.. confval:: JINA_LOG_VERBOSITY
+.. confval:: JINA_LOG_LEVEL
 
     The log verbosity of the Jina logger. Possible values are ``DEBUG``, ``WARNING``, ``INFO``, ``ERROR``, ``CRITICAL``.
 

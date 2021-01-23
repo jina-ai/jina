@@ -1,16 +1,17 @@
 !Flow
+version: '1'
 metas:
   prefetch: 10
 pods:
-  crafter:
+  - name: crafter
     parallel: 4
-  encoder:
+  - name: encoder
     parallel: 4
-  faiss_indexer:
+  - name: faiss_indexer
     parallel: 1
-  doc_indexer:
+  - name: doc_indexer
     needs: crafter
-  join_all:
+  - name: join_all
     uses: _pass
     needs: [doc_indexer, faiss_indexer]
     read_only: true

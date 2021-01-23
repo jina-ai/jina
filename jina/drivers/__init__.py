@@ -27,8 +27,8 @@ if False:
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
     from ..types.message import Message
-    from ..types.request import Request
     from ..types.document import Document
+    from ..types.request import Request
     from ..types.sets import QueryLangSet, DocumentSet
 
 
@@ -201,6 +201,13 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
             return []
 
     @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
+
+    @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``"""
         return self.runtime.logger
@@ -221,12 +228,13 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.__class__ == other.__class__
 
     def __getstate__(self) -> Dict[str, Any]:
-        """Do not save the BasePea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
-        file is always unattached."""
-        d = dict(self.__dict__)
-        if 'runtime' in d:
-            del d['runtime']
-        d['attached'] = False
+        """
+        Unlike `Executor`, driver is stateless.
+
+        Therefore, on every save, it creates a new & empty driver object and save it.
+        """
+
+        d = dict(self.__class__(**self._init_kwargs_dict).__dict__)
         return d
 
 
@@ -237,6 +245,15 @@ class BaseRecursiveDriver(BaseDriver):
         """
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
+
+    def _apply_root(
+        self,
+        docs: 'DocumentSet',
+        field: str,
+        *args,
+        **kwargs,
+    ) -> None:
+        return self._apply_all(docs, None, field, *args, **kwargs)
 
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
@@ -255,20 +272,13 @@ class BaseRecursiveDriver(BaseDriver):
         :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
         """
 
-    @property
-    def docs(self):
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
-
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec(docs, None, None, [], *args, **kwargs)
+                self._apply_root(docs, 'docs', *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(
                     [doc],

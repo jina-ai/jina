@@ -1,6 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from jina.parsers.peapods.runtimes.distributed import mixin_distributed_feature_parser
+
 
 def set_pea_parser(parser=None):
     if not parser:
@@ -19,6 +21,7 @@ def set_pea_parser(parser=None):
     mixin_zed_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_parser(parser)
+    mixin_distributed_feature_parser(parser)
     mixin_pea_parser(parser)
 
     return parser
@@ -31,7 +34,7 @@ def set_pod_parser(parser=None):
 
     set_pea_parser(parser)
 
-    from .peapods.pods.base import mixin_base_pod_parser
+    from .peapods.pod import mixin_base_pod_parser
 
     mixin_base_pod_parser(parser)
 
@@ -110,29 +113,32 @@ def get_main_parser():
                                 formatter_class=_chf))
 
     set_pod_parser(sp.add_parser('pod',
-                                 help='start a pod',
-                                 description='Start a Jina pod',
+                                 help='Start a Pod',
+                                 description='Start a Jina Pod',
                                  formatter_class=_chf))
 
     set_flow_parser(sp.add_parser('flow',
-                                  description='Start a Jina flow that consists of multiple pods',
-                                  help='start a flow from a YAML file', formatter_class=_chf))
+                                  description='Start a Flow that orchestrates multiple pods',
+                                  help='Start a Flow',
+                                  formatter_class=_chf))
+
 
     set_gateway_parser(sp.add_parser('gateway',
-                                     description='Start a Jina gateway that receives client remote requests via gRPC',
-                                     help='start a gateway', formatter_class=_chf))
+                                     description='Start a Gateway that receives client Requests via gRPC/REST interface',
+                                     help='Start a Gateway',
+                                     formatter_class=_chf))
 
     set_ping_parser(sp.add_parser('ping',
-                                  help='ping a pod and check the network connectivity',
+                                  help='Ping a pod and check its connectivity',
                                   description='Ping a remote pod and check the network connectivity',
                                   formatter_class=_chf))
 
     set_check_parser(sp.add_parser('check',
-                                   help='check the import status of all executors and drivers',
+                                   help='Check the import of all Executors and Drivers',
                                    description='Check the import status of all executors and drivers',
                                    formatter_class=_chf))
 
-    set_hub_parser(sp.add_parser('hub', help='build, push, pull Jina Hub images',
+    set_hub_parser(sp.add_parser('hub', help='Build, push, pull Jina Hub images',
                                  description='Build, push, pull Jina Hub images',
                                  formatter_class=_chf))
 

@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import os
 import pickle
-import subprocess
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -13,7 +12,7 @@ from typing import Dict, TypeVar, Type, List
 from .decorators import as_train_method, as_update_method, store_init_kwargs, as_aggregate_method, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import typename, get_random_identity
+from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext
@@ -30,7 +29,6 @@ AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 _ref_desolve_map = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'] = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
-_ref_desolve_map.__dict__['metas'].__dict__['separated_workspace'] = False
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -62,13 +60,15 @@ class ExecutorType(type(JAMLCompatible), type):
         aggregate_funcs = ['evaluate']
 
         reg_cls_set = getattr(cls, '_registered_class', set())
-        if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
+
+        cls_id = f'{cls.__module__}.{cls.__name__}'
+        if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
             wrap_func(cls, ['__init__'], store_init_kwargs)
             wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
             wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
-            reg_cls_set.add(cls.__name__)
+            reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
         return cls
 
@@ -124,8 +124,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._snapshot_files = []
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
-        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
-        self._attached_pea = None
+
 
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True) -> None:
         with TimeContext('post_init may take some time', self.logger):
@@ -145,6 +144,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def _fill_requests(self, _requests):
+        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
 
         if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
             # if control request is forget in YAML, then fill it
@@ -176,7 +176,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             elif type(getattr(self, k)) == type(v):
                 setattr(self, k, v)
         if not getattr(self, 'name', None):
-            _id = get_random_identity().split('-')[0]
+            _id = random_identity().split('-')[0]
             _name = f'{typename(self)}-{_id}'
             if getattr(self, 'warn_unnamed', False):
                 self.logger.warning(
@@ -240,30 +240,52 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """
         return self.get_file_from_workspace(f'{self.name}.yml')
 
-    @property
-    def current_workspace(self) -> str:
-        """ Get the path of the current workspace.
+    @staticmethod
+    def get_shard_workspace(workspace_folder: str, workspace_name: str, pea_id: int) -> str:
+        # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
+        return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}') if pea_id > 0 else workspace_folder
 
-        :return: if ``separated_workspace`` is set to ``False`` then ``metas.workspace`` is returned,
-                otherwise the ``metas.pea_workspace`` is returned
+    @property
+    def workspace_name(self):
+        return self.name
+
+    @property
+    def _workspace(self):
+        """ Property to access `workspace` if existing or default to `./`. Useful to provide good interface when
+        using executors directly in python.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            with NumpyIndexer() as indexer:
+                indexer.touch()
+
+        :return: returns the workspace property of the executor or default to './'
         """
-        work_dir = self.pea_workspace if self.separated_workspace and self.pea_id != -1 else self.workspace  # type: str
-        return work_dir
+        return self.workspace or './'
+
+    @property
+    def shard_workspace(self) -> str:
+        """ Get the path of the current shard.
+
+        :return: returns the workspace of the shard of this Executor
+        """
+        return BaseExecutor.get_shard_workspace(self._workspace, self.workspace_name, self.pea_id)
 
     def get_file_from_workspace(self, name: str) -> str:
         """Get a usable file path under the current workspace
 
         :param name: the name of the file
 
-        :return depending on ``metas.separated_workspace`` the file could be located in ``metas.workspace`` or ``metas.pea_workspace``
+        :return file path
         """
-        Path(self.current_workspace).mkdir(parents=True, exist_ok=True)
-        return os.path.join(self.current_workspace, name)
+        Path(self.shard_workspace).mkdir(parents=True, exist_ok=True)
+        return os.path.join(self.shard_workspace, name)
 
     @property
     def physical_size(self) -> int:
         """Return the size of the current workspace in bytes"""
-        root_directory = Path(self.current_workspace)
+        root_directory = Path(self.shard_workspace)
         return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
     def __getstate__(self):
@@ -298,7 +320,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def save(self, filename: str = None):
         """
-        Persist data of this executor to the :attr:`workspace` (or :attr:`pea_workspace`). The data could be
+        Persist data of this executor to the :attr:`shard_workspace`. The data could be
         a file or collection of files produced/used during an executor run.
 
         These are some of the common data that you might want to persist:
@@ -344,23 +366,19 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     @classmethod
     def inject_config(cls: Type[AnyExecutor],
                       raw_config: Dict,
-                      separated_workspace: bool = False,
                       pea_id: int = 0,
                       read_only: bool = False,
                       *args, **kwargs) -> Dict:
         """Inject config into the raw_config before loading into an object.
 
         :param raw_config: raw config to work on
-        :param separated_workspace: the dump and data files associated to this executor will be stored separately for
-                each parallel pea, which will be indexed by the ``pea_id``
-        :param pea_id: the id of the storage of this parallel pea, only effective when ``separated_workspace=True``
+        :param pea_id: the id of the storage of this parallel pea
         :param read_only: if the executor should be readonly
         :return: an executor object
         """
         if 'metas' not in raw_config:
             raw_config['metas'] = {}
         tmp = fill_metas_with_defaults(raw_config)
-        tmp['metas']['separated_workspace'] = separated_workspace
         tmp['metas']['pea_id'] = pea_id
         tmp['metas']['read_only'] = read_only
 

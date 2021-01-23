@@ -1,16 +1,16 @@
-from typing import Union, List, Iterator
+import uuid
+from typing import Union, List, Iterator, Dict
+
+import numpy as np
 
 from .base import BaseFlow
 from ..clients.base import InputFnType, CallbackFnType
 from ..enums import DataInputType
 from ..helper import deprecated_alias
 
-if False:
-    import numpy as np
-
 
 class Flow(BaseFlow):
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+
     def train(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -43,7 +43,7 @@ class Flow(BaseFlow):
         """
         return self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                       on_done: CallbackFnType = None,
                       on_error: CallbackFnType = None,
@@ -60,9 +60,9 @@ class Flow(BaseFlow):
         """
         from ..clients.sugary_io import _input_ndarray
         return self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
-                                         on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        on_done: CallbackFnType = None,
                        on_error: CallbackFnType = None,
@@ -83,7 +83,7 @@ class Flow(BaseFlow):
         self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
                     on_done: CallbackFnType = None,
@@ -104,9 +104,9 @@ class Flow(BaseFlow):
         """
         from ..clients.sugary_io import _input_lines
         return self._get_client(**kwargs).index(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                         on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
                     on_done: CallbackFnType = None,
@@ -128,9 +128,9 @@ class Flow(BaseFlow):
         """
         from ..clients.sugary_io import _input_files
         return self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                         on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
+                                                on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
                      on_done: CallbackFnType = None,
@@ -152,9 +152,10 @@ class Flow(BaseFlow):
         """
         from ..clients.sugary_io import _input_files
         return self._get_client(**kwargs).search(_input_files(patterns, recursive, size, sampling_rate, read_mode),
-                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
+                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT,
+                                                 **kwargs)
 
-    @deprecated_alias(output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
                      on_done: CallbackFnType = None,
@@ -175,9 +176,9 @@ class Flow(BaseFlow):
         """
         from ..clients.sugary_io import _input_lines
         return self._get_client(**kwargs).search(_input_lines(lines, filepath, size, sampling_rate, read_mode),
-                                          on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
+                                                 on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -209,12 +210,11 @@ class Flow(BaseFlow):
         """
         return self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def update(self, input_fn: InputFnType = None,
-              on_done: CallbackFnType = None,
-              on_error: CallbackFnType = None,
-              on_always: CallbackFnType = None,
-              **kwargs):
+               on_done: CallbackFnType = None,
+               on_error: CallbackFnType = None,
+               on_always: CallbackFnType = None,
+               **kwargs):
         """Updates documents on the current flow
         Example,
         .. highlight:: python
@@ -241,12 +241,11 @@ class Flow(BaseFlow):
         """
         self._get_client(**kwargs).update(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
     def delete(self, input_fn: InputFnType = None,
-              on_done: CallbackFnType = None,
-              on_error: CallbackFnType = None,
-              on_always: CallbackFnType = None,
-              **kwargs):
+               on_done: CallbackFnType = None,
+               on_error: CallbackFnType = None,
+               on_always: CallbackFnType = None,
+               **kwargs):
         """Do deletion on the current flow
         Example,
         .. highlight:: python
@@ -273,7 +272,7 @@ class Flow(BaseFlow):
         """
         self._get_client(**kwargs).delete(input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,

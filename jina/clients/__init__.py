@@ -15,7 +15,7 @@ class Client(BaseClient):
     It manages the asyncio eventloop internally, so all interfaces are synchronous from the outside.
     """
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def train(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -33,7 +33,7 @@ class Client(BaseClient):
         self.mode = RequestType.TRAIN
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -51,7 +51,7 @@ class Client(BaseClient):
         self.mode = RequestType.SEARCH
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index(self, input_fn: InputFnType = None,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -69,7 +69,7 @@ class Client(BaseClient):
         self.mode = RequestType.INDEX
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def update(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -87,7 +87,7 @@ class Client(BaseClient):
         self.mode = RequestType.UPDATE
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer='input_fn', callback='on_done', output_fn='on_done')
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def delete(self, input_fn: InputFnType = None,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,

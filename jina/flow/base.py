@@ -5,13 +5,16 @@ import argparse
 import base64
 import copy
 import os
+import re
 import threading
+import uuid
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
 from urllib.request import Request, urlopen
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
+from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
@@ -30,6 +33,9 @@ FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
     pass
+
+
+_regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
 
 class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -144,7 +150,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                            read_only=True,
                            runtime_cls='GRPCRuntime',
-                           log_id=self.args.log_id,
                            pod_role=PodRoleType.GATEWAY))
 
         kwargs.update(self._common_kwargs)
@@ -201,6 +206,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
+        # pod naming logic
         pod_name = kwargs.get('name', None)
 
         if pod_name in op_flow._pod_nodes:
@@ -215,16 +221,25 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             # hyphen - can not be used in the name
             raise ValueError(f'name: {pod_name} is invalid, please follow the python variable name conventions')
 
+        # needs logic
         needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
 
+        # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
             if key not in kwargs:
                 kwargs[key] = value
 
+        # check if host is set to remote:port
+        if 'host' in kwargs:
+            m = re.match(_regex_port, kwargs['host'])
+            if kwargs.get('host', __default_host__) != __default_host__ and m and 'port_expose' not in kwargs:
+                kwargs['port_expose'] = m.group(2)
+                kwargs['host'] = m.group(1)
+
+        # update kwargs of this pod
         kwargs.update(dict(
             name=pod_name,
             pod_role=pod_role,
-            log_id=self.args.log_id,
             num_part=len(needs)
         ))
 
@@ -394,7 +409,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
-            f'flow is closed and all resources should be released already, current build level is {self._build_level}')
+            f'flow is closed and all resources are released, current build level is {self._build_level}')
         self.logger.close()
 
     def start(self):
@@ -718,6 +733,22 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def _update_client(self):
         if self._pod_nodes['gateway'].args.restful:
             self._cls_client = WebSocketClient
+
+    @property
+    def workspace_id(self) -> Dict[str, str]:
+        """Get all Pods' ``workspace_id`` values in a dict """
+        return {k: p.args.workspace_id for k, p in self if hasattr(p.args, 'workspace_id')}
+
+    @workspace_id.setter
+    def workspace_id(self, value: str):
+        """Set all Pods' ``workspace_id`` to ``value``
+
+        :param value: a hexadecimal UUID string
+        """
+        uuid.UUID(value)
+        for k, p in self:
+            if hasattr(p.args, 'workspace_id'):
+                p.args.workspace_id = value
 
     def index(self):
         raise NotImplementedError

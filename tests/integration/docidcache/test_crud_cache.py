@@ -151,9 +151,15 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
     for indexer_fname in [KV_IDX_FILENAME, VEC_IDX_FILENAME]:
         indexers_full_size = 0
         for i in range(shards):
-            indexer_folder = 'docindexer' if indexer_fname == KV_IDX_FILENAME else 'vecindexer'
-            indexer_folder = f'inc_{indexer_folder}-{i + 1}'
-            indexer_path = tmp_path / indexer_folder / indexer_fname if shards > 1 else tmp_path / indexer_fname
+            from jina.executors.compound import CompoundExecutor
+            compound_name = 'inc_docindexer' if KV_IDX_FILENAME in indexer_fname else 'inc_vecindexer'
+            workspace_folder = CompoundExecutor.get_component_workspace_from_compound_workspace(tmp_path,
+                                                                                                compound_name,
+                                                                                                i + 1 if shards > 1 else 0 )
+            indexer_path = os.path.join(BaseIndexer.get_shard_workspace(workspace_folder=workspace_folder,
+                                                                        workspace_name=indexer_fname.rstrip('.bin'),
+                                                                        pea_id=i + 1 if shards > 1 else 0),
+                                        f'{indexer_fname}')
 
             # in the configuration of content-hash / same_content=True
             # there aren't enough docs to satisfy batch size, only 1 shard will have it
@@ -257,7 +263,7 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            output_fn=validate_result_factory(TOP_K)
+            on_done=validate_result_factory(TOP_K)
         )
     mock.assert_called_once()
 
@@ -287,7 +293,7 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            output_fn=validate_result_factory(TOP_K)
+            on_done=validate_result_factory(TOP_K)
         )
     mock.assert_called_once()
 
@@ -302,6 +308,6 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            output_fn=validate_result_factory(0)
+            on_done=validate_result_factory(0)
         )
     mock.assert_called_once()

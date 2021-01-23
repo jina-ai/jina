@@ -331,12 +331,12 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
                     embed1 = _encode_modality(batch_modality0)
 
             class MemoryHungryRanker:
-                
+
                 @batching_multi_input(batch_size = 64, slice_on = 2 , num_data=2)
                 def score(
                     self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
-                ) -> 'np.ndarray': 
-                ...       
+                ) -> 'np.ndarray':
+                ...
     """
 
     def _batching(func):
@@ -360,7 +360,7 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
             yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0,num_data)]
-            data_iterators = [batch_iterator(_get_slice(args[slice_on + i], total_size), b_size , split_over_axis, 
+            data_iterators = [batch_iterator(_get_slice(args[slice_on + i], total_size), b_size , split_over_axis,
                             yield_dict=yield_dict[i]) for i in range(0, num_data)]
 
             for batch in data_iterators[0]:

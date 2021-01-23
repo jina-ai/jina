@@ -14,6 +14,7 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
+from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
@@ -23,23 +24,43 @@ import numpy as np
 
 __all__ = ['batch_iterator',
            'parse_arg',
-           'random_port', 'get_random_identity', 'expand_env_var',
+           'random_port', 'random_identity', 'random_uuid', 'expand_env_var',
            'colored', 'ArgNamespace', 'is_valid_local_config_source',
            'cached_property', 'is_url',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
            'run_async', 'deprecated_alias']
 
+from jina.excepts import NotSupportedError
+
 
 def deprecated_alias(**aliases):
+    """
+    Usage, kwargs with key as the deprecated arg name and value be a tuple,
+     (new_name, deprecate_level). With level 0 means warning, level 1 means exception
+
+    Example:
+
+        @deprecated_alias(buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+    """
+
     def rename_kwargs(func_name: str, kwargs, aliases):
-        for alias, new in aliases.items():
+        for alias, new_arg in aliases.items():
+            if not isinstance(new_arg, tuple):
+                raise ValueError(f'{new_arg} must be a tuple, with first element as the new name, '
+                                 f'second element as the deprecated level: 0 as warning, 1 as exception')
             if alias in kwargs:
-                if new in kwargs:
-                    raise TypeError(f'{func_name} received both {alias} and {new}')
-                warnings.warn(
-                    f'"{alias}" is renamed to {new}" in "{func_name}()" '
-                    f'and "{alias}" will be removed in the next version', DeprecationWarning)
-                kwargs[new] = kwargs.pop(alias)
+                new_name, dep_level = new_arg
+                if new_name in kwargs:
+                    raise NotSupportedError(f'{func_name} received both {alias} and {new_name}')
+
+                if dep_level == 0:
+                    warnings.warn(
+                        f'`{alias}` is renamed to `{new_name}` in `{func_name}()`, the usage of `{alias}` is '
+                        f'deprecated and will be removed in the next version.',
+                        DeprecationWarning)
+                    kwargs[new_name] = kwargs.pop(alias)
+                elif dep_level == 1:
+                    raise NotSupportedError(f'{alias} has been renamed to `{new_name}`')
 
     def deco(f):
         @functools.wraps(f)
@@ -202,8 +223,12 @@ def random_port() -> Optional[int]:
     return _port
 
 
-def get_random_identity() -> str:
-    return str(uuid.uuid1())
+def random_identity() -> str:
+    return str(random_uuid())
+
+
+def random_uuid() -> uuid.UUID:
+    return uuid.uuid4()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
@@ -506,8 +531,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
 
 def format_full_version_info(info: Dict, env_info: Dict) -> str:
-    version_info = '\n'.join(f'{k:30s}{v}' for k, v in info.items())
-    env_info = '\n'.join(f'{k:30s}{v}' for k, v in env_info.items())
+    version_info = '\n'.join(f'- {k:30s}{v}' for k, v in info.items())
+    env_info = '\n'.join(f'* {k:30s}{v}' for k, v in env_info.items())
     return version_info + '\n' + env_info
 
 
@@ -703,3 +728,32 @@ def slugify(value):
     """
     s = str(value).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
+
+
+@contextmanager
+def change_cwd(path):
+    """
+    Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.
+    """
+    curdir = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(curdir)
+
+
+@contextmanager
+def change_env(key, val):
+    """
+    Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.
+    """
+    old_var = os.environ.get(key, None)
+    os.environ[key] = val
+    try:
+        yield
+    finally:
+        if old_var:
+            os.environ[key] = old_var
+        else:
+            os.environ.pop(key)

@@ -39,6 +39,22 @@ def test_input_lines_with_empty_filepath_and_lines():
             pass
 
 
+def test_input_lines_with_jsonlines_docs():
+    result = list(_input_lines(filepath='tests/unit/clients/python/docs.jsonlines'))
+    assert len(result) == 2
+    assert result[0]['text'] == "a"
+    assert result[1]['text'] == "b"
+
+
+def test_input_lines_with_jsonlines_docs_groundtruth():
+    result = list(_input_lines(filepath='tests/unit/clients/python/docs_groundtruth.jsonlines'))
+    assert len(result) == 2
+    assert result[0][0]['text'] == "a"
+    assert result[0][1]['text'] == "b"
+    assert result[1][0]['text'] == "c"
+    assert result[1][1]['text'] == "d"
+
+
 @pytest.mark.parametrize(
     'patterns, recursive, size, sampling_rate, read_mode',
     [

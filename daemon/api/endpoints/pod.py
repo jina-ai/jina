@@ -1,104 +1,81 @@
 import uuid
-from typing import List, Union
 
-from fastapi import status, APIRouter, File, UploadFile
-from fastapi.exceptions import HTTPException
+from fastapi import APIRouter, HTTPException
 
-from ... import daemon_logger
-from ...excepts import PodStartException
-from ...helper import pod_to_namespace, create_meta_files_from_upload
-from ...models import SinglePodModel, ParallelPodModel
-from ...store import pod_store
+from jina.helper import ArgNamespace
+from jina.parsers import set_pod_parser
+from ... import Runtime400Exception
+from ...models import PodModel
+from ...models.status import StoreStatus, StoreItemStatus
+from ...stores import pod_store as store
 
-router = APIRouter()
+router = APIRouter(prefix='/pods', tags=['pods'])
 
 
 @router.get(
-    path='/pod/parameters',
-    summary='Fetch all params that a Pod can accept'
+    path='',
+    summary='Get all alive Pods\' status',
+    response_model=StoreStatus
+)
+async def _get_items():
+    return store.status
+
+
+@router.get(
+    path='/arguments',
+    summary='Get all accept arguments of a Pod'
 )
 async def _fetch_pod_params():
-    return SinglePodModel.schema()['properties']
+    return PodModel.schema()['properties']
 
 
-
-@router.put(
-    path='/upload',
-    summary='Upload YAML & py_modules required by a Pod',
-)
-async def _upload(
-        uses_files: List[UploadFile] = File(()),
-        pymodules_files: List[UploadFile] = File(())
-):
-    """
-
-    """
-    upload_status = 'nothing to upload'
-    if uses_files:
-        [create_meta_files_from_upload(current_file) for current_file in uses_files]
-        upload_status = 'uploaded'
-
-    if pymodules_files:
-        [create_meta_files_from_upload(current_file) for current_file in pymodules_files]
-        upload_status = 'uploaded'
-
-    return {
-        'status_code': status.HTTP_200_OK,
-        'status': upload_status
-    }
-
-
-@router.put(
-    path='/pod',
+@router.post(
+    path='',
     summary='Create a Pod',
+    description='Create a Pod and add it to the store',
+    status_code=201,
+    response_model=uuid.UUID
 )
-async def _create(
-        pod_arguments: Union[SinglePodModel, ParallelPodModel]
-):
-    """This is used to create a remote Pod which gets triggered either in a Flow context or via CLI
-
-    Args: pod_arguments (SinglePodModel or RemotePodModel)
-    """
-    pod_arguments = pod_to_namespace(args=pod_arguments)
-
-    with pod_store._session():
-        try:
-            pod_id = pod_store._create(pod_arguments=pod_arguments)
-        except PodStartException as e:
-            raise HTTPException(status_code=404,
-                                detail=f'Pod couldn\'t get started: {e!r}')
-        except Exception as e:
-            daemon_logger.error(f'Got an error while creating a pod {e!r}')
-            raise HTTPException(status_code=404,
-                                detail=f'Something went wrong')
-        return {
-            'status_code': status.HTTP_200_OK,
-            'pod_id': pod_id,
-            'status': 'started'
-        }
+async def _create(pod: 'PodModel'):
+    try:
+        args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
+        return store.add(args)
+    except Exception as ex:
+        raise Runtime400Exception from ex
 
 
 @router.delete(
-    path='/pod',
-    summary='Terminate a running Pod',
+    path='/all',
+    summary='Terminate all running Pods',
 )
-async def _delete(
-        pod_id: uuid.UUID
-):
-    """Close Pod Context
-    """
-    with pod_store._session():
-        try:
-            pod_store._delete(pod_id=pod_id)
-            return {
-                'status_code': status.HTTP_200_OK
-            }
-        except KeyError:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail=f'Pod ID {pod_id} not found! Please create a new Pod')
+async def _clear_all():
+    store.clear()
+
+
+@router.delete(
+    path='/{id}',
+    summary='Terminate a running Pod',
+    description='Terminate a running Pod and release its resources'
+)
+async def _delete(id: uuid.UUID):
+    try:
+        del store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.get(
+    path='/{id}',
+    summary='Get status of a running Pod',
+    response_model=StoreItemStatus
+)
+async def _status(id: uuid.UUID):
+    try:
+        return store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
 
 @router.on_event('shutdown')
 def _shutdown():
-    with pod_store._session():
-        pod_store._delete_all()
+    store.reset()

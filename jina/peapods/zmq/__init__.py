@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import argparse
 import asyncio
 import os
 import tempfile
@@ -14,14 +15,11 @@ from zmq.ssh import tunnel_connection
 
 from ... import __default_host__, Request
 from ...enums import SocketType
-from ...helper import colored, get_random_identity, get_readable_size, get_or_reuse_loop
+from ...helper import colored, random_identity, get_readable_size, get_or_reuse_loop
 from ...importer import ImportExtensions
 from ...logging import default_logger, profile_logger, JinaLogger
 from ...types.message import Message
 from ...types.message.common import ControlMessage
-
-if False:
-    import argparse
 
 
 class Zmqlet:
@@ -33,13 +31,14 @@ class Zmqlet:
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr:str=None):
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr: str = None):
         """
 
         :param args: the parsed arguments from the CLI
         :param logger: the logger to use
         """
         self.args = args
+        self.identity = hex(id(self))
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
@@ -141,14 +140,14 @@ class Zmqlet:
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
             in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                            self.args.identity,
+                                            self.identity,
                                             ssh_server=self.args.ssh_server,
                                             ssh_keyfile=self.args.ssh_keyfile,
                                             ssh_password=self.args.ssh_password)
             self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
 
             out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                              self.args.identity,
+                                              self.identity,
                                               ssh_server=self.args.ssh_server,
                                               ssh_keyfile=self.args.ssh_keyfile,
                                               ssh_password=self.args.ssh_password
@@ -224,10 +223,10 @@ class Zmqlet:
 
     def send_idle(self):
         """Tell the upstream router this dealer is idle """
-        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.args.identity)
+        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
-        self.logger.debug('idle and i told the router')
+        self.logger.debug(f'idle and i {self.identity} told the router')
 
     def recv_message(self, callback: Callable[['Message'], 'Message'] = None) -> 'Message':
         """Receive a protobuf message from the input socket
@@ -547,14 +546,14 @@ def _get_random_ipc() -> str:
         tmp = os.environ['JINA_IPC_SOCK_TMP']
         if not os.path.exists(tmp):
             raise ValueError(f'This directory for sockets ({tmp}) does not seems to exist.')
-        tmp = os.path.join(tmp, get_random_identity())
+        tmp = os.path.join(tmp, random_identity())
     except KeyError:
         tmp = tempfile.NamedTemporaryFile().name
     return f'ipc://{tmp}'
 
 
 def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
-                 socket_type: 'SocketType', identity: 'str' = None,
+                 socket_type: 'SocketType', identity: str = None,
                  use_ipc: bool = False, ssh_server: str = None,
                  ssh_keyfile: str = None, ssh_password: str = None) -> Tuple['zmq.Socket', str]:
     sock = {
@@ -594,7 +593,9 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
                 try:
                     sock.bind(f'tcp://{host}:{port}')
                 except zmq.error.ZMQError:
-                    default_logger.error(f'error when binding port {port} to {host}, this port is occupied.')
+                    default_logger.error(f'error when binding port {port} to {host}, this port is occupied. '
+                                         f'If you are using Linux, try `lsof -i :{port}` to see which process '
+                                         f'occupies the port.')
                     raise
     else:
         if port is None:

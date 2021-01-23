@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 import glob
 import itertools as it
 import random
+import json
 from typing import List, Union, Iterator, Any
 
 import numpy as np
@@ -35,9 +36,17 @@ def _input_lines(
                 yield i
 
     if filepath:
+        file_type = filepath.split('.')[-1]
         with open(filepath, read_mode) as f:
             for line in it.islice(sample(f), size):
-                yield line
+                if file_type == 'jsonlines':
+                    value = json.loads(line)
+                    if 'groundtruth' in value:
+                        yield (value['document'], value['groundtruth'])
+                    else:
+                        yield value
+                else:
+                    yield line
     elif lines:
         for line in it.islice(sample(lines), size):
             yield line

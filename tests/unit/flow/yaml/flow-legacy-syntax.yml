@@ -1,12 +1,13 @@
 !Flow
+version: '1'
 pods:
-  pod0:
+  - name: pod0
     uses: _pass
     needs: gateway
-  pod1:
+  - name: pod1
     uses: _pass
     needs: gateway
-  pod2:
+  - name: pod2
     uses: _merge
     needs: [pod1, pod0]
 

@@ -2,7 +2,7 @@
 
 **Logging** (beta)
 In order to better understand and monitor the running and lifetime of Jina's flow, peas and pods, jina logs messages
-in 6 different levels (DEBUG, INFO, WARNING, ERROR, CRITICAL, SUCCESS). The default level is controlled by 'JINA_LOG_VERBOSITY' environment variable.
+in 6 different levels (DEBUG, INFO, WARNING, ERROR, CRITICAL, SUCCESS). The default level is controlled by 'JINA_LOG_LEVEL' environment variable.
 
 Jina uses loggers from logging python library with different Handlers to control where the messages are sent/stored:
 
