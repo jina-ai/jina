@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
@@ -68,18 +69,15 @@ def test_pod_remote_context(runtime):
     Pod(remote_pod_args).start().close()
 
 
-@pytest.mark.parametrize('remove_uses_ba', [False, True])
-def test_pod_args_remove_uses_ba(remove_uses_ba):
-    if remove_uses_ba:
-        args = set_pod_parser().parse_args(['--remove-uses-ba', '--uses-before', '_pass', '--uses-after', '_pass'])
-    else:
-        args = set_pod_parser().parse_args(['--uses-before', '_pass', '--uses-after', '_pass'])
+def test_pod_args_remove_uses_ba():
+    args = set_pod_parser().parse_args([])
+    with Pod(args) as p:
+        assert p.num_peas == 1
 
-    pod = Pod(args)
+    args = set_pod_parser().parse_args(['--uses-before', '_pass', '--uses-after', '_pass'])
+    with Pod(args) as p:
+        assert p.num_peas == 1
 
-    if remove_uses_ba:
-        assert pod.args.uses_before is None
-        assert pod.args.uses_after is None
-    else:
-        assert pod.args.uses_before == '_pass'
-        assert pod.args.uses_after == '_pass'
+    args = set_pod_parser().parse_args(['--uses-before', '_pass', '--uses-after', '_pass', '--parallel', '2'])
+    with Pod(args) as p:
+        assert p.num_peas == 4

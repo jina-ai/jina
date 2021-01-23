@@ -18,7 +18,7 @@ the Docker container.
     gp.add_argument('--docker-kwargs', action=DockerKwargsAppendAction,
                     metavar='KEY:VALUE', nargs='*',
                     help='''
-Dictionary of kwargs arguments that will be passed to Docker sdk when starting the docker '
+Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
 container. 
 
 More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/

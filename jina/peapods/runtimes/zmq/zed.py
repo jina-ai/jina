@@ -1,4 +1,3 @@
-import os
 import time
 from collections import defaultdict
 from typing import Dict, List
@@ -9,7 +8,7 @@ from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
 from .... import Message
 from .... import Request
-from ....enums import SkipOnErrorType
+from ....enums import OnErrorStrategy
 from ....excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
     BadConfigSource, RuntimeTerminated
 from ....executors import BaseExecutor
@@ -136,7 +135,7 @@ class ZEDRuntime(ZMQRuntime):
             # otherwise a reducer will lose its function when eailier pods raise exception
             raise NoExplicitMessage
 
-        if msg.envelope.status.code != jina_pb2.StatusProto.ERROR or self.args.skip_on_error < SkipOnErrorType.HANDLE:
+        if msg.envelope.status.code != jina_pb2.StatusProto.ERROR or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE:
             self._executor(self.request_type)
         else:
             raise ChainedPodException
@@ -177,6 +176,9 @@ class ZEDRuntime(ZMQRuntime):
             # general runtime error and nothing serious, we simply mark the message to error and pass on
             if not self.is_post_hook_done:
                 self._post_hook(msg)
+
+            if self.args.on_error_strategy == OnErrorStrategy.THROW_EARLY:
+                raise
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
                 self.logger.warning(f'{ex!r}' +
@@ -189,8 +191,7 @@ class ZEDRuntime(ZMQRuntime):
                                   f'add "--show-exc-info" to see the exception stack in details'
                                   if not self.args.show_exc_info else '',
                                   exc_info=self.args.show_exc_info)
-            if 'JINA_RAISE_ERROR_EARLY' in os.environ:
-                raise
+
             self._zmqlet.send_message(msg)
 
     #: Some class-specific properties

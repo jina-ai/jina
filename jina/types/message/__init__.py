@@ -90,7 +90,7 @@ class Message:
 
     def _add_envelope(self, pod_name, identity, check_version=False,
                       request_id: str = None, request_type: str = None,
-                      compress: str = 'NONE', compress_hwm: int = 0, compress_lwm: float = 1., *args,
+                      compress: str = 'NONE', compress_min_bytes: int = 0, compress_min_ratio: float = 1., *args,
                       **kwargs) -> 'jina_pb2.EnvelopeProto':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
@@ -132,8 +132,8 @@ class Message:
             raise TypeError(f'expecting request in type: jina_pb2.RequestProto, but receiving {type(self.request)}')
 
         envelope.compression.algorithm = str(compress)
-        envelope.compression.low_watermark = compress_lwm
-        envelope.compression.high_watermark = compress_hwm
+        envelope.compression.min_ratio = compress_min_ratio
+        envelope.compression.min_bytes = compress_min_bytes
         envelope.timeout = 5000
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)
@@ -170,7 +170,7 @@ class Message:
         _size_before = sys.getsizeof(data)
 
         # lower than hwm, pass compression
-        if _size_before < self.envelope.compression.high_watermark or self.envelope.compression.high_watermark == 0:
+        if _size_before < self.envelope.compression.min_bytes or self.envelope.compression.min_bytes < 0:
             self.envelope.compression.algorithm = 'NONE'
             return data
 
@@ -192,16 +192,16 @@ class Message:
                 c_data = gzip.compress(data)
 
             _size_after = sys.getsizeof(c_data)
-            _c_ratio = _size_after / _size_before
+            _c_ratio = _size_before / _size_after
 
-            if _c_ratio < self.envelope.compression.low_watermark:
+            if _c_ratio > self.envelope.compression.min_ratio:
                 data = c_data
             else:
                 # compression rate is too bad, dont bother
                 # save time on decompression
-                default_logger.debug(f'compression rate {(_size_after / _size_before * 100):.0f}% '
-                                     f'is lower than low_watermark '
-                                     f'{self.envelope.compression.low_watermark}')
+                default_logger.debug(f'compression rate {(_size_before / _size_after):.2f}% '
+                                     f'is lower than min_ratio '
+                                     f'{self.envelope.compression.min_ratio}')
                 self.envelope.compression.algorithm = 'NONE'
         except Exception as ex:
             default_logger.error(
@@ -345,5 +345,3 @@ class Message:
     @property
     def is_ready(self) -> bool:
         return self.envelope.status.code == jina_pb2.StatusProto.READY
-
-

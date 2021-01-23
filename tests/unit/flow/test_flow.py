@@ -555,6 +555,20 @@ def test_flow_workspace_id():
     assert list(f.workspace_id.values())[0] == new_id
 
 
+def test_flow_identity():
+    f = Flow().add().add().add().build()
+    assert len(f.identity) == 4
+    assert len(set(f.identity.values())) == 4
+
+    with pytest.raises(ValueError):
+        f.identity = 'hello'
+
+    new_id = random_identity()
+    f.identity = new_id
+    assert len(set(f.identity.values())) == 1
+    assert list(f.identity.values())[0] == new_id
+
+
 def test_flow_identity_override():
     f = Flow().add().add(parallel=2).add(parallel=2)
 
@@ -565,3 +579,22 @@ def test_flow_identity_override():
 
     with f:
         assert len(set(p.args.identity for _, p in f)) == 1
+
+    y = '''
+!Flow
+version: '1.0'
+pods:
+    - uses: _pass
+    - uses: _pass
+      parallel: 3
+    '''
+
+    f = Flow.load_config(y)
+    for _, p in f:
+        p.args.identity = '1234'
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == 2
+        for _, p in f:
+            if p.args.identity != '1234':
+                assert p.name == 'gateway'
