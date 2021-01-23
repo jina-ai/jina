@@ -30,7 +30,6 @@ class QueryLang:
             from jina import QueryLang
             from jina.drivers.querylang.slice import SliceQL
 
-            s = SliceQL(start=3, end=4)
             ql = QueryLang('SliceQL', 1, {'start': 3, 'end': 1, 'priority': 1})
 
     .. warning::
