@@ -1,4 +1,5 @@
 import collections
+import json
 import os
 from typing import Union, TextIO, Dict, Tuple, Optional
 
@@ -10,7 +11,6 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
-import json
 from jina.excepts import BadConfigSource
 from jina.importer import PathImporter
 
@@ -110,14 +110,15 @@ def parse_config_source(path: Union[str, TextIO, Dict],
         # NOTE: this returns a binary stream
         comp_path = resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
         return open(comp_path, encoding='utf8'), comp_path
-    elif allow_raw_yaml_content and path.startswith('!'):
+    elif allow_raw_yaml_content and path.lstrip().startswith('!'):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
         return io.StringIO(path), None
-    elif allow_raw_driver_yaml_content and path.startswith('- !'):
+    elif allow_raw_driver_yaml_content and path.lstrip().startswith('- !'):
         # possible driver YAML content, right now it is only used for debugging
         with open(resource_filename('jina', '/'.join(
-                ('resources', 'executors.base.all.yml' if path.startswith('- !!') else 'executors.base.yml')))) as fp:
+                ('resources',
+                 'executors.base.all.yml' if path.lstrip().startswith('- !!') else 'executors.base.yml')))) as fp:
             _defaults = fp.read()
         path = path.replace('- !!', '- !').replace('|', '\n        with: ')  # for indent, I know, its nasty
         path = _defaults.replace('*', path)
