@@ -19,7 +19,6 @@ def get_index_flow(yaml_file, num_shards):
     f = Flow().add(
         uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
-        separated_workspace=True,
     )
     return f
 
@@ -28,7 +27,6 @@ def get_delete_flow(yaml_file, num_shards):
     f = Flow().add(
         uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
-        separated_workspace=True,
         polling='all',
     )
     return f
@@ -38,7 +36,6 @@ def get_update_flow(yaml_file, num_shards):
     f = Flow().add(
         uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
-        separated_workspace=True,
         polling='all',
     )
     return f
@@ -48,7 +45,6 @@ def get_search_flow(yaml_file, num_shards):
     f = Flow(read_only=True).add(
         uses=os.path.join(cur_dir, 'yaml', yaml_file),
         shards=num_shards,
-        separated_workspace=True,
         uses_after='_merge_matches_topk',
         polling='all',
         timeout_ready='-1'
@@ -145,7 +141,7 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards, expe
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
             input_fn=random_docs(28, 35),
-            output_fn=validate_result_factory(10),
+            on_done=validate_result_factory(10),
             request_size=100
         )
     mock.assert_called_once()
@@ -193,7 +189,7 @@ def test_delete_kv(config, mocker, num_shards, expected1, expected2):
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
             input_fn=random_docs(28, 35),
-            output_fn=validate_result_factory(5),
+            on_done=validate_result_factory(5),
             request_size=100)
     mock.assert_called_once()
 
@@ -250,7 +246,7 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards, expe
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
             input_fn=random_docs(0, 1),
-            output_fn=validate_result_factory(),
+            on_done=validate_result_factory(),
             request_size=100)
     assert mock.call_count == 1
 
@@ -323,6 +319,6 @@ def test_update_kv(config, mocker, num_shards, expected_size_1, expected_size_2)
         with get_search_flow(index_conf, num_shards) as search_flow:
             search_flow.search(
                 input_fn=random_docs(start, end),
-                output_fn=validate_results,
+                on_done=validate_results,
                 request_size=100)
     assert mock.call_count == 3
