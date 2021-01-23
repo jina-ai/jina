@@ -22,16 +22,8 @@ class FlowStore(BaseStore):
 
                 y_spec = config.read().decode()
                 f = Flow.load_config(y_spec)
-                for _, pod in f:
-                    pod.args.identity = flow_identity
-                    for k, v in pod.peas_args.items():
-                        if v and isinstance(v, argparse.Namespace):
-                            v.workspace_id = str(workspace_id)
-                        if v and isinstance(v, List):
-                            for i in v:
-                                i.workspace_id = str(workspace_id)
-                    # pod.args.workspace_id = str(workspace_id)
-
+                f.identity = flow_identity
+                f.workspace_id = str(workspace_id)
                 f.start()
 
             _id = uuid.UUID(f.args.identity)

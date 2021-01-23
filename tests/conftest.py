@@ -41,6 +41,6 @@ def docker_compose(request):
     )
     time.sleep(5)
     yield
-    # os.system(
-    #     f"docker-compose -f {request.param} --project-directory . down --remove-orphans"
-    # )
+    os.system(
+        f"docker-compose -f {request.param} --project-directory . down --remove-orphans"
+    )

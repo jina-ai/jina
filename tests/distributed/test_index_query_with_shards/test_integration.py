@@ -11,7 +11,6 @@ pod_dir = os.path.join(cur_dir, 'pods')
 dependencies = [f'{pod_dir}/index.yml', f'{pod_dir}/encode.yml', f'{pod_dir}/slice.yml', f'{pod_dir}/dummy-encoder.py']
 
 
-# @pytest.mark.skip('skip until `workspace-id` is fully implemented')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose):
     print(f'\nCreating workspace with dependencies')

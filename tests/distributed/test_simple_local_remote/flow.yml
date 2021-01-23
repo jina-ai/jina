@@ -4,7 +4,6 @@ with:
   read_only: true
 pods:
   - name: encoder
-    # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: encode.yml
     host: $JINA_ENCODER_HOST
     port_in: 45000
@@ -12,8 +11,8 @@ pods:
     port_expose: 8000
     upload_files:
       - encode.yml
+      - dummy-encoder.py
   - name: indexer
-    # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: index.yml
     read_only: False
     host: $JINA_INDEXER_HOST
@@ -21,3 +20,5 @@ pods:
     port_out: 45001
     port_ctrl: 45002
     port_expose: 8000
+    upload_files:
+      - index.yml

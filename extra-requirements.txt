@@ -69,5 +69,6 @@ websockets:                 http, devel, test, daemon, ws
 wsproto:                    http, devel, test, ws, daemon
 pydantic:                   http, devel, test, daemon
 python-multipart:           http, devel, test, daemon
+aiofiles:                   devel, cicd, http, test, daemon
 pytest-custom_exit_code:    cicd, test
 bs4:                        test
