@@ -27,6 +27,24 @@ class BaseStore(MutableMapping):
         """Add a new element to the store. This method needs to be overridden by the subclass"""
         raise NotImplementedError
 
+    def delete(self,
+               id: Union[str, uuid.UUID],
+               workspace: bool = False,
+               **kwargs):
+        if isinstance(id, str):
+            id = uuid.UUID(id)
+
+        if id in self._items:
+            v = self._items[id]
+            if 'object' in v and hasattr(v['object'], 'close'):
+                v['object'].close()
+            if workspace and v.get('workdir', None):
+                shutil.rmtree(v['workdir'])
+            del self[id]
+            self._logger.success(f'{colored(str(id), "cyan")} is released from the store.')
+        else:
+            raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
+
     def __iter__(self):
         return iter(self._items)
 
@@ -38,28 +56,16 @@ class BaseStore(MutableMapping):
             key = uuid.UUID(key)
         return self._items[key]
 
-    def __delitem__(self, key: Union['uuid.UUID', str]):
+    def __delitem__(self, key: uuid.UUID):
         """ Release a Pea/Pod/Flow object from the store """
-        if isinstance(key, str):
-            key = uuid.UUID(key)
-
-        if key in self._items:
-            v = self._items[key]
-            if 'object' in v and hasattr(v['object'], 'close'):
-                v['object'].close()
-            if v.get('workdir', None):
-                shutil.rmtree(v['workdir'])
-            self._items.pop(key)
-            self._time_updated = datetime.now()
-            self._logger.success(f'{colored(str(key), "cyan")} is released from the store.')
-            self._num_del += 1
-        else:
-            raise KeyError(f'{colored(str(key), "cyan")} not found in store.')
+        self._items.pop(key)
+        self._time_updated = datetime.now()
+        self._num_del += 1
 
     def clear(self) -> None:
         keys = list(self._items.keys())
         for k in keys:
-            self.pop(k)
+            self.delete(id=k, workspace=True)
 
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """
@@ -71,7 +77,6 @@ class BaseStore(MutableMapping):
         t = datetime.now()
         value.update({'time_created': t})
         self._time_updated = t
-        self._logger.success(f'{colored(str(key), "cyan")} is added')
         self._num_add += 1
 
     @property

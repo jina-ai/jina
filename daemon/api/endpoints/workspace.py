@@ -1,7 +1,7 @@
 import uuid
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, Body, HTTPException
 
 from ... import Runtime400Exception
 from ...models.status import StoreStatus, StoreItemStatus
@@ -40,14 +40,17 @@ async def _delete(id: uuid.UUID):
 
 @router.post(
     path='',
-    summary='Create a Workspace and upload files to it',
+    summary='Upload files to a workspace',
     description='Return a UUID to the workspace, which can be used later when create Pea/Pod/Flow',
     response_model=uuid.UUID,
     status_code=201,
 )
-async def _create(files: List[UploadFile] = File(...)):
+async def _create(
+    files: List[UploadFile] = File(...),
+    workspace_id: Optional[uuid.UUID] = Body(None)
+):
     try:
-        return store.add(files)
+        return store.add(files, workspace_id)
     except Exception as ex:
         raise Runtime400Exception from ex
 

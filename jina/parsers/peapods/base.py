@@ -28,6 +28,11 @@ When not given, then the default naming strategy will apply.
                                               '/'.join(('resources', 'logging.default.yml'))),
                     help='The YAML config of the logger used in this object.')
 
+    gp.add_argument('--workspace-id', type=str, default=random_identity(),
+                    help='the UUID for identifying the workspace. When not given a random id will be assigned.'
+                         'Multiple Pea/Pod/Flow will work under the same workspace if they share the same '
+                         '`workspace-id`.')
+
     # hidden CLI used for internal only
 
     gp.add_argument('--identity', type=str, default=random_identity(),

@@ -21,7 +21,7 @@ fastapi:                    devel, cicd, http, test, daemon
 uvicorn>=0.12.1:            devel, cicd, http, test, daemon
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, test, daemon
 nmslib>=1.6.3:              index
-docker:                     devel, cicd, network, hub, test
+docker:                     devel, cicd, network, hub, test, daemon
 torch>=1.1.0:               framework, cicd
 transformers>=2.6.0:        nlp
 flair:                      nlp

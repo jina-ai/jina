@@ -1,7 +1,7 @@
 import uuid
 from argparse import Namespace
 
-from jina.helper import random_uuid
+from jina.helper import random_uuid, colored
 from jina.peapods import Pea
 from .base import BaseStore
 from .helper import jina_workspace
@@ -31,4 +31,5 @@ class PeaStore(BaseStore):
                 'workdir': _workdir,
                 'workspace_id': workspace_id
             }
+            self._logger.success(f'{colored(str(_id), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}')
             return _id

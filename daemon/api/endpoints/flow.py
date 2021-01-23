@@ -31,7 +31,7 @@ async def _fetch_flow_params():
 
 @router.post(
     path='',
-    summary='Creat a Flow from a YAML config',
+    summary='Create a Flow from a YAML config',
     status_code=201,
     response_model=uuid.UUID
 )
@@ -60,9 +60,12 @@ async def _clear_all():
     summary='Terminate a running Flow',
     description='Terminate a running Flow and release its resources'
 )
-async def _delete(id: 'uuid.UUID'):
+async def _delete(
+    id: uuid.UUID,
+    workspace: bool = False
+):
     try:
-        del store[id]
+        store.delete(id=id, workspace=workspace)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
