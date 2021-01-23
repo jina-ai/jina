@@ -45,7 +45,7 @@ class QueryLang:
         .. code-block:: python
 
             # to protobuf object
-            s.as_pb_object
+            ql.as_pb_object
 
     """
 
