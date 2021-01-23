@@ -270,7 +270,7 @@ class CompressAlgo(BetterEnum):
     LZMA = 5
 
 
-class SkipOnErrorType(BetterEnum):
+class OnErrorStrategy(BetterEnum):
     """ The level of error handling
 
     .. warning::
@@ -280,9 +280,10 @@ class SkipOnErrorType(BetterEnum):
         side-effect.
     """
 
-    NONE = 0  # do not skip on error, keep running the original executor & driver logics
-    EXECUTOR = 1  # skip the executor on error, but driver is still called, no error message is labeled
-    HANDLE = 2  # skip the handle on error, no driver and executor is called, pre_hook and post_hook are called
+    IGNORE = 0  #: Ignore it, keep running all Drivers & Executors logics in the sequel flow
+    SKIP_EXECUTOR = 1  #: Skip all Executors in the sequel, but drivers are still called
+    SKIP_HANDLE = 2  #: Skip all Drivers & Executors in the sequel, only `pre_hook` and `post_hook` are called
+    THROW_EARLY = 3  #: Immediately throw the exception, the sequel flow will not be running at all
 
 
 class FlowInspectType(BetterEnum):

@@ -40,7 +40,6 @@ def test_search_non_existent(config, mocker):
     with Flow().add(
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
-            separated_workspace=True,
     ) as index_flow:
         index_flow.index(input_fn=random_docs(0, 3), request_size=1)
 
@@ -49,7 +48,6 @@ def test_search_non_existent(config, mocker):
             show_exc_info=True,
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
-            separated_workspace=True,
             uses_after='_merge_root',
             polling='all'
     ) as search_flow:

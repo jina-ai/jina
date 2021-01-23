@@ -115,11 +115,10 @@ class Request:
         return DocumentSet(self.body.groundtruths)
 
     @staticmethod
-    def _decompress(data: bytes, algorithm: str) -> bytes:
-        if not algorithm:
+    def _decompress(data: bytes, ctag: CompressAlgo) -> bytes:
+        if not ctag:
             return data
 
-        ctag = CompressAlgo.from_string(algorithm)
         if ctag == CompressAlgo.LZ4:
             import lz4.frame
             data = lz4.frame.decompress(data)
@@ -151,7 +150,8 @@ class Request:
         else:
             # if not then build one from buffer
             r = jina_pb2.RequestProto()
-            _buffer = self._decompress(self._buffer, self._envelope.compression.algorithm if self._envelope else None)
+            _buffer = self._decompress(self._buffer, CompressAlgo.from_string(
+                self._envelope.compression.algorithm) if self._envelope else None)
             r.ParseFromString(_buffer)
             self.is_used = True
             self._request = r

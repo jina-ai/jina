@@ -193,9 +193,9 @@ message EnvelopeProto {
     message CompressConfigProto {
         string algorithm = 1;  // compress algorithm used for request
 
-        uint64 high_watermark = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
+        uint64 min_bytes = 2; // the high watermark that triggers the message compression. message bigger than this HWM (in bytes) will be compressed by the algorithm.
 
-        float low_watermark = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
+        float min_ratio = 3; // the low watermark that enables the sending of a compressed message. compression rate (after_size/before_size) lower than this LWM will be considered as successeful compression, and will be sent. Otherwise, it will send the original message without compression
 
         google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
     }
