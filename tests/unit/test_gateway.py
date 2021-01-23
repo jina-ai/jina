@@ -6,10 +6,8 @@ import numpy as np
 import pytest
 import requests
 
-from jina.enums import CompressAlgo
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
-from tests import random_docs
 
 concurrency = 10
 
@@ -17,14 +15,6 @@ concurrency = 10
 class DummyEncoder(BaseEncoder):
     def encode(self, data, *args, **kwargs):
         pass
-
-
-@pytest.mark.parametrize('compress_algo', list(CompressAlgo))
-def test_compression(compress_algo):
-    f = Flow(compress=str(compress_algo)).add(name='DummyEncoder', parallel=2)
-
-    with f:
-        f.index(random_docs(10))
 
 
 @pytest.mark.skip('this test hangs up for unknown reason on github, works on local')

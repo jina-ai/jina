@@ -170,7 +170,7 @@ class Message:
         _size_before = sys.getsizeof(data)
 
         # lower than hwm, pass compression
-        if _size_before < self.envelope.compression.high_watermark or self.envelope.compression.high_watermark == 0:
+        if _size_before < self.envelope.compression.high_watermark or self.envelope.compression.high_watermark < 0:
             self.envelope.compression.algorithm = 'NONE'
             return data
 
