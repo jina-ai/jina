@@ -102,10 +102,10 @@ def parse_config_source(path: Union[str, TextIO, Dict],
     elif allow_stream and hasattr(path, 'read'):
         # already a readable stream
         return path, None
-    elif allow_yaml_file and (path.endswith('.yml') or path.endswith('.yaml')):
+    elif allow_yaml_file and (path.rstrip().endswith('.yml') or path.rstrip().endswith('.yaml')):
         comp_path = complete_path(path)
         return open(comp_path, encoding='utf8'), comp_path
-    elif allow_builtin_resource and path.startswith('_') and os.path.exists(
+    elif allow_builtin_resource and path.lstrip().startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
         # NOTE: this returns a binary stream
         comp_path = resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
