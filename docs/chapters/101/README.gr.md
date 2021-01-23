@@ -29,7 +29,7 @@
   <a href="README.de.md">Deutsch</a> •
   <a href="README.ru.md">Русский язык</a> •
   <a href="README.zh.md">中文</a> •
-  <a href="README.ar.md">عربية</a>
+  <a href="README.ar.md">عربية</a> •
   <a href="README.gr.md">Ελληνικά</a>
     </td>
     <td>
