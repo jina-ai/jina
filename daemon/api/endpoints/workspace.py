@@ -33,7 +33,7 @@ async def _clear_all():
 )
 async def _delete(id: uuid.UUID):
     try:
-        del store[id]
+        store.delete(id=id, everything=True)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 

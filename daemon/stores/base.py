@@ -1,5 +1,6 @@
 import shutil
 import uuid
+from pathlib import Path
 from collections.abc import MutableMapping
 from datetime import datetime
 from typing import Dict, Any, Union
@@ -30,6 +31,7 @@ class BaseStore(MutableMapping):
     def delete(self,
                id: Union[str, uuid.UUID],
                workspace: bool = False,
+               everything: bool = False,
                **kwargs):
         if isinstance(id, str):
             id = uuid.UUID(id)
@@ -39,6 +41,11 @@ class BaseStore(MutableMapping):
             if 'object' in v and hasattr(v['object'], 'close'):
                 v['object'].close()
             if workspace and v.get('workdir', None):
+                for path in Path(v['workdir']).rglob('[!logging.log]*'):
+                    if path.is_file():
+                        self._logger.debug(f'to be deleted: {path}')
+                        path.unlink()
+            if everything and v.get('workdir', None):
                 shutil.rmtree(v['workdir'])
             del self[id]
             self._logger.success(f'{colored(str(id), "cyan")} is released from the store.')
