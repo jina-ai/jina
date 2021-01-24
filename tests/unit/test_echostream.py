@@ -14,8 +14,6 @@ def test_simple_zmqlet():
     args = set_pea_parser().parse_args([
         '--host-in', '0.0.0.0',
         '--host-out', '0.0.0.0',
-        '--port-in', '12346',
-        '--port-out', '12347',
         '--socket-in', 'PULL_CONNECT',
         '--socket-out', 'PUSH_CONNECT',
         '--timeout-ctrl', '-1'])
@@ -23,8 +21,8 @@ def test_simple_zmqlet():
     args2 = set_pea_parser().parse_args([
         '--host-in', '0.0.0.0',
         '--host-out', '0.0.0.0',
-        '--port-in', '12347',
-        '--port-out', '12346',
+        '--port-in', str(args.port_out),
+        '--port-out', str(args.port_in),
         '--socket-in', 'PULL_BIND',
         '--socket-out', 'PUSH_BIND',
         '--uses', '_logforward',
