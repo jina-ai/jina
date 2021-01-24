@@ -567,6 +567,7 @@ def test_flow_identity():
     f.identity = new_id
     assert len(set(f.identity.values())) == 1
     assert list(f.identity.values())[0] == new_id
+    assert f.args.identity == new_id
 
 
 def test_flow_identity_override():
