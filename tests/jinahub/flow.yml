@@ -1,4 +1,5 @@
 !Flow
+version: '1'
 with:
   show_exc_info: true
   read_only: true
