@@ -4,6 +4,12 @@ from jina.importer import ImportExtensions, import_classes
 from jina.logging import default_logger
 
 
+def bad_func(*args, **kwargs):
+    default_logger.logger('mock is called')
+    print('mock is called')
+    raise Exception('intentional error')
+
+
 def test_bad_import():
     from jina.logging import default_logger
 
@@ -61,7 +67,21 @@ def test_import_classes_import_once_exception(import_once):
 
 @pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
 def test_import_classes_failed_find_package(ns, mocker):
-    import pkgutil
-    mocker.patch.object(pkgutil, 'get_loader', return_value=None)
+    mocker.patch('pkgutil.get_loader', return_value=None)
     depend_tree = import_classes(namespace=ns)
-    assert not depend_tree
+    assert len(depend_tree) == 0
+
+
+@pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
+def test_import_classes_failed_import_module(ns, mocker):
+    mocker.patch('importlib.import_module', return_value=bad_func)
+    depend_tree = import_classes(namespace=ns)
+    assert len(depend_tree) == 0
+
+
+@pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
+def test_import_classes_failed_get_default_reqs(ns, mocker, recwarn):
+    mocker.patch('pkg_resources.resource_stream', return_value=bad_func)
+    _ = import_classes(namespace=ns)
+    assert len(recwarn) == 1
+    assert 'You can use `jina check` to list all executors and drivers' in recwarn[0].message.args[0]
