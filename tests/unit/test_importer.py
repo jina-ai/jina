@@ -79,9 +79,15 @@ def test_import_classes_failed_import_module(ns, mocker):
     assert len(depend_tree) == 0
 
 
+@pytest.mark.parametrize('print_table', [True, False])
 @pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
-def test_import_classes_failed_get_default_reqs(ns, mocker, recwarn):
+def test_import_classes_failed_get_default_reqs(ns, print_table, mocker, recwarn, capsys):
     mocker.patch('pkg_resources.resource_stream', return_value=bad_func)
-    _ = import_classes(namespace=ns)
-    assert len(recwarn) == 1
-    assert 'You can use `jina check` to list all executors and drivers' in recwarn[0].message.args[0]
+    _ = import_classes(namespace=ns, show_import_table=print_table)
+    if print_table:
+        captured = capsys.readouterr()
+        assert '✗' in captured.out
+    else:
+        assert len(recwarn) == 1
+        assert 'You can use `jina check` to list all executors and drivers' in recwarn[0].message.args[0]
+
