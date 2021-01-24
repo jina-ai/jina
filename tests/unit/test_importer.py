@@ -1,6 +1,6 @@
 import pytest
 
-from jina.importer import ImportExtensions
+from jina.importer import ImportExtensions, import_classes
 from jina.logging import default_logger
 
 
@@ -46,6 +46,22 @@ def test_no_suppress_other_exception():
             raise Exception
 
 
-def test_bad_import_classes():
-    from jina.importer import import_classes
-    import_classes('jina.executors')
+@pytest.mark.parametrize('import_once', [True, False])
+@pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
+def test_import_classes_import_once(ns, import_once):
+    depend_tree = import_classes(namespace=ns, import_once=import_once)
+    assert (depend_tree is None) == import_once
+
+
+@pytest.mark.parametrize('import_once', [True, False])
+def test_import_classes_import_once_exception(import_once):
+    with pytest.raises(TypeError):
+        _ = import_classes(namespace='dummy', import_once=import_once)
+
+
+@pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
+def test_import_classes_failed_find_package(ns, mocker):
+    import pkgutil
+    mocker.patch.object(pkgutil, 'get_loader', return_value=None)
+    depend_tree = import_classes(namespace=ns)
+    assert not depend_tree
