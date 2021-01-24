@@ -65,7 +65,7 @@ requests:                   http, devel, test, daemon
 prettytable:                devel, test
 sseclient-py:               test
 optuna:                     test, optimizer
-websockets:                 http, devel, test, daemon, ws
+websockets:                 http, devel, test, ws, daemon
 wsproto:                    http, devel, test, ws, daemon
 pydantic:                   http, devel, test, daemon
 python-multipart:           http, devel, test, daemon
