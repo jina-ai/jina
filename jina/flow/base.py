@@ -19,7 +19,7 @@ from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import colored, \
-    get_public_ip, get_internal_ip, typename, ArgNamespace
+    get_public_ip, get_internal_ip, typename, ArgNamespace, random_identity
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
@@ -76,6 +76,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
         self._env = env  #: environment vars shared by all pods in the flow
+        self._identity = None
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
@@ -150,7 +151,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                            read_only=True,
                            runtime_cls='GRPCRuntime',
-                           pod_role=PodRoleType.GATEWAY))
+                           pod_role=PodRoleType.GATEWAY,
+                           identity=self._identity or random_identity()
+                           ))
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
@@ -749,6 +752,22 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
+
+    @property
+    def identity(self) -> Dict[str, str]:
+        """Get all Pods' ``identity`` values in a dict """
+        return {k: p.args.identity for k, p in self}
+
+    @identity.setter
+    def identity(self, value: str):
+        """Set all Pods' ``identity`` to ``value``
+
+        :param value: a hexadecimal UUID string
+        """
+        uuid.UUID(value)
+        for _, p in self:
+            p.args.identity = value
+        self._identity = value
 
     def index(self):
         raise NotImplementedError

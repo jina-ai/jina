@@ -1,6 +1,7 @@
 from ...helper import add_arg_group
-from ....helper import random_port
 from .... import __default_host__
+from ....enums import CompressAlgo
+from ....helper import random_port
 
 
 def mixin_remote_parser(parser):
@@ -30,3 +31,14 @@ def mixin_grpc_parser(parser=None):
                     help='The number of additional requests to fetch on every receive')
     gp.add_argument('--restful', '--rest-api', action='store_true', default=False,
                     help='If set, use RESTful interface instead of gRPC as the main interface')
+    gp.add_argument('--compress', type=CompressAlgo.from_string, choices=list(CompressAlgo), default=CompressAlgo.LZ4,
+                    help='''
+The compress algorithm used over the entire Flow. 
+
+Note that this is not necessarily effective, it depends on the settings of `--compress-lwm` and `compress-hwm`''')
+    gp.add_argument('--compress-min-bytes', type=int, default=1024,
+                    help='The original message size must be larger than this number to trigger the compress algorithm, '
+                         '-1 means disable compression.')
+    gp.add_argument('--compress-min-ratio', type=float, default=1.1,
+                    help='The compression ratio (uncompressed_size/compressed_size) must be higher than this number '
+                         'to trigger the compress algorithm.')

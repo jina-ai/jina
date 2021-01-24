@@ -1,0 +1,50 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: cosine
+    metas:
+      name: vecidx
+      workspace: $JINA_CRUD_ADVANCED_WORKSPACE
+  - !BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: chunkidx
+      workspace: $JINA_CRUD_ADVANCED_WORKSPACE
+metas:
+  name: chunk_indexer
+  workspace: $JINA_CRUD_ADVANCED_WORKSPACE
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['c']
+      - !KVIndexDriver
+        with:
+          executor: chunkidx
+          traversal_paths: ['c']
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['r']
+      - !KVSearchDriver
+        with:
+          executor: chunkidx
+          traversal_paths: ['m']
+    DeleteRequest:
+      - !VectorIndexDriver
+        with:
+          method: delete
+          executor: vecidx
+          traversal_paths: ['c']
+      - !KVIndexDriver
+        with:
+          method: delete
+          executor: chunkidx
+          traversal_paths: ['c']
+
