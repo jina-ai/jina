@@ -22,8 +22,6 @@ class MockBasePeaRead(BasePea):
 args1 = set_pea_parser().parse_args([
     '--host-in', '0.0.0.0',
     '--host-out', '0.0.0.0',
-    '--port-in', '12346',
-    '--port-out', '12347',
     '--socket-in', 'PULL_CONNECT',
     '--socket-out', 'PUSH_CONNECT',
     '--timeout-ctrl', '-1'])
@@ -31,8 +29,8 @@ args1 = set_pea_parser().parse_args([
 args2 = set_pea_parser().parse_args([
     '--host-in', '0.0.0.0',
     '--host-out', '0.0.0.0',
-    '--port-in', '12347',
-    '--port-out', '12346',
+    '--port-in', str(args1.port_out),
+    '--port-out', str(args1.port_in),
     '--socket-in', 'PULL_BIND',
     '--socket-out', 'PUSH_BIND',
     '--uses', '_clear',  # will trigger use
@@ -42,8 +40,8 @@ args2 = set_pea_parser().parse_args([
 args3 = set_pea_parser().parse_args([
     '--host-in', '0.0.0.0',
     '--host-out', '0.0.0.0',
-    '--port-in', '12347',
-    '--port-out', '12346',
+    '--port-in', str(args1.port_out),
+    '--port-out', str(args1.port_in),
     '--socket-in', 'PULL_BIND',
     '--socket-out', 'PUSH_BIND',
     '--uses', '_pass',  # will NOT trigger use
