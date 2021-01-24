@@ -54,7 +54,7 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 | 📦 | On Linux/macOS & Python 3.7/3.8 | Docker Users|
 | --- | --- | --- |
 | Standard | `pip install -U jina` | `docker run jinaai/jina:latest` |
-| <sub>Daemon</sub> | <sub>`pip install -U jina[daemon]`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
+| <sub>Daemon</sub> | <sub>`pip install -U "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
 | <sub>With Extras</sub> | <sub>`pip install -U "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 | <sub>Dev/Pre-Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
 
