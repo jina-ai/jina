@@ -141,13 +141,14 @@ class FlowOptimizer(JAMLCompatible):
         trial_parameters = {}
         parameters = load_optimization_parameters(self._parameter_yaml)
         for param in parameters:
-            trial_parameters[param.jaml_variable] = self._suggest(param, trial)
+            trial_parameters[param.jaml_variable] = FlowOptimizer._suggest(param, trial)
 
         trial.workspace = self._workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
 
         return trial_parameters
 
-    def _suggest(self, param, trial):
+    @staticmethod
+    def _suggest(param, trial):
 
         if isinstance(param, IntegerParameter):
             return trial.suggest_int(
