@@ -29,6 +29,7 @@ def test_optimizer(tmpdir):
         documents=document_generator(10),
         request_size=1,
         execution_method='search',
+        documents_parameter_name='input_fn',
     )
 
     opt = FlowOptimizer(

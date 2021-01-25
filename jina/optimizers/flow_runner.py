@@ -30,22 +30,17 @@ class FlowRunner(JAMLCompatible):
 class SingleFlowRunner(FlowRunner):
     """Module to define and run a flow.
        `documents` maps to a parameter of the `execution_method`, depending on the method.
-       To understand to which parameter `documents` is mapped see `EXECUTION_METHOD_PARAMETER_MAPPINGS`.
-       Anyhow, the default values can be overriden by the `**kwargs` argument of the `run` method.
-    """
+       If you use a jsonlines file, the default will work out of the box.
+       Otherwise, the following settings will work:
 
-    EXECUTION_METHOD_PARAMETER_MAPPINGS = {
-        'delete': 'input_fn',
-        'index': 'input_fn',
-        'index_files': 'patterns',
-        'index_lines': 'filepath',
-        'index_ndarray': 'array',
-        'search': 'input_fn',
-        'search_files': 'patterns',
-        'search_lines': 'filepath',
-        'search_ndarray': 'array',
-        'update': 'input_fn',
-    }
+       indexing + document generator: `execution_methos='index', documents_parameter_name='input_fn'`
+       search + document generator: `execution_methos='search', documents_parameter_name='input_fn'`
+
+       indexing + file pattern: `execution_methos='index_files', documents_parameter_name='pattern'`
+       search + file pattern: `execution_methos='search_files', documents_parameter_name='pattern'`
+
+       For more reasonable values, have a look at the `Flow`.
+    """
 
     def __init__(
         self,
@@ -53,7 +48,7 @@ class SingleFlowRunner(FlowRunner):
         documents: Union[Iterator, str],
         request_size: int,
         execution_method: str,
-        documents_parameter_name: Optional[str] = None,
+        documents_parameter_name: Optional[str] = 'filepath',
         overwrite_workspace: bool = False,
     ):
         """
@@ -62,6 +57,8 @@ class SingleFlowRunner(FlowRunner):
         (e.g. a list of documents for `index` or a .jsonlines file for `index_lines`)
         :param request_size: request size used in the flow
         :param execution_method: one of the methods of the Jina :py:class:`Flow` (e.g. `index_lines`)
+        :param documents_parameter_name: to which parameter of the `execution_function` the `documents` will be mapped.
+        See `jina/flow/__init__.py::Flow` for more details.
         :param overwrite_workspace: True, means workspace created by the Flow will be overwriten
         """
         super().__init__()
@@ -77,6 +74,7 @@ class SingleFlowRunner(FlowRunner):
 
         self._request_size = request_size
         self._execution_method = execution_method
+        self._documents_parameter_name = documents_parameter_name
         self._overwrite_workspace = overwrite_workspace
 
     def _setup_workspace(self, workspace):
@@ -112,7 +110,7 @@ class SingleFlowRunner(FlowRunner):
         """
 
         self._setup_workspace(workspace)
-        additional_arguments = {SingleFlowRunner.EXECUTION_METHOD_PARAMETER_MAPPINGS[self._execution_method]: self._documents}
+        additional_arguments = {self._documents_parameter_name: self._documents}
         additional_arguments.update(kwargs)
         with Flow.load_config(self._flow_yaml, context=trial_parameters) as f:
             getattr(f, self._execution_method)(
