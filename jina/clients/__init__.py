@@ -3,9 +3,9 @@ __license__ = "Apache-2.0"
 
 from . import request
 from .base import BaseClient, CallbackFnType, InputFnType
-from .websockets import WebSocketClientMixin
 from .helper import callback_exec
 from .request import GeneratorSourceType
+from .websockets import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import run_async, deprecated_alias
 

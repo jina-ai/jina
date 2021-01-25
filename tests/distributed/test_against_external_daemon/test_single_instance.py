@@ -1,7 +1,11 @@
+import os
+
 import numpy as np
 import pytest
 
 from jina import Flow
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
@@ -110,3 +114,4 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
     with f:
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
     response_mock.assert_called()
+

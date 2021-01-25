@@ -58,8 +58,8 @@ async def _clear_all():
     description='Terminate a running Pod and release its resources'
 )
 async def _delete(
-    id: uuid.UUID,
-    workspace: bool = False
+        id: uuid.UUID,
+        workspace: bool = False
 ):
     try:
         store.delete(id=id, workspace=workspace)

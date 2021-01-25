@@ -4,8 +4,8 @@ import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, WebSocket
-from fastapi.responses import FileResponse
 from fastapi.exceptions import HTTPException
+from fastapi.responses import FileResponse
 from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 
@@ -19,8 +19,8 @@ router = APIRouter(tags=['logs'])
     path='/logs/{workspace_id}/{log_id}'
 )
 async def _export_logs(
-    workspace_id: uuid.UUID,
-    log_id: uuid.UUID
+        workspace_id: uuid.UUID,
+        log_id: uuid.UUID
 ):
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
     if not Path(filepath).is_file():

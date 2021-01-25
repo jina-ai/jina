@@ -21,7 +21,8 @@ class WorkspaceStore(BaseStore):
             for f in files:
                 dest = os.path.join(_workdir, f.filename)
                 if os.path.isfile(dest):
-                    self._logger.warning(f'file {f.filename} already exists in workspace {workspace_id}, will be replaced')
+                    self._logger.warning(
+                        f'file {f.filename} already exists in workspace {workspace_id}, will be replaced')
                 with open(dest, 'wb+') as fp:
                     content = f.file.read()
                     fp.write(content)

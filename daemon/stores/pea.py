@@ -31,5 +31,6 @@ class PeaStore(BaseStore):
                 'workdir': _workdir,
                 'workspace_id': workspace_id
             }
-            self._logger.success(f'{colored(str(_id), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}')
+            self._logger.success(
+                f'{colored(str(_id), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}')
             return _id
