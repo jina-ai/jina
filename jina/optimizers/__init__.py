@@ -9,6 +9,7 @@ from ..importer import ImportExtensions
 from ..logging import default_logger as logger
 from .parameters import load_optimization_parameters
 from ..jaml import JAMLCompatible
+from .parameters import IntegerParameter, FloatParameter, UniformParameter, LogUniformParameter, CategoricalParameter, DiscreteUniformParameter
 
 if False:
     from .flow_runner import FlowRunner
@@ -101,7 +102,7 @@ class ResultProcessor(JAMLCompatible):
 
 class FlowOptimizer(JAMLCompatible):
     """Optimizer runs the given flows on multiple parameter configurations in order
-       to find the best performing parameters.
+       to find the best performing parameters. Uses `optuna` behind the scenes.
     """
 
     def __init__(
@@ -140,13 +141,55 @@ class FlowOptimizer(JAMLCompatible):
         trial_parameters = {}
         parameters = load_optimization_parameters(self._parameter_yaml)
         for param in parameters:
-            trial_parameters[param.jaml_variable] = getattr(trial, param.optuna_method)(
-                **param.to_optuna_args()
-            )
+            trial_parameters[param.jaml_variable] = self._suggest(param, trial)
 
         trial.workspace = self._workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
 
         return trial_parameters
+
+    def _suggest(self, param, trial):
+
+        if isinstance(param, IntegerParameter):
+            return trial.suggest_int(
+                name=param.jaml_variable,
+                low=param.low,
+                high=param.high,
+                step=param.step_size,
+                log=param.log
+            )
+        elif isinstance(param, FloatParameter):
+            return trial.suggest_float(
+                name=param.jaml_variable,
+                low=param.low,
+                high=param.high,
+                step=param.step_size,
+                log=param.log,
+            )
+        elif isinstance(param, UniformParameter):
+            return trial.suggest_uniform(
+                name=param.jaml_variable,
+                low=param.low,
+                high=param.high,
+            )
+        elif isinstance(param, LogUniformParameter):
+            return trial.suggest_loguniform(
+                name=param.jaml_variable,
+                low=param.low,
+                high=param.high,
+            )
+        elif isinstance(param, CategoricalParameter):
+            return trial.suggest_categorical(
+                name=param.jaml_variable, choices=param.choices
+            )
+        elif isinstance(param, DiscreteUniformParameter):
+            return trial.suggest_discrete_uniform(
+                name=param.jaml_variable,
+                low=param.low,
+                high=param.high,
+                q=param.q,
+            )
+        else:
+            raise TypeError(f'Paramater {param} is of unsupported type {type(param)}')
 
     def _objective(self, trial):
         trial_parameters = self._trial_parameter_sampler(trial)

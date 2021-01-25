@@ -54,7 +54,7 @@ def test_evaluation_callback_with_name(responses):
     assert evaluation == 0.5
 
 
-def test_optuna_result_processor(tmpdir):
+def test_result_processor(tmpdir):
     study = Mock()
     study.trials = [1, 2]
     study.best_trial.params = {'a': 1}
