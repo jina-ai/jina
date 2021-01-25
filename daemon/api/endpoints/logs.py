@@ -4,8 +4,8 @@ import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, WebSocket
-from fastapi.responses import FileResponse
 from fastapi.exceptions import HTTPException
+from fastapi.responses import FileResponse
 from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 

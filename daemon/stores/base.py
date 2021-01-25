@@ -1,8 +1,8 @@
 import shutil
 import uuid
-from pathlib import Path
 from collections.abc import MutableMapping
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, Union
 
 from jina.helper import colored

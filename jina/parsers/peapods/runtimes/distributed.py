@@ -1,5 +1,5 @@
-from jina.parsers.helper import add_arg_group
 from jina.helper import random_identity
+from jina.parsers.helper import add_arg_group
 
 
 def mixin_distributed_feature_parser(parser):

@@ -3,9 +3,9 @@ __license__ = "Apache-2.0"
 
 import os
 import re
+import tempfile
 import unicodedata
 
-import tempfile
 from pkg_resources import resource_stream
 
 from ..jaml import JAML

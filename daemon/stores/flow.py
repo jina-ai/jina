@@ -1,5 +1,5 @@
 import uuid
-from typing import List, Optional, BinaryIO
+from typing import Optional, BinaryIO
 
 from jina.flow import Flow
 from jina.helper import colored, random_uuid
