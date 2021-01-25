@@ -89,7 +89,7 @@ def test_as_querylang():
     assert sort_querylang.parameters['field'] == 'field_value'
     assert not sort_querylang.parameters['reverse']
 
-    sliceql = SliceQL(start=10, encd=20)
+    sliceql = SliceQL(start=10, end=20)
     slice_querylang = sliceql.as_querylang
     assert slice_querylang.name == 'SliceQL'
     assert slice_querylang.priority == 0
@@ -100,4 +100,10 @@ def test_as_querylang():
     exclude_querylang = excludeql.as_querylang
     assert exclude_querylang.name == 'ExcludeQL'
     assert exclude_querylang.priority == 0
-    assert exclude_querylang.parameters['fields'] == ('field1', 'field2')
+    assert exclude_querylang.parameters['fields'] == ['field1', 'field2']
+
+    excludeql2 = ExcludeQL(fields='field1')
+    exclude_querylang2 = excludeql2.as_querylang
+    assert exclude_querylang2.name == 'ExcludeQL'
+    assert exclude_querylang2.priority == 0
+    assert exclude_querylang2.parameters['fields'] == ['field1']

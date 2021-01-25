@@ -62,6 +62,7 @@ class QueryLang:
                 else:
                     self._querylang = querylang
             elif isinstance(querylang, dict):
+                print(f' parse_dict {querylang}')
                 json_format.ParseDict(querylang, self._querylang)
             elif isinstance(querylang, str):
                 json_format.Parse(querylang, self._querylang)
