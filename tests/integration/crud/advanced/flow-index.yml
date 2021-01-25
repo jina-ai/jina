@@ -1,0 +1,21 @@
+!Flow
+version: '1.0'
+with:
+  restful: False
+pods:
+  - name: segmenter
+    uses: yaml/segmenter.yml
+    read_only: true
+  - name: encoder
+    uses: yaml/encoder.yml
+    timeout_ready: 60000
+    read_only: true
+  - name: chunk_indexer
+    uses: yaml/index-chunk.yml
+  - name: doc_indexer
+    uses: yaml/index-doc.yml
+    needs: gateway
+  - name: join_all
+    uses: _pass
+    needs: [doc_indexer, chunk_indexer]
+    read_only: true

@@ -86,3 +86,25 @@ def test_jina_version_freeze_no_jina_dependency(requirements, tmpdir):
     with open(requirements_file, 'r') as fp:
         requirements = pkg_resources.parse_requirements(fp)
         assert len(list(filter(lambda x: 'jina' in str(x), requirements))) == 0
+
+
+def test_labels():
+    class MockContainers:
+        def __init__(self):
+            pass
+
+        def build(self, *args, **kwargs):
+            labels = kwargs['labels']
+            assert all([isinstance(v, str) for k, v in labels.items()])
+            assert 'ai.jina.hub.version' in labels
+            assert 'ai.jina.hub.name' in labels
+
+            raise BaseException('labels all good')
+
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error'])
+    hubio = HubIO(args)
+    hubio._raw_client = MockContainers()
+
+    with pytest.raises(BaseException, match='labels all good'):
+        hubio.build()

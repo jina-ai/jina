@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock
 import yaml
 
-from jina.optimizers import MeanEvaluationCallback, OptunaResultProcessor
+from jina.optimizers import MeanEvaluationCallback, ResultProcessor
 
 
 @pytest.fixture
@@ -61,6 +61,6 @@ def test_optuna_result_processor(tmpdir):
     study.best_trial.duration = 3
 
     filepath = os.path.join(tmpdir, 'best_config.yml')
-    proc = OptunaResultProcessor(study)
+    proc = ResultProcessor(study)
     proc.save_parameters(filepath)
     assert yaml.load(open(filepath), Loader=yaml.Loader) == {'a': 1}

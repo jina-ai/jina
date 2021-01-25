@@ -14,7 +14,7 @@ from typing import (
 
 from google.protobuf.struct_pb2 import Struct
 
-from ..enums import SkipOnErrorType
+from ..enums import OnErrorStrategy
 from ..executors import BaseExecutor
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
@@ -336,7 +336,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         """the function of :func:`jina.executors.BaseExecutor` to call """
         if (
             not self.msg.is_error
-            or self.runtime.args.skip_on_error < SkipOnErrorType.EXECUTOR
+            or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
         ):
             return self._exec_fn
         else:

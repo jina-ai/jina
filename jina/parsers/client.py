@@ -13,12 +13,12 @@ def mixin_client_cli_parser(parser):
                     help='''
 The Request mode. This applies to all Requests sent from this client.
 
-* INDEX: store new Documents into the system
-* SEARCH: query Documents from an indexed system
-* UPDATE: update existing Documents in an indexed system
-* DELETE: delete existing Documents from an indexed system
-* CONTROL: (advance) control Pea/Pod such as shutdown, status
-* TRAIN: (experimental) train the system
+- INDEX: store new Documents into the system
+- SEARCH: query Documents from an indexed system
+- UPDATE: update existing Documents in an indexed system
+- DELETE: delete existing Documents from an indexed system
+- CONTROL: (advance) control Pea/Pod such as shutdown, status
+- TRAIN: (experimental) train the system
                     ''')
     gp.add_argument('--top-k', type=int,
                     help='The number of results will be returned. Sorted by their scores descendingly.')

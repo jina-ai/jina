@@ -6,9 +6,8 @@ from google.protobuf.json_format import MessageToJson
 
 from jina import Document
 from jina.jaml import JAML
-from jina.optimizers import OptunaOptimizer, MeanEvaluationCallback, run_optimizer
+from jina.optimizers import FlowOptimizer, MeanEvaluationCallback
 from jina.optimizers.flow_runner import SingleFlowRunner
-from jina.parsers.optimizer import set_optimizer_parser
 
 BEST_PARAMETERS = {
     'JINA_DUMMYCRAFTER_PARAM1': 0,
@@ -32,7 +31,7 @@ def test_optimizer(tmpdir):
         task='search',
     )
 
-    opt = OptunaOptimizer(
+    opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
         parameter_yaml='tests/integration/optimizers/parameter.yml',
         evaluation_callback=MeanEvaluationCallback(),
@@ -51,7 +50,7 @@ def test_optimizer(tmpdir):
 
 def test_yaml(tmpdir):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
-    optimizer_yaml = f'''!OptunaOptimizer
+    optimizer_yaml = f'''!FlowOptimizer
 version: 1
 with:
   flow_runner: !SingleFlowRunner

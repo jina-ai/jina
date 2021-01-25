@@ -8,6 +8,11 @@ requests:
       - !ReduceAllDriver
         with:
           traversal_paths: ['m']
+      - !SortQL
+        with:
+          reverse: False
+          traversal_paths: ['m']
+          field: 'score__value'
       - !SliceQL
         with:
           start: 0

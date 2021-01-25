@@ -57,8 +57,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
@@ -72,12 +70,9 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
   prep-testbed:
-    needs: lint-flake-8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -90,8 +85,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - run: |
           echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
       - run: |
@@ -101,7 +94,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   core-test:
-    needs: prep-testbed
+    needs: [prep-testbed, commit-lint, lint-flake-8]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -126,8 +119,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
-        timeout-minutes: 20
+          if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
+            docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
+            docker run --name jinad --network=host -d jinaai/jina:test-daemon
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            docker rm -f jinad
+          else
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          fi
+        timeout-minutes: 15
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
