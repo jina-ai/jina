@@ -1,14 +1,15 @@
-!OptunaOptimizer
-version: 1
-with:
-  flow_runner: !SingleFlowRunner
-    with:
-      flow_yaml: 'tests/integration/optimizers/flow.yml'
-      overwrite_workspace: True
-      documents: 'tests/integration/optimizers/data.jsonlines'
-      request_size: 1
-      task: 'search_lines'
-  evaluation_callback: !MeanEvaluationCallback {}
-  parameter_yaml: 'tests/integration/optimizers/parameter.yml'
-  workspace_base_dir: './optimizer_workspace'
-  n_trials: 5
+ !FlowOptimizer
+ version: 1
+ with:
+   flow_runner: !SingleFlowRunner
+     with:
+       flow_yaml: ${{JINA_OPTIMIZER_FLOW_JAML_PATH}}
+       overwrite_workspace: True
+       documents: ${{JINA_OPTIMIZER_DATA_PATH}}
+       request_size: 1
+       task: 'search_lines'
+   evaluation_callback: !MeanEvaluationCallback {}
+   parameter_yaml: ${{JINA_OPTIMIZER_PARAMETER_PATH}}
+   workspace_base_dir: ${{JINA_OPTIMIZER_WORKSPACE_DIR}}
+   output_file: ${{JINA_OPTIMIZER_OUTPUT_FILE}}
+   n_trials: 5

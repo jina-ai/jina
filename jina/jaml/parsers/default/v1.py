@@ -1,7 +1,7 @@
 from typing import Dict, Type
 
 from ..base import VersionedYAMLParser
-from ... import JAMLCompatible
+from ... import JAMLCompatible, JAML
 
 
 class V1Parser(VersionedYAMLParser):
@@ -13,6 +13,7 @@ class V1Parser(VersionedYAMLParser):
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
         """
+        data = JAML.expand_dict(data, None)
         if 'with' in data:
             obj = cls(**data.get('with', {}))
         else:

@@ -89,8 +89,8 @@ def flow(args):
         default_logger.critical('start a flow from CLI requires a valid "--uses"')
 
 def optimizer(args):
-    from jina.optimizers import run_optimizer
-    run_optimizer(args)
+    from jina.optimizers import run_optimizer_cli
+    run_optimizer_cli(args)
 
 
 def hub(args):

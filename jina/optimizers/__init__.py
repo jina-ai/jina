@@ -53,7 +53,8 @@ class MeanEvaluationCallback(OptimizerCallback):
         else:
             evaluation_name = list(self._evaluation_values)[0]
             if len(self._evaluation_values) > 1:
-                logger.warning(f'More than one evaluation metric found. Please define the right eval_name. Currently {evaluation_name} is used')
+                logger.warning(
+                    f'More than one evaluation metric found. Please define the right eval_name. Currently {evaluation_name} is used')
 
         return self._evaluation_values[evaluation_name] / self._n_docs
 
@@ -105,15 +106,16 @@ class FlowOptimizer(JAMLCompatible):
     """
 
     def __init__(
-        self,
-        flow_runner: 'FlowRunner',
-        parameter_yaml: str,
-        evaluation_callback: 'OptimizerCallback',
-        n_trials: int,
-        workspace_base_dir: str = '',
-        sampler: str = 'TPESampler',
-        direction: str = 'maximize',
-        seed: int = 42,
+            self,
+            flow_runner: 'FlowRunner',
+            parameter_yaml: str,
+            evaluation_callback: 'OptimizerCallback',
+            n_trials: int,
+            workspace_base_dir: str = '',
+            output_file=None,
+            sampler: str = 'TPESampler',
+            direction: str = 'maximize',
+            seed: int = 42,
     ):
         """
         :param flow_runner: `FlowRunner` object which contains the flows to be run.
@@ -121,6 +123,7 @@ class FlowOptimizer(JAMLCompatible):
         :param evaluation_callback: The callback object, which stores the evaluation results
         :param n_trials: evaluation trials to be run
         :param workspace_base_dir: directory in which all temporary created data should be stored
+        :param output_file: directory in which the results are stored
         :param sampler: The optuna sampler. For a list of usable names see: https://optuna.readthedocs.io/en/stable/reference/samplers.html
         :param direction: direction of the optimization from either of `maximize` or `minimize`
         :param seed: random seed for reproducibility
@@ -130,6 +133,7 @@ class FlowOptimizer(JAMLCompatible):
         self._flow_runner = flow_runner
         self._parameter_yaml = parameter_yaml
         self._workspace_base_dir = workspace_base_dir
+        self._output_file = output_file
         self._evaluation_callback = evaluation_callback
         self._n_trials = n_trials
         self._sampler = sampler
@@ -144,7 +148,8 @@ class FlowOptimizer(JAMLCompatible):
                 **param.to_optuna_args()
             )
 
-        trial.workspace = self._workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join([str(v) for v in trial_parameters.values()])
+        trial.workspace = self._workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join(
+            [str(v) for v in trial_parameters.values()])
 
         return trial_parameters
 
@@ -169,10 +174,19 @@ class FlowOptimizer(JAMLCompatible):
             sampler = getattr(optuna.samplers, self._sampler)(seed=self._seed, **kwargs)
         study = optuna.create_study(direction=self._direction, sampler=sampler)
         study.optimize(self._objective, n_trials=self._n_trials)
-        return ResultProcessor(study)
 
-    def run_optimizer(args):
-        from .flow_runner import SingleFlowRunner
-        with open(args.uses) as f:
-            optimizer = JAML.load(f)
-        result = optimizer.optimize_flow()
+        result_processor = ResultProcessor(study)
+        if self._output_file:
+            result_processor.save_parameters(self._output_file)
+        return result_processor
+
+
+def run_optimizer_cli(args):
+    """Used to run the optimizer from command line interface.
+
+    :param args: arguments passed via cli
+    """
+    from .flow_runner import SingleFlowRunner
+    with open(args.uses) as f:
+        optimizer = JAML.load(f)
+    optimizer.optimize_flow()
