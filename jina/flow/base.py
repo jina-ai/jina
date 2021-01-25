@@ -76,7 +76,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
         self._env = env  #: environment vars shared by all pods in the flow
-        self._identity = None
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
@@ -152,7 +151,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            read_only=True,
                            runtime_cls='GRPCRuntime',
                            pod_role=PodRoleType.GATEWAY,
-                           identity=self._identity or random_identity()
+                           identity=self.args.identity
                            ))
 
         kwargs.update(self._common_kwargs)
@@ -752,6 +751,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
+                for k, v in p.peas_args.items():
+                    if v and isinstance(v, argparse.Namespace):
+                        v.workspace_id = value
+                    if v and isinstance(v, List):
+                        for i in v:
+                            i.workspace_id = value
 
     @property
     def identity(self) -> Dict[str, str]:
@@ -765,9 +770,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param value: a hexadecimal UUID string
         """
         uuid.UUID(value)
+        self.args.identity = value
+        # Re-initiating logger with new identity
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         for _, p in self:
             p.args.identity = value
-        self._identity = value
 
     def index(self):
         raise NotImplementedError

@@ -13,7 +13,7 @@ def test_peastore_add(parser, store):
     s.add(p_args)
     assert len(s) == 1
     assert p_args.identity in s
-    del s[p_args.identity]
+    s.delete(p_args.identity)
     assert not s
 
 
