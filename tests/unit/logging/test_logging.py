@@ -38,6 +38,23 @@ def test_logging_default():
             assert len(logger.handlers) == 2
 
 
+def test_logging_level():
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
+        log(logger)
+        assert logger.logger.level == LogVerbosity.from_string('INFO')
+
+    os.environ['JINA_LOG_LEVEL'] = 'SUCCESS'
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
+        log(logger)
+        assert logger.logger.level == LogVerbosity.from_string(os.environ['JINA_LOG_LEVEL'])
+
+    del os.environ['JINA_LOG_LEVEL']
+
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
+        log(logger)
+        assert logger.logger.level == LogVerbosity.from_string('INFO')
+
+
 def test_logging_file():
     fn = f'jina-{__uptime__}.log'
     if os.path.exists(fn):
@@ -67,8 +84,4 @@ def test_logging_fluentd(monkeypatch, log_config):
         monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
         logger.info('logging progress')
 
-def test_logging_level():
-    os.environ['JINA_LOG_LEVEL'] = 'SUCCESS'
-    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
-        log(logger)
-        assert logger.logger.level == LogVerbosity.from_string(os.environ['JINA_LOG_LEVEL'])
+
