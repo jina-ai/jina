@@ -2,7 +2,7 @@ import argparse
 import asyncio
 from typing import Optional
 
-from .client import PodDaemonClient
+from .client import PeaDaemonClient
 from ..asyncio.base import AsyncZMQRuntime
 from ...zmq import Zmqlet
 from ....excepts import DaemonConnectivityError
