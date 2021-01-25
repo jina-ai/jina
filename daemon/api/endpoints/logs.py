@@ -19,8 +19,8 @@ router = APIRouter(tags=['logs'])
     path='/logs/{workspace_id}/{log_id}'
 )
 async def _export_logs(
-    workspace_id: uuid.UUID,
-    log_id: uuid.UUID
+        workspace_id: uuid.UUID,
+        log_id: uuid.UUID
 ):
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
     if not Path(filepath).is_file():

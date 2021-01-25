@@ -46,8 +46,8 @@ async def _delete(id: uuid.UUID):
     status_code=201,
 )
 async def _create(
-    files: List[UploadFile] = File(...),
-    workspace_id: Optional[uuid.UUID] = Body(None)
+        files: List[UploadFile] = File(...),
+        workspace_id: Optional[uuid.UUID] = Body(None)
 ):
     try:
         return store.add(files, workspace_id)

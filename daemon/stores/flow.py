@@ -35,5 +35,6 @@ class FlowStore(BaseStore):
                 'workdir': _workdir,
                 'workspace_id': workspace_id
             }
-            self._logger.success(f'{colored(str(flow_identity), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}')
+            self._logger.success(
+                f'{colored(str(flow_identity), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}')
             return flow_identity

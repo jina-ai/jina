@@ -1,7 +1,11 @@
+import os
+
 import numpy as np
 import pytest
 
 from jina import Flow
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
@@ -110,3 +114,28 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
     with f:
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
     response_mock.assert_called()
+
+
+@pytest.mark.parametrize('silent_log', [True, False])
+@pytest.mark.parametrize('parallels', [1, 2])
+def test_l_r_l_with_upload(silent_log, parallels, mocker):
+    img_name = 'test-mwu-encoder'
+    import docker
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir, '../../unit/mwu-encoder/'), tag=img_name)
+    client.close()
+
+    response_mock = mocker.Mock()
+    f = (Flow()
+         .add()
+         .add(uses=f'docker://{img_name}',
+              host=CLOUD_HOST,
+              parallel=parallels,
+              silent_remote_logs=silent_log)
+         .add())
+    with f:
+        f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
+    response_mock.assert_called()
+
+    client = docker.from_env()
+    client.containers.prune()
