@@ -1,3 +1,5 @@
+import pytest
+
 from jina.clients import Client
 from jina.drivers import QuerySetReader, BaseDriver
 from jina.drivers.querylang.sort import SortQL
@@ -6,6 +8,7 @@ from jina.drivers.querylang.select import ExcludeQL
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.querylang import QueryLang
+from jina.types.sets import QueryLangSet
 
 
 def random_docs(num_docs):
@@ -100,10 +103,33 @@ def test_as_querylang():
     exclude_querylang = excludeql.as_querylang
     assert exclude_querylang.name == 'ExcludeQL'
     assert exclude_querylang.priority == 0
-    assert exclude_querylang.parameters['fields'] == ['field1', 'field2']
+    assert list(exclude_querylang.parameters['fields']) == ['field1', 'field2']
 
     excludeql2 = ExcludeQL(fields='field1')
     exclude_querylang2 = excludeql2.as_querylang
     assert exclude_querylang2.name == 'ExcludeQL'
     assert exclude_querylang2.priority == 0
-    assert exclude_querylang2.parameters['fields'] == ['field1']
+    assert list(exclude_querylang2.parameters['fields']) == ['field1']
+
+
+class MockExcludeQL(ExcludeQL):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        ql = QueryLang({'name': 'MockExcludeQL', 'parameters': {'fields': ['updated_field1', 'updated_field2']}, 'priority': 3})
+        self.qset = QueryLangSet([ql.as_pb_object])
+
+    @property
+    def queryset(self):
+        return self.qset
+
+
+@pytest.mark.parametrize('driver_priority', [0, 4])
+def test_queryset_reader_excludeql(driver_priority):
+    querysetreader = MockExcludeQL(fields=('local_field1', 'local_field2'), priority=driver_priority)
+    fields = querysetreader._get_parameter('fields', default=None)
+
+    if driver_priority == 0:
+        assert list(fields) == ['updated_field1', 'updated_field2']
+    else:
+        assert list(fields) == ['local_field1', 'local_field2']
