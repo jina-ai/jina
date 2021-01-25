@@ -132,9 +132,7 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
               host=CLOUD_HOST,
               parallel=parallels,
               silent_remote_logs=silent_log,
-              pull_latest=True,
-              timeout_ready=60000,
-              entrypoint='jina pea')
+              timeout_ready=60000)
          .add())
     with f:
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
