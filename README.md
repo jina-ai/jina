@@ -283,8 +283,9 @@ A Flow does not have to be local-only, one can put any Pod to remote(s). In the 
 
 ```bash
 # have docker installed
-
-docker run --network=host jinaai/jina:latest-daemon --port-expose 8000
+docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
+# to stop it
+docker rm -f jinad
 ```
 
 </td>
