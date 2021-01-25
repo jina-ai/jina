@@ -16,7 +16,7 @@ lines = """
 {"host":"ubuntu","process":"32546","type":"INFO","name":"encode2","uptime":"20210124215151","context":"encode2","workspace_path":"/tmp/jinad/32aa7734-fbb8-4e7a-9f76-46221b512648","log_id":"16ef0bd7-e534-42e7-9076-87a3f585933c","message":"starting jina.peapods.runtimes.zmq.zed.ZEDRuntime..."}
 """
 
-with open('tests/jinad/unit/api/endpoints/logging.log', 'w') as f:
+with open('tests/daemon/unit/api/endpoints/logging.log', 'w') as f:
     f.writelines(lines)
 
 

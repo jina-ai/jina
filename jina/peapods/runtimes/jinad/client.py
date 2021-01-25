@@ -90,15 +90,10 @@ class DaemonClient:
             if files:
                 try:
                     self.logger.info(f'uploading {len(files)} file(s): {dependencies}')
-                    if workspace_id:
-                        r = requests.post(url=self.upload_api,
-                                          files=files,
-                                          data={'workspace_id': workspace_id},
-                                          timeout=self.timeout)
-                    else:
-                        r = requests.post(url=self.upload_api,
-                                          files=files,
-                                          timeout=self.timeout)
+                    r = requests.post(url=self.upload_api,
+                                      files=files,
+                                      data={'workspace_id': workspace_id} if workspace_id else None,
+                                      timeout=self.timeout)
                     rj = r.json()
                     if r.status_code == 201:
                         return rj

@@ -19,7 +19,7 @@ from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import colored, \
-    get_public_ip, get_internal_ip, typename, ArgNamespace, random_identity
+    get_public_ip, get_internal_ip, typename, ArgNamespace
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser

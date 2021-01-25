@@ -115,7 +115,7 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
     response_mock.assert_called()
 
-
+    
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1])  # TODO: parallel > 1 fails, need to check if local also work
 def test_l_r_l_with_upload(silent_log, parallels, mocker):
@@ -142,3 +142,4 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
 
     client = docker.from_env()
     client.containers.prune()
+

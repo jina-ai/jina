@@ -9,7 +9,6 @@ from ...helper import typename
 from ...importer import import_classes
 from ...proto import jina_pb2
 
-
 QueryLangSourceType = TypeVar('QueryLangSourceType',
                               jina_pb2.QueryLangProto, bytes, str, Dict, BaseDriver)
 
