@@ -81,10 +81,12 @@ class ResultProcessor(JAMLCompatible):
 
     @property
     def study(self):
+        """Raw optuna study as calculated by the :py:class:`FlowOptimizer`."""
         return self._study
 
     @property
     def best_parameters(self):
+        """The parameter set, which got the best evaluation result during the optimization."""
         return self._best_parameters
 
     def save_parameters(self, filepath: str = 'config/best_config.yml'):
