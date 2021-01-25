@@ -1,4 +1,5 @@
 from jina.parsers.helper import add_arg_group
+from jina.helper import random_identity
 
 
 def mixin_distributed_feature_parser(parser):
@@ -21,7 +22,7 @@ Note,
 - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
 ''')
 
-    gp.add_argument('--workspace-id', type=str,
+    gp.add_argument('--workspace-id', type=str, default=random_identity(),
                     help='the UUID for identifying the workspace. When not given a random id will be assigned.'
                          'Multiple Pea/Pod/Flow will work under the same workspace if they share the same '
                          '`workspace-id`.')
