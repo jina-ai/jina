@@ -1,5 +1,8 @@
 from jina.clients import Client
 from jina.drivers import QuerySetReader, BaseDriver
+from jina.drivers.querylang.sort import SortQL
+from jina.drivers.querylang.slice import SliceQL
+from jina.drivers.querylang.select import ExcludeQL
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.querylang import QueryLang
@@ -76,3 +79,25 @@ def test_read_from_req(mocker):
 def test_querlang_driver():
     qld2 = DummyDriver(arg1='world')
     assert qld2.arg1 == 'world'
+
+
+def test_as_querylang():
+    sortql = SortQL(field='field_value', reverse=False, priority=2)
+    sort_querylang = sortql.as_querylang
+    assert sort_querylang.name == 'SortQL'
+    assert sort_querylang.priority == 2
+    assert sort_querylang.parameters['field'] == 'field_value'
+    assert not sort_querylang.parameters['reverse']
+
+    sliceql = SliceQL(start=10, encd=20)
+    slice_querylang = sliceql.as_querylang
+    assert slice_querylang.name == 'SliceQL'
+    assert slice_querylang.priority == 0
+    assert slice_querylang.parameters['start'] == 10
+    assert slice_querylang.parameters['end'] == 20
+
+    excludeql = ExcludeQL(fields=('field1', 'field2'))
+    exclude_querylang = excludeql.as_querylang
+    assert exclude_querylang.name == 'ExcludeQL'
+    assert exclude_querylang.priority == 0
+    assert exclude_querylang.parameters['fields'] == ('field1', 'field2')
