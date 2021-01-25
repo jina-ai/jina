@@ -4,8 +4,16 @@ import pytest
 
 from jina import __uptime__
 from jina.logging import JinaLogger
+from jina.enums import LogVerbosity
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture
+def config():
+    os.environ['JINA_LOG_LEVEL'] = 'SUCCESS'
+    yield
+    del os.environ['JINA_LOG_LEVEL']
 
 
 def log(logger):
@@ -37,6 +45,18 @@ def test_logging_default():
             assert len(logger.handlers) == 2
 
 
+def test_logging_level_yaml():
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
+        log(logger)
+        assert logger.logger.level == LogVerbosity.from_string('INFO')
+
+
+def test_logging_level_os_environ_variable(config):
+    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
+        log(logger)
+        assert logger.logger.level == LogVerbosity.from_string('SUCCESS')
+
+
 def test_logging_file():
     fn = f'jina-{__uptime__}.log'
     if os.path.exists(fn):
@@ -65,3 +85,5 @@ def test_logging_fluentd(monkeypatch, log_config):
 
         monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
         logger.info('logging progress')
+
+
