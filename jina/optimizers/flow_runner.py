@@ -30,11 +30,11 @@ class FlowRunner(JAMLCompatible):
 class SingleFlowRunner(FlowRunner):
     """Module to define and run a flow.
        `documents` maps to a parameter of the `execution_method`, depending on the method.
-       If you use a jsonlines file, the default will work out of the box.
+       If you use a generator function/list as documents, the default will work out of the box.
        Otherwise, the following settings will work:
 
-       indexing + document generator: `execution_methos='index', documents_parameter_name='input_fn'`
-       search + document generator: `execution_methos='search', documents_parameter_name='input_fn'`
+       indexing + jsonlines file: `execution_methos='index_lines', documents_parameter_name='filepath'`
+       search + jsonlines file: `execution_methos='search_lines', documents_parameter_name='filepath'`
 
        indexing + file pattern: `execution_methos='index_files', documents_parameter_name='pattern'`
        search + file pattern: `execution_methos='search_files', documents_parameter_name='pattern'`
@@ -48,7 +48,7 @@ class SingleFlowRunner(FlowRunner):
         documents: Union[Iterator, str],
         request_size: int,
         execution_method: str,
-        documents_parameter_name: Optional[str] = 'filepath',
+        documents_parameter_name: Optional[str] = 'input_fn',
         overwrite_workspace: bool = False,
     ):
         """
@@ -103,10 +103,11 @@ class SingleFlowRunner(FlowRunner):
         callback=None,
         **kwargs,
     ):
-        """[summary]
+        """Runs a Flow according to the definition of the `FlowRunner`.
 
-        :param trial_parameters: flow env variable values
+        :param trial_parameters: context for the Flow
         :param workspace: directory to be used for artifacts generated
+        :param callback: The callback function, which should store results comming from evaluation.
         """
 
         self._setup_workspace(workspace)
@@ -121,11 +122,11 @@ class SingleFlowRunner(FlowRunner):
 
 
 class MultiFlowRunner(FlowRunner):
-    """Chain and run multiple flows"""
+    """Chain and run multiple Flows. It is an interface for common patterns like IndexFlow -> SearchFlow"""
 
-    def __init__(self, *flows):
+    def __init__(self, *flows: FlowRunner):
         """
-        :param flows: flows to be executed in sequence
+        :param flows: Flows to be executed in sequence
         """
         super().__init__()
         self.flows = flows
@@ -140,6 +141,7 @@ class MultiFlowRunner(FlowRunner):
         """
         :param trial_parameters: parameters to be used as environment variables
         :param workspace: directory to be used for the flows
+        :param callback: will be forwarded to every single Flow.
         """
         for flow in self.flows:
             flow.run(trial_parameters, workspace, callback, **kwargs)

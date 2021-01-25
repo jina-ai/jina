@@ -29,7 +29,6 @@ def test_optimizer(tmpdir):
         documents=document_generator(10),
         request_size=1,
         execution_method='search',
-        documents_parameter_name='input_fn',
     )
 
     opt = FlowOptimizer(
@@ -60,6 +59,7 @@ with:
       documents: {jsonlines_file}
       request_size: 1
       execution_method: 'search_lines'
+      documents_parameter_name: 'filepath'
   evaluation_callback: !MeanEvaluationCallback {{}}
   parameter_yaml: 'tests/integration/optimizers/parameter.yml'
   workspace_base_dir: {tmpdir}

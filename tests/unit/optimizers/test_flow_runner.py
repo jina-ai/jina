@@ -21,7 +21,6 @@ def test_flow_runner(tmpdir, mocker):
         documents=random_docs(5),
         request_size=1,
         execution_method='index',
-        documents_parameter_name='input_fn',
         overwrite_workspace=True,
     )
 
@@ -34,7 +33,6 @@ def test_flow_runner(tmpdir, mocker):
         documents=random_docs(5),
         request_size=1,
         execution_method='search',
-        documents_parameter_name='input_fn',
     )
 
     flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace}, callback=callback)
