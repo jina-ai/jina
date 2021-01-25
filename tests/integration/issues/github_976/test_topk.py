@@ -59,7 +59,7 @@ def test_topk_override(config, mocker):
             assert len(doc.matches) == TOPK_OVERRIDE
 
     # Making queryset
-    top_k_queryset = QueryLang(('VectorSearchDriver', {'top_k': TOPK_OVERRIDE, 'priority': 1}))
+    top_k_queryset = QueryLang({'name': 'VectorSearchDriver', 'parameters': {'top_k': TOPK_OVERRIDE}, 'priority': 1})
 
     with Flow.load_config('flow.yml') as index_flow:
         index_flow.index(input_fn=random_docs(100))

@@ -130,8 +130,8 @@ def test_lazy_request_fields():
 
 
 def test_request_extend_queryset():
-    q1 = ('SliceQ', {'start': 3, 'end': 4})
-    q2 = QueryLang(('SliceQL', {'start': 3, 'end': 4, 'priority': 1}))
+    q1 = {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}}
+    q2 = QueryLang({'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}, 'priority': 1})
     q3 = jina_pb2.QueryLangProto()
     q3.name = 'SliceQL'
     q3.parameters['start'] = 3

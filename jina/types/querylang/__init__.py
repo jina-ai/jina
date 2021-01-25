@@ -1,5 +1,5 @@
 import warnings
-from typing import TypeVar, Dict, Optional, Tuple
+from typing import TypeVar, Dict, Optional
 
 from google.protobuf import json_format
 
@@ -9,7 +9,7 @@ from ...proto import jina_pb2
 
 
 QueryLangSourceType = TypeVar('QueryLangSourceType',
-                              jina_pb2.QueryLangProto, bytes, str, Dict, Tuple[str, int, dict])
+                              jina_pb2.QueryLangProto, bytes, str, Dict)
 
 __all__ = ['QueryLang']
 
@@ -21,16 +21,14 @@ class QueryLang:
     It offers a Pythonic interface to allow users access and manipulate
     :class:`jina.jina_pb2.QueryLangProto` object without working with Protobuf itself.
 
-    To create a :class:`QueryLang` object from a Tuple containing the name of a :class:`BaseDriver`,
+    To create a :class:`QueryLang` object from a Dict containing the name of a :class:`BaseDriver`,
      and the parameters to override, simply:
 
         .. highlight:: python
         .. code-block:: python
 
             from jina import QueryLang
-            from jina.drivers.querylang.slice import SliceQL
-
-            ql = QueryLang('SliceQL', 1, {'start': 3, 'end': 1, 'priority': 1})
+            ql = QueryLang({name: 'SliceQL', priority: 1, parameters: {'start': 3, 'end': 1}})
 
     .. warning::
         The `BaseDriver` needs to be a `QuerySetReader` to be able to read the `QueryLang`
@@ -80,10 +78,6 @@ class QueryLang:
                         self._querylang.ParseFromString(querylang)
                     except RuntimeWarning as ex:
                         raise BadQueryLangType('fail to construct a query language') from ex
-            elif isinstance(querylang, Tuple):
-                self.name = querylang[0]
-                self._querylang.priority = querylang[1]['priority'] if 'priority' in querylang[1] else 0
-                self._querylang.parameters.update(querylang[1])
             elif querylang is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(querylang)} is not recognizable')

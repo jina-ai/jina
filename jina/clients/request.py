@@ -112,8 +112,8 @@ def search(*args, **kwargs):
     """Generate a searching request """
     if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
         # associate all VectorSearchDriver and SliceQL driver to use top_k
-        topk_ql = [QueryLang(('SliceQL', {'end': kwargs['top_k'], 'priority': 1})),
-                   QueryLang(('VectorSearchDriver', {'top_k': kwargs['top_k'], 'priority': 1}))]
+        topk_ql = [QueryLang({'name': 'SliceQL', 'priority': 1, 'parameters': {'end': kwargs['top_k']}}),
+                   QueryLang({'name': 'VectorSearchDriver', 'priority': 1, 'parameters': {'top_k': kwargs['top_k']}})]
         if 'queryset' not in kwargs:
             kwargs['queryset'] = topk_ql
         else:

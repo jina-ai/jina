@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Iterable, Union, Tuple
+from typing import Iterable, Union, Dict
 
 from google.protobuf.pyext._message import RepeatedCompositeContainer
 
@@ -7,7 +7,7 @@ from ..querylang import QueryLang
 from ...helper import typename
 from ...proto.jina_pb2 import QueryLangProto
 
-AcceptQueryLangType = Union[QueryLang, Tuple, QueryLangProto]
+AcceptQueryLangType = Union[QueryLang, QueryLangProto, Dict]
 
 __all__ = ['QueryLangSet', 'AcceptQueryLangType']
 
@@ -54,7 +54,7 @@ class QueryLangSet(MutableSequence):
 
     def append(self, value: 'AcceptQueryLangType'):
         q_pb = self._querylangs_proto.add()
-        if isinstance(value, Tuple):
+        if isinstance(value, Dict):
             q_pb.CopyFrom(QueryLang(value).as_pb_object)
         elif isinstance(value, QueryLangProto):
             q_pb.CopyFrom(value)
