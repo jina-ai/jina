@@ -1,7 +1,7 @@
 import os
 import shutil
 from collections.abc import Iterable
-from typing import Iterator
+from typing import Iterator, Optional, Union
 
 from ..flow import Flow
 from ..helper import colored
@@ -22,48 +22,66 @@ class FlowRunner(JAMLCompatible):
         """Runs the defined flow(s).
         :param trial_parameters: parameters to be used as context
         :param workspace: directory to be used for the flows
+        :param callback: callback that will be called by the flows. Should store the evaluation results.
         """
         raise NotImplementedError
 
 
 class SingleFlowRunner(FlowRunner):
-    """Module to define and run a flow."""
+    """Module to define and run a flow.
+       `documents` maps to a parameter of the `execution_method`, depending on the method.
+       To understand to which parameter `documents` is mapped see `EXECUTION_METHOD_PARAMETER_MAPPINGS`.
+       Anyhow, the default values can be overriden by the `**kwargs` argument of the `run` method.
+    """
+
+    EXECUTION_METHOD_PARAMETER_MAPPINGS = {
+        'delete': 'input_fn',
+        'index': 'input_fn',
+        'index_files': 'patterns',
+        'index_lines': 'filepath',
+        'index_ndarray': 'array',
+        'search': 'input_fn',
+        'search_files': 'patterns',
+        'search_lines': 'filepath',
+        'search_ndarray': 'array',
+        'update': 'input_fn',
+    }
 
     def __init__(
         self,
         flow_yaml: str,
-        documents: Iterator,
+        documents: Union[Iterator, str],
         request_size: int,
-        task: str,  # this can be only index or search as it is used to call the flow API
+        execution_method: str,
+        documents_parameter_name: Optional[str] = None,
         overwrite_workspace: bool = False,
     ):
         """
-        :param flow_yaml: path to flow yaml
-        :param documents: iterator with list or generator for getting the documents
+        :param flow_yaml: path to Flow yaml
+        :param documents: input parameter for `execution_method` for iterating documents.
+        (e.g. a list of documents for `index` or a .jsonlines file for `index_lines`)
         :param request_size: request size used in the flow
-        :param task: task of the flow which can be `index` or `search`
-        :param overwrite_workspace: overwrite workspace created by the flow
+        :param execution_method: one of the methods of the Jina :py:class:`Flow` (e.g. `index_lines`)
+        :param overwrite_workspace: True, means workspace created by the Flow will be overwriten
         """
         super().__init__()
-        self.flow_yaml = flow_yaml
-        # TODO: Make changes for working with doc generator (Pratik, before v1.0)
+        self._flow_yaml = flow_yaml
 
-        if type(documents) is list:
-            self.documents = documents
-        elif type(documents) is str:
-            self.documents = documents
+        if type(documents) is str:
+            self._documents = documents
+
         elif isinstance(documents, Iterable):
-            self.documents = list(documents)
+            self._documents = list(documents)
         else:
             raise TypeError(f"documents is of wrong type: {type(documents)}")
 
-        self.request_size = request_size
-        self.task = task
-        self.overwrite_workspace = overwrite_workspace
+        self._request_size = request_size
+        self._execution_method = execution_method
+        self._overwrite_workspace = overwrite_workspace
 
     def _setup_workspace(self, workspace):
         if os.path.exists(workspace):
-            if self.overwrite_workspace:
+            if self._overwrite_workspace:
                 shutil.rmtree(workspace)
                 logger.warning(colored('Existing workspace deleted', 'red'))
                 logger.warning(colored('WORKSPACE: ' + str(workspace), 'red'))
@@ -94,13 +112,13 @@ class SingleFlowRunner(FlowRunner):
         """
 
         self._setup_workspace(workspace)
-
-        with Flow.load_config(self.flow_yaml, context=trial_parameters) as f:
-            getattr(f, self.task)(
-                self.documents,
-                request_size=self.request_size,
+        additional_arguments = {SingleFlowRunner.EXECUTION_METHOD_PARAMETER_MAPPINGS[self._execution_method]: self._documents}
+        additional_arguments.update(kwargs)
+        with Flow.load_config(self._flow_yaml, context=trial_parameters) as f:
+            getattr(f, self._execution_method)(
+                request_size=self._request_size,
                 on_done=callback,
-                **kwargs,
+                **additional_arguments,
             )
 
 

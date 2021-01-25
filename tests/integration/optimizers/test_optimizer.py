@@ -28,7 +28,7 @@ def test_optimizer(tmpdir):
         flow_yaml='tests/integration/optimizers/flow.yml',
         documents=document_generator(10),
         request_size=1,
-        task='search',
+        execution_method='search',
     )
 
     opt = FlowOptimizer(
@@ -58,7 +58,7 @@ with:
       flow_yaml: 'tests/integration/optimizers/flow.yml'
       documents: {jsonlines_file}
       request_size: 1
-      task: 'search_lines'
+      execution_method: 'search_lines'
   evaluation_callback: !MeanEvaluationCallback {{}}
   parameter_yaml: 'tests/integration/optimizers/parameter.yml'
   workspace_base_dir: {tmpdir}
