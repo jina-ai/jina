@@ -10,6 +10,8 @@ from ..jaml import JAMLCompatible
 
 
 class FlowRunner(JAMLCompatible):
+    """An abstract FlowRunner object in Jina."""
+
     def run(
         self,
         trial_parameters: dict,
@@ -17,8 +19,8 @@ class FlowRunner(JAMLCompatible):
         callback=None,
         **kwargs,
     ):
-        """
-        :param trial_parameters: parameters to be used as environment variables
+        """Runs the defined flow(s).
+        :param trial_parameters: parameters to be used as context
         :param workspace: directory to be used for the flows
         """
         raise NotImplementedError

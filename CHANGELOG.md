@@ -12,6 +12,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -149,6 +150,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.9.18`)](#release-note-0918)
 - [Release Note (`0.9.19`)](#release-note-0919)
 - [Release Note (`0.9.20`)](#release-note-0920)
+- [Release Note (`0.9.21`)](#release-note-0921)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -6948,4 +6950,35 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a084556a```](https://github.com/jina-ai/jina/commit/a084556acce454975efc0255be1f8b68d13442e6)] __-__ __version__: the next version will be 0.9.20 (*Jina Dev Bot*)
  - [[```9ff1b8d2```](https://github.com/jina-ai/jina/commit/9ff1b8d2437d4d7ea438eb24c5650ae0c98c15c3)] __-__ __version__: the next version will be 0.9.19 (*Jina Dev Bot*)
  - [[```6c9a2432```](https://github.com/jina-ai/jina/commit/6c9a2432631492f2cb74f9ae59c57791d28f8f45)] __-__ fix manual release workflow (*Han Xiao*)
+
+<a name=release-note-0-9-21></a>
+## Release Note (`0.9.21`)
+
+> Release time: 2021-01-24 23:38:09
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Florian Hönicke,  Tadej Svetina,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```af31c326```](https://github.com/jina-ai/jina/commit/af31c3260debf96a5c26dd68fb054addaf4b818a)] __-__ add sortql to merge-matches-topk (#1767) (*Joan Fontanals*)
+ - [[```54b07ace```](https://github.com/jina-ai/jina/commit/54b07ace04ab8acdac72526805ceb212fb415094)] __-__ __hub__: fix label insertion into dockerfile (#1732) (*Tadej Svetina*)
+ - [[```01d2be4f```](https://github.com/jina-ai/jina/commit/01d2be4f6e763a24402e397e8d22f7ce3b9224a2)] __-__ __parser__: add compress args back to cli (#1766) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```f2c132a0```](https://github.com/jina-ai/jina/commit/f2c132a00ad1e8750cf77ca315643deabb048b35)] __-__ __cd__: add daemon test in cd to correct codecov (#1773) (*Han Xiao*)
+ - [[```e204a06c```](https://github.com/jina-ai/jina/commit/e204a06c3f8d8bdd87c3c0d5254170f27ebfb512)] __-__ test crud example (#1754) (*Florian Hönicke*)
+ - [[```ce45e6da```](https://github.com/jina-ai/jina/commit/ce45e6dae1db935db17f473c22fd53fd8ca9c2b0)] __-__ __daemon__: add daemon test back (#1771) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```d978f5a0```](https://github.com/jina-ai/jina/commit/d978f5a08e6b86dfe512bbe024c58cea5e7dc553)] __-__ update daemon setup in README (*Han Xiao*)
+ - [[```c18e2147```](https://github.com/jina-ai/jina/commit/c18e21475f8bdcba36bb4a1b27b7ec612a6d9e13)] __-__ __README__: add daemon run to readme (*Han Xiao*)
+ - [[```b6a7eb66```](https://github.com/jina-ai/jina/commit/b6a7eb66648ee1b1ddb3a6d9ae97b5ee8ef6006b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```ab5d0456```](https://github.com/jina-ai/jina/commit/ab5d04568ee06d489d4b6cbbc3752378917e5b0f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d8464838```](https://github.com/jina-ai/jina/commit/d846483874cf06aa79eeb372cf618f9a37c2e0ab)] __-__ __version__: the next version will be 0.9.21 (*Jina Dev Bot*)
 
