@@ -9,6 +9,13 @@ from jina.enums import LogVerbosity
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
+@pytest.fixture
+def config():
+    os.environ['JINA_LOG_LEVEL'] = 'SUCCESS'
+    yield
+    del os.environ['JINA_LOG_LEVEL']
+
+
 def log(logger):
     logger.debug('this is test debug message')
     logger.info('this is test info message')
@@ -38,21 +45,16 @@ def test_logging_default():
             assert len(logger.handlers) == 2
 
 
-def test_logging_level():
+def test_logging_level_yaml():
     with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
         log(logger)
         assert logger.logger.level == LogVerbosity.from_string('INFO')
 
-    os.environ['JINA_LOG_LEVEL'] = 'SUCCESS'
+
+def test_logging_level_os_environ_variable(config):
     with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
         log(logger)
-        assert logger.logger.level == LogVerbosity.from_string(os.environ['JINA_LOG_LEVEL'])
-
-    del os.environ['JINA_LOG_LEVEL']
-
-    with JinaLogger('test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')) as logger:
-        log(logger)
-        assert logger.logger.level == LogVerbosity.from_string('INFO')
+        assert logger.logger.level == LogVerbosity.from_string('SUCCESS')
 
 
 def test_logging_file():
