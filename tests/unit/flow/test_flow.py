@@ -543,8 +543,7 @@ def test_flow_host_expose_shortcut(input, expect_host, expect_port):
 def test_flow_workspace_id():
     f = Flow().add().add().add().build()
     assert len(f.workspace_id) == 3
-    assert len(set(f.workspace_id.values())) == 1
-    assert not list(f.workspace_id.values())[0]
+    assert len(set(f.workspace_id.values())) == 3
 
     with pytest.raises(ValueError):
         f.workspace_id = 'hello'
@@ -567,6 +566,7 @@ def test_flow_identity():
     f.identity = new_id
     assert len(set(f.identity.values())) == 1
     assert list(f.identity.values())[0] == new_id
+    assert f.args.identity == new_id
 
 
 def test_flow_identity_override():

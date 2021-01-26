@@ -3,13 +3,13 @@
  with:
    flow_runner: !SingleFlowRunner
      with:
-       flow_yaml: ${{JINA_OPTIMIZER_FLOW_JAML_PATH}}
+       flow_yaml: tests/integration/optimizers/flow.yml
        overwrite_workspace: True
-       documents: ${{JINA_OPTIMIZER_DATA_PATH}}
+       documents: tests/integration/optimizers/data.jsonlines
        request_size: 1
-       task: 'search_lines'
+       execution_method: 'search_lines'
+       documents_parameter_name: 'filepath'
    evaluation_callback: !MeanEvaluationCallback {}
-   parameter_yaml: ${{JINA_OPTIMIZER_PARAMETER_PATH}}
+   parameter_yaml: tests/integration/optimizers/parameter.yml
    workspace_base_dir: ${{JINA_OPTIMIZER_WORKSPACE_DIR}}
-   output_file: ${{JINA_OPTIMIZER_OUTPUT_FILE}}
    n_trials: 5

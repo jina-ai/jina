@@ -1,17 +1,18 @@
 import os
 import pkgutil
-from setuptools import find_packages
+from typing import Dict, Any, Optional
+
 from pkg_resources import parse_version
-from typing import Dict, Sequence, Any, Optional, List
+from setuptools import find_packages
 
-from ...jaml import JAML
-from ...helper import colored
 from ..helper import credentials_file
-from ...logging import default_logger
 from ...excepts import HubLoginRequired
-
+from ...helper import colored
+from ...jaml import JAML
+from ...logging import default_logger
 
 _header_attrs = ['bold', 'underline']
+
 
 def _load_local_hub_manifest():
     namespace = 'jina.hub'
@@ -79,6 +80,7 @@ def _fetch_access_token(logger):
         logger.error(f'Invalid access file. '
                      f'please re-login using command: {colored("jina hub login", attrs=["bold"])}')
         raise HubLoginRequired
+
 
 def _make_hub_table_with_local(images, local_images):
     info_table = [f'found {len(images)} matched hub images',

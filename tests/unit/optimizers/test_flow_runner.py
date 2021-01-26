@@ -20,7 +20,7 @@ def test_flow_runner(tmpdir, mocker):
         flow_yaml='flow.yml',
         documents=random_docs(5),
         request_size=1,
-        task='index',
+        execution_method='index',
         overwrite_workspace=True,
     )
 
@@ -32,7 +32,7 @@ def test_flow_runner(tmpdir, mocker):
         flow_yaml='flow.yml',
         documents=random_docs(5),
         request_size=1,
-        task='search',
+        execution_method='search',
     )
 
     flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace}, callback=callback)

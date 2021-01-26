@@ -21,22 +21,13 @@ BEST_PARAMETERS = {
 
 @pytest.fixture
 def config(tmpdir):
-    root = os.path.join('tests', 'integration', 'optimizers')
-    os.environ['JINA_OPTIMIZER_FLOW_JAML_PATH'] = os.path.join(root, 'flow.yml')
-    os.environ['JINA_OPTIMIZER_DATA_PATH'] = os.path.join(root, 'data.jsonlines')
-    os.environ['JINA_OPTIMIZER_PARAMETER_PATH'] = os.path.join(root, 'parameter.yml')
+    'tests/integration/optimizers/parameter.yml'
     os.environ['JINA_OPTIMIZER_WORKSPACE_DIR'] = str(tmpdir)
     os.environ['JINA_OPTIMIZER_OUTPUT_FILE'] = os.path.join(tmpdir, 'best_parameters.yml')
-    os.environ['JINA_OPTIMIZER_CRAFTER_FILE'] = os.path.join('pods', 'craft.yml')
-    os.environ['JINA_OPTIMIZER_EVALUATOR_FILE'] = os.path.join('pods', 'evaluate.yml')
     yield
-    del os.environ['JINA_OPTIMIZER_FLOW_JAML_PATH']
-    del os.environ['JINA_OPTIMIZER_DATA_PATH']
-    del os.environ['JINA_OPTIMIZER_PARAMETER_PATH']
     del os.environ['JINA_OPTIMIZER_WORKSPACE_DIR']
     del os.environ['JINA_OPTIMIZER_OUTPUT_FILE']
-    del os.environ['JINA_OPTIMIZER_CRAFTER_FILE']
-    del os.environ['JINA_OPTIMIZER_EVALUATOR_FILE']
+
 
 
 def validate_result(result, tmpdir):
@@ -58,7 +49,7 @@ def test_optimizer(tmpdir, config):
         flow_yaml=os.path.join('tests', 'integration', 'optimizers', 'flow.yml'),
         documents=document_generator(10),
         request_size=1,
-        task='search',
+        execution_method='search',
     )
     opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
@@ -81,7 +72,8 @@ with:
       flow_yaml: {os.path.join('tests', 'integration', 'optimizers', 'flow.yml')}
       documents: {jsonlines_file}
       request_size: 1
-      task: 'search_lines'
+      execution_method: 'search_lines'
+      documents_parameter_name: 'filepath'
   evaluation_callback: !MeanEvaluationCallback {{}}
   parameter_yaml: {os.path.join('tests', 'integration', 'optimizers', 'parameter.yml')}
   workspace_base_dir: {tmpdir}

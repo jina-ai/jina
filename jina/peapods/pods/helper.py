@@ -4,7 +4,7 @@ from typing import List
 
 from ... import __default_host__
 from ...enums import SchedulerType, SocketType, PeaRoleType
-from ...helper import random_port, random_identity, get_public_ip, get_internal_ip, is_valid_local_config_source
+from ...helper import random_port, get_public_ip, get_internal_ip
 
 
 def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Namespace = None) -> List[Namespace]:
