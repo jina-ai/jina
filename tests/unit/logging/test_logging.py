@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import pytest
 
@@ -82,8 +83,9 @@ def test_logging_fluentd(monkeypatch, log_config):
             assert msg['name'] == 'test_logger'
             assert msg['type'] == 'INFO'
             assert msg['message'] == 'logging progress'
+            datetime.fromisoformat(msg['uptime'])
 
-        monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
+        monkeypatch.setattr(fluentasynchandler.FluentHandler, 'emit', mock_emit)
         logger.info('logging progress')
 
 
