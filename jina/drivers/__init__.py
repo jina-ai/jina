@@ -20,6 +20,7 @@ from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import convert_tuple_to_list
 from ..jaml import JAMLCompatible
+from ..types.querylang import QueryLang
 
 if False:
     # fix type-hint complain for sphinx and flake
@@ -95,6 +96,11 @@ class QuerySetReader:
         For the sake of cooperative multiple inheritance, do NOT implement :meth:`__init__` for this class
 
     """
+
+    @property
+    def as_querylang(self):
+        parameters = {name: getattr(self, name) for name in self._init_kwargs_dict.keys()}
+        return QueryLang({'name': self.__class__.__name__, 'priority': self._priority, 'parameters': parameters})
 
     def _get_parameter(self, key: str, default: Any):
         if getattr(self, 'queryset', None):

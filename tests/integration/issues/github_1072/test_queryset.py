@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 from jina import QueryLang
-from jina.drivers.querylang.filter import FilterQL
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
@@ -46,7 +45,7 @@ def test_queryset_with_struct(random_workspace, mocker):
         # keep all the docs
         f.index(docs, on_done=validate_all_docs, callback_on='body')
         # keep only the docs with label2
-        qs = QueryLang(FilterQL(priority=1, lookups={'tags__label': 'label2'}, traversal_paths=['r']))
+        qs = QueryLang({'name': 'FilterQL', 'priority': 1, 'parameters': {'lookups': {'tags__label': 'label2'}, 'traversal_paths': ['r']}})
         f.index(docs, queryset=qs, on_done=validate_label2_docs, callback_on='body')
 
     mock1.assert_called_once()
