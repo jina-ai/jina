@@ -1,18 +1,19 @@
-from collections import defaultdict
 import os
+from collections import defaultdict
 from typing import Optional
 
 import yaml
 
+from .parameters import load_optimization_parameters
 from ..helper import colored
 from ..importer import ImportExtensions
-from ..logging import default_logger as logger
-from .parameters import load_optimization_parameters
 from ..jaml import JAMLCompatible, JAML
+from ..logging import default_logger as logger
 
 if False:
     from .flow_runner import FlowRunner
     import optuna
+    from argparse import Namespace
 
 
 class OptimizerCallback(JAMLCompatible):
@@ -112,7 +113,7 @@ class FlowOptimizer(JAMLCompatible):
             evaluation_callback: 'OptimizerCallback',
             n_trials: int,
             workspace_base_dir: str = '',
-            output_file=None,
+            output_file: str = None,
             sampler: str = 'TPESampler',
             direction: str = 'maximize',
             seed: int = 42,
@@ -181,7 +182,7 @@ class FlowOptimizer(JAMLCompatible):
         return result_processor
 
 
-def run_optimizer_cli(args):
+def run_optimizer_cli(args: 'Namespace'):
     """Used to run the optimizer from command line interface.
 
     :param args: arguments passed via cli
