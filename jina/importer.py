@@ -11,6 +11,17 @@ IMPORTED.drivers = False
 IMPORTED.hub = False
 
 
+def _get_targets(targets):
+    ret = None
+    if isinstance(targets, str):
+        ret = {targets}
+    elif isinstance(targets, list):
+        ret = set(targets)
+    elif targets is None:
+        ret = {}
+    return ret
+
+
 def import_classes(namespace: str, targets=None,
                    show_import_table: bool = False,
                    import_once: bool = False):
@@ -26,20 +37,18 @@ def import_classes(namespace: str, targets=None,
 
     import os, re
 
-    if namespace == 'jina.executors':
-        import_type = 'ExecutorType'
-        if import_once and IMPORTED.executors:
-            return
-    elif namespace == 'jina.drivers':
-        import_type = 'DriverType'
-        if import_once and IMPORTED.drivers:
-            return
-    elif namespace == 'jina.hub':
-        import_type = 'ExecutorType'
-        if import_once and IMPORTED.hub:
-            return
-    else:
+    _namespace2type = {
+        'jina.executors': 'ExecutorType',
+        'jina.drivers': 'DriverType',
+        'jina.hub': 'ExecutorType'
+    }
+    _import_type = _namespace2type.get(namespace)
+    if _import_type is None:
         raise TypeError(f'namespace: {namespace} is unrecognized')
+
+    _targets = _get_targets(targets)
+    if _targets is None:
+        raise TypeError(f'target must be a set, but received {targets!r}')
 
     from setuptools import find_packages
     import pkgutil
@@ -90,7 +99,7 @@ def import_classes(namespace: str, targets=None,
             mod = importlib.import_module(m)
             for k in dir(mod):
                 # import the class
-                if (getattr(mod, k).__class__.__name__ == import_type) and (not targets or k in targets):
+                if (getattr(mod, k).__class__.__name__ == _import_type) and (not targets or k in targets):
                     try:
                         _c = getattr(mod, k)
 
