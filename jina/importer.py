@@ -50,6 +50,10 @@ def import_classes(namespace: str, targets=None,
     if _targets is None:
         raise TypeError(f'target must be a set, but received {targets!r}')
 
+    _is_imported = getattr(IMPORTED, namespace.split('.')[-1])
+    if import_once and _is_imported:
+        return {}
+
     from setuptools import find_packages
     import pkgutil
     from pkgutil import iter_modules
