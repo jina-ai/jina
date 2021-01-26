@@ -194,7 +194,7 @@ class DaemonClient:
         _args.host = __default_host__
 
         _args.log_config = ''  # do not use local log_config
-        _args.upload_files = ''  # reset upload files
+        _args.upload_files = []  # reset upload files
 
         changes = []
         for k, v in vars(_args).items():

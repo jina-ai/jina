@@ -59,6 +59,8 @@ class _PydanticConfig(BaseConfig):
 
 
 def build_pydantic_model(model_name: str, module: str):
+    from jina.parsers import helper
+    helper._SHOW_ALL_ARGS, old_val = True, helper._SHOW_ALL_ARGS
     from jina.parsers import set_pea_parser, set_pod_parser
     from jina.parsers.flow import set_flow_parser
     if module == 'pod':
@@ -72,6 +74,7 @@ def build_pydantic_model(model_name: str, module: str):
 
     all_fields, field_validators = _get_pydantic_fields(parser)
 
+    helper._SHOW_ALL_ARGS = old_val
     return create_model(model_name,
                         **all_fields,
                         __config__=_PydanticConfig,
