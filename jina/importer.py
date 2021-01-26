@@ -86,15 +86,6 @@ def import_classes(namespace: str, targets=None,
     load_stat = defaultdict(list)
     bad_imports = []
 
-    if isinstance(targets, str):
-        targets = {targets}
-    elif isinstance(targets, list):
-        targets = set(targets)
-    elif targets is None:
-        targets = {}
-    else:
-        raise TypeError(f'target must be a set, but received {targets!r}')
-
     depend_tree = {}
     import importlib
     from .helper import colored
@@ -103,7 +94,7 @@ def import_classes(namespace: str, targets=None,
             mod = importlib.import_module(m)
             for k in dir(mod):
                 # import the class
-                if (getattr(mod, k).__class__.__name__ == _import_type) and (not targets or k in targets):
+                if (getattr(mod, k).__class__.__name__ == _import_type) and (not _targets or k in _targets):
                     try:
                         _c = getattr(mod, k)
 
@@ -113,9 +104,9 @@ def import_classes(namespace: str, targets=None,
                                 d[vvv.__name__] = {}
                             d = d[vvv.__name__]
                         d['module'] = m
-                        if k in targets:
-                            targets.remove(k)
-                            if not targets:
+                        if k in _targets:
+                            _targets.remove(k)
+                            if not _targets:
                                 return getattr(mod, k)  # target execs are all found and loaded, return
                         try:
                             # load the default request for this executor if possible
@@ -128,14 +119,14 @@ def import_classes(namespace: str, targets=None,
                     except Exception as ex:
                         load_stat[m].append((k, False, ex))
                         bad_imports.append('.'.join([m, k]))
-                        if k in targets:
+                        if k in _targets:
                             raise ex  # target class is found but not loaded, raise return
         except Exception as ex:
             load_stat[m].append(('', False, ex))
             bad_imports.append(m)
 
-    if targets:
-        raise ImportError(f'{targets} can not be found/load')
+    if _targets:
+        raise ImportError(f'{_targets} can not be found/load')
 
     if show_import_table:
         _print_load_table(load_stat)
