@@ -190,4 +190,6 @@ def run_optimizer_cli(args: 'Namespace'):
     from .flow_runner import SingleFlowRunner
     with open(args.uses) as f:
         optimizer = JAML.load(f)
-    optimizer.optimize_flow()
+    result_processor = optimizer.optimize_flow()
+    if args.output_file:
+        result_processor.save_parameters(args.output_file)
