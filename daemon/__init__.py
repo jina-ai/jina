@@ -82,7 +82,8 @@ def _start_uvicorn(app: 'FastAPI'):
                     log_level='error')
     server = Server(config=config)
     server.run()
-    daemon_logger.info('Goodbye!')
+    from jina import __stop_msg__
+    daemon_logger.info(__stop_msg__)
 
 
 def _start_fluentd():

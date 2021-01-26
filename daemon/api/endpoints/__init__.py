@@ -18,6 +18,8 @@ Welcome to Jina daemon - the manager of distributed Jina
 🔒 Private address:\thttp://{get_internal_ip()}:{jinad_args.port_expose}
 🌐 Public address:\thttp://{get_public_ip()}:{jinad_args.port_expose}
     ''')
+    from jina import __ready_msg__
+    daemon_logger.success(__ready_msg__)
 
 
 @router.get(
