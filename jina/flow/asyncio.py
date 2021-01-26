@@ -241,7 +241,7 @@ class AsyncFlow(BaseFlow):
             on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def search_lines(self, filepath: str = None, lines: Iterator[str] = None, size: int = None,
+    async def search_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
                            sampling_rate: float = None, read_mode='r',
                            on_done: CallbackFnType = None,
                            on_error: CallbackFnType = None,
