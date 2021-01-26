@@ -124,7 +124,7 @@ class FlowOptimizer(JAMLCompatible):
         :param evaluation_callback: The callback object, which stores the evaluation results
         :param n_trials: evaluation trials to be run
         :param workspace_base_dir: directory in which all temporary created data should be stored
-        :param output_file: directory in which the results are stored
+        :param output_file: file in which the results are stored
         :param sampler: The optuna sampler. For a list of usable names see: https://optuna.readthedocs.io/en/stable/reference/samplers.html
         :param direction: direction of the optimization from either of `maximize` or `minimize`
         :param seed: random seed for reproducibility

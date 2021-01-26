@@ -27,12 +27,17 @@ def config(tmpdir):
     os.environ['JINA_OPTIMIZER_PARAMETER_PATH'] = os.path.join(root, 'parameter.yml')
     os.environ['JINA_OPTIMIZER_WORKSPACE_DIR'] = str(tmpdir)
     os.environ['JINA_OPTIMIZER_OUTPUT_FILE'] = os.path.join(tmpdir, 'best_parameters.yml')
+    os.environ['JINA_OPTIMIZER_CRAFTER_FILE'] = os.path.join('pods', 'craft.yml')
+    os.environ['JINA_OPTIMIZER_EVALUATOR_FILE'] = os.path.join('pods', 'evaluate.yml')
+
     yield
     del os.environ['JINA_OPTIMIZER_FLOW_JAML_PATH']
     del os.environ['JINA_OPTIMIZER_DATA_PATH']
     del os.environ['JINA_OPTIMIZER_PARAMETER_PATH']
     del os.environ['JINA_OPTIMIZER_WORKSPACE_DIR']
     del os.environ['JINA_OPTIMIZER_OUTPUT_FILE']
+    del os.environ['JINA_OPTIMIZER_CRAFTER_FILE']
+    del os.environ['JINA_OPTIMIZER_EVALUATOR_FILE']
 
 
 def document_generator(num_doc):
@@ -43,7 +48,7 @@ def document_generator(num_doc):
 
 
 @pytest.mark.parametrize('use_output_file', (True, False))
-def test_optimizer(tmpdir, use_output_file):
+def test_optimizer(tmpdir, config, use_output_file):
     eval_flow_runner = SingleFlowRunner(
         flow_yaml=os.path.join('tests', 'integration', 'optimizers', 'flow.yml'),
         documents=document_generator(10),
@@ -74,7 +79,7 @@ def validate_results(output_file, use_output_file):
 
 
 @pytest.mark.parametrize('use_output_file', (True, False))
-def test_yaml(tmpdir, use_output_file):
+def test_yaml(tmpdir, config, use_output_file):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
     output_file = os.path.join(tmpdir, 'results', 'best_parameters.yml')
     optimizer_yaml = f'''!FlowOptimizer
