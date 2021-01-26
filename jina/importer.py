@@ -11,15 +11,6 @@ IMPORTED.drivers = False
 IMPORTED.hub = False
 
 
-def _load_default_config(c):
-    from .executors.requests import get_default_reqs
-    try:
-        # load the default request for this executor if possible
-        get_default_reqs(type.mro(c))
-    except ValueError:
-        pass
-
-
 def import_classes(namespace: str, targets=None,
                    show_import_table: bool = False,
                    import_once: bool = False):
@@ -33,72 +24,128 @@ def import_classes(namespace: str, targets=None,
     :param import_once: import everything only once, to avoid repeated import
     """
 
-    _namespace2type = {
-        'jina.executors': 'ExecutorType',
-        'jina.drivers': 'DriverType',
-        'jina.hub': 'ExecutorType'
-    }
-    _import_type = _namespace2type.get(namespace)
-    if _import_type is None:
+    import os, re
+
+    if namespace == 'jina.executors':
+        import_type = 'ExecutorType'
+        if import_once and IMPORTED.executors:
+            return
+    elif namespace == 'jina.drivers':
+        import_type = 'DriverType'
+        if import_once and IMPORTED.drivers:
+            return
+    elif namespace == 'jina.hub':
+        import_type = 'ExecutorType'
+        if import_once and IMPORTED.hub:
+            return
+    else:
         raise TypeError(f'namespace: {namespace} is unrecognized')
 
-    _targets = _get_targets(targets)
-    if _targets is None:
-        raise TypeError(f'target must be a set, but received {targets!r}')
+    from setuptools import find_packages
+    import pkgutil
+    from pkgutil import iter_modules
 
-    _is_imported = getattr(IMPORTED, namespace.split('.')[-1])
-    if import_once and _is_imported:
+    try:
+        path = os.path.dirname(pkgutil.get_loader(namespace).path)
+    except AttributeError:
+        if namespace == 'jina.hub':
+            warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
         return {}
 
-    modules = _get_modules(namespace)
-    if not modules:
-        return {}
+    modules = set()
 
-    import importlib
-    from .helper import colored
+    for info in iter_modules([path]):
+        if (namespace != 'jina.hub' and not info.ispkg) or (namespace == 'jina.hub' and info.ispkg):
+            modules.add('.'.join([namespace, info.name]))
+
+    for pkg in find_packages(path):
+        modules.add('.'.join([namespace, pkg]))
+        pkgpath = path + '/' + pkg.replace('.', '/')
+        for info in iter_modules([pkgpath]):
+            if (namespace != 'jina.hub' and not info.ispkg) or (namespace == 'jina.hub' and info.ispkg):
+                modules.add('.'.join([namespace, pkg, info.name]))
+
+    # filter
+    ignored_module_pattern = r'\.tests|\.api|\.bump_version'
+    modules = {m for m in modules if not re.findall(ignored_module_pattern, m)}
+
     from collections import defaultdict
     load_stat = defaultdict(list)
     bad_imports = []
+
+    if isinstance(targets, str):
+        targets = {targets}
+    elif isinstance(targets, list):
+        targets = set(targets)
+    elif targets is None:
+        targets = {}
+    else:
+        raise TypeError(f'target must be a set, but received {targets!r}')
+
     depend_tree = {}
+    import importlib
+    from .helper import colored
     for m in modules:
         try:
             mod = importlib.import_module(m)
             for k in dir(mod):
                 # import the class
-                if (getattr(mod, k).__class__.__name__ == _import_type) and (not targets or k in targets):
+                if (getattr(mod, k).__class__.__name__ == import_type) and (not targets or k in targets):
                     try:
                         _c = getattr(mod, k)
+
                         d = depend_tree
                         for vvv in _c.mro()[:-1][::-1]:
                             if vvv.__name__ not in d:
                                 d[vvv.__name__] = {}
                             d = d[vvv.__name__]
                         d['module'] = m
-                        if k in _targets:
-                            _targets.remove(k)
-                            if not _targets:
+                        if k in targets:
+                            targets.remove(k)
+                            if not targets:
                                 return getattr(mod, k)  # target execs are all found and loaded, return
-                        _load_default_config(_c)
+                        try:
+                            # load the default request for this executor if possible
+                            from .executors.requests import get_default_reqs
+                            get_default_reqs(type.mro(getattr(mod, k)))
+                        except ValueError:
+                            pass
                         load_stat[m].append(
                             (k, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
                     except Exception as ex:
                         load_stat[m].append((k, False, ex))
                         bad_imports.append('.'.join([m, k]))
-                        if k in _targets:
+                        if k in targets:
                             raise ex  # target class is found but not loaded, raise return
         except Exception as ex:
             load_stat[m].append(('', False, ex))
             bad_imports.append(m)
 
-    if _targets:
-        raise ImportError(f'{_targets} can not be found/load')
+    if targets:
+        raise ImportError(f'{targets} can not be found/load')
 
     if show_import_table:
         _print_load_table(load_stat)
-    else:
-        _raise_bad_imports_warnings(bad_imports, namespace)
 
-    setattr(IMPORTED, namespace.split('.')[-1], True)
+    else:
+        if bad_imports:
+            if namespace != 'jina.hub':
+                warnings.warn(
+                    f'theses modules or classes can not be imported {bad_imports}. '
+                    f'You can use `jina check` to list all executors and drivers')
+            else:
+                warnings.warn(
+                    f'due to the missing dependencies or bad implementations, '
+                    f'{bad_imports} can not be imported '
+                    f'if you are using these executors/drivers, they wont work. '
+                    f'You can use `jina check` to list all executors and drivers')
+
+    if namespace == 'jina.executors':
+        IMPORTED.executors = True
+    elif namespace == 'jina.drivers':
+        IMPORTED.drivers = True
+    elif namespace == 'jina.hub':
+        IMPORTED.hub = True
 
     return depend_tree
 
@@ -296,69 +343,3 @@ def _print_dep_tree_rst(fp, dep_tree, title='Executor'):
     fp.write(f'\n\n## Modules in a Table View \n\n| Class | Module |\n')
     fp.write('| --- | --- |\n')
     fp.write('\n'.join(sorted(tableview)))
-
-
-def _get_modules(namespace):
-    from setuptools import find_packages
-    from pkgutil import get_loader
-
-    try:
-        path = os.path.dirname(get_loader(namespace).path)
-    except AttributeError:
-        if namespace == 'jina.hub':
-            warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
-        return {}
-
-    modules = _get_submodules(path, namespace)
-
-    for pkg in find_packages(path):
-        modules.add('.'.join([namespace, pkg]))
-        pkgpath = os.path.join(path, pkg.replace('.', '/'))
-        modules.union(_get_submodules(pkgpath, namespace, prefix=pkg))
-
-    return _filter_modules(modules)
-
-
-def _get_submodules(path, namespace, prefix=None):
-    from pkgutil import iter_modules
-    _prefix = '.'.join([namespace, prefix]) if prefix else namespace
-    modules = set()
-    for info in iter_modules([path]):
-        is_hub_module = namespace == 'jina.hub' and info.ispkg
-        is_nonhub_module = namespace != 'jina.hub' and not info.ispkg
-        module_name = '.'.join([_prefix, info.name])
-        if is_hub_module or is_nonhub_module:
-            modules.add(module_name)
-    return modules
-
-
-def _filter_modules(modules):
-    import re
-    ignored_module_pattern = re.compile(r'\.tests|\.api|\.bump_version')
-    return {m for m in modules if not ignored_module_pattern.findall(m)}
-
-
-def _raise_bad_imports_warnings(bad_imports, namespace):
-    if not bad_imports:
-        return
-    if namespace != 'jina.hub':
-        warnings.warn(
-            f'theses modules or classes can not be imported {bad_imports}. '
-            f'You can use `jina check` to list all executors and drivers')
-    else:
-        warnings.warn(
-            f'due to the missing dependencies or bad implementations, '
-            f'{bad_imports} can not be imported '
-            f'if you are using these executors/drivers, they wont work. '
-            f'You can use `jina check` to list all executors and drivers')
-
-
-def _get_targets(targets):
-    ret = None
-    if isinstance(targets, str):
-        ret = {targets}
-    elif isinstance(targets, list):
-        ret = set(targets)
-    elif targets is None:
-        ret = {}
-    return ret
