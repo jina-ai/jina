@@ -4,6 +4,8 @@ from ..jaml import JAML, JAMLCompatible
 
 
 class OptimizationParameter(JAMLCompatible):
+    """Base class for all optimization parameters."""
+
     def __init__(
         self,
         parameter_name: str = "",
@@ -19,6 +21,11 @@ class OptimizationParameter(JAMLCompatible):
 
 
 class IntegerParameter(OptimizationParameter):
+    """Used for optimizing integer parameters with the Jina Optimizer.
+       For a detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_int
+    """
+
     def __init__(
         self,
         low: int,
@@ -37,24 +44,12 @@ class IntegerParameter(OptimizationParameter):
         self.log = log
 
 
-class FloatParameter(OptimizationParameter):
-    def __init__(
-        self,
-        low: float,
-        high: float,
-        step_size: Optional[float] = None,
-        log: bool = False,
-        *args,
-        **kwargs,
-    ):
-        super().__init__(*args, **kwargs)
-        self.low = low
-        self.high = high
-        self.step_size = step_size
-        self.log = log
-
-
 class UniformParameter(OptimizationParameter):
+    """Used for optimizing float parameters with the Jina Optimizer with uniform sampling.
+       For a detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform
+    """
+
     def __init__(self, low: float, high: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.low = low
@@ -62,6 +57,11 @@ class UniformParameter(OptimizationParameter):
 
 
 class LogUniformParameter(OptimizationParameter):
+    """Used for optimizing float parameters with the Jina Optimizer with loguniform sampling.
+       For a detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_loguniform
+    """
+
     def __init__(self, low: float, high: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.low = low
@@ -69,6 +69,11 @@ class LogUniformParameter(OptimizationParameter):
 
 
 class CategoricalParameter(OptimizationParameter):
+    """Used for optimizing categorical parameters with the Jina Optimizer.
+       For a detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical
+    """
+
     def __init__(
         self, choices: Sequence[Union[None, bool, int, float, str]], *args, **kwargs
     ):
@@ -77,6 +82,11 @@ class CategoricalParameter(OptimizationParameter):
 
 
 class DiscreteUniformParameter(OptimizationParameter):
+    """Used for optimizing discrete parameters with the Jina Optimizer with uniform sampling.
+       For a detailed information about sampling and usage it is used by Jina with optuna see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform
+    """
+
     def __init__(self, low: float, high: float, q: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.low = low

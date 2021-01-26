@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import yaml
 
 from jina.optimizers import MeanEvaluationCallback, ResultProcessor, FlowOptimizer
-from jina.optimizers.parameters import IntegerParameter, FloatParameter, UniformParameter, LogUniformParameter, CategoricalParameter, DiscreteUniformParameter
+from jina.optimizers.parameters import IntegerParameter, UniformParameter, LogUniformParameter, CategoricalParameter, DiscreteUniformParameter
 
 
 @pytest.fixture
@@ -71,9 +71,6 @@ def test_suggest(tmpdir):
     def _objective(trial):
 
         value = FlowOptimizer._suggest(IntegerParameter(0, 3, 1, jaml_variable='IntegerParameter'), trial)
-        assert 0 <= value
-        assert value <= 3
-        value = FlowOptimizer._suggest(FloatParameter(0, 3, 1, jaml_variable='FloatParameter'), trial)
         assert 0 <= value
         assert value <= 3
         value = FlowOptimizer._suggest(UniformParameter(0, 3, jaml_variable='UniformParameter'), trial)

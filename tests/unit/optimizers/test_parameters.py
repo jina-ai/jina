@@ -2,7 +2,6 @@ import os
 
 from jina.optimizers.parameters import (
     IntegerParameter,
-    FloatParameter,
     LogUniformParameter,
     UniformParameter,
     CategoricalParameter,
@@ -17,7 +16,6 @@ def test_parameter_file_loading():
     )
     expected = [
         IntegerParameter,
-        FloatParameter,
         UniformParameter,
         UniformParameter,
         LogUniformParameter,
