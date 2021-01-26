@@ -99,8 +99,16 @@ class QuerySetReader:
 
     @property
     def as_querylang(self):
-        parameters = {name: getattr(self, name) for name in self._init_kwargs_dict.keys()}
-        return QueryLang({'name': self.__class__.__name__, 'priority': self._priority, 'parameters': parameters})
+        parameters = {
+            name: getattr(self, name) for name in self._init_kwargs_dict.keys()
+        }
+        return QueryLang(
+            {
+                'name': self.__class__.__name__,
+                'priority': self._priority,
+                'parameters': parameters,
+            }
+        )
 
     def _get_parameter(self, key: str, default: Any):
         if getattr(self, 'queryset', None):
