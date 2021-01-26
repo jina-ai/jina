@@ -52,7 +52,7 @@ def set_hub_parser(parser=None):
         parser = set_base_parser()
 
     spp = parser.add_subparsers(dest='hub',
-                                description='use "%(prog)-8s [sub-command] --help" '
+                                description='use `%(prog)-8s [sub-command] --help` '
                                             'to get detailed information about each sub-command', required=True)
 
     spp.add_parser('login', help='login via Github to push images to Jina hub registry',

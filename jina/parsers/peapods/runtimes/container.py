@@ -32,6 +32,6 @@ The path on the host to be mounted inside the container.
 
 Note, 
 - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. 
-- If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into "/my-workspace" inside the container. 
+- If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container. 
 - All volumes are mounted with read-write mode.
 ''')

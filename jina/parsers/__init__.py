@@ -103,7 +103,7 @@ def get_main_parser():
     parser = set_base_parser()
 
     sp = parser.add_subparsers(dest='cli',
-                               description='use "%(prog)-8s [sub-command] --help" '
+                               description='use `%(prog)-8s [sub-command] --help` '
                                            'to get detailed information about each sub-command', required=True)
 
     set_hw_parser(sp.add_parser('hello-world',
