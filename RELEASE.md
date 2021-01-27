@@ -68,6 +68,7 @@ jinaai/jina:{version}{python_version}{extra}
 - `{python_version}`: The Python version of the image. Possible values: 
     - ` `, `-py37`: Python 3.7;
     - `-py38` for Python 3.8;
+    - `-py39` for Python 3.9;
 - `{extra}`: the extra dependency installed along with Jina. Possible values:
     - ` `: Jina is installed inside the image via `pip install jina`;
     - `-devel`: Jina is installed inside the image via `pip install jina[devel]`;
