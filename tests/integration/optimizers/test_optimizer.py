@@ -42,14 +42,14 @@ def document_generator(num_doc):
 
 def test_optimizer(tmpdir, config):
     eval_flow_runner = SingleFlowRunner(
-        flow_yaml=os.path.join('tests', 'integration', 'optimizers', 'flow.yml'),
+        flow_yaml='tests/integration/optimizers/flow.yml',
         documents=document_generator(10),
         request_size=1,
         execution_method='search',
     )
     opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
-        parameter_yaml=os.path.join('tests', 'integration', 'optimizers', 'parameter.yml'),
+        parameter_yaml='tests/integration/optimizers/parameter.yml',
         evaluation_callback=MeanEvaluationCallback(),
         workspace_base_dir=str(tmpdir),
         n_trials=5,
@@ -65,13 +65,13 @@ version: 1
 with:
   flow_runner: !SingleFlowRunner
     with:
-      flow_yaml: {os.path.join('tests', 'integration', 'optimizers', 'flow.yml')}
+      flow_yaml: 'tests/integration/optimizers/flow.yml'
       documents: {jsonlines_file}
       request_size: 1
       execution_method: 'search_lines'
       documents_parameter_name: 'filepath'
   evaluation_callback: !MeanEvaluationCallback {{}}
-  parameter_yaml: {os.path.join('tests', 'integration', 'optimizers', 'parameter.yml')}
+  parameter_yaml: 'tests/integration/optimizers/parameter.yml'
   workspace_base_dir: {tmpdir}
   n_trials: 5
 '''

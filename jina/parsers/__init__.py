@@ -126,7 +126,7 @@ def get_main_parser():
 
     set_optimizer_parser(sp.add_parser('optimizer',
                                   description='Start a Jina optimizer from a yaml configuration file',
-                                  help='start a optimizer from a YAML file', formatter_class=_chf))
+                                  help='start an optimizer from a YAML file', formatter_class=_chf))
 
     set_gateway_parser(sp.add_parser('gateway',
                                      description='Start a Gateway that receives client Requests via gRPC/REST interface',
