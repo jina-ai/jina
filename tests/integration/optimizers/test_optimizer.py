@@ -9,7 +9,7 @@ from jina import Document
 from jina.jaml import JAML
 from jina.optimizers import FlowOptimizer, MeanEvaluationCallback
 from jina.optimizers import run_optimizer_cli
-from jina.optimizers.flow_runner import SingleFlowRunner
+from jina.optimizers.flow_runner import SingleFlowRunner, MultiFlowRunner
 from jina.parsers.optimizer import set_optimizer_parser
 
 BEST_PARAMETERS = {
@@ -40,9 +40,9 @@ def document_generator(num_doc):
         yield doc, groundtruth_doc
 
 
-def test_optimizer(tmpdir, config):
+def test_optimizer_single_flow(tmpdir, config):
     eval_flow_runner = SingleFlowRunner(
-        flow_yaml='tests/integration/optimizers/flow.yml',
+        flow_yaml='tests/integration/optimizers/flow1.yml',
         documents=document_generator(10),
         request_size=1,
         execution_method='search',
@@ -58,6 +58,78 @@ def test_optimizer(tmpdir, config):
     validate_result(result, tmpdir)
 
 
+def test_optimizer_multi_flow(tmpdir, config):
+    multi_flow_runner = MultiFlowRunner(
+        SingleFlowRunner(
+            flow_yaml='tests/integration/optimizers/flow1.yml',
+            documents=document_generator(10),
+            request_size=1,
+            execution_method='search',
+        ),
+        SingleFlowRunner(
+            flow_yaml='tests/integration/optimizers/flow2.yml',
+            documents=document_generator(10),
+            request_size=1,
+            execution_method='search',
+        )
+    )
+    opt = FlowOptimizer(
+        flow_runner=multi_flow_runner,
+        parameter_yaml='tests/integration/optimizers/parameter.yml',
+        evaluation_callback=MeanEvaluationCallback(),
+        workspace_base_dir=str(tmpdir),
+        n_trials=5,
+    )
+    result = opt.optimize_flow()
+    validate_result(result, tmpdir)
+
+
+def test_yaml_multi_flow(tmpdir, config):
+    jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
+    optimizer_yaml = f'''!FlowOptimizer
+version: 1
+with:
+  flow_runner: !MultiFlowRunner
+    with:
+      flows: 
+        - !SingleFlowRunner
+          with:
+            flow_yaml: 'tests/integration/optimizers/flow1.yml'
+            documents: {jsonlines_file}
+            request_size: 1
+            execution_method: 'search_lines'
+            documents_parameter_name: 'filepath'
+        - !SingleFlowRunner
+          with:
+            flow_yaml: 'tests/integration/optimizers/flow1.yml'
+            documents: {jsonlines_file}
+            request_size: 1
+            execution_method: 'search_lines'
+            documents_parameter_name: 'filepath'
+  evaluation_callback: !MeanEvaluationCallback {{}}
+  parameter_yaml: 'tests/integration/optimizers/parameter.yml'
+  workspace_base_dir: {tmpdir}
+  n_trials: 5
+'''
+    documents = document_generator(10)
+    with open(jsonlines_file, 'w') as f:
+        for document, groundtruth_doc in documents:
+            document.id = ""
+            groundtruth_doc.id = ""
+            json.dump(
+                {
+                    'document': json.loads(MessageToJson(document).replace('\n', '')),
+                    'groundtruth': json.loads(MessageToJson(groundtruth_doc).replace('\n', '')),
+                },
+                f,
+            )
+            f.write('\n')
+
+    optimizer = JAML.load(optimizer_yaml)
+    result = optimizer.optimize_flow()
+    validate_result(result, tmpdir)
+
+
 def test_yaml(tmpdir, config):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
     optimizer_yaml = f'''!FlowOptimizer
@@ -65,7 +137,7 @@ version: 1
 with:
   flow_runner: !SingleFlowRunner
     with:
-      flow_yaml: 'tests/integration/optimizers/flow.yml'
+      flow_yaml: 'tests/integration/optimizers/flow1.yml'
       documents: {jsonlines_file}
       request_size: 1
       execution_method: 'search_lines'

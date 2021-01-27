@@ -124,7 +124,7 @@ class SingleFlowRunner(FlowRunner):
 class MultiFlowRunner(FlowRunner):
     """Chain and run multiple Flows. It is an interface for common patterns like IndexFlow -> SearchFlow"""
 
-    def __init__(self, *flows: FlowRunner):
+    def __init__(self, flows: FlowRunner):
         """
         :param flows: Flows to be executed in sequence
         """
