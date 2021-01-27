@@ -98,6 +98,7 @@ def get_main_parser():
     from .hub import set_hub_parser
     from .logger import set_logger_parser
     from .ping import set_ping_parser
+    from .optimizer import set_optimizer_parser
 
     # create the top-level parser
     parser = set_base_parser()
@@ -122,6 +123,9 @@ def get_main_parser():
                                   help='Start a Flow',
                                   formatter_class=_chf))
 
+    set_optimizer_parser(sp.add_parser('optimizer',
+                                  description='Start a FlowOptimizer from a YAML configuration file',
+                                  help='Start an FlowOptimizer from a YAML file', formatter_class=_chf))
 
     set_gateway_parser(sp.add_parser('gateway',
                                      description='Start a Gateway that receives client Requests via gRPC/REST interface',
