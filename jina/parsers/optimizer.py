@@ -1,6 +1,9 @@
 from .base import set_base_parser
 from .peapods.base import mixin_base_ppr_parser
 
+if False:
+    from argparse import ArgumentParser
+
 
 def set_optimizer_parser(parser: 'ArgumentParser' = None):
     if not parser:

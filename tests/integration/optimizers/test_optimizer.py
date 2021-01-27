@@ -26,7 +26,6 @@ def config(tmpdir):
     del os.environ['JINA_OPTIMIZER_WORKSPACE_DIR']
 
 
-
 def validate_result(result, tmpdir):
     result_path = os.path.join(tmpdir, 'out/best_parameters.yml')
     result.save_parameters(result_path)
