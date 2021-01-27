@@ -21,8 +21,8 @@ class OptimizationParameter(JAMLCompatible):
 
 
 class IntegerParameter(OptimizationParameter):
-    """Used for optimizing integer parameters with the Jina Optimizer.
-       For a detailed information about sampling and usage see
+    """Used for optimizing integer parameters with the FlowOptimizer.
+       For detailed information about sampling and usage see
        https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_int
     """
 
@@ -45,8 +45,8 @@ class IntegerParameter(OptimizationParameter):
 
 
 class UniformParameter(OptimizationParameter):
-    """Used for optimizing float parameters with the Jina Optimizer with uniform sampling.
-       For a detailed information about sampling and usage see
+    """Used for optimizing float parameters with the FlowOptimizer with uniform sampling.
+       For detailed information about sampling and usage see
        https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform
     """
 
@@ -57,8 +57,8 @@ class UniformParameter(OptimizationParameter):
 
 
 class LogUniformParameter(OptimizationParameter):
-    """Used for optimizing float parameters with the Jina Optimizer with loguniform sampling.
-       For a detailed information about sampling and usage see
+    """Used for optimizing float parameters with the FlowOptimizer with loguniform sampling.
+       For detailed information about sampling and usage see
        https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_loguniform
     """
 
@@ -69,8 +69,8 @@ class LogUniformParameter(OptimizationParameter):
 
 
 class CategoricalParameter(OptimizationParameter):
-    """Used for optimizing categorical parameters with the Jina Optimizer.
-       For a detailed information about sampling and usage see
+    """Used for optimizing categorical parameters with the FlowOptimizer.
+       For detailed information about sampling and usage see
        https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical
     """
 
@@ -82,8 +82,8 @@ class CategoricalParameter(OptimizationParameter):
 
 
 class DiscreteUniformParameter(OptimizationParameter):
-    """Used for optimizing discrete parameters with the Jina Optimizer with uniform sampling.
-       For a detailed information about sampling and usage it is used by Jina with optuna see
+    """Used for optimizing discrete parameters with the FlowOptimizer with uniform sampling.
+       For detailed information about sampling and usage it is used by Jina with optuna see
        https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform
     """
 
