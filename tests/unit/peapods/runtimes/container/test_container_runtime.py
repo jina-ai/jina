@@ -7,10 +7,10 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.flow import Flow
 from jina.helper import random_name
-from jina.peapods.runtimes.container import ContainerRuntime
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
+from jina.peapods.runtimes.container import ContainerRuntime
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -115,7 +115,17 @@ def test_flow_topo_parallel(docker_image_built):
          .join(['d9', 'd8']))
 
     with f:
-        f.index(input_fn=random_docs(1000))
+        f.index(input_fn=random_docs(10))
+
+
+def test_flow_topo_ldl_parallel(docker_image_built):
+    f = (Flow()
+         .add(name='d10')
+         .add(name='d11', uses='docker://jinaai/jina:test-pip', entrypoint='jina pod', uses_internal='_pass', parallel=3)
+         .add(name='d12'))
+
+    with f:
+        f.index(input_fn=random_docs(10))
 
 
 def test_container_volume(docker_image_built, tmpdir):

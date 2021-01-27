@@ -2,12 +2,10 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import base64
-import time
 from pathlib import Path
 from typing import Dict, Union, List
 
 from .. import __binary_delimiter__
-from ..logging import JinaLogger
 
 
 def _encode(clear, key=__binary_delimiter__.decode()):

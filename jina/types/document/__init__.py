@@ -189,7 +189,7 @@ class Document:
 
     def update_content_hash(self,
                             exclude_fields: Optional[Tuple[str]] = (
-                            'id', 'chunks', 'matches', 'content_hash', 'parent_id'),
+                                    'id', 'chunks', 'matches', 'content_hash', 'parent_id'),
                             include_fields: Optional[Tuple[str]] = None) -> None:
         """Update the document hash according to its content.
 

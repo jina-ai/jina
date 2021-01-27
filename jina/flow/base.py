@@ -17,9 +17,9 @@ from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
-from ..excepts import FlowTopologyError, FlowMissingPodError
+from ..excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
 from ..helper import colored, \
-    get_public_ip, get_internal_ip, typename, ArgNamespace, random_identity
+    get_public_ip, get_internal_ip, typename, ArgNamespace
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
@@ -76,7 +76,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
         self._env = env  #: environment vars shared by all pods in the flow
-        self._identity = None
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
@@ -152,7 +151,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            read_only=True,
                            runtime_cls='GRPCRuntime',
                            pod_role=PodRoleType.GATEWAY,
-                           identity=self._identity or random_identity()
+                           identity=self.args.identity
                            ))
 
         kwargs.update(self._common_kwargs)
@@ -432,11 +431,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             for k, v in self._env.items():
                 os.environ[k] = str(v)
 
-        for v in self._pod_nodes.values():
-            self.enter_context(v)
-            if not v.is_ready:
-                self.logger.error(f'Pod {v!r} can not be started, Flow is aborted')
-                break
+        for k, v in self:
+            try:
+                self.enter_context(v)
+            except Exception as ex:
+                self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
+                self.close()
+                raise
 
         self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
 
@@ -752,6 +753,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
+                for k, v in p.peas_args.items():
+                    if v and isinstance(v, argparse.Namespace):
+                        v.workspace_id = value
+                    if v and isinstance(v, List):
+                        for i in v:
+                            i.workspace_id = value
 
     @property
     def identity(self) -> Dict[str, str]:
@@ -765,9 +772,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param value: a hexadecimal UUID string
         """
         uuid.UUID(value)
+        self.args.identity = value
+        # Re-initiating logger with new identity
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         for _, p in self:
             p.args.identity = value
-        self._identity = value
 
     def index(self):
         raise NotImplementedError

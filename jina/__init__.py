@@ -43,7 +43,7 @@ __version__ = '0.9.22'
 # this is managed by proto/build-proto.sh and updated on every execution
 __proto_version__ = '0.0.77'
 
-__uptime__ = _datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+__uptime__ = _datetime.datetime.now().isoformat()
 
 # update on MacOS
 # 1. clean this tuple,

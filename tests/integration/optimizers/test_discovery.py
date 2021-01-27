@@ -1,6 +1,6 @@
 import os
-from shutil import copy2
 from distutils.dir_util import copy_tree
+from shutil import copy2
 
 from jina.optimizers.discovery import run_parameter_discovery
 
@@ -12,4 +12,3 @@ def test_discovery(tmpdir):
     parameter_result_file = os.path.join(tmpdir, 'parameter.yml')
     run_parameter_discovery([os.path.join(tmpdir, 'flow.yml')], parameter_result_file, True)
     assert os.path.exists(parameter_result_file)
-

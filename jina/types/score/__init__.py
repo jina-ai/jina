@@ -1,10 +1,8 @@
 from typing import Optional
 
-
 from ...excepts import BadNamedScoreType
-from ...proto import jina_pb2
 from ...helper import typename
-
+from ...proto import jina_pb2
 
 __all__ = ['NamedScore']
 

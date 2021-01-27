@@ -17,7 +17,7 @@ def mixin_zmq_runtime_parser(parser):
 
     gp.add_argument('--ssh-server', type=str, default=None,
                     help='The SSH server through which the tunnel will be created, '
-                         'can actually be a fully specified "user@server:port" ssh url.')
+                         'can actually be a fully specified `user@server:port` ssh url.')
     gp.add_argument('--ssh-keyfile', type=str, default=None,
                     help='This specifies a key to be used in ssh login, default None. '
                          'regular default ssh keys will be used without specifying this argument.')

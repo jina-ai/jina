@@ -3,8 +3,8 @@ __license__ = "Apache-2.0"
 
 import glob
 import itertools as it
-import random
 import json
+import random
 from typing import List, Union, Iterator, Any
 
 import numpy as np
