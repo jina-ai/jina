@@ -17,7 +17,7 @@ from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
-from ..excepts import FlowTopologyError, FlowMissingPodError
+from ..excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
 from ..helper import colored, \
     get_public_ip, get_internal_ip, typename, ArgNamespace
 from ..jaml import JAML, JAMLCompatible
@@ -431,10 +431,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             for k, v in self._env.items():
                 os.environ[k] = str(v)
 
-        for v in self._pod_nodes.values():
-            self.enter_context(v)
-            if not v.is_ready:
-                self.logger.error(f'Pod {v!r} can not be started, Flow is aborted')
+        for k, v in self:
+            try:
+                self.enter_context(v)
+            except Exception as ex:
+                self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
                 self.close()
                 break
 
