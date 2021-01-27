@@ -42,7 +42,7 @@ def document_generator(num_doc):
 
 def test_optimizer_single_flow(tmpdir, config):
     eval_flow_runner = SingleFlowRunner(
-        flow_yaml='tests/integration/optimizers/flow1.yml',
+        flow_yaml='tests/integration/optimizers/flow.yml',
         documents=document_generator(10),
         request_size=1,
         execution_method='search',
@@ -60,18 +60,20 @@ def test_optimizer_single_flow(tmpdir, config):
 
 def test_optimizer_multi_flow(tmpdir, config):
     multi_flow_runner = MultiFlowRunner(
-        SingleFlowRunner(
-            flow_yaml='tests/integration/optimizers/flow1.yml',
-            documents=document_generator(10),
-            request_size=1,
-            execution_method='search',
-        ),
-        SingleFlowRunner(
-            flow_yaml='tests/integration/optimizers/flow2.yml',
-            documents=document_generator(10),
-            request_size=1,
-            execution_method='search',
-        )
+        [
+            SingleFlowRunner(
+                flow_yaml='tests/integration/optimizers/flow.yml',
+                documents=document_generator(10),
+                request_size=1,
+                execution_method='index',
+            ),
+            SingleFlowRunner(
+                flow_yaml='tests/integration/optimizers/flow.yml',
+                documents=document_generator(10),
+                request_size=1,
+                execution_method='search',
+            )
+        ]
     )
     opt = FlowOptimizer(
         flow_runner=multi_flow_runner,
@@ -94,14 +96,14 @@ with:
       flows: 
         - !SingleFlowRunner
           with:
-            flow_yaml: 'tests/integration/optimizers/flow1.yml'
+            flow_yaml: 'tests/integration/optimizers/flow.yml'
             documents: {jsonlines_file}
             request_size: 1
-            execution_method: 'search_lines'
+            execution_method: 'index_lines'
             documents_parameter_name: 'filepath'
         - !SingleFlowRunner
           with:
-            flow_yaml: 'tests/integration/optimizers/flow1.yml'
+            flow_yaml: 'tests/integration/optimizers/flow.yml'
             documents: {jsonlines_file}
             request_size: 1
             execution_method: 'search_lines'
@@ -130,14 +132,14 @@ with:
     validate_result(result, tmpdir)
 
 
-def test_yaml(tmpdir, config):
+def test_yaml_single_flow(tmpdir, config):
     jsonlines_file = os.path.join(tmpdir, 'docs.jsonlines')
     optimizer_yaml = f'''!FlowOptimizer
 version: 1
 with:
   flow_runner: !SingleFlowRunner
     with:
-      flow_yaml: 'tests/integration/optimizers/flow1.yml'
+      flow_yaml: 'tests/integration/optimizers/flow.yml'
       documents: {jsonlines_file}
       request_size: 1
       execution_method: 'search_lines'
