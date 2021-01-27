@@ -5,7 +5,7 @@ import pytest
 
 from jina import Flow
 from jina.enums import SocketType, FlowBuildLevel
-from jina.excepts import FlowBuildLevelError
+from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
@@ -603,10 +603,9 @@ pods:
 
 def test_bad_pod_graceful_termination():
     def asset_bad_flow(f):
-        with pytest.raises(FlowBuildLevelError):
+        with pytest.raises(RuntimeFailToStart):
             with f:
                 assert f._build_level == FlowBuildLevel.EMPTY
-                f.index(['hello', 'world'])
 
     # bad remote pod
     asset_bad_flow(Flow().add(host='hello-there'))

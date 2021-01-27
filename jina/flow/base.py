@@ -437,7 +437,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             except Exception as ex:
                 self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
                 self.close()
-                return
+                raise
 
         self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
 
