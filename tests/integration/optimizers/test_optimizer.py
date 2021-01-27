@@ -21,17 +21,14 @@ BEST_PARAMETERS = {
 
 @pytest.fixture
 def config(tmpdir):
-    'tests/integration/optimizers/parameter.yml'
     os.environ['JINA_OPTIMIZER_WORKSPACE_DIR'] = str(tmpdir)
-    os.environ['JINA_OPTIMIZER_OUTPUT_FILE'] = os.path.join(tmpdir, 'best_parameters.yml')
     yield
     del os.environ['JINA_OPTIMIZER_WORKSPACE_DIR']
-    del os.environ['JINA_OPTIMIZER_OUTPUT_FILE']
 
 
 
 def validate_result(result, tmpdir):
-    result_path = os.path.join(tmpdir, 'best_parameters.yml')
+    result_path = os.path.join(tmpdir, 'out/best_parameters.yml')
     result.save_parameters(result_path)
     assert result.best_parameters == BEST_PARAMETERS
     assert yaml.load(open(result_path)) == BEST_PARAMETERS
@@ -98,20 +95,20 @@ with:
     validate_result(result, tmpdir)
 
 
-@pytest.mark.parametrize('uses_output_file', (True, False))
-def test_cli(tmpdir, config, uses_output_file):
+@pytest.mark.parametrize('uses_output_dir', (True, False))
+def test_cli(tmpdir, config, uses_output_dir):
     args = [
         '--uses',
         'tests/integration/optimizers/optimizer_conf.yml'
     ]
-    output_file = os.path.join(tmpdir, 'best_parameters.yml')
-    if uses_output_file:
+    output_dir = os.path.join(tmpdir, 'out')
+    if uses_output_dir:
         args.extend([
-            '--output_file',
-            output_file
+            '--output-dir',
+            output_dir
         ])
     run_optimizer_cli(
         set_optimizer_parser().parse_args(args)
     )
-    if uses_output_file:
-        assert yaml.load(open(output_file)) == BEST_PARAMETERS
+    if uses_output_dir:
+        assert yaml.load(open(os.path.join(output_dir, 'best_parameters.yml'))) == BEST_PARAMETERS

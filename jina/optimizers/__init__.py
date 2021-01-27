@@ -231,5 +231,5 @@ def run_optimizer_cli(args: 'Namespace'):
     with open(args.uses) as f:
         optimizer = JAML.load(f)
     result_processor = optimizer.optimize_flow()
-    if args.output_file:
-        result_processor.save_parameters(args.output_file)
+    if args.output_dir:
+        result_processor.save_parameters(os.path.join(args.output_dir, 'best_parameters.yml'))

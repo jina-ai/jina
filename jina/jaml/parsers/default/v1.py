@@ -13,11 +13,11 @@ class V1Parser(VersionedYAMLParser):
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
         """
-        data = JAML.expand_dict(data, None)
+        expanded_data = JAML.expand_dict(data, None)
         if 'with' in data:
-            obj = cls(**data.get('with', {}))
+            obj = cls(**expanded_data.get('with', {}))
         else:
-            obj = cls(**data)
+            obj = cls(**expanded_data)
         return obj
 
     def dump(self, data: 'JAMLCompatible') -> Dict:
