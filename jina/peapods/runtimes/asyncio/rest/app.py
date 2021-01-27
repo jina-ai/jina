@@ -98,9 +98,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             )
 
         async def on_connect(self, websocket: WebSocket) -> None:
-            # TODO(Deepankar): To enable multiple concurrent clients,
-            # Register each client - https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients
-            # And move class variables to instance variable
+            # TODO(Deepankar): To enable multiple concurrent clients, Register each client -
+            #  https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients And
+            #  move class variables to instance variable
             await websocket.accept()
             self.client_info = f'{websocket.client.host}:{websocket.client.port}'
             logger.success(f'Client {self.client_info} connected to stream requests via websockets')
@@ -132,7 +132,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         async def handle_send(self, websocket: WebSocket) -> None:
 
             def handle_route(msg: 'Message') -> 'Request':
-                msg.add_route(self.name, hex(id(self)))
+                msg.add_route(self.name, self.args.identity)
                 return msg.response
 
             try:

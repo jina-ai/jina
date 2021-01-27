@@ -122,7 +122,6 @@ def get_main_parser():
                                   help='Start a Flow',
                                   formatter_class=_chf))
 
-
     set_gateway_parser(sp.add_parser('gateway',
                                      description='Start a Gateway that receives client Requests via gRPC/REST interface',
                                      help='Start a Gateway',

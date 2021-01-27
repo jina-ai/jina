@@ -21,7 +21,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
     async def Call(self, request_iterator, context):
 
         def handle(msg: 'Message') -> 'Request':
-            msg.add_route(self.name, hex(id(self)))
+            msg.add_route(self.name, self.args.identity)
             return msg.response
 
         with AsyncZmqlet(self.args, logger=self.logger) as zmqlet:
