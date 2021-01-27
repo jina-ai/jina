@@ -3,7 +3,13 @@ from typing import Callable
 from typing import Union, Sequence, Iterable, Tuple
 
 import numpy as np
-from google.protobuf.pyext._message import RepeatedCompositeContainer
+
+try:
+    # when protobuf using Cpp backend
+    from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
+except:
+    # when protobuf using Python backend
+    from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
 
 from ...proto.jina_pb2 import DocumentProto
 
@@ -19,7 +25,7 @@ class DocumentSet(MutableSequence):
     a generator but ALSO modify it, count it, get item, or union two 'DocumentSet's using the '+' and '+=' operators.
     """
 
-    def __init__(self, docs_proto: Union['RepeatedCompositeContainer', Sequence['Document']]):
+    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
         super().__init__()
         self._docs_proto = docs_proto
         self._docs_map = {}
@@ -91,7 +97,7 @@ class DocumentSet(MutableSequence):
 
     def reverse(self):
         """In-place reverse the sequence """
-        if isinstance(self._docs_proto, RepeatedCompositeContainer):
+        if isinstance(self._docs_proto, RepeatedContainer):
             size = len(self._docs_proto)
             hi_idx = size - 1
             for i in range(int(size / 2)):

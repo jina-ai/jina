@@ -16,8 +16,24 @@ import signal as _signal
 import sys as _sys
 import types as _types
 
-if _sys.version_info < (3, 7, 0):
-    raise OSError(f'Jina requires Python 3.7 and above, but yours is {_sys.version_info}')
+from google.protobuf.internal import api_implementation as _api_implementation
+
+if _api_implementation._default_implementation_type != 'cpp':
+    import warnings as _warnings
+
+    _warnings.warn('''
+    You are using Python protobuf backend, not the C++ version, which is much faster.
+    
+    This is often due to C++ implementation failed to compile while installing Protobuf
+    - You are using in Python 3.9 (https://github.com/jina-ai/jina/issues/1801)
+    - You are using on architecture other than x86_64/armv6/armv7
+    - You installation is broken, try `pip install --force protobuf`
+    - You have C++ backend but you shut it down, try `export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp`
+    
+    ''', RuntimeWarning)
+
+if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
+    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
 if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # temporary fix for python 3.8 on macos where the default start is set to "spawn"

@@ -1,7 +1,14 @@
 from collections.abc import MutableSequence
 from typing import Iterable, Union, Dict
 
-from google.protobuf.pyext._message import RepeatedCompositeContainer
+
+try:
+    # when protobuf using Cpp backend
+    from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
+except:
+    # when protobuf using Python backend
+    from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
+
 
 from ..querylang import QueryLang
 from ...helper import typename
@@ -18,7 +25,7 @@ class QueryLangSet(MutableSequence):
     a generator but ALSO modify it, count it, get item.
     """
 
-    def __init__(self, querylang_protos: 'RepeatedCompositeContainer'):
+    def __init__(self, querylang_protos: 'RepeatedContainer'):
         super().__init__()
         self._querylangs_proto = querylang_protos
         self._querylangs_map = {}
