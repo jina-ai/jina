@@ -7,7 +7,6 @@ import yaml
 from .parameters import IntegerParameter, FloatParameter, UniformParameter, LogUniformParameter, CategoricalParameter, \
     DiscreteUniformParameter
 from .parameters import load_optimization_parameters
-from .parameters import load_optimization_parameters
 from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
@@ -223,11 +222,12 @@ class FlowOptimizer(JAMLCompatible):
 
 
 def run_optimizer_cli(args: 'Namespace'):
-    """Used to run the optimizer from command line interface.
+    """Used to run the FlowOptimizer from command line interface.
 
     :param args: arguments passed via cli
     """
-    from .flow_runner import SingleFlowRunner
+    # The following import is needed to initialize the JYML parser
+    from .flow_runner import SingleFlowRunner, MultiFlowRunner
     with open(args.uses) as f:
         optimizer = JAML.load(f)
     result_processor = optimizer.optimize_flow()
