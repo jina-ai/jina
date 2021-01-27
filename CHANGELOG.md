@@ -13,6 +13,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -6981,4 +6982,57 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b6a7eb66```](https://github.com/jina-ai/jina/commit/b6a7eb66648ee1b1ddb3a6d9ae97b5ee8ef6006b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```ab5d0456```](https://github.com/jina-ai/jina/commit/ab5d04568ee06d489d4b6cbbc3752378917e5b0f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d8464838```](https://github.com/jina-ai/jina/commit/d846483874cf06aa79eeb372cf618f9a37c2e0ab)] __-__ __version__: the next version will be 0.9.21 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-22></a>
+## Release Note (`0.9.22`)
+
+> Release time: 2021-01-27 16:57:30
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Florian Hönicke,  Dimitris Prasakis,  Jina Dev Bot,  Maximilian Werk,  Joan Fontanals,  Alex Cureton-Griffiths,  Yongxuanzhang,  Deepankar Mahapatro,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f7fc6d76```](https://github.com/jina-ai/jina/commit/f7fc6d76b6fbba94719a9768f80604ede63c40bf)] __-__ add Python 3.9 support (#1802) (*Han Xiao*)
+ - [[```994c13fe```](https://github.com/jina-ai/jina/commit/994c13fee4362bb367475ed6fd5e9dbf4e4a4de0)] __-__ optimizer cli (#1764) (*Florian Hönicke*)
+ - [[```d17f8162```](https://github.com/jina-ai/jina/commit/d17f8162a05b0842035dbfb5fb051d960030421b)] __-__ synced arguments of index-lines and search-lines (#1778) (*Maximilian Werk*)
+ - [[```e9da857b```](https://github.com/jina-ai/jina/commit/e9da857b6d8812a3d809a1b8c82b0c92dd867dfd)] __-__ code cleanup and docstrings added (#1776) (*Maximilian Werk*)
+
+### 🐞 Bug fixes
+
+ - [[```8d5e0c9b```](https://github.com/jina-ai/jina/commit/8d5e0c9bda20e3561e842600e09d14ca73dbdf4f)] __-__ __flow__: terminate flow gracefully on error pod (#1799) (*Han Xiao*)
+ - [[```c7a7eeb8```](https://github.com/jina-ai/jina/commit/c7a7eeb80467ff6b873896025b1dfff3905d33db)] __-__ __daemon__: fix pydantic model on List[str] (#1793) (*Han Xiao*)
+ - [[```5b8f387c```](https://github.com/jina-ai/jina/commit/5b8f387c3b49c22abd830f8fb0a86936c1633ddc)] __-__ __revert__: revert fix label insertion into dockerfile (#1732)&#34; (#1779) (*Joan Fontanals*)
+ - [[```7c2c0364```](https://github.com/jina-ai/jina/commit/7c2c03640b9ee7ac0284d87b6c554b700c107c8e)] __-__ __helper__: uptime in iso, get_workspace in str (#1786) (*Han Xiao*)
+ - [[```f570ef79```](https://github.com/jina-ai/jina/commit/f570ef79823b4f2d29aad424fe5342959a411e0f)] __-__ __daemon__: export logs, delete workspaces, reenable distributed tests (#1768) (*Deepankar Mahapatro*)
+ - [[```8cc83717```](https://github.com/jina-ai/jina/commit/8cc837176c11d0abcdbe099d935f41a2c71adfcf)] __-__ add field to resource executor (#1775) (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```317e267f```](https://github.com/jina-ai/jina/commit/317e267fe6a417dc426b6d9a6f956ea34e6cbb89)] __-__ avoid import drivers from types (#1759) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```b5b0ab4a```](https://github.com/jina-ai/jina/commit/b5b0ab4a84117e819d807c23ef63a9ac5ba89959)] __-__ __101__: added greek translation to 101 chapter (#1765) (*Dimitris Prasakis*)
+ - [[```6db14586```](https://github.com/jina-ai/jina/commit/6db145867ec562c5d779c18c7458b1b5867be828)] __-__ __readme__: rm non-english language links (#1788) (*Alex Cureton-Griffiths*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```a2af393a```](https://github.com/jina-ai/jina/commit/a2af393a286129011dc3aa1a1578c397714cd1eb)] __-__ __flow__: add local-docker-local test (#1787) (*Han Xiao*)
+ - [[```b15cc5f7```](https://github.com/jina-ai/jina/commit/b15cc5f7702eb4e279e27172197dd62fd9be779b)] __-__ __daemon__: add remote docker test (#1782) (*Han Xiao*)
+ - [[```ce7e2742```](https://github.com/jina-ai/jina/commit/ce7e274266d6282d4106772406ab38e674bcaf56)] __-__ logging level (#1774) (*Yongxuanzhang*)
+ - [[```c6057ff4```](https://github.com/jina-ai/jina/commit/c6057ff476f776c556d4bbad4a1a4cd99e428452)] __-__ crud sharding (#1716) (*Florian Hönicke*)
+
+### 🍹 Other Improvements
+
+ - [[```e04ad0f1```](https://github.com/jina-ai/jina/commit/e04ad0f177d847ec7dd31d1b43b354eeda115745)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```a86b8b12```](https://github.com/jina-ai/jina/commit/a86b8b129ed34b92dc336760a760e55eba327903)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
+ - [[```faec30ce```](https://github.com/jina-ai/jina/commit/faec30ceffff887604204b9917c5311ccd199b09)] __-__ update readme arch package (*Han Xiao*)
+ - [[```b74c4f54```](https://github.com/jina-ai/jina/commit/b74c4f548ff920d3532d74cc1af27b0cdae19831)] __-__ __parser__: use single quote for better doc-rendering (#1790) (*Han Xiao*)
+ - [[```39260f89```](https://github.com/jina-ai/jina/commit/39260f8961ad770bf88510cb8553f4d262ce72ee)] __-__ __daemon__: reformat the code for daemon (#1780) (*Han Xiao*)
+ - [[```51af9bb6```](https://github.com/jina-ai/jina/commit/51af9bb68d5572fecab12bbba3cefea9d306a355)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```bcfb1c07```](https://github.com/jina-ai/jina/commit/bcfb1c07bf1e6ac3692798be990de216e59ca00e)] __-__ __version__: the next version will be 0.9.22 (*Jina Dev Bot*)
 
