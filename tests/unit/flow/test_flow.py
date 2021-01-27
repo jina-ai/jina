@@ -4,7 +4,8 @@ import numpy as np
 import pytest
 
 from jina import Flow
-from jina.enums import SocketType
+from jina.enums import SocketType, FlowBuildLevel
+from jina.excepts import FlowBuildLevelError
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
@@ -598,3 +599,29 @@ pods:
         for _, p in f:
             if p.args.identity != '1234':
                 assert p.name == 'gateway'
+
+
+def test_bad_pod_graceful_termination():
+    def asset_bad_flow(f):
+        with pytest.raises(FlowBuildLevelError):
+            with f:
+                assert f._build_level == FlowBuildLevel.EMPTY
+                f.index(['hello', 'world'])
+
+    # bad remote pod
+    asset_bad_flow(Flow().add(host='hello-there'))
+
+    # bad local pod
+    asset_bad_flow(Flow().add(uses='hello-there'))
+
+    # bad local pod at second
+    asset_bad_flow(Flow().add().add(uses='hello-there'))
+
+    # bad remote pod at second
+    asset_bad_flow(Flow().add().add(host='hello-there'))
+
+    # bad local pod at second, with correct pod at last
+    asset_bad_flow(Flow().add().add(uses='hello-there').add())
+
+    # bad remote pod at second, with correct pod at last
+    asset_bad_flow(Flow().add().add(host='hello-there').add())

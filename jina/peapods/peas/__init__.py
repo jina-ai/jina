@@ -113,7 +113,6 @@ class BasePea(metaclass=PeaType):
                 # return too early and the shutdown is set, means something fails!!
                 self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
                                      f'add "--show-exc-info" to see the exception stack in details')
-                raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
         else:
