@@ -3,6 +3,9 @@ import os
 import uuid
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
+if _SHOW_ALL_ARGS:
+    from jina.logging import default_logger
+    default_logger.warning(f'Setting {_SHOW_ALL_ARGS} will make remote Peas with sharding not work when using JinaD')
 
 
 def add_arg_group(parser, title):
