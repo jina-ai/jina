@@ -13,7 +13,6 @@ from .....logging import JinaLogger
 from .....types.message import Message
 from .....types.request import Request
 
-
 def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     with ImportExtensions(required=True):
         from fastapi import FastAPI, WebSocket, Body
@@ -21,8 +20,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from fastapi.middleware.cors import CORSMiddleware
         from starlette.endpoints import WebSocketEndpoint
         from starlette import status
-        if False:
-            from starlette.types import Receive, Scope, Send
+        from starlette.types import Receive, Scope, Send
 
     app = FastAPI(title='RESTRuntime')
     app.add_middleware(

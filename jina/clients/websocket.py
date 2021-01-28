@@ -42,7 +42,7 @@ class WebSocketClientMixin(BaseClient, ABC):
             # setting `max_size` as None to avoid connection closure due to size of message
             # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
 
-            async with websockets.connect(f'ws://{client_info}/stream') as websocket:
+            async with websockets.connect(f'ws://{client_info}/stream', max_size=None) as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
                 self.logger.success(f'Connected to the gateway at {client_info}')
