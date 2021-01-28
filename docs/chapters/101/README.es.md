@@ -1,6 +1,6 @@
 <table>
   <tr>
-    <td width="70%"><h1>Jina 101: First Things to Learn About Jina</h1>
+    <td width="70%"><h1>Jina 101: Lo primero que tienes que aprender sobre Jina</h1>
     <a href="https://twitter.com/intent/tweet?text=%F0%9F%91%8DCheck+out+Jina%3A+the+New+Open-Source+Solution+for+Neural+Information+Retrieval+%F0%9F%94%8D%40JinaAI_&url=https%3A%2F%2Fgithub.com%2Fjina-ai%2Fjina&hashtags=JinaSearch&original_referer=http%3A%2F%2Fgithub.com%2F&tw_p=tweetbutton" target="_blank">
   <img src="../../../.github/badges/twitter-share101.svg?raw=true"
        alt="tweet button" title="👍Check out Jina: the New Open-Source Solution for Neural Information Retrieval 🔍@JinaAI_"></img>
@@ -31,7 +31,6 @@
   <a href="README.zh.md">中文</a> •
   <a href="README.ar.md">عربية</a> •
   <a href="README.es.md">Español</a>
-  <a href="README.gr.md">Ελληνικά</a>
     </td>
     <td>
       <img src="img/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
@@ -39,19 +38,19 @@
   </tr>
 </table>
 
-Want a general introduction to neural search and how it's different to regular old symbolic search? [Check out our explainer blog post](https://medium.com/@jina_ai/what-is-jina-and-neural-search-7a9e166608ab) to learn more!
+¿Quiere una introducción general a la búsqueda neuronal y en qué se diferencia de la búsqueda simbólica normal? [Consulte nuestra publicación](https://medium.com/@jina_ai/what-is-jina-and-neural-search-7a9e166608ab) para aprender más!
 
-<h2 align="center">Document & Chunk</h2>
+<h2 align="center">Document y Chunk</h2>
 
 <img align="left" src="img/ILLUS1.png?raw=true" alt="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" title="Jina 101 Concept Document and Chunk, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-When most people think of search, they think of a bar you type words into, like Google. But search is much more than that - as well as text, you may want to search for a song, recipe, video, genetic sequence, scientific paper, or location.
+Cuando la gente piensa en búsqueda, la mayoría piensa en una barra en la que se escriben palabras, como Google. Pero la búsqueda es mucho más que eso: además de texto, es posible que desee buscar una canción, receta, video, secuencia genética, artículo científico o ubicación.
 
-In Jina, we call all of these things **Documents**. In short, a Document is anything you want to search for, and the input query you use when searching.
+En Jina, llamamos a todas estas cosas **Documents**. En resumen, un documento es cualquier cosa que desee buscar así como la consulta de entrada que utiliza al realizar la búsqueda.
 
-Documents can be huge though - how can we search for the right part? We do this by breaking a Document into **Chunks**. A Chunk is a small semantic unit of a Document, like a sentence, a 64x64 pixel image patch, or a pair of coordinates. 
+Sin embargo, los documentos pueden ser enormes, ¿cómo podemos buscar la parte correcta? Hacemos esto dividiendo un documento en **Chunks**. Un Chunk es un fragmento, una pequeña unidad semántica de un documento, como una oración, un parche de imagen de 64x64 píxeles o un par de coordenadas.
 
-You can think of a Document like a chocolate bar. Documents have different formats and ingredients, but you can also break it into chunks any way you like. Eventually, what you buy and store are the chocolate bars, and what you eat and digest are the chunks. You don’t want to swallow the whole bar, but you don’t want to grind it into powder either; By doing that, you lose the flavor (i.e. the semantics).
+Puede pensar en un documento como una barra de chocolate. Los documentos tienen diferentes formatos e ingredientes, pero también puede dividirlos en trozos como desee. Con el tiempo, lo que compra y almacena son las barras de chocolate, y lo que come y digiere son los trozos. No quiere comerse toda la barra, pero tampoco quiere molerla hasta convertirla en polvo. Al hacer eso, pierde el sabor (es decir, la semántica).
 
 <br/><br/><br/>
 
@@ -59,7 +58,7 @@ You can think of a Document like a chocolate bar. Documents have different forma
 
 <img align="right" src="img/ILLUS2.png?raw=true" alt="Jina 101 YAML, Copyright by Jina AI Limited" title="Jina 101 YAML Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-Every part of Jina is configured with **YAML files**. YAML files offer customization, allowing you to change the behavior of an object without touching its code. Jina can build a very complicated object directly from a simple YAML file, or save an object into a YAML file.
+Cada parte de Jina está configurada con **archivos YAML**. Los archivos YAML ofrecen personalización, lo que le permite cambiar el comportamiento de un objeto sin tocar su código. Jina puede construir un objeto complejo directamente desde un archivo YAML y/o guardar un objeto en un archivo YAML.
 
 <br/><br/><br/><br/><br/><br/>
 
@@ -67,7 +66,7 @@ Every part of Jina is configured with **YAML files**. YAML files offer customiza
 
 <img align="left" src="img/ILLUS3.png?raw=true" alt="Jina AI Executor, Copyright by Jina AI Limited" title="Jina AI Executor Concept, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-How do we break down a Document into Chunks, and what happens next? **Executors** do all of this hard work, and each represents an algorithmic unit. They do things like encoding images into vectors, storing vectors on disk, ranking results, and so on. Each one has a simple interface, letting you concentrate on the algorithm and not get lost in the weeds. They handle feature persistence, scheduling, chaining, grouping, and parallelization out of the box. The properties of an Executor are stored in a [YAML file](#configuring-jina-with-yaml). They always go hand in hand.
+¿Cómo dividimos un documento en chunks (fragmentos) y qué sucede a continuación? Los **Executors** hacen todo este trabajo duro, cada Executor representa una unidad algorítmica. Hacen cosas como codificar imágenes en vectores, almacenar vectores en disco, rankear los resultados, etc. Cada uno tiene una interfaz simple, lo que le permite concentrarse en el algoritmo y no perderse en la maleza. Manejan la persistencia, planificación, encadenamiento, agrupación y paralelización de funciones de forma inmediata. Las propiedades de un Executor se almacenan en un archivo YAML. Siempre van de la mano.
 
 <br/><br/><br/>
 
@@ -78,13 +77,14 @@ How do we break down a Document into Chunks, and what happens next? **Executors*
   <img src="img/ILLUS4.png?raw=true" alt="Jina 101 Family of Executor, Copyright by Jina AI Limited" title="Jina 101 Family of Executor, Copyright by Jina AI Limited" hspace="10" width="80%"/>
 </p>
 
-The **Executors** are a big family. Each family member focuses on one important aspect of the search system. Let’s meet:
-- **Crafter**: for crafting/segmenting/transforming the Documents and Chunks;
-- **Encoder**: for representing the Chunk as vector;
-- **Indexer**: for saving and retrieving vectors and key-value information from storage;
-- **Ranker**: for sorting results;
+Los **Executors** son una gran familia. Cada integrante de la familia se centra en un aspecto importante del sistema de búsqueda:
 
-Got a new algorithm in mind? No problem, this family always welcomes new members!
+- **Crafter**: para crear/segmentar/transformar los Documents y Chunks;
+- **Encoder**: para representar el Chunk como vector;
+- **Indexer**: para guardar y recuperar vectores e información de valor-clave del almacenamiento;
+- **Ranker**: para ordenar y ranquear los resultados;
+
+¿Tiene un nuevo algoritmo en mente? No hay problema, ¡esta familia siempre da la bienvenida a nuevos integrantes!
 
 <br/><br/>
 
@@ -92,7 +92,7 @@ Got a new algorithm in mind? No problem, this family always welcomes new members
 
 <img align="right" src="img/ILLUS5.png?raw=true" alt="Jina 101 Driver, Copyright by Jina AI Limited" title="Jina 101 Driver, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-Executors do all the hard work, but they're not great at talking to each other. A **Driver** helps them do this by defining how an Executor behaves to network requests. It interprets network traffic into a format the Executor can understand, for example translating Protobuf into a Numpy array.
+Los Executors hacen todo el trabajo duro, pero no son buenos para hablarse entre ellos. Un **Driver** les ayuda a hacer esto definiendo cómo se comporta un Executor ante las peticiones de red. Interpreta el tráfico de la red en un formato que el Executor puede entender, por ejemplo, traduciendo un Protobuf en un arreglo NumPy.
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
@@ -102,9 +102,9 @@ Executors do all the hard work, but they're not great at talking to each other. 
 
 <img align="left" src="img/ILLUS6.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-All healthy families need to communicate, and the Executor clan is no different. They talk to each other via **Peas**.
+Todas las familias saludables necesitan comunicarse, y el clan Executor no es diferente. Se hablan a través de **Peas**.
 
-While a Driver translates data for an Executor, A Pea wraps an Executor and lets it exchange data over a network or with other Peas. Peas can also run in Docker, containing all dependencies and context in one place.
+Mientras que un Driver traduce datos para un Executor, un Pea envuelve a un Executor y le permite intercambiar datos a través de una red o con otros Peas. Los Peas también se pueden ejecutar en Docker, conteniendo todas las dependencias y el contexto en un solo lugar.
 
 <img align="right" src="img/ILLUS7.png?raw=true" alt="Jina 101 Pea, Copyright by Jina AI Limited" title="Jina 101 Pea, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -116,9 +116,10 @@ While a Driver translates data for an Executor, A Pea wraps an Executor and lets
 
 <img align="left" src="img/ILLUS8.png?raw=true" alt="Jina 101 Pod, Copyright by Jina AI Limited" title="Jina 101 Pod, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
-So now you've got lots of Peas talking to each other and rolling all over the place. How can you organize them? Nature uses **Pods**, and so do we.
+Así que ahora tienes muchos Peas hablando entre ellos y rodando por todos lados. ¿Cómo puedes organizarlos? Usamos **Pods** al igual que la naturaleza.
 
-A Pod is a group of Peas with the same property, running in parallel on a local host or over the network. A Pod provides a single network interface for its Peas, making them look like one single Pea from the outside. Beyond that, a Pod adds further control, scheduling, and context management to the Peas.
+Un Pod es un grupo de Peas con la misma propiedad que se ejecuta en paralelo en un host local o en la red. Un Pod proporciona una interfaz única de red para sus Peas, lo que los hace parecer un solo Pea desde el exterior. Más allá de eso, un Pod agrega mayor control, planeación y administración de contexto a los Peas.
+
 
 <img align="right" src="img/ILLUS9.png?raw=true" alt="Jina 101 Pod Remote, Copyright by Jina AI Limited" title="Jina 101 Pod Remote, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
@@ -130,18 +131,22 @@ A Pod is a group of Peas with the same property, running in parallel on a local 
 <img align="left" src="img/ILLUS10.png?raw=true" alt="Jina 101 Flow, Copyright by Jina AI Limited" title="Jina 101 Flow, Copyright by Jina AI Limited" hspace="10" width="30%"/>
 
 
-Now we've got a garden full of Pods, with each Pod full of Peas. That's a lot to manage! Say hello to **Flow**! Flow is like a Pea plant. Just as a plant manages nutrient flow and growth rate for its branches, Flow manages the states and context of a group of Pods, orchestrating them to accomplish one task. Whether a Pod is remote or running in Docker, one Flow rules them all!
+Ahora tenemos un jardín lleno de Pods, con cada Pod llena de Peas. ¡Eso es mucho para administrar! ¡Te introducimos a **Flow**! Flow es como una planta de Peas. Así como una planta gestiona el flujo de nutrientes y la tasa de crecimiento de sus ramas, Flow gestiona los estados y el contexto de un grupo de Pods.
+
+El Flow representa una tarea de alto nivel. Por ejemplo, indexación, búsqueda y entrenamiento. Gestiona los estados y el contexto de un grupo de Pods y los organiza para realizar una tarea.
+Ya sea que un Pod sea remoto o se esté ejecutando en Docker, ¡un Flow los gobierna a todos!
+
 
 <br/><br/><br/><br/><br/><br/>
 
 
 
-<h2 align="center">From Micro to Macro</h2>
+<h2 align="center">De Micro a Macro</h2>
 
 
-Jina is a happy family. You can feel the harmony when you use Jina.
+Jina es una familia feliz. Puede sentir la armonía cuando usa Jina.
 
-You can design at the micro-level and scale up to the macro-level. YAMLs becomes algorithms, threads become processes, Pods become Flows. The patterns and logic always remain the same. This is the beauty of Jina.
+Puede diseñar a nivel micro y escalar al nivel macro. Los YAML se convierten en algoritmos, los hilos se convierten en procesos, los Pods se convierten en Flows. Los patrones y la lógica siempre son los mismos. Esa es la belleza de Jina.
 
 
 <p align="center">
@@ -152,12 +157,12 @@ You can design at the micro-level and scale up to the macro-level. YAMLs becomes
 
 <p align="center">
 <a href="../../../README.md#jina-hello-world-">
-    ✨<b>Intrigued? Try our "Hello, World!" and build your neural image search in 1 min. </b>
+    ✨<b> ¿Le intriga? Pruebe nuestro "Hola, Mundo!" y construya su buscador de imágenes neuronales en 1 minuto. </b>
 </a>
 </p>
 <br><br><br>
 <p align="center">
-    ✨<b>Unleash your curiosity and happy searching! </b>🔍
+    ✨<b> ¡Desata tu curiosidad y feliz búsqueda! </b>🔍
 </p>
 <br><br><br>
 <p align="center">
@@ -186,5 +191,4 @@ You can design at the micro-level and scale up to the macro-level. YAMLs becomes
 
 
 
-The look and feel of this document ("Jina 101: First Things to Learn About Jina") is copyright © Jina AI Limited. All rights reserved. Customer may not duplicate, copy, or reuse any portion of the visual design elements or concepts without express written permission from Jina AI Limited.
-
+La apariencia de este documento ("Jina 101: Lo primero que debe aprender sobre Jina") está protegida por derechos de autor © Jina AI Limited. Todos los derechos reservados. Clientes no pueden duplicar, copiar ni reutilizar ninguna parte de los elementos o conceptos de diseño visual sin el permiso expreso por escrito de Jina AI Limited.
