@@ -6,7 +6,6 @@ import numpy as np
 from ....executors.rankers import Chunk2DocRanker
 from ....types.document import Document
 from ....types.score import NamedScore
-from ....types.document.uid import UniqueId
 
 from .. import BaseRankDriver
 

@@ -25,5 +25,5 @@ class DummyRanker(Match2DocRanker):
             for match_id, old_score in old_match_scores.items()
         ]
         return np.array(new_scores, dtype=[
-            (self.COL_MATCH_ID, np.int64),
+            (self.COL_MATCH_ID, np.object),
             (self.COL_SCORE, np.float64)])
