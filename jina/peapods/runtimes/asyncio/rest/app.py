@@ -50,6 +50,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             return error('"data" field is empty', 406)
 
         body['mode'] = RequestType.from_string(mode)
+        from .....clients import BaseClient
+        BaseClient.add_default_kwargs(body)
         req_iter = request_generator(**body)
         results = await get_result_in_json(req_iter=req_iter)
         return JSONResponse(content=results[0], status_code=200)
