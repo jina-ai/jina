@@ -71,7 +71,7 @@ class BaseClient:
         kwargs['data'] = input_fn
 
         try:
-            r = next(getattr(request, 'index')(**kwargs))
+            r = next(request_generator(**kwargs))
             if isinstance(r, Request):
                 default_logger.success(f'input_fn is valid')
             else:
