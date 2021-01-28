@@ -6,7 +6,7 @@ from .base import BaseClient
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
-from ..types.request import Request
+from ..types.request import Request, Response
 
 
 class WebSocketClientMixin(BaseClient, ABC):
