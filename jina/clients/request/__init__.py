@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple
+from typing import Iterator, Union, Tuple, AsyncIterator
 
 from .helper import _new_request_from_batch
 from ... import Request
@@ -11,10 +11,12 @@ from ...logging import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType
 from ...types.sets.querylang import AcceptQueryLangType
 
-GeneratorSourceType = Iterator[Union[DocumentContentType,
-                                     DocumentSourceType,
-                                     Tuple[DocumentContentType, DocumentContentType],
-                                     Tuple[DocumentSourceType, DocumentSourceType]]]
+SingletonDataType = Union[DocumentContentType,
+                          DocumentSourceType,
+                          Tuple[DocumentContentType, DocumentContentType],
+                          Tuple[DocumentSourceType, DocumentSourceType]]
+
+GeneratorSourceType = Union[Iterator[SingletonDataType], AsyncIterator[SingletonDataType]]
 
 
 def request_generator(data: GeneratorSourceType,

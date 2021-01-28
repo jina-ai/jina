@@ -3,13 +3,12 @@ __license__ = "Apache-2.0"
 
 import argparse
 import os
-from typing import Callable, Union, Optional, Iterator, List, Dict
+from typing import Callable, Union, Optional, Iterator, List, Dict, AsyncIterator
 
 import grpc
-
-from . import request
+import inspect
 from .helper import callback_exec
-from .request import GeneratorSourceType, request_generator
+from .request import GeneratorSourceType
 from ..enums import RequestType
 from ..excepts import BadClient, BadClientInput
 from ..helper import typename
@@ -70,7 +69,11 @@ class BaseClient:
 
         kwargs['data'] = input_fn
 
+        if inspect.isasyncgenfunction(input_fn) or inspect.isasyncgen(input_fn):
+            raise NotImplementedError('checking the validity of an async generator is not implemented yet')
+
         try:
+            from .request import request_generator
             r = next(request_generator(**kwargs))
             if isinstance(r, Request):
                 default_logger.success(f'input_fn is valid')
@@ -80,13 +83,19 @@ class BaseClient:
             default_logger.error(f'input_fn is not valid!')
             raise BadClientInput from ex
 
-    def _get_requests(self, **kwargs) -> Iterator['Request']:
+    def _get_requests(self, **kwargs) -> Union[Iterator['Request'], AsyncIterator['Request']]:
         """Get request in generator"""
         _kwargs = vars(self.args)
         _kwargs['data'] = self.input_fn
         # override by the caller-specific kwargs
         _kwargs.update(kwargs)
-        return request_generator(**_kwargs)
+
+        if inspect.isasyncgen(self.input_fn):
+            from .request.asyncio import request_generator
+            return request_generator(**_kwargs)
+        else:
+            from .request import request_generator
+            return request_generator(**_kwargs)
 
     def _get_task_name(self, kwargs: Dict) -> str:
         tname = str(self.mode).lower()
