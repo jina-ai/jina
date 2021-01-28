@@ -1,0 +1,25 @@
+!Flow
+version: '1'
+with:
+  port_expose: 45678
+  show_exc_info: true
+  rest_api: false
+pods:
+  - name: pod1
+    uses: _pass
+    host: $JINA_POD1_HOST
+    port_expose: 8000
+  - name: pod2
+    uses: _pass
+    parallel: 2
+    host: $JINA_POD2_HOST
+    port_expose: 8000
+  - name: pod3
+    parallel: 2
+    host: $JINA_POD3_HOST
+    port_expose: 8000
+    needs: [gateway]
+  - name: join_all
+    uses: _merge
+    needs: [pod2, pod3]
+    read_only: true

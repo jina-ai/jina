@@ -2,6 +2,7 @@
 version: '1'
 with:
   read_only: true
+  public-expose: true
 pods:
   - name: crafter
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote

@@ -10,9 +10,6 @@ compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 flow_yml = os.path.join(cur_dir, 'flow.yml')
 
 
-@pytest.mark.skip('Conflict with https://github.com/jina-ai/jina/pull/1697, '
-                  'the latter aims to solve the dameon on aws can not transfer data to local laptop behind a router. '
-                  'Feel like the dockercompose environment is not a perfect simulation of the real-world case.')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 @pytest.mark.parametrize('encoder_needs, indexer_needs', [('crafter', 'encoder'), ('gateway', '[encoder, crafter]')])
 def test_flow(docker_compose, tmpdir, mocker, encoder_needs, indexer_needs):

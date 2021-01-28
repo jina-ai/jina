@@ -92,9 +92,9 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             first_socket_type = SocketType.PUB_BIND
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
-        elif start_node.host != __default_host__ and end_node.host == __default_host__:
+        elif start_node.host != __default_host__ and end_node.host == __default_host__ and end_node.args.input_socket_pull_connect:
             # first node is on remote, second is local. in this case, local node is often behind router/private
-            # network, there is no way that first node can send data "actively" (CONNECT) to it, it
+            # network, there is no way that first node can send data "actively" (CONNECT) to it
             first_socket_type = SocketType.PUSH_BIND
         _connect(start_node, end_node, first_socket_type=first_socket_type)
         flow.logger.debug(f'Connect {start_node_name} '

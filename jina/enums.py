@@ -88,15 +88,15 @@ class BetterEnum(IntEnum, metaclass=EnumType):
 
 class SchedulerType(BetterEnum):
     LOAD_BALANCE = 0  #: balance the workload between Peas, faster peas get more work
-    ROUND_ROBIN = 1  #: workload are scheduled round-robin manner to the peas, assuming all peas have uniform processing speed.
+    ROUND_ROBIN = 1  # : workload are scheduled round-robin manner to the peas, assuming all peas have uniform processing speed.
 
 
 class PollingType(BetterEnum):
     """The enum for representing the parallel type of peas in a pod
 
     """
-    ANY = 1  #: one of the replica will receive the message
-    ALL = 2  #: all replica will receive the message, blocked until all done with the message
+    ANY = 1  #: one of the shards will receive the message
+    ALL = 2  #: all shards will receive the message, blocked until all done with the message
     ALL_ASYNC = 3  #: (reserved) all replica will receive the message, but any one of them can return, useful in backup
 
     @property
