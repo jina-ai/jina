@@ -113,20 +113,23 @@ To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are u
 #### Feed Data
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-feed-data.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Let's create some random data and index it:
+To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty document and index it:
 
 ```python
-import numpy 
 from jina import Document
 
 with Flow().add() as f:
-    f.index((Document() for _ in range(10)))  # index raw Jina Documents
+    f.index((Document() for _ in range(10)))
+```
+
+Flow supports CRUD operations: `index`, `search`, `update`, `delete`. Besides, it also provides sugary syntax on common data type such as files, text, and `ndarray`.
+
+```python
+with f:
     f.index_ndarray(numpy.random.random([4,2]), on_done=print)  # index ndarray data, document sliced on first dimension
     f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
     f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])  # index files and wildcard globs, each file is a document
 ```
-
-To use a Flow, open it using the `with` context manager, like you would a file in Python. You can call `index` and `search` with nearly all types of data. The whole data stream is asynchronous and efficient.
 
 #### Fetch Result
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-fetch-result.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -345,6 +348,19 @@ with AsyncFlow().add() as f:
     await f.index_ndarray(numpy.random.random([5, 4]), on_done=print)
 ```
 
+#### Asynchronous Input
+
+`AsyncFlow`'s CRUD operations support async generator as the input function. This is particular useful when your data sources involves other asynchronous libraries (e.g. motor for Mongodb):
+
+```python
+async def input_fn():
+    for _ in range(10):
+        yield Document()
+        await asyncio.sleep(0.1)
+
+with AsyncFlow().add() as f:
+    await f.index(input_fn)
+```
 
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it!
 
