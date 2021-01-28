@@ -3,20 +3,20 @@ __license__ = "Apache-2.0"
 
 import argparse
 import os
-from typing import Callable, Union, Optional, Iterator, List
+from typing import Callable, Union, Optional, Iterator, List, Dict
 
 import grpc
 
 from . import request
 from .helper import callback_exec
-from .request import GeneratorSourceType
+from .request import GeneratorSourceType, request_generator
 from ..enums import RequestType
 from ..excepts import BadClient, BadClientInput
 from ..helper import typename
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
-from ..types.request import Request, Response
+from ..types.request import Request
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 CallbackFnType = Optional[Callable[..., None]]
@@ -86,12 +86,13 @@ class BaseClient:
         _kwargs['data'] = self.input_fn
         # override by the caller-specific kwargs
         _kwargs.update(kwargs)
+        return request_generator(**_kwargs)
 
+    def _get_task_name(self, kwargs: Dict) -> str:
         tname = str(self.mode).lower()
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
-
-        return getattr(request, tname)(**_kwargs), tname
+        return tname
 
     @property
     def input_fn(self) -> InputFnType:
@@ -118,7 +119,8 @@ class BaseClient:
         result = []  # type: List['Response']
         try:
             self.input_fn = input_fn
-            req_iter, tname = self._get_requests(**kwargs)
+            tname = self._get_task_name(kwargs)
+            req_iter = self._get_requests(**kwargs)
             async with grpc.aio.insecure_channel(f'{self.args.host}:{self.args.port_expose}',
                                                  options=[('grpc.max_send_message_length', -1),
                                                           ('grpc.max_receive_message_length', -1)]) as channel:
@@ -167,3 +169,17 @@ class BaseClient:
 
     def train(self):
         raise NotImplementedError
+
+    @staticmethod
+    def add_default_kwargs(kwargs: Dict):
+        # TODO: refactor it into load from config file
+        if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
+            # associate all VectorSearchDriver and SliceQL driver to use top_k
+            from jina import QueryLang
+            topk_ql = [QueryLang({'name': 'SliceQL', 'priority': 1, 'parameters': {'end': kwargs['top_k']}}),
+                       QueryLang(
+                           {'name': 'VectorSearchDriver', 'priority': 1, 'parameters': {'top_k': kwargs['top_k']}})]
+            if 'queryset' not in kwargs:
+                kwargs['queryset'] = topk_ql
+            else:
+                kwargs['queryset'].extend(topk_ql)

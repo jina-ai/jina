@@ -1,14 +1,15 @@
 import asyncio
+from abc import ABC
 from typing import Callable, List
 
 from .base import BaseClient
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
-from ..types.request import Request, Response
+from ..types.request import Request
 
 
-class WebSocketClientMixin(BaseClient):
+class WebSocketClientMixin(BaseClient, ABC):
     async def _get_results(self,
                            input_fn: Callable,
                            on_done: Callable,
@@ -33,13 +34,15 @@ class WebSocketClientMixin(BaseClient):
 
         result = []  # type: List['Response']
         self.input_fn = input_fn
-        req_iter, tname = self._get_requests(**kwargs)
+
+        tname = self._get_task_name(kwargs)
+        req_iter = self._get_requests(**kwargs)
         try:
             client_info = f'{self.args.host}:{self.args.port_expose}'
             # setting `max_size` as None to avoid connection closure due to size of message
             # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
 
-            async with websockets.connect(f'ws://{client_info}/stream', max_size=None) as websocket:
+            async with websockets.connect(f'ws://{client_info}/stream') as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
                 self.logger.success(f'Connected to the gateway at {client_info}')
