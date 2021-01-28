@@ -31,12 +31,9 @@ class Chunk2DocRanker(BaseRanker):
     """
 
     required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
-    COL_MATCH_PARENT_HASH = 'match_parent_hash'
-    COL_MATCH_PARENT_ID = 'match_parent_hash'
-    COL_MATCH_HASH = 'match_hash'
-    COL_MATCH_ID = 'match_hash'
-    COL_DOC_CHUNK_HASH = 'doc_chunk_hash'
-    COL_DOC_CHUNK_ID = 'doc_chunk_hash'
+    COL_MATCH_PARENT_ID = 'match_parent_id'
+    COL_MATCH_ID = 'match_id'
+    COL_DOC_CHUNK_ID = 'doc_chunk_id'
     COL_SCORE = 'score'
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
@@ -69,7 +66,7 @@ class Chunk2DocRanker(BaseRanker):
         Group the ``match_idx`` by ``doc_id``
         :return: an iterator over the groups
         """
-        return self._group_by(match_idx, self.COL_MATCH_PARENT_HASH)
+        return self._group_by(match_idx, self.COL_MATCH_PARENT_ID)
 
     @staticmethod
     def _group_by(match_idx, col_name):
@@ -89,13 +86,13 @@ class Chunk2DocRanker(BaseRanker):
         :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
         """
         r = np.array(r, dtype=[
-            (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.object),
+            (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.object),
             (Chunk2DocRanker.COL_SCORE, np.float64)]
                      )
         return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
 
     def get_doc_id(self, match_with_same_doc_id):
-        return match_with_same_doc_id[0][self.COL_MATCH_PARENT_HASH]
+        return match_with_same_doc_id[0][self.COL_MATCH_PARENT_ID]
 
 
 class Match2DocRanker(BaseRanker):
@@ -108,8 +105,7 @@ class Match2DocRanker(BaseRanker):
         - BucketShuffleRanker (first buckets matches and then sort each bucket)
     """
 
-    COL_MATCH_HASH = 'match_hash'
-    COL_MATCH_ID = 'match_hash'
+    COL_MATCH_ID = 'match_id'
     COL_SCORE = 'score'
 
     def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':

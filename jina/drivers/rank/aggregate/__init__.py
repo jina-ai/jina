@@ -122,9 +122,9 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
         if match_idx:
             match_idx = np.array(match_idx,
                                  dtype=[
-                                     (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.object),
-                                     (Chunk2DocRanker.COL_MATCH_HASH, np.object),
-                                     (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.object),
+                                     (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.object),
+                                     (Chunk2DocRanker.COL_MATCH_ID, np.object),
+                                     (Chunk2DocRanker.COL_DOC_CHUNK_ID, np.object),
                                      (Chunk2DocRanker.COL_SCORE, np.float64)
                                  ]
                                  )
@@ -199,9 +199,9 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRanker):
         if match_idx:
             match_idx = np.array(match_idx,
                                  dtype=[
-                                     (Chunk2DocRanker.COL_MATCH_PARENT_HASH, np.object),
-                                     (Chunk2DocRanker.COL_MATCH_HASH, np.object),
-                                     (Chunk2DocRanker.COL_DOC_CHUNK_HASH, np.object),
+                                     (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.object),
+                                     (Chunk2DocRanker.COL_MATCH_ID, np.object),
+                                     (Chunk2DocRanker.COL_DOC_CHUNK_ID, np.object),
                                      (Chunk2DocRanker.COL_SCORE, np.float64)
                                  ]
                                  )
