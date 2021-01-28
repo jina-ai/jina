@@ -53,7 +53,7 @@ def _get_modules(namespace):
     for pkg in find_packages(path):
         modules.add('.'.join([namespace, pkg]))
         pkgpath = os.path.join(path, pkg.replace('.', '/'))
-        modules.union(_get_submodules(pkgpath, namespace, prefix=pkg))
+        modules = modules.union(_get_submodules(pkgpath, namespace, prefix=pkg))
 
     return _filter_modules(modules)
 
