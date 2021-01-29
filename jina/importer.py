@@ -78,7 +78,7 @@ def _filter_modules(modules):
     return {m for m in modules if not ignored_module_pattern.findall(m)}
 
 
-def _load_default_config(cls_obj):
+def _load_default_exc_config(cls_obj):
     from .executors.requests import get_default_reqs
     try:
         _request = get_default_reqs(type.mro(cls_obj))
@@ -87,11 +87,20 @@ def _load_default_config(cls_obj):
         pass
 
 
+def _update_depency_tree(cls_obj, module_name, cur_tree):
+    d = cur_tree
+    for vvv in cls_obj.mro()[:-1][::-1]:
+        if vvv.__name__ not in d:
+            d[vvv.__name__] = {}
+        d = d[vvv.__name__]
+    d['module'] = module_name
+
+
 def import_classes(namespace: str, targets=None,
                    show_import_table: bool = False,
                    import_once: bool = False):
     """
-    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML
+    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML``
     constructor beforehand. It can be also used to import third-part or external executors.
 
     :param namespace: the namespace to import
@@ -142,21 +151,16 @@ def import_classes(namespace: str, targets=None,
                 # import the class
                 if _c.__class__.__name__ != _import_type:
                     continue
-                if _targets and _attr not in _targets:
+                if _return_target_cls_obj and _attr not in _targets:
                     continue
                 if _return_target_cls_obj and not _targets:
                     break
                 try:
-                    d = depend_tree
-                    for vvv in _c.mro()[:-1][::-1]:
-                        if vvv.__name__ not in d:
-                            d[vvv.__name__] = {}
-                        d = d[vvv.__name__]
-                    d['module'] = m
+                    _update_depency_tree(_c, m, depend_tree)
                     # load the default request for this executor if possible
                     if _c.__class__.__name__ == 'ExecutorType':
-                        _load_default_config(_c)
-                    if _attr in _targets:
+                        _load_default_exc_config(_c)
+                    if _return_target_cls_obj:
                         _imported_cls_objs.append(_c)
                         _targets.remove(_attr)
                     load_stat[m].append(
