@@ -15,7 +15,7 @@ def test_workspace(tmpdir):
     os.environ['JINA_TEST_WORKSPACE'] = str(tmpdir)
     os.environ['JINA_TEST_WORKSPACE_COMP1'] = os.path.join(str(tmpdir), 'component-1')
     os.environ['JINA_TEST_WORKSPACE_COMP2'] = os.path.join(str(tmpdir), 'component-2')
-    yield
+    yield tmpdir
     del os.environ['JINA_TEST_WORKSPACE']
     del os.environ['JINA_TEST_WORKSPACE_COMP1']
     del os.environ['JINA_TEST_WORKSPACE_COMP2']
@@ -178,7 +178,7 @@ def test_workspace_move(tmpdir):
 # its workspace has changed.
 @pytest.mark.parametrize('pea_id', [-1, 0, 1, 2, 3])
 def test_simple_indexer_workspace_move_to_docker(test_workspace_move, tmpdir, pea_id):
-    keys = [0, 1]
+    keys = ['0', '1']
     content = [b'a', b'b']
     old_tmpdir = os.environ['JINA_TEST_WORKSPACE']
     docker_tmpdir = os.path.join(tmpdir, 'docker')
@@ -224,7 +224,7 @@ components:
       name: test_numpy
 metas:
   name: real-compound
-  workspace: {tmpdir}
+  workspace: {test_workspace}
     '''
     for j in range(3):
         with BaseExecutor.load_config(executor_yml, separated_workspace=True, pea_id=j) as indexer:
