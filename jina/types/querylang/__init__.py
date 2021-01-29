@@ -122,7 +122,7 @@ class QueryLang:
             This browses all module trees and can be costly,
             do not frequently call it.
         """
-        return import_classes('jina.drivers', targets=[self.name])
+        return import_classes('jina.drivers', targets=[self.name])[0]
 
     @driver.setter
     def driver(self, value: 'BaseDriver'):

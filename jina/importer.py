@@ -98,6 +98,8 @@ def import_classes(namespace: str, targets=None,
     :param targets: the list of executor names to import
     :param show_import_table: show the import result as a table
     :param import_once: import everything only once, to avoid repeated import
+
+    :return: for `targets=None`, the dependency tree of the imported classes under the `namespace`; for `target!=None`, the imported class object
     """
 
     _namespace2type = {
@@ -110,6 +112,7 @@ def import_classes(namespace: str, targets=None,
         raise TypeError(f'namespace: {namespace} is unrecognized')
 
     _targets = _parse_targets(targets)
+    _return_cls_obj = True if _targets else False
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:
@@ -128,6 +131,7 @@ def import_classes(namespace: str, targets=None,
     bad_imports = []
 
     depend_tree = {}
+    _imported_cls_objs = []
     from importlib import import_module
     from .helper import colored
     for m in modules:
@@ -147,12 +151,14 @@ def import_classes(namespace: str, targets=None,
                             d[vvv.__name__] = {}
                         d = d[vvv.__name__]
                     d['module'] = m
-                    if _attr in _targets:
-                        _targets.remove(_attr)
-                        if not _targets:
-                            return _c  # target execs are all found and loaded, return
                     # load the default request for this executor if possible
                     _load_default_config(_c)
+                    if _attr in _targets:
+                        _imported_cls_objs.append(_c)
+                        _targets.remove(_attr)
+                        if not _targets:
+                            break
+                            # return _c  # target execs are all found and loaded, return
                     load_stat[m].append(
                         (_attr, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
                 except Exception as ex:
@@ -163,7 +169,6 @@ def import_classes(namespace: str, targets=None,
         except Exception as ex:
             load_stat[m].append(('', False, ex))
             bad_imports.append(m)
-
     if _targets:
         raise ImportError(f'{_targets} can not be found/load')
 
@@ -174,7 +179,10 @@ def import_classes(namespace: str, targets=None,
 
     setattr(IMPORTED, _imported_property, True)
 
-    return depend_tree
+    if _return_cls_obj:
+        return _imported_cls_objs
+    else:
+        return depend_tree
 
 
 class ImportExtensions:
