@@ -55,28 +55,28 @@ def import_classes(namespace: str,
     _imported_cls_objs = []
     from importlib import import_module
     from .helper import colored
-    for m in modules:
+    for _mod_name in modules:
         # import module
         try:
-            mod = import_module(m)
-            for _attr in dir(mod):
-                _c = getattr(mod, _attr)
-                if _c.__class__.__name__ != _import_type:
+            _mod_obj = import_module(_mod_name)
+            for _attr in dir(_mod_obj):
+                _cls_obj = getattr(_mod_obj, _attr)
+                if _cls_obj.__class__.__name__ != _import_type:
                     continue
                 # import class
                 try:
-                    _update_depency_tree(_c, m, depend_tree)
-                    if _c.__class__.__name__ == 'ExecutorType':
-                        _load_default_exc_config(_c)
+                    _update_depency_tree(_cls_obj, _mod_name, depend_tree)
+                    if _cls_obj.__class__.__name__ == 'ExecutorType':
+                        _load_default_exc_config(_cls_obj)
                     # TODO: _success_msg is not used
-                    _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])
-                    load_stat[m].append((_attr, True, _success_msg))
+                    _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1])
+                    load_stat[_mod_name].append((_attr, True, _success_msg))
                 except Exception as ex:
-                    load_stat[m].append((_attr, False, ex))
-                    bad_imports.append('.'.join([m, _attr]))
+                    load_stat[_mod_name].append((_attr, False, ex))
+                    bad_imports.append('.'.join([_mod_name, _attr]))
         except Exception as ex:
-            load_stat[m].append(('', False, ex))
-            bad_imports.append(m)
+            load_stat[_mod_name].append(('', False, ex))
+            bad_imports.append(_mod_name)
 
     if show_import_table:
         _print_load_table(load_stat)
