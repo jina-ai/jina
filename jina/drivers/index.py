@@ -36,6 +36,6 @@ class KVIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        keys = [int(doc.id) for doc in docs]
+        keys = [doc.id for doc in docs]
         values = [doc.SerializeToString() for doc in docs]
         self.exec_fn(keys, values)

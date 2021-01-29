@@ -50,10 +50,6 @@ def int2id(value: int) -> str:
     return bytes2id(int2bytes(value))
 
 
-def id2hash(value: str) -> int:
-    return bytes2int(id2bytes(value))
-
-
 def id2int(value: str) -> int:
     return bytes2int(id2bytes(value))
 
@@ -87,14 +83,6 @@ class UniqueId(str):
         This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
         such as ranker and Numpyindexer
         """
-        return id2int(self)
-
-    def __hash__(self):
-        """The document id in the integer form of bytes, as 8 bytes map to int64.
-        This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
-        such as ranker and Numpyindexer
-        """
-        warnings.warn('Please use `int(doc_id)` instead.', DeprecationWarning)
         return id2int(self)
 
     def __bytes__(self):
