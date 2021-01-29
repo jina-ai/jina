@@ -79,6 +79,15 @@ def _filter_modules(modules):
     return {m for m in modules if not ignored_module_pattern.findall(m)}
 
 
+def _load_default_config(cls_obj):
+    from .executors.requests import get_default_reqs
+    try:
+        _request = get_default_reqs(type.mro(cls_obj))
+    except ValueError as e:
+        warnings.warn(f'Please ensure a config yml is given for {cls_obj.__class__.__name__}. {e}')
+        pass
+
+
 def import_classes(namespace: str, targets=None,
                    show_import_table: bool = False,
                    import_once: bool = False):
@@ -124,11 +133,13 @@ def import_classes(namespace: str, targets=None,
     for m in modules:
         try:
             mod = importlib.import_module(m)
-            for k in dir(mod):
+            for _attr in dir(mod):
+                _c = getattr(mod, _attr)
                 # import the class
-                if (getattr(mod, k).__class__.__name__ == _import_type) and (not _targets or k in _targets):
+                # if _targets and _attr not in _targets:
+                #     continue
+                if (_c.__class__.__name__ == _import_type) and (not _targets or _attr in _targets):
                     try:
-                        _c = getattr(mod, k)
 
                         d = depend_tree
                         for vvv in _c.mro()[:-1][::-1]:
@@ -136,22 +147,18 @@ def import_classes(namespace: str, targets=None,
                                 d[vvv.__name__] = {}
                             d = d[vvv.__name__]
                         d['module'] = m
-                        if k in _targets:
-                            _targets.remove(k)
+                        if _attr in _targets:
+                            _targets.remove(_attr)
                             if not _targets:
-                                return getattr(mod, k)  # target execs are all found and loaded, return
-                        try:
-                            # load the default request for this executor if possible
-                            from .executors.requests import get_default_reqs
-                            get_default_reqs(type.mro(getattr(mod, k)))
-                        except ValueError:
-                            pass
+                                return _c  # target execs are all found and loaded, return
+                        # load the default request for this executor if possible
+                        _load_default_config(_c)
                         load_stat[m].append(
-                            (k, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
+                            (_attr, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
                     except Exception as ex:
-                        load_stat[m].append((k, False, ex))
-                        bad_imports.append('.'.join([m, k]))
-                        if k in _targets:
+                        load_stat[m].append((_attr, False, ex))
+                        bad_imports.append('.'.join([m, _attr]))
+                        if _attr in _targets:
                             raise ex  # target class is found but not loaded, raise return
         except Exception as ex:
             load_stat[m].append(('', False, ex))
