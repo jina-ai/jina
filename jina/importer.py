@@ -324,7 +324,6 @@ def _load_default_exc_config(cls_obj):
         _request = get_default_reqs(type.mro(cls_obj))
     except ValueError as ex:
         warnings.warn(f'Please ensure a config yml is given for {cls_obj.__name__}. {ex}')
-        pass
 
 
 def _update_depend_tree(cls_obj, module_name, cur_tree):

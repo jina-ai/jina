@@ -50,7 +50,6 @@ def test_no_suppress_other_exception():
 @pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
 def test_import_classes_import_once(ns, import_once):
     depend_tree = import_classes(namespace=ns, import_once=import_once)
-    print(depend_tree)
     assert (not depend_tree) == import_once
 
 
