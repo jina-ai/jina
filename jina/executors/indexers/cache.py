@@ -67,9 +67,9 @@ class DocIDCache(BaseCache):
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
     def add(self, doc_id: 'UniqueId', *args, **kwargs):
-        """Add a document id to the cache.
+        """Add a document to the cache depending on `self.field`.
         
-        :param doc_id: Document id to be added.
+        :param doc_id: document id to be added
         """
         self.query_handler.ids.append(doc_id)
 
@@ -82,7 +82,7 @@ class DocIDCache(BaseCache):
         self._size += 1
 
     def query(self, data, *args, **kwargs) -> Optional[bool]:
-        """Check whether the data exists in the cache
+        """Check whether the data exists in the cache.
 
         :param data: either the id or the content_hash of a Document
         :return: status
