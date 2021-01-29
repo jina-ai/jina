@@ -88,15 +88,3 @@ def test_import_classes_failed_load_default_exc_config(ns, print_table, mocker, 
     else:
         assert len(recwarn) == 1
         assert 'You can use `jina check` to list all executors and drivers' in recwarn[0].message.args[0]
-
-
-@pytest.mark.parametrize('targets', [['FilterQL'], ['SelectQL', 'ExcludeQL']])
-def test_import_classes_with_target(targets):
-    _cls_obj = import_classes('jina.drivers', targets=targets)
-    assert len(targets) == len(_cls_obj)
-    for c in _cls_obj:
-        assert c.__name__ in targets
-
-
-def test_import_classes_broken_hub_executor():
-    _ = import_classes(namespace='jina.hub')
