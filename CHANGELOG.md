@@ -14,6 +14,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7036,4 +7037,40 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```39260f89```](https://github.com/jina-ai/jina/commit/39260f8961ad770bf88510cb8553f4d262ce72ee)] __-__ __daemon__: reformat the code for daemon (#1780) (*Han Xiao*)
  - [[```51af9bb6```](https://github.com/jina-ai/jina/commit/51af9bb68d5572fecab12bbba3cefea9d306a355)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```bcfb1c07```](https://github.com/jina-ai/jina/commit/bcfb1c07bf1e6ac3692798be990de216e59ca00e)] __-__ __version__: the next version will be 0.9.22 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-23></a>
+## Release Note (`0.9.23`)
+
+> Release time: 2021-01-29 00:07:33
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Florian Hönicke,  Jina Dev Bot,  Michelle Díaz,  Joan Fontanals,  Maximilian Werk,  🙇
+
+
+### 🆕 New Features
+
+ - [[```72aa9071```](https://github.com/jina-ai/jina/commit/72aa9071dfd088a4606ce81446635542c589dd3d)] __-__ __client__: input_fn can now be async generator (#1543) (#1808) (*Han Xiao*)
+ - [[```300931a7```](https://github.com/jina-ai/jina/commit/300931a70cd2162c16e23c277b038222a5461040)] __-__ crud asyncio (#1810) (*Florian Hönicke*)
+
+### 🐞 Bug fixes
+
+ - [[```ad9cc9e1```](https://github.com/jina-ai/jina/commit/ad9cc9e10690ce76d694fa11d40bb3d6cc55a4ff)] __-__ add warning (#1804) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```a0749ece```](https://github.com/jina-ai/jina/commit/a0749ece833cf678409b56e0adf6b1ce4164a724)] __-__ __101__: add support to the Spanish language for 101 (#1794) (*Michelle Díaz*)
+ - [[```7b625a16```](https://github.com/jina-ai/jina/commit/7b625a1674879270308fe962a9e6b9650c8ee2d1)] __-__ added docstring for paramters (#1789) (*Maximilian Werk*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```923c1bd4```](https://github.com/jina-ai/jina/commit/923c1bd4b70874a9400eac442d80287b7da53813)] __-__ optimizer multiflow (#1800) (*Florian Hönicke*)
+
+### 🍹 Other Improvements
+
+ - [[```0329e2c2```](https://github.com/jina-ai/jina/commit/0329e2c2b666fa8afc5a1a207e5377a92615ff2d)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f953ce1e```](https://github.com/jina-ai/jina/commit/f953ce1e1a0f752f66bbf92bf7527575322483cb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```dfea3716```](https://github.com/jina-ai/jina/commit/dfea37162a95f4b97717c7fed916a47fd41b4f48)] __-__ add py39 into release list (*Han Xiao*)
+ - [[```7a3fabb5```](https://github.com/jina-ai/jina/commit/7a3fabb5298cec3e51af9b602fd1f7fb9563bc05)] __-__ __version__: the next version will be 0.9.23 (*Jina Dev Bot*)
 
