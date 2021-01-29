@@ -34,6 +34,6 @@ When not given, then the default naming strategy will apply.
                     help='A UUID string to represent the identity of this object'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
-    gp.add_argument('--show-exc-info', action='store_true', default=False,
+    gp.add_argument('--hide-exc-info', action='store_true', default=True,
                     help='If set, then exception stack information to be added to the logging message, '
                          'useful in debugging')
