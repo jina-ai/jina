@@ -83,11 +83,12 @@ jobs:
           directory: docs/_build/html
           tags: true
           branch: master
+      # Tell docs repo jina is going to release
       - name: send-repository-dispatch-event-to-docs
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/jina-docs
+          repository: jina-ai/docs
           event-type: jina-release-event
 
   update-docker:
