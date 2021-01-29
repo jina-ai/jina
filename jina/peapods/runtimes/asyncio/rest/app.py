@@ -1,11 +1,13 @@
 import argparse
 import asyncio
+import warnings
 from typing import Any
 
 from google.protobuf.json_format import MessageToDict
 
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
+from ..... import __version__
 from .....clients.request import request_generator
 from .....enums import RequestType
 from .....helper import get_full_version
@@ -14,7 +16,6 @@ from .....logging import JinaLogger, default_logger
 from .....logging.profile import used_memory_readable
 from .....types.message import Message
 from .....types.request import Request
-from ..... import __version__
 
 
 def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
@@ -50,7 +51,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         default_logger.info(f'''
     Jina REST interface
     💬 Swagger UI:\thttp://localhost:{args.port_expose}/docs
-    📚 Docs address:\thttp://localhost:{args.port_expose}/redoc
+    📚 Redoc     :\thttp://localhost:{args.port_expose}/redoc
         ''')
         from jina import __ready_msg__
         default_logger.success(__ready_msg__)
@@ -66,6 +67,25 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'used_memory': used_memory_readable()
         }
 
+    @app.post(path='/api/{mode}', deprecated=True)
+    async def api(mode: str, body: Any = Body(...)):
+        warnings.warn('this interface will be retired soon', DeprecationWarning)
+        if mode.upper() not in RequestType.__members__:
+            return error(reason=f'unsupported mode {mode}', status_code=405)
+
+        if 'data' not in body:
+            return error('"data" field is empty', 406)
+
+        body['mode'] = RequestType.from_string(mode)
+        from .....clients import BaseClient
+        BaseClient.add_default_kwargs(body)
+        req_iter = request_generator(**body)
+        results = await get_result_in_json(req_iter=req_iter)
+        return JSONResponse(content=results[0], status_code=200)
+
+    async def get_result_in_json(req_iter):
+        return [MessageToDict(k) async for k in servicer.Call(request_iterator=req_iter, context=None)]
+
     @app.post(path='/api/{mode}')
     async def api(mode: str, body: Any = Body(...)):
         if mode.upper() not in RequestType.__members__:
@@ -78,9 +98,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from .....clients import BaseClient
         BaseClient.add_default_kwargs(body)
         req_iter = request_generator(**body)
-        return StreamingResponse(get_result_in_json(req_iter))
+        return StreamingResponse(get_result_in_json2(req_iter))
 
-    async def get_result_in_json(req_iter):
+    async def get_result_in_json2(req_iter):
         async for k in servicer.Call(request_iterator=req_iter, context=None):
             yield MessageToDict(k)
 
