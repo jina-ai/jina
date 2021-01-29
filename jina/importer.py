@@ -44,10 +44,10 @@ def _get_modules(namespace):
 
     try:
         path = os.path.dirname(get_loader(namespace).path)
-    except AttributeError as e:
+    except AttributeError as ex:
         if namespace == 'jina.hub':
             warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
-        raise ImportError(f'{namespace} can not be imported. {e}')
+        raise ImportError(f'{namespace} can not be imported. {ex}')
 
     modules = _get_submodules(path, namespace)
 
@@ -82,8 +82,8 @@ def _load_default_config(cls_obj):
     from .executors.requests import get_default_reqs
     try:
         _request = get_default_reqs(type.mro(cls_obj))
-    except ValueError as e:
-        warnings.warn(f'Please ensure a config yml is given for {cls_obj.__name__}. {e}')
+    except ValueError as ex:
+        warnings.warn(f'Please ensure a config yml is given for {cls_obj.__name__}. {ex}')
         pass
 
 
@@ -112,7 +112,7 @@ def import_classes(namespace: str, targets=None,
         raise TypeError(f'namespace: {namespace} is unrecognized')
 
     _targets = _parse_targets(targets)
-    _return_cls_obj = True if _targets else False
+    _return_target_cls_obj = True if _targets else False
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:
@@ -144,6 +144,8 @@ def import_classes(namespace: str, targets=None,
                     continue
                 if _targets and _attr not in _targets:
                     continue
+                if _return_target_cls_obj and not _targets:
+                    break
                 try:
                     d = depend_tree
                     for vvv in _c.mro()[:-1][::-1]:
@@ -157,9 +159,6 @@ def import_classes(namespace: str, targets=None,
                     if _attr in _targets:
                         _imported_cls_objs.append(_c)
                         _targets.remove(_attr)
-                        if not _targets:
-                            break
-                            # return _c  # target execs are all found and loaded, return
                     load_stat[m].append(
                         (_attr, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
                 except Exception as ex:
@@ -180,7 +179,7 @@ def import_classes(namespace: str, targets=None,
 
     setattr(IMPORTED, _imported_property, True)
 
-    if _return_cls_obj:
+    if _return_target_cls_obj:
         return _imported_cls_objs
     else:
         return depend_tree
