@@ -15,7 +15,7 @@ def import_classes(namespace: str,
                    show_import_table: bool = False,
                    import_once: bool = False):
     """
-    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML``
+    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML
     constructor beforehand. It can be also used to import third-part or external executors.
 
     :param namespace: the namespace to import
