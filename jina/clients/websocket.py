@@ -76,6 +76,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
                         p_bar.update(self.args.request_size)
+                        yield response
                         self.num_responses += 1
                         if self.num_requests == self.num_responses:
                             break

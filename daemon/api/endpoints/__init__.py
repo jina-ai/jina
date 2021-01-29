@@ -13,8 +13,8 @@ async def startup():
     from ... import daemon_logger, jinad_args
     daemon_logger.info(f'''
 Welcome to Jina daemon - the manager of distributed Jina
-💬 Swagger UI:\thttp://localhost:8000/docs
-📚 Docs address:\thttp://localhost:8000/redoc
+💬 Swagger UI:\thttp://localhost:{jinad_args.port_expose}/docs
+📚 Docs address:\thttp://localhost:{jinad_args.port_expose}/redoc
 🔒 Private address:\thttp://{get_internal_ip()}:{jinad_args.port_expose}
 🌐 Public address:\thttp://{get_public_ip()}:{jinad_args.port_expose}
     ''')

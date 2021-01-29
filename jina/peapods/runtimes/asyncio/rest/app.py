@@ -8,10 +8,14 @@ from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
 from .....clients.request import request_generator
 from .....enums import RequestType
+from .....helper import get_full_version
 from .....importer import ImportExtensions
-from .....logging import JinaLogger
+from .....logging import JinaLogger, default_logger
+from .....logging.profile import used_memory_readable
 from .....types.message import Message
 from .....types.request import Request
+from ..... import __version__
+
 
 def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     with ImportExtensions(required=True):
@@ -21,8 +25,14 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from starlette.endpoints import WebSocketEndpoint
         from starlette import status
         from starlette.types import Receive, Scope, Send
+        from starlette.responses import StreamingResponse
+        from .models import JinaStatus
 
-    app = FastAPI(title='RESTRuntime')
+    app = FastAPI(
+        title='Jina',
+        description='REST interface for Jina',
+        version=__version__,
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=['*'],
@@ -35,9 +45,26 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     def error(reason, status_code):
         return JSONResponse(content={'reason': reason}, status_code=status_code)
 
-    @app.get('/ready')
-    async def is_ready():
-        return JSONResponse(status_code=200)
+    @app.on_event('startup')
+    async def startup():
+        default_logger.info(f'''
+    Jina REST interface
+    💬 Swagger UI:\thttp://localhost:{args.port_expose}/docs
+    📚 Docs address:\thttp://localhost:{args.port_expose}/redoc
+        ''')
+        from jina import __ready_msg__
+        default_logger.success(__ready_msg__)
+
+    @app.get(path='/status',
+             summary='Get the status of the daemon',
+             response_model=JinaStatus)
+    async def _status():
+        _info = get_full_version()
+        return {
+            'jina': _info[0],
+            'envs': _info[1],
+            'used_memory': used_memory_readable()
+        }
 
     @app.post(path='/api/{mode}')
     async def api(mode: str, body: Any = Body(...)):
@@ -51,11 +78,11 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from .....clients import BaseClient
         BaseClient.add_default_kwargs(body)
         req_iter = request_generator(**body)
-        results = await get_result_in_json(req_iter=req_iter)
-        return JSONResponse(content=results[0], status_code=200)
+        return StreamingResponse(get_result_in_json(req_iter))
 
     async def get_result_in_json(req_iter):
-        return [MessageToDict(k) async for k in servicer.Call(request_iterator=req_iter, context=None)]
+        async for k in servicer.Call(request_iterator=req_iter, context=None):
+            yield MessageToDict(k)
 
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):
