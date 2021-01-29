@@ -83,7 +83,7 @@ def _load_default_config(cls_obj):
     try:
         _request = get_default_reqs(type.mro(cls_obj))
     except ValueError as e:
-        warnings.warn(f'Please ensure a config yml is given for {cls_obj.__class__.__name__}. {e}')
+        warnings.warn(f'Please ensure a config yml is given for {cls_obj.__name__}. {e}')
         pass
 
 
@@ -152,7 +152,8 @@ def import_classes(namespace: str, targets=None,
                         d = d[vvv.__name__]
                     d['module'] = m
                     # load the default request for this executor if possible
-                    _load_default_config(_c)
+                    if _c.__class__.__name__ == 'ExecutorType':
+                        _load_default_config(_c)
                     if _attr in _targets:
                         _imported_cls_objs.append(_c)
                         _targets.remove(_attr)
