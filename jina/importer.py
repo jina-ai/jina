@@ -128,38 +128,38 @@ def import_classes(namespace: str, targets=None,
     bad_imports = []
 
     depend_tree = {}
-    import importlib
+    from importlib import import_module
     from .helper import colored
     for m in modules:
         try:
-            mod = importlib.import_module(m)
+            mod = import_module(m)
             for _attr in dir(mod):
                 _c = getattr(mod, _attr)
                 # import the class
-                # if _targets and _attr not in _targets:
-                #     continue
-                if (_c.__class__.__name__ == _import_type) and (not _targets or _attr in _targets):
-                    try:
-
-                        d = depend_tree
-                        for vvv in _c.mro()[:-1][::-1]:
-                            if vvv.__name__ not in d:
-                                d[vvv.__name__] = {}
-                            d = d[vvv.__name__]
-                        d['module'] = m
-                        if _attr in _targets:
-                            _targets.remove(_attr)
-                            if not _targets:
-                                return _c  # target execs are all found and loaded, return
-                        # load the default request for this executor if possible
-                        _load_default_config(_c)
-                        load_stat[m].append(
-                            (_attr, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
-                    except Exception as ex:
-                        load_stat[m].append((_attr, False, ex))
-                        bad_imports.append('.'.join([m, _attr]))
-                        if _attr in _targets:
-                            raise ex  # target class is found but not loaded, raise return
+                if _c.__class__.__name__ != _import_type:
+                    continue
+                if _targets and _attr not in _targets:
+                    continue
+                try:
+                    d = depend_tree
+                    for vvv in _c.mro()[:-1][::-1]:
+                        if vvv.__name__ not in d:
+                            d[vvv.__name__] = {}
+                        d = d[vvv.__name__]
+                    d['module'] = m
+                    if _attr in _targets:
+                        _targets.remove(_attr)
+                        if not _targets:
+                            return _c  # target execs are all found and loaded, return
+                    # load the default request for this executor if possible
+                    _load_default_config(_c)
+                    load_stat[m].append(
+                        (_attr, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
+                except Exception as ex:
+                    load_stat[m].append((_attr, False, ex))
+                    bad_imports.append('.'.join([m, _attr]))
+                    if _attr in _targets:
+                        raise ex  # target class is found but not loaded, raise return
         except Exception as ex:
             load_stat[m].append(('', False, ex))
             bad_imports.append(m)
