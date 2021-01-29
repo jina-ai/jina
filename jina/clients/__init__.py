@@ -14,9 +14,9 @@ class Client(BaseClient):
     """A simple Python client for connecting to the gRPC gateway.
     It manages the asyncio eventloop internally, so all interfaces are synchronous from the outside.
     """
-    async def _get_results(self, *args):
+    async def _get_results(self, *args, **kwargs):
         result = []
-        async for resp in super()._get_results(*args):
+        async for resp in super()._get_results(*args, **kwargs):
             if self.args.return_results:
                 result.append(resp)
 
