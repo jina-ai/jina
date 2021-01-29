@@ -47,8 +47,7 @@ def _get_modules(namespace):
     except AttributeError as e:
         if namespace == 'jina.hub':
             warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
-        else:
-            raise ImportError(f'{namespace} can not be imported. {e}')
+        raise ImportError(f'{namespace} can not be imported. {e}')
 
     modules = _get_submodules(path, namespace)
 
