@@ -303,39 +303,39 @@ def _get_modules(namespace):
     from pkgutil import get_loader
 
     try:
-        path = os.path.dirname(get_loader(namespace).path)
+        _path = os.path.dirname(get_loader(namespace).path)
     except AttributeError as ex:
         if namespace == 'jina.hub':
             warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
         raise ImportError(f'{namespace} can not be imported. {ex}')
 
-    modules = _get_submodules(path, namespace)
+    _modules = _get_submodules(_path, namespace)
 
-    for pkg in find_packages(path):
-        modules.add('.'.join([namespace, pkg]))
-        pkgpath = os.path.join(path, pkg.replace('.', '/'))
-        modules = modules.union(_get_submodules(pkgpath, namespace, prefix=pkg))
+    for _pkg in find_packages(_path):
+        _modules.add('.'.join([namespace, _pkg]))
+        _pkgpath = os.path.join(_path, _pkg.replace('.', '/'))
+        _modules |= _get_submodules(_pkgpath, namespace, prefix=_pkg)
 
-    return _filter_modules(modules)
+    return _filter_modules(_modules)
 
 
 def _get_submodules(path, namespace, prefix=None):
     from pkgutil import iter_modules
     _prefix = '.'.join([namespace, prefix]) if prefix else namespace
     modules = set()
-    for info in iter_modules([path]):
-        is_hub_module = namespace == 'jina.hub' and info.ispkg
-        is_nonhub_module = namespace != 'jina.hub' and not info.ispkg
-        module_name = '.'.join([_prefix, info.name])
-        if is_hub_module or is_nonhub_module:
+    for _info in iter_modules([path]):
+        _is_hub_module = namespace == 'jina.hub' and _info.ispkg
+        _is_nonhub_module = namespace != 'jina.hub' and not _info.ispkg
+        module_name = '.'.join([_prefix, _info.name])
+        if _is_hub_module or _is_nonhub_module:
             modules.add(module_name)
     return modules
 
 
 def _filter_modules(modules):
     import re
-    ignored_module_pattern = re.compile(r'\.tests|\.api|\.bump_version')
-    return {m for m in modules if not ignored_module_pattern.findall(m)}
+    _ignored_module_pattern = re.compile(r'\.tests|\.api|\.bump_version')
+    return {m for m in modules if not _ignored_module_pattern.findall(m)}
 
 
 def _load_default_exc_config(cls_obj):
