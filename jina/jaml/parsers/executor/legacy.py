@@ -1,5 +1,7 @@
 import os
+import inspect
 from typing import Dict, Any, Type
+from functools import reduce
 
 from ..base import VersionedYAMLParser
 from ....executors import BaseExecutor, get_default_metas
@@ -8,6 +10,42 @@ from ....executors.compound import CompoundExecutor
 
 class LegacyParser(VersionedYAMLParser):
     version = 'legacy'  # the version number this parser designed for
+
+    @staticmethod
+    def _get_all_arguments(class_):
+        """
+        Returns a list of all the arguments of all the classess from which `class_`
+        inherits
+            
+        :param class_: target class from which we want to retrieve arguments
+        """
+        def get_class_arguments(class_):
+            """
+            Retrieves a list containing the arguments from `class_`
+            """
+            signature = inspect.signature(class_.__init__)
+            class_arguments = [p.name for p in signature.parameters.values()]
+            return class_arguments
+
+        def accumulate_classes(cls):
+            """
+            Retrieves all classes from which cls inherits from
+            """
+            def _accumulate_classes(c, cs):
+                cs.append(c)
+                if cls == object:
+                    return cs
+                for base in c.__bases__:
+                    _accumulate_classes(base, cs)
+                return cs
+            
+            classes = []
+            _accumulate_classes(cls, classes)
+            return set(classes)
+
+        all_classes = accumulate_classes(class_)
+        args = list(map(lambda x: get_class_arguments(x), all_classes))
+        return set(reduce(lambda x,y: x+y,args))
 
     @staticmethod
     def _get_dump_path_from_config(meta_config: Dict):
@@ -41,7 +79,6 @@ class LegacyParser(VersionedYAMLParser):
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
         """
-
         _meta_config = get_default_metas()
         _meta_config.update(data.get('metas', {}))
         if _meta_config:
@@ -76,6 +113,15 @@ class LegacyParser(VersionedYAMLParser):
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
                 obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
             cls._init_from_yaml = False
+
+            # check if the yaml file used to instanciate 'cls' has arguments that are not in 'cls'
+            arguments_from_cls = LegacyParser._get_all_arguments(cls)
+            arguments_from_yaml = set(data.get('with', {}))
+            difference_set = arguments_from_yaml  - arguments_from_cls
+            if any(difference_set):
+                obj.logger.warning(f'The arguments {difference_set} defined in the YAML are not expected in the '
+                                   f'class {cls.__name__}')
+
             obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
 
         # if node.tag in {'!CompoundExecutor'}:
