@@ -6,13 +6,12 @@ from google.protobuf.json_format import MessageToDict
 
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
-from ..... import clients
+from .....clients.request import request_generator
 from .....enums import RequestType
 from .....importer import ImportExtensions
 from .....logging import JinaLogger
 from .....types.message import Message
 from .....types.request import Request
-
 
 def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     with ImportExtensions(required=True):
@@ -21,8 +20,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from fastapi.middleware.cors import CORSMiddleware
         from starlette.endpoints import WebSocketEndpoint
         from starlette import status
-        if False:
-            from starlette.types import Receive, Scope, Send
+        from starlette.types import Receive, Scope, Send
 
     app = FastAPI(title='RESTRuntime')
     app.add_middleware(
@@ -50,7 +48,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             return error('"data" field is empty', 406)
 
         body['mode'] = RequestType.from_string(mode)
-        req_iter = getattr(clients.request, mode)(**body)
+        from .....clients import BaseClient
+        BaseClient.add_default_kwargs(body)
+        req_iter = request_generator(**body)
         results = await get_result_in_json(req_iter=req_iter)
         return JSONResponse(content=results[0], status_code=200)
 

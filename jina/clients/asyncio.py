@@ -1,5 +1,5 @@
 from .base import InputFnType, BaseClient, CallbackFnType
-from .websockets import WebSocketClientMixin
+from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
 
@@ -79,6 +79,7 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.SEARCH
+        self.add_default_kwargs(kwargs)
         return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
