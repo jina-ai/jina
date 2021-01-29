@@ -15,7 +15,7 @@ def test_workspace(tmpdir):
     os.environ['JINA_TEST_WORKSPACE'] = str(tmpdir)
     os.environ['JINA_TEST_WORKSPACE_COMP1'] = os.path.join(str(tmpdir), 'component-1')
     os.environ['JINA_TEST_WORKSPACE_COMP2'] = os.path.join(str(tmpdir), 'component-2')
-    yield tmpdir
+    yield
     del os.environ['JINA_TEST_WORKSPACE']
     del os.environ['JINA_TEST_WORKSPACE_COMP1']
     del os.environ['JINA_TEST_WORKSPACE_COMP2']
@@ -209,25 +209,8 @@ def test_simple_indexer_workspace_move_to_docker(test_workspace_move, tmpdir, pe
 
 def test_compound_indexer_rw(test_workspace):
     all_vecs = np.random.random([6, 5])
-    executor_yml = f'''!CompoundExecutor
-components:
-  - !BinaryPbIndexer
-    with:
-      index_filename: metaproto
-    metas:
-      name: test_meta
-  - !NumpyIndexer
-    with:
-      metric: euclidean
-      index_filename: npidx
-    metas:
-      name: test_numpy
-metas:
-  name: real-compound
-  workspace: {test_workspace}
-    '''
     for j in range(3):
-        with BaseExecutor.load_config(executor_yml, separated_workspace=True, pea_id=j) as indexer:
+        with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'), separated_workspace=True, pea_id=j) as indexer:
             assert indexer[0] == indexer['test_meta']
             assert not indexer[0].is_updated
             assert not indexer.is_updated
@@ -248,7 +231,7 @@ metas:
 
     recovered_vecs = []
     for j in range(3):
-        with BaseExecutor.load_config(executor_yml, separated_workspace=True, pea_id=j) as indexer:
+        with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-compound-indexer2.yml'), separated_workspace=True, pea_id=j) as indexer:
             recovered_vecs.append(indexer[1].query_handler)
 
     np.testing.assert_almost_equal(all_vecs, np.concatenate(recovered_vecs))

@@ -21,11 +21,11 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
         for key, value in zip(keys, vectors):
             self.docs[key] = value
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[str], *args, **kwargs):
         for key in keys:
             del self.docs[key]
 
@@ -106,7 +106,7 @@ def test_vector_index_driver_add(mock_groundtruth_indexer, simple_vector_indexer
     simple_vector_indexer_driver_add._apply_all(documents)
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[str(doc.id)], doc.embedding)
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
 
 
 def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents,
@@ -126,9 +126,9 @@ def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simp
     assert logger_mock.mock_calls[0][0] == 'warning'
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[str(doc.id)], doc.embedding)
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
     for idx, doc in enumerate(empty_documents):
-        assert str(doc.id) not in mock_groundtruth_indexer.docs
+        assert doc.id not in mock_groundtruth_indexer.docs
 
 
 def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_indexer_driver_add,
@@ -142,10 +142,10 @@ def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_inde
 
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(updated_documents):
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[str(doc.id)], doc.embedding)
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
     for idx in range(3, 5):
         doc = documents[idx]
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[str(doc.id)], doc.embedding)
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
 
 
 def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_vector_indexer_driver_add,
@@ -160,7 +160,7 @@ def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_vector_inde
     assert len(mock_groundtruth_indexer.docs) == 2
     for idx in range(3, 5):
         doc = documents[idx]
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[str(doc.id)], doc.embedding)
+        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
 
     for idx, doc in enumerate(deleted_documents):
-        assert str(doc.id) not in mock_groundtruth_indexer.docs
+        assert doc.id not in mock_groundtruth_indexer.docs

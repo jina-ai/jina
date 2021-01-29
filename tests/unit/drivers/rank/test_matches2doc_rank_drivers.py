@@ -26,7 +26,6 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
             (match_id, - abs(match_meta[match_id]['length'] - query_meta['length']))
             for match_id, old_score in old_match_scores.items()
         ]
-        print(new_scores)
         return np.array(
             new_scores,
             dtype=[(self.COL_MATCH_ID, np.object), (self.COL_SCORE, np.float64)],
