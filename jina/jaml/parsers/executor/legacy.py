@@ -161,5 +161,3 @@ class LegacyParser(VersionedYAMLParser):
         if hasattr(data, 'components'):
             r['components'] = data.components
         return r
-
-
