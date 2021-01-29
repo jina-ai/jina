@@ -10,6 +10,7 @@ from ....types.score import NamedScore
 from .. import BaseRankDriver
 
 if False:
+    from ....types.document.uid import UniqueId
     from ....types.sets import DocumentSet
 
 
