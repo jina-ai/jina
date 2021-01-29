@@ -3,6 +3,7 @@ import sys
 import warnings
 from types import SimpleNamespace, ModuleType
 from typing import Optional, List, Any, Dict
+from collections import defaultdict
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
@@ -42,38 +43,17 @@ def import_classes(namespace: str,
         return {}
 
     try:
-        modules = _get_modules(namespace)
+        _modules = _get_modules(namespace)
     except ImportError as e:
         warnings.warn(f'{namespace} has no module to import. {e}', ImportWarning)
         return {}
 
-    from collections import defaultdict
     load_stat = defaultdict(list)
     bad_imports = []
-
     depend_tree = {}
-    _imported_cls_objs = []
-    from importlib import import_module
-    from .helper import colored
-    for _mod_name in modules:
-        # import module
+    for _mod_name in _modules:
         try:
-            _mod_obj = import_module(_mod_name)
-            for _attr in dir(_mod_obj):
-                _cls_obj = getattr(_mod_obj, _attr)
-                if _cls_obj.__class__.__name__ != _import_type:
-                    continue
-                # import class
-                try:
-                    _update_depency_tree(_cls_obj, _mod_name, depend_tree)
-                    if _cls_obj.__class__.__name__ == 'ExecutorType':
-                        _load_default_exc_config(_cls_obj)
-                    # TODO: _success_msg is not used
-                    _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1])
-                    load_stat[_mod_name].append((_attr, True, _success_msg))
-                except Exception as ex:
-                    load_stat[_mod_name].append((_attr, False, ex))
-                    bad_imports.append('.'.join([_mod_name, _attr]))
+            bad_imports += _import_module(_mod_name, _import_type, depend_tree, load_stat)
         except Exception as ex:
             load_stat[_mod_name].append(('', False, ex))
             bad_imports.append(_mod_name)
@@ -347,10 +327,33 @@ def _load_default_exc_config(cls_obj):
         pass
 
 
-def _update_depency_tree(cls_obj, module_name, cur_tree):
+def _update_depend_tree(cls_obj, module_name, cur_tree):
     d = cur_tree
     for vvv in cls_obj.mro()[:-1][::-1]:
         if vvv.__name__ not in d:
             d[vvv.__name__] = {}
         d = d[vvv.__name__]
     d['module'] = module_name
+
+
+def _import_module(module_name, import_type, depend_tree, load_stat):
+    from importlib import import_module
+    from .helper import colored
+    bad_imports = []
+    _mod_obj = import_module(module_name)
+    for _attr in dir(_mod_obj):
+        _cls_obj = getattr(_mod_obj, _attr)
+        if _cls_obj.__class__.__name__ != import_type:
+            continue
+        # update the dependency tree for each class
+        try:
+            _update_depend_tree(_cls_obj, module_name, depend_tree)
+            if _cls_obj.__class__.__name__ == 'ExecutorType':
+                _load_default_exc_config(_cls_obj)
+            # TODO: _success_msg is never used
+            _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1])
+            load_stat[module_name].append((_attr, True, _success_msg))
+        except Exception as ex:
+            load_stat[module_name].append((_attr, False, ex))
+            bad_imports.append('.'.join([module_name, _attr]))
+    return bad_imports
