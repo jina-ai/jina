@@ -48,6 +48,12 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
+      - name: send-repository-dispatch-event-to-docs
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/jina-docs
+          event-type: jina-release-event
 
 
   update-doc:
