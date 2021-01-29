@@ -78,8 +78,8 @@ def test_import_classes_failed_import_module(ns, mocker, recwarn):
 
 
 @pytest.mark.parametrize('print_table', [True, False])
-@pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
-def test_import_classes_failed_get_default_reqs(ns, print_table, mocker, recwarn, capsys):
+@pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub'])
+def test_import_classes_failed_load_default_exc_config(ns, print_table, mocker, recwarn, capsys):
     mocker.patch('pkg_resources.resource_stream', side_effect=Exception('mocked error'))
     _ = import_classes(namespace=ns, show_import_table=print_table)
     if print_table:
