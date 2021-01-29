@@ -11,14 +11,15 @@ IMPORTED.drivers = False
 IMPORTED.hub = False
 
 
-def _get_targets(targets):
-    ret = None
+def _parse_targets(targets):
     if isinstance(targets, str):
         ret = {targets}
     elif isinstance(targets, list):
         ret = set(targets)
     elif targets is None:
         ret = {}
+    else:
+        raise TypeError(f'target must be a set, but received {targets!r}')
     return ret
 
 
@@ -43,10 +44,11 @@ def _get_modules(namespace):
 
     try:
         path = os.path.dirname(get_loader(namespace).path)
-    except AttributeError:
+    except AttributeError as e:
         if namespace == 'jina.hub':
             warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
-        return {}
+        else:
+            raise ImportError(f'{namespace} can not be imported. {e}')
 
     modules = _get_submodules(path, namespace)
 
@@ -90,8 +92,6 @@ def import_classes(namespace: str, targets=None,
     :param import_once: import everything only once, to avoid repeated import
     """
 
-    import os, re
-
     _namespace2type = {
         'jina.executors': 'ExecutorType',
         'jina.drivers': 'DriverType',
@@ -101,17 +101,17 @@ def import_classes(namespace: str, targets=None,
     if _import_type is None:
         raise TypeError(f'namespace: {namespace} is unrecognized')
 
-    _targets = _get_targets(targets)
-    if _targets is None:
-        raise TypeError(f'target must be a set, but received {targets!r}')
-
+    _targets = _parse_targets(targets)
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:
+        warnings.warn(f'{namespace} has already imported. If you want to re-imported, please set `import_once=False`',
+                      ImportWarning)
         return {}
 
     modules = _get_modules(namespace)
     if not modules:
+        warnings.warn(f'{namespace} has no module to import.', ImportWarning)
         return {}
     
     from collections import defaultdict
