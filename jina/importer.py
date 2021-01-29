@@ -96,7 +96,7 @@ def _update_depency_tree(cls_obj, module_name, cur_tree):
     d['module'] = module_name
 
 
-def import_classes(namespace: str, targets=None,
+def import_classes(namespace: str,
                    show_import_table: bool = False,
                    import_once: bool = False):
     """
@@ -104,11 +104,10 @@ def import_classes(namespace: str, targets=None,
     constructor beforehand. It can be also used to import third-part or external executors.
 
     :param namespace: the namespace to import
-    :param targets: the list of executor names to import
     :param show_import_table: show the import result as a table
     :param import_once: import everything only once, to avoid repeated import
 
-    :return: for `targets=None`, the dependency tree of the imported classes under the `namespace`; for `target!=None`, the imported class object
+    :return: the dependency tree of the imported classes under the `namespace`
     """
 
     _namespace2type = {
@@ -120,8 +119,6 @@ def import_classes(namespace: str, targets=None,
     if _import_type is None:
         raise TypeError(f'namespace: {namespace} is unrecognized')
 
-    _targets = _parse_targets(targets)
-    _return_target_cls_obj = True if _targets else False
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:
@@ -147,34 +144,23 @@ def import_classes(namespace: str, targets=None,
         try:
             mod = import_module(m)
             for _attr in dir(mod):
-                _c = getattr(mod, _attr)
                 # import the class
+                _c = getattr(mod, _attr)
                 if _c.__class__.__name__ != _import_type:
                     continue
-                if _return_target_cls_obj and _attr not in _targets:
-                    continue
-                if _return_target_cls_obj and not _targets:
-                    break
                 try:
                     _update_depency_tree(_c, m, depend_tree)
-                    # load the default request for this executor if possible
                     if _c.__class__.__name__ == 'ExecutorType':
                         _load_default_exc_config(_c)
-                    if _return_target_cls_obj:
-                        _imported_cls_objs.append(_c)
-                        _targets.remove(_attr)
+                    # TODO: _success_msg is not used
                     _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])
                     load_stat[m].append((_attr, True, _success_msg))
                 except Exception as ex:
                     load_stat[m].append((_attr, False, ex))
                     bad_imports.append('.'.join([m, _attr]))
-                    if _attr in _targets:
-                        raise ex  # target class is found but not loaded, raise return
         except Exception as ex:
             load_stat[m].append(('', False, ex))
             bad_imports.append(m)
-    if _targets:
-        raise ImportError(f'{_targets} can not be found/load')
 
     if show_import_table:
         _print_load_table(load_stat)
@@ -183,10 +169,7 @@ def import_classes(namespace: str, targets=None,
 
     setattr(IMPORTED, _imported_property, True)
 
-    if _return_target_cls_obj:
-        return _imported_cls_objs
-    else:
-        return depend_tree
+    return depend_tree
 
 
 class ImportExtensions:

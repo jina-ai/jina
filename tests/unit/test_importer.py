@@ -99,4 +99,4 @@ def test_import_classes_with_target(targets):
 
 
 def test_import_classes_broken_hub_executor():
-    pass
+    _ = import_classes(namespace='jina.hub')
