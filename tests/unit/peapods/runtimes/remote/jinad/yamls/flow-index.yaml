@@ -1,10 +1,11 @@
 !Flow
+version: '1'
 with:
   compress_hwm: 1024
 pods:
-  encode:
+  - name: encode
     uses: yamls/encoder.yml
     parallel: 2
-  index:
+  - name: index
     uses: yamls/indexer.yml
     shards: 2

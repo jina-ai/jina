@@ -5,13 +5,12 @@ import pytest
 
 from jina import Flow
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
-@pytest.mark.skip(
-    'Flaky test since it depends on external cloud host, to be enabled once '
-    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_r_l_simple(silent_log, parallels, mocker):
@@ -27,9 +26,6 @@ def test_r_l_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.skip(
-    'Flaky test since it depends on external cloud host, to be enabled once '
-    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_simple(silent_log, parallels, mocker):
@@ -46,9 +42,6 @@ def test_l_r_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.skip(
-    'Flaky test since it depends on external cloud host, to be enabled once '
-    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_r_l_r_simple(silent_log, parallels, mocker):
@@ -68,9 +61,6 @@ def test_r_l_r_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.skip(
-    'Flaky test since it depends on external cloud host, to be enabled once '
-    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_r_r_r_simple(silent_log, parallels, mocker):
@@ -92,9 +82,6 @@ def test_r_r_r_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.skip(
-    'Flaky test since it depends on external cloud host, to be enabled once '
-    'https://github.com/jina-ai/jina/issues/1733 is fixed')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_l_simple(silent_log, parallels, mocker):
@@ -112,8 +99,6 @@ def test_l_r_l_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ,
-                    reason='somehow this upload test does not work on Github action, but locally it works fine!')
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2])
 def test_l_r_l_with_upload(silent_log, parallels, mocker):
@@ -129,3 +114,30 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
     with f:
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
     response_mock.assert_called()
+
+    
+@pytest.mark.parametrize('silent_log', [True, False])
+@pytest.mark.parametrize('parallels', [1])  # TODO: parallel > 1 fails, need to check if local also work
+def test_l_r_l_with_upload(silent_log, parallels, mocker):
+    img_name = 'test-mwu-encoder'
+    import docker
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir, '../../unit/mwu-encoder/'), tag=img_name)
+    client.close()
+
+    response_mock = mocker.Mock()
+    f = (Flow()
+         .add()
+         .add(uses=f'docker://{img_name}',
+              host=CLOUD_HOST,
+              parallel=parallels,
+              silent_remote_logs=silent_log,
+              timeout_ready=60000)
+         .add())
+    with f:
+        f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
+    response_mock.assert_called()
+
+    client = docker.from_env()
+    client.containers.prune()
+

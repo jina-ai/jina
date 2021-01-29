@@ -4,7 +4,7 @@ import copy
 import json
 from argparse import Namespace
 from contextlib import ExitStack
-from typing import Tuple, List, Optional, Sequence, BinaryIO, Dict
+from typing import Optional, Sequence, Dict
 
 from pkg_resources import resource_filename
 
@@ -76,7 +76,7 @@ class DaemonClient:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')
 
-    def upload(self, dependencies: Sequence[str]) -> str:
+    def upload(self, dependencies: Sequence[str], workspace_id: str = None) -> str:
         """ Upload local file dependencies to remote server by extracting from the pea_args
         :param args: the arguments in dict that pea can accept
         :return: the workspace id
@@ -90,7 +90,10 @@ class DaemonClient:
             if files:
                 try:
                     self.logger.info(f'uploading {len(files)} file(s): {dependencies}')
-                    r = requests.post(url=self.upload_api, files=files, timeout=self.timeout)
+                    r = requests.post(url=self.upload_api,
+                                      files=files,
+                                      data={'workspace_id': workspace_id} if workspace_id else None,
+                                      timeout=self.timeout)
                     rj = r.json()
                     if r.status_code == 201:
                         return rj
@@ -179,17 +182,19 @@ class DaemonClient:
     def _mask_args(self, args: 'argparse.Namespace'):
         _args = copy.deepcopy(args)
 
-        # reset the runtime to ZEDRuntime
-        # TODO:/NOTE this prevents to run ContainerRuntime via JinaD (Han: 2021.1.17)
+        # reset the runtime to ZEDRuntime or ContainerRuntime
         if _args.runtime_cls == 'JinadRuntime':
-            _args.runtime_cls = 'ZEDRuntime'
+            if _args.uses.startswith('docker://'):
+                _args.runtime_cls = 'ContainerRuntime'
+            else:
+                _args.runtime_cls = 'ZEDRuntime'
 
         # reset the host default host
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         _args.host = __default_host__
 
         _args.log_config = ''  # do not use local log_config
-        _args.upload_files = ''  # reset upload files
+        _args.upload_files = []  # reset upload files
 
         changes = []
         for k, v in vars(_args).items():

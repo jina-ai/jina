@@ -98,7 +98,7 @@ jobs:
       fail-fast: false
       matrix:
         tag_stage: ["", "-devel", "-daemon"]
-        tag_pyversion: ["-py37", "-py38"]
+        tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -111,6 +111,8 @@ jobs:
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
+            echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
             echo "TAG_ALIAS=jinaai/jina:master${{ matrix.tag_stage }}" >> $GITHUB_ENV
@@ -202,8 +204,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
-        timeout-minutes: 20
+          if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
+            docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
+            docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            docker rm -f jinad
+          else
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          fi
+        timeout-minutes: 15
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}

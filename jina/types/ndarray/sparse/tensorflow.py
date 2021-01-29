@@ -1,7 +1,6 @@
 from typing import List
 
 from tensorflow import SparseTensor
-
 from . import BaseSparseNdArray
 
 if False:

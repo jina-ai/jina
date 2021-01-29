@@ -3,30 +3,69 @@ import asyncio
 import numpy as np
 import pytest
 
+from jina import Document
 from jina.flow.asyncio import AsyncFlow
-from jina.types.request import Response
 from jina.logging.profile import TimeContext
+from jina.types.request import Response
+
+num_docs = 5
 
 
 def validate(req):
-    assert len(req.docs) == 5
+    assert len(req.docs) == num_docs
     assert req.docs[0].blob.ndim == 1
 
 
 # TODO(Deepankar): with `restful: True` few of the asyncio tests are flaky.
 # Though it runs fine locally, results in - `RuntimeError - Event loop closed` in CI (Disabling for now)
 
+def documents(start_index, end_index):
+    for i in range(start_index, end_index):
+        with Document() as doc:
+            doc.text = 'this is text'
+            doc.tags['id'] = 'id in tags'
+            doc.tags['inner_dict'] = {'id': 'id in inner_dict'}
+            with Document() as chunk:
+                chunk.text = 'text in chunk'
+                chunk.tags['id'] = 'id in chunk tags'
+            doc.chunks.add(chunk)
+        yield doc
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize('restful', [False])
-async def test_run_async_flow(restful):
+async def test_run_async_flow(restful, mocker):
+    r_val = mocker.Mock(wrap=validate)
     with AsyncFlow(restful=restful).add() as f:
-        await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
+        await f.index_ndarray(np.random.random([num_docs, 4]), on_done=r_val)
+    r_val.assert_called()
+
+
+async def ainput_fn():
+    for _ in range(num_docs):
+        yield np.random.random([4])
+        await asyncio.sleep(0.1)
+
+async def ainput_fn2():
+    for _ in range(num_docs):
+        yield Document(content=np.random.random([4]))
+        await asyncio.sleep(0.1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('restful', [False])
+@pytest.mark.parametrize('input_fn', [ainput_fn, ainput_fn(), ainput_fn2(), ainput_fn2])
+async def test_run_async_flow_async_input(restful, input_fn, mocker):
+    r_val = mocker.Mock(wrap=validate)
+    with AsyncFlow(restful=restful).add() as f:
+        await f.index(input_fn, on_done=r_val)
+    r_val.assert_called()
 
 
 async def run_async_flow_5s(restful):
     # WaitDriver pause 5s makes total roundtrip ~5s
     with AsyncFlow(restful=restful).add(uses='- !WaitDriver {}') as f:
-        await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
+        await f.index_ndarray(np.random.random([num_docs, 4]), on_done=validate)
 
 
 async def sleep_print():
@@ -72,6 +111,40 @@ async def test_run_async_flow_other_task_concurrent(restful):
 async def test_return_results_async_flow(return_results, restful):
     with AsyncFlow(restful=restful, return_results=return_results).add() as f:
         r = await f.index_ndarray(np.random.random([10, 2]))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Response)
+        else:
+            assert r is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('return_results', [False, True])
+@pytest.mark.parametrize('restful', [False])
+async def test_return_results_async_flow_crud(return_results, restful):
+    with AsyncFlow(restful=restful, return_results=return_results).add() as f:
+        r = await f.index(documents(0, 10))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Response)
+        else:
+            assert r is None
+
+        r = await f.delete(documents(0, 5))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Response)
+        else:
+            assert r is None
+
+        r = await f.update(documents(5, 10))
+        if return_results:
+            assert isinstance(r, list)
+            assert isinstance(r[0], Response)
+        else:
+            assert r is None
+
+        r = await f.search(documents(0, 1))
         if return_results:
             assert isinstance(r, list)
             assert isinstance(r[0], Response)

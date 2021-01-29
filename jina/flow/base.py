@@ -7,6 +7,7 @@ import copy
 import os
 import re
 import threading
+import uuid
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
@@ -16,7 +17,7 @@ from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
-from ..excepts import FlowTopologyError, FlowMissingPodError
+from ..excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
 from ..helper import colored, \
     get_public_ip, get_internal_ip, typename, ArgNamespace
 from ..jaml import JAML, JAMLCompatible
@@ -149,7 +150,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                            read_only=True,
                            runtime_cls='GRPCRuntime',
-                           pod_role=PodRoleType.GATEWAY))
+                           pod_role=PodRoleType.GATEWAY,
+                           identity=self.args.identity
+                           ))
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
@@ -428,11 +431,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             for k, v in self._env.items():
                 os.environ[k] = str(v)
 
-        for v in self._pod_nodes.values():
-            self.enter_context(v)
-            if not v.is_ready:
-                self.logger.error(f'Pod {v!r} can not be started, Flow is aborted')
-                break
+        for k, v in self:
+            try:
+                self.enter_context(v)
+            except Exception as ex:
+                self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
+                self.close()
+                raise
 
         self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
 
@@ -732,6 +737,46 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def _update_client(self):
         if self._pod_nodes['gateway'].args.restful:
             self._cls_client = WebSocketClient
+
+    @property
+    def workspace_id(self) -> Dict[str, str]:
+        """Get all Pods' ``workspace_id`` values in a dict """
+        return {k: p.args.workspace_id for k, p in self if hasattr(p.args, 'workspace_id')}
+
+    @workspace_id.setter
+    def workspace_id(self, value: str):
+        """Set all Pods' ``workspace_id`` to ``value``
+
+        :param value: a hexadecimal UUID string
+        """
+        uuid.UUID(value)
+        for k, p in self:
+            if hasattr(p.args, 'workspace_id'):
+                p.args.workspace_id = value
+                for k, v in p.peas_args.items():
+                    if v and isinstance(v, argparse.Namespace):
+                        v.workspace_id = value
+                    if v and isinstance(v, List):
+                        for i in v:
+                            i.workspace_id = value
+
+    @property
+    def identity(self) -> Dict[str, str]:
+        """Get all Pods' ``identity`` values in a dict """
+        return {k: p.args.identity for k, p in self}
+
+    @identity.setter
+    def identity(self, value: str):
+        """Set all Pods' ``identity`` to ``value``
+
+        :param value: a hexadecimal UUID string
+        """
+        uuid.UUID(value)
+        self.args.identity = value
+        # Re-initiating logger with new identity
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
+        for _, p in self:
+            p.args.identity = value
 
     def index(self):
         raise NotImplementedError

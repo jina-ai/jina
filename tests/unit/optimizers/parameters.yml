@@ -4,12 +4,6 @@
   low: 0
   step_size: 1
   parameter_name: param1
-- !FloatParameter
-  jaml_variable: JINA_EXECUTOR_PARAM2
-  high: 1
-  low: 1
-  step_size: 1
-  parameter_name: param2
 - !UniformParameter
   jaml_variable: JINA_EXECUTOR_PARAM3
   high: 2

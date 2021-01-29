@@ -73,7 +73,6 @@ def test_load_yaml2(test_metas):
         ('executors._clear.yml', 'clear', 6),
         ('executors._concat.yml', 'concat', 6),
         ('executors._eval_pr.yml', 'eval_pr', 2),
-        ('executors._forward.yml', 'forward', 6),
         ('executors._logforward.yml', 'logforward', 6),
         ('executors._merge.yml', 'merge', 6),
         ('executors._merge_chunks.yml', 'merge_chunks', 6),

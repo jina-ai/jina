@@ -29,7 +29,8 @@
   <a href="README.de.md">Deutsch</a> •
   <a href="README.ru.md">Русский язык</a> •
   <a href="README.zh.md">中文</a> •
-  <a href="README.ar.md">عربية</a>
+  <a href="README.ar.md">عربية</a> •
+  <a href="README.gr.md">Ελληνικά</a>
     </td>
     <td>
       <img src="img/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>

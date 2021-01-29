@@ -1,0 +1,11 @@
+!DummyMinRanker
+metas:
+  name: ranker
+  py_modules:
+    - custom_executor.py
+requests:
+  on:
+    SearchRequest:
+      - !AggregateMatches2DocRankDriver
+        with:
+          traversal_paths: ['m']

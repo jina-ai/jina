@@ -8,13 +8,16 @@ from setuptools.command.install import install
 
 PY37 = 'py37'
 PY38 = 'py38'
+PY39 = 'py39'
 
-if sys.version_info >= (3, 8, 0):
+if sys.version_info >= (3, 10, 0) or sys.version_info < (3, 7, 0):
+    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {sys.version}')
+elif sys.version_info >= (3, 9, 0):
+    py_tag = PY39
+elif sys.version_info >= (3, 8, 0):
     py_tag = PY38
 elif sys.version_info >= (3, 7, 0):
     py_tag = PY37
-else:
-    raise OSError(f'Jina requires Python 3.7 and above, but yours is {sys.version}')
 
 try:
     pkg_name = 'jina'

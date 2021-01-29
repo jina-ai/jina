@@ -4,6 +4,8 @@ from ..jaml import JAML, JAMLCompatible
 
 
 class OptimizationParameter(JAMLCompatible):
+    """Base class for all optimization parameters."""
+
     def __init__(
         self,
         parameter_name: str = "",
@@ -19,6 +21,11 @@ class OptimizationParameter(JAMLCompatible):
 
 
 class IntegerParameter(OptimizationParameter):
+    """Used for optimizing integer parameters with the FlowOptimizer.
+       For detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_int
+    """
+
     def __init__(
         self,
         low: int,
@@ -35,102 +42,56 @@ class IntegerParameter(OptimizationParameter):
         # The step != 1 and log arguments cannot be used at the same time.
         # To set the log argument to True, set the step argument to 1.
         self.log = log
-        self.optuna_method = 'suggest_int'
-
-    def to_optuna_args(self):
-        return {
-            'name': self.jaml_variable,
-            'low': self.low,
-            'high': self.high,
-            'step': self.step_size,
-            'log': self.log,
-        }
-
-
-class FloatParameter(OptimizationParameter):
-    def __init__(
-        self,
-        low: float,
-        high: float,
-        step_size: Optional[float] = None,
-        log: bool = False,
-        *args,
-        **kwargs,
-    ):
-        super().__init__(*args, **kwargs)
-        self.low = low
-        self.high = high
-        self.step_size = step_size
-        self.log = log
-        self.optuna_method = 'suggest_float'
-
-    def to_optuna_args(self):
-        return {
-            'name': self.jaml_variable,
-            'low': self.low,
-            'high': self.high,
-            'step': self.step_size,
-            'log': self.log,
-        }
 
 
 class UniformParameter(OptimizationParameter):
+    """Used for optimizing float parameters with the FlowOptimizer with uniform sampling.
+       For detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform
+    """
+
     def __init__(self, low: float, high: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
-        self.optuna_method = 'suggest_uniform'
-
-    def to_optuna_args(self):
-        return {
-            'name': self.jaml_variable,
-            'low': self.low,
-            'high': self.high,
-        }
 
 
 class LogUniformParameter(OptimizationParameter):
+    """Used for optimizing float parameters with the FlowOptimizer with loguniform sampling.
+       For detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_loguniform
+    """
+
     def __init__(self, low: float, high: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
-        self.optuna_method = 'suggest_loguniform'
-
-    def to_optuna_args(self):
-        return {
-            'name': self.jaml_variable,
-            'low': self.low,
-            'high': self.high,
-        }
 
 
 class CategoricalParameter(OptimizationParameter):
+    """Used for optimizing categorical parameters with the FlowOptimizer.
+       For detailed information about sampling and usage see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical
+    """
+
     def __init__(
         self, choices: Sequence[Union[None, bool, int, float, str]], *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.choices = choices
-        self.optuna_method = 'suggest_categorical'
-
-    def to_optuna_args(self):
-        return {'name': self.jaml_variable, 'choices': self.choices}
 
 
 class DiscreteUniformParameter(OptimizationParameter):
+    """Used for optimizing discrete parameters with the FlowOptimizer with uniform sampling.
+       For detailed information about sampling and usage it is used by Jina with optuna see
+       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform
+    """
+
     def __init__(self, low: float, high: float, q: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
         self.q = q
-        self.optuna_method = 'suggest_discrete_uniform'
-
-    def to_optuna_args(self):
-        return {
-            'name': self.jaml_variable,
-            'low': self.low,
-            'high': self.high,
-            'q': self.q,
-        }
 
 
 def load_optimization_parameters(filepath: str):

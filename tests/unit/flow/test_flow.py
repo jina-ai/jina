@@ -4,7 +4,8 @@ import numpy as np
 import pytest
 
 from jina import Flow
-from jina.enums import SocketType
+from jina.enums import SocketType, FlowBuildLevel
+from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
@@ -543,8 +544,7 @@ def test_flow_host_expose_shortcut(input, expect_host, expect_port):
 def test_flow_workspace_id():
     f = Flow().add().add().add().build()
     assert len(f.workspace_id) == 3
-    assert len(set(f.workspace_id.values())) == 1
-    assert not list(f.workspace_id.values())[0]
+    assert len(set(f.workspace_id.values())) == 3
 
     with pytest.raises(ValueError):
         f.workspace_id = 'hello'
@@ -553,6 +553,21 @@ def test_flow_workspace_id():
     f.workspace_id = new_id
     assert len(set(f.workspace_id.values())) == 1
     assert list(f.workspace_id.values())[0] == new_id
+
+
+def test_flow_identity():
+    f = Flow().add().add().add().build()
+    assert len(f.identity) == 4
+    assert len(set(f.identity.values())) == 4
+
+    with pytest.raises(ValueError):
+        f.identity = 'hello'
+
+    new_id = random_identity()
+    f.identity = new_id
+    assert len(set(f.identity.values())) == 1
+    assert list(f.identity.values())[0] == new_id
+    assert f.args.identity == new_id
 
 
 def test_flow_identity_override():
@@ -565,3 +580,47 @@ def test_flow_identity_override():
 
     with f:
         assert len(set(p.args.identity for _, p in f)) == 1
+
+    y = '''
+!Flow
+version: '1.0'
+pods:
+    - uses: _pass
+    - uses: _pass
+      parallel: 3
+    '''
+
+    f = Flow.load_config(y)
+    for _, p in f:
+        p.args.identity = '1234'
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == 2
+        for _, p in f:
+            if p.args.identity != '1234':
+                assert p.name == 'gateway'
+
+
+def test_bad_pod_graceful_termination():
+    def asset_bad_flow(f):
+        with pytest.raises(RuntimeFailToStart):
+            with f:
+                assert f._build_level == FlowBuildLevel.EMPTY
+
+    # bad remote pod
+    asset_bad_flow(Flow().add(host='hello-there'))
+
+    # bad local pod
+    asset_bad_flow(Flow().add(uses='hello-there'))
+
+    # bad local pod at second
+    asset_bad_flow(Flow().add().add(uses='hello-there'))
+
+    # bad remote pod at second
+    asset_bad_flow(Flow().add().add(host='hello-there'))
+
+    # bad local pod at second, with correct pod at last
+    asset_bad_flow(Flow().add().add(uses='hello-there').add())
+
+    # bad remote pod at second, with correct pod at last
+    asset_bad_flow(Flow().add().add(host='hello-there').add())

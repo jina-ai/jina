@@ -91,7 +91,7 @@ jobs:
       fail-fast: false
       matrix:
         tag_stage: ["", "-devel", "-daemon"]
-        tag_pyversion: ["-py37", "-py38"]
+        tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
       - name: Set envs and versions
@@ -106,6 +106,8 @@ jobs:
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
+            echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
             echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV

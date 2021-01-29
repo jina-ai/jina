@@ -1,0 +1,17 @@
+!Flow
+version: '1.0'
+with:
+  restful: False
+pods:
+  - name: encoder
+    uses: yaml/encoder.yml
+    read_only: true
+  - name: chunk_indexer
+    uses: yaml/index-chunk.yml
+    read_only: true
+  - name: ranker
+    uses: yaml/rank.yml
+    read_only: true
+  - name: doc_indexer
+    uses: yaml/index-doc.yml
+    read_only: true

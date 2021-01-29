@@ -1,14 +1,20 @@
 from collections.abc import MutableSequence
-from typing import Iterable, Union
+from typing import Iterable, Union, Dict
 
-from google.protobuf.pyext._message import RepeatedCompositeContainer
+
+try:
+    # when protobuf using Cpp backend
+    from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
+except:
+    # when protobuf using Python backend
+    from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
+
 
 from ..querylang import QueryLang
-from ...drivers import BaseDriver
 from ...helper import typename
 from ...proto.jina_pb2 import QueryLangProto
 
-AcceptQueryLangType = Union[QueryLang, BaseDriver, QueryLangProto]
+AcceptQueryLangType = Union[QueryLang, QueryLangProto, Dict]
 
 __all__ = ['QueryLangSet', 'AcceptQueryLangType']
 
@@ -19,7 +25,7 @@ class QueryLangSet(MutableSequence):
     a generator but ALSO modify it, count it, get item.
     """
 
-    def __init__(self, querylang_protos: 'RepeatedCompositeContainer'):
+    def __init__(self, querylang_protos: 'RepeatedContainer'):
         super().__init__()
         self._querylangs_proto = querylang_protos
         self._querylangs_map = {}
@@ -55,7 +61,7 @@ class QueryLangSet(MutableSequence):
 
     def append(self, value: 'AcceptQueryLangType'):
         q_pb = self._querylangs_proto.add()
-        if isinstance(value, BaseDriver):
+        if isinstance(value, Dict):
             q_pb.CopyFrom(QueryLang(value).as_pb_object)
         elif isinstance(value, QueryLangProto):
             q_pb.CopyFrom(value)

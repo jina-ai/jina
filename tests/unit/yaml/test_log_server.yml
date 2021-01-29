@@ -1,0 +1,5 @@
+!Flow
+version: '1'
+with:
+  runtime: process
+  logserver: true

@@ -1,0 +1,17 @@
+!DummyOneHotTextEncoder
+metas:
+  name: encoder
+  py_modules:
+    - custom_executor.py
+requests:
+  on:
+    IndexRequest:
+      - !EncodeDriver
+        with:
+          traversal_paths: ['c']
+    SearchRequest:
+      - !EncodeDriver
+        with:
+          traversal_paths: ['r']
+    DeleteRequest:
+      - !ForwardDriver {}

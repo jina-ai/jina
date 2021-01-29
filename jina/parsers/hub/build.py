@@ -20,15 +20,15 @@ def mixin_hub_build_parser(parser):
     gp.add_argument('--raise-error', action='store_true', default=False,
                     help='If set, raise any error and exit with code 1')
     gp.add_argument('--test-uses', action='store_true', default=False,
-                    help='If set, after the build, test the image in "uses" with different level')
+                    help='If set, after the build, test the image in `--uses` with different level')
     gp.add_argument('--test-level', type=BuildTestLevel.from_string,
                     choices=list(BuildTestLevel), default=BuildTestLevel.FLOW,
-                    help='If set, the test level when "test-uses" is set, "NONE" means no test')
+                    help='If set, the test level when `--test-uses` is set, `NONE` means no test')
     gp.add_argument('--timeout-ready', type=int, default=10000,
                     help='The timeout in millisecond to give for the Pod to start before considering a test failed')
     gp.add_argument('--host-info', action='store_true', default=False,
                     help='If set, store the host information during bookkeeping')
     gp.add_argument('--daemon', action='store_true', default=False,
-                    help='If set, run the test Pea/Pod as a daemon process, see "jina pea --help" for details')
+                    help='If set, run the test Pea/Pod as a daemon process, see `jina pea --help` for details')
     gp.add_argument('--no-overwrite', action='store_true', default=False,
                     help='If set, do not overwrite existing images (based on module version and jina version)')

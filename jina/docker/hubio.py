@@ -1,33 +1,31 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import argparse
 import glob
 import json
 import time
-import webbrowser
 import urllib.parse
 import urllib.request
+import webbrowser
 from typing import Dict, Any, Optional
 
 from .checker import *
-from ..flow import Flow
-from ..peapods import Pod
-from ..logging import JinaLogger
-from ..enums import BuildTestLevel
-from ..executors import BaseExecutor
 from .helper import credentials_file
-from ..parsers import set_pod_parser
 from .hubapi.local import _list_local
-from ..importer import ImportExtensions
-from .. import __version__ as jina_version
-from ..logging.profile import TimeContext, ProgressBar
 from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
+from .. import __version__ as jina_version
+from ..enums import BuildTestLevel
 from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
+from ..executors import BaseExecutor
+from ..flow import Flow
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
     countdown
-
-if False:
-    import argparse
+from ..importer import ImportExtensions
+from ..logging import JinaLogger
+from ..logging.profile import TimeContext, ProgressBar
+from ..parsers import set_pod_parser
+from ..peapods import Pod
 
 _allowed = {'name', 'description', 'author', 'url',
             'documentation', 'version', 'vendor', 'license', 'avatar',
@@ -162,7 +160,8 @@ class HubIO:
                          image_type=self.args.type,
                          image_keywords=self.args.keywords)
 
-    def push(self, name: Optional[str] = None, readme_path: Optional[str] = None, build_result: Optional[Dict] = None) -> None:
+    def push(self, name: Optional[str] = None, readme_path: Optional[str] = None,
+             build_result: Optional[Dict] = None) -> None:
         """ A wrapper of docker push
         - Checks for the tempfile, returns without push if it cannot find
         - Pushes to docker hub, returns withput writing to db if it fails
@@ -270,10 +269,11 @@ class HubIO:
         try:
             image.labels['ai.jina.hub.jina_version'] = jina_version
             label_info = f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
-                        **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})
+                **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})
             safe_name = safe_url_name(label_info)
             if name != safe_name:
-                raise ValueError(f'image {name} does not match with label info in the image. name should be {safe_name}')
+                raise ValueError(
+                    f'image {name} does not match with label info in the image. name should be {safe_name}')
         except KeyError as e:
             self.logger.error(f'missing key in the label of the image {repr(e)}')
             raise

@@ -106,7 +106,8 @@ class BasePod(ExitStack):
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             peas_args['tail'] = _copy_to_tail_args(args)
             peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
-        elif getattr(args, 'uses_before', None) or getattr(args, 'uses_after', None):
+        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
+                getattr(args, 'uses_after', None) and args.uses_after != '_pass'):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
                 self.is_head_router = True
@@ -229,10 +230,6 @@ class BasePod(ExitStack):
                 args.runtime_cls = 'RESTRuntime'
             else:
                 args.runtime_cls = 'GRPCRuntime'
-        if 'parallel' in args and args.parallel == 1:
-            if args.remove_uses_ba:
-                args.uses_after = None
-                args.uses_before = None
 
     def connect_to_tail_of(self, pod: 'BasePod'):
         """Eliminate the head node by connecting prev_args node directly to peas """
