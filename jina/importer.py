@@ -117,11 +117,12 @@ def import_classes(namespace: str, targets=None,
                       ImportWarning)
         return {}
 
-    modules = _get_modules(namespace)
-    if not modules:
-        warnings.warn(f'{namespace} has no module to import.', ImportWarning)
+    try:
+        modules = _get_modules(namespace)
+    except ImportError as e:
+        warnings.warn(f'{namespace} has no module to import. {e}', ImportWarning)
         return {}
-    
+
     from collections import defaultdict
     load_stat = defaultdict(list)
     bad_imports = []
