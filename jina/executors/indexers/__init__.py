@@ -12,7 +12,7 @@ from ...helper import call_obj_fn, cached_property, get_readable_size
 
 
 class BaseIndexer(BaseExecutor):
-    """ base class for storing and searching any kind of data structure
+    """base class for storing and searching any kind of data structure
 
     The key functions here are :func:`add` and :func:`query`.
     One can decorate them with :func:`jina.decorator.require_train`,
@@ -53,17 +53,17 @@ class BaseIndexer(BaseExecutor):
         self._size = 0
 
     def add(self, *args, **kwargs):
-        """ Add documents to the index.
+        """Add documents to the index.
         """
         raise NotImplementedError
 
     def update(self, *args, **kwargs):
-        """ Update documents on the index.
+        """Update documents on the index.
         """
         raise NotImplementedError
 
     def delete(self, *args, **kwargs):
-        """ Delete documents from the index.
+        """Delete documents from the index.
         """
         raise NotImplementedError
 
@@ -74,7 +74,7 @@ class BaseIndexer(BaseExecutor):
         self.is_handler_loaded = False
 
     def query(self, *args, **kwargs):
-        """ Query documents from the index.
+        """Query documents from the index.
         """
         raise NotImplementedError
 
@@ -152,7 +152,7 @@ class BaseIndexer(BaseExecutor):
 
     @property
     def size(self) -> int:
-        """The number of vectors/chunks indexed """
+        """The number of vectors or documents indexed """
         return self._size
 
     def __getstate__(self):
@@ -212,9 +212,9 @@ class BaseVectorIndexer(BaseIndexer):
     """
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        """ Get the vectors by id.
+        """Get the vectors by id.
 
-        :param ids: list of document or chunk ids or document or chunk ids` as 1D-ndarray
+        :param ids: list of document ids` as 1D-ndarray
         :return: subset of indexed vectors
         """
         raise NotImplementedError
@@ -222,7 +222,7 @@ class BaseVectorIndexer(BaseIndexer):
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         """Add vectors to the index.
 
-        :param keys: document or chunk ids` as 1D-ndarray
+        :param keys: document ids` as 1D-ndarray
         :param vectors: vector representations in B x D
         """
         raise NotImplementedError
@@ -240,7 +240,7 @@ class BaseVectorIndexer(BaseIndexer):
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
         """Update vectors on the index.
 
-        :param keys: document or chunk ids` as 1D-ndarray
+        :param keys: document ids` as 1D-ndarray
         :param values: vector representations in B x D
         """
         raise NotImplementedError
@@ -248,7 +248,7 @@ class BaseVectorIndexer(BaseIndexer):
     def delete(self, keys: Iterator[int], *args, **kwargs):
         """Delete vectors from the index.
 
-        :param keys: document or chunk ids` as 1D-ndarray
+        :param keys: document ids` as 1D-ndarray
         """
         raise NotImplementedError
 
@@ -262,31 +262,31 @@ class BaseKVIndexer(BaseIndexer):
     """
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """ Add the serialized chunks or documents to the index via document ids.
+        """Add the serialized documents to the index via document ids.
 
         :param keys: document ids
-        :param values: serialized documents or chunks
+        :param values: serialized documents
         """
         raise NotImplementedError
 
     def query(self, key: Any) -> Optional[Any]:
-        """ Find the serialized chunk or document to the index via document id.
+        """Find the serialized document to the index via document id.
 
         :param key: document id
-        :return: serialized documents or chunks
+        :return: serialized documents
         """
         raise NotImplementedError
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """ Update the serialized chunks or documents on the index via document ids.
+        """Update the serialized documents on the index via document ids.
 
         :param keys: document ids
-        :param values: serialized documents or chunks
+        :param values: serialized documents
         """
         raise NotImplementedError
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
-        """ Delete the serialized chunks or documents from the index via document ids.
+        """Delete the serialized documents from the index via document ids.
 
         :param keys: document ids
         """
@@ -311,7 +311,7 @@ class CompoundIndexer(CompoundExecutor):
         - In the query time
             - 1. Find the knn using the vector via :class:`BaseVectorIndexer`
             - 2. remove all vector information (embedding, buffer, blob, text)
-            - 3. Fill in the meta information of the chunk via :class:`BaseKVIndexer`
+            - 3. Fill in the meta information of the document via :class:`BaseKVIndexer`
 
     One can use the :class:`ChunkIndexer` via
 

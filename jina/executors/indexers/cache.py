@@ -54,7 +54,7 @@ class DocIDCache(BaseCache):
     default_field = ID_KEY
 
     def __init__(self, index_filename: str = None, *args, **kwargs):
-        """ creates a new DocIDCache
+        """creates a new DocIDCache
 
         :param field: to be passed as kwarg. This dictates by which Document field we cache (either `id` or `content_hash`)
         """
@@ -68,7 +68,7 @@ class DocIDCache(BaseCache):
 
     def add(self, doc_id: 'UniqueId', *args, **kwargs):
         """Add a document id to the cache.
-
+        
         :param doc_id: Document id to be added.
         """
         self.query_handler.ids.append(doc_id)

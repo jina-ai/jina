@@ -34,7 +34,8 @@ if False:
 
 
 def store_init_kwargs(func: Callable) -> Callable:
-    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
+    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML
+    """
 
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
@@ -72,7 +73,8 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 class QuerySetReader:
-    """:class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
+    """
+    :class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
     driver to override its behavior based on the message it receives. Extremely useful in production, for example,
     get ``top_k`` results, doing pagination, filtering.
 
@@ -94,7 +96,6 @@ class QuerySetReader:
 
     .. warning::
         For the sake of cooperative multiple inheritance, do NOT implement :meth:`__init__` for this class
-
     """
 
     @property
@@ -157,14 +158,12 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     A :class:`BaseDriver` needs to be :attr:`attached` to a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` before
     using. This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
-
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, priority: int = 0, *args, **kwargs):
         """
-
         :param priority: the priority of its default arg values (hardcoded in Python). If the
              received ``QueryLang`` has a higher priority, it will override the hardcoded value
         """
@@ -290,8 +289,8 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        for path in self._traversal_paths:    # self._traversal_paths = ['cm']
-            if path[0] == 'r':    # path = 'cm'   path[0] = 'c'
+        for path in self._traversal_paths:
+            if path[0] == 'r':
                 self._apply_root(docs, 'docs', *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(

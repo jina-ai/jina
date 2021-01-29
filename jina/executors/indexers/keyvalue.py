@@ -55,10 +55,10 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """ Add the serialized chunks or documents to the index via document ids.
+        """Add the serialized documents to the index via document ids.
 
         :param keys: document ids
-        :param values: serialized documents or chunks
+        :param values: serialized documents
         """
         if len(list(keys)) != len(list(values)):
             raise ValueError(f'Len of keys {len(keys)} did not match len of values {len(values)}')
@@ -78,10 +78,10 @@ class BinaryPbIndexer(BaseKVIndexer):
         self.write_handler.flush()
 
     def query(self, key: int) -> Optional[bytes]:
-        """ Find the serialized chunk or document to the index via document id.
+        """Find the serialized document to the index via document id.
 
         :param key: document id
-        :return: serialized documents or chunks
+        :return: serialized documents
         """
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
@@ -90,10 +90,10 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
-        """ Update the serialized chunks or documents on the index via document ids.
+        """Update the serialized documents on the index via document ids.
 
         :param keys: document ids
-        :param values: serialized documents or chunks
+        :param values: serialized documents
         """
         keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(), self.save_abspath)
         self._delete(keys)
@@ -115,7 +115,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size -= 1
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
-        """ Delete the serialized chunks or documents from the index via document ids.
+        """Delete the serialized documents from the index via document ids.
 
         :param keys: document ids
         """
@@ -124,8 +124,7 @@ class BinaryPbIndexer(BaseKVIndexer):
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
-    """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,
-    differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
+    """Alias for BinaryPbIndexer"""
 
 
 class UniquePbIndexer(CompoundExecutor):

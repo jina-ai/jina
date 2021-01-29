@@ -15,7 +15,8 @@ from ...helper import cached_property
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
-    """:class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file
+    """
+    :class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file
 
     .. note::
         :attr:`compress_level` balances between time and space. By default, :classL`NumpyIndexer` has
@@ -26,8 +27,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         Setting :attr:`compress_level`=0 enables :func:`np.memmap`, which loads data in an on-demanding way and
         gives smaller memory footprint in the query time. However, it often gives larger file size on the disk.
-
-
     """
 
     def __init__(self,
@@ -41,7 +40,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                         at all. The default is 9.
         :param ref_indexer: Bootstrap the current indexer from a ``ref_indexer``. This enables user to switch
                             the query algorithm at the query time.
-
         """
         super().__init__(*args, **kwargs)
         self.num_dim = None
@@ -125,7 +123,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'keys\' dtype {keys.dtype.name} does not match with indexers keys\'s dtype: {self.key_dtype}')
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs) -> None:
-        """ Add the embeddings and document ids to the index.
+        """Add the embeddings and document ids to the index.
 
         :param keys: document ids
         :param vectors: embeddings
@@ -138,7 +136,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self._size += keys.shape[0]
 
     def update(self, keys: Sequence[int], vectors: Sequence[bytes], *args, **kwargs) -> None:
-        """ Update the embeddings on the index via document ids.
+        """Update the embeddings on the index via document ids.
 
         :param keys: document ids
         :param vectors: embeddings
@@ -167,7 +165,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 self._size -= 1
 
     def delete(self, keys: Sequence[int], *args, **kwargs) -> None:
-        """ Delete the embeddings from the index via document ids.
+        """Delete the embeddings from the index via document ids.
 
         :param keys: document ids
         """
@@ -187,8 +185,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return self.build_advanced_index(vecs)
 
     def build_advanced_index(self, vecs: 'np.ndarray'):
-        """
-        Build advanced index structure based on in-memory numpy ndarray, e.g. graph, tree, etc.
+        """Build advanced index structure based on in-memory numpy ndarray, e.g. graph, tree, etc.
 
         :param vecs: the raw numpy ndarray
         :return:
@@ -316,7 +313,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
     @staticmethod
     def _get_sorted_top_k(dist: 'np.array', top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
-        """ Find top-k smallest distances in ascending order.
+        """Find top-k smallest distances in ascending order.
 
         Idea is to use partial sort to retrieve top-k smallest distances unsorted and then sort these
         in ascending order. Equivalent to full sort but faster for n >> k. If k >= n revert to full sort.
@@ -336,7 +333,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple[
         Optional['np.ndarray'], Optional['np.ndarray']]:
-        """ Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
+        """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
         :return: a tuple of two ndarray.
             The first is ids in shape B x K (`dtype=int`), the second is metric in shape B x K (`dtype=float`)
