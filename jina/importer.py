@@ -163,8 +163,8 @@ def import_classes(namespace: str, targets=None,
                     if _return_target_cls_obj:
                         _imported_cls_objs.append(_c)
                         _targets.remove(_attr)
-                    load_stat[m].append(
-                        (_attr, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
+                    _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])
+                    load_stat[m].append((_attr, True, _success_msg))
                 except Exception as ex:
                     load_stat[m].append((_attr, False, ex))
                     bad_imports.append('.'.join([m, _attr]))

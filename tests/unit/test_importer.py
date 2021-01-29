@@ -97,3 +97,6 @@ def test_import_classes_with_target(targets):
     for c in _cls_obj:
         assert c.__name__ in targets
 
+
+def test_import_classes_broken_hub_executor():
+    pass
