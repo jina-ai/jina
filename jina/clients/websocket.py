@@ -1,12 +1,12 @@
 import asyncio
 from abc import ABC
-from typing import Callable, List
+from typing import Callable
 
 from .base import BaseClient
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
-from ..types.request import Request, Response
+from ..types.request import Request
 
 
 class WebSocketClientMixin(BaseClient, ABC):
@@ -32,7 +32,6 @@ class WebSocketClientMixin(BaseClient, ABC):
         with ImportExtensions(required=True):
             import websockets
 
-        result = []  # type: List['Response']
         self.input_fn = input_fn
 
         tname = self._get_task_name(kwargs)
@@ -77,8 +76,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
                         p_bar.update(self.args.request_size)
-                        if self.args.return_results:
-                            result.append(response)
+                        yield response
                         self.num_responses += 1
                         if self.num_requests == self.num_responses:
                             break
@@ -87,6 +85,3 @@ class WebSocketClientMixin(BaseClient, ABC):
             self.logger.warning(f'Client got disconnected from the websocket server')
         except websockets.exceptions.WebSocketException as e:
             self.logger.error(f'Got following error while streaming requests via websocket: {e!r}')
-        finally:
-            if self.args.return_results:
-                return result

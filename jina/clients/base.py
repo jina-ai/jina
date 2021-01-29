@@ -125,7 +125,6 @@ class BaseClient:
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
-        result = []  # type: List['Response']
         try:
             self.input_fn = input_fn
             tname = self._get_task_name(kwargs)
@@ -138,8 +137,6 @@ class BaseClient:
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     async for response in stub.Call(req_iter):
                         resp = response.to_response()
-                        if self.args.return_results:
-                            result.append(resp)
                         callback_exec(response=resp,
                                       on_error=on_error,
                                       on_done=on_done,
@@ -147,6 +144,7 @@ class BaseClient:
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
                         p_bar.update(self.args.request_size)
+                        yield resp
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.aio._call.AioRpcError as rpc_ex:
@@ -167,8 +165,6 @@ class BaseClient:
                                      'please double check your input iterator') from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
-        if self.args.return_results:
-            return result
 
     def index(self):
         raise NotImplementedError
