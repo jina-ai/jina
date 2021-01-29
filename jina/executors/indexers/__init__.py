@@ -212,25 +212,23 @@ class BaseVectorIndexer(BaseIndexer):
     """
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        """ Get the vectors by id, return a subset of indexed vectors
+        """ Get the vectors by id.
 
-        :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args:
-        :param kwargs:
-        :return:
+        :param ids: list of document or chunk ids or document or chunk ids` as 1D-ndarray
+        :return: subset of indexed vectors
         """
         raise NotImplementedError
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
-        """Add new chunks and their vector representations
+        """Add vectors to the index.
 
-        :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
+        :param keys: document or chunk ids` as 1D-ndarray
         :param vectors: vector representations in B x D
         """
         raise NotImplementedError
 
     def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        """Find k-NN using query vectors, return chunk ids and chunk scores
+        """Find k-NN using query vectors.
 
         :param keys: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
@@ -240,9 +238,18 @@ class BaseVectorIndexer(BaseIndexer):
         raise NotImplementedError
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """Update vectors on the index.
+
+        :param keys: document or chunk ids` as 1D-ndarray
+        :param values: vector representations in B x D
+        """
         raise NotImplementedError
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
+        """Delete vectors from the index.
+
+        :param keys: document or chunk ids` as 1D-ndarray
+        """
         raise NotImplementedError
 
 
