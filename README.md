@@ -318,9 +318,9 @@ with Flow().add().add(host='cloud.jina.ai:8000') as f:
 #### Asynchronous Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Synchronous from outside, Jina runs asynchronously underneath: it manages the eventloop(s) for scheduling the jobs. If user wants more control over the eventloop, then `AsyncFlow` comes to use.
+Synchronous from outside, Jina runs asynchronously underneath: it manages the eventloop(s) for scheduling the jobs. If user wants more control over the eventloop, then `AsyncFlow` comes to use. 
 
-`AsyncFlow`'s CRUD operations support async generator as the input function. This is particular useful when your data sources involves other asynchronous libraries (e.g. motor for Mongodb):
+Unlike `Flow`, the CRUD of `AsyncFlow` accepts input & output functions as [async generator](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involves other asynchronous libraries (e.g. motor for MongoDB):
 
 ```python
 from jina import AsyncFlow
@@ -332,7 +332,7 @@ async def input_fn():
 
 with AsyncFlow().add() as f:
     async for resp in f.index(input_fn):
-        yield resp
+        print(resp)
 ```
 
 `AsyncFlow` is particular useful when Jina is using as part of the integration, where another heavy-lifting job is running concurrently:
@@ -340,8 +340,8 @@ with AsyncFlow().add() as f:
 ```python
 async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
     with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-        async for resp in f.index_ndarray(numpy.random.random([5, 4]), on_done=validate):
-            yield resp
+        async for resp in f.index_ndarray(numpy.random.random([5, 4])):
+            print(resp)
 
 async def heavylifting():  # total roundtrip takes ~5s
     print('heavylifting other io-bound jobs, e.g. download, upload, file io')
