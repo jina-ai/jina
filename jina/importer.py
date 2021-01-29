@@ -141,13 +141,14 @@ def import_classes(namespace: str,
     from importlib import import_module
     from .helper import colored
     for m in modules:
+        # import module
         try:
             mod = import_module(m)
             for _attr in dir(mod):
-                # import the class
                 _c = getattr(mod, _attr)
                 if _c.__class__.__name__ != _import_type:
                     continue
+                # import class
                 try:
                     _update_depency_tree(_c, m, depend_tree)
                     if _c.__class__.__name__ == 'ExecutorType':
