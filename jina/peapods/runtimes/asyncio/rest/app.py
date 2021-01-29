@@ -27,7 +27,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from starlette import status
         from starlette.types import Receive, Scope, Send
         from starlette.responses import StreamingResponse
-        from .models import JinaStatus
+        from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, JinaSearchRequestModel
 
     app = FastAPI(
         title='Jina',
@@ -58,7 +58,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     @app.get(path='/status',
              summary='Get the status of the daemon',
-             response_model=JinaStatus)
+             response_model=JinaStatusModel,
+             tags=['jina']
+             )
     async def _status():
         _info = get_full_version()
         return {
@@ -86,21 +88,47 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     async def get_result_in_json(req_iter):
         return [MessageToDict(k) async for k in servicer.Call(request_iterator=req_iter, context=None)]
 
-    @app.post(path='/api/{mode}')
-    async def api(mode: str, body: Any = Body(...)):
-        if mode.upper() not in RequestType.__members__:
-            return error(reason=f'unsupported mode {mode}', status_code=405)
-
-        if 'data' not in body:
-            return error('"data" field is empty', 406)
-
-        body['mode'] = RequestType.from_string(mode)
+    @app.post(path='/index',
+              summary='Index documents into Jina',
+              tags=['CRUD']
+              )
+    async def index_api(body: JinaIndexRequestModel):
         from .....clients import BaseClient
-        BaseClient.add_default_kwargs(body)
-        req_iter = request_generator(**body)
-        return StreamingResponse(get_result_in_json2(req_iter))
+        bd = body.dict()
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    async def get_result_in_json2(req_iter):
+    @app.post(path='/search',
+              summary='Search documents from Jina',
+              tags=['CRUD']
+              )
+    async def index_api(body: JinaSearchRequestModel):
+        from .....clients import BaseClient
+        bd = body.dict()
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
+
+    @app.post(path='/update',
+              summary='Update documents in Jina',
+              tags=['CRUD']
+              )
+    async def index_api(body: JinaUpdateRequestModel):
+        from .....clients import BaseClient
+        bd = body.dict()
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
+
+    @app.post(path='/delete',
+              summary='Delete documents in Jina',
+              tags=['CRUD']
+              )
+    async def index_api(body: JinaDeleteRequestModel):
+        from .....clients import BaseClient
+        bd = body.dict()
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
+
+    async def result_in_stream(req_iter):
         async for k in servicer.Call(request_iterator=req_iter, context=None):
             yield MessageToDict(k)
 
