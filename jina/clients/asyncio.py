@@ -61,7 +61,8 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.TRAIN
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def search(self, input_fn: InputFnType = None,
@@ -80,7 +81,8 @@ class AsyncClient(BaseClient):
         """
         self.mode = RequestType.SEARCH
         self.add_default_kwargs(kwargs)
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def index(self, input_fn: InputFnType = None,
@@ -98,7 +100,8 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.INDEX
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def delete(self, input_fn: InputFnType = None,
@@ -116,7 +119,8 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.DELETE
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
@@ -135,7 +139,8 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.UPDATE
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
 
 class AsyncWebSocketClient(AsyncClient, WebSocketClientMixin):
