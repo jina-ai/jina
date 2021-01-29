@@ -125,6 +125,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'keys\' dtype {keys.dtype.name} does not match with indexers keys\'s dtype: {self.key_dtype}')
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs) -> None:
+        """ Add the embeddings and document ids to the index.
+
+        :param keys: document ids
+        :param vectors: embeddings
+        """
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
@@ -132,7 +137,12 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]
 
-    def update(self, keys: Sequence[int], values: Sequence[bytes], *args, **kwargs) -> None:
+    def update(self, keys: Sequence[int], vectors: Sequence[bytes], *args, **kwargs) -> None:
+        """ Update the embeddings on the index via document ids.
+
+        :param keys: document ids
+        :param vectors: embeddings
+        """
         # noinspection PyTypeChecker
         keys, values = self._filter_nonexistent_keys_values(keys, values, self.ext2int_id.keys(), self.save_abspath)
         # could be empty
@@ -157,6 +167,10 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 self._size -= 1
 
     def delete(self, keys: Sequence[int], *args, **kwargs) -> None:
+        """ Delete the embeddings from the index via document ids.
+
+        :param keys: document ids
+        """
         self._delete(keys, keys_precomputed=False)
 
     def get_query_handler(self) -> Optional['np.ndarray']:
@@ -206,9 +220,10 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> Optional['np.ndarray']:
         """
-        Search the index by the external key (passed during `.add(`)
+        Search the index by the external key (passed during `.add(`).
 
-        :param ids: The list of keys to be queried
+        :param ids: the list of keys to be queried
+        :return: ndarray of vectors
         """
         ids = self._filter_nonexistent_keys(ids, self.ext2int_id.keys(), self.save_abspath)
         if ids:

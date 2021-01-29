@@ -53,6 +53,18 @@ class BaseIndexer(BaseExecutor):
         self._size = 0
 
     def add(self, *args, **kwargs):
+        """ Add documents to the index.
+        """
+        raise NotImplementedError
+
+    def update(self, *args, **kwargs):
+        """ Update documents on the index.
+        """
+        raise NotImplementedError
+
+    def delete(self, *args, **kwargs):
+        """ Delete documents from the index.
+        """
         raise NotImplementedError
 
     def post_init(self):
@@ -62,6 +74,8 @@ class BaseIndexer(BaseExecutor):
         self.is_handler_loaded = False
 
     def query(self, *args, **kwargs):
+        """ Query documents from the index.
+        """
         raise NotImplementedError
 
     @property
@@ -241,20 +255,34 @@ class BaseKVIndexer(BaseIndexer):
     """
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """ Add the serialized chunks or documents to the index via document ids.
+
+        :param keys: document ids
+        :param values: serialized documents or chunks
+        """
         raise NotImplementedError
 
     def query(self, key: Any) -> Optional[Any]:
-        """ Find the protobuf chunk/doc using id
+        """ Find the serialized chunk or document to the index via document id.
 
-        :param key: ``id``
-        :return: protobuf chunk or protobuf document
+        :param key: document id
+        :return: serialized documents or chunks
         """
         raise NotImplementedError
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """ Update the serialized chunks or documents on the index via document ids.
+
+        :param keys: document ids
+        :param values: serialized documents or chunks
+        """
         raise NotImplementedError
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
+        """ Delete the serialized chunks or documents from the index via document ids.
+
+        :param keys: document ids
+        """
         raise NotImplementedError
 
     def __getitem__(self, key: Any) -> Optional[Any]:

@@ -290,8 +290,8 @@ class BaseRecursiveDriver(BaseDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
 
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        for path in self._traversal_paths:
-            if path[0] == 'r':
+        for path in self._traversal_paths:    # self._traversal_paths = ['cm']
+            if path[0] == 'r':    # path = 'cm'   path[0] = 'c'
                 self._apply_root(docs, 'docs', *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(

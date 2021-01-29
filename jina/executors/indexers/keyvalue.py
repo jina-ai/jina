@@ -55,6 +55,11 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
     def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """ Add the serialized chunks or documents to the index via document ids.
+
+        :param keys: document ids
+        :param values: serialized documents or chunks
+        """
         if len(list(keys)) != len(list(values)):
             raise ValueError(f'Len of keys {len(keys)} did not match len of values {len(values)}')
         for key, value in zip(keys, values):
@@ -73,6 +78,11 @@ class BinaryPbIndexer(BaseKVIndexer):
         self.write_handler.flush()
 
     def query(self, key: int) -> Optional[bytes]:
+        """ Find the serialized chunk or document to the index via document id.
+
+        :param key: document id
+        :return: serialized documents or chunks
+        """
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info
@@ -80,6 +90,11 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+        """ Update the serialized chunks or documents on the index via document ids.
+
+        :param keys: document ids
+        :param values: serialized documents or chunks
+        """
         keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(), self.save_abspath)
         self._delete(keys)
         self.add(keys, values)
@@ -100,6 +115,10 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size -= 1
 
     def delete(self, keys: Iterator[int], *args, **kwargs):
+        """ Delete the serialized chunks or documents from the index via document ids.
+
+        :param keys: document ids
+        """
         keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys(), self.save_abspath)
         self._delete(keys)
 
