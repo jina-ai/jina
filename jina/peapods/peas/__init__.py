@@ -65,7 +65,7 @@ class BasePea(metaclass=PeaType):
         try:
             self.runtime.setup()
         except Exception as ex:
-            self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}' +
+            self.logger.error(f'{ex!r} during {self.runtime.setup!r}' +
                               f'add "--hide-exc-info" if you do not want to see the exception stack in details'
                               if not self.args.hide_exc_info else '',
                               exc_info=not self.args.hide_exc_info)
