@@ -78,7 +78,7 @@ class BasePea(metaclass=PeaType):
             except KeyboardInterrupt:
                 self.logger.info(f'{self.runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
-                self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}' +
+                self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}' +
                                   f'add "--hide-exc-info" if you do not want to see the exception stack in details'
                                   if not self.args.hide_exc_info else '',
                                   exc_info=not self.args.hide_exc_info)
@@ -137,7 +137,7 @@ class BasePea(metaclass=PeaType):
                 self.runtime.cancel()
                 self.is_shutdown.wait()
             except Exception as ex:
-                self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}' +
+                self.logger.error(f'{ex!r} during {self.runtime.cancel!r}' +
                                   f'add "--hide-exc-info" if you do not want to see the exception stack in details'
                                   if not self.args.hide_exc_info else '',
                                   exc_info=not self.args.hide_exc_info)
