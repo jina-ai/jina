@@ -26,22 +26,27 @@ def config(tmpdir):
     del os.environ['JINA_TOPK']
 
 
-def random_docs(start, end, embed_dim=10, jitter=1, has_content=True):
+def random_docs(start, end, embed_dim=10, jitter=1):
     for j in range(start, end):
         d = Document()
-        d.id = str(f'{j}' * 16)
-        if has_content:
-            d.tags['id'] = j
-            d.text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10)).encode('utf8')
-            d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
+        d.id = j
+        d.tags['id'] = j
+        d.text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10)).encode('utf8')
+        d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
         yield d
+
+
+def document_ids(start, end):
+    for i in range(start, end):
+        yield i
 
 
 def validate_index_size(num_indexed_docs, compound=False):
     from jina.executors.compound import CompoundExecutor
 
     if compound:
-        path = Path(CompoundExecutor.get_component_workspace_from_compound_workspace(os.environ['JINA_TOPK_DIR'], 'chunk_indexer', 0))
+        path = Path(CompoundExecutor.get_component_workspace_from_compound_workspace(os.environ['JINA_TOPK_DIR'],
+                                                                                     'chunk_indexer', 0))
     else:
         path = Path(os.environ['JINA_TOPK_DIR'])
     bin_files = list(path.glob('*.bin'))
@@ -51,13 +56,13 @@ def validate_index_size(num_indexed_docs, compound=False):
         assert index.size == num_indexed_docs
 
 
-@pytest.mark.parametrize('flow_file, has_content, compound', [
-    ['flow.yml', True, True],
-    ['flow_vector.yml', True, False],
-    ['flow.yml', False, True],
-    ['flow_vector.yml', False, False]
+@pytest.mark.parametrize('flow_file, compound', [
+    ['flow.yml', True],
+    ['flow_vector.yml', False],
+    ['flow.yml', True],
+    ['flow_vector.yml', False]
 ])
-def test_delete_vector(config, mocker, flow_file, has_content, compound):
+def test_delete_vector(config, mocker, flow_file, compound):
     NUMBER_OF_SEARCHES = 5
 
     def validate_result_factory(num_matches):
@@ -80,7 +85,7 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=random_docs(0, 10, has_content=has_content))
+        index_flow.delete(input_fn=document_ids(0, 10))
     validate_index_size(0, compound)
 
     mock = mocker.Mock()
@@ -90,8 +95,8 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
     mock.assert_called_once()
 
 
-@pytest.mark.parametrize('has_content', [True, False])
-def test_delete_kv(config, mocker, has_content):
+
+def test_delete_kv(config, mocker):
     flow_file = 'flow_kv.yml'
 
     def validate_result_factory(num_matches):
@@ -111,7 +116,7 @@ def test_delete_kv(config, mocker, has_content):
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=random_docs(0, 3, has_content=has_content))
+        index_flow.delete(input_fn=document_ids(0, 3))
     validate_index_size(7)
 
     mock = mocker.Mock()
