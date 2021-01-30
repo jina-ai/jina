@@ -38,7 +38,7 @@ def import_classes(namespace: str,
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:
-        warnings.warn(f'{namespace} has already imported. If you want to re-imported, please set `import_once=False`',
+        warnings.warn(f'{namespace} has already imported. If you want to re-imported, please set `import_once=True`',
                       ImportWarning)
         return {}
 
