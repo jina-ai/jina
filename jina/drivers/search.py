@@ -38,9 +38,10 @@ class KVSearchDriver(BaseSearchDriver):
         This may not be very efficient, as the total number of queries grows cubic with the number of documents, chunks
         per document and top-k.
 
-             - ``granularity=0``: D x K
-             - ``granularity=1``: D x C x K
-             - ``granularity=1``: D x C x C x K
+            - traversal_paths = ['m'] => D x K
+            - traversal_paths = ['r'] => D
+            - traversal_paths = ['cm'] => D x C x K
+            - traversal_paths = ['m', 'cm'] => D x K + D x C x K
 
         where:
             - D is the number of queries

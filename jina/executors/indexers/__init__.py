@@ -12,7 +12,7 @@ from ...helper import call_obj_fn, cached_property, get_readable_size
 
 
 class BaseIndexer(BaseExecutor):
-    """base class for storing and searching any kind of data structure
+    """Base class for storing and searching any kind of data structure.
 
     The key functions here are :func:`add` and :func:`query`.
     One can decorate them with :func:`jina.decorator.require_train`,
