@@ -15,6 +15,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7074,4 +7075,41 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f953ce1e```](https://github.com/jina-ai/jina/commit/f953ce1e1a0f752f66bbf92bf7527575322483cb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```dfea3716```](https://github.com/jina-ai/jina/commit/dfea37162a95f4b97717c7fed916a47fd41b4f48)] __-__ add py39 into release list (*Han Xiao*)
  - [[```7a3fabb5```](https://github.com/jina-ai/jina/commit/7a3fabb5298cec3e51af9b602fd1f7fb9563bc05)] __-__ __version__: the next version will be 0.9.23 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-24></a>
+## Release Note (`0.9.24`)
+
+> Release time: 2021-01-31 23:15:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Maximilian Werk,  Jina Dev Bot,  Joan Fontanals,  Wang Bo,  Nan Wang,  cristian,  David Buchaca Prats,  Han Xiao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f1930d98```](https://github.com/jina-ai/jina/commit/f1930d98baa2ccd896863b9db02a5869d0ae319a)] __-__ check yaml definition matches instanciated class in LegacyParser (#1817) (*David Buchaca Prats*)
+ - [[```0b83b12b```](https://github.com/jina-ai/jina/commit/0b83b12b9b6a758eb9b66bdb8ce24aaeda7dc8c0)] __-__ __async__: AsyncClient &amp; AsyncFlow&#39;s return is async generator (#1816) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```ab2bb585```](https://github.com/jina-ai/jina/commit/ab2bb585a11e42578782fbe25736ebbf3a1b8c79)] __-__ show exc info by default (#1818) (*Joan Fontanals*)
+ - [[```2765a590```](https://github.com/jina-ai/jina/commit/2765a5902b307095e8103d36958568793deb5cca)] __-__ __importer__: fix jina check (#1762) (*Nan Wang*)
+
+### 📗 Documentation
+
+ - [[```415ccb7a```](https://github.com/jina-ai/jina/commit/415ccb7a77c02294a8d1da37f0fbc84dfb9f3d18)] __-__ crud (#1461) (*cristian*)
+ - [[```9d2f3b6a```](https://github.com/jina-ai/jina/commit/9d2f3b6af454242aa31588898a08743fdbffe680)] __-__ add repo dispatch event when release (#1819) (*Wang Bo*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```ffd972d3```](https://github.com/jina-ai/jina/commit/ffd972d374e89c46b4ba080d44b3fbbec5c85c54)] __-__ use flow v1 in integration test (#1820) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```d1d045e9```](https://github.com/jina-ai/jina/commit/d1d045e9e0933dffb3bd668cb9cfebab6cd52202)] __-__ Custom long ids (#1666) (*Maximilian Werk*)
+ - [[```d5dd45bf```](https://github.com/jina-ai/jina/commit/d5dd45bfcc85d57274f2b8f1a5df51760dce929f)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```147165f4```](https://github.com/jina-ai/jina/commit/147165f43fa3dbc25178fff59257ade82a3e13b3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8a93fb08```](https://github.com/jina-ai/jina/commit/8a93fb0894e3cf9b3f40aa51cc4220290b0b0afe)] __-__ __version__: the next version will be 0.9.24 (*Jina Dev Bot*)
 
