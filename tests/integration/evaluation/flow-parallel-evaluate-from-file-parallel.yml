@@ -4,12 +4,10 @@ with:
   restful: $RESTFUL
 pods:
   - name: gt_indexer
-    show_exc_info: true
     uses: yaml/index-gt.yml
     polling: 'all'
     needs: gateway
     shards: 2
   - name: evaluator
-    show_exc_info: true
     uses: yaml/single-evaluator.yml
     parallel: 2

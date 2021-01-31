@@ -7,9 +7,7 @@ pods:
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: _pass
     read_only: False
-    show-exc-info: True
   - name: encoder
-    show-exc-info: True
     uses: _pass
     host: $JINA_ENCODER_HOST
     port_in: 45003
@@ -20,5 +18,4 @@ pods:
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: _pass
     read_only: False
-    show-exc-info: True
     needs: $JINA_INDEXER_NEEDS

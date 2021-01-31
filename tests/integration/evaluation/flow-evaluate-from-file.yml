@@ -4,6 +4,5 @@ with:
   restful: $RESTFUL
 pods:
   - name: evaluate_from_file
-    show_exc_info: true
     uses: yaml/evaluate-from-file.yml
     read_only: true
