@@ -1,6 +1,7 @@
 !Flow
+version: '1'
 pods:
-  doc_indexer:
+  - name: doc_indexer
     show_exc_info: true
     uses: yaml/index-doc.yml
     needs: gateway

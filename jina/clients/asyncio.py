@@ -1,5 +1,5 @@
 from .base import InputFnType, BaseClient, CallbackFnType
-from .websockets import WebSocketClientMixin
+from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
 
@@ -61,7 +61,8 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.TRAIN
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def search(self, input_fn: InputFnType = None,
@@ -79,7 +80,9 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.SEARCH
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        self.add_default_kwargs(kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def index(self, input_fn: InputFnType = None,
@@ -97,7 +100,47 @@ class AsyncClient(BaseClient):
         :return:
         """
         self.mode = RequestType.INDEX
-        return await self._get_results(input_fn, on_done, on_error, on_always, **kwargs)
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
+
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    async def delete(self, input_fn: InputFnType = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
+                    **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
+        self.mode = RequestType.DELETE
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
+
+
+    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    async def update(self, input_fn: InputFnType = None,
+                    on_done: CallbackFnType = None,
+                    on_error: CallbackFnType = None,
+                    on_always: CallbackFnType = None,
+                    **kwargs) -> None:
+        """
+
+        :param input_fn: the input function that generates the content
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs:
+        :return:
+        """
+        self.mode = RequestType.UPDATE
+        async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
+            yield r
 
 
 class AsyncWebSocketClient(AsyncClient, WebSocketClientMixin):

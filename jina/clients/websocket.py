@@ -1,14 +1,15 @@
 import asyncio
-from typing import Callable, List
+from abc import ABC
+from typing import Callable
 
 from .base import BaseClient
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
-from ..types.request import Request, Response
+from ..types.request import Request
 
 
-class WebSocketClientMixin(BaseClient):
+class WebSocketClientMixin(BaseClient, ABC):
     async def _get_results(self,
                            input_fn: Callable,
                            on_done: Callable,
@@ -31,9 +32,10 @@ class WebSocketClientMixin(BaseClient):
         with ImportExtensions(required=True):
             import websockets
 
-        result = []  # type: List['Response']
         self.input_fn = input_fn
-        req_iter, tname = self._get_requests(**kwargs)
+
+        tname = self._get_task_name(kwargs)
+        req_iter = self._get_requests(**kwargs)
         try:
             client_info = f'{self.args.host}:{self.args.port_expose}'
             # setting `max_size` as None to avoid connection closure due to size of message
@@ -74,8 +76,7 @@ class WebSocketClientMixin(BaseClient):
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
                         p_bar.update(self.args.request_size)
-                        if self.args.return_results:
-                            result.append(response)
+                        yield response
                         self.num_responses += 1
                         if self.num_requests == self.num_responses:
                             break
@@ -84,6 +85,3 @@ class WebSocketClientMixin(BaseClient):
             self.logger.warning(f'Client got disconnected from the websocket server')
         except websockets.exceptions.WebSocketException as e:
             self.logger.error(f'Got following error while streaming requests via websocket: {e!r}')
-        finally:
-            if self.args.return_results:
-                return result

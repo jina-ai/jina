@@ -5,7 +5,7 @@ from . import request
 from .base import BaseClient, CallbackFnType, InputFnType
 from .helper import callback_exec
 from .request import GeneratorSourceType
-from .websockets import WebSocketClientMixin
+from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import run_async, deprecated_alias
 
@@ -14,6 +14,14 @@ class Client(BaseClient):
     """A simple Python client for connecting to the gRPC gateway.
     It manages the asyncio eventloop internally, so all interfaces are synchronous from the outside.
     """
+    async def _get_results(self, *args, **kwargs):
+        result = []
+        async for resp in super()._get_results(*args, **kwargs):
+            if self.args.return_results:
+                result.append(resp)
+
+        if self.args.return_results:
+            return result
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def train(self, input_fn: InputFnType = None,
@@ -49,6 +57,7 @@ class Client(BaseClient):
         :return:
         """
         self.mode = RequestType.SEARCH
+        self.add_default_kwargs(kwargs)
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))

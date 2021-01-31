@@ -3,11 +3,10 @@ __license__ = "Apache-2.0"
 
 import argparse
 import os
-from typing import Callable, Union, Optional, Iterator, List
+from typing import Callable, Union, Optional, Iterator, List, Dict, AsyncIterator
 
 import grpc
-
-from . import request
+import inspect
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
@@ -70,8 +69,12 @@ class BaseClient:
 
         kwargs['data'] = input_fn
 
+        if inspect.isasyncgenfunction(input_fn) or inspect.isasyncgen(input_fn):
+            raise NotImplementedError('checking the validity of an async generator is not implemented yet')
+
         try:
-            r = next(getattr(request, 'index')(**kwargs))
+            from .request import request_generator
+            r = next(request_generator(**kwargs))
             if isinstance(r, Request):
                 default_logger.success(f'input_fn is valid')
             else:
@@ -80,18 +83,25 @@ class BaseClient:
             default_logger.error(f'input_fn is not valid!')
             raise BadClientInput from ex
 
-    def _get_requests(self, **kwargs) -> Iterator['Request']:
+    def _get_requests(self, **kwargs) -> Union[Iterator['Request'], AsyncIterator['Request']]:
         """Get request in generator"""
         _kwargs = vars(self.args)
         _kwargs['data'] = self.input_fn
         # override by the caller-specific kwargs
         _kwargs.update(kwargs)
 
+        if inspect.isasyncgen(self.input_fn):
+            from .request.asyncio import request_generator
+            return request_generator(**_kwargs)
+        else:
+            from .request import request_generator
+            return request_generator(**_kwargs)
+
+    def _get_task_name(self, kwargs: Dict) -> str:
         tname = str(self.mode).lower()
         if 'mode' in kwargs:
             tname = str(kwargs['mode']).lower()
-
-        return getattr(request, tname)(**_kwargs), tname
+        return tname
 
     @property
     def input_fn(self) -> InputFnType:
@@ -115,10 +125,10 @@ class BaseClient:
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
-        result = []  # type: List['Response']
         try:
             self.input_fn = input_fn
-            req_iter, tname = self._get_requests(**kwargs)
+            tname = self._get_task_name(kwargs)
+            req_iter = self._get_requests(**kwargs)
             async with grpc.aio.insecure_channel(f'{self.args.host}:{self.args.port_expose}',
                                                  options=[('grpc.max_send_message_length', -1),
                                                           ('grpc.max_receive_message_length', -1)]) as channel:
@@ -127,8 +137,6 @@ class BaseClient:
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     async for response in stub.Call(req_iter):
                         resp = response.to_response()
-                        if self.args.return_results:
-                            result.append(resp)
                         callback_exec(response=resp,
                                       on_error=on_error,
                                       on_done=on_done,
@@ -136,6 +144,7 @@ class BaseClient:
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
                         p_bar.update(self.args.request_size)
+                        yield resp
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except grpc.aio._call.AioRpcError as rpc_ex:
@@ -156,8 +165,6 @@ class BaseClient:
                                      'please double check your input iterator') from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
-        if self.args.return_results:
-            return result
 
     def index(self):
         raise NotImplementedError
@@ -167,3 +174,17 @@ class BaseClient:
 
     def train(self):
         raise NotImplementedError
+
+    @staticmethod
+    def add_default_kwargs(kwargs: Dict):
+        # TODO: refactor it into load from config file
+        if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
+            # associate all VectorSearchDriver and SliceQL driver to use top_k
+            from jina import QueryLang
+            topk_ql = [QueryLang({'name': 'SliceQL', 'priority': 1, 'parameters': {'end': kwargs['top_k']}}),
+                       QueryLang(
+                           {'name': 'VectorSearchDriver', 'priority': 1, 'parameters': {'top_k': kwargs['top_k']}})]
+            if 'queryset' not in kwargs:
+                kwargs['queryset'] = topk_ql
+            else:
+                kwargs['queryset'].extend(topk_ql)
