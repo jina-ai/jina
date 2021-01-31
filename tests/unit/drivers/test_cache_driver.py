@@ -6,6 +6,7 @@ import pytest
 
 from jina import DocumentSet
 from jina.drivers.cache import BaseCacheDriver
+from jina.drivers.delete import DeleteDriver
 from jina.executors import BaseExecutor
 from jina.executors.indexers.cache import DocIDCache, ID_KEY, CONTENT_HASH_KEY
 from jina.proto import jina_pb2
@@ -105,6 +106,13 @@ class MockBaseCacheDriver(BaseCacheDriver):
         raise NotImplementedError
 
 
+class SimpleDeleteDriver(DeleteDriver):
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+
 def test_cache_content_driver_same_content(tmpdir, test_metas):
     doc1 = Document(id=1)
     doc1.text = 'blabla'
@@ -174,9 +182,8 @@ def test_cache_content_driver_same_id(tmp_path, test_metas):
 
 
 @pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
-@pytest.mark.parametrize('method_type', ['delete', 'update'])
-def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type, mocker):
-    driver = MockBaseCacheDriver(method=method_type, traversal_paths=['r'])
+def test_cache_driver_update(tmpdir, test_metas, field_type, mocker):
+    driver = MockBaseCacheDriver(method='update', traversal_paths=['r'])
 
     docs = [Document(text=f'doc_{i}') for i in range(5)]
 
@@ -198,3 +205,19 @@ def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type,
         mocker.patch.object(DocIDCache, 'delete', validate_delete)
         driver.attach(executor=e, runtime=None)
         driver._apply_all(docs)
+
+
+@pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
+def test_cache_driver_delete(tmpdir, test_metas, field_type, mocker):
+    driver = SimpleDeleteDriver()
+
+    docs = [Document(text=f'doc_{i}') for i in range(5)]
+
+    def validate_delete(self, keys, *args, **kwargs):
+        assert len(keys) == len(docs)
+        assert all([k == d.id for k, d in zip(keys, docs)])
+
+    with DocIDCache(tmpdir, metas=test_metas, field=field_type) as e:
+        mocker.patch.object(DocIDCache, 'delete', validate_delete)
+        driver.attach(executor=e, runtime=None)
+        driver()

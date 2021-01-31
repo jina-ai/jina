@@ -162,7 +162,8 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator, check_path: str) -> Tuple[List, List]:
+    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator,
+                                        check_path: str) -> Tuple[List, List]:
         keys = list(keys)
         values = list(values)
         if len(keys) != len(values):
