@@ -62,7 +62,7 @@ class Message:
 
     @property
     def request(self) -> 'Request':
-        if self.envelope:
+        if self.envelope and isinstance(self._request, Request):
             return self._request.as_typed_request(self.envelope.request_type)
         else:
             # when there is no envelope, just return a generic request

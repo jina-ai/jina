@@ -28,7 +28,8 @@ class VectorIndexDriver(BaseIndexDriver):
             if bad_docs:
                 self.runtime.logger.warning(f'these bad docs can not be added: {bad_docs}')
             if docs_pts:
-                self.exec_fn(np.array([doc.id for doc in docs_pts], dtype=(np.str_, self._exec.key_length)), np.stack(embed_vecs))
+                self.exec_fn(np.array([doc.id for doc in docs_pts], dtype=(np.str_, self._exec.key_length)),
+                             np.stack(embed_vecs))
 
 
 class KVIndexDriver(BaseIndexDriver):
