@@ -304,9 +304,7 @@ message RequestProto {
      * Represents a delete request
      */
     message DeleteRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to delete
-
-        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+        repeated string ids = 1; // a list of Document Ids to delete
     }
 
     /**

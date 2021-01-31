@@ -14,4 +14,4 @@ class RequestProto:
 
     @staticmethod
     def FromString(x: bytes):
-        return Request(x)
+        return Request(x).to_body_request()

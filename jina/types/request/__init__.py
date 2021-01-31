@@ -3,7 +3,7 @@ from typing import Union, Optional, TypeVar, Dict
 from google.protobuf import json_format
 from google.protobuf.json_format import MessageToJson
 
-from ..sets import QueryLangSet, DocumentSet
+from ..sets import QueryLangSet
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
@@ -95,6 +95,22 @@ class Request:
         if self._request_type:
             return self.body.__class__.__name__
 
+    def to_body_request(self) -> 'Request':
+        """Return the Request object by its body type"""
+        from .train import TrainRequest
+        from .search import SearchRequest
+        from .control import ControlRequest
+        from .index import IndexRequest
+        from .delete import DeleteRequest
+
+        return {
+            'train': TrainRequest,
+            'index': IndexRequest,
+            'search': SearchRequest,
+            'control': ControlRequest,
+            'delete': DeleteRequest
+        }[self.request_type](self._request)
+
     @request_type.setter
     def request_type(self, value: str):
         """Set the type of this request, but keep the body empty"""
@@ -103,16 +119,6 @@ class Request:
             getattr(self.as_pb_object, value).SetInParent()
         else:
             raise ValueError(f'{value} is not valid, must be one of {_body_type}')
-
-    @property
-    def docs(self) -> 'DocumentSet':
-        self.is_used = True
-        return DocumentSet(self.body.docs)
-
-    @property
-    def groundtruths(self) -> 'DocumentSet':
-        self.is_used = True
-        return DocumentSet(self.body.groundtruths)
 
     @staticmethod
     def _decompress(data: bytes, algorithm: str) -> bytes:
@@ -175,11 +181,6 @@ class Request:
     def queryset(self) -> 'QueryLangSet':
         self.is_used = True
         return QueryLangSet(self.as_pb_object.queryset)
-
-    @property
-    def command(self) -> str:
-        self.is_used = True
-        return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.as_pb_object.control.command)
 
     def to_json(self) -> str:
         """Return the object in JSON string """
