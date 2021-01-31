@@ -80,7 +80,7 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=random_docs(0, 10, has_content=has_content))
+        index_flow.delete(input_fn=[d.id for d in random_docs(0, 10, has_content=has_content)])
     validate_index_size(0, compound)
 
     mock = mocker.Mock()
@@ -111,7 +111,7 @@ def test_delete_kv(config, mocker, has_content):
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=random_docs(0, 3, has_content=has_content))
+        index_flow.delete(input_fn=[d.id for d in random_docs(0, 3, has_content=has_content)])
     validate_index_size(7)
 
     mock = mocker.Mock()

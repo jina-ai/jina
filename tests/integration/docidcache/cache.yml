@@ -21,9 +21,5 @@ requests:
           executor: cache
           traversal_paths: [r, c]
     DeleteRequest:
-      - !BaseCacheDriver
-        with:
-          method: delete
-          executor: cache
-          traversal_paths: [r, c]
+      - !DeleteDriver { }
 

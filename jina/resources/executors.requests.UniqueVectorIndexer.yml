@@ -1,5 +1,5 @@
 on:
-  [IndexRequest, UpdateRequest, DeleteRequest]:
+  [IndexRequest, UpdateRequest]:
     - !TaggingCacheDriver
       with:
         executor: DocIDCache
@@ -17,3 +17,5 @@ on:
         executor: BaseVectorIndexer
   ControlRequest:
     - !ControlReqDriver {}
+  DeleteRequest:
+    - !DeleteDriver {}

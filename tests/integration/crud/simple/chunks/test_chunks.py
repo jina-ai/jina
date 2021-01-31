@@ -84,7 +84,7 @@ def test_delete_vector(config, mocker, flow_file):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.delete(
-            input_fn=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks))
+            input_fn=[d.id for d in document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks)])
     validate_index_size(0)
 
     mock = mocker.Mock()

@@ -298,7 +298,7 @@ def test_cache_crud(
 
     # DELETE
     with flow_delete as f:
-        f.delete(docs)
+        f.delete([d.id for d in docs])
 
     check_indexers_size(chunks, 0, field, tmp_path, same_content, shards, 'delete')
 

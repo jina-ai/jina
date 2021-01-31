@@ -18,11 +18,9 @@ requests:
           executor: $JINA_VEC_IDX_NAME
           traversal_paths: [r, c]
     DeleteRequest:
-      - !VectorIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: $JINA_VEC_IDX_NAME
-          traversal_paths: [r, c]
     IndexRequest:
       - !FilterQL
         with:

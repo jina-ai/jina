@@ -81,7 +81,7 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
 
     # run flow for deletion
     with Flow.load_config('flow-index.yml') as delete_flow:
-        delete_flow.delete(delete_data)
+        delete_flow.delete([d.id for d in delete_data])
 
     validate_index(
         tmpdir,

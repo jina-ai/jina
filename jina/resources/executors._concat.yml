@@ -4,5 +4,7 @@ metas:
   name: concat
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+    [SearchRequest, TrainRequest, IndexRequest]:
       - !ConcatEmbedDriver {}
+    [DeleteRequest, UpdateRequest]:
+      - !RouteDriver {}

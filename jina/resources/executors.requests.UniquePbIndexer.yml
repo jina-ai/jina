@@ -1,5 +1,5 @@
 on:
-  [IndexRequest, UpdateRequest, DeleteRequest]:
+  [IndexRequest, UpdateRequest]:
     - !TaggingCacheDriver
       with:
         executor: DocIDCache
@@ -22,3 +22,5 @@ on:
         executor: BinaryPbIndexer
   ControlRequest:
     - !ControlReqDriver {}
+  DeleteRequest:
+    - !DeleteDriver {}

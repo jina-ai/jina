@@ -4,7 +4,7 @@ metas:
   name: merge_matches_topk
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+    [SearchRequest, TrainRequest, IndexRequest]:
       - !ReduceAllDriver
         with:
           traversal_paths: ['m']
@@ -15,3 +15,5 @@ requests:
           traversal_paths: ['m']
     ControlRequest:
       - !ControlReqDriver {}
+    [DeleteRequest, UpdateRequest]:
+      - !RouteDriver {}
