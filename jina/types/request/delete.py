@@ -2,4 +2,7 @@ from . import Request
 
 
 class DeleteRequest(Request):
-    pass
+
+    @property
+    def ids(self):
+        return self.body.ids

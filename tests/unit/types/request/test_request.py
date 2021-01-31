@@ -1,6 +1,7 @@
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
+from jina.enums import RequestType
 from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
@@ -30,16 +31,23 @@ def test_init_fail():
         Request(request=5)
 
 
-def test_docs(req):
+@pytest.mark.parametrize('req_type', ['index', 'search', 'train'])
+def test_docs(req, req_type):
     request = Request(request=req, copy=False)
+    request.request_type = req_type
     docs = request.docs
     assert request.is_used
     assert isinstance(docs, DocumentSet)
-    assert len(docs) == 1
+    if req_type == 'index':
+        assert len(docs) == 1
+    else:
+        assert len(docs) == 0
 
 
-def test_groundtruth(req):
+@pytest.mark.parametrize('req_type', ['index', 'search', 'train'])
+def test_groundtruth(req, req_type):
     request = Request(request=req, copy=False)
+    request.request_type = req_type
     groundtruths = request.groundtruths
     assert request.is_used
     assert isinstance(groundtruths, DocumentSet)
@@ -67,6 +75,7 @@ def test_queryset(req):
 
 def test_command(req):
     request = Request(request=req, copy=False)
+    request.request_type = 'control'
     cmd = request.command
     assert request.is_used
     assert cmd
@@ -84,6 +93,13 @@ def test_as_pb_object(req):
 
 def test_as_json_str(req):
     request = Request(request=req)
-    assert isinstance(request.to_json(), str)
+    assert isinstance(request.json(), str)
     request = Request(request=None)
-    assert isinstance(request.to_json(), str)
+    assert isinstance(request.json(), str)
+
+
+def test_delete_request():
+    req = Request()
+    req.request_type = str(RequestType.DELETE)
+    req.ids.extend(['123', '456'])
+    assert req.dict()['delete']['ids'] == ['123', '456']

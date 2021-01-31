@@ -50,14 +50,7 @@ class Message:
             # otherwise delay it to after request is built
             self.envelope = None
 
-        if isinstance(request, bytes):
-            self.request = Request(request, self.envelope)
-            self._size += sys.getsizeof(request)
-        elif isinstance(request, (Request, jina_pb2.RequestProto)):
-            self.request = request  # type: Union['Request', 'jina_pb2.RequestProto']
-        else:
-            raise TypeError(f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(request)}')
-
+        self.request = request
         if envelope is None:
             self.envelope = self._add_envelope(*args, **kwargs)
             # delayed assignment, now binding envelope to request
@@ -66,6 +59,24 @@ class Message:
 
         if self.envelope.check_version:
             self._check_version()
+
+    @property
+    def request(self) -> 'Request':
+        if self.envelope:
+            return self._request.as_typed_request(self.envelope.request_type)
+        else:
+            # when there is no envelope, just return a generic request
+            return self._request
+
+    @request.setter
+    def request(self, val: Union[bytes, 'jina_pb2.RequestProto']):
+        if isinstance(val, bytes):
+            self._request = Request(val, self.envelope)
+            self._size += sys.getsizeof(val)
+        elif isinstance(val, (Request, jina_pb2.RequestProto)):
+            self._request = val  # type: Union['Request', 'jina_pb2.RequestProto']
+        else:
+            raise TypeError(f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}')
 
     @property
     def as_pb_object(self) -> 'jina_pb2.MessageProto':

@@ -278,8 +278,6 @@ message RequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to train
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
-
-        bool flush = 3; // if True then do actual training, otherwise only collect all documents but not do training.
     }
 
     /**

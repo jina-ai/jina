@@ -2,5 +2,5 @@ from . import Request
 from .mixin import *
 
 
-class SearchRequest(Request, DocsPropertyMixin, GroundtruthPropertyMixin):
+class UpdateRequest(Request, DocsPropertyMixin, GroundtruthPropertyMixin):
     pass
