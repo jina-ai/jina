@@ -9,7 +9,7 @@ from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.request import Response
+from jina.types.request import Request
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -524,7 +524,7 @@ def test_return_results_sync_flow(return_results, restful):
         r = f.index_ndarray(np.random.random([10, 2]))
         if return_results:
             assert isinstance(r, list)
-            assert isinstance(r[0], Response)
+            assert isinstance(r[0], Request)
         else:
             assert r is None
 

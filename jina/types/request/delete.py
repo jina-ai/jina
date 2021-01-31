@@ -1,8 +1,6 @@
 from . import Request
+from .mixin import IdsMixin
 
 
-class DeleteRequest(Request):
-
-    @property
-    def ids(self):
-        return self.body.ids
+class DeleteRequest(Request, IdsMixin):
+    pass

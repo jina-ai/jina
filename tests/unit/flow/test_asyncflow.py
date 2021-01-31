@@ -6,7 +6,7 @@ import pytest
 from jina import Document
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
-from jina.types.request import Response
+from jina.types.request import Request
 
 num_docs = 5
 
@@ -38,7 +38,7 @@ async def test_run_async_flow(restful, mocker):
     r_val = mocker.Mock(wrap=validate)
     with AsyncFlow(restful=restful).add() as f:
         async for r in f.index_ndarray(np.random.random([num_docs, 4]), on_done=r_val):
-            assert isinstance(r, Response)
+            assert isinstance(r, Request)
     r_val.assert_called()
 
 
@@ -61,7 +61,7 @@ async def test_run_async_flow_async_input(restful, input_fn, mocker):
     r_val = mocker.Mock(wrap=validate)
     with AsyncFlow(restful=restful).add() as f:
         async for r in f.index(input_fn, on_done=r_val):
-            assert isinstance(r, Response)
+            assert isinstance(r, Request)
     r_val.assert_called()
 
 
@@ -69,7 +69,7 @@ async def run_async_flow_5s(restful):
     # WaitDriver pause 5s makes total roundtrip ~5s
     with AsyncFlow(restful=restful).add(uses='- !WaitDriver {}') as f:
         async for r in f.index_ndarray(np.random.random([num_docs, 4]), on_done=validate):
-            assert isinstance(r, Response)
+            assert isinstance(r, Request)
 
 
 async def sleep_print():
@@ -115,7 +115,7 @@ async def test_run_async_flow_other_task_concurrent(restful):
 async def test_return_results_async_flow(return_results, restful):
     with AsyncFlow(restful=restful, return_results=return_results).add() as f:
         async for r in f.index_ndarray(np.random.random([10, 2])):
-            assert isinstance(r, Response)
+            assert isinstance(r, Request)
 
 
 @pytest.mark.asyncio
@@ -125,4 +125,4 @@ async def test_return_results_async_flow(return_results, restful):
 async def test_return_results_async_flow_crud(return_results, restful, flow_api):
     with AsyncFlow(restful=restful, return_results=return_results).add() as f:
         async for r in getattr(f, flow_api)(documents(0, 10)):
-            assert isinstance(r, Response)
+            assert isinstance(r, Request)

@@ -4,7 +4,6 @@ __license__ = "Apache-2.0"
 from functools import wraps
 from typing import Callable
 
-from .. import Response
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions

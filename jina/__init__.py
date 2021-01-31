@@ -104,7 +104,7 @@ _names_with_underscore = ['__version__', '__copyright__', '__license__',
 # Primitive data type,
 # note, they must be loaded BEFORE all executors/drivers/... to avoid cyclic imports
 from jina.types.ndarray.generic import NdArray
-from jina.types.request import Request, Response
+from jina.types.request import Request
 from jina.types.message import Message
 from jina.types.querylang import QueryLang
 from jina.types.document import Document
