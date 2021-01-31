@@ -225,10 +225,10 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[str], *args, **kwargs):
         raise NotImplementedError
 
 
@@ -240,7 +240,7 @@ class BaseKVIndexer(BaseIndexer):
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
 
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
     def query(self, key: Any) -> Optional[Any]:
@@ -251,10 +251,10 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[str], *args, **kwargs):
         raise NotImplementedError
 
     def __getitem__(self, key: Any) -> Optional[Any]:

@@ -63,8 +63,7 @@ def test_container_runtime_good_entrypoint(runtime):
 
     arg = set_pea_parser().parse_args(['--uses', 'docker://jinaai/jina:test-pip',
                                        '--entrypoint', 'jina pod',
-                                       '--runtime-backend', runtime,
-                                       '--show-exc-info'])
+                                       '--runtime-backend', runtime])
     with Pea1(arg):
         pass
 

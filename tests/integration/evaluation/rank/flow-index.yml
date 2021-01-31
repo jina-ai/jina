@@ -2,6 +2,5 @@
 version: '1'
 pods:
   - name: doc_indexer
-    show_exc_info: true
     uses: yaml/index-doc.yml
     needs: gateway

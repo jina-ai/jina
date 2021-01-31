@@ -29,6 +29,6 @@ def test_collect_evals_driver(mocker):
             .add(name='b', needs='gateway')
             .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
     with flow:
-        flow.index(input_fn=input_fn, on_done=validate, callback_on='body')
+        flow.index(input_fn=input_fn, on_done=validate)
 
     mock.assert_called_once()

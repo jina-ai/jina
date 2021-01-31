@@ -61,7 +61,7 @@ def test_shards_insufficient_data(mocker, restful):
               uses_after='_merge_chunks'))
     with f:
         f.search(input_fn=random_queries(1, index_docs),
-                 callback_on='body',
+
                  on_done=validate)
     time.sleep(2)
     rm_files(['test-docshard-tmp'])

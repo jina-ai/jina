@@ -4,6 +4,5 @@ with:
   restful: $RESTFUL
 pods:
   - name: gt_indexer
-    show_exc_info: true
     uses: yaml/index-gt.yml
     needs: gateway

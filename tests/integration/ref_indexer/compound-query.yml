@@ -1,7 +1,5 @@
 !Flow
 version: '1'
-with:
-  show_exc_info: true
 pods:
   - name: indexer
     uses: $JINA_QUERY_USES_COMPOUND

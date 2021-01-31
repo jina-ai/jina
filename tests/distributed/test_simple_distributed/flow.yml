@@ -10,7 +10,6 @@ pods:
     uses: encode.yml
     host: $JINA_ENCODER_HOST
     port_expose: 8000
-    show_exc_info: true
     upload_files:
       - dummy-encoder.py
   - name: indexer
@@ -19,4 +18,3 @@ pods:
     read_only: False
     host: $JINA_INDEXER_HOST
     port_expose: 8000
-    show_exc_info: true

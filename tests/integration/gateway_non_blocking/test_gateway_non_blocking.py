@@ -25,8 +25,8 @@ def test_non_blocking_gateway(parallel, expected_response, restful, monkeypatch)
     with Flow().load_config(os.path.join(cur_dir, 'flow.yml')) as f:
         f.search(input_fn=data,
                  on_done=fill_responses,
-                 request_size=1,
-                 callback_on='body')
+                 request_size=1
+                 )
 
     del os.environ['JINA_NON_BLOCKING_PARALLEL']
     assert response == expected_response

@@ -148,7 +148,7 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
         search_flow.search(
             input_fn=search_data,
             on_done=validate_granularity_1,
-            callback_on='body',
+
         )
 
     mock.assert_called_once()
