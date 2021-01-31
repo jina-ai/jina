@@ -22,7 +22,7 @@ def test_binarypb_in_flow(test_metas, mocker):
             np.testing.assert_almost_equal(NdArray(d.embedding).value,
                                            NdArray(d0.embedding).value)
 
-    f = Flow(callback_on='body').add(show_exc_info=True, uses='binarypb.yml')
+    f = Flow().add(show_exc_info=True, uses='binarypb.yml')
 
     with f:
         f.index(docs)

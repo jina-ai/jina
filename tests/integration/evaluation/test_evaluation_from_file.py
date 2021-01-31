@@ -91,8 +91,7 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
     with Flow.load_config(search_yaml) as evaluate_flow:
         evaluate_flow.search(
             input_fn=evaluate_docs,
-            on_done=validate_evaluation_response,
-            callback_on='body',
+            on_done=validate_evaluation_response
         )
 
     m.assert_called_once()
