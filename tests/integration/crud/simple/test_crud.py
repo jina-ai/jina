@@ -79,8 +79,14 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
                            on_done=validate_result_factory(TOPK))
     mock.assert_called_once()
 
+    delete_ids = []
+    for d in random_docs(0, 10, has_content=has_content):
+        delete_ids.append(d.id)
+        for c in d.chunks:
+            delete_ids.append(c.id)
+
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=[d.id for d in random_docs(0, 10, has_content=has_content)])
+        index_flow.delete(input_fn=delete_ids)
     validate_index_size(0, compound)
 
     mock = mocker.Mock()

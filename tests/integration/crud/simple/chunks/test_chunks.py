@@ -1,16 +1,16 @@
 import os
 import random
-from itertools import chain
 from pathlib import Path
 
 import numpy as np
 import pytest
-from jina.executors.indexers import BaseIndexer
 
 from jina import Document
+from jina.executors.indexers import BaseIndexer
 from jina.flow import Flow
 
 TOP_K = 10
+
 
 @pytest.fixture
 def config(tmpdir):
@@ -73,7 +73,7 @@ def test_delete_vector(config, mocker, flow_file):
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(
             input_fn=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks))
-    validate_index_size(num_chunks*num_docs) #5 chunks for each of the 10 docs
+    validate_index_size(num_chunks * num_docs)  # 5 chunks for each of the 10 docs
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -82,9 +82,15 @@ def test_delete_vector(config, mocker, flow_file):
             on_done=validate_result_factory(TOP_K))
     mock.assert_called_once()
 
+    delete_ids = []
+    for d in document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks):
+        delete_ids.append(d.id)
+        for c in d.chunks:
+            delete_ids.append(c.id)
+
     with Flow.load_config(flow_file) as index_flow:
         index_flow.delete(
-            input_fn=[d.id for d in document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks)])
+            input_fn=delete_ids)
     validate_index_size(0)
 
     mock = mocker.Mock()
@@ -93,7 +99,6 @@ def test_delete_vector(config, mocker, flow_file):
             input_fn=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
             on_done=validate_result_factory(0))
     mock.assert_called_once()
-
 
 
 @pytest.mark.parametrize('flow_file', ['flow_vector.yml'])
@@ -123,11 +128,12 @@ def test_update_vector(config, mocker, flow_file):
                 else:
                     assert doc.id in ids_before
                     assert doc.id not in ids_updated
+
         return validate_results
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(input_fn=docs_before)
-    validate_index_size(num_chunks*num_docs) #num_docs per all its chunks, 50 in this case
+    validate_index_size(num_chunks * num_docs)  # num_docs per all its chunks, 50 in this case
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -138,7 +144,7 @@ def test_update_vector(config, mocker, flow_file):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.update(input_fn=docs_updated)
-    validate_index_size(num_chunks*num_docs) #num_docs per all its chunks, 50 in this case
+    validate_index_size(num_chunks * num_docs)  # num_docs per all its chunks, 50 in this case
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
@@ -146,5 +152,3 @@ def test_update_vector(config, mocker, flow_file):
             input_fn=document_generator(start=10, num_docs=20, num_chunks=num_chunks),
             on_done=validate_result_factory(has_changed=True, num_matches=num_docs))
     mock.assert_called_once()
-
-

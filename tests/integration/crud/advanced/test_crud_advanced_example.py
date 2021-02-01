@@ -79,9 +79,16 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
         0: response_docs[0].chunks
     })
 
+    # delete the docs and all its chunks
+    delete_idx = []
+    for d in delete_data:
+        delete_idx.append(d.id)
+        for c in d.chunks:
+            delete_idx.append(c.id)
+
     # run flow for deletion
     with Flow.load_config('flow-index.yml') as delete_flow:
-        delete_flow.delete([d.id for d in delete_data])
+        delete_flow.delete(delete_idx)
 
     validate_index(
         tmpdir,
