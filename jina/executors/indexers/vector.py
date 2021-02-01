@@ -199,15 +199,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
                              shape=(self.size + deleted_keys, self.num_dim))
 
-    def query_by_id(self, ids: Sequence[str], *args, **kwargs) -> Optional['np.ndarray']:
+    def query_by_key(self, keys: Sequence[str], *args, **kwargs) -> Optional['np.ndarray']:
         """
         Search the index by the external key (passed during `.add(`)
 
-        :param ids: The list of keys to be queried
+        :param keys: The list of keys to be queried
         """
-        ids = self._filter_nonexistent_keys(ids, self._ext2int_id.keys(), self.save_abspath)
-        if ids:
-            indices = [self._ext2int_id[key] for key in ids]
+        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        if keys:
+            indices = [self._ext2int_id[key] for key in keys]
             return self._raw_ndarray[indices]
         else:
             return None

@@ -198,10 +198,10 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_id(self, ids: Iterator[str], *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, keys: Iterator[str], *args, **kwargs) -> 'np.ndarray':
         """ Get the vectors by id, return a subset of indexed vectors
 
-        :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args:
         :param kwargs:
         :return:
