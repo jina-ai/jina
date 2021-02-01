@@ -209,9 +209,9 @@ def test_cache_driver_update(tmpdir, test_metas, field_type, mocker):
 
 @pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
 def test_cache_driver_delete(tmpdir, test_metas, field_type, mocker):
-    driver = SimpleDeleteDriver()
-
     docs = [Document(text=f'doc_{i}') for i in range(5)]
+
+    driver = SimpleDeleteDriver()
 
     def validate_delete(self, keys, *args, **kwargs):
         assert len(keys) == len(docs)
@@ -219,5 +219,8 @@ def test_cache_driver_delete(tmpdir, test_metas, field_type, mocker):
 
     with DocIDCache(tmpdir, metas=test_metas, field=field_type) as e:
         mocker.patch.object(DocIDCache, 'delete', validate_delete)
+
         driver.attach(executor=e, runtime=None)
+        mck = mocker.patch.object(driver, 'runtime', autospec=True)
+        mck.request.ids = [d.id for d in docs]
         driver()
