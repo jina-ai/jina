@@ -54,7 +54,7 @@ def test_vectorsearch_driver_mock_queryset():
 
 
 def mock_query(vectors: 'np.ndarray', top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
-    idx = np.zeros((vectors.shape[0], top_k))
+    idx = np.zeros((vectors.shape[0], top_k), dtype=(np.str_, 16))
     dist = np.zeros((vectors.shape[0], top_k))
     for i, row in enumerate(dist):
         for k in range(top_k):

@@ -63,26 +63,13 @@ jobs:
         run: |
           echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
           echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
-      - uses: actions/checkout@v2
+      # Tell docs repo jina is going to release
+      - name: send-repository-dispatch-event-to-docs
+        uses: peter-evans/repository-dispatch@v1
         with:
-          repository: jina-ai/jina-docs
-          path: docs/_build/html
           token: ${{ secrets.JINA_DEV_BOT }}
-      - name: install the release version
-        run: |
-          pip install .  --no-cache-dir
-          ./scripts/make-doc.sh release "release $JINA_VERSION of ${{github.repository}}"
-        env:
-          JINA_VERSION: ${{steps.get_version.outputs.JINA_VERSION}}
-          V_JINA_VERSION: ${{steps.get_version.outputs.V_JINA_VERSION}}
-      - uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/jina-docs
-          force: true
-          directory: docs/_build/html
-          tags: true
-          branch: master
+          repository: jina-ai/docs
+          event-type: jina-release-event
 
   update-docker:
     needs: update-doc

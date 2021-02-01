@@ -91,6 +91,7 @@ def flow(args: 'Namespace'):
         from jina.logging import default_logger
         default_logger.critical('start a flow from CLI requires a valid "--uses"')
 
+
 def optimizer(args: 'Namespace'):
     """Start an optimization from a YAML file"""
     from jina.optimizers import run_optimizer_cli

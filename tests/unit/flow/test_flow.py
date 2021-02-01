@@ -379,7 +379,7 @@ def test_index_text_files(mocker, restful):
          .add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
 
     with f:
-        f.index_files('*.py', on_done=response_mock, callback_on='body')
+        f.index_files('*.py', on_done=response_mock)
 
     rm_files(['doc.gzip'])
     response_mock.assert_called()

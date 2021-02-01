@@ -29,7 +29,7 @@ class ImportChecker:
 
         _r = import_classes('jina.hub', show_import_table=True, import_once=False)
 
-        if args.summary_exec:
+        if args.summary_exec and _r:
             with open(args.summary_exec, 'w') as fp:
                 _print_dep_tree_rst(fp, _r, 'Executor')
 

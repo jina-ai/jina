@@ -79,7 +79,7 @@ def test_only_tags(tmp_path, mocker):
     mock.assert_called_once()
 
     with f:
-        f.delete(input_fn=all_docs_indexed)
+        f.delete(input_fn=[d.id for d in all_docs_indexed])
     # only stored in KV
     validate_index_size(NR_DOCS_INDEX, expected_indices=1)
 
@@ -174,7 +174,7 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
     mock.assert_called_once()
 
     with f:
-        f.delete(input_fn=all_docs_indexed)
+        f.delete(input_fn=[d.id for d in all_docs_indexed])
     validate_index_size(0, expected_indices=2)
 
     mock = mocker.Mock()
@@ -241,7 +241,7 @@ def test_wrong_mime_type(tmp_path, mocker):
     mock.assert_called_once()
 
     with f_index:
-        f_index.delete(input_fn=all_docs_indexed)
+        f_index.delete(input_fn=[d.id for d in all_docs_indexed])
     validate_index_size(0, expected_indices=2)
 
     mock = mocker.Mock()
@@ -315,7 +315,7 @@ def test_dimensionality_search_wrong(tmp_path, mocker):
     mock.assert_called_once()
 
     with f_index:
-        f_index.delete(input_fn=all_docs_indexed)
+        f_index.delete(input_fn=[d.id for d in all_docs_indexed])
     validate_index_size(0, expected_indices=2)
 
     mock = mocker.Mock()

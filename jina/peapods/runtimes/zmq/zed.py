@@ -181,16 +181,16 @@ class ZEDRuntime(ZMQRuntime):
                 raise
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
-                self.logger.warning(f'{ex!r}' +
-                                    f'add "--show-exc-info" to see the exception stack in details'
-                                    if not self.args.show_exc_info else '',
-                                    exc_info=self.args.show_exc_info)
+                self.logger.error(f'{ex!r}' +
+                                  f'add "--hide-exc-info" if you do not want to see the exception stack in details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
                 self.logger.error(f'{ex!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
+                                  f'add "--hide-exc-info" if you do not want to see the exception stack in details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
 
             self._zmqlet.send_message(msg)
 

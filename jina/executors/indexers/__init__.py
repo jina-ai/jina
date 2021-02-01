@@ -162,7 +162,8 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator, check_path: str) -> Tuple[List, List]:
+    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator,
+                                        check_path: str) -> Tuple[List, List]:
         keys = list(keys)
         values = list(values)
         if len(keys) != len(values):
@@ -225,10 +226,10 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[str], *args, **kwargs):
         raise NotImplementedError
 
 
@@ -240,7 +241,7 @@ class BaseKVIndexer(BaseIndexer):
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
 
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
     def query(self, key: Any) -> Optional[Any]:
@@ -251,10 +252,10 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[str], *args, **kwargs):
         raise NotImplementedError
 
     def __getitem__(self, key: Any) -> Optional[Any]:

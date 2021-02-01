@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -10,7 +9,7 @@ from jina.executors.indexers.cache import DocIDCache
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 
-cur_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 KV_IDX_FILENAME = 'kv_idx.bin'
 VEC_IDX_FILENAME = 'vec_idx.bin'
@@ -71,20 +70,20 @@ def get_documents(chunks, same_content, nr=10, index_start=0):
 
 def get_index_flow(field, tmp_path, shards, indexers):
     config_env(field, tmp_path, shards, indexers, polling='any')
-    f = Flow.load_config(os.path.join(os.curdir, 'crud_cache_flow_index.yml'))
+    f = Flow.load_config(os.path.join(cur_dir, 'crud_cache_flow_index.yml'))
     return f
 
 
 def get_query_flow(field, tmp_path, shards):
     # searching must always be sequential
     config_env(field, tmp_path, shards, 'sequential', polling='all')
-    f = Flow.load_config(os.path.join(os.curdir, 'crud_cache_flow_query.yml'))
+    f = Flow.load_config(os.path.join(cur_dir, 'crud_cache_flow_query.yml'))
     return f
 
 
 def get_delete_flow(field, tmp_path, shards, indexers):
     config_env(field, tmp_path, shards, indexers, polling='all')
-    f = Flow.load_config(os.path.join(os.curdir, 'crud_cache_flow_index.yml'))
+    f = Flow.load_config(os.path.join(cur_dir, 'crud_cache_flow_index.yml'))
     return f
 
 
@@ -298,8 +297,13 @@ def test_cache_crud(
     mock.assert_called_once()
 
     # DELETE
+    delete_ids = []
+    for d in docs:
+        delete_ids.append(d.id)
+        for c in d.chunks:
+            delete_ids.append(c.id)
     with flow_delete as f:
-        f.delete(docs)
+        f.delete(delete_ids)
 
     check_indexers_size(chunks, 0, field, tmp_path, same_content, shards, 'delete')
 

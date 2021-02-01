@@ -26,8 +26,4 @@ requests:
           executor: kvidx
           traversal_paths: ['r']
     DeleteRequest:
-      - !KVIndexDriver
-        with:
-          method: delete
-          executor: kvidx
-          traversal_paths: ['r']
+      - !DeleteDriver { }

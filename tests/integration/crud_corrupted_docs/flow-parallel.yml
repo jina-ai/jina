@@ -1,9 +1,10 @@
 !Flow
+version: '1'
 pods:
-  vector:
+  - name: vector
     uses: vector.yml
-  kv:
+  - name: kv
     uses: kv.yml
     needs: [gateway]
-  last:
+  - name: last
     needs: [kv, vector]

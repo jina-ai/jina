@@ -16,7 +16,11 @@ requests:
       - !VectorSearchDriver
         with:
           executor: wrapidx
-    [IndexRequest, UpdateRequest, DeleteRequest]:
+    [IndexRequest, UpdateRequest]:
       - !VectorIndexDriver
+        with:
+          executor: wrapidx
+    DeleteRequest:
+      - !DeleteDriver
         with:
           executor: wrapidx

@@ -45,10 +45,10 @@ def test_flow(docker_compose):
     print(f'\nQuerying any text')
     r = assert_request(method='post',
                        url='http://0.0.0.0:45678/api/search',
-                       payload={'top_k': 10, 'data': ['text:anything will match the same']})
+                       payload={'top_k': 100, 'data': ['text:anything will match the same']})
     print(f'returned: {r}')
     texts_matched = r['search']['docs'][0]['matches']
-    assert len(texts_matched) == 10
+    assert len(texts_matched) == 100
 
     assert_request(method='get',
                    url=f'http://localhost:8000/flows/{query_flow_id}')

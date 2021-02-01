@@ -17,11 +17,9 @@ requests:
           executor: $JINA_KV_IDX_NAME
           traversal_paths: [r, c]
     DeleteRequest:
-      - !KVIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: $JINA_KV_IDX_NAME
-          traversal_paths: [r, c]
     IndexRequest:
       - !FilterQL
         with:

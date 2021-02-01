@@ -3,6 +3,7 @@ import sys
 import warnings
 from types import SimpleNamespace, ModuleType
 from typing import Optional, List, Any, Dict
+from collections import defaultdict
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
@@ -11,7 +12,7 @@ IMPORTED.drivers = False
 IMPORTED.hub = False
 
 
-def import_classes(namespace: str, targets=None,
+def import_classes(namespace: str,
                    show_import_table: bool = False,
                    import_once: bool = False):
     """
@@ -19,133 +20,50 @@ def import_classes(namespace: str, targets=None,
     constructor beforehand. It can be also used to import third-part or external executors.
 
     :param namespace: the namespace to import
-    :param targets: the list of executor names to import
     :param show_import_table: show the import result as a table
     :param import_once: import everything only once, to avoid repeated import
+
+    :return: the dependency tree of the imported classes under the `namespace`
     """
 
-    import os, re
-
-    if namespace == 'jina.executors':
-        import_type = 'ExecutorType'
-        if import_once and IMPORTED.executors:
-            return
-    elif namespace == 'jina.drivers':
-        import_type = 'DriverType'
-        if import_once and IMPORTED.drivers:
-            return
-    elif namespace == 'jina.hub':
-        import_type = 'ExecutorType'
-        if import_once and IMPORTED.hub:
-            return
-    else:
+    _namespace2type = {
+        'jina.executors': 'ExecutorType',
+        'jina.drivers': 'DriverType',
+        'jina.hub': 'ExecutorType'
+    }
+    _import_type = _namespace2type.get(namespace)
+    if _import_type is None:
         raise TypeError(f'namespace: {namespace} is unrecognized')
 
-    from setuptools import find_packages
-    import pkgutil
-    from pkgutil import iter_modules
-
-    try:
-        path = os.path.dirname(pkgutil.get_loader(namespace).path)
-    except AttributeError:
-        if namespace == 'jina.hub':
-            warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
+    _imported_property = namespace.split('.')[-1]
+    _is_imported = getattr(IMPORTED, _imported_property)
+    if import_once and _is_imported:
+        warnings.warn(f'{namespace} has already imported. If you want to re-imported, please set `import_once=True`',
+                      ImportWarning)
         return {}
 
-    modules = set()
+    try:
+        _modules = _get_modules(namespace)
+    except ImportError as e:
+        warnings.warn(f'{namespace} has no module to import. {e}', ImportWarning)
+        return {}
 
-    for info in iter_modules([path]):
-        if (namespace != 'jina.hub' and not info.ispkg) or (namespace == 'jina.hub' and info.ispkg):
-            modules.add('.'.join([namespace, info.name]))
-
-    for pkg in find_packages(path):
-        modules.add('.'.join([namespace, pkg]))
-        pkgpath = path + '/' + pkg.replace('.', '/')
-        for info in iter_modules([pkgpath]):
-            if (namespace != 'jina.hub' and not info.ispkg) or (namespace == 'jina.hub' and info.ispkg):
-                modules.add('.'.join([namespace, pkg, info.name]))
-
-    # filter
-    ignored_module_pattern = r'\.tests|\.api|\.bump_version'
-    modules = {m for m in modules if not re.findall(ignored_module_pattern, m)}
-
-    from collections import defaultdict
     load_stat = defaultdict(list)
     bad_imports = []
-
-    if isinstance(targets, str):
-        targets = {targets}
-    elif isinstance(targets, list):
-        targets = set(targets)
-    elif targets is None:
-        targets = {}
-    else:
-        raise TypeError(f'target must be a set, but received {targets!r}')
-
     depend_tree = {}
-    import importlib
-    from .helper import colored
-    for m in modules:
+    for _mod_name in _modules:
         try:
-            mod = importlib.import_module(m)
-            for k in dir(mod):
-                # import the class
-                if (getattr(mod, k).__class__.__name__ == import_type) and (not targets or k in targets):
-                    try:
-                        _c = getattr(mod, k)
-
-                        d = depend_tree
-                        for vvv in _c.mro()[:-1][::-1]:
-                            if vvv.__name__ not in d:
-                                d[vvv.__name__] = {}
-                            d = d[vvv.__name__]
-                        d['module'] = m
-                        if k in targets:
-                            targets.remove(k)
-                            if not targets:
-                                return getattr(mod, k)  # target execs are all found and loaded, return
-                        try:
-                            # load the default request for this executor if possible
-                            from .executors.requests import get_default_reqs
-                            get_default_reqs(type.mro(getattr(mod, k)))
-                        except ValueError:
-                            pass
-                        load_stat[m].append(
-                            (k, True, colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _c.mro()[:-1][::-1])))
-                    except Exception as ex:
-                        load_stat[m].append((k, False, ex))
-                        bad_imports.append('.'.join([m, k]))
-                        if k in targets:
-                            raise ex  # target class is found but not loaded, raise return
+            bad_imports += _import_module(_mod_name, _import_type, depend_tree, load_stat)
         except Exception as ex:
-            load_stat[m].append(('', False, ex))
-            bad_imports.append(m)
-
-    if targets:
-        raise ImportError(f'{targets} can not be found/load')
+            load_stat[_mod_name].append(('', False, ex))
+            bad_imports.append(_mod_name)
 
     if show_import_table:
         _print_load_table(load_stat)
-
     else:
-        if bad_imports:
-            if namespace != 'jina.hub':
-                warnings.warn(
-                    f'theses modules or classes can not be imported {bad_imports}. '
-                    f'You can use `jina check` to list all executors and drivers')
-            else:
-                warnings.warn(
-                    f'due to the missing dependencies or bad implementations, '
-                    f'{bad_imports} can not be imported '
-                    f'if you are using these executors/drivers, they wont work. '
-                    f'You can use `jina check` to list all executors and drivers')
+        _raise_bad_imports_warnings(bad_imports, namespace)
 
-    if namespace == 'jina.executors':
-        IMPORTED.executors = True
-    elif namespace == 'jina.drivers':
-        IMPORTED.drivers = True
-    elif namespace == 'jina.hub':
-        IMPORTED.hub = True
+    setattr(IMPORTED, _imported_property, True)
 
     return depend_tree
 
@@ -343,3 +261,98 @@ def _print_dep_tree_rst(fp, dep_tree, title='Executor'):
     fp.write(f'\n\n## Modules in a Table View \n\n| Class | Module |\n')
     fp.write('| --- | --- |\n')
     fp.write('\n'.join(sorted(tableview)))
+
+
+def _raise_bad_imports_warnings(bad_imports, namespace):
+    if not bad_imports:
+        return
+    if namespace != 'jina.hub':
+        warnings.warn(
+            f'theses modules or classes can not be imported {bad_imports}. '
+            f'You can use `jina check` to list all executors and drivers')
+    else:
+        warnings.warn(
+            f'due to the missing dependencies or bad implementations, '
+            f'{bad_imports} can not be imported '
+            f'if you are using these executors/drivers, they wont work. '
+            f'You can use `jina check` to list all executors and drivers')
+
+
+def _get_modules(namespace):
+    from setuptools import find_packages
+    from pkgutil import get_loader
+
+    try:
+        _path = os.path.dirname(get_loader(namespace).path)
+    except AttributeError as ex:
+        if namespace == 'jina.hub':
+            warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
+        raise ImportError(f'{namespace} can not be imported. {ex}')
+
+    _modules = _get_submodules(_path, namespace)
+
+    for _pkg in find_packages(_path):
+        _modules.add('.'.join([namespace, _pkg]))
+        _pkgpath = os.path.join(_path, _pkg.replace('.', '/'))
+        _modules |= _get_submodules(_pkgpath, namespace, prefix=_pkg)
+
+    return _filter_modules(_modules)
+
+
+def _get_submodules(path, namespace, prefix=None):
+    from pkgutil import iter_modules
+    _prefix = '.'.join([namespace, prefix]) if prefix else namespace
+    modules = set()
+    for _info in iter_modules([path]):
+        _is_hub_module = namespace == 'jina.hub' and _info.ispkg
+        _is_nonhub_module = namespace != 'jina.hub' and not _info.ispkg
+        module_name = '.'.join([_prefix, _info.name])
+        if _is_hub_module or _is_nonhub_module:
+            modules.add(module_name)
+    return modules
+
+
+def _filter_modules(modules):
+    import re
+    _ignored_module_pattern = re.compile(r'\.tests|\.api|\.bump_version')
+    return {m for m in modules if not _ignored_module_pattern.findall(m)}
+
+
+def _load_default_exc_config(cls_obj):
+    from .executors.requests import get_default_reqs
+    try:
+        _request = get_default_reqs(type.mro(cls_obj))
+    except ValueError as ex:
+        warnings.warn(f'Please ensure a config yml is given for {cls_obj.__name__}. {ex}')
+
+
+def _update_depend_tree(cls_obj, module_name, cur_tree):
+    d = cur_tree
+    for vvv in cls_obj.mro()[:-1][::-1]:
+        if vvv.__name__ not in d:
+            d[vvv.__name__] = {}
+        d = d[vvv.__name__]
+    d['module'] = module_name
+
+
+def _import_module(module_name, import_type, depend_tree, load_stat):
+    from importlib import import_module
+    from .helper import colored
+    bad_imports = []
+    _mod_obj = import_module(module_name)
+    for _attr in dir(_mod_obj):
+        _cls_obj = getattr(_mod_obj, _attr)
+        if _cls_obj.__class__.__name__ != import_type:
+            continue
+        # update the dependency tree for each class
+        try:
+            _update_depend_tree(_cls_obj, module_name, depend_tree)
+            if _cls_obj.__class__.__name__ == 'ExecutorType':
+                _load_default_exc_config(_cls_obj)
+            # TODO: _success_msg is never used
+            _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1])
+            load_stat[module_name].append((_attr, True, _success_msg))
+        except Exception as ex:
+            load_stat[module_name].append((_attr, False, ex))
+            bad_imports.append('.'.join([module_name, _attr]))
+    return bad_imports

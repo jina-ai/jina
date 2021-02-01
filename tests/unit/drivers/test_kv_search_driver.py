@@ -15,7 +15,7 @@ class MockIndexer(BaseKVIndexer):
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         pass
 
-    def query(self, key: int) -> Optional['jina_pb2.DocumentProto']:
+    def query(self, key: str) -> Optional['jina_pb2.DocumentProto']:
         if key in self.db.keys():
             return self.db[key]
         else:
@@ -38,8 +38,8 @@ class MockIndexer(BaseKVIndexer):
         for doc_id in doc_ids:
             with Document() as doc:
                 doc.id = doc_id
-                doc.embedding = np.array([int(doc.id)])
-            self.db[int(doc.id)] = doc.SerializeToString()
+                doc.embedding = np.array([doc.id])
+            self.db[doc.id] = doc.SerializeToString()
 
 
 class SimpleKVSearchDriver(KVSearchDriver):
@@ -113,7 +113,7 @@ def test_vectorsearch_driver_mock_indexer_apply_all(document):
     for chunk in dcs:
         assert chunk.embedding is not None
         embedding_array = chunk.embedding
-        np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
+        np.testing.assert_equal(embedding_array, np.array([chunk.id]))
 
 
 def test_vectorsearch_driver_mock_indexer_traverse_apply(document):
@@ -135,7 +135,7 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply(document):
     for chunk in dcs:
         assert chunk.embedding is not None
         embedding_array = chunk.embedding
-        np.testing.assert_equal(embedding_array, np.array([int(chunk.id)]))
+        np.testing.assert_equal(embedding_array, np.array([chunk.id]))
 
 
 def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(document_with_matches_on_chunks):
@@ -153,4 +153,4 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(document_with_m
     for match in matches:
         assert NdArray(match.embedding).value is not None
         embedding_array = NdArray(match.embedding).value
-        np.testing.assert_equal(embedding_array, np.array([int(match.id)]))
+        np.testing.assert_equal(embedding_array, np.array([match.id]))
