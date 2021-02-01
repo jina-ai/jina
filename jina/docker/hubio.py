@@ -627,12 +627,14 @@ class HubIO:
         # modify dockerfile
         revised_dockerfile = []
         with open(dockerfile_path) as fp:
-            for l in fp:
+            _last_from_ln = None
+            for _ln, l in enumerate(fp):
                 revised_dockerfile.append(l)
                 if l.startswith('FROM'):
-                    revised_dockerfile.append('LABEL ')
-                    revised_dockerfile.append(
-                        ' \\      \n'.join(f'{_label_prefix}{k}="{v}"' for k, v in manifest.items()))
+                    _last_from_ln = _ln
+        _label_l = ['LABEL ', ' \\      \n'.join(f'{_label_prefix}{k}="{v}"' for k, v in manifest.items())]
+        _insert_ln = _last_from_ln + 1
+        revised_dockerfile = revised_dockerfile[:_insert_ln] + _label_l + revised_dockerfile[_insert_ln:]
 
         f = tempfile.NamedTemporaryFile('w', delete=False).name
         with open(f, 'w', encoding='utf8') as fp:
