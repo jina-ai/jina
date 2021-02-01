@@ -314,7 +314,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         return idx, dist
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple[
+    def query(self, query_vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple[
         Optional['np.ndarray'], Optional['np.ndarray']]:
         """ Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
@@ -330,13 +330,13 @@ class NumpyIndexer(BaseNumpyIndexer):
         if self.size == 0:
             return None, None
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
-            dist = self._cdist(keys, self.query_handler)
+            dist = self._cdist(query_vectors, self.query_handler)
         elif self.metric == 'euclidean':
-            _keys = _ext_A(keys)
-            dist = self._euclidean(_keys, self.query_handler)
+            _query_vectors = _ext_A(query_vectors)
+            dist = self._euclidean(_query_vectors, self.query_handler)
         elif self.metric == 'cosine':
-            _keys = _ext_A(_norm(keys))
-            dist = self._cosine(_keys, self.query_handler)
+            _query_vectors = _ext_A(_norm(query_vectors))
+            dist = self._cosine(_query_vectors, self.query_handler)
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
