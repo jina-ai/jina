@@ -41,7 +41,6 @@ jobs:
           python-version: 3.7
       - run: |
           pip install .[daemon] --no-cache-dir
-          jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
           pip install css-html-js-minify
@@ -67,20 +66,6 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/jina-docs
-          path: docs/_build/html
-          token: ${{ secrets.JINA_DEV_BOT }}
-      - run: |
-          ./scripts/make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
-      - uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/jina-docs
-          directory: docs/_build/html
-          force: true
-          branch: master
       - name: Pre-release
         run: |
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
