@@ -4,14 +4,14 @@ __license__ = "Apache-2.0"
 from functools import wraps
 from typing import Callable
 
-from .. import Request
+from .. import Response
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions
 from ..proto import jina_pb2
 
 
-def pprint_routes(resp: 'Request', stack_limit: int = 3):
+def pprint_routes(resp: 'Response', stack_limit: int = 3):
     """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`
 
     :param resp: the :class:`Response` object

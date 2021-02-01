@@ -70,6 +70,7 @@ class WebSocketClientMixin(BaseClient, ABC):
 
                         resp = Request(response_bytes)
                         resp.as_typed_request(resp.request_type)
+                        resp.as_response()
                         callback_exec(response=resp,
                                       on_error=on_error,
                                       on_done=on_done,

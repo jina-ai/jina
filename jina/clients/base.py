@@ -137,6 +137,7 @@ class BaseClient:
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     async for resp in stub.Call(req_iter):
                         resp.as_typed_request(resp.request_type)
+                        resp.as_response()
                         callback_exec(response=resp,
                                       on_error=on_error,
                                       on_done=on_done,

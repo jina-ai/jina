@@ -201,16 +201,19 @@ class Request:
         """Return the request object in dictionary """
         return MessageToDict(self._request)
 
-    def to_response(self) -> 'Response':
+    def as_response(self):
         """Return a weak reference of this object but as :class:`Response` object. It gives a more
         consistent semantics on the client.
         """
-        return Response(self._buffer)
+
+        base_cls = self.__class__
+        base_cls_name = self.__class__.__name__
+        self.__class__ = type(base_cls_name, (base_cls, Response), {})
 
 
-class Response(Request):
+class Response:
     """Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
-    :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
-    the client API: send a :class:`Request` and receive a :class:`Response`.
+       :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
+       the client API: send a :class:`Request` and receive a :class:`Response`.
 
     """
