@@ -16,7 +16,6 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.docs = {}
-        self.key_length = 16
 
     def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         for key, value in zip(keys, vectors):

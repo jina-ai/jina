@@ -240,7 +240,7 @@ class Flow(BaseFlow):
         """
         self._get_client(**kwargs).update(input_fn, on_done, on_error, on_always, **kwargs)
 
-    def delete(self, input_fn: Iterable[int],
+    def delete(self, input_fn: Iterable[str],
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,

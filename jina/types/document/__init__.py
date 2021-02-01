@@ -1,15 +1,18 @@
 import base64
+import mimetypes
 import os
 import urllib.parse
 import urllib.request
+import warnings
+import numpy as np
 from hashlib import blake2b
 from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tuple
 
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import *
-from .uid import *
+from .converters import png_to_buffer, to_datauri, guess_mime
+from .uid import DIGEST_SIZE, UniqueId
 from ..ndarray.generic import NdArray
 from ..score import NamedScore
 from ..sets.chunk import ChunkSet
@@ -211,7 +214,7 @@ class Document:
         elif exclude_fields is not None:
             FieldMask(paths=exclude_fields).MergeMessage(empty_doc, masked_d, replace_repeated_field=True)
 
-        self._document.content_hash = blake2b(masked_d.SerializeToString(), digest_size=uid._digest_size).hexdigest()
+        self._document.content_hash = blake2b(masked_d.SerializeToString(), digest_size=DIGEST_SIZE).hexdigest()
 
     @property
     def id(self) -> 'UniqueId':

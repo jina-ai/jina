@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, Union, List, Iterator, Optional, Any
+from typing import Tuple, List, Iterator, Optional, Any
 
 import numpy as np
 
@@ -198,17 +198,17 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, keys: Iterator[str], *args, **kwargs) -> 'np.ndarray':
         """ Get the vectors by id, return a subset of indexed vectors
 
-        :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args:
         :param kwargs:
         :return:
         """
         raise NotImplementedError
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs):
         """Add new chunks and their vector representations
 
         :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
@@ -216,10 +216,10 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, query_vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
 
-        :param keys: query vectors in ndarray, shape B x D
+        :param query_vectors: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
         :return: a tuple of two ndarray.
             The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)

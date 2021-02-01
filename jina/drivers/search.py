@@ -80,7 +80,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
     """ Fill in the embedding by their doc id
     """
 
-    def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
+    def __init__(self, executor: str = None, method: str = 'query_by_key', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
@@ -99,7 +99,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
         :param top_k: top-k doc id to retrieve
         :param fill_embedding: fill in the embedding of the corresponding doc,
-                this requires the executor to implement :meth:`query_by_id`
+                this requires the executor to implement :meth:`query_by_key`
         :param args:
         :param kwargs:
         """
@@ -113,9 +113,9 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         if not doc_pts:
             return
 
-        fill_fn = getattr(self.exec, 'query_by_id', None)
+        fill_fn = getattr(self.exec, 'query_by_key', None)
         if self._fill_embedding and not fill_fn:
-            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method')
+            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_key" method')
 
         if bad_docs:
             self.logger.warning(f'these bad docs can not be added: {bad_docs}')

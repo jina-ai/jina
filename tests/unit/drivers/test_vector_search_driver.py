@@ -62,14 +62,14 @@ def mock_query(vectors: 'np.ndarray', top_k: int) -> Tuple['np.ndarray', 'np.nda
     return idx, dist
 
 
-def mock_query_by_id(ids: 'np.ndarray'):
-    return np.random.random([len(ids), 7])
+def mock_query_by_key(keys: 'np.ndarray'):
+    return np.random.random([len(keys), 7])
 
 
 def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search):
     driver = MockVectorSearchDriver(top_k=2)
     index = BaseVectorIndexer()
-    monkeypatch.setattr(index, 'query_by_id', None)
+    monkeypatch.setattr(index, 'query_by_key', None)
     monkeypatch.setattr(driver, '_exec', index)
     monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)
@@ -89,7 +89,7 @@ def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search
 def test_vectorsearch_driver_mock_indexer_with_fill(monkeypatch, create_document_to_search):
     driver = MockVectorSearchDriver(top_k=2, fill_embedding=True)
     index = BaseVectorIndexer()
-    monkeypatch.setattr(index, 'query_by_id', mock_query_by_id)
+    monkeypatch.setattr(index, 'query_by_key', mock_query_by_key)
     monkeypatch.setattr(driver, '_exec', index)
     monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)

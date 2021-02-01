@@ -367,7 +367,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def delete(self, input_fn: Iterable[int],
+    async def delete(self, input_fn: Iterable[str],
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
