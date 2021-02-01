@@ -66,14 +66,14 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 <summary>Click here to see console output</summary>
 
 <p align="center">
-  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world-demo.png?raw=true" alt="hello world console output">
+  <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world-demo.png?raw=true" alt="hello world console output">
 </p>
 
 </details>
 This downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and after running opens a webpage and shows results:
 
 <p align="center">
-  <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/helloworld/hello-world.gif?raw=true" alt="Jina banner" width="80%">
+  <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" alt="Jina banner" width="80%">
 </p>
 
 Intrigued? Play with different options:
@@ -92,14 +92,14 @@ jina hello-world --help
 #### Create
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Jina provides a high-level [Flow API](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#flow) to simplify building search/index workflows. To create a new Flow:
+Jina provides a high-level [Flow API](https://101.jina.ai) to simplify building search/index workflows. To create a new Flow:
 
 ```python
 from jina import Flow
 f = Flow().add()
 ```
 
-This creates a simple Flow with one [Pod](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#pods). You can chain multiple `.add()`s in a single Flow.
+This creates a simple Flow with one [Pod](https://101.jina.ai). You can chain multiple `.add()`s in a single Flow.
 
 #### Visualize
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-visualize-a-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -223,7 +223,7 @@ Interested readers can refer to [`jina-ai/example`: how to build a multimodal se
 #### Add Logic
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-add-logic.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#executors). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
+To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://101.jina.ai/#executors). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
 
 
 ```python
@@ -553,20 +553,20 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 <table>
   <tr>
     <td width="30%">
-    <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">
-      <img src="https://github.com/jina-ai/jina/blob/master/docs/chapters/101/img/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+    <a href="https://101.jina.ai">
+      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
     </a>
     </td>
     <td width="70%">
-&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101: First Things to Learn About Jina</a></h3>
-&nbsp;&nbsp;<a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">English</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ja.md">日本語</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.fr.md">Français</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.pt.md">Português</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.de.md">Deutsch</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ru.md">Русский язык</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.zh.md">中文</a> •
-  <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101/README.ar.md">عربية</a>
+&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/docs/tree/master/chapters/101">Jina 101: First Things to Learn About Jina</a></h3>
+&nbsp;&nbsp;<a href="https://github.com/jina-ai/docs/tree/master/chapters/101">English</a> •
+  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ja.md">日本語</a> •
+  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.fr.md">Français</a> •
+  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.pt.md">Português</a> •
+  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.de.md">Deutsch</a> •
+  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ru.md">Русский язык</a> •
+  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.zh.md">中文</a> •
+  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ar.md">عربية</a>
     </td>
 
   </tr>
