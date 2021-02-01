@@ -97,7 +97,6 @@ jobs:
     needs: [prep-testbed, commit-lint, lint-flake-8]
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}

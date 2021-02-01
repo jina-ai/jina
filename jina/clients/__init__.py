@@ -1,6 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Iterable
+
 from . import request
 from .base import BaseClient, CallbackFnType, InputFnType
 from .helper import callback_exec
@@ -24,7 +26,7 @@ class Client(BaseClient):
             return result
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def train(self, input_fn: InputFnType = None,
+    def train(self, input_fn: InputFnType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
@@ -42,7 +44,7 @@ class Client(BaseClient):
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def search(self, input_fn: InputFnType = None,
+    def search(self, input_fn: InputFnType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
@@ -61,7 +63,7 @@ class Client(BaseClient):
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def index(self, input_fn: InputFnType = None,
+    def index(self, input_fn: InputFnType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
@@ -79,7 +81,7 @@ class Client(BaseClient):
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def update(self, input_fn: InputFnType = None,
+    def update(self, input_fn: InputFnType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
@@ -97,7 +99,7 @@ class Client(BaseClient):
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def delete(self, input_fn: InputFnType = None,
+    def delete(self, input_fn: Iterable[int],
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
