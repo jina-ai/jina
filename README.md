@@ -142,9 +142,10 @@ def beep(*args):
     import os
     os.system('echo -n "\a";')
 
+
 with Flow().add() as f, open('output.txt', 'w') as fp:
-    f.index(numpy.random.random([4,5,2]),
-            on_done=print, on_error=beep, on_always=lambda x: fp.write(x.to_json()))
+    f.index(numpy.random.random([4, 5, 2]),
+            on_done=print, on_error=beep, on_always=lambda x: fp.write(x.json()))
 ```
 
 

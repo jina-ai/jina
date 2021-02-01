@@ -3,10 +3,12 @@ on:
     - !ControlReqDriver {}
   SearchRequest:
     - !VectorSearchDriver {}
-  [IndexRequest, UpdateRequest, DeleteRequest]:
+  [IndexRequest, UpdateRequest]:
     - !ExcludeQL
       with:
         fields:
           - buffer
           - chunks
     - !VectorIndexDriver {}
+  DeleteRequest:
+    - !DeleteDriver {}

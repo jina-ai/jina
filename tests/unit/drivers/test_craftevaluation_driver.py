@@ -173,7 +173,7 @@ def eval_request():
             elif field_type == 'blob':
                 chunk_doc.blob = np.array([1, 1, 1])
                 chunk_gt.blob = np.array([1, 1, 1, 1])
-        return Request(req)
+        return Request(req).as_typed_request('index')
 
     return request
 

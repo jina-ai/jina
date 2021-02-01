@@ -19,8 +19,13 @@ requests:
       - !VectorSearchDriver
         with:
           executor: outeridx
-    [IndexRequest, UpdateRequest, DeleteRequest]:
+    [IndexRequest, UpdateRequest]:
       - !VectorIndexDriver
         with:
           executor: outeridx
+    DeleteRequest:
+      - !DeleteDriver
+        with:
+          executor: outeridx
+
 

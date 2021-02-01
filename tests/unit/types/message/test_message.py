@@ -64,6 +64,7 @@ def test_lazy_append_access():
     reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert not r.is_used
+        r.request_type = 'index'
         # write access r.train
         r.docs.append(Document())
         # now it is read

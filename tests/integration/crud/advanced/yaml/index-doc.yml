@@ -17,9 +17,7 @@ requests:
           executor: docIndexer
           traversal_paths: ['m']
     DeleteRequest:
-      - !KVIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: docIndexer
-          traversal_paths: ['r']
 

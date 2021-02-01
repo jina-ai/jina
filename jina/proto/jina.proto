@@ -278,8 +278,6 @@ message RequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to train
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
-
-        bool flush = 3; // if True then do actual training, otherwise only collect all documents but not do training.
     }
 
     /**
@@ -304,9 +302,7 @@ message RequestProto {
      * Represents a delete request
      */
     message DeleteRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to delete
-
-        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+        repeated string ids = 1; // a list of Document Ids to delete
     }
 
     /**

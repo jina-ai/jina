@@ -97,7 +97,7 @@ def eval_request():
         chunk_gt = gt.chunks.new()
         chunk_doc.embedding = np.array([1, 1])
         chunk_gt.embedding = np.array([2, 2])
-    return Request(req)
+    return Request(req).as_typed_request('index')
 
 
 def test_encoding_evaluate_driver_embedding_in_chunks(simple_chunk_evaluate_driver,

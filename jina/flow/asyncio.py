@@ -1,4 +1,4 @@
-from typing import Union, List, Iterator
+from typing import Union, List, Iterator, Iterable
 
 from .base import BaseFlow
 from ..clients.asyncio import AsyncClient, AsyncWebSocketClient
@@ -76,7 +76,7 @@ class AsyncFlow(BaseFlow):
             self._cls_client = AsyncWebSocketClient
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def train(self, input_fn: InputFnType = None,
+    async def train(self, input_fn: InputFnType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
@@ -274,7 +274,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def index(self, input_fn: InputFnType = None,
+    async def index(self, input_fn: InputFnType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
@@ -319,7 +319,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def update(self, input_fn: InputFnType = None,
+    async def update(self, input_fn: InputFnType,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
@@ -367,7 +367,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def delete(self, input_fn: InputFnType = None,
+    async def delete(self, input_fn: Iterable[int],
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
@@ -415,7 +415,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def search(self, input_fn: InputFnType = None,
+    async def search(self, input_fn: InputFnType,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,

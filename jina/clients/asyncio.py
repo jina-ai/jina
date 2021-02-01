@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from .base import InputFnType, BaseClient, CallbackFnType
 from .websocket import WebSocketClientMixin
 from ..enums import RequestType
@@ -46,7 +48,7 @@ class AsyncClient(BaseClient):
     """
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def train(self, input_fn: InputFnType = None,
+    async def train(self, input_fn: InputFnType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
@@ -65,7 +67,7 @@ class AsyncClient(BaseClient):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def search(self, input_fn: InputFnType = None,
+    async def search(self, input_fn: InputFnType,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
@@ -85,7 +87,7 @@ class AsyncClient(BaseClient):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def index(self, input_fn: InputFnType = None,
+    async def index(self, input_fn: InputFnType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
@@ -104,7 +106,7 @@ class AsyncClient(BaseClient):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def delete(self, input_fn: InputFnType = None,
+    async def delete(self, input_fn: Iterable[int],
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
@@ -124,7 +126,7 @@ class AsyncClient(BaseClient):
 
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def update(self, input_fn: InputFnType = None,
+    async def update(self, input_fn: InputFnType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,

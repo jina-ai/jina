@@ -297,8 +297,13 @@ def test_cache_crud(
     mock.assert_called_once()
 
     # DELETE
+    delete_ids = []
+    for d in docs:
+        delete_ids.append(d.id)
+        for c in d.chunks:
+            delete_ids.append(c.id)
     with flow_delete as f:
-        f.delete(docs)
+        f.delete(delete_ids)
 
     check_indexers_size(chunks, 0, field, tmp_path, same_content, shards, 'delete')
 

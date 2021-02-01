@@ -1,8 +1,8 @@
 from typing import Tuple, Sequence
 
 from ... import Document, Request
-from ...enums import DataInputType
-from ...excepts import BadDocType
+from ...enums import DataInputType, RequestType
+from ...excepts import BadDocType, BadRequestType
 
 
 def _new_doc_from_data(data, data_type: DataInputType, **kwargs) -> Tuple['Document', 'DataInputType']:
@@ -31,6 +31,27 @@ def _new_doc_from_data(data, data_type: DataInputType, **kwargs) -> Tuple['Docum
 def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
     req = Request()
     req.request_type = str(mode)
+
+    try:
+        # add type-specific fields
+        if mode == RequestType.INDEX or mode == RequestType.SEARCH or mode == RequestType.TRAIN or mode == RequestType.UPDATE:
+            _add_docs_groundtruths(req, batch, data_type, _kwargs)
+        elif mode == RequestType.DELETE:
+            _add_ids(req, batch)
+        else:
+            raise NotImplementedError(f'generating request from {mode} is not yet supported')
+    except Exception as ex:
+        raise BadRequestType(f'error when building {req.request_type} from {batch}') from ex
+
+    # add common fields
+    if isinstance(queryset, Sequence):
+        req.queryset.extend(queryset)
+    elif queryset is not None:
+        req.queryset.append(queryset)
+    return req
+
+
+def _add_docs_groundtruths(req, batch, data_type, _kwargs):
     for content in batch:
         if isinstance(content, tuple) and len(content) == 2:
             # content comes in pair,  will take the first as the input and the second as the groundtruth
@@ -43,8 +64,7 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
         else:
             d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
             req.docs.append(d)
-    if isinstance(queryset, Sequence):
-        req.queryset.extend(queryset)
-    elif queryset is not None:
-        req.queryset.append(queryset)
-    return req
+
+
+def _add_ids(req, batch):
+    req.ids.extend(batch)

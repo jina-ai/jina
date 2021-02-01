@@ -26,9 +26,7 @@ class BaseCacheDriver(BaseIndexDriver):
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         self.field = self.exec.field
 
-        if self._method_name == 'delete':
-            self.exec_fn([d.id for d in docs])
-        elif self._method_name == 'update':
+        if self._method_name == 'update':
             self.exec_fn([d.id for d in docs], [d.id if self.field == ID_KEY else d.content_hash for d in docs])
         else:
             for d in docs:
