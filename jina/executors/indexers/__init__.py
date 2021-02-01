@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, Union, List, Iterator, Optional, Any
+from typing import Tuple, List, Iterator, Optional, Any
 
 import numpy as np
 
@@ -198,7 +198,7 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+    def query_by_id(self, ids: Iterator[str], *args, **kwargs) -> 'np.ndarray':
         """ Get the vectors by id, return a subset of indexed vectors
 
         :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -208,7 +208,7 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs):
         """Add new chunks and their vector representations
 
         :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1

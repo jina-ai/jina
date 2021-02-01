@@ -99,7 +99,7 @@ class Client(BaseClient):
         return run_async(self._get_results, input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def delete(self, input_fn: Iterable[int],
+    def delete(self, input_fn: Iterable[str],
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,

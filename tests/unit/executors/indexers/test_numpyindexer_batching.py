@@ -45,7 +45,7 @@ def test_numpy_indexer_known_big_batch(batch_size, test_metas):
     with BaseIndexer.load(save_abspath) as indexer:
         indexer.batch_size = batch_size
         assert isinstance(indexer, MockNumpyIndexer)
-        assert isinstance(indexer.raw_ndarray, np.memmap)
+        assert isinstance(indexer._raw_ndarray, np.memmap)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
             [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'], ['19000']]))

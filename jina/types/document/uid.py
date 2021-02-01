@@ -15,7 +15,6 @@ __license__ = "Apache-2.0"
 
 import re
 import sys
-import warnings
 from binascii import unhexlify
 
 import numpy as np
@@ -23,12 +22,12 @@ import numpy as np
 from ...excepts import BadDocID
 from ...helper import typename
 
-_digest_size = 8
+DIGEST_SIZE = 8
 _id_regex = re.compile(r'([0-9a-fA-F][0-9a-fA-F])+')
 
 
 def int2bytes(value: int) -> bytes:
-    return int(value).to_bytes(_digest_size, sys.byteorder, signed=True)
+    return int(value).to_bytes(DIGEST_SIZE, sys.byteorder, signed=True)
 
 
 def bytes2int(value: bytes) -> int:

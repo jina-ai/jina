@@ -22,9 +22,9 @@ def png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
 
     def png_pack(png_tag, data):
         chunk_head = png_tag + data
-        return (struct.pack('!I', len(data)) +
-                chunk_head +
-                struct.pack('!I', 0xFFFFFFFF & zlib.crc32(chunk_head)))
+        return (struct.pack('!I', len(data))
+                + chunk_head
+                + struct.pack('!I', 0xFFFFFFFF & zlib.crc32(chunk_head)))
 
     png_bytes = b''.join([
         b'\x89PNG\r\n\x1a\n',
