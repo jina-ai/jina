@@ -1,6 +1,6 @@
 import pytest
 
-from jina.drivers.querylang.queryset.lookup import LookupLeaf, Q, QuerySet
+from jina.drivers.querylang.queryset.lookup import LookupNode, LookupLeaf, Q, QuerySet
 from jina.types.document import Document
 from tests import random_docs
 
@@ -203,3 +203,36 @@ def test_nested_chunks_filter(docs):
     assert len(filtered_docs) == 1
     for d in filtered_docs:
         assert len(d.chunks) == 5
+
+
+def test_lookup_node_in():
+    node = LookupNode()
+    leaf1 = LookupLeaf(id__in=[0, 1])
+    leaf2 = LookupLeaf(id__in=[1, 2])
+    node.add_child(leaf1)
+    node.add_child(leaf2)
+    assert len(node.children) == 2
+
+    mock0 = MockId(0)
+    mock1 = MockId(1)
+    mock2 = MockId(2)
+    assert node.op == 'and'
+    assert not node.evaluate(mock0)
+    assert node.evaluate(mock1)
+    assert not node.evaluate(mock2)
+
+    assert not node.negate
+    assert (~node).evaluate(mock0)
+    assert not (~node).evaluate(mock1)
+    assert (~node).evaluate(mock2)
+
+    node.op = 'or'
+    assert node.op == 'or'
+    assert node.evaluate(mock0)
+    assert node.evaluate(mock1)
+    assert node.evaluate(mock2)
+
+    assert (~node).negate
+    assert (~node).evaluate(mock0)
+    assert not (~node).evaluate(mock1)
+    assert (~node).evaluate(mock2)
