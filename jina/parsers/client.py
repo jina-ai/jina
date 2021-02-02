@@ -25,7 +25,8 @@ The Request mode. This applies to all Requests sent from this client.
     gp.add_argument('--mime-type', type=str,
                     help='MIME type of the input Documents.')
     gp.add_argument('--continue-on-error', action='store_true', default=False,
-                    help='If set, a Request that causes error will be logged only without blocking the further requests.')
+                    help='If set, a Request that causes error will be logged only without blocking the further '
+                         'requests.')
     gp.add_argument('--return-results', action='store_true', default=False,
                     help='''
 This feature is only used for AsyncClient.

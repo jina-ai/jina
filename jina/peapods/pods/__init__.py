@@ -83,7 +83,7 @@ class BasePod(ExitStack):
     @property
     def address_out(self) -> str:
         """Get the full outgoing address of this pod"""
-        return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.head_args.socket_out!s})'
+        return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
     @property
     def first_pea_args(self) -> Namespace:

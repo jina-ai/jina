@@ -2,6 +2,7 @@
 version: '1'
 with:
   read_only: true
+  public-expose: true
 pods:
   - name: crafter
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
@@ -18,4 +19,5 @@ pods:
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: _pass
     read_only: False
+    method: $JINA_INDEXER_METHOD
     needs: $JINA_INDEXER_NEEDS
