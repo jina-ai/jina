@@ -16,6 +16,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7113,4 +7114,44 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d5dd45bf```](https://github.com/jina-ai/jina/commit/d5dd45bfcc85d57274f2b8f1a5df51760dce929f)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```147165f4```](https://github.com/jina-ai/jina/commit/147165f43fa3dbc25178fff59257ade82a3e13b3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```8a93fb08```](https://github.com/jina-ai/jina/commit/8a93fb0894e3cf9b3f40aa51cc4220290b0b0afe)] __-__ __version__: the next version will be 0.9.24 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-26></a>
+## Release Note (`0.9.26`)
+
+> Release time: 2021-02-02 18:09:53
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Wang Bo,  cristian,  Jina Dev Bot,  Maximilian Werk,  Yongxuanzhang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```6fc05742```](https://github.com/jina-ai/jina/commit/6fc057423da25018ad8027078655d71a63e1f2a6)] __-__ __rest__: add protobuf model to pydantic (#1835) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```c2ab42b5```](https://github.com/jina-ai/jina/commit/c2ab42b500a103672b07e111a66b6ef16c00527a)] __-__ upload_files should also upload uses_internal (#1834) (#1836) (*Joan Fontanals*)
+ - [[```43b65869```](https://github.com/jina-ai/jina/commit/43b658690957bc0c78a59d1cf2a938569b6b5f3c)] __-__ upload_files should also upload uses_internal (#1834) (*Joan Fontanals*)
+ - [[```b05a0a38```](https://github.com/jina-ai/jina/commit/b05a0a38c8dd066443d7a02fa2ccc399a5fb63f5)] __-__ two remotes connect to local (#1809) (*Joan Fontanals*)
+ - [[```171515c2```](https://github.com/jina-ai/jina/commit/171515c2b089b664e1fac63ed11f9b6ad99b4ab9)] __-__ rename docidcache to doccache (#1831) (*cristian*)
+ - [[```1f5f7cf4```](https://github.com/jina-ai/jina/commit/1f5f7cf4d82029d76ab41df157526fe6f6e0da50)] __-__ vector indexer only uses str as keys (#1829) (*Maximilian Werk*)
+
+### 🚧 Code Refactoring
+
+ - [[```1c14d458```](https://github.com/jina-ai/jina/commit/1c14d4582f73359458671b59cb945556da7272f6)] __-__ __docs__: remove docs folder from core (#1828) (*Han Xiao*)
+ - [[```49cb447f```](https://github.com/jina-ai/jina/commit/49cb447f027e3a687cbc261dcc00bcbdbf45b9f0)] __-__ __request__: delete request now accepts sequence of ids (#1823) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```658e6050```](https://github.com/jina-ai/jina/commit/658e60503614e24ae9b6c2dedb8802bb448673eb)] __-__ __drivers__: add lookupnode tests (#1824) (*Yongxuanzhang*)
+
+### 🍹 Other Improvements
+
+ - [[```c6cc9c6b```](https://github.com/jina-ai/jina/commit/c6cc9c6b29f2364d062ef1227d44eb56d3dee5c9)] __-__ update version (*Han Xiao*)
+ - [[```c1f7997b```](https://github.com/jina-ai/jina/commit/c1f7997ba291cf142d581da1f43177f34b30c1e9)] __-__ take out dependency on version file from core (#1833) (*Wang Bo*)
+ - [[```a48fa368```](https://github.com/jina-ai/jina/commit/a48fa368582e5a4ed9ae3c2d3c04e12045de4b87)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```c8aa0b3c```](https://github.com/jina-ai/jina/commit/c8aa0b3c63516e52adea0627698a248b244c0609)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```00c212f4```](https://github.com/jina-ai/jina/commit/00c212f4d73272f118d09001baab65e6d1297fe8)] __-__ __version__: the next version will be 0.9.25 (*Jina Dev Bot*)
 
