@@ -29,11 +29,6 @@ The polling strategy of the Pod (when `parallel>1`)
                     default=SchedulerType.LOAD_BALANCE,
                     help='The strategy of scheduling workload among Peas')
 
-    gp.add_argument('--expose-public', action='store_true', default=False,
-                    help='If set, expose the public IP address to remote when necessary, by default it exposes'
-                         'private IP address, which only allows accessing under the same network/subnet. Important to '
-                         'set this to true when the Pea will receive input connections from remote Peas')
-
     # hidden CLI used for internal only
 
     gp.add_argument('--pod-role', type=PodRoleType.from_string, choices=list(PodRoleType),
