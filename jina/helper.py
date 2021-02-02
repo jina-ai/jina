@@ -238,7 +238,7 @@ def random_identity(use_uuid1: bool = False) -> str:
     return str(random_uuid(use_uuid1))
 
 
-def random_uuid(use_uuid1) -> uuid.UUID:
+def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
     return uuid.uuid1() if use_uuid1 else uuid.uuid4()
 
 
