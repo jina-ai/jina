@@ -24,7 +24,7 @@ def test_remote_pod_local_gateway(local_ip, on_public):
                                                  (get_public_ip(), True)])
 def test_remote_pod_local_pod_local_gateway_input_socket_pull_connect_from_remote(local_ip, on_public):
     remote_ip = '111.111.111.111'
-    f = Flow(expose_public=on_public, input_socket_pull_connect=True).add(host=remote_ip).add().build()
+    f = Flow(expose_public=on_public).add(host=remote_ip).add().build()
     for k, v in f:
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
     assert f['pod0'].host_in == __default_host__
@@ -43,8 +43,8 @@ def test_remote_pod_local_pod_local_gateway(local_ip, on_public):
     for k, v in f:
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
     assert f['pod0'].host_in == __default_host__
-    assert f['pod0'].host_out == local_ip
-    assert f['pod1'].host_in == __default_host__
+    assert f['pod0'].host_out == __default_host__
+    assert f['pod1'].host_in == remote_ip
     assert f['pod1'].host_out == __default_host__
     assert f['gateway'].host_in == __default_host__
     assert f['gateway'].host_out == remote_ip
@@ -56,7 +56,7 @@ def test_remote_pod_local_pod_remote_pod_local_gateway_input_socket_pull_connect
     remote1 = '111.111.111.111'
     remote2 = '222.222.222.222'
 
-    f = Flow(expose_public=on_public, input_socket_pull_connect=True).add(host=remote1).add().add(
+    f = Flow(expose_public=on_public).add(host=remote1).add().add(
         host=remote2).build()
     for k, v in f:
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
@@ -83,8 +83,8 @@ def test_remote_pod_local_pod_remote_pod_local_gateway(local_ip, on_public):
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
 
     assert f['pod0'].host_in == __default_host__
-    assert f['pod0'].host_out == local_ip
-    assert f['pod1'].host_in == __default_host__
+    assert f['pod0'].host_out == __default_host__
+    assert f['pod1'].host_in == remote1
     assert f['pod1'].host_out == remote2
     assert f['pod2'].host_in == __default_host__
     assert f['pod2'].host_out == __default_host__
@@ -142,13 +142,13 @@ def test_gateway_remote_local():
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
 
     assert f['pod0'].host_in == __default_host__
-    assert f['pod0'].host_out == get_internal_ip()
+    assert f['pod0'].host_out == __default_host__
     assert f['pod0'].args.socket_in == SocketType.PULL_BIND
-    assert f['pod0'].args.socket_out == SocketType.PUSH_CONNECT
+    assert f['pod0'].args.socket_out == SocketType.PUSH_BIND
 
-    assert f['pod1'].host_in == __default_host__
+    assert f['pod1'].host_in == remote1
     assert f['pod1'].host_out == __default_host__
-    assert f['pod1'].args.socket_in == SocketType.PULL_BIND
+    assert f['pod1'].args.socket_in == SocketType.PULL_CONNECT
     assert f['pod1'].args.socket_out == SocketType.PUSH_BIND
     assert f['gateway'].host_in == __default_host__
     assert f['gateway'].host_out == remote1
@@ -166,7 +166,7 @@ def test_gateway_remote_local_input_socket_pull_connect_from_remote():
     :return:
     """
     remote1 = '111.111.111.111'
-    f = Flow(input_socket_pull_connect=True).add(host=remote1).add().build()
+    f = Flow().add(host=remote1).add().build()
     for k, v in f:
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
 

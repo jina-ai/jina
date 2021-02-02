@@ -32,16 +32,6 @@ def mixin_pea_parser(parser):
                     metavar='KEY=VALUE', nargs='*',
                     help='The map of environment variables that are available inside runtime')
 
-    gp.add_argument('--expose-public', action='store_true', default=False,
-                    help='If set, expose the public IP address to remote when necessary, by default it exposes'
-                         'private IP address, which only allows accessing under the same network/subnet. Important to '
-                         'set this to true when the Pea will receive input connections from remote Peas')
-
-    gp.add_argument('--input-socket-pull-connect', action='store_true', default=False,
-                    help='If set, in the case where a Pod is local with respect to the Flow, it forces the incoming '
-                         'socket connection from remote instances to be of type PULL_CONNECT. This is useful when the '
-                         'Pod is not directly reachable from remote and therefore it needs to PULL.')
-
     # hidden CLI used for internal only
 
     gp.add_argument('--pea-id', type=int, default=0,
