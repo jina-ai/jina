@@ -215,11 +215,10 @@ def test_compound_indexer_rw(test_workspace):
             assert not indexer[0].is_updated
             assert not indexer.is_updated
             indexer[0].add([UniqueId(j), UniqueId(j * 2), UniqueId(j * 3)], [bytes(j), bytes(j * 2), bytes(j * 3)])
-            indexer[0].add([j, j * 2, j * 3], [bytes(j), bytes(j * 2), bytes(j * 3)])
             assert indexer[0].is_updated
             assert indexer.is_updated
             assert not indexer[1].is_updated
-            indexer[1].add(np.array([j * 2, j * 2 + 1]), all_vecs[(j * 2, j * 2 + 1), :])
+            indexer[1].add([UniqueId(j), UniqueId(j * 2)], all_vecs[(j * 2, j * 2 + 1), :])
             assert indexer[1].is_updated
             indexer.save()
             # the compound executor itself is not modified, therefore should not generate a save
