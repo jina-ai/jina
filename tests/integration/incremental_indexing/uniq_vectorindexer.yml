@@ -1,6 +1,6 @@
 !UniqueVectorIndexer
 components:
-  - !DocIDCache
+  - !DocCache
     metas:
       name: cache
   - !NumpyIndexer

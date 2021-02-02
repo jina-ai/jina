@@ -112,4 +112,4 @@ class DataURIPbIndexer(BinaryPbIndexer):
 
 
 class UniquePbIndexer(CompoundExecutor):
-    """A frequently used pattern for combining a :class:`BaseKVIndexer` and a :class:`DocIDCache` """
+    """A frequently used pattern for combining a :class:`BaseKVIndexer` and a :class:`DocCache` """

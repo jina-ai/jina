@@ -5,7 +5,7 @@ import pytest
 
 from jina import Flow, Document
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.cache import DocIDCache
+from jina.executors.indexers.cache import DocCache
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 
@@ -143,7 +143,7 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
     cache_indexer_path = tmp_path / 'cache.bin'
     cache_full_size = 0
     with BaseIndexer.load(cache_indexer_path) as cache:
-        assert isinstance(cache, DocIDCache)
+        assert isinstance(cache, DocCache)
         cache_full_size = cache.size
         print(f'cache size {cache.size}')
 

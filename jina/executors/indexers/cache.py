@@ -26,7 +26,7 @@ class BaseCache(BaseKVIndexer):
         self.handler_mutex = False  #: for Cache we need to release the handler mutex to allow RW at the same time
 
 
-class DocIDCache(BaseCache):
+class DocCache(BaseCache):
     """A key-value indexer that specializes in caching.
     Serializes the cache to two files, one for ids, one for the actually cached field.
     If field=`id`, then the second file is redundant. The class optimizes the process
@@ -54,7 +54,7 @@ class DocIDCache(BaseCache):
     default_field = ID_KEY
 
     def __init__(self, index_filename: str = None, *args, **kwargs):
-        """ creates a new DocIDCache
+        """ creates a new DocCache
 
         :param field: to be passed as kwarg. This dictates by which Document field we cache (either `id` or `content_hash`)
         """
@@ -97,7 +97,7 @@ class DocIDCache(BaseCache):
     def update(self, keys: Iterator['UniqueId'], values: Iterator[any], *args, **kwargs):
         """
         :param keys: list of Document.id
-        :param values: list of either `id` or `content_hash` of :class:`Document"""
+        :param values: list of either `id` or `content_hash` of :class:`Document`"""
         # if we don't cache anything else, no need
         if self.field != ID_KEY:
             keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.ids, self.save_abspath)
