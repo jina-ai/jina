@@ -1,4 +1,4 @@
-!DocIDCache
+!DocCache
 with:
   field: $JINA_CACHE_FIELD
   index_filename: cache

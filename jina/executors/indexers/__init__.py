@@ -263,7 +263,7 @@ class BaseKVIndexer(BaseIndexer):
 
 
 class UniqueVectorIndexer(CompoundExecutor):
-    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocIDCache` """
+    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocCache` """
 
 
 class CompoundIndexer(CompoundExecutor):

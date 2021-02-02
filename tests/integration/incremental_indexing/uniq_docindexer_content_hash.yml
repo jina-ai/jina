@@ -1,6 +1,6 @@
 !UniquePbIndexer
 components:
-  - !DocIDCache
+  - !DocCache
     with:
       field: content_hash
     metas:
