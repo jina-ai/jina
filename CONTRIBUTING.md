@@ -285,10 +285,12 @@ Docstrings are how we document Jina's functions. This is suitable for more exper
 
 #### Building Documentation Locally
 
-To build documentation locally, you need Docker installed. Clone this repository and run the following command: 
+To build documentation locally, please checkout our [jina-ai/docs](https://github.com/jina-ai/docs) repo:
 
 ```bash
-bash ./scripts/make-doc.sh serve 8080
+make clean
+make html
+python -m http.server 8080 -d _build/html
 ```
 
 The documentation is then available in your browser at [`http://0.0.0.0:8080/`](http://0.0.0.0:8080/).
