@@ -5,10 +5,10 @@ metas:
   workspace: $JINA_TEST_WORKSPACE_BINARY_PB
 requests:
   on:
-    [ SearchRequest ]:
+    SearchRequest:
       - !KVSearchDriver
         with:
           is_merge: true
           traversal_paths: [ 'r' ]
-    [IndexRequest]:
+    IndexRequest:
       - !KVIndexDriver {}
