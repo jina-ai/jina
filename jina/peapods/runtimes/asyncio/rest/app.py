@@ -27,7 +27,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from starlette import status
         from starlette.types import Receive, Scope, Send
         from starlette.responses import StreamingResponse
-        from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, JinaSearchRequestModel
+        from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, \
+            JinaSearchRequestModel
 
     app = FastAPI(
         title='Jina',
@@ -95,6 +96,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     async def index_api(body: JinaIndexRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.INDEX
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
@@ -105,26 +107,29 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     async def index_api(body: JinaSearchRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.SEARCH
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.post(path='/update',
-              summary='Update documents in Jina',
-              tags=['CRUD']
-              )
+    @app.put(path='/update',
+             summary='Update documents in Jina',
+             tags=['CRUD']
+             )
     async def index_api(body: JinaUpdateRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.UPDATE
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.post(path='/delete',
-              summary='Delete documents in Jina',
-              tags=['CRUD']
-              )
+    @app.delete(path='/delete',
+                summary='Delete documents in Jina',
+                tags=['CRUD']
+                )
     async def index_api(body: JinaDeleteRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.DELETE
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 

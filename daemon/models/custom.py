@@ -54,11 +54,10 @@ def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser']):
     return all_options, choices_validators
 
 
-class _PydanticConfig(BaseConfig):
-    arbitrary_types_allowed = True
-
-
 def build_pydantic_model(model_name: str, module: str):
+    class _PydanticConfig(BaseConfig):
+        arbitrary_types_allowed = True
+
     from jina.parsers import helper
     helper._SHOW_ALL_ARGS, old_val = True, helper._SHOW_ALL_ARGS
     from jina.parsers import set_pea_parser, set_pod_parser

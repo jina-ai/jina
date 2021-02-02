@@ -1,8 +1,10 @@
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union
 
-from pydantic.main import BaseModel
+from pydantic import Field
+from pydantic.main import BaseModel, create_model
 
-from jina.enums import RequestType, DataInputType
+from jina.enums import DataInputType
+from jina.proto.jina_pb2 import DocumentProto, QueryLangProto
 
 
 class JinaStatusModel(BaseModel):
@@ -11,34 +13,50 @@ class JinaStatusModel(BaseModel):
     used_memory: str
 
 
+def build_model_from_pb(name, pb_model):
+    from google.protobuf.json_format import MessageToDict
+
+    dp = MessageToDict(pb_model(), including_default_value_fields=True)
+
+    all_fields = {k: (name if k in ('chunks', 'matches') else type(v), Field(default=v)) for k, v in dp.items()}
+    if pb_model == QueryLangProto:
+        all_fields['parameters'] = (Dict, Field(default={}))
+
+    return create_model(name, **all_fields)
+
+
+JinaDocumentModel = build_model_from_pb('Document', DocumentProto)
+JinaDocumentModel.update_forward_refs()
+JinaQueryLangModel = build_model_from_pb('QueryLang', QueryLangProto)
+
+
 class JinaRequestModel(BaseModel):
-    data: List[Dict[str, Any]]
+    data: Union[List[JinaDocumentModel], List[Dict[str, Any]], List[str], List[bytes]]
     request_size: Optional[int] = 0
-    mode: RequestType
     mime_type: Optional[str] = None
-    queryset: List[Dict[str, Any]]
+    queryset: List[JinaQueryLangModel]
     data_type: DataInputType = DataInputType.AUTO
 
 
 class JinaIndexRequestModel(JinaRequestModel):
-    mode: RequestType = RequestType.INDEX
+    pass
 
 
 class JinaSearchRequestModel(JinaRequestModel):
-    mode: RequestType = RequestType.SEARCH
+    pass
 
 
 class JinaUpdateRequestModel(JinaRequestModel):
-    mode: RequestType = RequestType.UPDATE
+    pass
 
 
 class JinaDeleteRequestModel(JinaRequestModel):
-    mode: RequestType = RequestType.DELETE
+    data: List[str]
 
 
 class JinaControlRequestModel(JinaRequestModel):
-    mode: RequestType = RequestType.CONTROL
+    pass
 
 
 class JinaTrainRequestModel(JinaRequestModel):
-    mode: RequestType = RequestType.TRAIN
+    pass
