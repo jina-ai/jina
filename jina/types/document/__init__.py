@@ -10,6 +10,7 @@ from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tupl
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from .converters import png_to_buffer, to_datauri, guess_mime
 from .uid import DIGEST_SIZE, UniqueId
@@ -622,3 +623,11 @@ class Document:
         else:
             for d in docs:
                 callback_fn(d, parent_doc, parent_edge_type, *args, **kwargs)
+
+    def json(self) -> str:
+        """Return the Document object in JSON string """
+        return MessageToJson(self._document)
+
+    def dict(self) -> Dict:
+        """Return the Document object in dictionary """
+        return MessageToDict(self._document)

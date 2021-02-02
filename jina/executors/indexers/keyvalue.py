@@ -29,8 +29,11 @@ class BinaryPbIndexer(BaseKVIndexer):
     class ReadHandler:
         def __init__(self, path, key_length):
             with open(path + '.head', 'rb') as fp:
-                tmp = np.frombuffer(fp.read(), dtype=[('', (np.str_, key_length)), ('', np.int64), ('', np.int64), ('', np.int64)])
-                self.header = {r[0]: None if np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY) else (r[1], r[2], r[3]) for r in tmp}
+                tmp = np.frombuffer(fp.read(),
+                                    dtype=[('', (np.str_, key_length)), ('', np.int64), ('', np.int64), ('', np.int64)])
+                self.header = {
+                    r[0]: None if np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY) else (r[1], r[2], r[3]) for r in
+                    tmp}
             self._body = open(path, 'r+b')
             self.body = self._body.fileno()
 
@@ -56,15 +59,13 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._key_length = 0
 
     def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
-        if len(list(keys)) != len(list(values)):
-            raise ValueError(f'Len of keys {len(keys)} did not match len of values {len(values)}')
+        if not keys:
+            return
+
+        max_key_len = max([len(k) for k in keys])
+        self.key_length = max_key_len
+
         for key, value in zip(keys, values):
-
-            if not self._key_length:
-                self._key_length = len(key)
-            elif self._key_length != len(key):
-                raise ValueError(f'this indexer allows only keys at length {self._key_length}, but yours is {len(key)}')
-
             l = len(value)  #: the length
             p = int(self._start / self._page_size) * self._page_size  #: offset of the page
             r = self._start % self._page_size  #: the remainder, i.e. the start position given the offset
@@ -87,7 +88,8 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
-        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(), self.save_abspath)
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(),
+                                                            self.save_abspath)
         self._delete(keys)
         self.add(keys, values)
         return
