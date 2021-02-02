@@ -4,10 +4,10 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-import numpy as np
 from hashlib import blake2b
 from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tuple
 
+import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 

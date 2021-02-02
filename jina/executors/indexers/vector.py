@@ -33,7 +33,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def __init__(self,
                  compress_level: int = 1,
                  ref_indexer: Optional['BaseNumpyIndexer'] = None,
-                 key_length: int = 16,
                  *args, **kwargs):
         """
         :param compress_level: The compresslevel argument is an integer from 0 to 9 controlling the
@@ -49,7 +48,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.dtype = None
         self.compress_level = compress_level
         self.key_bytes = b''
-        self.key_dtype = (np.str_, key_length)
+        self.key_dtype = None
         self.valid_indices = np.array([], dtype=bool)
         self.ref_indexer_workspace_name = None
 
@@ -123,10 +122,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
 
     def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
-        np_keys = np.array(keys, dtype=self.key_dtype)
+        np_keys = np.array(keys)
+        if not self.key_dtype:
+            self.key_dtype = np_keys.dtype
+        elif self.key_dtype != np_keys.dtype:
+            raise ValueError(f'this indexer allows only keys with type {self.key_dtype}, but yours is {np_keys.dtype}')
+
         self._add(np_keys, vectors)
 
-    def _add(self, keys: 'np.ndarry', vectors: 'np.ndarray'):
+    def _add(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
@@ -136,7 +140,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def update(self, keys: Iterator[str], values: Sequence[bytes], *args, **kwargs) -> None:
         # noinspection PyTypeChecker
         keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys(), self.save_abspath)
-        np_keys = np.array(keys, dtype=self.key_dtype)
+        np_keys = np.array(keys)
 
         if np_keys.size:
             self._delete(np_keys)
@@ -151,7 +155,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     def delete(self, keys: Iterator[str], *args, **kwargs) -> None:
         keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
-        np_keys = np.array(keys, dtype=self.key_dtype)
+        np_keys = np.array(keys)
         self._delete(np_keys)
 
     def get_query_handler(self) -> Optional['np.ndarray']:

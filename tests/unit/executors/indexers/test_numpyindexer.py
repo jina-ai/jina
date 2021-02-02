@@ -39,7 +39,7 @@ def test_numpy_indexer(batch_size, compress_level, test_metas):
 
 def test_numpy_indexer_long_ids(test_metas):
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=0,
-                      metas=test_metas, key_length=20) as indexer:
+                      metas=test_metas) as indexer:
         indexer.batch_size = 4
         long_vec_id = np.array(vec_idx, dtype=(np.str_, 20))
         long_vec_id[0] = '1234512345123451234'

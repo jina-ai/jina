@@ -48,17 +48,23 @@ class BinaryPbIndexer(BaseKVIndexer):
     def get_query_handler(self):
         return self.ReadHandler(self.index_abspath, self._key_length)
 
-    def __init__(self, key_length: int = 16, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._total_byte_len = 0
         self._start = 0
         self._page_size = mmap.ALLOCATIONGRANULARITY
-        self._key_length = key_length
+        self._key_length = 0
 
     def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         if len(list(keys)) != len(list(values)):
             raise ValueError(f'Len of keys {len(keys)} did not match len of values {len(values)}')
         for key, value in zip(keys, values):
+
+            if not self._key_length:
+                self._key_length = len(key)
+            elif self._key_length != len(key):
+                raise ValueError(f'this indexer allows only keys at length {self._key_length}, but yours is {len(key)}')
+
             l = len(value)  #: the length
             p = int(self._start / self._page_size) * self._page_size  #: offset of the page
             r = self._start % self._page_size  #: the remainder, i.e. the start position given the offset
