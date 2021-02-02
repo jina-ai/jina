@@ -15,6 +15,7 @@ __license__ = "Apache-2.0"
 
 import re
 import sys
+import warnings
 from binascii import unhexlify
 
 import numpy as np
@@ -70,7 +71,7 @@ class UniqueId(str):
             seq = bytes2id(seq)
         elif seq == '':
             pass
-        elif isinstance(seq, str) and is_valid_id(seq):
+        elif isinstance(seq, str):
             seq = seq
         elif seq is not None:
             raise BadDocID(f'{typename(seq)}: {seq} is not a valid id')
@@ -82,6 +83,7 @@ class UniqueId(str):
         This is useful when sometimes you want to use key along with other numeric values together in one ndarray,
         such as ranker and Numpyindexer
         """
+        warnings.warn('UniqueId to int conversion is not reliable and deprecated', DeprecationWarning)
         return id2int(self)
 
     def __bytes__(self):
@@ -89,4 +91,5 @@ class UniqueId(str):
         so it can be used in the dense file storage, e.g. BinaryPbIndexer,
         as it requires the key has to be fixed length.
         """
+        warnings.warn('UniqueId to str conversion is not reliable and deprecated', DeprecationWarning)
         return id2bytes(self)

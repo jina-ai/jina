@@ -18,7 +18,7 @@ from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
 from ...excepts import BadDocType
-from ...helper import is_url, typename
+from ...helper import is_url, typename, random_identity
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
@@ -143,8 +143,7 @@ class Document:
                              f'you may use "Document(content=your_content)"') from ex
 
         if self._document.id is None or not self._document.id:
-            import random
-            self.id = random.randint(0, np.iinfo(np.int64).max)
+            self.id = random_identity(use_uuid1=True)
 
         self.set_attrs(**kwargs)
 
@@ -217,18 +216,18 @@ class Document:
         self._document.content_hash = blake2b(masked_d.SerializeToString(), digest_size=DIGEST_SIZE).hexdigest()
 
     @property
-    def id(self) -> 'UniqueId':
+    def id(self) -> str:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return UniqueId(self._document.id)
+        return self._document.id
 
     @property
-    def parent_id(self) -> 'UniqueId':
+    def parent_id(self) -> str:
         """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return UniqueId(self._document.parent_id)
+        return self._document.parent_id
 
     @id.setter
     def id(self, value: Union[bytes, str, int]):
@@ -244,7 +243,12 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        self._document.id = UniqueId(value)
+        if isinstance(value, str):
+            self._document.id = value
+        else:
+            warnings.warn(f'expecting a string as ID, receiving {type(value)}. '
+                          f'Note this type will be deprecated soon', DeprecationWarning)
+            self._document.id = UniqueId(value)
 
     @parent_id.setter
     def parent_id(self, value: Union[bytes, str, int]):
@@ -260,7 +264,12 @@ class Document:
         :param value: restricted string value
         :return:
         """
-        self._document.parent_id = UniqueId(value)
+        if isinstance(value, str):
+            self._document.parent_id = value
+        else:
+            warnings.warn(f'expecting a string as ID, receiving {type(value)}. '
+                          f'Note this type will be deprecated soon', DeprecationWarning)
+            self._document.parent_id = UniqueId(value)
 
     @property
     def blob(self) -> 'np.ndarray':

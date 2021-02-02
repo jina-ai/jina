@@ -223,12 +223,23 @@ def random_port() -> Optional[int]:
     return _port
 
 
-def random_identity() -> str:
-    return str(random_uuid())
+def random_identity(use_uuid1: bool = False) -> str:
+    """Generate random UUID
+
+    :param use_uuid1: use UUID1 instead of UUID4. This is the default Document ID generator.
+
+    ..note::
+        A MAC address or time-based ordering (UUID1) can afford increased database performance, since it's less work
+        to sort numbers closer-together than those distributed randomly (UUID4) (see here).
+
+        A second related issue, is that using UUID1 can be useful in debugging, even if origin data is lost or not
+        explicitly stored.
+    """
+    return str(random_uuid(use_uuid1))
 
 
-def random_uuid() -> uuid.UUID:
-    return uuid.uuid4()
+def random_uuid(use_uuid1) -> uuid.UUID:
+    return uuid.uuid1() if use_uuid1 else uuid.uuid4()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
