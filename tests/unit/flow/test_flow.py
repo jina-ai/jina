@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow
+from jina import Flow, Document
 from jina.enums import SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
@@ -652,3 +652,10 @@ def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote()
     assert f._pod_nodes['join'].head_args.socket_in == SocketType.PULL_BIND
     assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.PUSH_CONNECT
     assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.PUSH_CONNECT
+
+
+def test_single_document_flow_index():
+    d = Document()
+    with Flow().add() as f:
+        f.index(d)
+        f.index(lambda: d)

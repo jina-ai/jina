@@ -1,22 +1,23 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple, AsyncIterator
+from typing import Iterator, Union, Tuple, AsyncIterator, Iterable
 
 from .helper import _new_request_from_batch
 from ... import Request
 from ...enums import RequestType, DataInputType
 from ...helper import batch_iterator
 from ...logging import default_logger
-from ...types.document import DocumentSourceType, DocumentContentType
+from ...types.document import DocumentSourceType, DocumentContentType, Document
 from ...types.sets.querylang import AcceptQueryLangType
 
 SingletonDataType = Union[DocumentContentType,
                           DocumentSourceType,
+                          Document,
                           Tuple[DocumentContentType, DocumentContentType],
                           Tuple[DocumentSourceType, DocumentSourceType]]
 
-GeneratorSourceType = Union[Iterator[SingletonDataType], AsyncIterator[SingletonDataType]]
+GeneratorSourceType = Union[Document, Iterator[SingletonDataType], AsyncIterator[SingletonDataType]]
 
 
 def request_generator(data: GeneratorSourceType,
@@ -36,6 +37,8 @@ def request_generator(data: GeneratorSourceType,
     _kwargs = dict(mime_type=mime_type, length=request_size, weight=1.0)
 
     try:
+        if not isinstance(data, Iterable):
+            data = [data]
         for batch in batch_iterator(data, request_size):
             yield _new_request_from_batch(_kwargs, batch, data_type, mode, queryset)
 
