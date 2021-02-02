@@ -21,5 +21,6 @@ pods:
     needs: [gateway]
   - name: join_all
     uses: _merge
+    method: needs
     needs: [pod2, pod3]
     read_only: true
