@@ -51,17 +51,26 @@ jobs:
           cd schema
           jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
+          python scripts/get-gateway-openapi.py
           cd -
       - name: redoc-cli-jinad
         uses: seeebiii/redoc-cli-github-action@v10
         with:
           args: 'bundle schema/daemon.json -o jinad.html'
+      - name: redoc-cli-gateway
+        uses: seeebiii/redoc-cli-github-action@v10
+        with:
+          args: 'bundle schema/gateway.json -o rest.html'
       - name: push-to-api-repo
         run: |
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/master.html
           rm schema/daemon.json
           rm -rf schema/jinad
+          mkdir -p schema/rest/
+          cp rest.html schema/rest/master.html
+          rm schema/gateway.json
+          rm -rf schema/rest
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
