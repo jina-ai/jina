@@ -2,6 +2,7 @@ import warnings
 from typing import TypeVar, Dict, Optional
 
 from google.protobuf import json_format
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from ...excepts import BadQueryLangType
 from ...helper import typename
@@ -110,3 +111,11 @@ class QueryLang:
     def as_pb_object(self) -> 'jina_pb2.QueryLangProto':
         """Return a protobuf :class:`jina_pb2.QueryLangProto` object """
         return self._querylang
+
+    def json(self) -> str:
+        """Return the object in JSON string """
+        return MessageToJson(self._querylang)
+
+    def dict(self) -> Dict:
+        """Return the object in dictionary """
+        return MessageToDict(self._querylang)

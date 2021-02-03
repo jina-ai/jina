@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Optional, Dict
+
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from ...excepts import BadNamedScoreType
 from ...helper import typename
@@ -90,3 +92,11 @@ class NamedScore:
                     setattr(self._score, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
+
+    def json(self) -> str:
+        """Return the Document object in JSON string """
+        return MessageToJson(self._score)
+
+    def dict(self) -> Dict:
+        """Return the Document object in dictionary """
+        return MessageToDict(self._score)
