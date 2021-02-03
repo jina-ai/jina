@@ -1,8 +1,7 @@
 !Flow
-with:
-  show_exc_info: true
+version: '1'
 pods:
-  indexer:
+  - name: indexer
     uses: $JINA_QUERY_USES
     uses_internal: $JINA_QUERY_USES_INTERNAL
     parallel: $JINA_TEST_REF_INDEXER_PARALLEL

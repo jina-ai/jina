@@ -61,7 +61,7 @@ class KVSearchDriver(BaseSearchDriver):
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
         for idx, retrieved_doc in enumerate(docs):
-            serialized_doc = self.exec_fn(int(retrieved_doc.id))
+            serialized_doc = self.exec_fn(retrieved_doc.id)
             if serialized_doc:
                 r = Document(serialized_doc)
 
@@ -82,11 +82,11 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
     """Fill in the embedding by their document id.
     """
 
-    def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
+    def __init__(self, executor: str = None, method: str = 'query_by_key', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embeds = self.exec_fn([int(d.id) for d in docs])
+        embeds = self.exec_fn([d.id for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding = embedding
 
@@ -100,7 +100,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
         :param top_k: top-k document ids to retrieve
         :param fill_embedding: fill in the embedding of the corresponding doc,
-                this requires the executor to implement :meth:`query_by_id`
+                this requires the executor to implement :meth:`query_by_key`
         :param args:
         :param kwargs:
         """
@@ -114,9 +114,9 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         if not doc_pts:
             return
 
-        fill_fn = getattr(self.exec, 'query_by_id', None)
+        fill_fn = getattr(self.exec, 'query_by_key', None)
         if self._fill_embedding and not fill_fn:
-            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method')
+            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_key" method')
 
         if bad_docs:
             self.logger.warning(f'these bad docs can not be added: {bad_docs}')
@@ -129,7 +129,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
 
                 topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
                 for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
-                    m = Document(id=int(numpy_match_id))
+                    m = Document(id=numpy_match_id)
                     m.score = NamedScore(op_name=op_name,
                                          value=score)
                     r = doc.matches.append(m)

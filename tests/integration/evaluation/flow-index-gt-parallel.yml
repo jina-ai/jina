@@ -1,9 +1,9 @@
 !Flow
+version: '1'
 with:
   restful: $RESTFUL
 pods:
-  gt_indexer:
-    show_exc_info: true
+  - name: gt_indexer
     uses: yaml/index-gt.yml
     polling: 'all'
     needs: gateway

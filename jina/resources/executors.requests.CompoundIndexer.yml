@@ -11,7 +11,7 @@ on:
       with:
         executor: BaseKVIndexer
         traversal_paths: ['m']
-  [IndexRequest, UpdateRequest, DeleteRequest]:
+  [IndexRequest, UpdateRequest]:
     - !VectorIndexDriver
       with:
         executor: BaseVectorIndexer
@@ -24,3 +24,10 @@ on:
         executor: BaseKVIndexer
   ControlRequest:
     - !ControlReqDriver {}
+  DeleteRequest:
+    - !DeleteDriver
+      with:
+        executor: BaseKVIndexer
+    - !DeleteDriver
+      with:
+        executor: BaseVectorIndexer

@@ -47,7 +47,7 @@ def test_check_input_fail(input_fn):
 @pytest.mark.parametrize(
     'port_expose, route, status_code',
     [
-        (random_port(), '/ready', 200),
+        (random_port(), '/status', 200),
         (random_port(), '/api/ass', 405)
     ]
 )

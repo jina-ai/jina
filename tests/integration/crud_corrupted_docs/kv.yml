@@ -13,11 +13,7 @@ requests:
           executor: docidx
           traversal_paths: [ 'r' ]
     DeleteRequest:
-      - !KVIndexDriver
-        with:
-          method: delete
-          executor: docidx
-          traversal_paths: [ 'r' ]
+      - !DeleteDriver {}
     IndexRequest:
       - !KVIndexDriver
         with:

@@ -6,8 +6,9 @@ import pytest
 
 from jina import DocumentSet
 from jina.drivers.cache import BaseCacheDriver
+from jina.drivers.delete import DeleteDriver
 from jina.executors import BaseExecutor
-from jina.executors.indexers.cache import DocIDCache, ID_KEY, CONTENT_HASH_KEY
+from jina.executors.indexers.cache import DocCache, ID_KEY, CONTENT_HASH_KEY
 from jina.proto import jina_pb2
 from jina.types.document import Document, UniqueId
 from tests import random_docs
@@ -30,8 +31,8 @@ class MockCacheDriver(BaseCacheDriver):
 def test_cache_driver_twice(tmpdir, test_metas):
     docs = DocumentSet(list(random_docs(10)))
     driver = MockCacheDriver()
-    # FIXME DocIdCache doesn't use tmpdir, it saves in curdir
-    with DocIDCache(tmpdir, metas=test_metas) as executor:
+    # FIXME DocCache doesn't use tmpdir, it saves in curdir
+    with DocCache(tmpdir, metas=test_metas) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs)
@@ -52,7 +53,7 @@ def test_cache_driver_twice(tmpdir, test_metas):
 def test_cache_driver_tmpfile(tmpdir, test_metas):
     docs = list(random_docs(10, embedding=False))
     driver = MockCacheDriver()
-    with DocIDCache(tmpdir, field=ID_KEY, metas=test_metas) as executor:
+    with DocCache(tmpdir, field=ID_KEY, metas=test_metas) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
 
@@ -79,7 +80,7 @@ def test_cache_driver_from_file(tmpdir, test_metas):
     pickle.dump([doc.content_hash for doc in docs], open(f'{bin_full_path}.cache', 'wb'))
 
     driver = MockCacheDriver()
-    with DocIDCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
+    with DocCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
 
@@ -105,6 +106,13 @@ class MockBaseCacheDriver(BaseCacheDriver):
         raise NotImplementedError
 
 
+class SimpleDeleteDriver(DeleteDriver):
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+
 def test_cache_content_driver_same_content(tmpdir, test_metas):
     doc1 = Document(id=1)
     doc1.text = 'blabla'
@@ -119,7 +127,7 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
 
     driver = MockBaseCacheDriver()
 
-    with DocIDCache(tmpdir, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
+    with DocCache(tmpdir, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
 
@@ -146,14 +154,14 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
 
     # delete
     with BaseExecutor.load(filename) as executor:
-        executor.delete([UniqueId(doc1.id)])
+        executor.delete([doc1.id])
 
     with BaseExecutor.load(filename) as executor:
         assert executor.query(doc1.content_hash) is None
 
 
 def test_cache_content_driver_same_id(tmp_path, test_metas):
-    filename = tmp_path / 'docidcache.bin'
+    filename = tmp_path / 'DocCache.bin'
     doc1 = Document(id=1)
     doc1.text = 'blabla'
     doc1.update_content_hash()
@@ -166,7 +174,7 @@ def test_cache_content_driver_same_id(tmp_path, test_metas):
 
     driver = MockBaseCacheDriver()
 
-    with DocIDCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
+    with DocCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         driver.attach(executor=executor, runtime=None)
         driver._traverse_apply(docs1)
         driver._traverse_apply(docs2)
@@ -174,9 +182,8 @@ def test_cache_content_driver_same_id(tmp_path, test_metas):
 
 
 @pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
-@pytest.mark.parametrize('method_type', ['delete', 'update'])
-def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type, mocker):
-    driver = MockBaseCacheDriver(method=method_type, traversal_paths=['r'])
+def test_cache_driver_update(tmpdir, test_metas, field_type, mocker):
+    driver = MockBaseCacheDriver(method='update', traversal_paths=['r'])
 
     docs = [Document(text=f'doc_{i}') for i in range(5)]
 
@@ -193,8 +200,27 @@ def test_cache_driver_update_delete(tmpdir, test_metas, field_type, method_type,
         elif self.field == ID_KEY:
             assert all([v == d.id for v, d in zip(values, docs)])
 
-    with DocIDCache(tmpdir, metas=test_metas, field=field_type) as e:
-        mocker.patch.object(DocIDCache, 'update', validate_update)
-        mocker.patch.object(DocIDCache, 'delete', validate_delete)
+    with DocCache(tmpdir, metas=test_metas, field=field_type) as e:
+        mocker.patch.object(DocCache, 'update', validate_update)
+        mocker.patch.object(DocCache, 'delete', validate_delete)
         driver.attach(executor=e, runtime=None)
         driver._apply_all(docs)
+
+
+@pytest.mark.parametrize('field_type', [CONTENT_HASH_KEY, ID_KEY])
+def test_cache_driver_delete(tmpdir, test_metas, field_type, mocker):
+    docs = [Document(text=f'doc_{i}') for i in range(5)]
+
+    driver = SimpleDeleteDriver()
+
+    def validate_delete(self, keys, *args, **kwargs):
+        assert len(keys) == len(docs)
+        assert all([k == d.id for k, d in zip(keys, docs)])
+
+    with DocCache(tmpdir, metas=test_metas, field=field_type) as e:
+        mocker.patch.object(DocCache, 'delete', validate_delete)
+
+        driver.attach(executor=e, runtime=None)
+        mck = mocker.patch.object(driver, 'runtime', autospec=True)
+        mck.request.ids = [d.id for d in docs]
+        driver()

@@ -1,9 +1,9 @@
 from typing import Union, Optional, TypeVar, Dict
 
 from google.protobuf import json_format
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToJson, MessageToDict
 
-from ..sets import QueryLangSet, DocumentSet
+from ..sets import QueryLangSet
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
@@ -95,6 +95,32 @@ class Request:
         if self._request_type:
             return self.body.__class__.__name__
 
+    def as_typed_request(self, request_type: str):
+        """Change the request class according to the one_of value in ``body``"""
+        from .train import TrainRequest
+        from .search import SearchRequest
+        from .control import ControlRequest
+        from .index import IndexRequest
+        from .delete import DeleteRequest
+        from .update import UpdateRequest
+
+        rt = request_type.upper()
+        if rt.startswith(str(RequestType.TRAIN)):
+            self.__class__ = TrainRequest
+        elif rt.startswith(str(RequestType.DELETE)):
+            self.__class__ = DeleteRequest
+        elif rt.startswith(str(RequestType.INDEX)):
+            self.__class__ = IndexRequest
+        elif rt.startswith(str(RequestType.SEARCH)):
+            self.__class__ = SearchRequest
+        elif rt.startswith(str(RequestType.UPDATE)):
+            self.__class__ = UpdateRequest
+        elif rt.startswith(str(RequestType.CONTROL)):
+            self.__class__ = ControlRequest
+        else:
+            raise TypeError(f'{request_type} is not recognized')
+        return self
+
     @request_type.setter
     def request_type(self, value: str):
         """Set the type of this request, but keep the body empty"""
@@ -103,16 +129,7 @@ class Request:
             getattr(self.as_pb_object, value).SetInParent()
         else:
             raise ValueError(f'{value} is not valid, must be one of {_body_type}')
-
-    @property
-    def docs(self) -> 'DocumentSet':
-        self.is_used = True
-        return DocumentSet(self.body.docs)
-
-    @property
-    def groundtruths(self) -> 'DocumentSet':
-        self.is_used = True
-        return DocumentSet(self.body.groundtruths)
+        self.as_typed_request(self._request_type)
 
     @staticmethod
     def _decompress(data: bytes, algorithm: str) -> bytes:
@@ -164,7 +181,7 @@ class Request:
             #     self._envelope.request_type = getattr(r, r.WhichOneof('body')).__class__.__name__
             return r
 
-    def SerializeToString(self):
+    def SerializeToString(self) -> bytes:
         if self.is_used:
             return self.as_pb_object.SerializeToString()
         else:
@@ -176,25 +193,27 @@ class Request:
         self.is_used = True
         return QueryLangSet(self.as_pb_object.queryset)
 
-    @property
-    def command(self) -> str:
-        self.is_used = True
-        return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.as_pb_object.control.command)
-
-    def to_json(self) -> str:
-        """Return the object in JSON string """
+    def json(self) -> str:
+        """Return the request object in JSON string """
         return MessageToJson(self._request)
 
-    def to_response(self) -> 'Response':
+    def dict(self) -> Dict:
+        """Return the request object in dictionary """
+        return MessageToDict(self._request)
+
+    def as_response(self):
         """Return a weak reference of this object but as :class:`Response` object. It gives a more
         consistent semantics on the client.
         """
-        return Response(self._buffer)
+
+        base_cls = self.__class__
+        base_cls_name = self.__class__.__name__
+        self.__class__ = type(base_cls_name, (base_cls, Response), {})
 
 
-class Response(Request):
+class Response:
     """Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
-    :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
-    the client API: send a :class:`Request` and receive a :class:`Response`.
+       :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
+       the client API: send a :class:`Request` and receive a :class:`Response`.
 
     """

@@ -4,7 +4,9 @@ metas:
   name: merge_eval
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+    [SearchRequest, TrainRequest, IndexRequest]:
       - !CollectEvaluationDriver {}
     ControlRequest:
       - !ControlReqDriver {}
+    [DeleteRequest, UpdateRequest]:
+      - !RouteDriver {}

@@ -42,9 +42,9 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         doc4.id = '04' * 8
         doc4.tags['groundtruth'] = True
         self.db = {
-            int(doc1.id): doc1.SerializeToString(),
-            int(doc2.id): doc2.SerializeToString(),
-            int(doc4.id): doc4.SerializeToString()
+            doc1.id: doc1.SerializeToString(),
+            doc2.id: doc2.SerializeToString(),
+            doc4.id: doc4.SerializeToString()
         }
 
 

@@ -1,4 +1,4 @@
-from typing import Union, List, Iterator
+from typing import Union, List, Iterator, Iterable
 
 import numpy as np
 
@@ -10,7 +10,7 @@ from ..helper import deprecated_alias
 
 class Flow(BaseFlow):
 
-    def train(self, input_fn: InputFnType = None,
+    def train(self, input_fn: InputFnType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
@@ -178,7 +178,7 @@ class Flow(BaseFlow):
                                                  on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def index(self, input_fn: InputFnType = None,
+    def index(self, input_fn: InputFnType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
@@ -209,7 +209,7 @@ class Flow(BaseFlow):
         """
         return self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
 
-    def update(self, input_fn: InputFnType = None,
+    def update(self, input_fn: InputFnType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
@@ -240,7 +240,7 @@ class Flow(BaseFlow):
         """
         self._get_client(**kwargs).update(input_fn, on_done, on_error, on_always, **kwargs)
 
-    def delete(self, input_fn: InputFnType = None,
+    def delete(self, input_fn: Iterable[str],
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
@@ -272,7 +272,7 @@ class Flow(BaseFlow):
         self._get_client(**kwargs).delete(input_fn, on_done, on_error, on_always, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def search(self, input_fn: InputFnType = None,
+    def search(self, input_fn: InputFnType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,

@@ -1,7 +1,6 @@
 !Flow
-with:
-  show_exc_info: true
+version: '1'
 pods:
-  indexer:
+  - name: indexer
     uses: indexer.yml
     parallel: $JINA_TEST_REF_INDEXER_PARALLEL

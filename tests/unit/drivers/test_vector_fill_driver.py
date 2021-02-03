@@ -23,9 +23,9 @@ def docs_to_encode(num_docs):
 
 
 class MockIndexer(BaseIndexer):
-    def query_by_id(self, data: Any, *args, **kwargs) -> Any:
-        # encodes 10 * data into the encoder, so return data
-        return np.random.random([len(data), 5])
+    def query_by_key(self, keys: Any, *args, **kwargs) -> Any:
+        # encodes 10 * keys into the encoder, so return keys
+        return np.random.random([len(keys), 5])
 
 
 class SimpleFillDriver(VectorFillDriver):

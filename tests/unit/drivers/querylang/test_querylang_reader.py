@@ -58,7 +58,7 @@ def test_read_from_req(mocker):
 
     qs = QueryLang({'name': 'SliceQL', 'priority': 1, 'parameters': {'start': 1, 'end': 4}})
 
-    f = Flow(callback_on='body').add(uses='- !SliceQL | {start: 0, end: 5}')
+    f = Flow().add(uses='- !SliceQL | {start: 0, end: 5}')
 
     # without queryset
     with f:

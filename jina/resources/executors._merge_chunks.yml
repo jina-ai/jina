@@ -4,7 +4,9 @@ metas:
   name: merge_chunks
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+    [SearchRequest, TrainRequest, IndexRequest]:
       - !ReduceAllDriver {}
     ControlRequest:
       - !ControlReqDriver {}
+    [DeleteRequest, UpdateRequest]:
+      - !RouteDriver {}

@@ -11,7 +11,7 @@ from jina.logging.profile import used_memory_readable, TimeContext, used_memory
 num_data = 10000
 num_dim = 10000
 queries = np.random.random([100, num_dim])
-vec_idx = np.random.randint(0, high=num_data, size=[num_data])
+vec_idx = np.array(np.random.randint(0, high=num_data, size=[num_data]), dtype=(np.str_, 16))
 vec = np.random.random([num_data, num_dim])
 filename = 'a.gz'
 summary_file = 'summary.json'
@@ -33,7 +33,7 @@ def test_standard_query(tmpdir, test_standard):
     with NumpyIndexer.load(os.path.join(tmpdir, 'a.bin')) as ni:
         ni.batch_size = 256
         print(used_memory_readable())
-        print(ni.raw_ndarray.shape)
+        print(ni._raw_ndarray.shape)
         print(used_memory_readable())
         with TimeContext('query topk') as ti:
             result = ni.query(queries, top_k=10)

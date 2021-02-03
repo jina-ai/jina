@@ -5,7 +5,7 @@ import gzip
 import os
 from functools import lru_cache
 from os import path
-from typing import Optional, List, Union, Tuple, Dict, Sequence
+from typing import Optional, Iterator, Tuple, Dict, Sequence
 
 import numpy as np
 
@@ -46,7 +46,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.dtype = None
         self.compress_level = compress_level
         self.key_bytes = b''
-        self.key_dtype = None
         self.valid_indices = np.array([], dtype=bool)
         self.ref_indexer_workspace_name = None
 
@@ -56,7 +55,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self.dtype = ref_indexer.dtype
             self.compress_level = ref_indexer.compress_level
             self.key_bytes = ref_indexer.key_bytes
-            self.key_dtype = ref_indexer.key_dtype
+            self._key_length = ref_indexer._key_length
             self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
@@ -118,58 +117,55 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'vectors\' dtype {vectors.dtype.name} does not match with indexers\'s dtype: {self.dtype}')
         elif keys.shape[0] != vectors.shape[0]:
             raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
-        elif self.key_dtype != keys.dtype.name:
-            raise TypeError(
-                f'keys\' dtype {keys.dtype.name} does not match with indexers keys\'s dtype: {self.key_dtype}')
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs) -> None:
+    def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Add the embeddings and document ids to the index.
 
-        :param keys: document ids
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: embeddings
         """
+        max_key_len = max([len(k) for k in keys])
+        self.key_length = max_key_len
+        np_keys = np.array(keys, (np.str_, self.key_length))
+
+        self._add(np_keys, vectors)
+
+    def _add(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
         self.key_bytes += keys.tobytes()
-        self.key_dtype = keys.dtype.name
         self._size += keys.shape[0]
 
-    def update(self, keys: Sequence[int], vectors: Sequence[bytes], *args, **kwargs) -> None:
+    def update(self, keys: Iterator[str], values: Sequence[bytes], *args, **kwargs) -> None:
         """Update the embeddings on the index via document ids.
 
-        :param keys: document ids
-        :param vectors: embeddings
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: embeddings
         """
         # noinspection PyTypeChecker
-        keys, values = self._filter_nonexistent_keys_values(keys, vectors, self.ext2int_id.keys(), self.save_abspath)
-        # could be empty
-        # please do not use "if keys:", it wont work on both sequence and ndarray
-        if getattr(keys, 'size', len(keys)):
-            # expects np array for computing shapes
-            keys = np.array(list(keys))
-            self._delete(keys, keys_precomputed=True)
-            self.add(np.array(keys), np.array(values))
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys(), self.save_abspath)
+        np_keys = np.array(keys, (np.str_, self.key_length))
 
-    def _delete(self, keys, keys_precomputed):
-        # could be empty
-        if keys_precomputed is not True:
-            keys = self._filter_nonexistent_keys(keys, self.ext2int_id.keys(), self.save_abspath)
-        # please do not use "if keys:", it wont work on both sequence and ndarray
-        if getattr(keys, 'size', len(keys)):
-            # expects np array for computing shapes
-            keys = np.array(list(keys))
+        if np_keys.size:
+            self._delete(np_keys)
+            self._add(np_keys, np.array(values))
+
+    def _delete(self, keys):
+        if keys.size:
             for key in keys:
                 # mark as `False` in mask
-                self.valid_indices[self.ext2int_id[key]] = False
+                self.valid_indices[self._ext2int_id[key]] = False
                 self._size -= 1
 
-    def delete(self, keys: Sequence[int], *args, **kwargs) -> None:
+    def delete(self, keys: Iterator[str], *args, **kwargs) -> None:
         """Delete the embeddings from the index via document ids.
 
-        :param keys: document ids
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
-        self._delete(keys, keys_precomputed=False)
+        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        np_keys = np.array(keys, (np.str_, self.key_length))
+        self._delete(np_keys)
 
     def get_query_handler(self) -> Optional['np.ndarray']:
         """Open a gzip file and load it as a numpy ndarray
@@ -177,9 +173,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :return: a numpy ndarray of vectors
         """
         if np.all(self.valid_indices):
-            vecs = self.raw_ndarray
+            vecs = self._raw_ndarray
         else:
-            vecs = self.raw_ndarray[self.valid_indices]
+            vecs = self._raw_ndarray[self.valid_indices]
 
         if vecs is not None:
             return self.build_advanced_index(vecs)
@@ -202,7 +198,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'{abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
 
     @cached_property
-    def raw_ndarray(self) -> Optional['np.ndarray']:
+    def _raw_ndarray(self) -> Optional['np.ndarray']:
         if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
 
@@ -215,40 +211,40 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
                              shape=(self.size + deleted_keys, self.num_dim))
 
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> Optional['np.ndarray']:
+    def query_by_key(self, keys: Sequence[str], *args, **kwargs) -> Optional['np.ndarray']:
         """
         Search the index by the external key (passed during `.add(`).
 
-        :param ids: the list of keys to be queried
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :return: ndarray of vectors
         """
-        ids = self._filter_nonexistent_keys(ids, self.ext2int_id.keys(), self.save_abspath)
-        if ids:
-            indices = [self.ext2int_id[key] for key in ids]
-            return self.raw_ndarray[indices]
+        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        if keys:
+            indices = [self._ext2int_id[key] for key in keys]
+            return self._raw_ndarray[indices]
         else:
             return None
 
     @cached_property
-    def int2ext_id(self) -> Optional['np.ndarray']:
+    def _int2ext_id(self) -> Optional['np.ndarray']:
         """Convert internal ids (0,1,2,3,4,...) to external ids (random index) """
-        if self.key_bytes and self.key_dtype:
-            r = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+        if self.key_bytes:
+            r = np.frombuffer(self.key_bytes, dtype=(np.str_, self.key_length))
             # `==` is required. `is False` does not work in np
             deleted_keys = len(self.valid_indices[self.valid_indices == False])  # noqa
-            if r.shape[0] == (self.size + deleted_keys) == self.raw_ndarray.shape[0]:
+            if r.shape[0] == (self.size + deleted_keys) == self._raw_ndarray.shape[0]:
                 return r
             else:
                 self.logger.error(
                     f'the size of the keys and vectors are inconsistent '
-                    f'({r.shape[0]}, {self._size}, {self.raw_ndarray.shape[0]}), '
+                    f'({r.shape[0]}, {self._size}, {self._raw_ndarray.shape[0]}), '
                     f'did you write to this index twice? or did you forget to save indexer?')
 
     @cached_property
-    def ext2int_id(self) -> Optional[Dict]:
+    def _ext2int_id(self) -> Optional[Dict]:
         """Convert external ids (random index) to internal ids (0,1,2,3,4,...) """
-        if self.int2ext_id is not None:
-            return {k: idx for idx, k in enumerate(self.int2ext_id)}
+        if self._int2ext_id is not None:
+            return {k: idx for idx, k in enumerate(self._int2ext_id)}
 
 
 @lru_cache(maxsize=3)
@@ -331,7 +327,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         return idx, dist
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple[
+    def query(self, query_vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple[
         Optional['np.ndarray'], Optional['np.ndarray']]:
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
@@ -347,18 +343,18 @@ class NumpyIndexer(BaseNumpyIndexer):
         if self.size == 0:
             return None, None
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
-            dist = self._cdist(keys, self.query_handler)
+            dist = self._cdist(query_vectors, self.query_handler)
         elif self.metric == 'euclidean':
-            _keys = _ext_A(keys)
-            dist = self._euclidean(_keys, self.query_handler)
+            _query_vectors = _ext_A(query_vectors)
+            dist = self._euclidean(_query_vectors, self.query_handler)
         elif self.metric == 'cosine':
-            _keys = _ext_A(_norm(keys))
-            dist = self._cosine(_keys, self.query_handler)
+            _query_vectors = _ext_A(_norm(query_vectors))
+            dist = self._cosine(_query_vectors, self.query_handler)
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
 
         idx, dist = self._get_sorted_top_k(dist, top_k)
-        indices = self.int2ext_id[self.valid_indices][idx]
+        indices = self._int2ext_id[self.valid_indices][idx]
         return indices, dist
 
     def build_advanced_index(self, vecs: 'np.ndarray'):

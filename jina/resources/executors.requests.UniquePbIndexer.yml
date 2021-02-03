@@ -1,8 +1,8 @@
 on:
-  [IndexRequest, UpdateRequest, DeleteRequest]:
+  [IndexRequest, UpdateRequest]:
     - !TaggingCacheDriver
       with:
-        executor: DocIDCache
+        executor: DocCache
         tags:
           is_indexed: true
     - !FilterQL

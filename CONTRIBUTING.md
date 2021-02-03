@@ -265,7 +265,7 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 
 #### General Documentation
 
-This covers files like [Jina 101](https://github.com/jina-ai/jina/tree/master/docs/chapters/101), [Input and Output Functions, etc](https://github.com/jina-ai/jina/blob/master/docs/chapters/io/index.md).
+This covers files like [Jina 101](https://101.jina.ai), [Input and Output Functions, etc](https://github.com/jina-ai/jina/blob/master/docs/chapters/io/index.md).
 
 These are typically written in Markdown, though some may be in RestructuredText.
 
@@ -285,10 +285,12 @@ Docstrings are how we document Jina's functions. This is suitable for more exper
 
 #### Building Documentation Locally
 
-To build documentation locally, you need Docker installed. Clone this repository and run the following command: 
+To build documentation locally, please checkout our [jina-ai/docs](https://github.com/jina-ai/docs) repo:
 
 ```bash
-bash ./scripts/make-doc.sh serve 8080
+make clean
+make html
+python -m http.server 8080 -d _build/html
 ```
 
 The documentation is then available in your browser at [`http://0.0.0.0:8080/`](http://0.0.0.0:8080/).

@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, Union, List, Iterator, Optional, Any
+from typing import Tuple, List, Iterator, Optional, Any
 
 import numpy as np
 
@@ -51,6 +51,25 @@ class BaseIndexer(BaseExecutor):
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
         self._size = 0
+        self._key_length = 0  #: the length of the key
+
+    @property
+    def key_length(self) -> int:
+        return self._key_length
+
+    @key_length.setter
+    def key_length(self, val: int):
+        """Set the max key length. """
+        if not self._key_length:
+            self._key_length = val
+        elif val < self._key_length:
+            # just padding, no big deal
+            self.logger.warning(
+                f'key padding is triggered. this indexer allows only keys at length {self._key_length}, '
+                f'but your max key length is {val}.')
+        elif val > self._key_length:
+            # panic
+            raise ValueError(f'this indexer allows only keys at length {self._key_length}, but yours is {val}')
 
     def add(self, *args, **kwargs):
         """Add documents to the index.
@@ -176,7 +195,8 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator, check_path: str) -> Tuple[List, List]:
+    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator,
+                                        check_path: str) -> Tuple[List, List]:
         keys = list(keys)
         values = list(values)
         if len(keys) != len(values):
@@ -211,44 +231,44 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
-        """Get the vectors by id.
+    def query_by_key(self, keys: Iterator[str], *args, **kwargs) -> 'np.ndarray':
+        """ Get the vectors by id, return a subset of indexed vectors
 
-        :param ids: list of document ids` as 1D-ndarray
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :return: subset of indexed vectors
         """
         raise NotImplementedError
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
-        """Add vectors to the index.
+    def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs):
+        """Add new chunks and their vector representations
 
-        :param keys: document ids` as 1D-ndarray
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
         """
         raise NotImplementedError
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
-        """Find k-NN using query vectors.
+    def query(self, query_vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Find k-NN using query vectors, return chunk ids and chunk scores
 
-        :param keys: query vectors in ndarray, shape B x D
+        :param query_vectors: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
         :return: a tuple of two ndarray.
             The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         """Update vectors on the index.
 
-        :param keys: document ids` as 1D-ndarray
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: vector representations in B x D
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[str], *args, **kwargs):
         """Delete vectors from the index.
 
-        :param keys: document ids` as 1D-ndarray
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
         raise NotImplementedError
 
@@ -261,10 +281,10 @@ class BaseKVIndexer(BaseIndexer):
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
 
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         """Add the serialized documents to the index via document ids.
 
-        :param keys: document ids
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
         """
         raise NotImplementedError
@@ -277,18 +297,18 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
         """Update the serialized documents on the index via document ids.
 
-        :param keys: document ids
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterator[str], *args, **kwargs):
         """Delete the serialized documents from the index via document ids.
 
-        :param keys: document ids
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
         raise NotImplementedError
 
@@ -297,7 +317,7 @@ class BaseKVIndexer(BaseIndexer):
 
 
 class UniqueVectorIndexer(CompoundExecutor):
-    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocIDCache` """
+    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocCache` """
 
 
 class CompoundIndexer(CompoundExecutor):

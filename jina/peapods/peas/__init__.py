@@ -45,9 +45,9 @@ class BasePea(metaclass=PeaType):
             self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}' +
-                              f'add "--show-exc-info" to see the exception stack in details'
-                              if not self.args.show_exc_info else '',
-                              exc_info=self.args.show_exc_info)
+                              f'\n add "--hide-exc-info" to suppress the exception details'
+                              if not self.args.hide_exc_info else '',
+                              exc_info=not self.args.hide_exc_info)
             raise RuntimeFailToStart from ex
 
     def run(self):
@@ -66,9 +66,9 @@ class BasePea(metaclass=PeaType):
             self.runtime.setup()
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime.setup!r}' +
-                              f'add "--show-exc-info" to see the exception stack in details'
-                              if not self.args.show_exc_info else '',
-                              exc_info=self.args.show_exc_info)
+                              f'\n add "--hide-exc-info" to suppress the exception details'
+                              if not self.args.hide_exc_info else '',
+                              exc_info=not self.args.hide_exc_info)
         else:
             self.is_ready.set()
             try:
@@ -79,17 +79,17 @@ class BasePea(metaclass=PeaType):
                 self.logger.info(f'{self.runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
 
             try:
                 self.runtime.teardown()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.teardown!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
         finally:
             self.is_shutdown.set()
             self.is_ready.clear()
@@ -111,8 +111,9 @@ class BasePea(metaclass=PeaType):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
-                                     f'add "--show-exc-info" to see the exception stack in details')
+                if self.args.hide_exc_info:
+                    self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
+                                         f'remove "--hide-exc-info" to see the exception stack in details')
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
@@ -137,9 +138,9 @@ class BasePea(metaclass=PeaType):
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.cancel!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:

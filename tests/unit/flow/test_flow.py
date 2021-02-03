@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow
+from jina import Flow, Document
 from jina.enums import SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
@@ -379,7 +379,7 @@ def test_index_text_files(mocker, restful):
          .add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
 
     with f:
-        f.index_files('*.py', on_done=response_mock, callback_on='body')
+        f.index_files('*.py', on_done=response_mock)
 
     rm_files(['doc.gzip'])
     response_mock.assert_called()
@@ -624,3 +624,38 @@ def test_bad_pod_graceful_termination():
 
     # bad remote pod at second, with correct pod at last
     asset_bad_flow(Flow().add().add(host='hello-there').add())
+
+
+def test_socket_types_2_remote_one_local():
+    f = Flow().add(name='pod1', host='0.0.0.1'). \
+        add(name='pod2', parallel=2, host='0.0.0.2'). \
+        add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway']). \
+        join(name='join', needs=['pod2', 'pod3'])
+
+    f.build()
+
+    assert f._pod_nodes['join'].head_args.socket_in == SocketType.PULL_BIND
+    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.PUSH_CONNECT
+    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.PUSH_CONNECT
+
+
+def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote():
+    f = Flow().add(name='pod1', host='0.0.0.1'). \
+        add(name='pod2', parallel=2, host='0.0.0.2'). \
+        add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway']). \
+        join(name='join', needs=['pod2', 'pod3'])
+
+    f.build()
+    for k, v in f:
+        print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
+
+    assert f._pod_nodes['join'].head_args.socket_in == SocketType.PULL_BIND
+    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.PUSH_CONNECT
+    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.PUSH_CONNECT
+
+
+def test_single_document_flow_index():
+    d = Document()
+    with Flow().add() as f:
+        f.index(d)
+        f.index(lambda: d)

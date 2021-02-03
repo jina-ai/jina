@@ -1,15 +1,19 @@
 import argparse
 import asyncio
+import warnings
 from typing import Any
 
 from google.protobuf.json_format import MessageToDict
 
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
-from ..... import clients
+from ..... import __version__
+from .....clients.request import request_generator
 from .....enums import RequestType
+from .....helper import get_full_version
 from .....importer import ImportExtensions
-from .....logging import JinaLogger
+from .....logging import JinaLogger, default_logger
+from .....logging.profile import used_memory_readable
 from .....types.message import Message
 from .....types.request import Request
 
@@ -21,10 +25,16 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from fastapi.middleware.cors import CORSMiddleware
         from starlette.endpoints import WebSocketEndpoint
         from starlette import status
-        if False:
-            from starlette.types import Receive, Scope, Send
+        from starlette.types import Receive, Scope, Send
+        from starlette.responses import StreamingResponse
+        from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, \
+            JinaSearchRequestModel
 
-    app = FastAPI(title='RESTRuntime')
+    app = FastAPI(
+        title='Jina',
+        description='REST interface for Jina',
+        version=__version__,
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=['*'],
@@ -37,12 +47,32 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     def error(reason, status_code):
         return JSONResponse(content={'reason': reason}, status_code=status_code)
 
-    @app.get('/ready')
-    async def is_ready():
-        return JSONResponse(status_code=200)
+    @app.on_event('startup')
+    async def startup():
+        default_logger.info(f'''
+    Jina REST interface
+    💬 Swagger UI:\thttp://localhost:{args.port_expose}/docs
+    📚 Redoc     :\thttp://localhost:{args.port_expose}/redoc
+        ''')
+        from jina import __ready_msg__
+        default_logger.success(__ready_msg__)
 
-    @app.post(path='/api/{mode}')
+    @app.get(path='/status',
+             summary='Get the status of the daemon',
+             response_model=JinaStatusModel,
+             tags=['jina']
+             )
+    async def _status():
+        _info = get_full_version()
+        return {
+            'jina': _info[0],
+            'envs': _info[1],
+            'used_memory': used_memory_readable()
+        }
+
+    @app.post(path='/api/{mode}', deprecated=True)
     async def api(mode: str, body: Any = Body(...)):
+        warnings.warn('this interface will be retired soon', DeprecationWarning)
         if mode.upper() not in RequestType.__members__:
             return error(reason=f'unsupported mode {mode}', status_code=405)
 
@@ -50,12 +80,62 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             return error('"data" field is empty', 406)
 
         body['mode'] = RequestType.from_string(mode)
-        req_iter = getattr(clients.request, mode)(**body)
+        from .....clients import BaseClient
+        BaseClient.add_default_kwargs(body)
+        req_iter = request_generator(**body)
         results = await get_result_in_json(req_iter=req_iter)
         return JSONResponse(content=results[0], status_code=200)
 
     async def get_result_in_json(req_iter):
         return [MessageToDict(k) async for k in servicer.Call(request_iterator=req_iter, context=None)]
+
+    @app.post(path='/index',
+              summary='Index documents into Jina',
+              tags=['CRUD']
+              )
+    async def index_api(body: JinaIndexRequestModel):
+        from .....clients import BaseClient
+        bd = body.dict()
+        bd['mode'] = RequestType.INDEX
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
+
+    @app.post(path='/search',
+              summary='Search documents from Jina',
+              tags=['CRUD']
+              )
+    async def index_api(body: JinaSearchRequestModel):
+        from .....clients import BaseClient
+        bd = body.dict()
+        bd['mode'] = RequestType.SEARCH
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
+
+    @app.put(path='/update',
+             summary='Update documents in Jina',
+             tags=['CRUD']
+             )
+    async def index_api(body: JinaUpdateRequestModel):
+        from .....clients import BaseClient
+        bd = body.dict()
+        bd['mode'] = RequestType.UPDATE
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
+
+    @app.delete(path='/delete',
+                summary='Delete documents in Jina',
+                tags=['CRUD']
+                )
+    async def index_api(body: JinaDeleteRequestModel):
+        from .....clients import BaseClient
+        bd = body.dict()
+        bd['mode'] = RequestType.DELETE
+        BaseClient.add_default_kwargs(bd)
+        return StreamingResponse(result_in_stream(request_generator(**bd)))
+
+    async def result_in_stream(req_iter):
+        async for k in servicer.Call(request_iterator=req_iter, context=None):
+            yield MessageToDict(k)
 
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):

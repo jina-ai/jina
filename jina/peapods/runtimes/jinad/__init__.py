@@ -61,11 +61,15 @@ class JinadRuntime(AsyncZMQRuntime):
             upload_files = []
             if self.args.uses.endswith('.yml') or self.args.uses.endswith('.yaml'):
                 upload_files.append(self.args.uses)
-                if not self.args.upload_files:
-                    self.logger.warning(f'will upload {self.args.uses} to remote, to include more local file '
-                                        f'dependencies, please use `--upload-files`')
+
+            if self.args.uses_internal.endswith('.yml') or self.args.uses_internal.endswith('.yaml'):
+                upload_files.append(self.args.uses_internal)
+
             if self.args.upload_files:
                 upload_files.extend(self.args.upload_files)
+            else:
+                self.logger.warning(f'will upload {upload_files} to remote, to include more local file '
+                                    f'dependencies, please use `--upload-files`')
 
             if upload_files:
                 workspace_id = self.api.upload(dependencies=list(set(upload_files)),

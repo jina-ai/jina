@@ -1,0 +1,35 @@
+version: "3.3"
+services:
+  flow:
+    image: test_join_local_from_remote
+    build:
+      context: .
+      dockerfile: Dockerfiles/debianx.Dockerfile
+    ports:
+      - "8000:8000"
+      - "45678:45678"
+    env_file:
+      - tests/distributed/test_join_local_from_remote/.env
+    expose:
+      - 10000-60000
+  pod_one:
+    image: test_join_local_from_remote
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/distributed/test_join_local_from_remote/.env
+  pod_two:
+    image: test_join_local_from_remote
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/distributed/test_join_local_from_remote/.env
+  pod_three:
+    image: test_join_local_from_remote
+    expose:
+      - 8000
+      - 10000-60000
+    env_file:
+      - tests/distributed/test_join_local_from_remote/.env

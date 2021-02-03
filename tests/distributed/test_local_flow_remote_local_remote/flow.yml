@@ -12,7 +12,6 @@ pods:
     port_ctrl: 45001
     port_expose: 8000
   - name: encoder
-    show-exc-info: True
     uses: _pass
     needs: $JINA_ENCODER_NEEDS
   - name: indexer
