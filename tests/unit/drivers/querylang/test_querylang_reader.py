@@ -117,7 +117,7 @@ class MockExcludeQL(ExcludeQL):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         ql = QueryLang({'name': 'MockExcludeQL', 'parameters': {'fields': ['updated_field1', 'updated_field2']}, 'priority': 3})
-        self.qset = QueryLangSet([ql.as_pb_object])
+        self.qset = QueryLangSet([ql.proto])
 
     @property
     def queryset(self):

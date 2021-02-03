@@ -26,7 +26,7 @@ def test_ndarray_get_set(field):
     b = np.random.random([10, 10])
     c = NdArray()
     c.value = b
-    setattr(a, field, c.proto)
+    setattr(a, field, c._pb_body)
     np.testing.assert_equal(getattr(a, field), b)
 
 
@@ -139,7 +139,7 @@ def test_request_docs_mutable_iterator():
         doc_pointers.append(d)
 
     # pb-lize it should see the change
-    rpb = r.as_pb_object
+    rpb = r.proto
 
     for idx, d in enumerate(rpb.index.docs):
         assert isinstance(d, DocumentProto)
@@ -177,7 +177,7 @@ def test_request_docs_chunks_mutable_iterator():
             doc_pointers.append(c)
 
     # pb-lize it should see the change
-    rpb = r.as_pb_object
+    rpb = r.proto
 
     for d in rpb.index.docs:
         assert isinstance(d, DocumentProto)

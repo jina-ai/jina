@@ -1,7 +1,6 @@
-from typing import Optional, Dict
+from typing import Optional
 
-from google.protobuf.json_format import MessageToJson, MessageToDict
-
+from ..mixin import ProtoTypeMixin
 from ...excepts import BadNamedScoreType
 from ...helper import typename
 from ...proto import jina_pb2
@@ -9,7 +8,7 @@ from ...proto import jina_pb2
 __all__ = ['NamedScore']
 
 
-class NamedScore:
+class NamedScore(ProtoTypeMixin):
     """
      :class:`NamedScore` is one of the **primitive data type** in Jina.
 
@@ -50,13 +49,13 @@ class NamedScore:
                 view (i.e. weak reference) from it or a deep copy from it.
         :param kwargs: other parameters to be set
         """
-        self._score = jina_pb2.NamedScoreProto()
+        self._pb_body = jina_pb2.NamedScoreProto()
         try:
             if isinstance(score, jina_pb2.NamedScoreProto):
                 if copy:
-                    self._score.CopyFrom(score)
+                    self._pb_body.CopyFrom(score)
                 else:
-                    self._score = score
+                    self._pb_body = score
             elif score is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(score)} is not recognizable')
@@ -64,9 +63,6 @@ class NamedScore:
             raise BadNamedScoreType(f'fail to construct a NamedScore from {score}') from ex
 
         self.set_attrs(**kwargs)
-
-    def __getattr__(self, name: str):
-        return getattr(self._score, name)
 
     def set_attrs(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs
@@ -77,26 +73,18 @@ class NamedScore:
         """
         for k, v in kwargs.items():
             if isinstance(v, list) or isinstance(v, tuple):
-                self._score.ClearField(k)
-                getattr(self._score, k).extend(v)
+                self._pb_body.ClearField(k)
+                getattr(self._pb_body, k).extend(v)
             elif isinstance(v, dict):
-                self._score.ClearField(k)
-                getattr(self._score, k).update(v)
+                self._pb_body.ClearField(k)
+                getattr(self._pb_body, k).update(v)
             else:
                 if hasattr(NamedScore, k) and isinstance(getattr(NamedScore, k), property) and getattr(NamedScore,
                                                                                                        k).fset:
                     # if class property has a setter
                     setattr(self, k, v)
-                elif hasattr(self._score, k):
+                elif hasattr(self._pb_body, k):
                     # no property setter, but proto has this attribute so fallback to proto
-                    setattr(self._score, k, v)
+                    setattr(self._pb_body, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
-
-    def json(self) -> str:
-        """Return the Document object in JSON string """
-        return MessageToJson(self._score)
-
-    def dict(self) -> Dict:
-        """Return the Document object in dictionary """
-        return MessageToDict(self._score)

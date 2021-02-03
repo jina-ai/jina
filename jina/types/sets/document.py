@@ -31,7 +31,7 @@ class DocumentSet(MutableSequence):
         self._docs_map = {}
 
     def insert(self, index: int, doc: 'Document') -> None:
-        self._docs_proto.insert(index, doc.as_pb_object)
+        self._docs_proto.insert(index, doc.proto)
 
     def __setitem__(self, key, value: 'Document'):
         from ..document.uid import UniqueId
@@ -83,14 +83,14 @@ class DocumentSet(MutableSequence):
         return self
 
     def append(self, doc: 'Document') -> 'Document':
-        return self._docs_proto.append(doc.as_pb_object)
+        return self._docs_proto.append(doc.proto)
 
     def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method """
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
-        self._docs_proto.extend(doc.as_pb_object for doc in iterable)
+        self._docs_proto.extend(doc.proto for doc in iterable)
 
     def clear(self):
         del self._docs_proto[:]

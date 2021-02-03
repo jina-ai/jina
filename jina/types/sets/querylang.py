@@ -31,13 +31,13 @@ class QueryLangSet(MutableSequence):
         self._querylangs_map = {}
 
     def insert(self, index: int, ql: 'QueryLang') -> None:
-        self._querylangs_proto.insert(index, ql.as_pb_object)
+        self._querylangs_proto.insert(index, ql.proto)
 
     def __setitem__(self, key, value: 'QueryLang'):
         if isinstance(key, int):
-            self._querylangs_proto[key].CopyFrom(value.as_pb_object)
+            self._querylangs_proto[key].CopyFrom(value.proto)
         elif isinstance(key, str):
-            self._querylangs_map[key].CopyFrom(value.as_pb_object)
+            self._querylangs_map[key].CopyFrom(value.proto)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -62,11 +62,11 @@ class QueryLangSet(MutableSequence):
     def append(self, value: 'AcceptQueryLangType'):
         q_pb = self._querylangs_proto.add()
         if isinstance(value, Dict):
-            q_pb.CopyFrom(QueryLang(value).as_pb_object)
+            q_pb.CopyFrom(QueryLang(value).proto)
         elif isinstance(value, QueryLangProto):
             q_pb.CopyFrom(value)
         elif isinstance(value, QueryLang):
-            q_pb.CopyFrom(value.as_pb_object)
+            q_pb.CopyFrom(value.proto)
         else:
             raise TypeError(f'unknown type {typename(value)}')
 
