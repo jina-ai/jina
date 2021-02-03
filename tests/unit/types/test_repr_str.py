@@ -3,13 +3,17 @@ import pytest
 
 from jina import Document, Request, QueryLang, NdArray
 from jina.types.score import NamedScore
+from jina.types.sets.chunk import ChunkSet
+from jina.types.sets.match import MatchSet
 
 
 @pytest.mark.parametrize('obj', [Document(),
                                  Request(),
                                  QueryLang(),
                                  NamedScore(),
-                                 NdArray()])
+                                 NdArray(),
+                                 MatchSet([Document()], Document()),
+                                 ChunkSet([Document()], Document())])
 def test_builtin_str_repr_no_content(obj):
     print(obj)
     print(f'{obj!r}')
@@ -24,6 +28,6 @@ def test_builtin_str_repr_no_content(obj):
                                             ref_id='10' * 16,
                                             description='score description'),
                                  NdArray(np.random.random([3, 5]))])
-def test_builtin_str_repr_no_content(obj):
+def test_builtin_str_repr_has_content(obj):
     print(obj)
     print(f'{obj!r}')

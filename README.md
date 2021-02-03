@@ -135,8 +135,7 @@ with f:
 ```python
 # retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively 
 with f:
-    f.search(docs[0], top_k=3,
-             on_done=lambda x: [print(m.dict()) for m in x.docs[0].matches])
+    f.search(docs[0], top_k=3, on_done=lambda x: print(x.docs[0].matches))
 ```
 
 <sup>

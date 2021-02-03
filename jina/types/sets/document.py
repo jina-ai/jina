@@ -4,6 +4,8 @@ from typing import Union, Sequence, Iterable, Tuple
 
 import numpy as np
 
+from ...helper import typename
+
 try:
     # when protobuf using Cpp backend
     from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
@@ -167,3 +169,16 @@ class DocumentSet(MutableSequence):
         """Create a new empty document appended to the end of the set"""
         from ..document import Document
         return self.append(Document())
+
+    def __str__(self):
+        from ..document import Document
+        content = ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
+        if len(self._docs_proto) > 3:
+            content += f'in total {len(self._docs_proto)} items'
+        return content
+
+    def __repr__(self):
+        content = ' '.join(f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items())
+        content += f' at {id(self)}'
+        content = content.strip()
+        return f'<{typename(self)} {content}>'
