@@ -134,7 +134,7 @@ with f:
     <td>
 
 ```python
-# print 🐲🐦🐢 Doc with score 0, 1, 1
+# print 🐲🐦🐢 Doc with score 0, 1, 1, respectively
 with f:
     f.search(docs[0], top_k=3,
              on_done=lambda x: [print(m.dict()) for m in x.docs[0].matches])
@@ -147,8 +147,8 @@ with f:
 {"id": "🐦", "tags": {"position": "South", "guardian": "Vermilion Bird"}, "embedding": {"dense": {"buffer": "AQAAAAAAAAAAAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"value": 1.0, "opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
 {"id": "🐢", "tags": {"guardian": "Black Tortoise", "position": "North"}, "embedding": {"dense": {"buffer": "AAAAAAAAAAABAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"value": 1.0, "opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
 ```
-
 </sup>
+
 </tr>
   <tr>
     <td>
@@ -178,6 +178,8 @@ with f:
 
 </tr>
 </table>
+
+Get the vibe? Now we are talking! Let's learn more about the basic concepts and features in Jina.
 
 #### Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
