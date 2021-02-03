@@ -86,10 +86,93 @@ jina hello-world --help
 
 |     |   |
 | --- |---|
-| 🐣  | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🚀  | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🥚  | [CRUD Functions](#CRUD-ops) |
+| 🐣  | [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
-#### Create
+#### CRUD Functions
+
+First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With documents below as example:
+```python
+import numpy as np
+from jina import Document
+docs = [
+    Document(id='🐲', embedding=np.array([0, 0]), tags={'guardian': 'Azure Dragon', 'position': 'East'}),
+    Document(id='🐦', embedding=np.array([1, 0]), tags={'guardian': 'Vermilion Bird', 'position': 'South'}),
+    Document(id='🐢', embedding=np.array([0, 1]), tags={'guardian': 'Black Tortoise', 'position': 'North'}),
+    Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
+```
+
+Let's build a simple Flow with a simple indexer. 
+
+```python
+from jina import Flow
+f = Flow().add(uses='_index')
+```
+
+`Document` and `Flow` are important concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured info database.
+
+<table>
+  <tr>
+    <td>
+    <b>Index</b>
+    </td>
+    <td>
+
+```python
+# store four docs (both embedding and structured info) into Jina
+with f:
+    f.index(docs, on_done=print)
+```
+
+</tr>
+  <tr>
+    <td>
+    <b>Search</b>
+    </td>
+    <td>
+
+```python
+# return 🐲🐦🐢 with score 0, 1, 1
+with f:
+    f.search(docs[0],
+             top_k=3,
+             on_done=lambda x: [print(m.dict()) for m in x.docs[0].matches])
+```
+
+</tr>
+</tr>
+  <tr>
+    <td>
+    <b>Update</b>
+    </td>
+    <td>
+
+```python
+# update 🐲 embedding
+docs[0].embedding = np.array([1, 1])
+with f:
+    f.update(docs[0])
+```
+
+</tr>
+</tr>
+  <tr>
+    <td>
+    <b>Delete</b>
+    </td>
+    <td>
+
+```python
+# remove 🐦🐲 Documents
+with f:
+    f.delete(['🐦', '🐲'])
+```
+
+</tr>
+</table>
+
+#### Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 Jina provides a high-level [Flow API](https://101.jina.ai) to simplify building search/index workflows. To create a new Flow:
@@ -364,8 +447,9 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 |     |   |
 | --- |---|
-| 🐣   | [Create](#create) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🚀   | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🥚  | [CRUD Functions](#CRUD-ops) |
+| 🐣  | [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 
 #### Customize Encoder
