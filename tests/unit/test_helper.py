@@ -223,6 +223,7 @@ def test_deprecated_decor():
 def test_yaml_filepath_validate_good(val):
     assert is_yaml_filepath(val)
 
+
 @pytest.mark.parametrize('val', [' .yml',
                                  'a',
                                  ' uses: yaml',
