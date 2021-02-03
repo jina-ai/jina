@@ -93,7 +93,7 @@ jina hello-world --help
 #### CRUD Functions
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With documents below as example:
+First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With Documents below as an example:
 ```python
 import numpy as np
 from jina import Document
@@ -103,14 +103,14 @@ docs = [Document(id='🐲', embedding=np.array([0, 0]), tags={'guardian': 'Azure
         Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
 ```
 
-Let's build a simple Flow with a simple indexer. 
+Let's build a Flow with a simple indexer: 
 
 ```python
 from jina import Flow
 f = Flow().add(uses='_index')
 ```
 
-`Document` and `Flow` are important concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured info database.
+`Document` and `Flow` are basic concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured storage that one can use out of the box.
 
 <table>
   <tr>
@@ -120,7 +120,7 @@ f = Flow().add(uses='_index')
     <td>
 
 ```python
-# store four docs (both embedding and structured info) into Jina
+# save four docs (both embedding and structured info) into storage
 with f:
     f.index(docs, on_done=print)
 ```
@@ -133,7 +133,7 @@ with f:
     <td>
 
 ```python
-# print 🐲🐦🐢 Doc with score 0, 1, 1, respectively
+# retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively 
 with f:
     f.search(docs[0], top_k=3,
              on_done=lambda x: [print(m.dict()) for m in x.docs[0].matches])
@@ -156,7 +156,7 @@ with f:
     <td>
 
 ```python
-# update 🐲 embedding
+# update 🐲 embedding in the storage
 docs[0].embedding = np.array([1, 1])
 with f:
     f.update(docs[0])
@@ -170,7 +170,7 @@ with f:
     <td>
 
 ```python
-# remove 🐦🐲 Documents
+# remove 🐦🐲 Documents from the storage
 with f:
     f.delete(['🐦', '🐲'])
 ```
