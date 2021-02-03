@@ -107,7 +107,6 @@ class BinaryPbIndexer(BaseKVIndexer):
                                                             self.save_abspath)
         self._delete(keys)
         self.add(keys, values)
-        return
 
     def _delete(self, keys: Iterator[str]):
         self.query_handler.close()
