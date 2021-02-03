@@ -1,4 +1,4 @@
-from typing import Union, List, Iterator, Iterable
+from typing import Union, List, Iterable
 
 from .base import BaseFlow
 from ..clients.asyncio import AsyncClient, AsyncWebSocketClient
@@ -167,7 +167,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
+    async def index_lines(self, lines: Iterable[str] = None, filepath: str = None, size: int = None,
                           sampling_rate: float = None, read_mode='r',
                           on_done: CallbackFnType = None,
                           on_error: CallbackFnType = None,
@@ -193,7 +193,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
+    async def index_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                           size: int = None, sampling_rate: float = None, read_mode: str = None,
                           on_done: CallbackFnType = None,
                           on_error: CallbackFnType = None,
@@ -221,7 +221,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
+    async def search_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                            size: int = None, sampling_rate: float = None, read_mode: str = None,
                            on_done: CallbackFnType = None,
                            on_error: CallbackFnType = None,
@@ -248,7 +248,7 @@ class AsyncFlow(BaseFlow):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def search_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
+    async def search_lines(self, lines: Iterable[str] = None, filepath: str = None, size: int = None,
                            sampling_rate: float = None, read_mode='r',
                            on_done: CallbackFnType = None,
                            on_error: CallbackFnType = None,

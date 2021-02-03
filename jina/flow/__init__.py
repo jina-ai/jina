@@ -1,4 +1,4 @@
-from typing import Union, List, Iterator, Iterable
+from typing import Union, List, Iterable
 
 import numpy as np
 
@@ -83,7 +83,7 @@ class Flow(BaseFlow):
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def index_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
+    def index_lines(self, lines: Iterable[str] = None, filepath: str = None, size: int = None,
                     sampling_rate: float = None, read_mode='r',
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
@@ -106,7 +106,7 @@ class Flow(BaseFlow):
                                                 on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def index_files(self, patterns: Union[str, List[str]], recursive: bool = True,
+    def index_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
@@ -130,7 +130,7 @@ class Flow(BaseFlow):
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def search_files(self, patterns: Union[str, List[str]], recursive: bool = True,
+    def search_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
@@ -155,7 +155,7 @@ class Flow(BaseFlow):
                                                  **kwargs)
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def search_lines(self, lines: Iterator[str] = None, filepath: str = None, size: int = None,
+    def search_lines(self, lines: Iterable[str] = None, filepath: str = None, size: int = None,
                      sampling_rate: float = None, read_mode='r',
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
