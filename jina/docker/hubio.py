@@ -172,8 +172,8 @@ class HubIO:
             # check if image exists
             # fail if it does
             if self.args.no_overwrite and build_result and self._image_version_exists(
-                    build_result['manifest_info']['name'],
-                    build_result['manifest_info']['version'],
+                    build_result['name'],
+                    build_result['version'],
                     jina_version
             ):
                 raise ImageAlreadyExists(f'Image with name {name} already exists. Will NOT overwrite.')
