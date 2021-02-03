@@ -80,7 +80,8 @@ def test_build_timeout_ready():
 @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
-    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    import jina.docker.hubapi.local as local
+    mock_access_token = mocker.patch.object(local, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
     args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
@@ -113,7 +114,8 @@ def test_hub_build_push(monkeypatch, mocker):
 @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push_push_again(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
-    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    import jina.docker.hubapi.local as local
+    mock_access_token = mocker.patch.object(local, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
 
     args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info'])
