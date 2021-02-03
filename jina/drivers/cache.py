@@ -9,12 +9,12 @@ if False:
 
 
 class BaseCacheDriver(BaseIndexDriver):
-    """The driver related to :class:`BaseCache`
+    """A driver related to :class:`BaseCache`
     """
 
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
         """
-        :param with_serialization: feed serialized doc to the CacheIndexer
+        :param with_serialization: feed serialized Document to the CacheIndexer
         :param args:
         :param kwargs:
         """
@@ -40,17 +40,20 @@ class BaseCacheDriver(BaseIndexDriver):
                 else:
                     self.on_hit(d, result)
 
-    def on_miss(self, doc: 'Document', data) -> None:
-        """Function to call when document is missing, the default behavior is add to cache when miss.
-        :param doc: the document in the request but missed in the cache
+    def on_miss(self, req_doc: 'Document', data: Any) -> None:
+        """Function to call when document is missing, the default behavior is to add to cache when miss.
+
+        :param req_doc: the document in the request but missed in the cache
+        :param data: the data besides the `req_doc.id` to be passed through to the executors
         """
         if self.with_serialization:
-            self.exec_fn(doc.id, doc.SerializeToString(), **{DATA_FIELD: data})
+            self.exec_fn(req_doc.id, req_doc.SerializeToString(), **{DATA_FIELD: data})
         else:
-            self.exec_fn(doc.id, **{DATA_FIELD: data})
+            self.exec_fn(req_doc.id, **{DATA_FIELD: data})
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         """Function to call when document is hit.
+
         :param req_doc: the document in the request and hitted in the cache
         :param hit_result: the hit result returned by the cache
         :return:
@@ -59,7 +62,7 @@ class BaseCacheDriver(BaseIndexDriver):
 
 
 class TaggingCacheDriver(BaseCacheDriver):
-    """Label the hit-cache docs with certain tags
+    """A driver for labelling the hit-cache docs with certain tags
     """
 
     def __init__(self, tags: Dict, *args, **kwargs):

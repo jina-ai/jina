@@ -79,7 +79,7 @@ class KVSearchDriver(BaseSearchDriver):
 
 
 class VectorFillDriver(QuerySetReader, BaseSearchDriver):
-    """Fills in the embedding by their document id.
+    """Fill in the embedding by their document id.
     """
 
     def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
