@@ -35,7 +35,7 @@ class LogInfoDriver(BaseControlDriver):
         self.json = json
 
     def __call__(self, *args, **kwargs):
-        data = dunder_get(self.msg.as_pb_object, self.key)
+        data = dunder_get(self.msg.proto, self.key)
         if self.json:
             self.logger.info(
                 MessageToJson(data)

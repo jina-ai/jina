@@ -26,4 +26,4 @@ class CommandMixin:
     @property
     def command(self) -> str:
         self.is_used = True
-        return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.as_pb_object.control.command)
+        return jina_pb2.RequestProto.ControlRequestProto.Command.Name(self.proto.control.command)

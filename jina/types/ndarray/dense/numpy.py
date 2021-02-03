@@ -38,7 +38,7 @@ class DenseNdArray(BaseDenseNdArray):
 
     @property
     def value(self) -> 'np.ndarray':
-        blob = self.proto
+        blob = self._pb_body
         if blob.buffer:
             x = np.frombuffer(blob.buffer, dtype=blob.dtype)
 
@@ -51,7 +51,7 @@ class DenseNdArray(BaseDenseNdArray):
 
     @value.setter
     def value(self, value: 'np.ndarray'):
-        blob = self.proto
+        blob = self._pb_body
         x = value
 
         if self.quantize == 'fp16' and (x.dtype == np.float32 or x.dtype == np.float64):

@@ -10,10 +10,10 @@ from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tupl
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
-from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from .converters import png_to_buffer, to_datauri, guess_mime
 from .uid import DIGEST_SIZE, UniqueId
+from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray
 from ..score import NamedScore
 from ..sets.chunk import ChunkSet
@@ -30,7 +30,7 @@ DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
 
 
-class Document:
+class Document(ProtoTypeMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -106,17 +106,17 @@ class Document:
                 view (i.e. weak reference) from it or a deep copy from it.
         :param kwargs: other parameters to be set
         """
-        self._document = jina_pb2.DocumentProto()
+        self._pb_body = jina_pb2.DocumentProto()
         try:
             if isinstance(document, jina_pb2.DocumentProto):
                 if copy:
-                    self._document.CopyFrom(document)
+                    self._pb_body.CopyFrom(document)
                 else:
-                    self._document = document
+                    self._pb_body = document
             elif isinstance(document, dict):
-                json_format.ParseDict(document, self._document)
+                json_format.ParseDict(document, self._pb_body)
             elif isinstance(document, str):
-                json_format.Parse(document, self._document)
+                json_format.Parse(document, self._pb_body)
             elif isinstance(document, bytes):
                 # directly parsing from binary string gives large false-positive
                 # fortunately protobuf throws a warning when the parsing seems go wrong
@@ -127,14 +127,14 @@ class Document:
                                             'Unexpected end-group tag',
                                             category=RuntimeWarning)
                     try:
-                        self._document.ParseFromString(document)
+                        self._pb_body.ParseFromString(document)
                     except RuntimeWarning as ex:
                         raise BadDocType(f'fail to construct a document from {document}') from ex
             elif isinstance(document, Document):
                 if copy:
-                    self._document.CopyFrom(document.as_pb_object)
+                    self._pb_body.CopyFrom(document.proto)
                 else:
-                    self._document = document.as_pb_object
+                    self._pb_body = document.proto
             elif document is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(document)} is not recognizable')
@@ -143,30 +143,24 @@ class Document:
                              f'if you are trying to set the content '
                              f'you may use "Document(content=your_content)"') from ex
 
-        if self._document.id is None or not self._document.id:
+        if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
         self.set_attrs(**kwargs)
 
-    def __getattr__(self, name: str):
-        return getattr(self._document, name)
-
-    def __str__(self):
-        return f'{self.as_pb_object}'
-
     @property
     def length(self) -> int:
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
-        return self._document.length
+        return self._pb_body.length
 
     @length.setter
     def length(self, value: int):
-        self._document.length = value
+        self._pb_body.length = value
 
     @property
     def weight(self) -> float:
         """Returns the weight of the document """
-        return self._document.weight
+        return self._pb_body.weight
 
     @weight.setter
     def weight(self, value: float):
@@ -174,21 +168,21 @@ class Document:
 
         :param value: the float weight of the document.
         """
-        self._document.weight = value
+        self._pb_body.weight = value
 
     @property
     def modality(self) -> str:
         """Get the modality of the document """
-        return self._document.modality
+        return self._pb_body.modality
 
     @modality.setter
     def modality(self, value: str):
         """Set the modality of the document"""
-        self._document.modality = value
+        self._pb_body.modality = value
 
     @property
     def content_hash(self):
-        return self._document.content_hash
+        return self._pb_body.content_hash
 
     def update_content_hash(self,
                             exclude_fields: Optional[Tuple[str]] = (
@@ -203,7 +197,7 @@ class Document:
             "exclude_fields" and "include_fields" are mutually exclusive, use one only
         """
         masked_d = jina_pb2.DocumentProto()
-        masked_d.CopyFrom(self._document)
+        masked_d.CopyFrom(self._pb_body)
         empty_doc = jina_pb2.DocumentProto()
         if include_fields and exclude_fields:
             raise ValueError('"exclude_fields" and "exclude_fields" are mutually exclusive, use one only')
@@ -214,21 +208,21 @@ class Document:
         elif exclude_fields is not None:
             FieldMask(paths=exclude_fields).MergeMessage(empty_doc, masked_d, replace_repeated_field=True)
 
-        self._document.content_hash = blake2b(masked_d.SerializeToString(), digest_size=DIGEST_SIZE).hexdigest()
+        self._pb_body.content_hash = blake2b(masked_d.SerializeToString(), digest_size=DIGEST_SIZE).hexdigest()
 
     @property
     def id(self) -> str:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return self._document.id
+        return self._pb_body.id
 
     @property
     def parent_id(self) -> str:
         """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
         """
-        return self._document.parent_id
+        return self._pb_body.parent_id
 
     @id.setter
     def id(self, value: Union[bytes, str, int]):
@@ -245,11 +239,11 @@ class Document:
         :return:
         """
         if isinstance(value, str):
-            self._document.id = value
+            self._pb_body.id = value
         else:
             warnings.warn(f'expecting a string as ID, receiving {type(value)}. '
                           f'Note this type will be deprecated soon', DeprecationWarning)
-            self._document.id = UniqueId(value)
+            self._pb_body.id = UniqueId(value)
 
     @parent_id.setter
     def parent_id(self, value: Union[bytes, str, int]):
@@ -266,11 +260,11 @@ class Document:
         :return:
         """
         if isinstance(value, str):
-            self._document.parent_id = value
+            self._pb_body.parent_id = value
         else:
             warnings.warn(f'expecting a string as ID, receiving {type(value)}. '
                           f'Note this type will be deprecated soon', DeprecationWarning)
-            self._document.parent_id = UniqueId(value)
+            self._pb_body.parent_id = UniqueId(value)
 
     @property
     def blob(self) -> 'np.ndarray':
@@ -279,7 +273,7 @@ class Document:
         .. note::
             Use :attr:`content` to return the content of a Document
         """
-        return NdArray(self._document.blob).value
+        return NdArray(self._pb_body.blob).value
 
     @blob.setter
     def blob(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
@@ -289,7 +283,7 @@ class Document:
     def embedding(self) -> 'np.ndarray':
         """Return ``embedding`` of the content of a Document.
         """
-        return NdArray(self._document.embedding).value
+        return NdArray(self._pb_body.embedding).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
@@ -297,24 +291,24 @@ class Document:
 
     def _update_ndarray(self, k, v):
         if isinstance(v, jina_pb2.NdArrayProto):
-            getattr(self._document, k).CopyFrom(v)
+            getattr(self._pb_body, k).CopyFrom(v)
         elif isinstance(v, np.ndarray):
-            NdArray(getattr(self._document, k)).value = v
+            NdArray(getattr(self._pb_body, k)).value = v
         elif isinstance(v, NdArray):
-            NdArray(getattr(self._document, k)).is_sparse = v.is_sparse
-            NdArray(getattr(self._document, k)).value = v.value
+            NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
+            NdArray(getattr(self._pb_body, k)).value = v.value
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
     def matches(self) -> 'MatchSet':
         """Get all matches of the current document """
-        return MatchSet(self._document.matches, reference_doc=self)
+        return MatchSet(self._pb_body.matches, reference_doc=self)
 
     @property
     def chunks(self) -> 'ChunkSet':
         """Get all chunks of the current document """
-        return ChunkSet(self._document.chunks, reference_doc=self)
+        return ChunkSet(self._pb_body.chunks, reference_doc=self)
 
     def set_attrs(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs
@@ -325,18 +319,23 @@ class Document:
         """
         for k, v in kwargs.items():
             if isinstance(v, list) or isinstance(v, tuple):
-                self._document.ClearField(k)
-                getattr(self._document, k).extend(v)
+                if k == 'chunks':
+                    self.chunks.extend(v)
+                elif k == 'matches':
+                    self.matches.extend(v)
+                else:
+                    self._pb_body.ClearField(k)
+                    getattr(self._pb_body, k).extend(v)
             elif isinstance(v, dict):
-                self._document.ClearField(k)
-                getattr(self._document, k).update(v)
+                self._pb_body.ClearField(k)
+                getattr(self._pb_body, k).update(v)
             else:
                 if hasattr(Document, k) and isinstance(getattr(Document, k), property) and getattr(Document, k).fset:
                     # if class property has a setter
                     setattr(self, k, v)
-                elif hasattr(self._document, k):
+                elif hasattr(self._pb_body, k):
                     # no property setter, but proto has this attribute so fallback to proto
-                    setattr(self._document, k, v)
+                    setattr(self._pb_body, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
 
@@ -350,21 +349,17 @@ class Document:
         return {k: getattr(self, k) for k in args if hasattr(self, k)}
 
     @property
-    def as_pb_object(self) -> 'jina_pb2.DocumentProto':
-        return self._document
-
-    @property
     def buffer(self) -> bytes:
         """Return ``buffer``, one of the content form of a Document.
 
         .. note::
             Use :attr:`content` to return the content of a Document
         """
-        return self._document.buffer
+        return self._pb_body.buffer
 
     @buffer.setter
     def buffer(self, value: bytes):
-        self._document.buffer = value
+        self._pb_body.buffer = value
         if value:
             with ImportExtensions(required=False,
                                   pkg_name='python-magic',
@@ -372,7 +367,7 @@ class Document:
                                             f'MIME sniffing requires brew install '
                                             f'libmagic (Mac)/ apt-get install libmagic1 (Linux)'):
                 import magic
-                self._document.mime_type = magic.from_buffer(value, mime=True)
+                self._pb_body.mime_type = magic.from_buffer(value, mime=True)
 
     @property
     def text(self):
@@ -381,16 +376,16 @@ class Document:
         .. note::
             Use :attr:`content` to return the content of a Document
         """
-        return self._document.text
+        return self._pb_body.text
 
     @text.setter
     def text(self, value: str):
-        self._document.text = value
+        self._pb_body.text = value
         self.mime_type = 'text/plain'
 
     @property
     def uri(self) -> str:
-        return self._document.uri
+        return self._pb_body.uri
 
     @uri.setter
     def uri(self, value: str):
@@ -407,7 +402,7 @@ class Document:
                 or (scheme in {'data'})
                 or os.path.exists(value)
                 or os.access(os.path.dirname(value), os.W_OK)):
-            self._document.uri = value
+            self._pb_body.uri = value
             self.mime_type = guess_mime(value)
         else:
             raise ValueError(f'{value} is not a valid URI')
@@ -415,7 +410,7 @@ class Document:
     @property
     def mime_type(self) -> str:
         """Get MIME type of the document"""
-        return self._document.mime_type
+        return self._pb_body.mime_type
 
     @mime_type.setter
     def mime_type(self, value: str):
@@ -425,12 +420,12 @@ class Document:
                 recognizable.
         """
         if value in mimetypes.types_map.values():
-            self._document.mime_type = value
+            self._pb_body.mime_type = value
         elif value:
             # given but not recognizable, do best guess
             r = mimetypes.guess_type(f'*.{value}')[0]
             if r:
-                self._document.mime_type = r
+                self._pb_body.mime_type = r
             else:
                 raise ValueError(f'{value} is not a valid MIME type')
 
@@ -443,7 +438,7 @@ class Document:
     @property
     def content_type(self) -> str:
         """Return the content type of the document, possible values: text, blob, buffer"""
-        return self._document.WhichOneof('content')
+        return self._pb_body.WhichOneof('content')
 
     @property
     def content(self) -> DocumentContentType:
@@ -483,22 +478,22 @@ class Document:
 
     @property
     def granularity(self):
-        return self._document.granularity
+        return self._pb_body.granularity
 
     @granularity.setter
     def granularity(self, granularity_value: int):
-        self._document.granularity = granularity_value
+        self._pb_body.granularity = granularity_value
 
     @property
     def score(self):
-        return self._document.score
+        return self._pb_body.score
 
     @score.setter
     def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
         if isinstance(value, jina_pb2.NamedScoreProto):
-            self._document.score.CopyFrom(value)
+            self._pb_body.score.CopyFrom(value)
         elif isinstance(value, NamedScore):
-            self._document.score.CopyFrom(value._score)
+            self._pb_body.score.CopyFrom(value._pb_body)
         else:
             raise TypeError(f'score is in unsupported type {typename(value)}')
 
@@ -595,10 +590,10 @@ class Document:
             raise NotImplementedError
 
     def MergeFrom(self, doc: 'Document'):
-        self._document.MergeFrom(doc.as_pb_object)
+        self._pb_body.MergeFrom(doc.proto)
 
     def CopyFrom(self, doc: 'Document'):
-        self._document.CopyFrom(doc.as_pb_object)
+        self._pb_body.CopyFrom(doc.proto)
 
     def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) -> None:
         """Traverse leaves of the document."""
@@ -623,11 +618,3 @@ class Document:
         else:
             for d in docs:
                 callback_fn(d, parent_doc, parent_edge_type, *args, **kwargs)
-
-    def json(self) -> str:
-        """Return the Document object in JSON string """
-        return MessageToJson(self._document)
-
-    def dict(self) -> Dict:
-        """Return the Document object in dictionary """
-        return MessageToDict(self._document)

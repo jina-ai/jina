@@ -1,5 +1,6 @@
 from typing import TypeVar, Union
 
+from ..mixin import ProtoTypeMixin
 from ...proto import jina_pb2
 
 PbMessageType = jina_pb2._reflection.GeneratedProtocolMessageType
@@ -9,7 +10,7 @@ AnyNdArray = TypeVar('AnyNdArray')
 __all__ = ['BaseNdArray']
 
 
-class BaseNdArray:
+class BaseNdArray(ProtoTypeMixin):
     """A base class for containing the protobuf message of NdArray. It defines interfaces
     for easier get/set value.
 
@@ -23,9 +24,9 @@ class BaseNdArray:
         :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
         """
         if proto is not None and isinstance(type(proto), PbMessageType):
-            self.proto = proto  # a weak ref/copy
+            self._pb_body = proto  # a weak ref/copy
         else:
-            self.proto = self.null_proto()
+            self._pb_body = self.null_proto()
             if proto is not None:
                 # casting using the subclass :attr:`value` interface
                 self.value = proto
@@ -47,5 +48,5 @@ class BaseNdArray:
 
     def copy_to(self, proto: 'PbMessageType') -> 'BaseNdArray':
         """Copy itself to another protobuf message, return a view of the copied message"""
-        proto.CopyFrom(self.proto)
+        proto.CopyFrom(self._pb_body)
         return self.__class__(proto)

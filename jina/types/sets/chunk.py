@@ -21,7 +21,7 @@ class ChunkSet(DocumentSet):
 
         from ..document import Document
         c = self._docs_proto.add()
-        c.CopyFrom(document.as_pb_object)
+        c.CopyFrom(document.proto)
         chunk = Document(c)
 
         chunk.set_attrs(parent_id=self._ref_doc.id,

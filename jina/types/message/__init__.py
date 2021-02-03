@@ -79,13 +79,13 @@ class Message:
             raise TypeError(f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}')
 
     @property
-    def as_pb_object(self) -> 'jina_pb2.MessageProto':
+    def proto(self) -> 'jina_pb2.MessageProto':
         r = jina_pb2.MessageProto()
         r.envelope.CopyFrom(self.envelope)
         if isinstance(self.request, jina_pb2.RequestProto):
             req = self.request
         else:
-            req = self.request.as_pb_object
+            req = self.request.proto
         r.request.CopyFrom(req)
         return r
 

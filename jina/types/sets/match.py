@@ -16,7 +16,7 @@ class MatchSet(DocumentSet):
         """
         from ..document import Document
         m = self._docs_proto.add()
-        m.CopyFrom(document.as_pb_object)
+        m.CopyFrom(document.proto)
         match = Document(m)
 
         match.set_attrs(granularity=self.granularity, adjacency=self.adjacency, **kwargs)

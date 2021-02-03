@@ -6,7 +6,7 @@ from jina.types.querylang import QueryLang
 
 def test_ql_constructors_from_driver_info():
     q = QueryLang({'name': 'SliceQL', 'parameters': {'start': 3, 'end': 5}, 'priority': 999})
-    qb = q.as_pb_object
+    qb = q.proto
     assert q.name == 'SliceQL'
     assert q.parameters['start'] == 3
     assert q.parameters['end'] == 5
@@ -23,7 +23,7 @@ def test_ql_constructors_from_driver_info():
                                     lambda x: MessageToJson(x),
                                     lambda x: x])
 def test_ql_constructors_from_proto(source):
-    q = QueryLang({'name': 'SliceQL', 'parameters': {'start': 3, 'end': 5}, 'priority': 999}).as_pb_object
+    q = QueryLang({'name': 'SliceQL', 'parameters': {'start': 3, 'end': 5}, 'priority': 999}).proto
 
     qlr = QueryLang(source(q))
     assert qlr.name == 'SliceQL'
@@ -35,12 +35,12 @@ def test_ql_constructors_from_proto(source):
 def test_ql_priority():
     qs = QueryLang({'name': 'SliceQL', 'parameters': {'start': 1, 'end': 4}, 'priority': 1})
     assert qs.priority == 1
-    qs._querylang.priority = -1
-    assert qs._querylang.priority == -1
+    qs._pb_body.priority = -1
+    assert qs._pb_body.priority == -1
     assert qs.priority == -1
 
     qs.priority = -2
-    assert qs._querylang.priority == -2
+    assert qs._pb_body.priority == -2
     assert qs.priority == -2
 
     qs2 = QueryLang({'name': 'SliceQL', 'parameters': {'start': 1, 'end': 4}})

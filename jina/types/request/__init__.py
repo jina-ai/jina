@@ -1,8 +1,8 @@
 from typing import Union, Optional, TypeVar, Dict
 
 from google.protobuf import json_format
-from google.protobuf.json_format import MessageToJson, MessageToDict
 
+from ..mixin import ProtoTypeMixin
 from ..sets import QueryLangSet
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
@@ -25,7 +25,7 @@ RequestSourceType = TypeVar('RequestSourceType',
                             jina_pb2.RequestProto, bytes, str, Dict)
 
 
-class Request:
+class Request(ProtoTypeMixin):
     """
     :class:`Request` is one of the **primitive data type** in Jina.
 
@@ -45,23 +45,23 @@ class Request:
                  copy: bool = False):
 
         self._buffer = None
-        self._request = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
+        self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
         try:
             if isinstance(request, jina_pb2.RequestProto):
                 if copy:
-                    self._request.CopyFrom(request)
+                    self._pb_body.CopyFrom(request)
                 else:
-                    self._request = request
+                    self._pb_body = request
             elif isinstance(request, dict):
-                json_format.ParseDict(request, self._request)
+                json_format.ParseDict(request, self._pb_body)
             elif isinstance(request, str):
-                json_format.Parse(request, self._request)
+                json_format.Parse(request, self._pb_body)
             elif isinstance(request, bytes):
                 self._buffer = request
-                self._request = None
+                self._pb_body = None
             elif request is None:
                 # make sure every new request has a request id
-                self._request.request_id = random_identity()
+                self._pb_body.request_id = random_identity()
             elif request is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(request)} is not recognizable')
@@ -76,18 +76,18 @@ class Request:
         if name in _trigger_body_fields:
             return getattr(self.body, name)
         else:
-            return getattr(self.as_pb_object, name)
+            return getattr(self.proto, name)
 
     @property
     def body(self):
         if self._request_type:
-            return getattr(self.as_pb_object, self._request_type)
+            return getattr(self.proto, self._request_type)
         else:
             raise ValueError(f'"request_type" is not set yet')
 
     @property
     def _request_type(self) -> str:
-        return self.as_pb_object.WhichOneof('body')
+        return self.proto.WhichOneof('body')
 
     @property
     def request_type(self) -> Optional[str]:
@@ -126,7 +126,7 @@ class Request:
         """Set the type of this request, but keep the body empty"""
         value = value.lower()
         if value in _body_type:
-            getattr(self.as_pb_object, value).SetInParent()
+            getattr(self.proto, value).SetInParent()
         else:
             raise ValueError(f'{value} is not valid, must be one of {_body_type}')
         self.as_typed_request(self._request_type)
@@ -155,23 +155,23 @@ class Request:
         return data
 
     @property
-    def as_pb_object(self) -> 'jina_pb2.RequestProto':
+    def proto(self) -> 'jina_pb2.RequestProto':
         """
         Cast ``self`` to a :class:`jina_pb2.RequestProto`. This will trigger
          :attr:`is_used`. Laziness will be broken and serialization will be recomputed when calling
          :meth:`SerializeToString`.
         """
-        if self._request:
+        if self._pb_body:
             # if request is already given while init
             self.is_used = True
-            return self._request
+            return self._pb_body
         else:
             # if not then build one from buffer
             r = jina_pb2.RequestProto()
             _buffer = self._decompress(self._buffer, self._envelope.compression.algorithm if self._envelope else None)
             r.ParseFromString(_buffer)
             self.is_used = True
-            self._request = r
+            self._pb_body = r
             # # Though I can modify back the envelope, not sure if it is a good design:
             # # My intuition is: if the content is changed dramatically, e.g. from index to control request,
             # # then whatever writes on the envelope should be dropped
@@ -183,7 +183,7 @@ class Request:
 
     def SerializeToString(self) -> bytes:
         if self.is_used:
-            return self.as_pb_object.SerializeToString()
+            return self.proto.SerializeToString()
         else:
             # no touch, skip serialization, return original
             return self._buffer
@@ -191,15 +191,7 @@ class Request:
     @property
     def queryset(self) -> 'QueryLangSet':
         self.is_used = True
-        return QueryLangSet(self.as_pb_object.queryset)
-
-    def json(self) -> str:
-        """Return the request object in JSON string """
-        return MessageToJson(self._request)
-
-    def dict(self) -> Dict:
-        """Return the request object in dictionary """
-        return MessageToDict(self._request)
+        return QueryLangSet(self.proto.queryset)
 
     def as_response(self):
         """Return a weak reference of this object but as :class:`Response` object. It gives a more

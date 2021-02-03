@@ -84,10 +84,10 @@ def test_command(req):
 
 def test_as_pb_object(req):
     request = Request(request=req)
-    request.as_pb_object
+    request.proto
     assert request.is_used
     request = Request(request=None)
-    assert request.as_pb_object
+    assert request.proto
     assert request.is_used
 
 

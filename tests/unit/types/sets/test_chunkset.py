@@ -32,7 +32,7 @@ def chunks(document_factory):
         document_factory.create(2, 'test 1'),
         document_factory.create(3, 'test 3')
     ])
-    return req.as_pb_object.index.docs
+    return req.proto.index.docs
 
 
 @pytest.fixture
