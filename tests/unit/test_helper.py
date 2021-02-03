@@ -9,7 +9,7 @@ from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback, NotSupportedError
-from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias
+from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
@@ -209,3 +209,32 @@ def test_deprecated_decor():
     # deprecated HARD
     with pytest.raises(NotSupportedError):
         dummy(bar=1, foofoo=2)
+
+
+@pytest.mark.parametrize('val', ['merge_and_topk.yml',
+                                 'merge_and_topk.yaml',
+                                 'da.yaml',
+                                 'd.yml',
+                                 '/da/da.yml',
+                                 'das/das.yaml',
+                                 '1234.yml',
+                                 '1234.yml ',
+                                 ' 1234.yml '])
+def test_yaml_filepath_validate_good(val):
+    assert is_yaml_filepath(val)
+
+
+@pytest.mark.parametrize('val', [' .yml',
+                                 'a',
+                                 ' uses: yaml',
+                                 'ayaml',
+                                 '''
+    shards: $JINA_SHARDS_INDEXERS
+    host: $JINA_REDIS_INDEXER_HOST
+    port_expose: 8000
+    polling: all
+    timeout_ready: 100000 # larger timeout as in query time will read all the data
+    uses_after: merge_and_topk.yml
+                                 '''])
+def test_yaml_filepath_validate_bad(val):
+    assert not is_yaml_filepath(val)
