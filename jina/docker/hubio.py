@@ -210,7 +210,10 @@ class HubIO:
         """ Helper push function """
         check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
-        self._docker_login()
+        try:
+            self._docker_login()
+        except DockerLoginFailed as ex:
+            raise ex
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
             for line in self._client.images.push(name, stream=True, decode=True):
                 t.update(1)
@@ -283,12 +286,14 @@ class HubIO:
     def _docker_login(self) -> None:
         """A wrapper of docker login """
         from docker.errors import APIError
-        if not (self.args.username and self.args.password):
-            self.args.username, self.args.password = _fetch_docker_auth(logger=self.logger)
         try:
+            if not (self.args.username and self.args.password):
+                self.args.username, self.args.password = _fetch_docker_auth(logger=self.logger)
             self._client.login(username=self.args.username, password=self.args.password,
                                registry=self.args.registry)
             self.logger.debug(f'successfully logged in to docker hub')
+        except DockerLoginFailed as ex:
+            raise ex
         except APIError:
             raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
 

@@ -77,9 +77,10 @@ def test_build_timeout_ready():
         pass
 
 
+@pytest.mark.skip('Skip because everytime it will push an image to the cloud')
 def test_hub_build_push(monkeypatch, mocker):
-    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value='dummy_token')
     mocker.patch.object(HubIO, '_docker_login', return_value=None)
+    mocker.patch('jina.docker.hubio._register_to_mongodb', return_value=None)
     args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
 
@@ -100,16 +101,16 @@ def test_hub_build_push(monkeypatch, mocker):
         '--name', summary['manifest_info']['name'],
         '--keywords', summary['manifest_info']['keywords'][0],
         '--type', summary['manifest_info']['type'],
-        '--local-only'
     ])
     response = HubIO(args).list()
     assert len(response) >= 1
 
 
-@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
-def test_hub_build_push_push_again(monkeypatch, mocker):
-    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value=os.environ.get('GITHUB_TOKEN', None))
+# @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
+@pytest.mark.skip('Skip because everytime it will push an image to the cloud')
+def test_hub_build_push_push_again(mocker):
     mocker.patch.object(HubIO, '_docker_login', return_value=None)
+    mocker.patch('jina.docker.hubio._register_to_mongodb', return_value=None)
     args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info'])
     HubIO(args).build()
 
