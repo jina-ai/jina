@@ -53,16 +53,17 @@ class DocCache(BaseCache):
     supported_fields = [ID_KEY, CONTENT_HASH_KEY]
     default_field = ID_KEY
 
-    def __init__(self, index_filename: str = None, *args, **kwargs):
+    def __init__(self, index_filename: Optional[str] = None, field: Optional[str] = None, *args, **kwargs):
         """ Create a new DocCache
 
         :param index_filename: file name for storing the cache data
+        :param field: field to cache on (ID_KEY or CONTENT_HASH_KEY)
         """
         if not index_filename:
             # create a new temp file if not exist
             index_filename = tempfile.NamedTemporaryFile(delete=False).name
         super().__init__(index_filename, *args, **kwargs)
-        self.field = kwargs.get('field', self.default_field)
+        self.field = field or self.default_field
         if self.field not in self.supported_fields:
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
