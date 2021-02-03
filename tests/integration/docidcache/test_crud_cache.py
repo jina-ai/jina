@@ -98,7 +98,7 @@ def test_docs_generator(chunks, same_content, nr):
     check_docs(chunk_content, chunks, same_content, docs, ids_used)
 
     if nr > 0:
-        index_start = 1 + max(list(ids_used))
+        index_start = 1 + len(list(ids_used))
     else:
         index_start = 1
     new_docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr, index_start=index_start))
@@ -111,7 +111,7 @@ def test_docs_generator(chunks, same_content, nr):
 def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=0):
     for i, d in enumerate(docs):
         i += index_start
-        id_int = int(d.id)
+        id_int = d.id
         assert id_int not in ids_used
         ids_used.add(id_int)
 
@@ -125,7 +125,7 @@ def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=
         assert len(d.chunks) == chunks
 
         for j, c in enumerate(d.chunks):
-            id_int = int(c.id)
+            id_int = c.id
             assert id_int not in ids_used
             ids_used.add(id_int)
             if same_content:
@@ -249,7 +249,7 @@ def test_cache_crud(
 
     # INDEX (with new documents)
     chunks_ids = np.concatenate([d.chunks for d in docs])
-    index_start_new_docs = 1 + max([int(d.id) for d in np.concatenate([chunks_ids, docs])])
+    index_start_new_docs = 1 + len(docs) + len(chunks_ids)
 
     new_docs = list(get_documents(chunks=chunks, same_content=same_content, index_start=index_start_new_docs))
     with flow_index as f:

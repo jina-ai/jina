@@ -19,10 +19,10 @@ def test_binarypb_in_flow(test_metas, mocker):
         mock()
         assert len(docs) == len(req.docs)
         for d, d0 in zip(req.docs, docs):
-            np.testing.assert_almost_equal(NdArray(d.embedding).value,
-                                           NdArray(d0.embedding).value)
+            np.testing.assert_almost_equal(d.embedding,
+                                           d0.embedding)
 
-    f = Flow().add(show_exc_info=True, uses='binarypb.yml')
+    f = Flow().add(uses='binarypb.yml')
 
     with f:
         f.index(docs)

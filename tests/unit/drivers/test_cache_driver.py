@@ -154,7 +154,7 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
 
     # delete
     with BaseExecutor.load(filename) as executor:
-        executor.delete([UniqueId(doc1.id)])
+        executor.delete([doc1.id])
 
     with BaseExecutor.load(filename) as executor:
         assert executor.query(doc1.content_hash) is None

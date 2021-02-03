@@ -51,6 +51,25 @@ class BaseIndexer(BaseExecutor):
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
         self._size = 0
+        self._key_length = 0  #: the length of the key
+
+    @property
+    def key_length(self) -> int:
+        return self._key_length
+
+    @key_length.setter
+    def key_length(self, val: int):
+        """Set the max key length. """
+        if not self._key_length:
+            self._key_length = val
+        elif val < self._key_length:
+            # just padding, no big deal
+            self.logger.warning(
+                f'key padding is triggered. this indexer allows only keys at length {self._key_length}, '
+                f'but your max key length is {val}.')
+        elif val > self._key_length:
+            # panic
+            raise ValueError(f'this indexer allows only keys at length {self._key_length}, but yours is {val}')
 
     def add(self, *args, **kwargs):
         raise NotImplementedError

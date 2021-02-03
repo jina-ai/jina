@@ -5,7 +5,6 @@ from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
-from jina.excepts import BadDocID
 from tests import random_docs
 
 DOCUMENTS_PER_LEVEL = 1
@@ -96,8 +95,7 @@ def test_copy_construct():
 
 def test_bad_good_doc_id():
     b = Document()
-    with pytest.raises(BadDocID):
-        b.id = 'hello'
+    b.id = 'hello'
     b.id = 'abcd' * 4
     b.id = 'de09' * 4
     b.id = 'af54' * 4

@@ -33,7 +33,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def __init__(self,
                  compress_level: int = 1,
                  ref_indexer: Optional['BaseNumpyIndexer'] = None,
-                 key_length: int = 16,
                  *args, **kwargs):
         """
         :param compress_level: The compresslevel argument is an integer from 0 to 9 controlling the
@@ -49,7 +48,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.dtype = None
         self.compress_level = compress_level
         self.key_bytes = b''
-        self.key_dtype = (np.str_, key_length)
         self.valid_indices = np.array([], dtype=bool)
         self.ref_indexer_workspace_name = None
 
@@ -59,7 +57,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self.dtype = ref_indexer.dtype
             self.compress_level = ref_indexer.compress_level
             self.key_bytes = ref_indexer.key_bytes
-            self.key_dtype = ref_indexer.key_dtype
+            self._key_length = ref_indexer._key_length
             self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
@@ -123,10 +121,13 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
 
     def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
-        np_keys = np.array(keys, dtype=self.key_dtype)
+        max_key_len = max([len(k) for k in keys])
+        self.key_length = max_key_len
+        np_keys = np.array(keys, (np.str_, self.key_length))
+
         self._add(np_keys, vectors)
 
-    def _add(self, keys: 'np.ndarry', vectors: 'np.ndarray'):
+    def _add(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
         self._validate_key_vector_shapes(keys, vectors)
         self.write_handler.write(vectors.tobytes())
         self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
@@ -136,7 +137,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def update(self, keys: Iterator[str], values: Sequence[bytes], *args, **kwargs) -> None:
         # noinspection PyTypeChecker
         keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys(), self.save_abspath)
-        np_keys = np.array(keys, dtype=self.key_dtype)
+        np_keys = np.array(keys, (np.str_, self.key_length))
 
         if np_keys.size:
             self._delete(np_keys)
@@ -151,7 +152,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     def delete(self, keys: Iterator[str], *args, **kwargs) -> None:
         keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
-        np_keys = np.array(keys, dtype=self.key_dtype)
+        np_keys = np.array(keys, (np.str_, self.key_length))
         self._delete(np_keys)
 
     def get_query_handler(self) -> Optional['np.ndarray']:
@@ -216,7 +217,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def _int2ext_id(self) -> Optional['np.ndarray']:
         """Convert internal ids (0,1,2,3,4,...) to external ids (random index) """
         if self.key_bytes:
-            r = np.frombuffer(self.key_bytes, dtype=self.key_dtype)
+            r = np.frombuffer(self.key_bytes, dtype=(np.str_, self.key_length))
             # `==` is required. `is False` does not work in np
             deleted_keys = len(self.valid_indices[self.valid_indices == False])  # noqa
             if r.shape[0] == (self.size + deleted_keys) == self._raw_ndarray.shape[0]:

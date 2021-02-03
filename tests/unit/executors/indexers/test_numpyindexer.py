@@ -39,7 +39,7 @@ def test_numpy_indexer(batch_size, compress_level, test_metas):
 
 def test_numpy_indexer_long_ids(test_metas):
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=0,
-                      metas=test_metas, key_length=20) as indexer:
+                      metas=test_metas) as indexer:
         indexer.batch_size = 4
         long_vec_id = np.array(vec_idx, dtype=(np.str_, 20))
         long_vec_id[0] = '1234512345123451234'
@@ -120,7 +120,8 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16))
+    # TODO: PLLEASE DO NOT BUILD FLAKY KEYS LIKE THIS
+    keys = np.squeeze(np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16)))
 
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
                       metas=test_metas) as indexer:
@@ -156,7 +157,7 @@ def test_scipy_indexer_known_big(compress_level, test_metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16))
+    keys = np.squeeze(np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16)))
 
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', backend='scipy', compress_level=compress_level,
                       metas=test_metas) as indexer:
