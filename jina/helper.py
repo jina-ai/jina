@@ -771,5 +771,5 @@ def change_env(key, val):
 
 
 def is_yaml_filepath(val) -> bool:
-    r = r'^[/\w-]+.ya?ml$'
+    r = r'^[/\w\-\_\.]+.ya?ml$'
     return re.match(r, val.strip()) is not None

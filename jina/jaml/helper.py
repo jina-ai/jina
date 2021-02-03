@@ -134,7 +134,7 @@ def parse_config_source(path: Union[str, TextIO, Dict],
             tmp = JAML.dump(tmp)
             return io.StringIO(tmp), None
         except json.JSONDecodeError:
-            raise BadConfigSource
+            raise BadConfigSource(path)
     else:
         raise BadConfigSource(f'{path} can not be resolved, it should be a readable stream,'
                               ' or a valid file path, or a supported class name.')
