@@ -87,10 +87,6 @@ class DocCache(BaseCache):
         :param data: either the id or the content_hash of a Document
         :return: status
         """
-        # FIXME this shouldn't happen
-        if self.query_handler is None:
-            self.query_handler = self.get_query_handler()
-
         if self.field == ID_KEY:
             status = (data in self.query_handler.ids) or None
         else:
