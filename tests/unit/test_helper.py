@@ -221,7 +221,7 @@ def test_deprecated_decor():
                                  '1234.yml ',
                                  ' 1234.yml '])
 def test_yaml_filepath_validate_good(val):
-    assert is_yaml_filepath(val.strip())
+    assert is_yaml_filepath(val)
 
 @pytest.mark.parametrize('val', [' .yml',
                                  'a',
@@ -236,4 +236,4 @@ def test_yaml_filepath_validate_good(val):
     uses_after: merge_and_topk.yml
                                  '''])
 def test_yaml_filepath_validate_bad(val):
-    assert not is_yaml_filepath(val.strip())
+    assert not is_yaml_filepath(val)

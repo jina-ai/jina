@@ -772,4 +772,4 @@ def change_env(key, val):
 
 def is_yaml_filepath(val) -> bool:
     r = r'^(/?\w+?/)*(\w+\.ya?ml)$'
-    return re.match(r, val) is not None
+    return re.match(r.strip(), val) is not None
