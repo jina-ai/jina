@@ -51,7 +51,7 @@ class BaseIndexer(BaseExecutor):
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
         self._size = 0
-        self._key_length = 0  #: the length of the key
+        self._key_length = 16  #: the default minimum length of the key, will be expanded one time on the first batch
 
     @property
     def key_length(self) -> int:
@@ -60,7 +60,8 @@ class BaseIndexer(BaseExecutor):
     @key_length.setter
     def key_length(self, val: int):
         """Set the max key length. """
-        if not self._key_length:
+        if not self._key_length or self._key_length < val:
+            # expand once
             self._key_length = val
         elif val < self._key_length:
             # just padding, no big deal
