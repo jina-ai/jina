@@ -77,12 +77,9 @@ def test_build_timeout_ready():
         pass
 
 
-@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push(monkeypatch, mocker):
-    monkeypatch.setattr(Path, 'is_file', True)
-    import jina.docker.hubapi.local as local
-    mock_access_token = mocker.patch.object(local, '_fetch_access_token', autospec=True)
-    mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
+    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value='dummy_token')
+    mocker.patch.object(HubIO, '_docker_login', return_value=None)
     args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), '--push', '--host-info'])
     summary = HubIO(args).build()
 
@@ -102,16 +99,15 @@ def test_hub_build_push(monkeypatch, mocker):
     args = set_hub_list_parser().parse_args([
         '--name', summary['manifest_info']['name'],
         '--keywords', summary['manifest_info']['keywords'][0],
-        '--type', summary['manifest_info']['type']
+        '--type', summary['manifest_info']['type'],
+        '--local-only'
     ])
+    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value='dummy_token')
     response = HubIO(args).list()
-    manifests = response
-
-    assert len(manifests) >= 1
-    assert manifests[0]['name'] == summary['manifest_info']['name']
+    assert len(response) >= 1
 
 
-@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
+# @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push_push_again(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
     import jina.docker.hubapi.local as local
