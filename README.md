@@ -91,6 +91,7 @@ jina hello-world --help
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### CRUD Functions
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With documents below as example:
 ```python
@@ -133,10 +134,9 @@ with f:
     <td>
 
 ```python
-# return 🐲🐦🐢 with score 0, 1, 1
+# print 🐲🐦🐢 Doc with score 0, 1, 1
 with f:
-    f.search(docs[0],
-             top_k=3,
+    f.search(docs[0], top_k=3,
              on_done=lambda x: [print(m.dict()) for m in x.docs[0].matches])
 ```
 
