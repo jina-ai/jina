@@ -147,3 +147,9 @@ def test_hub_build_push_push_again(monkeypatch, mocker):
         # try and push same version again should fail with `--no-overwrite`
         args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info', '--no-overwrite'])
         HubIO(args).build()
+
+
+def test_hub_build(monkeypatch):
+    args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), ])
+    result = HubIO(args).build()
+    assert result['is_build_success']
