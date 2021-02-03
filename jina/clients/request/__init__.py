@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple, AsyncIterator, Iterable
+from typing import Iterator, Union, Tuple, AsyncIterable, Iterable
 
 from .helper import _new_request_from_batch
 from ... import Request
@@ -17,7 +17,7 @@ SingletonDataType = Union[DocumentContentType,
                           Tuple[DocumentContentType, DocumentContentType],
                           Tuple[DocumentSourceType, DocumentSourceType]]
 
-GeneratorSourceType = Union[Document, Iterator[SingletonDataType], AsyncIterator[SingletonDataType]]
+GeneratorSourceType = Union[Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]]
 
 
 def request_generator(data: GeneratorSourceType,

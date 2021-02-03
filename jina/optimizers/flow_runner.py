@@ -1,7 +1,7 @@
 import os
 import shutil
 from collections.abc import Iterable
-from typing import Iterator, Optional, Union, List
+from typing import Iterable, Optional, Union, List
 
 from ..flow import Flow
 from ..helper import colored
@@ -45,7 +45,7 @@ class SingleFlowRunner(FlowRunner):
     def __init__(
         self,
         flow_yaml: str,
-        documents: Union[Iterator, str],
+        documents: Union[Iterable, str],
         request_size: int,
         execution_method: str,
         documents_parameter_name: Optional[str] = 'input_fn',

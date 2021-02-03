@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import mmap
-from typing import Iterator, Optional
+from typing import Iterable, Optional
 
 import numpy as np
 
@@ -58,7 +58,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._page_size = mmap.ALLOCATIONGRANULARITY
         self._key_length = 0
 
-    def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         """Add the serialized documents to the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -97,7 +97,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
                 return m[r:]
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         """Update the serialized documents on the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -109,7 +109,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         self.add(keys, values)
         return
 
-    def _delete(self, keys: Iterator[str]):
+    def _delete(self, keys: Iterable[str]):
         self.query_handler.close()
         self.handler_mutex = False
         for key in keys:
@@ -124,7 +124,7 @@ class BinaryPbIndexer(BaseKVIndexer):
                 del self.query_handler.header[key]
             self._size -= 1
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf

@@ -1,6 +1,6 @@
 import pickle
 import tempfile
-from typing import Optional, Iterator
+from typing import Optional, Iterable
 
 from jina.executors.indexers import BaseKVIndexer
 
@@ -68,7 +68,7 @@ class DocCache(BaseCache):
 
     def add(self, doc_id: 'UniqueId', *args, **kwargs):
         """Add a document to the cache depending on `self.field`.
-        
+
         :param doc_id: document id to be added
         """
         self.query_handler.ids.append(doc_id)
@@ -98,7 +98,7 @@ class DocCache(BaseCache):
 
         return status
 
-    def update(self, keys: Iterator['UniqueId'], values: Iterator[any], *args, **kwargs):
+    def update(self, keys: Iterable['UniqueId'], values: Iterable[any], *args, **kwargs):
         """Update cached documents.
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document`"""
@@ -112,7 +112,7 @@ class DocCache(BaseCache):
                 if self.field != ID_KEY:
                     self.query_handler.content_hash[key_idx] = cached_field
 
-    def delete(self, keys: Iterator['UniqueId'], *args, **kwargs):
+    def delete(self, keys: Iterable['UniqueId'], *args, **kwargs):
         """Delete documents from the cache.
         :param keys: list of Document.id
         """

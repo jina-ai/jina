@@ -5,7 +5,7 @@ import gzip
 import os
 from functools import lru_cache
 from os import path
-from typing import Optional, Iterator, Tuple, Dict, Sequence
+from typing import Optional, Iterable, Tuple, Dict, Sequence
 
 import numpy as np
 
@@ -118,7 +118,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         elif keys.shape[0] != vectors.shape[0]:
             raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
 
-    def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
+    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Add the embeddings and document ids to the index.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -137,7 +137,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.key_bytes += keys.tobytes()
         self._size += keys.shape[0]
 
-    def update(self, keys: Iterator[str], values: Sequence[bytes], *args, **kwargs) -> None:
+    def update(self, keys: Iterable[str], values: Sequence[bytes], *args, **kwargs) -> None:
         """Update the embeddings on the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -158,7 +158,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 self.valid_indices[self._ext2int_id[key]] = False
                 self._size -= 1
 
-    def delete(self, keys: Iterator[str], *args, **kwargs) -> None:
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete the embeddings from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf

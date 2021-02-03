@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Iterator
+from typing import Iterable
 
 import numpy as np
 import pytest
@@ -21,11 +21,11 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
         for key, value in zip(keys, vectors):
             self.docs[key] = value
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
         for key in keys:
             del self.docs[key]
 

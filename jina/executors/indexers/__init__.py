@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, List, Iterator, Optional, Any
+from typing import Tuple, List, Optional, Any, Iterable
 
 import numpy as np
 
@@ -196,7 +196,7 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator,
+    def _filter_nonexistent_keys_values(self, keys: Iterable, values: Iterable, existent_keys: Iterable,
                                         check_path: str) -> Tuple[List, List]:
         keys = list(keys)
         values = list(values)
@@ -207,13 +207,13 @@ class BaseIndexer(BaseExecutor):
         values = [values[i] for i in range(len(values)) if i not in indices_to_drop]
         return keys, values
 
-    def _filter_nonexistent_keys(self, keys: Iterator, existent_keys: Iterator, check_path: str) -> List:
+    def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable, check_path: str) -> List:
         keys = list(keys)
         indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
         keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
         return keys
 
-    def _get_indices_to_drop(self, keys: List, existent_keys: Iterator, check_path: str):
+    def _get_indices_to_drop(self, keys: List, existent_keys: Iterable, check_path: str):
         indices_to_drop = []
         for key_index, key in enumerate(keys):
             if key not in existent_keys:
@@ -232,7 +232,7 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_key(self, keys: Iterator[str], *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
         """ Get the vectors by id, return a subset of indexed vectors
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -240,7 +240,7 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs):
         """Add new chunks and their vector representations
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -258,7 +258,7 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         """Update vectors on the index.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -266,7 +266,7 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
         """Delete vectors from the index.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -282,7 +282,7 @@ class BaseKVIndexer(BaseIndexer):
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
 
-    def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         """Add the serialized documents to the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -298,7 +298,7 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         """Update the serialized documents on the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -306,7 +306,7 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf

@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterable
 
 import pytest
 
@@ -13,15 +13,15 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         super().__init__(*args, **kwargs)
         self.docs = {}
 
-    def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
         for key in keys:
             del self.docs[key]
 
