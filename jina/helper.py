@@ -768,3 +768,8 @@ def change_env(key, val):
             os.environ[key] = old_var
         else:
             os.environ.pop(key)
+
+
+def is_yaml_filepath(val) -> bool:
+    r = r'^(/?\w+?/)*(\w+\.ya?ml)$'
+    return re.match(r, val) is not None

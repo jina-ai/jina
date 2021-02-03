@@ -6,7 +6,7 @@ from .client import PeaDaemonClient
 from ..asyncio.base import AsyncZMQRuntime
 from ...zmq import Zmqlet
 from ....excepts import DaemonConnectivityError
-from ....helper import cached_property, colored
+from ....helper import cached_property, colored, is_yaml_filepath
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -59,10 +59,10 @@ class JinadRuntime(AsyncZMQRuntime):
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
             upload_files = []
-            if self.args.uses.endswith('.yml') or self.args.uses.endswith('.yaml'):
+            if is_yaml_filepath(self.args.uses):
                 upload_files.append(self.args.uses)
 
-            if self.args.uses_internal.endswith('.yml') or self.args.uses_internal.endswith('.yaml'):
+            if is_yaml_filepath(self.args.uses_internal):
                 upload_files.append(self.args.uses_internal)
 
             if self.args.upload_files:
