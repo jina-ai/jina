@@ -102,40 +102,16 @@ def test_hub_build_push(monkeypatch, mocker):
         '--type', summary['manifest_info']['type'],
         '--local-only'
     ])
-    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value='dummy_token')
     response = HubIO(args).list()
     assert len(response) >= 1
 
 
+@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
 def test_hub_build_push_push_again(monkeypatch, mocker):
-    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value='dummy_token')
+    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value=os.environ.get('GITHUB_TOKEN', None))
     mocker.patch.object(HubIO, '_docker_login', return_value=None)
     args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info'])
-    summary = HubIO(args).build()
-
-    with open(str(cur_dir) + '/hub-mwu' + '/manifest.yml') as fp:
-        manifest_jaml = JAML.load(fp, substitute=True)
-        manifest = expand_dict(manifest_jaml)
-
-    assert summary['is_build_success']
-    assert manifest['version'] == summary['version']
-    assert manifest['description'] == summary['manifest_info']['description']
-    assert manifest['author'] == summary['manifest_info']['author']
-    assert manifest['kind'] == summary['manifest_info']['kind']
-    assert manifest['type'] == summary['manifest_info']['type']
-    assert manifest['vendor'] == summary['manifest_info']['vendor']
-    assert manifest['keywords'] == summary['manifest_info']['keywords']
-
-    args = set_hub_list_parser().parse_args([
-        '--name', summary['manifest_info']['name'],
-        '--keywords', summary['manifest_info']['keywords'][0],
-        '--type', summary['manifest_info']['type']
-    ])
-    mocker.patch('jina.docker.hubapi.local._fetch_access_token', return_value='dummy_token')
-    response = HubIO(args).list()
-    manifests = response
-
-    assert len(manifests) >= 1
+    HubIO(args).build()
 
     with pytest.raises(ImageAlreadyExists):
         # try and push same version again should fail with `--no-overwrite`
