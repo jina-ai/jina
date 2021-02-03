@@ -37,18 +37,17 @@ class DocCache(BaseCache):
         def __init__(self, path, logger):
             self.path = path
             try:
-                # TODO maybe mmap?
-                self.ids = pickle.load(open(path + '.ids', 'rb'))
-                self.content_hash = pickle.load(open(path + '.cache', 'rb'))
+                self.id_to_cache_val = pickle.load(open(path + '.ids', 'rb'))
+                self.cache_val_to_id = pickle.load(open(path + '.cache', 'rb'))
             except FileNotFoundError as e:
                 logger.warning(
                     f'File path did not exist : {path}.ids or {path}.cache: {e!r}. Creating new CacheHandler...')
-                self.ids = []
-                self.content_hash = []
+                self.id_to_cache_val = dict()
+                self.cache_val_to_id = dict()
 
         def close(self):
-            pickle.dump(self.ids, open(self.path + '.ids', 'wb'))
-            pickle.dump(self.content_hash, open(self.path + '.cache', 'wb'))
+            pickle.dump(self.id_to_cache_val, open(self.path + '.ids', 'wb'))
+            pickle.dump(self.cache_val_to_id, open(self.path + '.cache', 'wb'))
 
     supported_fields = [ID_KEY, CONTENT_HASH_KEY]
     default_field = ID_KEY
@@ -67,19 +66,18 @@ class DocCache(BaseCache):
         if self.field not in self.supported_fields:
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
-    def add(self, doc_id: 'UniqueId', *args, **kwargs):
+    def add(self, doc_id: str, *args, **kwargs):
         """Add a document to the cache depending on `self.field`.
 
         :param doc_id: document id to be added
         """
-        self.query_handler.ids.append(doc_id)
-
         # optimization. don't duplicate ids
         if self.field != ID_KEY:
             data = kwargs.get(DATA_FIELD, None)
-            if data is None:
-                raise ValueError(f'Got None from CacheDriver')
-            self.query_handler.content_hash.append(data)
+        else:
+            data = doc_id
+        self.query_handler.id_to_cache_val[doc_id] = data
+        self.query_handler.cache_val_to_id[data] = doc_id
         self._size += 1
 
     def query(self, data, *args, **kwargs) -> Optional[bool]:
@@ -92,39 +90,34 @@ class DocCache(BaseCache):
         if self.query_handler is None:
             self.query_handler = self.get_query_handler()
 
-        if self.field == ID_KEY:
-            status = (data in self.query_handler.ids) or None
-        else:
-            status = (data in self.query_handler.content_hash) or None
+        return data in self.query_handler.cache_val_to_id
 
-        return status
 
-    def update(self, keys: Iterable['UniqueId'], values: Iterable[any], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[any], *args, **kwargs):
         """Update cached documents.
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document`"""
         # if we don't cache anything else, no need
         if self.field != ID_KEY:
-            keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.ids, self.save_abspath)
+            for key, value in zip(keys, values):
+                if key not in self.query_handler.id_to_cache_val:
+                    continue
+                old_value = self.query_handler.id_to_cache_val[key]
+                self.query_handler.id_to_cache_val[key] = value
+                del self.query_handler.cache_val_to_id[old_value]
+                self.query_handler.cache_val_to_id[value] = key
 
-            for key, cached_field in zip(keys, values):
-                key_idx = self.query_handler.ids.index(key)
-                # optimization. don't duplicate ids
-                if self.field != ID_KEY:
-                    self.query_handler.content_hash[key_idx] = cached_field
 
-    def delete(self, keys: Iterable['UniqueId'], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs):
         """Delete documents from the cache.
         :param keys: list of Document.id
         """
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.ids, self.save_abspath)
-
         for key in keys:
-            key_idx = self.query_handler.ids.index(key)
-            self.query_handler.ids = [query_id for idx, query_id in enumerate(self.query_handler.ids) if idx != key_idx]
-            if self.field != ID_KEY:
-                self.query_handler.content_hash = [cached_field for idx, cached_field in
-                                                   enumerate(self.query_handler.content_hash) if idx != key_idx]
+            if key not in self.query_handler.id_to_cache_val:
+                continue
+            value = self.query_handler.id_to_cache_val[key]
+            del self.query_handler.id_to_cache_val[key]
+            del self.query_handler.cache_val_to_id[value]
             self._size -= 1
 
     def get_add_handler(self):
