@@ -17,7 +17,9 @@ class BaseIndexDriver(BaseExecutableDriver):
 
 
 class VectorIndexDriver(BaseIndexDriver):
-    """Extract chunk-level embeddings and add it to the executor
+    """Extracts embeddings and ids from the documents and forwards them to the executor.
+    In case `method` is 'delete', the embeddings are ignored.
+    If `method` is not 'delete', documents without content are filtered out.
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
@@ -29,7 +31,7 @@ class VectorIndexDriver(BaseIndexDriver):
 
 
 class KVIndexDriver(BaseIndexDriver):
-    """Serialize the documents/chunks in the request to key-value JSON pairs and write it using the executor
+    """Forwards pairs of serialized documents and ids to the executor.
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:

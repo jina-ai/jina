@@ -59,6 +59,11 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._key_length = 0
 
     def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+        """Add the serialized documents to the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: serialized documents
+        """
         if not keys:
             return
 
@@ -81,6 +86,11 @@ class BinaryPbIndexer(BaseKVIndexer):
         self.write_handler.flush()
 
     def query(self, key: str) -> Optional[bytes]:
+        """Find the serialized document to the index via document id.
+
+        :param key: document id
+        :return: serialized documents
+        """
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info
@@ -88,6 +98,11 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+        """Update the serialized documents on the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: serialized documents
+        """
         keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(),
                                                             self.save_abspath)
         self._delete(keys)
@@ -110,13 +125,16 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size -= 1
 
     def delete(self, keys: Iterator[str], *args, **kwargs):
+        """Delete the serialized documents from the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        """
         keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys(), self.save_abspath)
         self._delete(keys)
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
-    """Shortcut for :class:`DocPbIndexer` equipped with ``requests.on`` for storing doc-level protobuf and data uri info,
-    differ with :class:`ChunkPbIndexer` only in ``requests.on`` """
+    """Alias for BinaryPbIndexer"""
 
 
 class UniquePbIndexer(CompoundExecutor):

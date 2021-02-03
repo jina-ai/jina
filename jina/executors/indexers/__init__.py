@@ -12,7 +12,7 @@ from ...helper import call_obj_fn, cached_property, get_readable_size
 
 
 class BaseIndexer(BaseExecutor):
-    """ base class for storing and searching any kind of data structure
+    """Base class for storing and searching any kind of data structure.
 
     The key functions here are :func:`add` and :func:`query`.
     One can decorate them with :func:`jina.decorator.require_train`,
@@ -72,6 +72,18 @@ class BaseIndexer(BaseExecutor):
             raise ValueError(f'this indexer allows only keys at length {self._key_length}, but yours is {val}')
 
     def add(self, *args, **kwargs):
+        """Add documents to the index.
+        """
+        raise NotImplementedError
+
+    def update(self, *args, **kwargs):
+        """Update documents on the index.
+        """
+        raise NotImplementedError
+
+    def delete(self, *args, **kwargs):
+        """Delete documents from the index.
+        """
         raise NotImplementedError
 
     def post_init(self):
@@ -81,6 +93,8 @@ class BaseIndexer(BaseExecutor):
         self.is_handler_loaded = False
 
     def query(self, *args, **kwargs):
+        """Query documents from the index.
+        """
         raise NotImplementedError
 
     @property
@@ -157,7 +171,7 @@ class BaseIndexer(BaseExecutor):
 
     @property
     def size(self) -> int:
-        """The number of vectors/chunks indexed """
+        """The number of vectors or documents indexed """
         return self._size
 
     def __getstate__(self):
@@ -221,16 +235,14 @@ class BaseVectorIndexer(BaseIndexer):
         """ Get the vectors by id, return a subset of indexed vectors
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args:
-        :param kwargs:
-        :return:
+        :return: subset of indexed vectors
         """
         raise NotImplementedError
 
     def add(self, keys: Iterator[str], vectors: 'np.ndarray', *args, **kwargs):
         """Add new chunks and their vector representations
 
-        :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
         """
         raise NotImplementedError
@@ -246,9 +258,18 @@ class BaseVectorIndexer(BaseIndexer):
         raise NotImplementedError
 
     def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+        """Update vectors on the index.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: vector representations in B x D
+        """
         raise NotImplementedError
 
     def delete(self, keys: Iterator[str], *args, **kwargs):
+        """Delete vectors from the index.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        """
         raise NotImplementedError
 
 
@@ -261,20 +282,34 @@ class BaseKVIndexer(BaseIndexer):
     """
 
     def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+        """Add the serialized documents to the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: serialized documents
+        """
         raise NotImplementedError
 
     def query(self, key: Any) -> Optional[Any]:
-        """ Find the protobuf chunk/doc using id
+        """Find the serialized document to the index via document id.
 
-        :param key: ``id``
-        :return: protobuf chunk or protobuf document
+        :param key: document id
+        :return: serialized documents
         """
         raise NotImplementedError
 
     def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+        """Update the serialized documents on the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: serialized documents
+        """
         raise NotImplementedError
 
     def delete(self, keys: Iterator[str], *args, **kwargs):
+        """Delete the serialized documents from the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        """
         raise NotImplementedError
 
     def __getitem__(self, key: Any) -> Optional[Any]:
@@ -296,7 +331,7 @@ class CompoundIndexer(CompoundExecutor):
         - In the query time
             - 1. Find the knn using the vector via :class:`BaseVectorIndexer`
             - 2. remove all vector information (embedding, buffer, blob, text)
-            - 3. Fill in the meta information of the chunk via :class:`BaseKVIndexer`
+            - 3. Fill in the meta information of the document via :class:`BaseKVIndexer`
 
     One can use the :class:`ChunkIndexer` via
 

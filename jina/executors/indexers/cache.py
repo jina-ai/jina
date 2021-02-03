@@ -54,9 +54,9 @@ class DocCache(BaseCache):
     default_field = ID_KEY
 
     def __init__(self, index_filename: str = None, *args, **kwargs):
-        """ creates a new DocCache
+        """ Create a new DocCache
 
-        :param field: to be passed as kwarg. This dictates by which Document field we cache (either `id` or `content_hash`)
+        :param index_filename: file name for storing the cache data
         """
         if not index_filename:
             # create a new temp file if not exist
@@ -67,6 +67,10 @@ class DocCache(BaseCache):
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
     def add(self, doc_id: 'UniqueId', *args, **kwargs):
+        """Add a document to the cache depending on `self.field`.
+        
+        :param doc_id: document id to be added
+        """
         self.query_handler.ids.append(doc_id)
 
         # optimization. don't duplicate ids
@@ -78,10 +82,10 @@ class DocCache(BaseCache):
         self._size += 1
 
     def query(self, data, *args, **kwargs) -> Optional[bool]:
-        """
-        Check whether the data exists in the cache
+        """Check whether the data exists in the cache.
 
         :param data: either the id or the content_hash of a Document
+        :return: status
         """
         # FIXME this shouldn't happen
         if self.query_handler is None:
@@ -95,7 +99,7 @@ class DocCache(BaseCache):
         return status
 
     def update(self, keys: Iterator['UniqueId'], values: Iterator[any], *args, **kwargs):
-        """
+        """Update cached documents.
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document`"""
         # if we don't cache anything else, no need
@@ -109,7 +113,7 @@ class DocCache(BaseCache):
                     self.query_handler.content_hash[key_idx] = cached_field
 
     def delete(self, keys: Iterator['UniqueId'], *args, **kwargs):
-        """
+        """Delete documents from the cache.
         :param keys: list of Document.id
         """
         keys = self._filter_nonexistent_keys(keys, self.query_handler.ids, self.save_abspath)
