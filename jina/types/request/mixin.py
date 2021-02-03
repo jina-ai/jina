@@ -6,20 +6,20 @@ class DocsPropertyMixin:
     @property
     def docs(self) -> 'DocumentSet':
         self.is_used = True
-        return DocumentSet(self._pb_body.docs)
+        return DocumentSet(self.body.docs)
 
 
 class GroundtruthPropertyMixin:
     @property
     def groundtruths(self) -> 'DocumentSet':
         self.is_used = True
-        return DocumentSet(self._pb_body.groundtruths)
+        return DocumentSet(self.body.groundtruths)
 
 
 class IdsMixin:
     @property
     def ids(self):
-        return self._pb_body.ids
+        return self.body.ids
 
 
 class CommandMixin:
