@@ -276,14 +276,14 @@ class Message:
                                         f'incoming message has JINA version {self.envelope.version.jina}, '
                                         f'whereas local JINA version {__version__}')
 
-            if not self.envelope.version._pb_body:
+            if not self.envelope.version.proto:
                 # only happen in unittest
                 default_logger.warning('incoming message contains empty "version.proto", '
                                        'you may ignore it in debug/unittest mode. '
                                        'otherwise please check if gateway service set correct version')
-            elif __proto_version__ != self.envelope.version._pb_body:
+            elif __proto_version__ != self.envelope.version.proto:
                 raise MismatchedVersion('mismatched protobuf version! '
-                                        f'incoming message has protobuf version {self.envelope.version._pb_body}, '
+                                        f'incoming message has protobuf version {self.envelope.version.proto}, '
                                         f'whereas local protobuf version {__proto_version__}')
 
             if not self.envelope.version.vcs or not os.environ.get('JINA_VCS_VERSION'):
@@ -304,7 +304,7 @@ class Message:
 
     def _add_version(self, envelope):
         envelope.version.jina = __version__
-        envelope.version._pb_body = __proto_version__
+        envelope.version.proto = __proto_version__
         envelope.version.vcs = os.environ.get('JINA_VCS_VERSION', '')
 
     def update_timestamp(self):
