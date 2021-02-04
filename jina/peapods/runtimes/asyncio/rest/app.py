@@ -42,10 +42,15 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         allow_methods=['*'],
         allow_headers=['*'],
     )
-    servicer = AsyncPrefetchCall(args)
+    zmqlet = AsyncZmqlet(args)
+    servicer = AsyncPrefetchCall(args, zmqlet)
 
     def error(reason, status_code):
         return JSONResponse(content={'reason': reason}, status_code=status_code)
+
+    @app.on_event('shutdown')
+    def _shutdown():
+        zmqlet.close()
 
     @app.on_event('startup')
     async def startup():
