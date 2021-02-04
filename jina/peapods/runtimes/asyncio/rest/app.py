@@ -10,7 +10,7 @@ from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
 from .....enums import RequestType
-from .....helper import get_full_version
+from .....helper import get_full_version, random_identity
 from .....importer import ImportExtensions
 from .....logging import JinaLogger, default_logger
 from .....logging.profile import used_memory_readable
@@ -170,6 +170,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             super().__init__(scope, receive, send)
             self.args = args
             self.name = args.name or self.__class__.__name__
+            self._id = random_identity()
             self.client_encoding = None
 
         async def dispatch(self) -> None:
@@ -217,7 +218,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         async def handle_send(self, websocket: WebSocket) -> None:
 
             def handle_route(msg: 'Message') -> 'Request':
-                msg.add_route(self.name, hex(id(self)))
+                msg.add_route(self.name, self._id)
                 return msg.response
 
             try:

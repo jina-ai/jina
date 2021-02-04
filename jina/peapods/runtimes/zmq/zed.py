@@ -12,6 +12,7 @@ from ....enums import OnErrorStrategy
 from ....excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
     BadConfigSource, RuntimeTerminated
 from ....executors import BaseExecutor
+from ....helper import random_identity
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
 
@@ -21,6 +22,7 @@ class ZEDRuntime(ZMQRuntime):
         self._zmqlet.start(self._msg_callback)
 
     def setup(self):
+        self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self._last_dump_time = time.perf_counter()
 
@@ -94,7 +96,7 @@ class ZEDRuntime(ZMQRuntime):
     #: Private methods required by run_forever
     def _pre_hook(self, msg: 'Message') -> 'ZEDRuntime':
         """Pre-hook function, what to do after first receiving the message """
-        msg.add_route(self.name, hex(id(self)))
+        msg.add_route(self.name, self._id)
         self._request = msg.request
         self._message = msg
 

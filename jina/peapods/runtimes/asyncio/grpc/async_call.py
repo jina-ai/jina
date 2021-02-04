@@ -1,5 +1,6 @@
 import asyncio
 
+from .....helper import random_identity
 from .....logging import JinaLogger
 from .....logging.profile import TimeContext
 from .....proto import jina_pb2_grpc
@@ -17,11 +18,12 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
         self.zmqlet = zmqlet
         self.name = args.name or self.__class__.__name__
         self.logger = JinaLogger(self.name, **vars(args))
+        self._id = random_identity()
 
     async def Call(self, request_iterator, context):
 
         def handle(msg: 'Message') -> 'Request':
-            msg.add_route(self.name, hex(id(self)))
+            msg.add_route(self.name, self._id)
             return msg.response
 
         prefetch_task = []
