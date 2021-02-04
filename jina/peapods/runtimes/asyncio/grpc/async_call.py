@@ -1,6 +1,6 @@
 import asyncio
 
-from .....helper import random_identity
+from .....helper import random_identity, typename
 from .....logging import JinaLogger
 from .....logging.profile import TimeContext
 from .....proto import jina_pb2_grpc
@@ -26,22 +26,27 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
             msg.add_route(self.name, self._id)
             return msg.response
 
-        prefetch_task = []
-
         async def prefetch_req(num_req, fetch_to):
-            nf = 0
-            async for next_request in request_iterator:
-                asyncio.create_task(
-                    self.zmqlet.send_message(Message(None, next_request, 'gateway', **vars(self.args))))
-                fetch_to.append(asyncio.create_task(self.zmqlet.recv_message(callback=handle)))
-                nf += 1
-                if nf == num_req:
-                    return False  # aiter is not empty yet
-            return True  # aiter is empty
+            for _ in range(num_req):
+                try:
+                    if hasattr(request_iterator, '__anext__'):
+                        next_request = await request_iterator.__anext__()
+                    elif hasattr(request_iterator, '__next__'):
+                        # This code block will be executed for REST based invocations
+                        next_request = next(request_iterator)
+                    else:
+                        raise TypeError(f'{typename(request_iterator)} does not have `__anext__` or `__next__`')
+                    asyncio.create_task(
+                        self.zmqlet.send_message(Message(None, next_request, 'gateway', **vars(self.args))))
+                    fetch_to.append(asyncio.create_task(self.zmqlet.recv_message(callback=handle)))
+                except (StopIteration, StopAsyncIteration):
+                    return True
+            return False
 
         with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
             self.logger.warning('if this takes too long, you may want to take smaller "--prefetch" or '
                                 'ask client to reduce "--request-size"')
+            prefetch_task = []
             is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
             if is_req_empty and not prefetch_task:
                 self.logger.error('receive an empty stream from the client! '
