@@ -125,7 +125,11 @@ class BasePea(metaclass=PeaType):
         return self
 
     def close(self) -> None:
-        # wait 1s for the process/thread to end naturally, in this case no "cancel" is required this is required for
+        """ Close the Pea
+
+        This method makes sure that the `Process/thread` is properly finished and its resources properly released
+        """
+        # wait 0.1s for the process/thread to end naturally, in this case no "cancel" is required this is required for
         # the is case where in subprocess, runtime.setup() fails and _finally() is not yet executed, BUT close() in the
         # main process is calling runtime.cancel(), which is completely unnecessary as runtime.run_forever() is not
         # started yet.
