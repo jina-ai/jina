@@ -33,10 +33,10 @@ class BaseCacheDriver(BaseIndexDriver):
                 if self.field == CONTENT_HASH_KEY:
                     data = d.content_hash
                 result = self.exec[data]
-                if result is None:
-                    self.on_miss(d, data)
-                else:
+                if result:
                     self.on_hit(d, result)
+                else:
+                    self.on_miss(d, data)
 
     def on_miss(self, req_doc: 'Document', data: Any) -> None:
         """Function to call when document is missing, the default behavior is to add to cache when miss.

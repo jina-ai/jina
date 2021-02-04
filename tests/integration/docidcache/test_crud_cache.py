@@ -141,7 +141,6 @@ def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=
 
 def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, post_op):
     cache_indexer_path = tmp_path / 'cache.bin'
-    cache_full_size = 0
     with BaseIndexer.load(cache_indexer_path) as cache:
         assert isinstance(cache, DocCache)
         cache_full_size = cache.size

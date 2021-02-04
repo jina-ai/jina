@@ -76,8 +76,8 @@ def test_cache_driver_from_file(tmpdir, test_metas):
     folder = os.path.join(test_metas["workspace"])
     bin_full_path = os.path.join(folder, filename)
     docs = list(random_docs(10, embedding=False))
-    pickle.dump([doc.id for doc in docs], open(f'{bin_full_path}.ids', 'wb'))
-    pickle.dump([doc.content_hash for doc in docs], open(f'{bin_full_path}.cache', 'wb'))
+    pickle.dump({doc.id: doc.content_hash for doc in docs}, open(f'{bin_full_path}.ids', 'wb'))
+    pickle.dump({doc.content_hash: doc.id for doc in docs}, open(f'{bin_full_path}.cache', 'wb'))
 
     driver = MockCacheDriver()
     with DocCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
@@ -150,18 +150,18 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
 
     with BaseExecutor.load(filename) as executor:
         assert executor.query(doc1.content_hash) is True
-        assert executor.query(old_doc.content_hash) is None
+        assert executor.query(old_doc.content_hash) is False
 
     # delete
     with BaseExecutor.load(filename) as executor:
         executor.delete([doc1.id])
 
     with BaseExecutor.load(filename) as executor:
-        assert executor.query(doc1.content_hash) is None
+        assert executor.query(doc1.content_hash) is False
 
 
 def test_cache_content_driver_same_id(tmp_path, test_metas):
-    filename = tmp_path / 'DocCache.bin'
+    filename = os.path.join(tmp_path, 'DocCache.bin')
     doc1 = Document(id=1)
     doc1.text = 'blabla'
     doc1.update_content_hash()
