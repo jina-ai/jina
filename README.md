@@ -835,6 +835,6 @@ Jina is an open-source project. [We are hiring](https://jobs.jina.ai) full-stack
 
 ## License
 
-Copyright (c) 2020 Jina AI Limited. All rights reserved.
+Copyright (c) 2020-2021 Jina AI Limited. All rights reserved.
 
 Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
