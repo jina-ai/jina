@@ -127,7 +127,7 @@ def docker_image():
     client = docker.from_env()
     client.containers.prune()
 
-    
+
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2, 3])
 def test_l_r_l_with_upload(silent_log, parallels, docker_image, mocker):
@@ -143,3 +143,17 @@ def test_l_r_l_with_upload(silent_log, parallels, docker_image, mocker):
     with f:
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
     response_mock.assert_called()
+
+
+@pytest.mark.parametrize('parallels', [1, 2])
+def test_create_pea_timeout(parallels):
+    f = (Flow()
+         .add()
+         .add(uses='delayed_executor.yml',
+              host=CLOUD_HOST,
+              parallel=parallels,
+              upload_files=['delayed_executor.py'],
+              timeout_ready=10000)
+         .add())
+    with f:
+        f.index_ndarray(['abc'])
