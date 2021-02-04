@@ -43,6 +43,7 @@ class BasePod(ExitStack):
 
     @property
     def role(self) -> 'PodRoleType':
+        """Return the role of this :class:`BasePod`."""
         return self.args.pod_role
 
     @property
@@ -162,7 +163,7 @@ class BasePod(ExitStack):
 
     @tail_args.setter
     def tail_args(self, args):
-        """Get the arguments for the `tail` of this BasePod. """
+        """Set the arguments for the `tail` of this BasePod. """
         if self.is_tail_router and self.peas_args['tail']:
             self.peas_args['tail'] = args
         elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
@@ -188,14 +189,12 @@ class BasePod(ExitStack):
         return self.num_peas == other.num_peas and self.name == other.name
 
     def start(self) -> 'BasePod':
-        """Start to run all Peas in this BasePod.
+        """Start to run all :class:`BasePea` in this BasePod.
 
-        Remember to close the BasePod with :meth:`close`.
-
-        Note that this method has a timeout of ``timeout_ready`` set in CLI,
-        which is inherited from :class:`jina.peapods.peas.BasePea`
+        .. note::
+            If one of the :class:`BasePea` fails to start, make sure that all of them
+            are properly closed.
         """
-        # start head and tail
         try:
             for _args in self.all_args:
                 self._enter_pea(BasePea(_args))
@@ -233,40 +232,52 @@ class BasePod(ExitStack):
             else:
                 args.runtime_cls = 'GRPCRuntime'
 
-    def connect_to_tail_of(self, pod: 'BasePod'):
-        """Eliminate the head node by connecting prev_args node directly to peas """
+    def optimize_connect_to_tail_of(self, incoming_pod: 'BasePod'):
+        """Removes the `head` arguments to make sure that the Peas are connected directly to the
+        `tail` of the incoming pod.
+
+        :param incoming_pod: :class:`BasePod` that connects its tail to this :class:`BasePod` head
+        """
         if self.args.parallel > 1 and self.is_head_router:
             # keep the port_in and socket_in of prev_args
             # only reset its output
-            pod.tail_args = _copy_to_head_args(pod.tail_args, self.args.polling.is_push, as_router=False)
+            incoming_pod.tail_args = _copy_to_head_args(incoming_pod.tail_args, self.args.polling.is_push,
+                                                        as_router=False)
             # update peas to receive from it
-            self.peas_args['peas'] = _set_peas_args(self.args, pod.tail_args, self.tail_args)
+            self.peas_args['peas'] = _set_peas_args(self.args, incoming_pod.tail_args, self.tail_args)
             # remove the head node
             self.peas_args['head'] = None
             # head is no longer a router anymore
             self.is_head_router = False
-            self.deducted_head = pod.tail_args
+            self.deducted_head = incoming_pod.tail_args
         else:
             raise ValueError('the current pod has no head router, deducting the head is confusing')
 
-    def connect_to_head_of(self, pod: 'BasePod'):
-        """Eliminate the tail node by connecting next_args node directly to peas """
+    def optimize_connect_to_head_of(self, outgoing_pod: 'BasePod'):
+        """Removes the `tail` arguments to make sure that the Peas are connected directly to the
+        `head` of the outgoing pod.
+
+        :param outgoing_pod: :class:`BasePod` that this :class:`BasePod` tries to send data to
+        """
         if self.args.parallel > 1 and self.is_tail_router:
             # keep the port_out and socket_out of next_arts
             # only reset its input
-            pod.head_args = _copy_to_tail_args(pod.head_args,
-                                               as_router=False)
+            outgoing_pod.head_args = _copy_to_tail_args(outgoing_pod.head_args,
+                                                        as_router=False)
             # update peas to receive from it
-            self.peas_args['peas'] = _set_peas_args(self.args, self.head_args, pod.head_args)
+            self.peas_args['peas'] = _set_peas_args(self.args, self.head_args, outgoing_pod.head_args)
             # remove the tail node
             self.peas_args['tail'] = None
             # tail is no longer a router anymore
             self.is_tail_router = False
-            self.deducted_tail = pod.head_args
+            self.deducted_tail = outgoing_pod.head_args
         else:
             raise ValueError('the current pod has no tail router, deducting the tail is confusing')
 
     @property
     def is_ready(self) -> bool:
-        """A Pod is ready when all the Peas it contains are ready"""
+        """Checks if Pod is read.
+        .. note::
+            A Pod is ready when all the Peas it contains are ready
+        """
         return all(p.is_ready.is_set() for p in self.peas)
