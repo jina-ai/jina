@@ -35,6 +35,7 @@ requests:
       - !KVSearchDriver
         with:
           executor: chunkidx
+          is_merge: true
           traversal_paths: ['m']
     DeleteRequest:
       - !DeleteDriver
