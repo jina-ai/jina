@@ -10,7 +10,7 @@ from jina.drivers.delete import DeleteDriver
 from jina.executors import BaseExecutor
 from jina.executors.indexers.cache import DocCache, ID_KEY, CONTENT_HASH_KEY
 from jina.proto import jina_pb2
-from jina.types.document import Document, UniqueId
+from jina.types.document import Document
 from tests import random_docs
 
 
@@ -146,7 +146,7 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
     doc1.text = new_string
     doc1.update_content_hash()
     with BaseExecutor.load(filename) as executor:
-        executor.update([UniqueId(1)], [doc1.content_hash])
+        executor.update([1], [doc1.content_hash])
 
     with BaseExecutor.load(filename) as executor:
         assert executor.query(doc1.content_hash) is True
