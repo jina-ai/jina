@@ -49,8 +49,9 @@ class MultiModalDriver(BaseEncodeDriver):
 
     def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray']):
         """
-            From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
-            passed to the executor.
+        From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
+        passed to the executor.
+         :param content_by_modality: a dictionary of `Document content` by modality name
         """
         return [content_by_modality[modality] for modality in self.positional_modality]
 

@@ -20,8 +20,4 @@ class CraftDriver(BaseExecutableDriver):
             _args_dict = doc.get_attrs(*self.exec.required_keys)
             ret = self.exec_fn(**_args_dict)
             if ret:
-                self.update(doc, ret)
-
-    @staticmethod
-    def update(doc, ret):
-        doc.set_attrs(**ret)
+                doc.set_attrs(**ret)

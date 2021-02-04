@@ -28,10 +28,10 @@ class SegmentDriver(BaseExecutableDriver):
             _args_dict = doc.get_attrs(*self.exec.required_keys)
             ret = self.exec_fn(**_args_dict)
             if ret:
-                self.update(doc, ret)
+                SegmentDriver._update(doc, ret)
 
     @staticmethod
-    def update(doc, ret):
+    def _update(doc, ret):
         for r in ret:
             with Document(length=len(ret), **r) as c:
                 if not c.mime_type:
