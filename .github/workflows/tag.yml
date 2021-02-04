@@ -58,6 +58,20 @@ jobs:
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
 
+  update-dashboard-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
+          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
+      - name: Dashboard version update
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Sync version with Jina core
+          repo: jina-ai/dashboard
+          token: ${{ secrets.JINA_DEV_BOT }}
+          inputs: '{ "version": "${{ env.JINA_VERSION }}" }'
 
   update-doc:
     runs-on: ubuntu-latest
