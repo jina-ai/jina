@@ -196,10 +196,12 @@ class BasePod(ExitStack):
         which is inherited from :class:`jina.peapods.peas.BasePea`
         """
         # start head and tail
-
-        for _args in self.all_args:
-            self._enter_pea(BasePea(_args))
-
+        try:
+            for _args in self.all_args:
+                self._enter_pea(BasePea(_args))
+        except:
+            self.close()
+            raise
         return self
 
     def _enter_pea(self, pea: 'BasePea') -> None:
