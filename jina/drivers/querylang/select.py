@@ -21,7 +21,7 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
         ExcludeQL will avoid `buffer` and `chunks` fields to be sent to the next `Pod`
     """
 
-    def __init__(self, fields: Union[Tuple, str], traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
+    def __init__(self, fields: Union[Tuple, str], traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         """
 
         :param fields: the pruned field names in tuple

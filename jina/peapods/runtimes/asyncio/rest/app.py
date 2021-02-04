@@ -226,7 +226,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                     if self.client_encoding == 'bytes':
                         await websocket.send_bytes(response.SerializeToString())
                     else:
-                        await websocket.send_json(response.to_json())
+                        await websocket.send_json(response.json())
                     self.num_responses += 1
             except Exception as e:
                 logger.error(f'Got an exception in handle_send: {e!r}')

@@ -18,6 +18,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -161,6 +162,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`0.9.24`)](#release-note-0924)
 - [Release Note (`0.9.26`)](#release-note-0926)
 - [Release Note (`0.9.27`)](#release-note-0927)
+- [Release Note (`0.9.28`)](#release-note-0928)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -7172,4 +7174,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```5a777fa4```](https://github.com/jina-ai/jina/commit/5a777fa4df4c0cf21ae78f2c6c9f38ea4ac3e649)] __-__ __version__: the next version will be 0.9.27 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-28></a>
+## Release Note (`0.9.28`)
+
+> Release time: 2021-02-03 22:09:02
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Deepankar Mahapatro,  Joan Fontanals,  Florian Hönicke,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```8ca3ba91```](https://github.com/jina-ai/jina/commit/8ca3ba91cb6969f5fa6f3af927c8074b56549aca)] __-__ __types__: add proper __str__ and __repr__ to jina types (#1847) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```23090e01```](https://github.com/jina-ai/jina/commit/23090e0199ac17f49efd46a4f0104d866542e48e)] __-__ __types__: fix repr and str magic methods (#1852) (*Han Xiao*)
+ - [[```5c68831e```](https://github.com/jina-ai/jina/commit/5c68831e683c5a491ce3bc60243bf4292a4b84b9)] __-__ __helper__: fix yaml path check (#1850) (*Han Xiao*)
+ - [[```26f31e3e```](https://github.com/jina-ai/jina/commit/26f31e3e3e39b76b27a25893464602d8fade115c)] __-__ __indexer__: set default key_length to 16 (#1840) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```11eb7c9d```](https://github.com/jina-ai/jina/commit/11eb7c9d61fe4f1a9528e31d74253aa229585729)] __-__ docCache signature fix (#1842) (*Joan Fontanals*)
+ - [[```87d296ba```](https://github.com/jina-ai/jina/commit/87d296bab6071754d8b3c720656a8dc967f3f258)] __-__ use iterable (#1843) (*Florian Hönicke*)
+ - [[```39116ee8```](https://github.com/jina-ai/jina/commit/39116ee8cabadd1be49eae4f798b6c25a1add60e)] __-__ doc.id can now be arbitrary string (#1837) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```f24c4f8b```](https://github.com/jina-ai/jina/commit/f24c4f8ba96accc9b731a1700889e4edb7e506dc)] __-__ __readme__: add CRUD to the top section of the get-started (#1841) (*Han Xiao*)
+ - [[```ba4cea32```](https://github.com/jina-ai/jina/commit/ba4cea3246862af9ee7fc51eb8643caa963b8c3c)] __-__ crud vector kv indexer (#1814) (*Florian Hönicke*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```24696b9e```](https://github.com/jina-ai/jina/commit/24696b9ef53482c998b20beb8001432fabaae8cc)] __-__ __rest__: added redoc docs for rest gateway (#1846) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```66829d18```](https://github.com/jina-ai/jina/commit/66829d185593f1a980d39f3ded691b689db7e702)] __-__ Revert &#34;ci(rest): added redoc docs for rest gateway (#1846)&#34; (#1849) (*Han Xiao*)
+ - [[```b295c561```](https://github.com/jina-ai/jina/commit/b295c5619d0189149d1788fe5f30a175ece0afcc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```ea729556```](https://github.com/jina-ai/jina/commit/ea729556fc55f0502a93f88fd6c0fd54f7ebe002)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```db9e1f11```](https://github.com/jina-ai/jina/commit/db9e1f117ba436ea94cf715452c10bf9493a8bf0)] __-__ __version__: the next version will be 0.9.28 (*Jina Dev Bot*)
 

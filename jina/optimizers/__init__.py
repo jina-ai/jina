@@ -115,7 +115,7 @@ class FlowOptimizer(JAMLCompatible):
             parameter_yaml: str,
             evaluation_callback: 'OptimizerCallback',
             n_trials: int,
-            workspace_base_dir: str = '',
+            workspace_base_dir: str = '.',
             sampler: str = 'TPESampler',
             direction: str = 'maximize',
             seed: int = 42,
