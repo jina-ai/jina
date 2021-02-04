@@ -294,8 +294,6 @@ message RequestProto {
      */
     message UpdateRequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to update
-
-        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
     }
 
      /**
