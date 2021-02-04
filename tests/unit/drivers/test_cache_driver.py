@@ -146,7 +146,7 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
     doc1.text = new_string
     doc1.update_content_hash()
     with BaseExecutor.load(filename) as executor:
-        executor.update([1], [doc1.content_hash])
+        executor.update(['1'], [doc1.content_hash])
 
     with BaseExecutor.load(filename) as executor:
         assert executor.query(doc1.content_hash) is True
