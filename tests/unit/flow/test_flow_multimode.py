@@ -42,15 +42,15 @@ def test_flow_with_modalities(tmpdir, restful):
     def input_fn():
         doc1 = jina_pb2.DocumentProto()
         doc1.text = 'title: this is mode1 from doc1, body: this is mode2 from doc1'
-        doc1.id = 1
+        doc1.id = '1'
 
         doc2 = jina_pb2.DocumentProto()
         doc2.text = 'title: this is mode1 from doc2, body: this is mode2 from doc2'
-        doc2.id = 2
+        doc2.id = '2'
 
         doc3 = jina_pb2.DocumentProto()
         doc3.text = 'title: this is mode1 from doc3, body: this is mode2 from doc3'
-        doc3.id = 3
+        doc3.id = '3'
 
         return [doc1, doc2, doc3]
 
