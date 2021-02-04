@@ -8,10 +8,6 @@ DATA_FIELD = 'data'
 ID_KEY = 'id'
 CONTENT_HASH_KEY = 'content_hash'
 
-# noinspection PyUnreachableCode
-if False:
-    from jina.types.document import UniqueId
-
 
 class BaseCache(BaseKVIndexer):
     """Base class of the cache inherited :class:`BaseKVIndexer`
@@ -71,7 +67,6 @@ class DocCache(BaseCache):
 
         :param doc_id: document id to be added
         """
-        # optimization. don't duplicate ids
         if self.field != ID_KEY:
             data = kwargs.get(DATA_FIELD, None)
         else:
@@ -86,9 +81,6 @@ class DocCache(BaseCache):
         :param data: either the id or the content_hash of a Document
         :return: status
         """
-        # FIXME this shouldn't happen
-        if self.query_handler is None:
-            self.query_handler = self.get_query_handler()
 
         return data in self.query_handler.cache_val_to_id
 

@@ -113,7 +113,7 @@ class BaseIndexer(BaseExecutor):
             :attr:`query_handler` and :attr:`write_handler` are by default mutex
         """
         r = None
-        if (not self.handler_mutex or not self.is_handler_loaded) and self.is_exist:
+        if not self.handler_mutex or not self.is_handler_loaded:
             r = self.get_query_handler()
             if r is None:
                 self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '

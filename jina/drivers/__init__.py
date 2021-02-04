@@ -34,8 +34,7 @@ if False:
 
 
 def store_init_kwargs(func: Callable) -> Callable:
-    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML
-    """
+    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML"""
 
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
