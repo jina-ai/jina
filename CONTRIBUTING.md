@@ -8,7 +8,7 @@ I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new con
 
 The best way to know more about contributing and how to get started is to **[join us on Slack](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w)** and ask questions in our public channels.
 
-In this guide we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
+In this guide, we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -27,7 +27,7 @@ In this guide we're going to go through the steps for each kind of contribution,
 <a name="-before-you-start"></a>
 ## 🏁 Before you Start
 
-Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](https://101.jina.ai), and [example tutorials](https://learn.jina.ai) so you have a good understanding of what Jina is and how it works.
+Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](https://github.com/jina-ai/docs/tree/master/chapters/101), and [example tutorials](https://learn.jina.ai) so you have a good understanding of what Jina is and how it works.
 
 ### Not a coder but still want to contribute?
 
@@ -100,7 +100,7 @@ What happens after the merge? [Understand the development stage and release cycl
 
 By default, `git clone` won't clone anything under `jina/hub` as it is a Git submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). If you want to contribute to `jina-hub`, please move to [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub) repo and make your contribution.
 
-Most cases when you work on `jina-ai/jina`, you don't need `jina-hub`. But just in case for some reason you wish to work with files under `jina/hub` (e.g. some integration test), you can use:
+In most cases when you work on `jina-ai/jina`, you don't need `jina-hub`. But just in case for some reason you wish to work with files under `jina/hub` (e.g. some integration test), you can use:
 
 ```bash
 git clone https://github.com/jina-ai/jina.git
@@ -186,7 +186,7 @@ Commit messages should stick to our [naming conventions](#naming-conventions) ou
 
 * `type` is one of the [types above](#specify-the-correct-types).
 * `scope` is optional, and represents the module your commit is working on.
-* `subject` explains the commit, without an ending period `.`
+* `subject` explains the commit, without an ending period`.`
 
 For example, a commit that fixes a bug in the executor module should be phrased as: `fix(executor): fix the bad naming in init function`
 
@@ -211,7 +211,7 @@ feat: add remote api
 
 #### What if I Mess Up?
 
-We all make mistakes. GitHub has a guide on [rewriting commit messages](https://docs.github.com/en/free-pro-team@latest/github/committing-changes-to-your-project/changing-a-commit-message) to they can adhere to our standards.
+We all make mistakes. GitHub has a guide on [rewriting commit messages](https://docs.github.com/en/free-pro-team@latest/github/committing-changes-to-your-project/changing-a-commit-message) so they can adhere to our standards.
 
 You can also install [commitlint](https://commitlint.js.org/#/) onto your own machine and check your commit message by running:
 
@@ -252,7 +252,7 @@ docker run jinaai/jina:my-local-version check
 
 It prints a list of components the current version of Jina supports, and then exits. Make sure yours are not in red.
 
-Once you submit the PR, your code will be tested in the environment of Python 3.7 and 3.8 with [full exta dependencies](extra-requirements.txt) (`pip install .[all]`) installed.
+Once you submit the PR, your code will be tested in the environment of Python 3.7 and 3.8 with [full extra dependencies](extra-requirements.txt) (`pip install .[all]`) installed.
 
 <a name="-contributing-documentation"></a>
 ## 📖 Contributing Documentation
@@ -265,7 +265,7 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 
 #### General Documentation
 
-This covers files like [Jina 101](https://101.jina.ai), [Input and Output Functions, etc](https://github.com/jina-ai/jina/blob/master/docs/chapters/io/index.md).
+This covers files like [Jina 101](https://github.com/jina-ai/docs/tree/master/chapters/101), [Input and Output Functions](https://docs.jina.ai/chapters/io/index.html), etc.
 
 These are typically written in Markdown, though some may be in RestructuredText.
 
@@ -285,7 +285,7 @@ Docstrings are how we document Jina's functions. This is suitable for more exper
 
 #### Building Documentation Locally
 
-To build documentation locally, please checkout our [jina-ai/docs](https://github.com/jina-ai/docs) repo:
+To build the documentation locally, please checkout our [jina-ai/docs](https://github.com/jina-ai/docs) repo:
 
 ```bash
 make clean
