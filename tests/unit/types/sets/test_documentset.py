@@ -3,7 +3,6 @@ from copy import deepcopy
 import pytest
 
 from jina import Document
-from jina.types.document.uid import UniqueId
 from jina.types.sets import DocumentSet
 
 DOCUMENTS_PER_LEVEL = 1
@@ -106,7 +105,7 @@ def test_build(docset):
 def test_set_get_success(docset, document_factory):
     docset.build()
     doc = document_factory.create(4, 'test 4')
-    doc_id = str(UniqueId(2))
+    doc_id = 2
     docset[doc_id] = doc
     assert docset[doc_id].text == 'test 4'
     doc_0_id = docset[0].id
