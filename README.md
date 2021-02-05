@@ -87,7 +87,7 @@ jina hello-world --help
 |     |   |
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) |
-| 🐣  | [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🐣  | [Document](#document) • [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### CRUD Functions
@@ -180,6 +180,79 @@ with f:
 
 Get the vibe? Now we are talking! Let's learn more about the basic concepts and features in Jina.
 
+
+
+#### Document
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
+
+`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. It can be recurred both vertically and horizontally to have nested documents and matched documents. To construct a Document, one can use:
+
+```python
+import numpy
+from jina import Document
+
+doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
+doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
+doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
+```
+
+<details>
+  <summary>Click here to see more about MultimodalDocument</summary>
+  
+
+#### MultimodalDocument
+  
+A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
+ 
+Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content in a `dict`:
+  
+```python
+from jina import MultimodalDocument
+document = MultimodalDocument(modality_content_map={
+    'title': 'my holiday picture',
+    'description': 'the family having fun on the beach',
+    'image': PIL.Image.open('path/to/image.jpg')
+})
+```
+
+One can also compose a `MultimodalDocument` from multiple `Document` directly:
+  
+```python
+from jina.types import Document, MultimodalDocument
+
+doc_title = Document(content='my holiday picture', modality='title')
+doc_desc = Document(content='the family having fun on the beach', modality='description')
+doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='description')
+doc_img.tags['date'] = '10/08/2019' 
+
+document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
+```
+
+##### Fusion Embeddings from Different Modalities
+
+To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
+
+```python
+def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
+    ...
+```
+
+`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the endoder as the first argument, and `text` as the second.
+
+```yaml
+!MyMultimodalEncoder
+with:
+  positional_modality: ['image', 'text']
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - !MultiModalDriver {}
+```
+
+Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
+
+</details>
+
 #### Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
@@ -195,7 +268,7 @@ This creates a simple Flow with one [Pod](https://101.jina.ai). You can chain mu
 #### Visualize
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-visualize-a-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be automatically displayed inline *without* `plot`:
+To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be displayed inline *without* `plot`:
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
 
@@ -328,78 +401,6 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
     f.index(numpy.random.random([4, 5, 2]),
             on_done=print, on_error=beep, on_always=lambda x: fp.write(x.json()))
 ```
-
-
-#### Construct Document
-<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
-
-`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. It can be recurred both vertically and horizontally to have nested documents and matched documents. To construct a Document, one can use:
-
-```python
-import numpy
-from jina import Document
-
-doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
-doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
-doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
-```
-
-<details>
-  <summary>Click here to see more about MultimodalDocument</summary>
-  
-
-#### MultimodalDocument
-  
-A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
- 
-Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content in a `dict`:
-  
-```python
-from jina import MultimodalDocument
-document = MultimodalDocument(modality_content_map={
-    'title': 'my holiday picture',
-    'description': 'the family having fun on the beach',
-    'image': PIL.Image.open('path/to/image.jpg')
-})
-```
-
-One can also compose a `MultimodalDocument` from multiple `Document` directly:
-  
-```python
-from jina.types import Document, MultimodalDocument
-
-doc_title = Document(content='my holiday picture', modality='title')
-doc_desc = Document(content='the family having fun on the beach', modality='description')
-doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='description')
-doc_img.tags['date'] = '10/08/2019' 
-
-document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
-```
-
-##### Fusion Embeddings from Different Modalities
-
-To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
-
-```python
-def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
-    ...
-```
-
-`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the endoder as the first argument, and `text` as the second.
-
-```yaml
-!MyMultimodalEncoder
-with:
-  positional_modality: ['image', 'text']
-requests:
-  on:
-    [IndexRequest, SearchRequest]:
-      - !MultiModalDriver {}
-```
-
-Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
-
-</details>
   
 #### Add Logic
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-add-logic.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -546,7 +547,7 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 |     |   |
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) |
-| 🐣  | [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Construct Document](#construct-document) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🐣  | [Document](#document) • [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 
