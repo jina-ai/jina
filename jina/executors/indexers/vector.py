@@ -144,7 +144,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param values: embeddings
         """
         # noinspection PyTypeChecker
-        keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys(), self.save_abspath)
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys())
         np_keys = np.array(keys, (np.str_, self.key_length))
 
         if np_keys.size:
@@ -163,7 +163,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
-        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
         np_keys = np.array(keys, (np.str_, self.key_length))
         self._delete(np_keys)
 
@@ -218,7 +218,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :return: ndarray of vectors
         """
-        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
         if keys:
             indices = [self._ext2int_id[key] for key in keys]
             return self._raw_ndarray[indices]

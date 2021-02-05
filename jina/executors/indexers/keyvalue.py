@@ -103,8 +103,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
         """
-        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(),
-                                                            self.save_abspath)
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys())
         self._delete(keys)
         self.add(keys, values)
 
@@ -128,7 +127,7 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys(), self.save_abspath)
+        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
         self._delete(keys)
 
 

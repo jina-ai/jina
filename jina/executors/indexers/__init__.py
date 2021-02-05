@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, List, Optional, Any, Iterable
+from typing import Tuple, Optional, Any, Iterable
 
 import numpy as np
 
@@ -196,32 +196,13 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(self, keys: Iterable, values: Iterable, existent_keys: Iterable,
-                                        check_path: str) -> Tuple[List, List]:
-        keys = list(keys)
-        values = list(values)
-        if len(keys) != len(values):
-            raise ValueError(f'Keys of length {len(keys)} did not match values of length {len(values)}')
-        indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
-        keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
-        values = [values[i] for i in range(len(values)) if i not in indices_to_drop]
-        return keys, values
+    def _filter_nonexistent_keys_values(self, keys: Iterable, values: Iterable, existent_keys: Iterable) -> Tuple[
+        Iterable, Iterable]:
+        filtered_list = [[key, value] for key, value in zip(keys, values) if key in existent_keys]
+        return [key_value[0] for key_value in filtered_list], [key_value[1] for key_value in filtered_list]
 
-    def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable, check_path: str) -> List:
-        keys = list(keys)
-        indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
-        keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
-        return keys
-
-    def _get_indices_to_drop(self, keys: List, existent_keys: Iterable, check_path: str):
-        indices_to_drop = []
-        for key_index, key in enumerate(keys):
-            if key not in existent_keys:
-                indices_to_drop.append(key_index)
-        if indices_to_drop:
-            self.logger.warning(
-                f'Key(s) {[keys[i] for i in indices_to_drop]} were not found in {check_path}. Continuing anyway...')
-        return indices_to_drop
+    def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable) -> Iterable:
+        return [key for key in keys if key in existent_keys]
 
 
 class BaseVectorIndexer(BaseIndexer):
