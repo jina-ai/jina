@@ -125,6 +125,7 @@ with f:
     f.index(docs, on_done=print)
 ```
 
+</td>
 </tr>
   <tr>
     <td>
@@ -146,7 +147,7 @@ with f:
 {"id": "🐢", "tags": {"guardian": "Black Tortoise", "position": "North"}, "embedding": {"dense": {"buffer": "AAAAAAAAAAABAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"value": 1.0, "opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
 ```
 </sup>
-
+</td>
 </tr>
   <tr>
     <td>
@@ -160,7 +161,7 @@ docs[0].embedding = np.array([1, 1])
 with f:
     f.update(docs[0])
 ```
-
+</td>
 </tr>
   <tr>
     <td>
@@ -173,7 +174,7 @@ with f:
 with f:
     f.delete(['🐦', '🐲'])
 ```
-
+</td>
 </tr>
 </table>
 
@@ -212,14 +213,93 @@ with Flow().add() as f:
     f.index((Document() for _ in range(10)))
 ```
 
-Flow supports CRUD operations: `index`, `search`, `update`, `delete`. Besides, it also provides sugary syntax on common data type such as files, text, and `ndarray`.
+Flow supports CRUD operations: `index`, `search`, `update`, `delete`. Besides, it also provides sugary syntax on `ndarray`, `csv`, `ndjson` and arbitrary files.
+
+<table>
+<tr>
+    <td>
+    Input
+    </td>
+    <td>
+     Example on <code>index</code>/<code>search</code>
+    </td>
+<td>
+Explain
+</td>
+</tr>
+  <tr>
+    <td>
+    <code>numpy.ndarray</code>
+    </td>
+    <td>
 
 ```python
 with f:
-    f.index_ndarray(numpy.random.random([4,2]), on_done=print)  # index ndarray data, document sliced on first dimension
-    f.index_lines(['hello world!', 'goodbye world!'])  # index textual data, each element is a document
-    f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])  # index files and wildcard globs, each file is a document
+    f.index_ndarray(numpy.random.random([4,2]))
 ```
+
+  </td>
+<td>
+
+Input four `Document`, where each `document.blob` is a `ndarray([2])` 
+
+</td>
+</tr>
+<tr>
+    <td>
+    CSV
+    </td>
+    <td>
+
+```python
+with f, open('index.csv') as fp:
+    f.index_csv(fp1, field_resolver={'pic_url': 'uri'})
+```
+  </td>
+
+<td>
+
+Each line in the `index.csv` is constructed as `Document`, where CSV's field `pic_url` is mapped to `document.uri`.
+
+</td>
+</tr>
+
+<tr>
+    <td>
+    JSON Lines/<code>ndjson</code>/LDJSON
+    </td>
+    <td>
+
+```python
+with f, open('index.ndjson') as fp:
+    f.index_ndjson(fp1, field_resolver={'question_id': 'id'})
+```
+  </td>
+<td>
+
+Each line in `index.ndjson` is constructed as `Document`, where JSON's field `question_id` is mapped to `document.id`.
+
+</td>
+</tr>
+<tr>
+    <td>
+    Files with wildcard
+    </td>
+    <td>
+
+```python
+with f:
+    f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])
+```
+  </td>
+<td>
+
+Each file captured the wildcard is constructed as a `Document`, where Document's content (`text`, `blob`, `buffer`) is auto-guessed.
+
+</td>
+</tr>
+
+</table>
 
 #### Fetch Result
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-fetch-result.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -231,7 +311,6 @@ def beep(*args):
     # make a beep sound
     import os
     os.system('echo -n "\a";')
-
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
     f.index(numpy.random.random([4, 5, 2]),
