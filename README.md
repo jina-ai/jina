@@ -183,7 +183,7 @@ Get the vibe? Now we are talking! Let's learn more about the basic concepts and 
 #### Document
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. It can be recurred both vertically and horizontally to have nested documents and matched documents. To construct a Document, one can use:
+`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. To construct a Document, one can use:
 
 ```python
 import numpy
@@ -191,8 +191,33 @@ from jina import Document
 
 doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
 doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
-doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
 ```
+
+Document can be recurred both vertically and horizontally to have nested documents and matched documents. To better see the recursive structure of a document, one can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
+
+<table>
+  <tr>
+    <td>
+
+```python
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
+
+d0.chunks.append(d1)
+d1.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
+
+d0.plot()
+```
+
+</td>
+<td>
+<img src="https://github.com/jina-ai/jina/blob/master/.github/.images/four-symbol-docs.svg?raw=true"/>
+</td>
+</tr>
+</table>
 
 <details>
   <summary>Click here to see more about MultimodalDocument</summary>
@@ -254,7 +279,7 @@ Interested readers can refer to [`jina-ai/example`: how to build a multimodal se
 #### Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Jina provides a high-level [Flow API](https://101.jina.ai) to simplify building search/index workflows. To create a new Flow:
+Jina provides a high-level Flow API to simplify building CRUD workflows. To create a new Flow:
 
 ```python
 from jina import Flow

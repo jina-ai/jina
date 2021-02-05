@@ -64,6 +64,15 @@ class NamedScore(ProtoTypeMixin):
 
         self.set_attrs(**kwargs)
 
+    @property
+    def ref_id(self) -> str:
+        """The score is computed between doc ``id`` and ``ref_id``"""
+        return self._pb_body.ref_id
+
+    @ref_id.setter
+    def ref_id(self, val: str):
+        self._pb_body.ref_id = val
+
     def set_attrs(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs
 
