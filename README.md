@@ -200,6 +200,9 @@ Document can be recurred both vertically and horizontally to have nested documen
     <td>
 
 ```python
+import numpy
+from jina import Document
+
 d0 = Document(id='🐲', embedding=np.array([0, 0]))
 d1 = Document(id='🐦', embedding=np.array([1, 0]))
 d2 = Document(id='🐢', embedding=np.array([0, 1]))
@@ -209,7 +212,7 @@ d0.chunks.append(d1)
 d1.chunks[0].chunks.append(d2)
 d0.matches.append(d3)
 
-d0.plot()
+d0.plot()  # simply `d0` on Jupyter 
 ```
 
 </td>
