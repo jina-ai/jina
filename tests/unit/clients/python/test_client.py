@@ -85,3 +85,23 @@ def test_mime_type(restful):
 
     with f:
         f.index(_input_files('*.py'), validate_mime_type)
+
+
+@pytest.mark.parametrize('func_name', ['index', 'search'])
+@pytest.mark.parametrize('restful', [False, True])
+def test_client_ndjson(restful, mocker, func_name):
+    with Flow(restful=restful).add() as f, \
+            open('docs.jsonlines') as fp:
+        m = mocker.Mock()
+        getattr(f, f'{func_name}_ndjson')(fp, on_done=m)
+        m.assert_called_once()
+
+
+@pytest.mark.parametrize('func_name', ['index', 'search'])
+@pytest.mark.parametrize('restful', [False, True])
+def test_client_csv(restful, mocker, func_name):
+    with Flow(restful=restful).add() as f, \
+            open('docs.csv') as fp:
+        m = mocker.Mock()
+        getattr(f, f'{func_name}_csv')(fp, on_done=m)
+        m.assert_called_once()
