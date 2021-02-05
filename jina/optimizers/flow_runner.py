@@ -2,7 +2,7 @@ import os
 import shutil
 from collections.abc import Iterable
 from typing import Optional, Union, List
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 
 from ..flow import Flow
 from ..helper import colored
@@ -10,7 +10,7 @@ from ..logging import default_logger as logger
 from ..jaml import JAMLCompatible
 
 
-class FlowRunner(JAMLCompatible, ABC):
+class FlowRunner(JAMLCompatible):
     """An abstract FlowRunner object in Jina."""
 
     @abstractmethod

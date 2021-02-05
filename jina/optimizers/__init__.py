@@ -10,7 +10,7 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
 from ..logging import default_logger as logger
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 
 if False:
     from .flow_runner import FlowRunner
@@ -18,7 +18,7 @@ if False:
     from argparse import Namespace
 
 
-class OptimizerCallback(JAMLCompatible, ABC):
+class OptimizerCallback(JAMLCompatible):
     """
     Callback interface for storing and calculating evaluation metric during an optimization.
     Should be used, whenever a custom evaluation aggregation during an Flow optimization is needed.
