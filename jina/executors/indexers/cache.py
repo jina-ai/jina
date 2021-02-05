@@ -62,15 +62,12 @@ class DocCache(BaseCache):
         if self.field not in self.supported_fields:
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
-    def add(self, doc_id: str, *args, **kwargs):
-        """Add a document to the cache depending on `self.field`.
+    def add(self, doc_id: str, data: str, *args, **kwargs):
+        """Add a document to the cache.
 
         :param doc_id: document id to be added
+        :param data: cache value
         """
-        if self.field != ID_KEY:
-            data = kwargs.get(DATA_FIELD, None)
-        else:
-            data = doc_id
         self.query_handler.id_to_cache_val[doc_id] = data
         self.query_handler.cache_val_to_id[data] = doc_id
         self._size += 1

@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from .index import BaseIndexDriver
-from ..executors.indexers.cache import DATA_FIELD, CONTENT_HASH_KEY, ID_KEY
+from ..executors.indexers.cache import CONTENT_HASH_KEY, ID_KEY
 
 if False:
     from .. import Document
@@ -45,9 +45,9 @@ class BaseCacheDriver(BaseIndexDriver):
         :param data: the data besides the `req_doc.id` to be passed through to the executors
         """
         if self.with_serialization:
-            self.exec_fn(req_doc.id, req_doc.SerializeToString(), **{DATA_FIELD: data})
+            self.exec_fn(req_doc.id, req_doc.SerializeToString(), data)
         else:
-            self.exec_fn(req_doc.id, **{DATA_FIELD: data})
+            self.exec_fn(req_doc.id, data)
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         """Function to call when document is hit.
