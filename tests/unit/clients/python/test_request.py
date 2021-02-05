@@ -1,4 +1,5 @@
 import os
+import sys
 
 import numpy as np
 import pytest
@@ -13,7 +14,6 @@ from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
-import sys
 
 @pytest.mark.skipif(sys.version_info < (3, 8, 0), reason='somehow this does not work on Github workflow with Py3.7, '
                                                          'but Py 3.8 is fine, local Py3.7 is fine')
@@ -44,9 +44,6 @@ def test_data_type_builder_doc_bad():
 
     with pytest.raises(BadDocType):
         _new_doc_from_data(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
-
-    with pytest.raises(BadDocType):
-        _new_doc_from_data({'🍔': '🍔'}, DataInputType.DOCUMENT)
 
 
 @pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
