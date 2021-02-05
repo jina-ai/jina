@@ -56,7 +56,6 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._total_byte_len = 0
         self._start = 0
         self._page_size = mmap.ALLOCATIONGRANULARITY
-        self._key_length = 0
 
     def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         """Add the serialized documents to the index via document ids.
@@ -66,9 +65,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         """
         if not keys:
             return
-
-        max_key_len = max([len(k) for k in keys])
-        self.key_length = max_key_len
+        self._assert_key_length(keys)
 
         for key, value in zip(keys, values):
             l = len(value)  #: the length

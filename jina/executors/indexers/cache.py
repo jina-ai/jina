@@ -83,7 +83,6 @@ class DocCache(BaseCache):
         """
         return data in self.query_handler.cache_val_to_id
 
-
     def update(self, keys: Iterable[str], values: Iterable[any], *args, **kwargs):
         """Update cached documents.
         :param keys: list of Document.id
@@ -97,7 +96,6 @@ class DocCache(BaseCache):
                 self.query_handler.id_to_cache_val[key] = value
                 del self.query_handler.cache_val_to_id[old_value]
                 self.query_handler.cache_val_to_id[value] = key
-
 
     def delete(self, keys: Iterable[str], *args, **kwargs):
         """Delete documents from the cache.
