@@ -348,7 +348,7 @@ def test_refactor_num_part_proxy_2(restful):
          .needs(['r2', 'r3']))
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'])
+        f.index(['abbcs', 'efgh'])
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -357,13 +357,13 @@ def test_refactor_num_part_2(restful):
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3, polling='ALL'))
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'])
+        f.index(['abbcs', 'efgh'])
 
     f = (Flow(restful=restful)
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3))
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'])
+        f.index(['abbcs', 'efgh'])
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -400,7 +400,7 @@ def test_flow_with_publish_driver(mocker, restful):
          .join(needs=['r2', 'r3']))
 
     with f:
-        f.index_lines(lines=['text_1', 'text_2'], on_done=response_mock)
+        f.index(['text_1', 'text_2'], on_done=response_mock)
 
     response_mock.assert_called()
 
@@ -453,7 +453,7 @@ def test_flow_arbitrary_needs(restful):
          .needs(['r2', 'r3'], name='r4'))
 
     with f:
-        f.index_lines(['abc', 'def'])
+        f.index(['abc', 'def'])
 
 
 @pytest.mark.parametrize('restful', [False])

@@ -32,7 +32,7 @@ def test_bad_flow_skip_handle(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -68,7 +68,7 @@ def test_bad_flow_skip_handle_join(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -90,7 +90,7 @@ def test_bad_flow_skip_exec(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -115,6 +115,6 @@ def test_bad_flow_skip_exec_join(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()
