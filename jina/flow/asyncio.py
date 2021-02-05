@@ -84,34 +84,6 @@ class AsyncFlow(BaseFlow):
                     **kwargs):
         """Do training on the current flow
 
-        It will start a :py:class:`CLIClient` and call :py:func:`train`.
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            with f:
-                f.train(input_fn)
-                ...
-
-
-        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
-
-        One may also build a reader/generator on your own.
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            def my_reader():
-                for _ in range(10):
-                    yield b'abcdfeg'   # each yield generates a document for training
-
-            with f.build(runtime='thread') as flow:
-                flow.train(bytes_gen=my_reader())
-
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
@@ -444,32 +416,6 @@ class AsyncFlow(BaseFlow):
                     **kwargs):
         """Do indexing on the current flow
 
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            with f:
-                f.index(input_fn)
-                ...
-
-
-        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
-
-        One may also build a reader/generator on your own.
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            def my_reader():
-                for _ in range(10):
-                    yield b'abcdfeg'  # each yield generates a document to index
-
-            with f.build(runtime='thread') as flow:
-                flow.index(bytes_gen=my_reader())
-
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
@@ -488,35 +434,6 @@ class AsyncFlow(BaseFlow):
                      on_always: CallbackFnType = None,
                      **kwargs):
         """Do updates on the current flow
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            with f:
-                f.update(input_fn)
-                ...
-
-
-        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
-
-        One may also build a reader/generator on your own.
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            def my_reader():
-                for i in range(10):
-                    with Document() as doc:
-                        doc.text = '...'
-                        doc.id = i
-                    yield doc  # each yield generates a query for updating
-
-            with f.build(runtime='thread') as flow:
-                flow.update(bytes_gen=my_reader())
 
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
@@ -537,37 +454,6 @@ class AsyncFlow(BaseFlow):
                      **kwargs):
         """Do deletion on the current flow
 
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            with f:
-                f.delete(input_fn)
-                ...
-
-
-        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
-
-        One may also build a reader/generator on your own.
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            def my_reader():
-                for i in range(10):
-                    with Document() as doc:
-                        doc.text = '...'
-                        doc.id = i
-                    yield doc  # each yield generates a query for deletion
-
-            with f.build(runtime='thread') as flow:
-                flow.delete(bytes_gen=my_reader())
-
-        It will start a :py:class:`CLIClient` and call :py:func:`index`.
-
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
@@ -586,33 +472,6 @@ class AsyncFlow(BaseFlow):
         """Do searching on the current flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`search`.
-
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            with f:
-                f.search(input_fn)
-                ...
-
-
-        This will call the pre-built reader to read files into an iterator of bytes and feed to the flow.
-
-        One may also build a reader/generator on your own.
-
-        Example,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            def my_reader():
-                for _ in range(10):
-                    yield b'abcdfeg'   # each yield generates a query for searching
-
-            with f.build(runtime='thread') as flow:
-                flow.search(bytes_gen=my_reader())
 
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
