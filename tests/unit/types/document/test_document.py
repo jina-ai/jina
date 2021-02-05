@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToDict
@@ -316,3 +318,38 @@ def test_include_repeated_fields():
     d2.chunks.clear()
     d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
     assert d1.content_hash != d2.content_hash
+
+
+@pytest.mark.parametrize('from_str', [True, False])
+@pytest.mark.parametrize('d_src', [
+    {'id': '123', 'mime_type': 'txt', 'parent_id': '456', 'tags': {'hello': 'world'}},
+    {'id': '123', 'mimeType': 'txt', 'parentId': '456', 'tags': {'hello': 'world'}},
+    {'id': '123', 'mimeType': 'txt', 'parent_id': '456', 'tags': {'hello': 'world'}},
+])
+def test_doc_from_dict_cases(d_src, from_str):
+    # regular case
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.tags['hello'] == 'world'
+    assert d.mime_type == 'txt'
+    assert d.id == '123'
+    assert d.parent_id == '456'
+
+
+@pytest.mark.parametrize('from_str', [True, False])
+def test_doc_arbitrary_dict(from_str):
+    d_src = {'id': '123', 'hello': 'world', 'tags': {'good': 'bye'}}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.id == '123'
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'
+
+    d_src = {'hello': 'world', 'good': 'bye'}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'

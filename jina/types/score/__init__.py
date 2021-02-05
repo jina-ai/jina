@@ -72,7 +72,7 @@ class NamedScore(ProtoTypeMixin):
 
         """
         for k, v in kwargs.items():
-            if isinstance(v, list) or isinstance(v, tuple):
+            if isinstance(v, (list, tuple)):
                 self._pb_body.ClearField(k)
                 getattr(self._pb_body, k).extend(v)
             elif isinstance(v, dict):

@@ -278,14 +278,14 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
     def _replace(sub_d: Union[Dict, List], p):
         if isinstance(sub_d, Dict):
             for k, v in sub_d.items():
-                if isinstance(v, dict) or isinstance(v, list):
+                if isinstance(v, (dict, list)):
                     _replace(v, p.__dict__[k])
                 else:
                     if isinstance(v, str) and pat.findall(v):
                         sub_d[k] = _sub(v, p)
         elif isinstance(sub_d, List):
             for idx, v in enumerate(sub_d):
-                if isinstance(v, dict) or isinstance(v, list):
+                if isinstance(v, (dict, list)):
                     _replace(v, p[idx])
                 else:
                     if isinstance(v, str) and pat.findall(v):

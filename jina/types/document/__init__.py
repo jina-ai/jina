@@ -1,4 +1,5 @@
 import base64
+import json
 import mimetypes
 import os
 import urllib.parse
@@ -28,6 +29,9 @@ __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
 DocumentSourceType = TypeVar('DocumentSourceType',
                              jina_pb2.DocumentProto, bytes, str, Dict)
+
+_document_fields = set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name) + list(
+    jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name))
 
 
 class Document(ProtoTypeMixin):
@@ -113,10 +117,20 @@ class Document(ProtoTypeMixin):
                     self._pb_body.CopyFrom(document)
                 else:
                     self._pb_body = document
-            elif isinstance(document, dict):
-                json_format.ParseDict(document, self._pb_body)
-            elif isinstance(document, str):
-                json_format.Parse(document, self._pb_body)
+            elif isinstance(document, (dict, str)):
+                if isinstance(document, str):
+                    document = json.loads(document)
+
+                user_fields = set(document.keys())
+                if _document_fields.issuperset(user_fields):
+                    json_format.ParseDict(document, self._pb_body)
+                else:
+                    _intersect = _document_fields.intersection(user_fields)
+                    _remainder = user_fields.difference(_intersect)
+                    if _intersect:
+                        json_format.ParseDict({k: document[k] for k in _intersect}, self._pb_body)
+                    if _remainder:
+                        self._pb_body.tags.update({k: document[k] for k in _remainder})
             elif isinstance(document, bytes):
                 # directly parsing from binary string gives large false-positive
                 # fortunately protobuf throws a warning when the parsing seems go wrong
@@ -318,7 +332,7 @@ class Document(ProtoTypeMixin):
 
         """
         for k, v in kwargs.items():
-            if isinstance(v, list) or isinstance(v, tuple):
+            if isinstance(v, (list, tuple)):
                 if k == 'chunks':
                     self.chunks.extend(v)
                 elif k == 'matches':

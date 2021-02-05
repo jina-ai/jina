@@ -55,7 +55,7 @@ def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'Versione
     """
     all_parsers, legacy_parser = _get_all_parser(cls)
     if version:
-        if isinstance(version, float) or isinstance(version, int):
+        if isinstance(version, (float, int)):
             version = str(version)
         for p in all_parsers:
             if p.version == version:
