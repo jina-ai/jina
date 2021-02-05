@@ -107,10 +107,10 @@ class AsyncClient(BaseClient):
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def delete(self, input_fn: Iterable[str],
-                    on_done: CallbackFnType = None,
-                    on_error: CallbackFnType = None,
-                    on_always: CallbackFnType = None,
-                    **kwargs) -> None:
+                     on_done: CallbackFnType = None,
+                     on_error: CallbackFnType = None,
+                     on_always: CallbackFnType = None,
+                     **kwargs) -> None:
         """
 
         :param input_fn: the input function that generates the content
@@ -124,13 +124,12 @@ class AsyncClient(BaseClient):
         async for r in self._get_results(input_fn, on_done, on_error, on_always, **kwargs):
             yield r
 
-
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def update(self, input_fn: InputFnType,
-                    on_done: CallbackFnType = None,
-                    on_error: CallbackFnType = None,
-                    on_always: CallbackFnType = None,
-                    **kwargs) -> None:
+                     on_done: CallbackFnType = None,
+                     on_error: CallbackFnType = None,
+                     on_always: CallbackFnType = None,
+                     **kwargs) -> None:
         """
 
         :param input_fn: the input function that generates the content
