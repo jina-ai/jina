@@ -222,7 +222,7 @@ from jina.types import Document, MultimodalDocument
 
 doc_title = Document(content='my holiday picture', modality='title')
 doc_desc = Document(content='the family having fun on the beach', modality='description')
-doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='description')
+doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='image')
 doc_img.tags['date'] = '10/08/2019' 
 
 document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
@@ -389,7 +389,7 @@ Each file captured is constructed as a `Document`, whose content (`text`, `blob`
 #### Fetch Result
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-fetch-result.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_done`, `on_error`, `on_always` to hook different event. In the example below, our Flow passes the message then prints the result when success. If something wrong, it beeps. Finally, the result is written to `output.txt`.
+Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes the message then prints the result when successful. If something wrong, it beeps. Finally, the result is written to `output.txt`.
 
 ```python
 def beep(*args):
@@ -501,9 +501,9 @@ with Flow().add().add(host='cloud.jina.ai:8000') as f:
 #### Asynchronous Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Synchronous from outside, Jina runs asynchronously underneath: it manages the eventloop(s) for scheduling the jobs. If user wants more control over the eventloop, then `AsyncFlow` comes to use. 
+Synchronous from outside, Jina runs asynchronously underneath: it manages the eventloop(s) for scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` comes to use. 
 
-Unlike `Flow`, the CRUD of `AsyncFlow` accepts input & output functions as [async generator](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involves other asynchronous libraries (e.g. motor for MongoDB):
+Unlike `Flow`, the CRUD of `AsyncFlow` accepts input & output functions as [async generator](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other asynchronous libraries (e.g. motor for MongoDB):
 
 ```python
 from jina import AsyncFlow
@@ -713,7 +713,7 @@ f.search(query_iterator, ...)
 
 #### REST Interface
 
-In practice, the query Flow and the client (i.e. data sender) are often physically seperated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `restful=True`:
+In practice, the query Flow and the client (i.e. data sender) are often physically separated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `restful=True`:
 
 ```python
 f = Flow(port_expose=45678, restful=True)
@@ -723,7 +723,7 @@ with f:
 ```
 
 
-That is the essense behind `jina hello-world`. It is merely a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
+That is the essence behind `jina hello-world`. It is merely a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
 
 ```bash
 pip install jina[hub] && jina hub new --type app
