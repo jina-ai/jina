@@ -215,6 +215,7 @@ with Flow().add() as f:
 
 Flow supports CRUD operations: `index`, `search`, `update`, `delete`. Besides, it also provides sugary syntax on `ndarray`, `csv`, `ndjson` and arbitrary files.
 
+
 <table>
 <tr>
     <td>
@@ -232,16 +233,18 @@ Explain
     <code>numpy.ndarray</code>
     </td>
     <td>
+      <sup>
 
 ```python
 with f:
-    f.index_ndarray(numpy.random.random([4,2]))
+  f.index_ndarray(numpy.random.random([4,2]))
 ```
 
+</sup>
   </td>
 <td>
 
-Input four `Document`, where each `document.blob` is a `ndarray([2])` 
+Input four `Document`, each `document.blob` is a `ndarray([2])` 
 
 </td>
 </tr>
@@ -250,16 +253,19 @@ Input four `Document`, where each `document.blob` is a `ndarray([2])`
     CSV
     </td>
     <td>
+      <sup>
 
 ```python
 with f, open('index.csv') as fp:
-    f.index_csv(fp1, field_resolver={'pic_url': 'uri'})
+  f.index_csv(fp1, field_resolver={'pic_url': 'uri'})
 ```
+
+</sup>
   </td>
 
 <td>
 
-Each line in the `index.csv` is constructed as `Document`, where CSV's field `pic_url` is mapped to `document.uri`.
+Each line in the `index.csv` is constructed as `Document`, CSV's field `pic_url` is mapped to `document.uri`.
 
 </td>
 </tr>
@@ -269,15 +275,18 @@ Each line in the `index.csv` is constructed as `Document`, where CSV's field `pi
     JSON Lines/<code>ndjson</code>/LDJSON
     </td>
     <td>
-
+<sup>
+  
 ```python
 with f, open('index.ndjson') as fp:
-    f.index_ndjson(fp1, field_resolver={'question_id': 'id'})
+  f.index_ndjson(fp1, field_resolver={'question_id': 'id'})
 ```
+
+</sup>
   </td>
 <td>
 
-Each line in `index.ndjson` is constructed as `Document`, where JSON's field `question_id` is mapped to `document.id`.
+Each line in `index.ndjson` is constructed as `Document`, JSON's field `question_id` is mapped to `document.id`.
 
 </td>
 </tr>
@@ -286,15 +295,18 @@ Each line in `index.ndjson` is constructed as `Document`, where JSON's field `qu
     Files with wildcard
     </td>
     <td>
+      <sup>
 
 ```python
 with f:
-    f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])
+  f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])
 ```
+
+</sup>
   </td>
 <td>
 
-Each file captured the wildcard is constructed as a `Document`, where Document's content (`text`, `blob`, `buffer`) is auto-guessed.
+Each file captured is constructed as a `Document`, whose content (`text`, `blob`, `buffer`) is auto-guessed & filled.
 
 </td>
 </tr>
