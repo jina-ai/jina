@@ -1,3 +1,4 @@
+import os
 import time
 
 import pytest
@@ -11,6 +12,8 @@ from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope='function')
@@ -91,7 +94,7 @@ def test_mime_type(restful):
 @pytest.mark.parametrize('restful', [False, True])
 def test_client_ndjson(restful, mocker, func_name):
     with Flow(restful=restful).add() as f, \
-            open('docs.jsonlines') as fp:
+            open(os.path.join(cur_dir, 'docs.jsonlines')) as fp:
         m = mocker.Mock()
         getattr(f, f'{func_name}_ndjson')(fp, on_done=m)
         m.assert_called_once()
@@ -101,7 +104,7 @@ def test_client_ndjson(restful, mocker, func_name):
 @pytest.mark.parametrize('restful', [False, True])
 def test_client_csv(restful, mocker, func_name):
     with Flow(restful=restful).add() as f, \
-            open('docs.csv') as fp:
+            open(os.path.join(cur_dir, 'docs.csv')) as fp:
         m = mocker.Mock()
         getattr(f, f'{func_name}_csv')(fp, on_done=m)
         m.assert_called_once()
