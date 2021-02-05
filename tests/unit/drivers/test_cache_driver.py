@@ -114,12 +114,12 @@ class SimpleDeleteDriver(DeleteDriver):
 
 
 def test_cache_content_driver_same_content(tmpdir, test_metas):
-    doc1 = Document(id=1)
+    doc1 = Document(id='1')
     doc1.text = 'blabla'
     doc1.update_content_hash()
     docs1 = DocumentSet([doc1])
 
-    doc2 = Document(id=2)
+    doc2 = Document(id='2')
     doc2.text = 'blabla'
     doc2.update_content_hash()
     docs2 = DocumentSet([doc2])

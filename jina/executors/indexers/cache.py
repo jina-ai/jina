@@ -75,13 +75,12 @@ class DocCache(BaseCache):
         self.query_handler.cache_val_to_id[data] = doc_id
         self._size += 1
 
-    def query(self, data, *args, **kwargs) -> Optional[bool]:
+    def query(self, data: str, *args, **kwargs) -> Optional[bool]:
         """Check whether the data exists in the cache.
 
         :param data: either the id or the content_hash of a Document
         :return: status
         """
-
         return data in self.query_handler.cache_val_to_id
 
 
