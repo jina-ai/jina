@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, List, Optional, Any, Iterable
+from typing import Tuple, Optional, Any, Iterable
 
 import numpy as np
 
@@ -196,15 +196,13 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(self, keys: Iterable, values: Iterable, existent_keys: Iterable) -> Tuple[List, List]:
-        keys, values = zip(*[
-            [key, value] for key, value in zip(keys, values) if key in existent_keys
-        ])
-        return keys, values
+    def _filter_nonexistent_keys_values(self, keys: Iterable, values: Iterable, existent_keys: Iterable) -> Tuple[
+        Iterable, Iterable]:
+        filtered_list = [[key, value] for key, value in zip(keys, values) if key in existent_keys]
+        return [key_value[0] for key_value in filtered_list], [key_value[1] for key_value in filtered_list]
 
-    def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable) -> List:
+    def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable) -> Iterable:
         return [key for key in keys if key in existent_keys]
-
 
 
 class BaseVectorIndexer(BaseIndexer):
