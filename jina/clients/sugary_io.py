@@ -1,21 +1,37 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import csv
 import glob
 import itertools as it
 import json
+import os
 import random
-from typing import List, Union, Iterator, Any
+from typing import List, Union, Iterator, Any, Iterable, Dict
 
 import numpy as np
 
+# https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
+_jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
+_csv_ext = {'.csv', '.tcsv'}
+
+
+def _sample(iterable, sampling_rate: float = None):
+    for i in iterable:
+        if sampling_rate is None or random.random() < sampling_rate:
+            yield i
+
+
+def _subsample(iterable, sampling_rate: float = None, size: int = None, **kwargs):
+    yield from it.islice(_sample(iterable, sampling_rate), size)
+
 
 def _input_lines(
-        lines: Iterator[str] = None,
+        lines: Iterable[str] = None,
         filepath: str = None,
-        size: int = None,
-        sampling_rate: float = None,
-        read_mode='r',
+        read_mode: str = 'r',
+        line_format: str = 'json',
+        **kwargs
 ) -> Iterator[Union[str, bytes]]:
     """Input function that iterates over list of strings, it can be used in the Flow API
 
@@ -25,33 +41,58 @@ def _input_lines(
     :param sampling_rate: the sampling rate between [0, 1]
     :param read_mode: specifies the mode in which the file
             is opened. 'r' for reading in text mode, 'rb' for reading in binary
+    :param line_format: the format of each line ``json`` or ``csv``
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_lines`, :meth:`Flow.search_lines` instead
     """
 
-    def sample(iterable):
-        for i in iterable:
-            if sampling_rate is None or random.random() < sampling_rate:
-                yield i
-
     if filepath:
-        file_type = filepath.split('.')[-1]
+        file_type = os.path.splitext(filepath)[1]
         with open(filepath, read_mode) as f:
-            for line in it.islice(sample(f), size):
-                if file_type == 'jsonlines':
-                    value = json.loads(line)
-                    if 'groundtruth' in value:
-                        yield (value['document'], value['groundtruth'])
-                    else:
-                        yield value
-                else:
-                    yield line
+            if file_type in _jsonl_ext:
+                yield from _input_ndjson(f, **kwargs)
+            elif file_type in _csv_ext:
+                yield from _input_csv(f, **kwargs)
+            else:
+                yield from _subsample(f, **kwargs)
     elif lines:
-        for line in it.islice(sample(lines), size):
-            yield line
+        if line_format == 'json':
+            yield from _input_ndjson(lines, **kwargs)
+        elif line_format == 'csv':
+            yield from _input_csv(lines, **kwargs)
+        else:
+            yield from _subsample(lines, **kwargs)
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
+
+def _input_ndjson(
+        fp: Iterable[str],
+        field_resolver: Dict[str, str] = None,
+        **kwargs
+):
+    from jina import Document
+
+    for line in _subsample(fp, **kwargs):
+        value = json.loads(line)
+        if 'groundtruth' in value and 'document' in value:
+            yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
+        else:
+            yield Document(value, field_resolver)
+
+
+def _input_csv(
+        fp: Iterable[str],
+        field_resolver: Dict[str, str] = None,
+        **kwargs
+):
+    from jina import Document
+    lines = csv.DictReader(fp)
+    for value in _subsample(lines, **kwargs):
+        if 'groundtruth' in value and 'document' in value:
+            yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
+        else:
+            yield Document(value, field_resolver)
 
 
 def _input_files(
