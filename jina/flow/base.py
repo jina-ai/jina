@@ -10,16 +10,15 @@ import threading
 import uuid
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
-from urllib.request import Request, urlopen
+from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
-from ..excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
+from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import colored, \
-    get_public_ip, get_internal_ip, typename, ArgNamespace
+    get_public_ip, get_internal_ip, typename, ArgNamespace, download_mermaid_url
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
@@ -604,7 +603,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 pass
 
         if output:
-            op_flow._download_mermaid_url(url, output)
+            download_mermaid_url(url, output)
         elif not showed:
             op_flow.logger.info(f'flow visualization: {url}')
 
@@ -626,20 +625,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
 
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
-
-    def _download_mermaid_url(self, mermaid_url, output) -> None:
-        """
-        Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
-        :param path: the file path of the image
-        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
-        :return:
-        """
-        try:
-            req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
-            with open(output, 'wb') as fp:
-                fp.write(urlopen(req).read())
-        except:
-            self.logger.error('can not download image, please check your graph and the network connections')
 
     @build_required(FlowBuildLevel.GRAPH)
     def to_swarm_yaml(self, path: TextIO):
