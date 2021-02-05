@@ -203,7 +203,7 @@ class BaseIndexer(BaseExecutor):
         return keys, values
 
     def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable) -> List:
-        return [key for key, value in keys if key in existent_keys]
+        return [key for key in keys if key in existent_keys]
 
 
 
