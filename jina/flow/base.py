@@ -107,7 +107,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 endpoint = []
 
-        if isinstance(endpoint, list) or isinstance(endpoint, tuple):
+        if isinstance(endpoint, (list, tuple)):
             for idx, s in enumerate(endpoint):
                 if s == pod_name:
                     raise FlowTopologyError('the income/output of a pod can not be itself')

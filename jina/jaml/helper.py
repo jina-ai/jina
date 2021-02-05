@@ -184,7 +184,7 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) ->
         value = obj.get(key, [])
         if isinstance(value, str):
             mod.append(value)
-        elif isinstance(value, list) or isinstance(value, tuple):
+        elif isinstance(value, (list, tuple)):
             mod.extend(value)
         for k, v in obj.items():
             if isinstance(v, dict):
