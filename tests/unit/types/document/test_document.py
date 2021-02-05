@@ -353,3 +353,24 @@ def test_doc_arbitrary_dict(from_str):
     d = Document(d_src)
     assert d.tags['hello'] == 'world'
     assert d.tags['good'] == 'bye'
+
+
+@pytest.mark.parametrize('from_str', [True, False])
+def test_doc_field_resolver(from_str):
+    d_src = {'music_id': '123', 'hello': 'world', 'tags': {'good': 'bye'}}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.id != '123'
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'
+    assert d.tags['music_id'] == '123'
+
+    d_src = {'music_id': '123', 'hello': 'world', 'tags': {'good': 'bye'}}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src, field_resolver={'music_id': 'id'})
+    assert d.id == '123'
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'
+    assert 'music_id' not in d.tags
