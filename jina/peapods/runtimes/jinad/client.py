@@ -113,7 +113,7 @@ class DaemonClient:
 
         try:
             payload = replace_enum_to_str(vars(self._mask_args(args)))
-            r = requests.post(url=self.store_api, json=payload, timeout=args.timeout_ready)
+            r = requests.post(url=self.store_api, json=payload, timeout=args.timeout_ready if args.timeout_ready > 0 else self.timeout)
             rj = r.json()
             if r.status_code == 201:
                 return rj

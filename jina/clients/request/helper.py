@@ -67,4 +67,5 @@ def _add_docs_groundtruths(req, batch, data_type, _kwargs):
 
 
 def _add_ids(req, batch):
-    req.ids.extend(batch)
+    string_ids = (str(doc_id) for doc_id in batch)
+    req.ids.extend(string_ids)

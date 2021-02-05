@@ -75,15 +75,13 @@ class DocCache(BaseCache):
         self.query_handler.cache_val_to_id[data] = doc_id
         self._size += 1
 
-    def query(self, data, *args, **kwargs) -> Optional[bool]:
+    def query(self, data: str, *args, **kwargs) -> Optional[bool]:
         """Check whether the data exists in the cache.
 
         :param data: either the id or the content_hash of a Document
         :return: status
         """
-
         return data in self.query_handler.cache_val_to_id
-
 
     def update(self, keys: Iterable[str], values: Iterable[any], *args, **kwargs):
         """Update cached documents.
@@ -98,7 +96,6 @@ class DocCache(BaseCache):
                 self.query_handler.id_to_cache_val[key] = value
                 del self.query_handler.cache_val_to_id[old_value]
                 self.query_handler.cache_val_to_id[value] = key
-
 
     def delete(self, keys: Iterable[str], *args, **kwargs):
         """Delete documents from the cache.

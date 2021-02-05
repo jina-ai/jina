@@ -10,7 +10,6 @@ from ....types.score import NamedScore
 from .. import BaseRankDriver
 
 if False:
-    from ....types.document.uid import UniqueId
     from ....types.sets import DocumentSet
 
 
@@ -105,9 +104,9 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
         :return:
         """
 
-        match_idx = []  # type: List[Tuple[UniqueId, UniqueId, UniqueId, float]]
-        query_meta = {}  # type: Dict[UniqueId, Dict]
-        match_meta = {}  # type: Dict[UniqueId, Dict]
+        match_idx = []  # type: List[Tuple[str, str, str, float]]
+        query_meta = {}  # type: Dict[str, Dict]
+        match_meta = {}  # type: Dict[str, Dict]
         parent_id_chunk_id_map = defaultdict(list)
         matches_by_id = defaultdict(Document)
         for chunk in docs:

@@ -13,7 +13,6 @@ from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, guess_mime
-from .uid import DIGEST_SIZE, UniqueId
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray
 from ..score import NamedScore
@@ -25,6 +24,7 @@ from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
+DIGEST_SIZE = 8
 
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
 DocumentSourceType = TypeVar('DocumentSourceType',
@@ -261,45 +261,23 @@ class Document(ProtoTypeMixin):
 
     @id.setter
     def id(self, value: Union[bytes, str, int]):
-        """Set document id to a string value
+        """Set document id to a string value.
 
-        .. note:
-
-            Customized ``id`` is acceptable as long as
-            - it only contains the symbols "0"–"9" to represent values 0 to 9,
-            and "A"–"F" (or alternatively "a"–"f").
-            - it has 16 chars described above.
-
-        :param value: restricted string value
+        :param value: id as bytes, int or str
         :return:
         """
-        if isinstance(value, str):
-            self._pb_body.id = value
-        else:
-            warnings.warn(f'expecting a string as ID, receiving {type(value)}. '
-                          f'Note this type will be deprecated soon', DeprecationWarning)
-            self._pb_body.id = UniqueId(value)
+        self._pb_body.id = str(value)
+
 
     @parent_id.setter
     def parent_id(self, value: Union[bytes, str, int]):
-        """Set document's parent id to a string value
+        """Set document's parent id to a string value.
 
-        .. note:
-
-            Customized ``id`` is acceptable as long as
-            - it only contains the symbols "0"–"9" to represent values 0 to 9,
-            and "A"–"F" (or alternatively "a"–"f").
-            - it has 16 chars described above.
-
-        :param value: restricted string value
+        :param value: id as bytes, int or str
         :return:
         """
-        if isinstance(value, str):
-            self._pb_body.parent_id = value
-        else:
-            warnings.warn(f'expecting a string as ID, receiving {type(value)}. '
-                          f'Note this type will be deprecated soon', DeprecationWarning)
-            self._pb_body.parent_id = UniqueId(value)
+        self._pb_body.parent_id = str(value)
+
 
     @property
     def blob(self) -> 'np.ndarray':
