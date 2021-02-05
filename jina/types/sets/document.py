@@ -86,7 +86,8 @@ class DocumentSet(MutableSequence):
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
-        self._docs_proto.extend(doc.proto for doc in iterable)
+        for doc in iterable:
+            self.append(doc)
 
     def clear(self):
         del self._docs_proto[:]
