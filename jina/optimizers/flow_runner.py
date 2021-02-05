@@ -2,7 +2,6 @@ import os
 import shutil
 from collections.abc import Iterable
 from typing import Optional, Union, List
-from abc import abstractmethod
 
 from ..flow import Flow
 from ..helper import colored
@@ -13,7 +12,6 @@ from ..jaml import JAMLCompatible
 class FlowRunner(JAMLCompatible):
     """An abstract FlowRunner object in Jina."""
 
-    @abstractmethod
     def run(
         self,
         trial_parameters: dict,
@@ -28,8 +26,9 @@ class FlowRunner(JAMLCompatible):
         :param workspace: Directory to be used for the flows
         :param callback: Callback that will be called by the Flows. Should store the evaluation results.
         :param **kwargs: Further arguments passed to the Flow(s) as `context`
-
+        :raises NotImplementedError: :class:`FlowRunner` is just an interface. Please use any implemented subclass.
         """
+        raise NotImplementedError
 
 
 class SingleFlowRunner(FlowRunner):

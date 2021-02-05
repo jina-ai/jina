@@ -10,7 +10,6 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
 from ..logging import default_logger as logger
-from abc import abstractmethod
 
 if False:
     from .flow_runner import FlowRunner
@@ -24,27 +23,28 @@ class OptimizerCallback(JAMLCompatible):
     Should be used, whenever a custom evaluation aggregation during an Flow optimization is needed.
     """
 
-    @abstractmethod
     def get_empty_copy(self) -> 'OptimizerCallback':
         """
         :returns: An empty copy of the :class:`OptimizerCallback`.
+        :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
         """
-        return
+        raise NotImplementedError
 
-    @abstractmethod
     def get_final_evaluation(self) -> float:
         """
         :returns: The aggregation of all evaluation collected via :method:`__call__`
+        :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
         """
-        return
+        raise NotImplementedError
 
-    @abstractmethod
     def __call__(self, response):
         """
         Collects the results of evaluators in the response object for aggregation.
 
         :param response: A response object of a Flow.
+        :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
         """
+        raise NotImplementedError
 
 
 class MeanEvaluationCallback(OptimizerCallback):
