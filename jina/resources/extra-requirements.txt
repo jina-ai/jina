@@ -63,8 +63,7 @@ flaky:                      test
 mock:                       test
 requests:                   http, devel, test, daemon
 prettytable:                devel, test
-sseclient-py:               test
-optuna:                     test, optimizer
+optuna:                     cicd, optimizer
 websockets:                 http, devel, test, ws, daemon
 wsproto:                    http, devel, test, ws, daemon
 pydantic:                   http, devel, test, daemon
