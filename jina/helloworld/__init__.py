@@ -14,14 +14,20 @@ from ..helper import countdown, colored
 
 
 def hello_world(args):
-    """The hello world of Jina. Use it via CLI :command:`jina hello-world`.
+    """
+    Runs Jina's Hello World.
 
-    It downloads Fashion-MNIST dataset and indexes 50,000 images via Jina search framework.
-    The index is stored into 4 *shards*. We then randomly sample 128 unseen images as *Queries*,
-    ask Jina to retrieve relevant results.
+    Usage:
+        Use it via CLI :command:`jina hello-world`.
+
+    Description:
+        It downloads Fashion-MNIST dataset and :term:`Indexer<indexes>` 50,000 images.
+        The index is stored into 4 *shards*. It randomly samples 128 unseen images as :term:`Queries<Searching>`
+        Results are shown in a webpage.
 
     More options can be found in :command:`jina hello-world --help`
     """
+
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
     targets = {
