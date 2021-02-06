@@ -20,6 +20,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7280,4 +7281,35 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d8f002a8```](https://github.com/jina-ai/jina/commit/d8f002a822e0a1c6a63999236d019ab2668c9849)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```ac122d90```](https://github.com/jina-ai/jina/commit/ac122d9077280072e19094d46714d3b2ebb5bfcb)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
  - [[```106a4731```](https://github.com/jina-ai/jina/commit/106a4731f57a3fdad4538af6e8e05a3f9939ee6e)] __-__ __version__: the next version will be 0.9.29 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-30></a>
+## Release Note (`0.9.30`)
+
+> Release time: 2021-02-06 22:39:52
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Maximilian Werk,  CatStark,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```a31a4750```](https://github.com/jina-ai/jina/commit/a31a4750daa08ceb27a3c9683af97537ea207a59)] __-__ __driver__: compoundindexer should turn on is_merge (#1888) (*Han Xiao*)
+ - [[```8aed8f61```](https://github.com/jina-ai/jina/commit/8aed8f6116af4707b5290cd7dfdaba9f9ab75ec9)] __-__ __driver__: fix driver except handling (#1886) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```6716be28```](https://github.com/jina-ai/jina/commit/6716be28ba4301d9e698ffbad970eeae77a39a98)] __-__ __driver__: set default len 36, move check to driver (#1887) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```c5e275b2```](https://github.com/jina-ai/jina/commit/c5e275b2bcfb67d88c7ba17550161a05ed2015f3)] __-__ updated optimizer docstrings (#1876) (*Maximilian Werk*)
+ - [[```4df6527c```](https://github.com/jina-ai/jina/commit/4df6527ca71ff97d7d58d59f782d4c46ad2678b1)] __-__ docstring helloworld (#1874) (*CatStark*)
+
+### 🍹 Other Improvements
+
+ - [[```130c046d```](https://github.com/jina-ai/jina/commit/130c046d18a8b399f5a3b92f9372f9ffd1bfc97b)] __-__ add page break between section (*Han Xiao*)
+ - [[```c7bcbcdb```](https://github.com/jina-ai/jina/commit/c7bcbcdbc6751d83b9e3e6a9070072bd1ac3c14d)] __-__ fix typo in readme (*Han Xiao*)
+ - [[```ab3598dc```](https://github.com/jina-ai/jina/commit/ab3598dceb1ee7928a2c2b6f234990c07b6b6cb6)] __-__ __version__: the next version will be 0.9.30 (*Jina Dev Bot*)
 
