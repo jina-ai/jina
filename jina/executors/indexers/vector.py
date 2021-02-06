@@ -124,8 +124,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: embeddings
         """
-        self._assert_key_length(keys)
-
         np_keys = np.array(keys, (np.str_, self.key_length))
 
         self._add(np_keys, vectors)
