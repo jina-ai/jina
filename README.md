@@ -211,7 +211,7 @@ d2 = Document(id='🐢', embedding=np.array([0, 1]))
 d3 = Document(id='🐯', embedding=np.array([1, 1]))
 
 d0.chunks.append(d1)
-d1.chunks[0].chunks.append(d2)
+d0.chunks[0].chunks.append(d2)
 d0.matches.append(d3)
 
 d0.plot()  # simply `d0` on JupyterLab 
