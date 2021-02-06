@@ -18,23 +18,39 @@ if False:
 
 
 class OptimizerCallback(JAMLCompatible):
-    """Callback interface for storing and calculating evaluation metric during an optimization.
-       Should be used, whenever a custom evaluation aggregation during an Flow optimization is needed.
+    """
+    Callback interface for storing and calculating evaluation metric during an optimization.
+    Should be used, whenever a custom evaluation aggregation during an Flow optimization is needed.
     """
 
     def get_empty_copy(self) -> 'OptimizerCallback':
+        """
+        :returns: An empty copy of the :class:`OptimizerCallback`.
+        :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
+        """
         raise NotImplementedError
 
     def get_final_evaluation(self) -> float:
+        """
+        :returns: The aggregation of all evaluation collected via :method:`__call__`
+        :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
+        """
         raise NotImplementedError
 
     def __call__(self, response):
+        """
+        Collects the results of evaluators in the response object for aggregation.
+
+        :param response: A response object of a Flow.
+        :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
+        """
         raise NotImplementedError
 
 
 class MeanEvaluationCallback(OptimizerCallback):
-    """Calculates the mean of all evaluations during a single :py:class:`FlowRunner`
-       execution from the :py:class:`FlowOptimizer`.
+    """
+    Calculates the mean of all evaluations during a single :py:class:`FlowRunner`
+    execution from the :py:class:`FlowOptimizer`.
     """
 
     def __init__(self, eval_name: Optional[str] = None):
@@ -49,7 +65,11 @@ class MeanEvaluationCallback(OptimizerCallback):
         return MeanEvaluationCallback(self._eval_name)
 
     def get_final_evaluation(self):
-        """Returns mean evaluation value on the eval_name metric."""
+        """
+        Calculates and returns mean evaluation value on the metric defined in the :method:`__init__`.
+
+        :returns: The aggregation of all evaluation collected via :method:`__call__`
+        """
         if self._eval_name is not None:
             evaluation_name = self._eval_name
         else:
@@ -61,7 +81,6 @@ class MeanEvaluationCallback(OptimizerCallback):
         return self._evaluation_values[evaluation_name] / self._n_docs
 
     def __call__(self, response):
-        """Will be used as the callback in a :py:class:`Flow` run in the :py:class:`FlowRunner`."""
         self._n_docs += len(response.search.docs)
         logger.info(f'Num of docs evaluated: {self._n_docs}')
         for doc in response.search.docs:
@@ -84,16 +103,21 @@ class ResultProcessor(JAMLCompatible):
 
     @property
     def study(self):
-        """Raw optuna study as calculated by the :py:class:`FlowOptimizer`."""
+        """
+        :returns: Raw optuna study as calculated by the :py:class:`FlowOptimizer`.
+        """
         return self._study
 
     @property
     def best_parameters(self):
-        """The parameter set, which got the best evaluation result during the optimization."""
+        """
+        :returns: The parameter set, which got the best evaluation result during the optimization.
+        """
         return self._best_parameters
 
     def save_parameters(self, filepath: str = 'config/best_config.yml'):
-        """Stores the best parameters in the given file.
+        """
+        Stores the best parameters in the given file.
 
         :param filepath: path where the best parameter config will be saved
         """
@@ -103,10 +127,11 @@ class ResultProcessor(JAMLCompatible):
 
 
 class FlowOptimizer(JAMLCompatible):
-    """Optimizer runs the given flows on multiple parameter configurations in order
-       to find the best performing parameters. Uses `optuna` behind the scenes.
-       For a detailed information how the parameters are sampled by optuna see
-       https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html
+    """
+    Optimizer runs the given flows on multiple parameter configurations in order
+    to find the best performing parameters. Uses `optuna` behind the scenes.
+    For a detailed information how the parameters are sampled by optuna see
+    https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html
     """
 
     def __init__(
@@ -198,9 +223,11 @@ class FlowOptimizer(JAMLCompatible):
         return eval_score
 
     def optimize_flow(self, **kwargs) -> 'ResultProcessor':
-        """Will run the actual optimization.
+        """
+        Will run the actual optimization.
 
         :param kwargs: extra parameters for optuna sampler
+        :returns: The aggregated result of the optimization run as a :class:`ResultProcessor`.
         """
         with ImportExtensions(required=True):
             import optuna
@@ -215,11 +242,12 @@ class FlowOptimizer(JAMLCompatible):
 
 
 def run_optimizer_cli(args: 'Namespace'):
-    """Used to run the FlowOptimizer from command line interface.
+    """
+    Used to run the FlowOptimizer from command line interface.
 
     :param args: arguments passed via cli
     """
-    # The following import is needed to initialize the JYML parser
+    # The following import is needed to initialize the JAML parser
     from .flow_runner import SingleFlowRunner, MultiFlowRunner
     with open(args.uses) as f:
         optimizer = JAML.load(f)
