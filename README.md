@@ -212,12 +212,12 @@ d0.chunks.append(d1)
 d1.chunks[0].chunks.append(d2)
 d0.matches.append(d3)
 
-d0.plot()  # simply `d0` on Jupyter 
+d0.plot()  # simply `d0` on JupyterLab 
 ```
 
 </td>
 <td>
-<img src="https://github.com/jina-ai/jina/blob/master/.github/.images/four-symbol-docs.svg?raw=true"/>
+<img src="https://github.com/jina-ai/jina/blob/master/.github/images/four-symbol-docs.svg?raw=true"/>
 </td>
 </tr>
 </table>
