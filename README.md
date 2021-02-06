@@ -180,7 +180,6 @@ with f:
 </tr>
 </table>
 
-Get the vibe? Now we are talking! Let's learn more about the basic concepts and features in Jina.
 
 #### Document
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -301,7 +300,9 @@ To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are u
 
 `Gateway` is the entrypoint of the Flow.
 
+Get the vibe? Now we are talking! Let's learn more about the basic concepts and features in Jina.
 
+---
 
 |     |   |
 | --- |---|
@@ -580,7 +581,7 @@ if __name__ == '__main__':
 
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it!
 
-
+---
 
 |     |   |
 | --- |---|
