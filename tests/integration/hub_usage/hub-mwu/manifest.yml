@@ -4,7 +4,7 @@ description: a minimum working unit of a containerized encoder, used for tutoria
 author: Jina AI Dev-Team (dev-team@jina.ai)
 url: https://jina.ai
 documentation: https://github.com/jina-ai/jina-hub
-version: 0.0.6
+version: 0.0.30
 vendor: Jina AI Limited
 license: apache-2.0
 update: nightly

@@ -106,13 +106,13 @@ def test_hub_build_push(monkeypatch, mocker):
     assert len(response) >= 1
 
 
-# @pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
-@pytest.mark.skip('Skip because everytime it will push an image to the cloud')
 def test_hub_build_push_push_again(mocker):
     mocker.patch.object(HubIO, '_docker_login', return_value=None)
     mocker.patch('jina.docker.hubio._register_to_mongodb', return_value=None)
     args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info'])
-    HubIO(args).build()
+    mocker.patch('jina.docker.hubio.jina_version', new='0.9.14')
+    hubIO = HubIO(args)
+    hubIO.build()
 
     with pytest.raises(ImageAlreadyExists):
         # try and push same version again should fail with `--no-overwrite`

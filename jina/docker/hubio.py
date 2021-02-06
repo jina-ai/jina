@@ -674,15 +674,13 @@ class HubIO:
     create = new
     init = new
 
-    def _image_version_exists(self, name, module_version, req_jina_version):
-        manifests = _list(self.logger, name)
+    def _image_version_exists(self, image_name, module_version, req_jina_version):
+        manifests = _list(self.logger, image_name)
+        if not manifests:
+            return False
         # check if matching module version and jina version exists
-        if manifests:
-            matching = [
-                m for m in manifests
-                if m['version'] == module_version
-                   and 'jina_version' in m.keys()
-                   and m['jina_version'] == req_jina_version
-            ]
-            return len(matching) > 0
+        for m in manifests:
+            if m.get('version') == module_version and \
+                    m.get('jina-version') == req_jina_version:
+                return True
         return False
