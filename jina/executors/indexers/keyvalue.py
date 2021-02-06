@@ -49,7 +49,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         return self.WriteHandler(self.index_abspath, 'wb')
 
     def get_query_handler(self):
-        return self.ReadHandler(self.index_abspath, self._key_length)
+        return self.ReadHandler(self.index_abspath, self.key_length)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,7 +65,6 @@ class BinaryPbIndexer(BaseKVIndexer):
         """
         if not keys:
             return
-        self._assert_key_length(keys)
 
         for key, value in zip(keys, values):
             l = len(value)  #: the length
@@ -74,7 +73,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.header.write(
                 np.array(
                     (key, p, r, r + l),
-                    dtype=[('', (np.str_, self._key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
+                    dtype=[('', (np.str_, self.key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
                 ).tobytes()
             )
             self._start += l
@@ -111,7 +110,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.header.write(
                 np.array(
                     tuple(np.concatenate([[key], HEADER_NONE_ENTRY])),
-                    dtype=[('', (np.str_, self._key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
+                    dtype=[('', (np.str_, self.key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
                 ).tobytes()
             )
 

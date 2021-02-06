@@ -41,7 +41,7 @@ class BaseIndexer(BaseExecutor):
 
     def __init__(self,
                  index_filename: str = None,
-                 key_length: int = None,
+                 key_length: int = 36,
                  *args, **kwargs):
         """
 
@@ -51,24 +51,8 @@ class BaseIndexer(BaseExecutor):
         """
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
+        self.key_length = key_length  #: the default minimum length of the key, will be expanded one time on the first batch
         self._size = 0
-        self._key_length = key_length  #: the default minimum length of the key, will be expanded one time on the first batch
-
-    @property
-    def key_length(self) -> int:
-        return self._key_length
-
-    def _assert_key_length(self, keys):
-        max_key_len = max([len(k) for k in keys])
-
-        if self.key_length is None:
-            self.key_length = max(16, max_key_len)
-        elif max_key_len > self.key_length:
-            raise ValueError(f'This indexer allows only keys of length {self._key_length}, but yours is {max_key_len}.')
-
-    @key_length.setter
-    def key_length(self, val: int):
-        self._key_length = val
 
     def add(self, *args, **kwargs):
         """Add documents to the index.
