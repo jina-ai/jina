@@ -99,3 +99,15 @@ def test_docker_auth_failure(mocker, docker_jaml_token):
     from jina.excepts import DockerLoginFailed
     with pytest.raises(DockerLoginFailed):
         remote._fetch_docker_auth(logger=getLogger())
+
+
+@pytest.mark.parametrize('image_name',
+                         ['jinahub/pod.encoder.transformertorchencoder', 'jinahub/pod.encoder.dummy_mwu_encoder'])
+def test_hubapi_list_no_mocker(image_name):
+    result = remote._list(logger=getLogger(),
+                          image_name=image_name)
+    assert len(result) > 0
+    assert 'jina-version' in result[0]
+    assert 'version' in result[0]
+    assert result[0].get('docker-name') == image_name
+    print(result)

@@ -420,14 +420,14 @@ class HubIO:
             if is_build_success:
                 _version = self.manifest['version']
                 self.manifest.pop('version', None)
-                self.manifest.pop('jina_version', None)
+                self.manifest.pop('jina-version', None)
             else:
                 _version = '0.0.1'
 
             result = {
                 'name': self.executor_name if is_build_success else '',
                 'version': _version,
-                'jina_version': jina_version,
+                'jina-version': jina_version,
                 'path': self.args.path,
                 'manifest_info': self.manifest if is_build_success else '',
                 'details': _details,
@@ -574,7 +574,7 @@ class HubIO:
             raise FileNotFoundError('Dockerfile or manifest.yml is not given, can not build')
 
         self.manifest = self._read_manifest(manifest_path)
-        self.manifest['jina_version'] = jina_version
+        self.manifest['jina-version'] = jina_version
         self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
         self.executor_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}')
