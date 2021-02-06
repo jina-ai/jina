@@ -19,7 +19,7 @@ from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
 from ...excepts import BadDocType
-from ...helper import is_url, typename, random_identity
+from ...helper import is_url, typename, random_identity, download_mermaid_url
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
 
@@ -182,6 +182,7 @@ class Document(ProtoTypeMixin):
             self.id = random_identity(use_uuid1=True)
 
         self.set_attrs(**kwargs)
+        self._mermaid_id = random_identity()  #: for mermaid visualize id
 
     @property
     def length(self) -> int:
@@ -268,7 +269,6 @@ class Document(ProtoTypeMixin):
         """
         self._pb_body.id = str(value)
 
-
     @parent_id.setter
     def parent_id(self, value: Union[bytes, str, int]):
         """Set document's parent id to a string value.
@@ -277,7 +277,6 @@ class Document(ProtoTypeMixin):
         :return:
         """
         self._pb_body.parent_id = str(value)
-
 
     @property
     def blob(self) -> 'np.ndarray':
@@ -499,7 +498,7 @@ class Document(ProtoTypeMixin):
 
     @property
     def score(self):
-        return self._pb_body.score
+        return NamedScore(self._pb_body.score)
 
     @score.setter
     def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
@@ -631,3 +630,86 @@ class Document(ProtoTypeMixin):
         else:
             for d in docs:
                 callback_fn(d, parent_doc, parent_edge_type, *args, **kwargs)
+
+    def __mermaid_str__(self):
+        results = []
+        from google.protobuf.json_format import MessageToDict
+        content = MessageToDict(self._pb_body, preserving_proto_field_name=True)
+
+        _id = f'{self._mermaid_id[:3]}~Document~'
+
+        for idx, c in enumerate(self.chunks):
+            results.append(f'{_id} --> "{idx + 1}/{len(self.chunks)}" {c._mermaid_id[:3]}~Document~: chunks')
+            results.append(c.__mermaid_str__())
+
+        for idx, c in enumerate(self.matches):
+            results.append(f'{_id} ..> "{idx + 1}/{len(self.matches)}" {c._mermaid_id[:3]}~Document~: matches')
+            results.append(c.__mermaid_str__())
+        if 'chunks' in content:
+            content.pop('chunks')
+        if 'matches' in content:
+            content.pop('matches')
+        if content:
+            results.append(f'class {_id}{{')
+            for k, v in content.items():
+                if isinstance(v, (str, int, float, bytes)):
+                    results.append(f'+{k} {str(v)[:10]}')
+                else:
+                    results.append(f'+{k}({type(getattr(self, k, v))})')
+            results.append('}')
+
+        return '\n'.join(results)
+
+    def _mermaid_to_url(self, img_type) -> str:
+        """
+        Rendering the current flow as a url points to a SVG, it needs internet connection
+        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+        :return: the url points to a SVG
+        """
+        if img_type == 'jpg':
+            img_type = 'img'
+
+        mermaid_str = """
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+classDiagram
+        
+        """ + self.__mermaid_str__()
+
+        encoded_str = base64.b64encode(bytes(mermaid_str.strip(), 'utf-8')).decode('utf-8')
+
+        return f'https://mermaid.ink/{img_type}/{encoded_str}'
+
+    def _ipython_display_(self):
+        """Displays the object in IPython as a side effect"""
+        self.plot(inline_display=True)
+
+    def plot(self, output: str = None,
+             inline_display: bool = False) -> None:
+        """
+        Visualize the Document recursively
+
+        :param output: a filename specifying the name of the image to be created,
+                    the suffix svg/jpg determines the file type of the output image
+        :param inline_display: show image directly inside the Jupyter Notebook
+        """
+        image_type = 'svg'
+        if output and output.endswith('jpg'):
+            image_type = 'jpg'
+
+        url = self._mermaid_to_url(image_type)
+        showed = False
+        if inline_display:
+            try:
+                from IPython.display import display, Image
+
+                display(Image(url=url))
+                showed = True
+            except:
+                # no need to panic users
+                pass
+
+        if output:
+            download_mermaid_url(url, output)
+        elif not showed:
+            from jina.logging import default_logger
+            default_logger.info(f'Document visualization: {url}')

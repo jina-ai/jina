@@ -86,8 +86,8 @@ jina hello-world --help
 
 |     |   |
 | --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) |
-| 🐣  | [Document](#document) • [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
+| 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### CRUD Functions
@@ -180,12 +180,10 @@ with f:
 
 Get the vibe? Now we are talking! Let's learn more about the basic concepts and features in Jina.
 
-
-
 #### Document
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. It can be recurred both vertically and horizontally to have nested documents and matched documents. To construct a Document, one can use:
+`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. To construct a Document, one can use:
 
 ```python
 import numpy
@@ -193,8 +191,36 @@ from jina import Document
 
 doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
 doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
-doc1.chunks.append(doc2)  # doc2 is now a sub-document of doc1
 ```
+
+Document can be recurred both vertically and horizontally to have nested documents and matched documents. To better see the recursive structure of a document, one can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
+
+<table>
+  <tr>
+    <td>
+
+```python
+import numpy
+from jina import Document
+
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
+
+d0.chunks.append(d1)
+d1.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
+
+d0.plot()  # simply `d0` on Jupyter 
+```
+
+</td>
+<td>
+<img src="https://github.com/jina-ai/jina/blob/master/.github/.images/four-symbol-docs.svg?raw=true"/>
+</td>
+</tr>
+</table>
 
 <details>
   <summary>Click here to see more about MultimodalDocument</summary>
@@ -256,7 +282,7 @@ Interested readers can refer to [`jina-ai/example`: how to build a multimodal se
 #### Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Jina provides a high-level [Flow API](https://101.jina.ai) to simplify building search/index workflows. To create a new Flow:
+Jina provides a high-level Flow API to simplify building CRUD workflows. To create a new Flow:
 
 ```python
 from jina import Flow
@@ -265,14 +291,20 @@ f = Flow().add()
 
 This creates a simple Flow with one [Pod](https://101.jina.ai). You can chain multiple `.add()`s in a single Flow.
 
-#### Visualize
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-visualize-a-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be displayed inline *without* `plot`:
+To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be displayed inline *without* `plot`.
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
 
-`Gateway` is the entrypoint of the Flow. 
+`Gateway` is the entrypoint of the Flow.
+
+
+|     |   |
+| --- |---|
+| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
+| 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 #### Feed Data
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-feed-data.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -546,8 +578,8 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 
 |     |   |
 | --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) |
-| 🐣  | [Document](#document) • [Flow](#flow) • [Visualize](#visualize) • [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
+| 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 

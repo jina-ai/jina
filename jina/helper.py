@@ -19,6 +19,7 @@ from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, Sequence, Iterable
+from urllib.request import Request, urlopen
 
 import numpy as np
 
@@ -773,3 +774,18 @@ def change_env(key, val):
 def is_yaml_filepath(val) -> bool:
     r = r'^[/\w\-\_\.]+.ya?ml$'
     return re.match(r, val.strip()) is not None
+
+
+def download_mermaid_url(mermaid_url, output) -> None:
+    """
+    Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
+    :param path: the file path of the image
+    :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+    """
+    try:
+        req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with open(output, 'wb') as fp:
+            fp.write(urlopen(req).read())
+    except:
+        from jina.logging import default_logger
+        default_logger.error('can not download image, please check your graph and the network connections')
