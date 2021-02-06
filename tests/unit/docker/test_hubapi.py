@@ -1,8 +1,7 @@
+import json
 from logging import getLogger
 
-import json
 import mock
-
 import pytest
 import requests
 
@@ -10,27 +9,28 @@ from jina.docker.hubapi import remote
 
 sample_manifest = [
     {
-        'name': 'Dummy MWU Encoder',
-        'description': 'a minimum working unit of a containerized encoder, used for tutorial only',
-        'type': 'pod',
-        'author': 'Jina AI Dev-Team (dev-team@jina.ai)',
-        'url': 'https://jina.ai',
-        'documentation': 'https://github.com/jina-ai/jina-hub',
-        'version': '0.0.52',
-        'vendor': 'Jina AI Limited',
-        'license': 'apache-2.0',
-        'avatar': None,
-        'platform': [
-            'linux/amd64'
+        "docker-name": "jinahub/pod.encoder.dummy_mwu_encoder",
+        "version": "0.0.30",
+        "jina-version": "0.9.14",
+        "docker-command": "docker pull jinahub/pod.encoder.dummy_mwu_encoder:0.0.30-0.9.14",
+        "name": "Dummy MWU Encoder",
+        "description": "a minimum working unit of a containerized encoder, used for tutorial only",
+        "type": "pod",
+        "kind": "encoder",
+        "keywords": [
+            "example",
+            "demo",
+            "toy-example"
         ],
-        'keywords': [
-            'toy',
-            'example'
+        "platform": [
+            "linux/amd64"
         ],
-        'manifest_version': 1,
-        'update': 'nightly',
-        'kind': 'encoder'
-    }
+        "license": "apache-2.0",
+        "url": "https://jina.ai",
+        "documentation": "https://github.com/jina-ai/jina-hub",
+        "author": "Jina AI Dev-Team (dev-team@jina.ai)",
+        "avatar": "None"
+    },
 ]
 
 
@@ -45,7 +45,7 @@ def test_hubapi_list(mocker):
 
     mocker.assert_called_once()
     assert result[0]['name'] == 'Dummy MWU Encoder'
-    assert result[0]['version'] == '0.0.52'
+    assert result[0]['version'] == '0.0.30'
     assert result[0]['kind'] == 'encoder'
 
 
