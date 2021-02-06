@@ -425,7 +425,8 @@ class HubIO:
                 _version = '0.0.1'
 
             result = {
-                'name': self.executor_name if is_build_success else '',
+                'docker-name': self.executor_name if is_build_success else '',
+                'tag': self.tag if is_build_success else '',
                 'version': _version,
                 'jina-version': jina_version,
                 'path': self.args.path,
@@ -511,7 +512,7 @@ class HubIO:
         return s
 
     def _write_summary_to_file(self, summary: Dict) -> None:
-        file_path = get_summary_path(f'{summary["name"]}:{summary["version"]}')
+        file_path = get_summary_path(f'{summary["docker-name"]}:{summary["version"]}')
         with open(file_path, 'w+') as f:
             json.dump(summary, f)
         self.logger.debug(f'stored the summary from build to {file_path}')
