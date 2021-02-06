@@ -643,7 +643,7 @@ class Document(ProtoTypeMixin):
             results.append(c.__mermaid_str__())
 
         for idx, c in enumerate(self.matches):
-            results.append(f'{_id} --> "{idx + 1}/{len(self.matches)}" {c._mermaid_id[:3]}~Document~: matches')
+            results.append(f'{_id} ..> "{idx + 1}/{len(self.matches)}" {c._mermaid_id[:3]}~Document~: matches')
             results.append(c.__mermaid_str__())
         if 'chunks' in content:
             content.pop('chunks')
