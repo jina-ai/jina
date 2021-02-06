@@ -96,5 +96,6 @@ def test_docker_auth_failure(mocker, docker_jaml_token):
     mock_response.return_value.text = json.dumps({'message': 'Missing Authentication Token'})
 
     # If no token is fetched, docker auth fails
-    fetch_cred = remote._fetch_docker_auth(logger=getLogger())
-    assert fetch_cred is None
+    from jina.excepts import DockerLoginFailed
+    with pytest.raises(DockerLoginFailed):
+        remote._fetch_docker_auth(logger=getLogger())
