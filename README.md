@@ -302,7 +302,6 @@ To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are u
 `Gateway` is the entrypoint of the Flow.
 
 
-### 🐣 Basic
 
 |     |   |
 | --- |---|
@@ -310,6 +309,8 @@ To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are u
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
+
+### 🐣 Basic
 
 #### Feed Data
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-feed-data.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -579,7 +580,7 @@ if __name__ == '__main__':
 
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it!
 
-### 🐥 Breakdown of `hello-world`
+
 
 |     |   |
 | --- |---|
@@ -587,6 +588,7 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
+### 🐥 Breakdown of `hello-world`
 
 #### Customize Encoder
 
