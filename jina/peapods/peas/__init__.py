@@ -118,6 +118,8 @@ class BasePea(metaclass=PeaType):
             else:
                 self.logger.success(__ready_msg__)
         else:
+            self.logger.warning(f'{self.runtime!r} timeout after waiting for {self.args.timeout_ready}ms, '
+                                f'if your executor takes time to load, you may increase --timeout-ready')
             self.close()
             raise TimeoutError(
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')

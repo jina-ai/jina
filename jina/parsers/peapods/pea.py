@@ -24,7 +24,7 @@ def mixin_pea_parser(parser):
     gp.add_argument('--runtime-cls', type=str, choices=list_all_runtimes(), default='ZEDRuntime',
                     help='The runtime class to run inside the Pea')
 
-    gp.add_argument('--timeout-ready', type=int, default=10000,
+    gp.add_argument('--timeout-ready', type=int, default=60000,
                     help='The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting '
                          'forever')
 

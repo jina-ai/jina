@@ -24,7 +24,7 @@ def mixin_hub_build_parser(parser):
     gp.add_argument('--test-level', type=BuildTestLevel.from_string,
                     choices=list(BuildTestLevel), default=BuildTestLevel.FLOW,
                     help='If set, the test level when `--test-uses` is set, `NONE` means no test')
-    gp.add_argument('--timeout-ready', type=int, default=10000,
+    gp.add_argument('--timeout-ready', type=int, default=60000,
                     help='The timeout in millisecond to give for the Pod to start before considering a test failed')
     gp.add_argument('--host-info', action='store_true', default=False,
                     help='If set, store the host information during bookkeeping')
