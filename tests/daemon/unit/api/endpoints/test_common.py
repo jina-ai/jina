@@ -23,7 +23,7 @@ def test_status(api, fastapi_client):
 
 @pytest.mark.parametrize('api', ['/peas', '/pods', '/flows', '/workspaces'])
 def test_status(api, fastapi_client):
-    response = fastapi_client.delete(f'{api}/all')
+    response = fastapi_client.delete(f'{api}')
     print(response.json())
     assert response.status_code == 200
 
@@ -52,7 +52,7 @@ def test_add_same_del_all(api, payload, fastapi_client):
     assert response.status_code == 200
     num_add = response.json()['num_add']
 
-    response = fastapi_client.delete(f'{api}/all')
+    response = fastapi_client.delete(f'{api}')
     assert response.status_code == 200
 
     response = fastapi_client.get(api)

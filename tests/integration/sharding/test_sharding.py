@@ -120,13 +120,13 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_delete_flow(index_conf, num_shards) as index_flow:
         index_flow.delete(
-            input_fn=[d.id for d in random_docs(0, 30)],
+            ids=[d.id for d in random_docs(0, 30)],
             request_size=100
         )
 
     with get_delete_flow(index_conf, num_shards) as index_flow:
         index_flow.delete(
-            input_fn=[d.id for d in random_docs(100, 150)],
+            ids=[d.id for d in random_docs(100, 150)],
             request_size=100
         )
 
@@ -166,12 +166,12 @@ def test_delete_kv(config, mocker, num_shards):
 
     with get_delete_flow(index_conf, num_shards) as delete_flow:
         delete_flow.delete(
-            input_fn=[d.id for d in random_docs(0, 30)],
+            ids=[d.id for d in random_docs(0, 30)],
             request_size=100)
 
     with get_delete_flow(index_conf, num_shards) as delete_flow:
         delete_flow.delete(
-            input_fn=[d.id for d in random_docs(100, 150)],
+            ids=[d.id for d in random_docs(100, 150)],
             request_size=100)
 
     validate_index_size(121, index_name)

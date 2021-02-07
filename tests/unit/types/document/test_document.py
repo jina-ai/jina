@@ -374,3 +374,16 @@ def test_doc_field_resolver(from_str):
     assert d.tags['hello'] == 'world'
     assert d.tags['good'] == 'bye'
     assert 'music_id' not in d.tags
+
+
+def test_doc_plot():
+    docs = [Document(id='🐲', embedding=np.array([0, 0]), tags={'guardian': 'Azure Dragon', 'position': 'East'}),
+            Document(id='🐦', embedding=np.array([1, 0]), tags={'guardian': 'Vermilion Bird', 'position': 'South'}),
+            Document(id='🐢', embedding=np.array([0, 1]), tags={'guardian': 'Black Tortoise', 'position': 'North'}),
+            Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
+
+    docs[0].chunks.append(docs[1])
+    docs[0].chunks[0].chunks.append(docs[2])
+    docs[0].matches.append(docs[3])
+
+    assert docs[0]._mermaid_to_url('svg')

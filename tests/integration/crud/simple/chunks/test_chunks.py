@@ -89,8 +89,7 @@ def test_delete_vector(config, mocker, flow_file):
             delete_ids.append(c.id)
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(
-            input_fn=delete_ids)
+        index_flow.delete(ids=delete_ids)
     validate_index_size(0)
 
     mock = mocker.Mock()

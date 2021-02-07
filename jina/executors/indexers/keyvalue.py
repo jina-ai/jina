@@ -49,14 +49,13 @@ class BinaryPbIndexer(BaseKVIndexer):
         return self.WriteHandler(self.index_abspath, 'wb')
 
     def get_query_handler(self):
-        return self.ReadHandler(self.index_abspath, self._key_length)
+        return self.ReadHandler(self.index_abspath, self.key_length)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._total_byte_len = 0
         self._start = 0
         self._page_size = mmap.ALLOCATIONGRANULARITY
-        self._key_length = 0
 
     def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
         """Add the serialized documents to the index via document ids.
@@ -67,9 +66,6 @@ class BinaryPbIndexer(BaseKVIndexer):
         if not keys:
             return
 
-        max_key_len = max([len(k) for k in keys])
-        self.key_length = max_key_len
-
         for key, value in zip(keys, values):
             l = len(value)  #: the length
             p = int(self._start / self._page_size) * self._page_size  #: offset of the page
@@ -77,7 +73,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.header.write(
                 np.array(
                     (key, p, r, r + l),
-                    dtype=[('', (np.str_, self._key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
+                    dtype=[('', (np.str_, self.key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
                 ).tobytes()
             )
             self._start += l
@@ -103,8 +99,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
         """
-        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys(),
-                                                            self.save_abspath)
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys())
         self._delete(keys)
         self.add(keys, values)
 
@@ -115,7 +110,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.write_handler.header.write(
                 np.array(
                     tuple(np.concatenate([[key], HEADER_NONE_ENTRY])),
-                    dtype=[('', (np.str_, self._key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
+                    dtype=[('', (np.str_, self.key_length)), ('', np.int64), ('', np.int64), ('', np.int64)]
                 ).tobytes()
             )
 
@@ -128,7 +123,7 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys(), self.save_abspath)
+        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
         self._delete(keys)
 
 

@@ -55,7 +55,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self.dtype = ref_indexer.dtype
             self.compress_level = ref_indexer.compress_level
             self.key_bytes = ref_indexer.key_bytes
-            self._key_length = ref_indexer._key_length
+            self.key_length = ref_indexer.key_length
             self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
@@ -124,8 +124,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: embeddings
         """
-        max_key_len = max([len(k) for k in keys])
-        self.key_length = max_key_len
         np_keys = np.array(keys, (np.str_, self.key_length))
 
         self._add(np_keys, vectors)
@@ -144,7 +142,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param values: embeddings
         """
         # noinspection PyTypeChecker
-        keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys(), self.save_abspath)
+        keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys())
         np_keys = np.array(keys, (np.str_, self.key_length))
 
         if np_keys.size:
@@ -163,7 +161,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
-        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
         np_keys = np.array(keys, (np.str_, self.key_length))
         self._delete(np_keys)
 
@@ -218,7 +216,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :return: ndarray of vectors
         """
-        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys(), self.save_abspath)
+        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
         if keys:
             indices = [self._ext2int_id[key] for key in keys]
             return self._raw_ndarray[indices]

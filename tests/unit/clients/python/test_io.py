@@ -3,10 +3,13 @@ import os
 import numpy as np
 import pytest
 
+from jina import Document
 from jina.clients import Client
-from jina.clients.sugary_io import _input_files, _input_lines, _input_ndarray
+from jina.clients.sugary_io import _input_files, _input_lines, _input_ndarray, _input_csv
 from jina.enums import DataInputType
 from jina.excepts import BadClientInput
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope='function')
@@ -20,16 +23,42 @@ def filepath(tmpdir):
 def test_input_lines_with_filepath(filepath):
     result = list(_input_lines(filepath=filepath, size=2))
     assert len(result) == 2
-    assert result[0] == "1\n"
-    assert result[1] == "2\n"
+    assert isinstance(result[0], Document)
 
 
-def test_input_lines_with_lines():
-    lines = ["1", "2", "3"]
-    result = list(_input_lines(lines=lines, size=2))
+def test_input_csv_from_file():
+    with open(os.path.join(cur_dir, 'docs.csv')) as fp:
+        result = list(_input_csv(fp))
     assert len(result) == 2
-    assert result[0] == "1"
-    assert result[1] == "2"
+    assert isinstance(result[0], Document)
+    assert result[0].tags['source'] == 'testsrc'
+
+
+def test_input_csv_from_lines():
+    with open(os.path.join(cur_dir, 'docs.csv')) as fp:
+        result = list(_input_lines(fp, line_format='csv'))
+    assert len(result) == 2
+    assert isinstance(result[0], Document)
+    assert result[0].tags['source'] == 'testsrc'
+
+
+def test_input_csv_from_lines_field_resolver():
+    with open(os.path.join(cur_dir, 'docs.csv')) as fp:
+        result = list(_input_lines(fp, line_format='csv', field_resolver={'url': 'uri', 'question': 'text'}))
+    assert len(result) == 2
+    assert isinstance(result[0], Document)
+    assert result[0].tags['source'] == 'testsrc'
+    assert result[0].uri
+    assert result[0].text
+
+
+def test_input_csv_from_strings():
+    with open(os.path.join(cur_dir, 'docs.csv')) as fp:
+        lines = fp.readlines()
+    result = list(_input_csv(lines))
+    assert len(result) == 2
+    assert isinstance(result[0], Document)
+    assert result[0].tags['source'] == 'testsrc'
 
 
 def test_input_lines_with_empty_filepath_and_lines():
@@ -42,17 +71,17 @@ def test_input_lines_with_empty_filepath_and_lines():
 def test_input_lines_with_jsonlines_docs():
     result = list(_input_lines(filepath='tests/unit/clients/python/docs.jsonlines'))
     assert len(result) == 2
-    assert result[0]['text'] == "a"
-    assert result[1]['text'] == "b"
+    assert result[0].text == "a"
+    assert result[1].text == "b"
 
 
 def test_input_lines_with_jsonlines_docs_groundtruth():
     result = list(_input_lines(filepath='tests/unit/clients/python/docs_groundtruth.jsonlines'))
     assert len(result) == 2
-    assert result[0][0]['text'] == "a"
-    assert result[0][1]['text'] == "b"
-    assert result[1][0]['text'] == "c"
-    assert result[1][1]['text'] == "d"
+    assert result[0][0].text == "a"
+    assert result[0][1].text == "b"
+    assert result[1][0].text == "c"
+    assert result[1][1].text == "d"
 
 
 @pytest.mark.parametrize(

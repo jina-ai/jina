@@ -43,9 +43,10 @@ class BaseStore(MutableMapping):
             if workspace and v.get('workdir', None):
                 for path in Path(v['workdir']).rglob('[!logging.log]*'):
                     if path.is_file():
-                        self._logger.debug(f'to be deleted: {path}')
+                        self._logger.debug(f'file to be deleted: {path}')
                         path.unlink()
             if everything and v.get('workdir', None):
+                self._logger.debug(f'directory to be deleted: {v["workdir"]}')
                 shutil.rmtree(v['workdir'])
             del self[id]
             self._logger.success(f'{colored(str(id), "cyan")} is released from the store.')

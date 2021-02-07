@@ -29,8 +29,8 @@ def test_bad_flow(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock_2)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock_2)
 
     on_error_mock.assert_called()
     on_error_mock_2.assert_called()
@@ -57,8 +57,8 @@ def test_bad_flow_customized(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock_2)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock_2)
 
     on_error_mock.assert_called()
     on_error_mock_2.assert_called()
@@ -88,8 +88,8 @@ def test_except_with_parallel(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock_2)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock_2)
 
     on_error_mock.assert_called()
     on_error_mock_2.assert_called()
@@ -113,7 +113,7 @@ def test_on_error_callback(mocker, restful):
     on_error_mock = mocker.Mock(wrap=validate2)
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_done=validate1, on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_done=validate1, on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -134,7 +134,7 @@ def test_no_error_callback(mocker, restful):
     on_error_mock = mocker.Mock(wrap=validate2)
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_done=response_mock, on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_done=response_mock, on_error=on_error_mock)
 
     response_mock.assert_called()
     on_error_mock.assert_not_called()

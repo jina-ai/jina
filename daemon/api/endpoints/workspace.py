@@ -20,7 +20,7 @@ async def _get_items():
 
 
 @router.delete(
-    path='/all',
+    path='',
     summary='Deleting all Workspaces',
 )
 async def _clear_all():

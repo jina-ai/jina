@@ -1,4 +1,3 @@
-import random
 import time
 from types import SimpleNamespace
 
@@ -14,8 +13,8 @@ from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina.types.document.uid import *
 from tests import random_docs
+import numpy as np
 
 
 def test_cached_property():
@@ -58,11 +57,6 @@ def test_time_context():
 
     assert int(tc.duration) == 2
     assert tc.readable_duration == '2 seconds'
-
-
-def test_np_int():
-    a = random.randint(0, 100000)
-    assert int2bytes(np.int64(a)) == int2bytes(a)
 
 
 def test_dunder_get():

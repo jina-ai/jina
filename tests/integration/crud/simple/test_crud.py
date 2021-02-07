@@ -29,7 +29,7 @@ def config(tmpdir):
 def random_docs(start, end, embed_dim=10, jitter=1, has_content=True):
     for j in range(start, end):
         d = Document()
-        d.id = str(f'{j}' * 16)
+        d.id = j
         if has_content:
             d.tags['id'] = j
             d.text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10)).encode('utf8')
@@ -37,11 +37,18 @@ def random_docs(start, end, embed_dim=10, jitter=1, has_content=True):
         yield d
 
 
+def get_ids_to_delete(start, end, as_string):
+    if as_string:
+        return (str(idx) for idx in range(start, end))
+    return range(start, end)
+
+
 def validate_index_size(num_indexed_docs, compound=False):
     from jina.executors.compound import CompoundExecutor
 
     if compound:
-        path = Path(CompoundExecutor.get_component_workspace_from_compound_workspace(os.environ['JINA_TOPK_DIR'], 'chunk_indexer', 0))
+        path = Path(CompoundExecutor.get_component_workspace_from_compound_workspace(os.environ['JINA_TOPK_DIR'],
+                                                                                     'chunk_indexer', 0))
     else:
         path = Path(os.environ['JINA_TOPK_DIR'])
     bin_files = list(path.glob('*.bin'))
@@ -86,7 +93,7 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
             delete_ids.append(c.id)
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=delete_ids)
+        index_flow.delete(ids=delete_ids)
     validate_index_size(0, compound)
 
     mock = mocker.Mock()
@@ -96,8 +103,8 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
     mock.assert_called_once()
 
 
-@pytest.mark.parametrize('has_content', [True, False])
-def test_delete_kv(config, mocker, has_content):
+@pytest.mark.parametrize('as_string', [True, False])
+def test_delete_kv(config, mocker, as_string):
     flow_file = 'flow_kv.yml'
 
     def validate_result_factory(num_matches):
@@ -117,7 +124,7 @@ def test_delete_kv(config, mocker, has_content):
     mock.assert_called_once()
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.delete(input_fn=[d.id for d in random_docs(0, 3, has_content=has_content)])
+        index_flow.delete(ids=get_ids_to_delete(0, 3, as_string))
     validate_index_size(7)
 
     mock = mocker.Mock()
