@@ -34,7 +34,7 @@ class JinaRequestModel(BaseModel):
     data: Union[List[JinaDocumentModel], List[Dict[str, Any]], List[str], List[bytes]]
     request_size: Optional[int] = 0
     mime_type: Optional[str] = None
-    queryset: List[JinaQueryLangModel]
+    queryset: Optional[List[JinaQueryLangModel]] = None
     data_type: DataInputType = DataInputType.AUTO
 
 
