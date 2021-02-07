@@ -71,6 +71,7 @@ jobs:
           workflow: Sync version with Jina core
           repo: jina-ai/dashboard
           token: ${{ secrets.JINA_DEV_BOT }}
+          ref: refs/heads/master
           inputs: '{ "version": "${{ env.JINA_VERSION }}" }'
 
   update-doc:
