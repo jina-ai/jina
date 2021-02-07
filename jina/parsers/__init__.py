@@ -90,7 +90,7 @@ def set_client_cli_parser(parser=None):
 
 def get_main_parser():
     from .base import set_base_parser
-    from .helloworld import set_hw_parser
+    from .helloworld import set_hw_parser, set_hw_chatbot_parser
     from .helper import _chf, _SHOW_ALL_ARGS
     from .check import set_check_parser
     from .export_api import set_export_api_parser
@@ -124,8 +124,8 @@ def get_main_parser():
                                   formatter_class=_chf))
 
     set_optimizer_parser(sp.add_parser('optimizer',
-                                  description='Start a FlowOptimizer from a YAML configuration file',
-                                  help='Start an FlowOptimizer from a YAML file', formatter_class=_chf))
+                                       description='Start a FlowOptimizer from a YAML configuration file',
+                                       help='Start an FlowOptimizer from a YAML file', formatter_class=_chf))
 
     set_gateway_parser(sp.add_parser('gateway',
                                      description='Start a Gateway that receives client Requests via gRPC/REST interface',
@@ -169,4 +169,10 @@ def get_main_parser():
                                         description='Export Jina API to JSON/YAML file for 3rd party applications',
                                         formatter_class=_chf,
                                         **(dict(help='export Jina API to file')) if _SHOW_ALL_ARGS else {}))
+
+    set_hw_chatbot_parser(sp.add_parser('hello-world-chatbot',
+                                        **(dict(help='Covid-19 chatbot based on DistilBERT')) if _SHOW_ALL_ARGS else {},
+                                        description='Start a hello-world demo: a simple Covid-19 chatbot. '
+                                                    'Pytorch and transformers are required to run this demo',
+                                        formatter_class=_chf))
     return parser

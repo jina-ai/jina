@@ -80,6 +80,11 @@ def hello_world(args: 'Namespace'):
     hello_world(args)
 
 
+def hello_world_chatbot(args: 'Namespace'):
+    from jina.helloworld.chatbot import hello_world
+    hello_world(args)
+
+
 def flow(args: 'Namespace'):
     """Start a Flow from a YAML file or a docker image"""
     from jina.flow import Flow

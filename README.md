@@ -41,7 +41,7 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 | 📦<br><sub><sup>x86/64,arm/v6,v7,[v8 (Apple M1)](https://github.com/jina-ai/jina/issues/1781)</sup></sub> | On Linux/macOS & Python 3.7/3.8/[3.9](https://github.com/jina-ai/jina/issues/1801) | Docker Users|
 | --- | --- | --- |
 | Standard | `pip install -U jina` | `docker run jinaai/jina:latest` |
-| <sub>Daemon</sub> | <sub>`pip install -U "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
+| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install -U "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
 | <sub>With Extras</sub> | <sub>`pip install -U "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 | <sub>Dev/Pre-Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
 
@@ -52,7 +52,7 @@ Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/ma
 Just starting out? Try Jina's "Hello, World" - a simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply run:
 
 ```bash
-jina hello-world
+jina hello-world  # more options in --help
 ```
 
 ...or even easier for Docker users, **no install required**:
@@ -76,11 +76,19 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
   <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" alt="Jina banner" width="80%">
 </p>
 
-Intrigued? Play with different options:
+### Covid-19 Chatbot
 
+<a href="https://docs.jina.ai/">
+<img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
+</a>
+
+For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. You will need PyTorch and Transformers, which can be installed along with Jina:
 ```bash
-jina hello-world --help
+pip install "jina[torch,transformers]"
+jina hello-world-chatbot
 ```
+
+This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
 
 ## Get Started
 
@@ -753,7 +761,7 @@ f.search(query_iterator, ...)
 
 #### REST Interface
 
-In practice, the query Flow and the client (i.e. data sender) are often physically separated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://docs.jina.ai/chapters/restapi/index.html) with `restful=True`:
+In practice, the query Flow and the client (i.e. data sender) are often physically separated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://api.jina.ai/rest/) with `restful=True`:
 
 ```python
 f = Flow(port_expose=45678, restful=True)
