@@ -23,10 +23,10 @@ class ColorFormatter(Formatter):
 
     def format(self, record):
         """
-        Format the LogRecord with corresponding colour
+        Format the LogRecord with corresponding colour.
 
-        :param record: LogRecord object
-        :returns: Formatted LogRecord with level-colour MAPPING to add corresponding colour
+        :param record: A LogRecord object
+        :returns: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
         """
         cr = copy(record)
         if cr.levelname != 'INFO':
@@ -38,16 +38,16 @@ class ColorFormatter(Formatter):
 class PlainFormatter(Formatter):
     """
     Remove all control chars from the log and format it as plain text
-    Also restrict the max-length of msg to 512
+    Also restrict the max-length of msg to 512.
     """
 
     def format(self, record):
         """
         Format the LogRecord by removing all control chars and plain text
-        restrict the max-length of msg to 512
+        restrict the max-length of msg to 512.
 
-        :param record: LogRecord object
-        :returns: Formatted plain LogRecord
+        :param record: A LogRecord object.
+        :returns: Formatted plain LogRecord.
         """
         cr = copy(record)
         if isinstance(cr.msg, str):
@@ -67,10 +67,10 @@ class JsonFormatter(Formatter):
 
     def format(self, record):
         """
-        Format the log message as a JSON object
+        Format the log message as a JSON object.
 
-        :param record: LogRecord object
-        :returns: LogRecord with JSON format
+        :param record: A LogRecord object.
+        :returns: LogRecord with JSON format.
         """
         cr = copy(record)
         cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))
@@ -81,15 +81,15 @@ class JsonFormatter(Formatter):
 
 class ProfileFormatter(Formatter):
     """
-    Format the log message as JSON object and add the current used memory into it
+    Format the log message as JSON object and add the current used memory into it.
     """
 
     def format(self, record):
         """
-        Format the log message as JSON object and add the current used memory
+        Format the log message as JSON object and add the current used memory.
 
-        :param record: LogRecord object
-        :returns: Return JSON formatted log if msg of LogRecord is dict type else return empty
+        :param record: A LogRecord object.
+        :returns: Return JSON formatted log if msg of LogRecord is dict type else return empty.
         """
         cr = copy(record)
         if isinstance(cr.msg, dict):
