@@ -130,7 +130,7 @@ class JinaLogger:
         :param identity: The id of the group the messages from this logger will belong, used by fluentd default
         configuration to group logs by pod
         :param workspace_path: The workspace path where the log will be stored at (only apply to fluentd)
-        :return: an executor object
+        :returns: an executor object
         """
         from .. import __uptime__
         if not log_config:
@@ -179,7 +179,7 @@ class JinaLogger:
         """
         Get the handlers of the logger
 
-        :return: handlers of logger
+        :returns: handlers of logger
         """
         return self.logger.handlers
 
@@ -193,7 +193,7 @@ class JinaLogger:
         """
         Close all the handlers
 
-        :return: None
+        :returns: None
         """
         for handler in self.logger.handlers:
             handler.close()
@@ -204,7 +204,7 @@ class JinaLogger:
 
         :param config_path: Path of config file
         :param kwargs: Extra parameters
-        :return: None
+        :returns: None
         """
         self.logger.handlers = []
 
