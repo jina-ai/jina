@@ -18,10 +18,11 @@ from ..jaml import JAML
 
 class NTLogger:
     def __init__(self, context: str, log_level: 'LogVerbosity' = LogVerbosity.INFO):
-        """A compatible logger for Windows system, colors are all removed to keep compat.
+        """
+        A compatible logger for Windows system, colors are all removed to keep compatible.
 
         :param context: the name prefix of each log
-        :param verbose: show debug level info
+        :param log_level: level of log
         """
         self.context = self._planify(context)
         self.log_level = log_level
@@ -31,32 +32,56 @@ class NTLogger:
         return re.sub(r'\u001b\[.*?[@-~]', '', msg)
 
     def info(self, msg: str, **kwargs):
-        """log info-level message"""
+        """
+        log info-level message
+
+        :param msg: context of log
+        """
         if self.log_level <= LogVerbosity.INFO:
             sys.stdout.write(f'{self.context}[I]:{self._planify(msg)}')
 
     def critical(self, msg: str, **kwargs):
-        """log critical-level message"""
+        """
+        log critical-level message
+
+        :param msg: context of log
+        """
         if self.log_level <= LogVerbosity.CRITICAL:
             sys.stdout.write(f'{self.context}[C]:{self._planify(msg)}')
 
     def debug(self, msg: str, **kwargs):
-        """log debug-level message"""
+        """
+        log debug-level message
+
+        :param msg: content of log
+        """
         if self.log_level <= LogVerbosity.DEBUG:
             sys.stdout.write(f'{self.context}[D]:{self._planify(msg)}')
 
     def error(self, msg: str, **kwargs):
-        """log error-level message"""
+        """
+        log error-level message
+
+        :param msg: context of log
+        """
         if self.log_level <= LogVerbosity.ERROR:
             sys.stdout.write(f'{self.context}[E]:{self._planify(msg)}')
 
     def warning(self, msg: str, **kwargs):
-        """log warn-level message"""
+        """
+        log warning-level message
+
+        :param msg: context of log
+        """
         if self.log_level <= LogVerbosity.WARNING:
             sys.stdout.write(f'{self.context}[W]:{self._planify(msg)}')
 
     def success(self, msg: str, **kwargs):
-        """log success-level message"""
+        """
+        log success-level message
+
+        :param msg: context of log
+        """
         if self.log_level <= LogVerbosity.SUCCESS:
             sys.stdout.write(f'{self.context}[S]:{self._planify(msg)}')
 
@@ -69,7 +94,8 @@ class PrintLogger(NTLogger):
 
 
 class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
-    """ Override the priority_map :class:`SysLogHandler`
+    """
+    Override the priority_map :class:`SysLogHandler`
 
     .. warning::
         This messages at DEBUG and INFO are therefore not stored by ASL, (ASL = Apple System Log)
@@ -96,12 +122,14 @@ class JinaLogger:
                  identity: Optional[str] = None,
                  workspace_path: Optional[str] = None,
                  **kwargs):
-        """Build a logger for a context
+        """
+        Build a logger for a context
+
         :param context: The context identifier of the class, module or method
-        :param log_config: the configuration file for the logger
-        :param identity: the id of the group the messages from this logger will belong, used by fluentd default configuration
-        to group logs by pod
-        :param workspace_path: the workspace path where the log will be stored at (only apply to fluentd)
+        :param log_config: The configuration file for the logger
+        :param identity: The id of the group the messages from this logger will belong, used by fluentd default
+        configuration to group logs by pod
+        :param workspace_path: The workspace path where the log will be stored at (only apply to fluentd)
         :return: an executor object
         """
         from .. import __uptime__
@@ -148,6 +176,11 @@ class JinaLogger:
 
     @property
     def handlers(self):
+        """
+        Get the handlers of the logger
+
+        :return: handlers of logger
+        """
         return self.logger.handlers
 
     def __enter__(self):
@@ -157,10 +190,22 @@ class JinaLogger:
         self.close()
 
     def close(self):
+        """
+        Close all the handlers
+
+        :return: None
+        """
         for handler in self.logger.handlers:
             handler.close()
 
     def add_handlers(self, config_path: str = None, **kwargs):
+        """
+        Add handlers from config file
+
+        :param config_path: Path of config file
+        :param kwargs: Extra parameters
+        :return: None
+        """
         self.logger.handlers = []
 
         with open(config_path) as fp:
