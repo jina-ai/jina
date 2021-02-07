@@ -3,7 +3,7 @@ from typing import Optional, Iterable
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentSet
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.types.ndarray.generic import NdArray
@@ -142,7 +142,7 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(document_with_m
     executor = MockIndexer()
     driver.attach(executor=executor, runtime=None)
 
-    driver._traverse_apply([document_with_matches_on_chunks])
+    driver._traverse_apply(DocumentSet([document_with_matches_on_chunks]))
 
     dcs = list(document_with_matches_on_chunks.chunks)
     assert len(dcs) == 1

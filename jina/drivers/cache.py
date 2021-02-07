@@ -45,9 +45,9 @@ class BaseCacheDriver(BaseIndexDriver):
         :param value: the data besides the `req_doc.id` to be passed through to the executors
         """
         if self.with_serialization:
-            self.exec_fn(req_doc.id, req_doc.SerializeToString(), value)
+            self.exec_fn([req_doc.id], req_doc.SerializeToString(), [value])
         else:
-            self.exec_fn(req_doc.id, value)
+            self.exec_fn([req_doc.id], [value])
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         """Function to call when document is hit.
