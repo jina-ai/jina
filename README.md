@@ -79,12 +79,11 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello
 This downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute, and after running opens a webpage and shows results:
 
 
+### Covid-19 Chatbot
 
 <a href="https://docs.jina.ai/">
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
 </a>
-
-### Covid-19 Chatbot
 
 For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. You will need PyTorch and Transformers, which can be installed along with Jina:
 ```bash
