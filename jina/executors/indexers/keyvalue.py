@@ -40,15 +40,21 @@ class BinaryPbIndexer(BaseKVIndexer):
         def close(self):
             self._body.close()
 
-    def get_add_handler(self):
+    def get_add_handler(self) -> 'WriteHandler':
+        """Get write file handler.
+        """
         # keep _start position as in pickle serialization
         return self.WriteHandler(self.index_abspath, 'ab')
 
-    def get_create_handler(self):
+    def get_create_handler(self) -> 'WriteHandler':
+        """Get write file handler.
+        """
         self._start = 0  # override _start position
         return self.WriteHandler(self.index_abspath, 'wb')
 
-    def get_query_handler(self):
+    def get_query_handler(self) -> 'ReadHandler':
+        """Get read file handler.
+        """
         return self.ReadHandler(self.index_abspath, self.key_length)
 
     def __init__(self, *args, **kwargs):
@@ -57,7 +63,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._start = 0
         self._page_size = mmap.ALLOCATIONGRANULARITY
 
-    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Add the serialized documents to the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -93,7 +99,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
                 return m[r:]
 
-    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Update the serialized documents on the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -103,7 +109,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         self._delete(keys)
         self.add(keys, values)
 
-    def _delete(self, keys: Iterable[str]):
+    def _delete(self, keys: Iterable[str]) -> None:
         self.query_handler.close()
         self.handler_mutex = False
         for key in keys:
@@ -118,7 +124,7 @@ class BinaryPbIndexer(BaseKVIndexer):
                 del self.query_handler.header[key]
             self._size -= 1
 
-    def delete(self, keys: Iterable[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf

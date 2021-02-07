@@ -123,15 +123,13 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
 
         op_name = self.exec.__class__.__name__
-        # can be None if index is size 0
-        if idx is not None and dist is not None:
-            for doc, topks, scores in zip(doc_pts, idx, dist):
+        for doc, topks, scores in zip(doc_pts, idx, dist):
 
-                topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
-                for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
-                    m = Document(id=numpy_match_id)
-                    m.score = NamedScore(op_name=op_name,
-                                         value=score)
-                    r = doc.matches.append(m)
-                    if vec is not None:
-                        r.embedding = vec
+            topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
+            for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
+                m = Document(id=numpy_match_id)
+                m.score = NamedScore(op_name=op_name,
+                                     value=score)
+                r = doc.matches.append(m)
+                if vec is not None:
+                    r.embedding = vec

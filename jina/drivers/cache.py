@@ -38,16 +38,16 @@ class BaseCacheDriver(BaseIndexDriver):
                 else:
                     self.on_miss(d, data)
 
-    def on_miss(self, req_doc: 'Document', data: Any) -> None:
+    def on_miss(self, req_doc: 'Document', value: str) -> None:
         """Function to call when document is missing, the default behavior is to add to cache when miss.
 
         :param req_doc: the document in the request but missed in the cache
-        :param data: the data besides the `req_doc.id` to be passed through to the executors
+        :param value: the data besides the `req_doc.id` to be passed through to the executors
         """
         if self.with_serialization:
-            self.exec_fn(req_doc.id, req_doc.SerializeToString(), data)
+            self.exec_fn(req_doc.id, req_doc.SerializeToString(), value)
         else:
-            self.exec_fn(req_doc.id, data)
+            self.exec_fn(req_doc.id, value)
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         """Function to call when document is hit.
@@ -71,4 +71,6 @@ class TaggingCacheDriver(BaseCacheDriver):
         self._tags = tags
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
+        """Function to call when document is hit.
+        """
         req_doc.tags.update(self._tags)

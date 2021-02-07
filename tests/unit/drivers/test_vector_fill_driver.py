@@ -23,7 +23,7 @@ def docs_to_encode(num_docs):
 
 
 class MockIndexer(BaseIndexer):
-    def query_by_key(self, keys: Any, *args, **kwargs) -> Any:
+    def query_by_key(self, keys: Any, *args, **kwargs) -> 'np.ndarray':
         # encodes 10 * keys into the encoder, so return keys
         return np.random.random([len(keys), 5])
 

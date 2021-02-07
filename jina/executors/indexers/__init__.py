@@ -203,7 +203,7 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Add new chunks and their vector representations
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -211,25 +211,24 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def query(self, query_vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
 
-        :param query_vectors: query vectors in ndarray, shape B x D
+        :param vectors: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
-        :return: a tuple of two ndarray.
-            The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
+        :return: ids as ndarray (`dtype=int`) and scores as ndarray (`dtype=float)
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Update vectors on the index.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: vector representations in B x D
+        :param vectors: vector representations in B x D
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterable[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete vectors from the index.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -245,7 +244,7 @@ class BaseKVIndexer(BaseIndexer):
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
 
-    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Add the serialized documents to the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -253,7 +252,7 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def query(self, key: Any) -> Optional[Any]:
+    def query(self, key: str) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
         :param key: document id
@@ -261,7 +260,7 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Update the serialized documents on the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -269,14 +268,14 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterable[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
         raise NotImplementedError
 
-    def __getitem__(self, key: Any) -> Optional[Any]:
+    def __getitem__(self, key: Any) -> Optional[bytes]:
         return self.query(key)
 
 
