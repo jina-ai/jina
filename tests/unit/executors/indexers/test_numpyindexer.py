@@ -206,8 +206,8 @@ def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
-        assert idx is None
-        assert dist is None
+        assert len(idx) == 0
+        assert len(dist) == 0
 
 
 @pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
