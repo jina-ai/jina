@@ -53,4 +53,5 @@ def hello_world(args):
         finally:
             default_logger.success(f'You should see a chatbot page opened in your browser, '
                                    f'if not you may open {args.demo_url} manually')
-        f.block()
+        if not args.unblock_query_flow:
+            f.block()

@@ -8,6 +8,7 @@ from pkg_resources import resource_filename
 from jina.clients.sugary_io import _input_ndarray
 from jina.flow import Flow
 from jina.helloworld import download_data
+from jina.helper import random_port
 from jina.parsers.helloworld import set_hw_parser
 
 EMPTY_IMAGE_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAECklEQVR42u2WSSi2axjH+ZSFDaUUFobMQ5mHzFPmKfOQKVNIIYkMGUJJUrIRZWFhIbEgWVhZsLBUpCgsJRtDhuv0u/S853O+Tr1Op3M231v3ez/P/dzP/f//r+t/X/djIf/xz+I34P8G+PHxIQsLCzI4OChra2vy+Pio429vb98DfH19la2tLTk/P5fV1VWZm5uT8fFxGR0dlY6ODsnOzpbIyEhxc3OTlJQUaW9vl9raWhkeHjYR+Rbg4eGhJCYmSnFxsVRUVEhTU5M0NjZKfX29NDc3m+7b2tqkt7dXx6qrq2VgYOCL+m8BxsXFSVpammRlZUleXp4UFRVJfn6+qsvNzdXxpKQkycjIkIKCAn3W2dn5C6A5wBYXFxcKSLjS09N1UfqEhARtEDHA4uPjFZy5XV1dXwDNVWlxfX2tCyYnJ5tAU1NTJSYmRokQ7qioKAXmmgjQd3d3fzHN+/u7eYDPz88aOhYB0FBFY9xQZig3SJHLf5RD/ggTTkRZdHS0gsXGxuo96rlmzCBDXquqquTu7u5b6kyAODQ8PFyVGC00NFQB6QHJyclRcMaIRmlpqZSXl5ul8udnCsgi5AslNEIGaGFhoRLBmfSAEg0IAEbb2dnRhZ6ensxXSHhgDQhmoYcABuEeZSEhIbpdAKUgNDQ0KODGxoYuhBdeXl7MAyR/sEYpbiVXGAalgNbV1eniNTU1UllZKZmZmRIQECBeXl5SVlYmR0dHv4QQ91LF6MkxjXEF7O/vVyPQKFuwLykpUdURERHi4OAgVlZW2tvY2MiPHz/E0dFR505PT+v8paUlubm5MU/hw8ODBAYGirOzs9ja2uqilpaWYm1tLXZ2dmJvby9hYWFftgUkqastLS0yOzsrY2Nj0tfXJ1NTU7K4uCjb29tyfHysIZ+ZmZG9vb0/AYk/gO7u7homX19fbYxhFsDIKXnEtUZxwFTU2dbWVpmcnFQQwIaGhpQE9XZkZETVU5tPTk4+ATc3N01bISgoSPPj6empzc/PzwTOcw8PD3FxcdFQk19yCCAgLN7T0yPr6+tydnamCufn5/UAgPTExMQnIKGANS5kEfYlxoAECgFFub+/vwJDyiDEPep5h7wbBwChB4R3cDoKIaWAMKLCYBpOAlzKxsaxhpkobZgIRxPa4OBgVY5izkquIYZ6iADEOmw5jjNOl6urq0/A29tbZYEqo44a1QXlkEEh7FENEa5RxRzyCVEI8R65hTDPaD+fnaZPDJgQHpgDboTOx8dHdnd3dc79/b2srKxo6CHg5OQk3t7eepoYRiKUrq6umgrWPDg4MIGxJ02AFOL9/X39buHzAtex0U9PT/92T11eXsry8rJuDaoP+5I88bny159R4H9/Jv7rvz8AY0k6gVZiXR4AAAAASUVORK5CYII='
@@ -66,7 +67,9 @@ def test_helloworld_py(tmpdir):
 @pytest.mark.timeout(360)
 def test_helloworld_py_chatbot(tmpdir):
     from jina.helloworld.chatbot import hello_world
-    hello_world(set_hw_parser().parse_args(['--workdir', str(tmpdir)]))
+    hello_world(set_hw_parser().parse_args(['--workdir', str(tmpdir),
+                                            '--unblock-query-flow',
+                                            '--port-expose', str(random_port())]))
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')

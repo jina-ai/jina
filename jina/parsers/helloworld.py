@@ -1,7 +1,9 @@
+import argparse
+
 from pkg_resources import resource_filename
 
 from .base import set_base_parser
-from .helper import add_arg_group
+from .helper import add_arg_group, _SHOW_ALL_ARGS
 from ..helper import random_identity
 
 
@@ -83,4 +85,6 @@ def set_hw_chatbot_parser(parser=None):
     parser.add_argument('--parallel', type=int,
                         default=2,
                         help='The number of parallel when index and query')
+    parser.add_argument('--unblock-query-flow', action='store_true', default=False,
+                        help='Do not block the query flow' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
     return parser
