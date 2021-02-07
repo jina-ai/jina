@@ -62,7 +62,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
             # if there are left over (`else` clause above is unnecessary for code but for better readability)
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
-            while not is_req_empty:
+            while prefetch_task:
                 self.logger.info(f'send: {self.zmqlet.msg_sent} '
                                  f'recv: {self.zmqlet.msg_recv} '
                                  f'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}')
