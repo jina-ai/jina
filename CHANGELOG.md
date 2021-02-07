@@ -21,6 +21,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7314,4 +7315,44 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```130c046d```](https://github.com/jina-ai/jina/commit/130c046d18a8b399f5a3b92f9372f9ffd1bfc97b)] __-__ add page break between section (*Han Xiao*)
  - [[```c7bcbcdb```](https://github.com/jina-ai/jina/commit/c7bcbcdbc6751d83b9e3e6a9070072bd1ac3c14d)] __-__ fix typo in readme (*Han Xiao*)
  - [[```ab3598dc```](https://github.com/jina-ai/jina/commit/ab3598dceb1ee7928a2c2b6f234990c07b6b6cb6)] __-__ __version__: the next version will be 0.9.30 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-31></a>
+## Release Note (`0.9.31`)
+
+> Release time: 2021-02-07 23:12:08
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Deepankar Mahapatro,  Sebastian Lettner,  Yongxuanzhang,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```556a3c25```](https://github.com/jina-ai/jina/commit/556a3c25224748b50764a02f8f858583f8a1354e)] __-__ __helloworld__: add chatbot hello-world (#1894) (*Han Xiao*)
+ - [[```4008fa76```](https://github.com/jina-ai/jina/commit/4008fa768cfeb13aab2c4cc5a406bb036833e07e)] __-__ __hub__: expose jina version in hub list cli #1885 (#1890) (*Deepankar Mahapatro*)
+
+### 🐞 Bug fixes
+
+ - [[```b15f7c67```](https://github.com/jina-ai/jina/commit/b15f7c674178834a42517d93f999bf2419109e49)] __-__ __driver__: compoundindexer should turn on is_merge (*Han Xiao*)
+ - [[```f0104b49```](https://github.com/jina-ai/jina/commit/f0104b495d2af1160d537eea050a1f3d58fa4b3c)] __-__ __grpc__: grpc closed too early (*Han Xiao*)
+ - [[```59b47255```](https://github.com/jina-ai/jina/commit/59b47255b23655b6a2fe5e690ca911075e44984a)] __-__ __cli__: increase the default timeout-ready (#1893) (*Han Xiao*)
+ - [[```7265d211```](https://github.com/jina-ai/jina/commit/7265d211295bbd097506d81efffc5010841fa562)] __-__ __daemon__: remove all from endpoints (#1880) (*Deepankar Mahapatro*)
+
+### 📗 Documentation
+
+ - [[```b16b32bd```](https://github.com/jina-ai/jina/commit/b16b32bd5737bf9d58ec36d91bd60102dde8963e)] __-__ fix typos markdowns (#1882) (*Sebastian Lettner*)
+ - [[```b626cbbb```](https://github.com/jina-ai/jina/commit/b626cbbbdc14c5177a58d4f62af2d873007d0b79)] __-__ __logging__: update logging docstrings (#1889) (*Yongxuanzhang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b967c006```](https://github.com/jina-ai/jina/commit/b967c00684258f8f74e78af2a73c4e2874a2987c)] __-__ add fixed ref for workflow dispatch event (#1892) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```b1329543```](https://github.com/jina-ai/jina/commit/b13295432ebaa889ca50de6bc26a1392524a425b)] __-__ update readme image (*Han Xiao*)
+ - [[```f615c3b9```](https://github.com/jina-ai/jina/commit/f615c3b92034b5fc45e75cc1de4adfdda86f7f9c)] __-__ update readme (*Han Xiao*)
+ - [[```529e10ea```](https://github.com/jina-ai/jina/commit/529e10ea3eb7c4d67a343e49535c012085deef7a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0c7d397a```](https://github.com/jina-ai/jina/commit/0c7d397a60cf08e2d473e69ba0b83f775e80e299)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```77c76678```](https://github.com/jina-ai/jina/commit/77c7667836169ec69a81be06d17b536e4e288776)] __-__ __version__: the next version will be 0.9.31 (*Jina Dev Bot*)
 
