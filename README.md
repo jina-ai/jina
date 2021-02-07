@@ -52,7 +52,7 @@ Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/ma
 Just starting out? Try Jina's "Hello, World" - a simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply run:
 
 ```bash
-jina hello-world
+jina hello-world  # more options in --help
 ```
 
 ...or even easier for Docker users, **no install required**:
@@ -76,11 +76,19 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
   <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" alt="Jina banner" width="80%">
 </p>
 
-Intrigued? Play with different options:
+### Covid-19 Chatbot
 
+<a href="https://docs.jina.ai/">
+<img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
+</a>
+
+For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. You will need PyTorch and Transformers, which can be installed along with Jina:
 ```bash
-jina hello-world --help
+pip install "jina[torch,transformers]"
+jina hello-world-chatbot
 ```
+
+This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
 
 ## Get Started
 
