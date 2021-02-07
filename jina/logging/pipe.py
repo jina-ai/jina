@@ -14,7 +14,8 @@ if False:
 
 class PipeLogger:
     def __init__(self, args: 'argparse.Namespace'):
-        """ Start a pipe logger to beautify the log
+        """
+        Start a pipe logger to beautify the log
 
         :param args: the parsed arguments from the CLI
         """
