@@ -13,6 +13,8 @@ if False:
 
 
 class PipeLogger:
+    """:class: `PipeLogger` is one that beautify the log."""
+
     def __init__(self, args: 'argparse.Namespace'):
         """
         Start a pipe logger to beautify the log.
@@ -23,8 +25,7 @@ class PipeLogger:
         self._preserved_logs = defaultdict(str)
 
     def start(self):
-        """ Start to receive logs from pipe."""
-
+        """Start to receive logs from pipe."""
         try:
             for l in sys.stdin:
                 m = re.match(self.args.groupby_regex, l)

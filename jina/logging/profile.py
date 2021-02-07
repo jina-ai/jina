@@ -41,10 +41,9 @@ def used_memory_readable() -> str:
 
 def profiling(func):
     """
-    Decorator to mark a function for profiling. The time and memory usage will be recorded and printed.
+    Create the Decorator to mark a function for profiling. The time and memory usage will be recorded and printed.
 
     Example:
-
     .. highlight:: python
     .. code-block:: python
 
@@ -122,18 +121,18 @@ class TimeDict:
 
 
 class TimeContext:
-    """Timing a code snippet with a context manager. """
+    """Timing a code snippet with a context manager."""
 
     time_attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
 
     def __init__(self, task_name: str, logger: 'JinaLogger' = None):
         """
+        Create the context manager to timing a code snippet.
 
         :param task_name: The context/message.
         :param logger: Use existing logger or use naive :func:`print`.
 
         Example:
-
         .. highlight:: python
         .. code-block:: python
 
@@ -175,7 +174,6 @@ class ProgressBar(TimeContext):
     A simple progress bar.
 
     Example:
-
         .. highlight:: python
         .. code-block:: python
 
@@ -185,6 +183,7 @@ class ProgressBar(TimeContext):
 
     def __init__(self, bar_len: int = 20, task_name: str = '', batch_unit: str = 'batch', logger=None):
         """
+        Create the ProgressBar.
 
         :param bar_len: Total length of the bar.
         :param task_name: The name of the task, will be displayed in front of the bar.

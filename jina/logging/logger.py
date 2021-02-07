@@ -17,9 +17,11 @@ from ..jaml import JAML
 
 
 class NTLogger:
+    """A compatible logger for Windows system, colors are all removed to keep compatible."""
+
     def __init__(self, context: str, log_level: 'LogVerbosity' = LogVerbosity.INFO):
         """
-        A compatible logger for Windows system, colors are all removed to keep compatible.
+        Create a compatible logger for Windows system, colors are all removed to keep compatible.
 
         :param context: The name prefix of each log.
         :param log_level: Level of log.
@@ -42,7 +44,7 @@ class NTLogger:
 
     def critical(self, msg: str, **kwargs):
         """
-        log critical-level message.
+        Log critical-level message.
 
         :param msg: Context of log.
         """
@@ -78,7 +80,7 @@ class NTLogger:
 
     def success(self, msg: str, **kwargs):
         """
-        Log success-level message
+        Log success-level message.
 
         :param msg: Context of log.
         """
@@ -102,6 +104,7 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
         which in turn means they can't be printed by syslog after the fact. You can confirm it via :command:`syslog` or
         :command:`tail -f /var/log/system.log`.
     """
+
     priority_map = {
         'DEBUG': 'debug',
         'INFO': 'info',

@@ -8,9 +8,7 @@ from ..helper import colored
 
 
 class ColorFormatter(Formatter):
-    """
-    Format the log into colored logs based on the log-level.
-    """
+    """Format the log into colored logs based on the log-level."""
 
     MAPPING = {
         'DEBUG': dict(color='white', on_color=None),  # white
@@ -36,15 +34,11 @@ class ColorFormatter(Formatter):
 
 
 class PlainFormatter(Formatter):
-    """
-    Remove all control chars from the log and format it as plain text
-    Also restrict the max-length of msg to 512.
-    """
+    """Remove all control chars from the log and format it as plain text, also restrict the max-length of msg to 512."""
 
     def format(self, record):
         """
-        Format the LogRecord by removing all control chars and plain text
-        restrict the max-length of msg to 512.
+        Format the LogRecord by removing all control chars and plain text, and restrict the max-length of msg to 512.
 
         :param record: A LogRecord object.
         :returns: Formatted plain LogRecord.
@@ -56,10 +50,7 @@ class PlainFormatter(Formatter):
 
 
 class JsonFormatter(Formatter):
-    """
-    Format the log message as a JSON object so that
-    it can be later used/parsed in browser with javascript.
-    """
+    """Format the log message as a JSON object so that it can be later used/parsed in browser with javascript."""
 
     KEYS = {'created', 'filename', 'funcName', 'levelname', 'lineno', 'msg',
             'module', 'name', 'pathname', 'process', 'thread', 'processName',
@@ -80,9 +71,7 @@ class JsonFormatter(Formatter):
 
 
 class ProfileFormatter(Formatter):
-    """
-    Format the log message as JSON object and add the current used memory into it.
-    """
+    """Format the log message as JSON object and add the current used memory into it."""
 
     def format(self, record):
         """
