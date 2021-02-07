@@ -45,7 +45,7 @@ async def _create(pod: 'PodModel'):
 
 
 @router.delete(
-    path='/all',
+    path='',
     summary='Terminate all running Pods',
 )
 async def _clear_all():

@@ -47,7 +47,7 @@ async def _create(pea: 'PeaModel'):
 # order matters! this must be put in front of del {id}
 #  https://fastapi.tiangolo.com/tutorial/path-params/?h=+path#order-matters
 @router.delete(
-    path='/all',
+    path='',
     summary='Terminate all running Peas',
 )
 async def _clear_all():
