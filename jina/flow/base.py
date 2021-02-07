@@ -406,6 +406,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             for k in self._env.keys():
                 os.unsetenv(k)
 
+        self._pod_nodes.pop('gateway')
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources are released, current build level is {self._build_level}')
@@ -701,13 +702,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         except KeyboardInterrupt:
             pass
 
-    def use_grpc_gateway(self):
+    def use_grpc_gateway(self, port: int = None):
         """Change to use gRPC gateway for IO """
-        self._common_kwargs['rest_api'] = False
+        self._common_kwargs['restful'] = False
+        if port:
+            self._common_kwargs['port_expose'] = port
 
-    def use_rest_gateway(self):
+    def use_rest_gateway(self, port: int = None):
         """Change to use REST gateway for IO """
-        self._common_kwargs['rest_api'] = True
+        self._common_kwargs['restful'] = True
+        if port:
+            self._common_kwargs['port_expose'] = port
 
     def __getitem__(self, item):
         if isinstance(item, str):
