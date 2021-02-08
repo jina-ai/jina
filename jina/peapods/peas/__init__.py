@@ -112,10 +112,6 @@ class BasePea(metaclass=PeaType):
 
         If not success, it will raise an error hoping the outer function to catch it
         """
-
-        if not self.args.noblock_on_start:
-            raise ValueError(f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True')
-
         _timeout = self.args.timeout_ready
         if _timeout <= 0:
             _timeout = None
