@@ -22,6 +22,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7356,4 +7357,39 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```529e10ea```](https://github.com/jina-ai/jina/commit/529e10ea3eb7c4d67a343e49535c012085deef7a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```0c7d397a```](https://github.com/jina-ai/jina/commit/0c7d397a60cf08e2d473e69ba0b83f775e80e299)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```77c76678```](https://github.com/jina-ai/jina/commit/77c7667836169ec69a81be06d17b536e4e288776)] __-__ __version__: the next version will be 0.9.31 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-32></a>
+## Release Note (`0.9.32`)
+
+> Release time: 2021-02-08 14:40:23
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  CatStark,  cristian,  Florian Hönicke,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```7a4d894a```](https://github.com/jina-ai/jina/commit/7a4d894ae330dc974a0c0759e6aa5431d4494fe9)] __-__ __flow__: pea/pod start on the Flow level should not block (#1902) (*Han Xiao*)
+ - [[```38383926```](https://github.com/jina-ai/jina/commit/38383926d79458a607c49b0d267b93751e90553a)] __-__ rename folder of doccache integration tests (#1898) (*cristian*)
+
+### 🚧 Code Refactoring
+
+ - [[```2b1e6e6d```](https://github.com/jina-ai/jina/commit/2b1e6e6d2b34d6515024c1b8480fa545ac5d05ee)] __-__ cache data field (#1878) (*Florian Hönicke*)
+
+### 📗 Documentation
+
+ - [[```6dae7b57```](https://github.com/jina-ai/jina/commit/6dae7b57f823348f44ea9b6515f38963aecb7b56)] __-__ docstring for types/score (#1903) (*CatStark*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1c7ba358```](https://github.com/jina-ai/jina/commit/1c7ba35833138140993da2e70dfbe3f7be826393)] __-__ fix test in flow, add back hw result check (#1897) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```31991f22```](https://github.com/jina-ai/jina/commit/31991f227254ee6fcf6497b8977bf0325c68b876)] __-__ update readme image (*Han Xiao*)
+ - [[```342d9f8a```](https://github.com/jina-ai/jina/commit/342d9f8a58fd6ecc13a9f9a41fc5582c5f819b0c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0b5ca8bc```](https://github.com/jina-ai/jina/commit/0b5ca8bc2f2b518afe67cc00269470687f192c44)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```d30a1d67```](https://github.com/jina-ai/jina/commit/d30a1d670199e474dbfe5f2b394176feb07997c8)] __-__ __version__: the next version will be 0.9.32 (*Jina Dev Bot*)
 
