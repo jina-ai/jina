@@ -37,18 +37,19 @@ class NamedScore(ProtoTypeMixin):
              score_proto.value = 10.0
              score = NamedScore(score_proto)
 
+    :param score: The score to construct from, depending on the ``copy``,
+        it builds a view or a copy from it.
+    :type score: Optional[jina_pb2.NamedScoreProto]
+    :param copy: When ``score`` is given as a :class:`NamedScoreProto` object, build a
+        view (i.e. weak reference) from it or a deep copy from it.
+    :type copy: bool
+    :param kwargs: Other parameters to be set
+
      """
 
     def __init__(self, score: Optional[jina_pb2.NamedScoreProto] = None,
                  copy: bool = False, **kwargs):
-        """
-
-        :param score: the score to construct from, depending on the ``copy``,
-                it builds a view or a copy from it.
-        :param copy: when ``score`` is given as a :class:`NamedScoreProto` object, build a
-                view (i.e. weak reference) from it or a deep copy from it.
-        :param kwargs: other parameters to be set
-        """
+        """Set constructor."""
         self._pb_body = jina_pb2.NamedScoreProto()
         try:
             if isinstance(score, jina_pb2.NamedScoreProto):
@@ -66,7 +67,7 @@ class NamedScore(ProtoTypeMixin):
 
     @property
     def ref_id(self) -> str:
-        """The score is computed between doc ``id`` and ``ref_id``"""
+        """Returns computed score between doc ``id`` and ``ref_id``."""
         return self._pb_body.ref_id
 
     @ref_id.setter
@@ -74,11 +75,10 @@ class NamedScore(ProtoTypeMixin):
         self._pb_body.ref_id = val
 
     def set_attrs(self, **kwargs):
-        """Bulk update Document fields with key-value specified in kwargs
+        """Udate Document fields with key-value specified in kwargs.
 
         .. seealso::
             :meth:`get_attrs` for bulk get attributes
-
         """
         for k, v in kwargs.items():
             if isinstance(v, (list, tuple)):
