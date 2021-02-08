@@ -19,15 +19,15 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 
 ⏱️ **Time Saver** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
+🍱 **Full-stack Ownership** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with fragmented, multi-vendor, generic legacy tools.
+
 🌌 **Universal Search** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
 
-🧠 **First-Class AI Models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html).
+🧠 **First-Class AI Models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
 
-☁️  **Cloud Ready** - Decentralized architecture with cloud-native features out-of-the-box: containerization, microservice, scaling, sharding, async IO, REST, gRPC, WebSocket.
+☁️  **Cloud Ready** - Decentralized architecture from day one. Cloud-native by design: enjoy containerizing, distributing, scaling, sharding, async, REST/gRPC/WebSocket.
 
-🧩 **Plug & Play** - Easily usable and extendable with a Pythonic interface.
-
-❤️  **Made with Love** - Lean dependencies (only 6!) & tip-top, never compromises on quality, maintained by a [passionate full-time, venture-backed team](https://jina.ai).
+❤️  **Made with Love** - Lean dependencies (only 6!), never compromises on quality, maintained by a [passionate full-time, venture-backed team](https://jina.ai).
 
 ---
 
