@@ -23,6 +23,9 @@ def test_crud_in_readme(mocker):
             assert m.id != '🐯'
             assert 'position' in m.tags
             assert 'guardian' in m.tags
+            # when is_merge set to False, m.score is empty
+            assert m.score.value
+            assert m.score.ref_id == req.docs[0].id
 
     m = mocker.Mock(wrap=validate)
 
