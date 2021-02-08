@@ -37,22 +37,26 @@ class Chunk2DocRanker(BaseRanker):
     COL_SCORE = 'score'
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
-        """Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
+        """
+        Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
         meta information of the query, hence the meta info of the query chunks and matched chunks are given
         as arguments.
 
-        :param match_idx: a [N x 4] numpy ``ndarray``, column-wise:
-
+        :param match_idx: A [N x 4] numpy ``ndarray``, column-wise:
                 - ``match_idx[:, 0]``: ``doc_id`` of the matched chunks, integer
                 - ``match_idx[:, 1]``: ``chunk_id`` of the matched chunks, integer
                 - ``match_idx[:, 2]``: ``chunk_id`` of the query chunks, integer
                 - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
-        :param query_chunk_meta: the meta information of the query chunks, where the key is query chunks' ``chunk_id``,
+        :type match_idx: np.ndarray.
+        :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
             the value is extracted by the ``required_keys``.
-        :param match_chunk_meta: the meta information of the matched chunks, where the key is matched chunks'
+        :type query_chunk_meta: Dict.
+        :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
             ``chunk_id``, the value is extracted by the ``required_keys``.
-        :return: a [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
+        :type query_chunk_meta: Dict.
+        :return: A [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
                 the second column is the score/distance/metric between the matched doc and the query doc (float).
+        :rtype: np.ndarray.
         """
         _groups = self.group_by_doc_id(match_idx)
         r = []
@@ -63,8 +67,9 @@ class Chunk2DocRanker(BaseRanker):
 
     def group_by_doc_id(self, match_idx):
         """
-        Group the ``match_idx`` by ``doc_id``
-        :return: an iterator over the groups
+        Group the ``match_idx`` by ``doc_id``.
+        :return: an iterator over the groups.
+        :rtype: :class:`Chunk2DocRanker`.
         """
         return self._group_by(match_idx, self.COL_MATCH_PARENT_ID)
 
@@ -83,7 +88,10 @@ class Chunk2DocRanker(BaseRanker):
     def sort_doc_by_score(r):
         """
         Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
-        :return: an `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
+        :param r: List of Tuples with document id and score
+        :type r: List[Tuple[Any, Any]]
+        :return: A `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
+        :rtype: np.ndarray
         """
         r = np.array(r, dtype=[
             (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.object),
@@ -92,6 +100,7 @@ class Chunk2DocRanker(BaseRanker):
         return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
 
     def get_doc_id(self, match_with_same_doc_id):
+        """Return document id that matches with given id :param:`match_with_same_doc_id`"""
         return match_with_same_doc_id[0][self.COL_MATCH_PARENT_ID]
 
 
@@ -100,9 +109,10 @@ class Match2DocRanker(BaseRanker):
     Re-scores the matches for a document. This Ranker is only responsible for
     calculating new scores and not for the actual sorting. The sorting is handled
     in the respective ``Matches2DocRankDriver``.
+
     Possible implementations:
         - ReverseRanker (reverse scores of all matches)
-        - BucketShuffleRanker (first buckets matches and then sort each bucket)
+        - BucketShuffleRanker (first buckets matches and then sort each bucket).
     """
 
     COL_MATCH_ID = 'match_id'
@@ -110,14 +120,19 @@ class Match2DocRanker(BaseRanker):
 
     def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':
         """
-        This function calculated the new scores for matches and returns them.
-        :query_meta: a dictionary containing all the query meta information
+        Calculates the new scores for matches and returns them.
+
+        :param query_meta: Dictionary containing all the query meta information
             requested by the `required_keys` class_variable.
-        :old_match_scores: contains old scores in the format {match_id: score}
-        :match_meta: a dictionary containing all the matches meta information
+        :type query_meta: Dict
+        :param old_match_scores: Contains old scores in the format {match_id: score}
+        :type old_match_scores: Dict
+        :param match_meta: Dictionary containing all the matches meta information
             requested by the `required_keys` class_variable.
             Format: {match_id: {attribute: attribute_value}}e.g.{5: {"length": 3}}
-        :return: a `np.ndarray` in the shape of [N x 2] where `N` is the length of
+        :type match_meta: Dict
+        :return: A `np.ndarray` in the shape of [N x 2] where `N` is the length of
             the `old_match_scores`. Semantic: [[match_id, new_score]]
+        :rtype: np.ndarray
         """
         raise NotImplementedError
