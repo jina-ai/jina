@@ -11,7 +11,7 @@ class ChunkSet(DocumentSet):
 
     :param docs_proto: Set of sub-documents (i.e chunks) of `reference_doc`
     :type docs_proto: :class:`Document`
-    :para reference_doc: Reference :class:`Document` for the sub-documents
+    :param reference_doc: Reference :class:`Document` for the sub-documents
     :type reference_doc: :class:`Document`
     """
 

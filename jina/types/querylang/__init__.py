@@ -53,6 +53,7 @@ class QueryLang(ProtoTypeMixin):
     """
 
     def __init__(self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False):
+        """Set constructor method."""
         self._pb_body = jina_pb2.QueryLangProto()
         try:
             if isinstance(querylang, jina_pb2.QueryLangProto):
@@ -86,10 +87,8 @@ class QueryLang(ProtoTypeMixin):
     @property
     def priority(self) -> int:
         """
-        Get the priority of this query language. The query language only takes
-        effect when if it has a higher priority than the internal one with the same name
-
-        :rtype: int
+        Get the priority of this query language.
+        The query language only takes effect when if it has a higher priority than the internal one with the same name
         """
         return self._pb_body.priority
 
@@ -99,17 +98,13 @@ class QueryLang(ProtoTypeMixin):
 
     @property
     def name(self) -> str:
-        """
-        Get the name of the driver that the query language attached to
-        
-        :rtype: str
-        """
+        """Get the name of the driver that the query language attached to."""
         return self._pb_body.name
 
     @name.setter
     def name(self, value: str):
         """
-        Set the name of the driver that the query language attached to
+        Set the name of the driver that the query language attached to.
 
         :param value: Name of the driver
         :type value: str
