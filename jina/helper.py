@@ -328,6 +328,14 @@ def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Dict[str, Any]:
+    """
+    Expand variables from YAML file.
+
+    :param d: Target Dict.
+    :param expand_fn: Parsed environment variables.
+    :param resolve_cycle_ref:
+    :return: Expanded variables.
+    """
     expand_map = SimpleNamespace()
     pat = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
@@ -602,7 +610,7 @@ class ArgNamespace:
 
     @staticmethod
     def flatten_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
-        """A helper function to convert argparse.Namespace to dict to be uploaded via REST.
+        """Convert argparse.Namespace to dict to be uploaded via REST.
 
         :param args: namespace or dict or namespace to dict.
         """
@@ -622,6 +630,12 @@ class ArgNamespace:
 
 def is_valid_local_config_source(path: str) -> bool:
     # TODO: this function must be refactored before 1.0 (Han 12.22)
+    """
+    Check if the path is valid.
+
+    :param path: Local file path.
+    :return: True if the path is valid else False.
+    """
     try:
         from .jaml import parse_config_source
         parse_config_source(path)
@@ -631,6 +645,11 @@ def is_valid_local_config_source(path: str) -> bool:
 
 
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
+    """
+    Get the version of libraries used in Jina and environment variables.
+
+    :return: Version information and environment variables
+    """
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
     import os, zmq, numpy, google.protobuf, grpc, yaml
@@ -668,11 +687,11 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
 def format_full_version_info(info: Dict, env_info: Dict) -> str:
     """
+    Format the version information.
 
-
-    :param info:
-    :param env_info:
-    :return:
+    :param info: Version information of Jina libraries.
+    :param env_info: The Jina environment variables.
+    :return: Formatted version information.
     """
     version_info = '\n'.join(f'- {k:30s}{v}' for k, v in info.items())
     env_info = '\n'.join(f'* {k:30s}{v}' for k, v in env_info.items())
