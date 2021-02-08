@@ -36,7 +36,7 @@ class QueryLangSet(MutableSequence):
         self._querylangs_map = {}
 
     def insert(self, index: int, ql: 'QueryLang') -> None:
-        """Insert :param:`ql` into `_querylangs_proto`."""
+        """Insert :param:`ql` at :param:`index` into `_querylangs_proto`."""
         self._querylangs_proto.insert(index, ql.proto)
 
     def __setitem__(self, key, value: 'QueryLang'):
