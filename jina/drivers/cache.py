@@ -1,3 +1,4 @@
+"""Module for the Drivers for the Cache."""
 from typing import Any, Dict
 
 from .index import BaseIndexDriver
@@ -9,11 +10,11 @@ if False:
 
 
 class BaseCacheDriver(BaseIndexDriver):
-    """A driver related to :class:`BaseCache`
-    """
+    """A driver related to :class:`BaseCache`."""
 
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
-        """
+        """Create a new BaseCacheDriver.
+
         :param with_serialization: feed serialized Document to the CacheIndexer
         :param args:
         :param kwargs:
@@ -39,7 +40,9 @@ class BaseCacheDriver(BaseIndexDriver):
                     self.on_miss(d, data)
 
     def on_miss(self, req_doc: 'Document', value: str) -> None:
-        """Function to call when document is missing, the default behavior is to add to cache when miss.
+        """Call when document is missing.
+
+        The default behavior is to add to cache when miss.
 
         :param req_doc: the document in the request but missed in the cache
         :param value: the data besides the `req_doc.id` to be passed through to the executors
@@ -50,7 +53,7 @@ class BaseCacheDriver(BaseIndexDriver):
             self.exec_fn([req_doc.id], [value])
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
-        """Function to call when document is hit.
+        """Call when cache is hit for a document.
 
         :param req_doc: the document in the request and hitted in the cache
         :param hit_result: the hit result returned by the cache
@@ -60,17 +63,16 @@ class BaseCacheDriver(BaseIndexDriver):
 
 
 class TaggingCacheDriver(BaseCacheDriver):
-    """A driver for labelling the hit-cache docs with certain tags
-    """
+    """A driver for labelling the hit-cache docs with certain tags."""
 
     def __init__(self, tags: Dict, *args, **kwargs):
-        """
+        """Create a new TaggingCacheDriver.
+
         :param tags: the tags to be updated on hit docs
         """
         super().__init__(*args, **kwargs)
         self._tags = tags
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
-        """Function to call when document is hit.
-        """
+        """Call when cache is hit for a document."""
         req_doc.tags.update(self._tags)
