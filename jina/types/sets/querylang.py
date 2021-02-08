@@ -36,6 +36,7 @@ class QueryLangSet(MutableSequence):
         self._querylangs_map = {}
 
     def insert(self, index: int, ql: 'QueryLang') -> None:
+        """Insert :param:`ql` into `_querylangs_proto`."""
         self._querylangs_proto.insert(index, ql.proto)
 
     def __setitem__(self, key, value: 'QueryLang'):
@@ -65,6 +66,7 @@ class QueryLangSet(MutableSequence):
             raise IndexError(f'do not support this index {item}')
 
     def append(self, value: 'AcceptQueryLangType'):
+        """Append :param:`value` in `_querylangs_proto`."""
         q_pb = self._querylangs_proto.add()
         if isinstance(value, Dict):
             q_pb.CopyFrom(QueryLang(value).proto)
@@ -80,9 +82,11 @@ class QueryLangSet(MutableSequence):
             self.append(q)
 
     def clear(self):
+        """Clear `_querylangs_proto` set."""
         del self._querylangs_proto[:]
 
     def reverse(self):
+        """Reverse order of `_querylangs_proto` set."""
         size = len(self._querylangs_proto)
         hi_idx = size - 1
         for i in range(int(size / 2)):
