@@ -192,7 +192,7 @@ class BasePod(ExitStack):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        if self.args.noblock_on_start:
+        if getattr(self.args, 'noblock_on_start', False):
             for _args in self.all_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
