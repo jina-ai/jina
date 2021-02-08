@@ -156,11 +156,14 @@ class TimeContext:
             print(self.task_name, end=' ...\t', flush=True)
 
     def __exit__(self, typ, value, traceback):
-        self.duration = time.perf_counter() - self.start
+        self.duration = self.now()
 
         self.readable_duration = get_readable_time(seconds=self.duration)
 
         self._exit_msg()
+
+    def now(self) -> float:
+        return time.perf_counter() - self.start
 
     def _exit_msg(self):
         if self._logger:

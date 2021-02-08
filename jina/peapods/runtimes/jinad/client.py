@@ -218,6 +218,7 @@ class DaemonClient:
 
         _args.log_config = ''  # do not use local log_config
         _args.upload_files = []  # reset upload files
+        _args.noblock_on_start = False  # wait until start success
 
         changes = []
         for k, v in vars(_args).items():

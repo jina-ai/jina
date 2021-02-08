@@ -102,12 +102,25 @@ class BasePea(metaclass=PeaType):
         """
 
         super().start()  #: required here to call process/thread method
+        if not self.args.noblock_on_start:
+            self.wait_start_success()
+
+        return self
+
+    def wait_start_success(self):
+        """Block until all peas starts successfully.
+
+        If not success, it will raise an error hoping the outer function to catch it
+        """
+
+        if not self.args.noblock_on_start:
+            raise ValueError(f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True')
+
         _timeout = self.args.timeout_ready
         if _timeout <= 0:
             _timeout = None
         else:
             _timeout /= 1e3
-
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
@@ -123,8 +136,6 @@ class BasePea(metaclass=PeaType):
             self.close()
             raise TimeoutError(
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')
-
-        return self
 
     def close(self) -> None:
         """ Close the Pea
