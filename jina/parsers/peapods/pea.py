@@ -46,3 +46,8 @@ def mixin_pea_parser(parser):
     gp.add_argument('--pea-role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                     default=PeaRoleType.SINGLETON,
                     help='The role of this Pea in a Pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+
+    gp.add_argument('--noblock-on-start', action='store_true', default=False,
+                    help='If set, starting a Pea/Pod does not block the thread/process. It then relies on '
+                         '`wait_start_success` at outer function for the postpone check.'
+                    if _SHOW_ALL_ARGS else argparse.SUPPRESS)

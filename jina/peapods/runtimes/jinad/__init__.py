@@ -17,7 +17,8 @@ class JinadRuntime(AsyncZMQRuntime):
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
-        self.api = PeaDaemonClient(host=self.host, port=self.port_expose, logger=self.logger)
+        self.api = PeaDaemonClient(host=self.host, port=self.port_expose, logger=self.logger,
+                                   timeout=self.args.timeout_ready)
 
     def setup(self):
         """

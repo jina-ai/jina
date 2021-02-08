@@ -23,7 +23,7 @@ class BasePod(ExitStack):
         """
         super().__init__()
         self.args = args
-        BasePod._set_conditional_args(self.args)
+        self._set_conditional_args(self.args)
         self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.peas = []  # type: List['BasePea']
@@ -37,9 +37,6 @@ class BasePod(ExitStack):
             self.peas_args = args
         else:
             self.peas_args = self._parse_args(args)
-
-        for a in self.all_args:
-            BasePod._set_conditional_args(a)
 
     @property
     def role(self) -> 'PodRoleType':
@@ -195,13 +192,36 @@ class BasePod(ExitStack):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        try:
+        if getattr(self.args, 'noblock_on_start', False):
             for _args in self.all_args:
+                _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
+            # now rely on higher level to call `wait_start_success`
+            return self
+        else:
+            try:
+                for _args in self.all_args:
+                    self._enter_pea(BasePea(_args))
+            except:
+                self.close()
+                raise
+            return self
+
+    def wait_start_success(self) -> None:
+        """Block until all peas starts successfully.
+
+        If not success, it will raise an error hoping the outer function to catch it
+        """
+
+        if not self.args.noblock_on_start:
+            raise ValueError(f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True')
+
+        try:
+            for p in self.peas:
+                p.wait_start_success()
         except:
             self.close()
             raise
-        return self
 
     def _enter_pea(self, pea: 'BasePea') -> None:
         self.peas.append(pea)
