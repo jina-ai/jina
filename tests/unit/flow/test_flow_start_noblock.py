@@ -24,3 +24,11 @@ def test_flow_slow_executor_inter():
 
     with f, TimeContext('start flow') as tc:
         assert tc.now() < 8
+
+
+def test_flow_slow_executor_bad_fail_early():
+    f = (Flow().add(uses='SlowExecutor', parallel=3)
+         .add(uses='BADNAME_EXECUTOR', parallel=3))
+
+    with f, TimeContext('start flow') as tc:
+        assert tc.now() < 8
