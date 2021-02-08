@@ -20,12 +20,17 @@ __all__ = ['QueryLangSet', 'AcceptQueryLangType']
 
 
 class QueryLangSet(MutableSequence):
-    """:class:`QueryLangSet` is a mutable sequence of :class:`QueryLang`,
-    it gives an efficient view of a list of Document. One can iterate over it like
+    """
+    :class:`QueryLangSet` is a mutable sequence of :class:`QueryLang`.
+    It gives an efficient view of a list of Document. One can iterate over it like
     a generator but ALSO modify it, count it, get item.
+
+    :param querylang_protos: A list of :class:`QueryLangProto`
+    :type querylang_protos: :class:`RepeatedCompositeContainer`
     """
 
     def __init__(self, querylang_protos: 'RepeatedContainer'):
+        """Set constructor method."""
         super().__init__()
         self._querylangs_proto = querylang_protos
         self._querylangs_map = {}
@@ -88,8 +93,6 @@ class QueryLangSet(MutableSequence):
             hi_idx -= 1
 
     def build(self):
-        """Build a name to QueryLang mapping so one can later index a QueryLang using
-        name as string key
-        """
+        """Build a name to QueryLang mapping so one can later index a QueryLang using name as string key."""
         # TODO This is a temp fix, QueryLangProto do not have an id field.
         self._querylangs_map = {q.name: q for q in self._querylangs_proto}
