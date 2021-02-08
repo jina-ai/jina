@@ -1,3 +1,5 @@
+"""Indexer for caching."""
+
 import pickle
 import tempfile
 from typing import Optional, Iterable
@@ -10,28 +12,38 @@ CONTENT_HASH_KEY = 'content_hash'
 
 
 class BaseCache(BaseKVIndexer):
-    """Base class of the cache inherited :class:`BaseKVIndexer`
+    """Base class of the cache inherited :class:`BaseKVIndexer`.
 
     The difference between a cache and a :class:`BaseKVIndexer` is the ``handler_mutex`` is released in cache,
     this allows one to query-while-indexing.
     """
 
     def __init__(self, *args, **kwargs):
+        """Create a new BaseCache."""
         super().__init__(*args, **kwargs)
 
     def post_init(self):
-        self.handler_mutex = False  #: for Cache we need to release the handler mutex to allow RW at the same time
+        """For Cache we need to release the handler mutex to allow RW at the same time."""
+        self.handler_mutex = False
 
 
 class DocCache(BaseCache):
     """A key-value indexer that specializes in caching.
+
     Serializes the cache to two files, one for ids, one for the actually cached field.
     If field=`id`, then the second file is redundant. The class optimizes the process
     so that there are no duplicates.
     """
 
     class CacheHandler:
+        """A handler for loading and serializing the in-memory cache of the DocCache."""
+
         def __init__(self, path, logger):
+            """Create a new CacheHandler.
+
+            :param path: Path to the file from which to build the actual paths.
+            :param logger: Instance of logger.
+            """
             self.path = path
             try:
                 self.id_to_cache_val = pickle.load(open(path + '.ids', 'rb'))
@@ -43,6 +55,7 @@ class DocCache(BaseCache):
                 self.cache_val_to_id = dict()
 
         def close(self):
+            """Flushes the in-memory cache to pickle files."""
             pickle.dump(self.id_to_cache_val, open(self.path + '.ids', 'wb'))
             pickle.dump(self.cache_val_to_id, open(self.path + '.cache', 'wb'))
 
@@ -50,7 +63,7 @@ class DocCache(BaseCache):
     default_field = ID_KEY
 
     def __init__(self, index_filename: Optional[str] = None, field: Optional[str] = None, *args, **kwargs):
-        """Create a new DocCache
+        """Create a new DocCache.
 
         :param index_filename: file name for storing the cache data
         :param field: field to cache on (ID_KEY or CONTENT_HASH_KEY)
@@ -84,8 +97,10 @@ class DocCache(BaseCache):
 
     def update(self, keys: Iterable[str], values: Iterable[str], *args, **kwargs) -> None:
         """Update cached documents.
+
         :param keys: list of Document.id
-        :param values: list of either `id` or `content_hash` of :class:`Document`"""
+        :param values: list of either `id` or `content_hash` of :class:`Document`
+        """
         # if we don't cache anything else, no need
         if self.field != ID_KEY:
             for key, value in zip(keys, values):
@@ -98,6 +113,7 @@ class DocCache(BaseCache):
 
     def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete documents from the cache.
+
         :param keys: list of Document.id
         """
         for key in keys:
@@ -109,14 +125,13 @@ class DocCache(BaseCache):
             self._size -= 1
 
     def get_add_handler(self):
-        # not needed, as we use the queryhandler
-        # FIXME better way to silence warnings
-        return 1
+        """Get the CacheHandler."""
+        return self.get_query_handler()
 
     def get_query_handler(self) -> CacheHandler:
-        return self.CacheHandler(self.index_abspath, self.logger)
+        """Get the CacheHandler."""
+        return self.CacheHandler(self.save_abspath, self.logger)
 
     def get_create_handler(self):
-        # not needed, as we use the queryhandler
-        # FIXME better way to silence warnings
-        return 1
+        """Get the CacheHandler."""
+        return self.get_query_handler()

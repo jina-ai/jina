@@ -71,16 +71,16 @@ def test_cache_driver_tmpfile(tmpdir, test_metas):
 
 
 def test_cache_driver_from_file(tmpdir, test_metas):
-    test_metas['name'] = 'cachename'
     filename = 'cache'
+    test_metas['name'] = filename
     folder = os.path.join(test_metas["workspace"])
     bin_full_path = os.path.join(folder, filename)
-    docs = list(random_docs(10, embedding=False))
-    pickle.dump({doc.id: doc.content_hash for doc in docs}, open(f'{bin_full_path}.ids', 'wb'))
-    pickle.dump({doc.content_hash: doc.id for doc in docs}, open(f'{bin_full_path}.cache', 'wb'))
+    docs = DocumentSet(list(random_docs(10, embedding=False)))
+    pickle.dump({doc.id: doc.content_hash for doc in docs}, open(f'{bin_full_path}.bin.ids', 'wb'))
+    pickle.dump({doc.content_hash: doc.id for doc in docs}, open(f'{bin_full_path}.bin.cache', 'wb'))
 
     driver = MockCacheDriver()
-    with DocCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
+    with DocCache(metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
 
@@ -89,7 +89,7 @@ def test_cache_driver_from_file(tmpdir, test_metas):
             driver._traverse_apply(docs)
 
         # new docs
-        docs = list(random_docs(10, start_id=100))
+        docs = DocumentSet(list(random_docs(10, start_id=100)))
         driver._traverse_apply(docs)
 
     # check persistence
