@@ -17,15 +17,15 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
         super().__init__(*args, **kwargs)
         self.docs = {}
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: np.ndarray, vectors: np.ndarray, *args, **kwargs):
         for key, value in zip(keys, vectors):
             self.docs[key] = value
 
-    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs):
-        for key, value in zip(keys, values):
+    def update(self, keys: Iterable[str], vectors: np.ndarray, *args, **kwargs) -> None:
+        for key, value in zip(keys, vectors):
             self.docs[key] = value
 
-    def delete(self, keys: Iterable[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         for key in keys:
             del self.docs[key]
 

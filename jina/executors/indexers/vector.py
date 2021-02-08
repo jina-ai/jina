@@ -2,10 +2,11 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import gzip
+import io
 import os
 from functools import lru_cache
 from os import path
-from typing import Optional, Iterable, Tuple, Dict, Sequence
+from typing import Optional, Iterable, Tuple, Dict
 
 import numpy as np
 
@@ -82,8 +83,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         """
         return self.get_file_from_workspace(self.index_filename)
 
-    def get_add_handler(self):
-        """Open a binary gzip file for adding new vectors
+    def get_add_handler(self) -> 'io.BufferedWriter':
+        """Open a binary gzip file for appending new vectors
 
         :return: a gzip file stream
         """
@@ -92,8 +93,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         else:
             return open(self.index_abspath, 'ab')
 
-    def get_create_handler(self):
-        """Create a new gzip file for adding new vectors
+    def get_create_handler(self) -> 'io.BufferedWriter':
+        """Create a new gzip file for adding new vectors. The old vectors are replaced.
 
         :return: a gzip file stream
         """
@@ -135,14 +136,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.key_bytes += keys.tobytes()
         self._size += keys.shape[0]
 
-    def update(self, keys: Iterable[str], values: Sequence[bytes], *args, **kwargs) -> None:
+    def update(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Update the embeddings on the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: embeddings
+        :param vectors: embeddings
         """
         # noinspection PyTypeChecker
-        keys, values = self._filter_nonexistent_keys_values(keys, values, self._ext2int_id.keys())
+        keys, values = self._filter_nonexistent_keys_values(keys, vectors, self._ext2int_id.keys())
         np_keys = np.array(keys, (np.str_, self.key_length))
 
         if np_keys.size:
@@ -209,7 +210,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
                              shape=(self.size + deleted_keys, self.num_dim))
 
-    def query_by_key(self, keys: Sequence[str], *args, **kwargs) -> Optional['np.ndarray']:
+    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
         """
         Search the index by the external key (passed during `.add(`).
 
@@ -325,8 +326,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         return idx, dist
 
-    def query(self, query_vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple[
-        Optional['np.ndarray'], Optional['np.ndarray']]:
+    def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
         :return: a tuple of two ndarray.
@@ -339,14 +339,14 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         """
         if self.size == 0:
-            return None, None
+            return np.array([]), np.array([])
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
-            dist = self._cdist(query_vectors, self.query_handler)
+            dist = self._cdist(vectors, self.query_handler)
         elif self.metric == 'euclidean':
-            _query_vectors = _ext_A(query_vectors)
+            _query_vectors = _ext_A(vectors)
             dist = self._euclidean(_query_vectors, self.query_handler)
         elif self.metric == 'cosine':
-            _query_vectors = _ext_A(_norm(query_vectors))
+            _query_vectors = _ext_A(_norm(vectors))
             dist = self._cosine(_query_vectors, self.query_handler)
         else:
             raise NotImplementedError(f'{self.metric} is not implemented')
@@ -355,7 +355,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         indices = self._int2ext_id[self.valid_indices][idx]
         return indices, dist
 
-    def build_advanced_index(self, vecs: 'np.ndarray'):
+    def build_advanced_index(self, vecs: 'np.ndarray') -> 'np.ndarray':
         return vecs
 
     @batching(merge_over_axis=1, slice_on=2)

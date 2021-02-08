@@ -12,7 +12,8 @@ CONTENT_HASH_KEY = 'content_hash'
 class BaseCache(BaseKVIndexer):
     """Base class of the cache inherited :class:`BaseKVIndexer`
 
-    The difference between a cache and a :class:`BaseKVIndexer` is the ``handler_mutex`` is released in cache, this allows one to query-while-indexing.
+    The difference between a cache and a :class:`BaseKVIndexer` is the ``handler_mutex`` is released in cache,
+    this allows one to query-while-indexing.
     """
 
     def __init__(self, *args, **kwargs):
@@ -49,7 +50,7 @@ class DocCache(BaseCache):
     default_field = ID_KEY
 
     def __init__(self, index_filename: Optional[str] = None, field: Optional[str] = None, *args, **kwargs):
-        """ Create a new DocCache
+        """Create a new DocCache
 
         :param index_filename: file name for storing the cache data
         :param field: field to cache on (ID_KEY or CONTENT_HASH_KEY)
@@ -62,28 +63,26 @@ class DocCache(BaseCache):
         if self.field not in self.supported_fields:
             raise ValueError(f"Field '{self.field}' not in supported list of {self.supported_fields}")
 
-    def add(self, doc_id: str, *args, **kwargs):
-        """Add a document to the cache depending on `self.field`.
+    def add(self, keys: Iterable[str], values: Iterable[str], *args, **kwargs) -> None:
+        """Add a document to the cache depending.
 
-        :param doc_id: document id to be added
+        :param keys: document ids to be added
+        :param values: document cache values to be added
         """
-        if self.field != ID_KEY:
-            data = kwargs.get(DATA_FIELD, None)
-        else:
-            data = doc_id
-        self.query_handler.id_to_cache_val[doc_id] = data
-        self.query_handler.cache_val_to_id[data] = doc_id
-        self._size += 1
+        for key, value in zip(keys, values):
+            self.query_handler.id_to_cache_val[key] = value
+            self.query_handler.cache_val_to_id[value] = key
+            self._size += 1
 
-    def query(self, data: str, *args, **kwargs) -> Optional[bool]:
+    def query(self, key: str, *args, **kwargs) -> bool:
         """Check whether the data exists in the cache.
 
-        :param data: either the id or the content_hash of a Document
+        :param key: either the id or the content_hash of a Document
         :return: status
         """
-        return data in self.query_handler.cache_val_to_id
+        return key in self.query_handler.cache_val_to_id
 
-    def update(self, keys: Iterable[str], values: Iterable[any], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[str], *args, **kwargs) -> None:
         """Update cached documents.
         :param keys: list of Document.id
         :param values: list of either `id` or `content_hash` of :class:`Document`"""
@@ -97,7 +96,7 @@ class DocCache(BaseCache):
                 del self.query_handler.cache_val_to_id[old_value]
                 self.query_handler.cache_val_to_id[value] = key
 
-    def delete(self, keys: Iterable[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete documents from the cache.
         :param keys: list of Document.id
         """

@@ -42,7 +42,7 @@ def test_cache_driver_twice(tmpdir, test_metas):
             driver._traverse_apply(docs)
 
         # new docs
-        docs = list(random_docs(10, start_id=100))
+        docs = DocumentSet(list(random_docs(10, start_id=100)))
         driver._traverse_apply(docs)
         filename = executor.save_abspath
 
@@ -51,7 +51,7 @@ def test_cache_driver_twice(tmpdir, test_metas):
 
 
 def test_cache_driver_tmpfile(tmpdir, test_metas):
-    docs = list(random_docs(10, embedding=False))
+    docs = DocumentSet(list(random_docs(10, embedding=False)))
     driver = MockCacheDriver()
     with DocCache(tmpdir, field=ID_KEY, metas=test_metas) as executor:
         assert not executor.handler_mutex
@@ -64,7 +64,7 @@ def test_cache_driver_tmpfile(tmpdir, test_metas):
             driver._traverse_apply(docs)
 
         # new docs
-        docs = list(random_docs(10, start_id=100, embedding=False))
+        docs = DocumentSet(list(random_docs(10, start_id=100, embedding=False)))
         driver._traverse_apply(docs)
 
     assert os.path.exists(executor.index_abspath)
