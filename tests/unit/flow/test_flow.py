@@ -93,9 +93,11 @@ def test_simple_flow(restful):
         f.index(input_fn=bytes_fn)
         f.index(input_fn=bytes_fn)
 
-    node = f._pod_nodes['gateway']
-    assert node.head_args.socket_in == SocketType.PULL_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['gateway']
+        assert node.head_args.socket_in == SocketType.PULL_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+
+    assert 'gateway' not in f
 
     node = f._pod_nodes['pod0']
     assert node.head_args.socket_in == SocketType.PULL_BIND

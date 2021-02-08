@@ -32,7 +32,7 @@ def check_hello_world_results(html_path: str):
     evaluation = soup.find_all('h3')[0].text
     assert 'Precision@50' in evaluation
     assert 'Recall@50' in evaluation
-    evaluation_results = re.findall("\d+\.\d+", evaluation)
+    evaluation_results = re.findall(r'\d+\.\d+', evaluation)
     assert len(evaluation_results) == 2
     # not exact to avoid instability, but enough accurate to current results to raise some alarms
     assert float(evaluation_results[0]) > 65.0
@@ -61,7 +61,7 @@ def test_helloworld_execution(tmpdir):
 def test_helloworld_py(tmpdir):
     from jina.helloworld import hello_world
     hello_world(set_hw_parser().parse_args(['--workdir', str(tmpdir)]))
-    # check_hello_world_results(os.path.join(str(tmpdir), 'hello-world.html'))
+    check_hello_world_results(os.path.join(str(tmpdir), 'hello-world.html'))
 
 
 @pytest.mark.timeout(360)
