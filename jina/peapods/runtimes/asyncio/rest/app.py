@@ -10,7 +10,7 @@ from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
 from .....enums import RequestType
-from .....helper import get_full_version
+from .....helper import get_full_version, random_identity
 from .....importer import ImportExtensions
 from .....logging import JinaLogger, default_logger
 from .....logging.profile import used_memory_readable
@@ -27,7 +27,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from starlette import status
         from starlette.types import Receive, Scope, Send
         from starlette.responses import StreamingResponse
-        from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, JinaSearchRequestModel
+        from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, \
+            JinaSearchRequestModel
 
     app = FastAPI(
         title='Jina',
@@ -41,10 +42,15 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         allow_methods=['*'],
         allow_headers=['*'],
     )
-    servicer = AsyncPrefetchCall(args)
+    zmqlet = AsyncZmqlet(args, default_logger)
+    servicer = AsyncPrefetchCall(args, zmqlet)
 
     def error(reason, status_code):
         return JSONResponse(content={'reason': reason}, status_code=status_code)
+
+    @app.on_event('shutdown')
+    def _shutdown():
+        zmqlet.close()
 
     @app.on_event('startup')
     async def startup():
@@ -95,6 +101,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     async def index_api(body: JinaIndexRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.INDEX
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
@@ -105,26 +112,29 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     async def index_api(body: JinaSearchRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.SEARCH
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.post(path='/update',
-              summary='Update documents in Jina',
-              tags=['CRUD']
-              )
+    @app.put(path='/update',
+             summary='Update documents in Jina',
+             tags=['CRUD']
+             )
     async def index_api(body: JinaUpdateRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.UPDATE
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.post(path='/delete',
-              summary='Delete documents in Jina',
-              tags=['CRUD']
-              )
+    @app.delete(path='/delete',
+                summary='Delete documents in Jina',
+                tags=['CRUD']
+                )
     async def index_api(body: JinaDeleteRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
+        bd['mode'] = RequestType.DELETE
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
@@ -152,14 +162,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         """
 
         encoding = None
-        is_req_empty = False
-        num_requests = 0
-        num_responses = 0
 
         def __init__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
             super().__init__(scope, receive, send)
             self.args = args
             self.name = args.name or self.__class__.__name__
+            self._id = random_identity()
             self.client_encoding = None
 
         async def dispatch(self) -> None:
@@ -169,7 +177,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
             await asyncio.gather(
                 self.handle_receive(websocket=websocket, close_code=close_code),
-                self.handle_send(websocket=websocket)
             )
 
         async def on_connect(self, websocket: WebSocket) -> None:
@@ -179,47 +186,35 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             await websocket.accept()
             self.client_info = f'{websocket.client.host}:{websocket.client.port}'
             logger.success(f'Client {self.client_info} connected to stream requests via websockets')
-            self.zmqlet = AsyncZmqlet(args, logger)
 
         async def handle_receive(self, websocket: WebSocket, close_code: int) -> None:
+            def handle_route(msg: 'Message') -> 'Request':
+                msg.add_route(self.name, self._id)
+                return msg.response
+
             try:
                 while True:
                     message = await websocket.receive()
                     if message['type'] == 'websocket.receive':
                         data = await self.decode(websocket, message)
                         if data == bytes(True):
-                            self.is_req_empty = True
+                            await asyncio.sleep(.1)
                             continue
-                        await self.zmqlet.send_message(
-                            Message(None, Request(data), 'gateway', **vars(self.args))
-                        )
-                        self.num_requests += 1
+                        await zmqlet.send_message(Message(None, Request(data), 'gateway', **vars(self.args)))
+                        response = await zmqlet.recv_message(callback=handle_route)
+                        if self.client_encoding == 'bytes':
+                            await websocket.send_bytes(response.SerializeToString())
+                        else:
+                            await websocket.send_json(response.json())
                     elif message['type'] == 'websocket.disconnect':
                         close_code = int(message.get('code', status.WS_1000_NORMAL_CLOSURE))
                         break
             except Exception as exc:
                 close_code = status.WS_1011_INTERNAL_ERROR
                 logger.error(f'Got an exception in handle_receive: {exc!r}')
-                raise exc from None
+                raise
             finally:
                 await self.on_disconnect(websocket, close_code)
-
-        async def handle_send(self, websocket: WebSocket) -> None:
-
-            def handle_route(msg: 'Message') -> 'Request':
-                msg.add_route(self.name, hex(id(self)))
-                return msg.response
-
-            try:
-                while not (self.num_requests == self.num_responses != 0 and self.is_req_empty):
-                    response = await self.zmqlet.recv_message(callback=handle_route)
-                    if self.client_encoding == 'bytes':
-                        await websocket.send_bytes(response.SerializeToString())
-                    else:
-                        await websocket.send_json(response.to_json())
-                    self.num_responses += 1
-            except Exception as e:
-                logger.error(f'Got an exception in handle_send: {e!r}')
 
         async def decode(self, websocket: WebSocket, message: Message) -> Any:
             if 'text' in message or 'json' in message:
@@ -231,7 +226,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             return await super().decode(websocket, message)
 
         async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
-            self.zmqlet.close()
             logger.info(f'Client {self.client_info} got disconnected!')
 
     return app

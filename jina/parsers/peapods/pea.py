@@ -24,7 +24,7 @@ def mixin_pea_parser(parser):
     gp.add_argument('--runtime-cls', type=str, choices=list_all_runtimes(), default='ZEDRuntime',
                     help='The runtime class to run inside the Pea')
 
-    gp.add_argument('--timeout-ready', type=int, default=10000,
+    gp.add_argument('--timeout-ready', type=int, default=60000,
                     help='The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting '
                          'forever')
 
@@ -34,7 +34,8 @@ def mixin_pea_parser(parser):
 
     gp.add_argument('--expose-public', action='store_true', default=False,
                     help='If set, expose the public IP address to remote when necessary, by default it exposes'
-                         'private IP address, which only allows accessing under the same network/subnet')
+                         'private IP address, which only allows accessing under the same network/subnet. Important to '
+                         'set this to true when the Pea will receive input connections from remote Peas')
 
     # hidden CLI used for internal only
 
@@ -45,3 +46,8 @@ def mixin_pea_parser(parser):
     gp.add_argument('--pea-role', type=PeaRoleType.from_string, choices=list(PeaRoleType),
                     default=PeaRoleType.SINGLETON,
                     help='The role of this Pea in a Pod' if _SHOW_ALL_ARGS else argparse.SUPPRESS)
+
+    gp.add_argument('--noblock-on-start', action='store_true', default=False,
+                    help='If set, starting a Pea/Pod does not block the thread/process. It then relies on '
+                         '`wait_start_success` at outer function for the postpone check.'
+                    if _SHOW_ALL_ARGS else argparse.SUPPRESS)

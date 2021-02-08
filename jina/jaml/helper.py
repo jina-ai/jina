@@ -12,6 +12,7 @@ from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
 from jina.excepts import BadConfigSource
+from jina.helper import is_yaml_filepath
 from jina.importer import PathImporter
 
 
@@ -102,7 +103,7 @@ def parse_config_source(path: Union[str, TextIO, Dict],
     elif allow_stream and hasattr(path, 'read'):
         # already a readable stream
         return path, None
-    elif allow_yaml_file and (path.rstrip().endswith('.yml') or path.rstrip().endswith('.yaml')):
+    elif allow_yaml_file and is_yaml_filepath(path):
         comp_path = complete_path(path)
         return open(comp_path, encoding='utf8'), comp_path
     elif allow_builtin_resource and path.lstrip().startswith('_') and os.path.exists(
@@ -133,7 +134,7 @@ def parse_config_source(path: Union[str, TextIO, Dict],
             tmp = JAML.dump(tmp)
             return io.StringIO(tmp), None
         except json.JSONDecodeError:
-            raise BadConfigSource
+            raise BadConfigSource(path)
     else:
         raise BadConfigSource(f'{path} can not be resolved, it should be a readable stream,'
                               ' or a valid file path, or a supported class name.')
@@ -183,7 +184,7 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) ->
         value = obj.get(key, [])
         if isinstance(value, str):
             mod.append(value)
-        elif isinstance(value, list) or isinstance(value, tuple):
+        elif isinstance(value, (list, tuple)):
             mod.extend(value)
         for k, v in obj.items():
             if isinstance(v, dict):

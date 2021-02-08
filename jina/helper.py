@@ -19,6 +19,7 @@ from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
 from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, Sequence, Iterable
+from urllib.request import Request, urlopen
 
 import numpy as np
 
@@ -223,12 +224,23 @@ def random_port() -> Optional[int]:
     return _port
 
 
-def random_identity() -> str:
-    return str(random_uuid())
+def random_identity(use_uuid1: bool = False) -> str:
+    """Generate random UUID
+
+    :param use_uuid1: use UUID1 instead of UUID4. This is the default Document ID generator.
+
+    ..note::
+        A MAC address or time-based ordering (UUID1) can afford increased database performance, since it's less work
+        to sort numbers closer-together than those distributed randomly (UUID4) (see here).
+
+        A second related issue, is that using UUID1 can be useful in debugging, even if origin data is lost or not
+        explicitly stored.
+    """
+    return str(random_uuid(use_uuid1))
 
 
-def random_uuid() -> uuid.UUID:
-    return uuid.uuid4()
+def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
+    return uuid.uuid1() if use_uuid1 else uuid.uuid4()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
@@ -267,14 +279,14 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
     def _replace(sub_d: Union[Dict, List], p):
         if isinstance(sub_d, Dict):
             for k, v in sub_d.items():
-                if isinstance(v, dict) or isinstance(v, list):
+                if isinstance(v, (dict, list)):
                     _replace(v, p.__dict__[k])
                 else:
                     if isinstance(v, str) and pat.findall(v):
                         sub_d[k] = _sub(v, p)
         elif isinstance(sub_d, List):
             for idx, v in enumerate(sub_d):
-                if isinstance(v, dict) or isinstance(v, list):
+                if isinstance(v, (dict, list)):
                     _replace(v, p[idx])
                 else:
                     if isinstance(v, str) and pat.findall(v):
@@ -757,3 +769,23 @@ def change_env(key, val):
             os.environ[key] = old_var
         else:
             os.environ.pop(key)
+
+
+def is_yaml_filepath(val) -> bool:
+    r = r'^[/\w\-\_\.]+.ya?ml$'
+    return re.match(r, val.strip()) is not None
+
+
+def download_mermaid_url(mermaid_url, output) -> None:
+    """
+    Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
+    :param path: the file path of the image
+    :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+    """
+    try:
+        req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with open(output, 'wb') as fp:
+            fp.write(urlopen(req).read())
+    except:
+        from jina.logging import default_logger
+        default_logger.error('can not download image, please check your graph and the network connections')

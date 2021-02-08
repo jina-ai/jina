@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from fastapi import UploadFile
-
 from daemon.stores import FlowStore
 from jina.flow import Flow
 
@@ -22,7 +20,7 @@ def test_flow_store():
     assert len(store) == 1
     assert flow_id in store
     assert isinstance(store[flow_id]['object'], Flow)
-    del store[flow_id]
+    store.delete(flow_id)
     assert flow_id not in store
     assert not store
 

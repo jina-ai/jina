@@ -15,7 +15,7 @@ from ..helper import typename
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
-from ..types.request import Request, Response
+from ..types.request import Request
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 CallbackFnType = Optional[Callable[..., None]]
@@ -135,8 +135,9 @@ class BaseClient:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.success(f'connected to the gateway at {self.args.host}:{self.args.port_expose}!')
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
-                    async for response in stub.Call(req_iter):
-                        resp = response.to_response()
+                    async for resp in stub.Call(req_iter):
+                        resp.as_typed_request(resp.request_type)
+                        resp.as_response()
                         callback_exec(response=resp,
                                       on_error=on_error,
                                       on_done=on_done,

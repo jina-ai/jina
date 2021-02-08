@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Flow
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -115,20 +116,26 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
     response_mock.assert_called()
 
-    
-@pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1])  # TODO: parallel > 1 fails, need to check if local also work
-def test_l_r_l_with_upload(silent_log, parallels, mocker):
+
+@pytest.fixture()
+def docker_image():
     img_name = 'test-mwu-encoder'
     import docker
     client = docker.from_env()
     client.images.build(path=os.path.join(cur_dir, '../../unit/mwu-encoder/'), tag=img_name)
     client.close()
+    yield img_name
+    client = docker.from_env()
+    client.containers.prune()
 
+
+@pytest.mark.parametrize('silent_log', [True, False])
+@pytest.mark.parametrize('parallels', [1, 2, 3])
+def test_l_r_l_with_upload(silent_log, parallels, docker_image, mocker):
     response_mock = mocker.Mock()
     f = (Flow()
          .add()
-         .add(uses=f'docker://{img_name}',
+         .add(uses=f'docker://{docker_image}',
               host=CLOUD_HOST,
               parallel=parallels,
               silent_remote_logs=silent_log,
@@ -138,6 +145,16 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
         f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
     response_mock.assert_called()
 
-    client = docker.from_env()
-    client.containers.prune()
 
+@pytest.mark.parametrize('parallels', [2])
+def test_create_pea_timeout(parallels):
+    f = (Flow()
+         .add()
+         .add(uses='delayed_executor.yml',
+              host=CLOUD_HOST,
+              parallel=parallels,
+              upload_files=['delayed_executor.py'],
+              timeout_ready=20000)
+         .add())
+    with f:
+        f.index(random_docs(10))

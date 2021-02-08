@@ -127,7 +127,7 @@ class JAML:
         def _replace(sub_d, p, resolve_ref=False):
             if isinstance(sub_d, dict):
                 for k, v in sub_d.items():
-                    if isinstance(v, dict) or isinstance(v, list):
+                    if isinstance(v, (dict, list)):
                         _replace(v, p.__dict__[k], resolve_ref)
                     else:
                         if isinstance(v, str):
@@ -137,7 +137,7 @@ class JAML:
                                 sub_d[k] = _sub(v)
             elif isinstance(sub_d, list):
                 for idx, v in enumerate(sub_d):
-                    if isinstance(v, dict) or isinstance(v, list):
+                    if isinstance(v, (dict, list)):
                         _replace(v, p[idx], resolve_ref)
                     else:
                         if isinstance(v, str):

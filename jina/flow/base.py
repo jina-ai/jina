@@ -10,25 +10,22 @@ import threading
 import uuid
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, TextIO, TypeVar
-from urllib.request import Request, urlopen
+from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
 
 from .builder import build_required, _build_flow, _optimize_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
-from ..excepts import FlowTopologyError, FlowMissingPodError, RuntimeFailToStart
+from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import colored, \
-    get_public_ip, get_internal_ip, typename, ArgNamespace
+    get_public_ip, get_internal_ip, typename, ArgNamespace, download_mermaid_url
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 
-__all__ = ['BaseFlow', 'FlowLike']
+__all__ = ['BaseFlow']
 
 from ..peapods import BasePod
-
-FlowLike = TypeVar('FlowLike', bound='BaseFlow')
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -107,7 +104,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 endpoint = []
 
-        if isinstance(endpoint, list) or isinstance(endpoint, tuple):
+        if isinstance(endpoint, (list, tuple)):
             for idx, s in enumerate(endpoint):
                 if s == pod_name:
                     raise FlowTopologyError('the income/output of a pod can not be itself')
@@ -160,7 +157,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._pod_nodes[pod_name] = BasePod(args, needs)
 
     def needs(self, needs: Union[Tuple[str], List[str]],
-              name: str = 'joiner', *args, **kwargs) -> FlowLike:
+              name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
         """
         Add a blocker to the flow, wait until all peas defined in **needs** completed.
 
@@ -172,10 +169,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
         return self.add(name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
 
-    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> FlowLike:
+    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
         """
         Collect all hanging Pod so far and add a blocker to the flow, wait until all handing peas completed.
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
+        
         :param name: the name of this joiner, by default is ``joiner``
         :return: the modified flow
         """
@@ -189,7 +186,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             needs: Union[str, Tuple[str], List[str]] = None,
             copy_flow: bool = True,
             pod_role: 'PodRoleType' = PodRoleType.POD,
-            **kwargs) -> FlowLike:
+            **kwargs) -> 'BaseFlow':
         """
         Add a pod to the current flow object and return the new modified flow object.
         The attribute of the pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
@@ -256,7 +253,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return op_flow
 
-    def inspect(self, name: str = 'inspect', *args, **kwargs) -> FlowLike:
+    def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'BaseFlow':
         """Add an inspection on the last changed Pod in the Flow
 
         Internally, it adds two pods to the flow. But no worry, the overhead is minimized and you
@@ -327,7 +324,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             # no inspect node is in the graph, return the current graph
             return self
 
-    def build(self, copy_flow: bool = False) -> FlowLike:
+    def build(self, copy_flow: bool = False) -> 'BaseFlow':
         """
         Build the current flow and make it ready to use
 
@@ -409,6 +406,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             for k in self._env.keys():
                 os.unsetenv(k)
 
+        self._pod_nodes.pop('gateway')
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources are released, current build level is {self._build_level}')
@@ -432,8 +430,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 os.environ[k] = str(v)
 
         for k, v in self:
+            v.args.noblock_on_start = True
+            self.enter_context(v)
+
+        for k, v in self:
             try:
-                self.enter_context(v)
+                v.wait_start_success()
             except Exception as ex:
                 self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
                 self.close()
@@ -455,7 +457,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """Get the number of peas (parallel count) in this flow"""
         return sum(v.num_peas for v in self._pod_nodes.values())
 
-    def __eq__(self, other: FlowLike):
+    def __eq__(self, other: 'BaseFlow'):
         """
         Comparing the topology of a flow with another flow.
         Identification is defined by whether two flows share the same set of edges.
@@ -553,7 +555,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
              vertical_layout: bool = False,
              inline_display: bool = False,
              build: bool = True,
-             copy_flow: bool = False) -> FlowLike:
+             copy_flow: bool = False) -> 'BaseFlow':
         """
         Visualize the flow up to the current point
         If a file name is provided it will create a jpg image with that name,
@@ -606,7 +608,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 pass
 
         if output:
-            op_flow._download_mermaid_url(url, output)
+            download_mermaid_url(url, output)
         elif not showed:
             op_flow.logger.info(f'flow visualization: {url}')
 
@@ -628,20 +630,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
 
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
-
-    def _download_mermaid_url(self, mermaid_url, output) -> None:
-        """
-        Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
-        :param path: the file path of the image
-        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
-        :return:
-        """
-        try:
-            req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
-            with open(output, 'wb') as fp:
-                fp.write(urlopen(req).read())
-        except:
-            self.logger.error('can not download image, please check your graph and the network connections')
 
     @build_required(FlowBuildLevel.GRAPH)
     def to_swarm_yaml(self, path: TextIO):
@@ -718,13 +706,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         except KeyboardInterrupt:
             pass
 
-    def use_grpc_gateway(self):
+    def use_grpc_gateway(self, port: int = None):
         """Change to use gRPC gateway for IO """
-        self._common_kwargs['rest_api'] = False
+        self._common_kwargs['restful'] = False
+        if port:
+            self._common_kwargs['port_expose'] = port
 
-    def use_rest_gateway(self):
+    def use_rest_gateway(self, port: int = None):
         """Change to use REST gateway for IO """
-        self._common_kwargs['rest_api'] = True
+        self._common_kwargs['restful'] = True
+        if port:
+            self._common_kwargs['port_expose'] = port
 
     def __getitem__(self, item):
         if isinstance(item, str):
@@ -777,30 +769,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         for _, p in self:
             p.args.identity = value
-
-    def index(self):
-        raise NotImplementedError
-
-    def search(self):
-        raise NotImplementedError
-
-    def index_ndarray(self):
-        raise NotImplementedError
-
-    def index_lines(self):
-        raise NotImplementedError
-
-    def index_files(self):
-        raise NotImplementedError
-
-    def search_ndarray(self):
-        raise NotImplementedError
-
-    def search_lines(self):
-        raise NotImplementedError
-
-    def search_files(self):
-        raise NotImplementedError
 
     # for backward support
     join = needs

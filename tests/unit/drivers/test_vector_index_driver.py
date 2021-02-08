@@ -1,10 +1,11 @@
 from copy import deepcopy
-from typing import Iterator
+from typing import Iterable
 
 import numpy as np
 import pytest
 
 from jina import DocumentSet
+from jina.drivers.delete import DeleteDriver
 from jina.drivers.index import VectorIndexDriver
 from jina.executors.indexers import BaseVectorIndexer
 from jina.types.document import Document
@@ -15,24 +16,28 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.docs = {}
-        self.key_length = 16
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: np.ndarray, vectors: np.ndarray, *args, **kwargs):
         for key, value in zip(keys, vectors):
             self.docs[key] = value
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
-        for key, value in zip(keys, values):
+    def update(self, keys: Iterable[str], vectors: np.ndarray, *args, **kwargs) -> None:
+        for key, value in zip(keys, vectors):
             self.docs[key] = value
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         for key in keys:
             del self.docs[key]
 
 
 class SimpleVectorIndexDriver(VectorIndexDriver):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+
+class SimpleDeleteDriver(DeleteDriver):
 
     @property
     def exec_fn(self):
@@ -51,7 +56,7 @@ def simple_vector_indexer_driver_update():
 
 @pytest.fixture(scope='function')
 def simple_vector_indexer_driver_delete():
-    return SimpleVectorIndexDriver(method='delete')
+    return SimpleDeleteDriver()
 
 
 @pytest.fixture(scope='function')
@@ -150,12 +155,14 @@ def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_inde
 
 def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_vector_indexer_driver_add,
                                     simple_vector_indexer_driver_delete,
-                                    documents, deleted_documents):
+                                    documents, deleted_documents, mocker):
     simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_vector_indexer_driver_add._apply_all(documents)
 
     simple_vector_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, runtime=None)
-    simple_vector_indexer_driver_delete._apply_all(deleted_documents)
+    mock_load = mocker.patch.object(simple_vector_indexer_driver_delete, 'runtime', autospec=True)
+    mock_load.request.ids = [d.id for d in deleted_documents]
+    simple_vector_indexer_driver_delete()
 
     assert len(mock_groundtruth_indexer.docs) == 2
     for idx in range(3, 5):

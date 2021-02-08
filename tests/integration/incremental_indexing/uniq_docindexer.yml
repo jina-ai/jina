@@ -1,6 +1,6 @@
 !UniquePbIndexer
 components:
-  - !DocIDCache
+  - !DocCache
     metas:
       name: cache
   - !BinaryPbIndexer

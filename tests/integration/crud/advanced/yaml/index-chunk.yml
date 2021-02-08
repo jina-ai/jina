@@ -35,16 +35,13 @@ requests:
       - !KVSearchDriver
         with:
           executor: chunkidx
+          is_merge: true
           traversal_paths: ['m']
     DeleteRequest:
-      - !VectorIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: vecidx
-          traversal_paths: ['c']
-      - !KVIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: chunkidx
-          traversal_paths: ['c']
 

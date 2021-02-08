@@ -31,24 +31,26 @@ class BaseSearchDriver(BaseExecutableDriver):
 
 
 class KVSearchDriver(BaseSearchDriver):
-    """Fill in the doc/chunk-level top-k results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
+    """Fill in the results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
 
     .. warning::
-        This driver loops over all chunk/chunk's top-K results, each step fires a query.
-        This may not be very efficient, as the total number of queries depends on ``level``
+        This driver runs a query for each document.
+        This may not be very efficient, as the total number of queries grows cubic with the number of documents, chunks
+        per document and top-k.
 
-             - ``level=chunk``: D x C x K
-             - ``level=doc``: D x K
-             - ``level=all``: D x C x K
+            - traversal_paths = ['m'] => D x K
+            - traversal_paths = ['r'] => D
+            - traversal_paths = ['cm'] => D x C x K
+            - traversal_paths = ['m', 'cm'] => D x K + D x C x K
 
         where:
             - D is the number of queries
-            - C is the number of chunks per query/doc
+            - C is the number of chunks per document
             - K is the top-k
     """
 
-    def __init__(self, is_merge: bool = True, traversal_paths: Tuple[str] = ('m'), *args, **kwargs):
-        """
+    def __init__(self, is_merge: bool = False, traversal_paths: Tuple[str] = ('m'), *args, **kwargs):
+        """Construct the driver.
 
         :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
             otherwise, it overrides the current message using :meth:`CopyFrom`
@@ -77,10 +79,10 @@ class KVSearchDriver(BaseSearchDriver):
 
 
 class VectorFillDriver(QuerySetReader, BaseSearchDriver):
-    """ Fill in the embedding by their doc id
+    """Fill in the embedding by their document id.
     """
 
-    def __init__(self, executor: str = None, method: str = 'query_by_id', *args, **kwargs):
+    def __init__(self, executor: str = None, method: str = 'query_by_key', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
@@ -90,16 +92,15 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
 
 
 class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
-    """Extract chunk-level embeddings from the request and use the executor to query it
-
+    """Extract embeddings from the request for the executor to query.
     """
 
     def __init__(self, top_k: int = 50, fill_embedding: bool = False, *args, **kwargs):
-        """
+        """Construct the driver.
 
-        :param top_k: top-k doc id to retrieve
+        :param top_k: top-k document ids to retrieve
         :param fill_embedding: fill in the embedding of the corresponding doc,
-                this requires the executor to implement :meth:`query_by_id`
+                this requires the executor to implement :meth:`query_by_key`
         :param args:
         :param kwargs:
         """
@@ -113,24 +114,22 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         if not doc_pts:
             return
 
-        fill_fn = getattr(self.exec, 'query_by_id', None)
+        fill_fn = getattr(self.exec, 'query_by_key', None)
         if self._fill_embedding and not fill_fn:
-            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_id" method')
+            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_key" method')
 
         if bad_docs:
             self.logger.warning(f'these bad docs can not be added: {bad_docs}')
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
 
         op_name = self.exec.__class__.__name__
-        # can be None if index is size 0
-        if idx is not None and dist is not None:
-            for doc, topks, scores in zip(doc_pts, idx, dist):
+        for doc, topks, scores in zip(doc_pts, idx, dist):
 
-                topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
-                for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
-                    m = Document(id=numpy_match_id)
-                    m.score = NamedScore(op_name=op_name,
-                                         value=score)
-                    r = doc.matches.append(m)
-                    if vec is not None:
-                        r.embedding = vec
+            topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
+            for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
+                m = Document(id=numpy_match_id)
+                m.score = NamedScore(op_name=op_name,
+                                     value=score)
+                r = doc.matches.append(m)
+                if vec is not None:
+                    r.embedding = vec

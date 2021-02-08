@@ -3,6 +3,7 @@ from typing import TypeVar, Dict, Optional
 
 from google.protobuf import json_format
 
+from ..mixin import ProtoTypeMixin
 from ...excepts import BadQueryLangType
 from ...helper import typename
 from ...proto import jina_pb2
@@ -13,7 +14,7 @@ QueryLangSourceType = TypeVar('QueryLangSourceType',
 __all__ = ['QueryLang']
 
 
-class QueryLang:
+class QueryLang(ProtoTypeMixin):
     """
     :class:`QueryLang` is one of the **primitive data type** in Jina.
 
@@ -53,17 +54,17 @@ class QueryLang:
         :param copy: when ``querylang`` is given as a :class:`QueryLangProto` object, build a
                 view (i.e. weak reference) from it or a deep copy from it.
         """
-        self._querylang = jina_pb2.QueryLangProto()
+        self._pb_body = jina_pb2.QueryLangProto()
         try:
             if isinstance(querylang, jina_pb2.QueryLangProto):
                 if copy:
-                    self._querylang.CopyFrom(querylang)
+                    self._pb_body.CopyFrom(querylang)
                 else:
-                    self._querylang = querylang
+                    self._pb_body = querylang
             elif isinstance(querylang, dict):
-                json_format.ParseDict(querylang, self._querylang)
+                json_format.ParseDict(querylang, self._pb_body)
             elif isinstance(querylang, str):
-                json_format.Parse(querylang, self._querylang)
+                json_format.Parse(querylang, self._pb_body)
             elif isinstance(querylang, bytes):
                 # directly parsing from binary string gives large false-positive
                 # fortunately protobuf throws a warning when the parsing seems go wrong
@@ -74,7 +75,7 @@ class QueryLang:
                                             'Unexpected end-group tag',
                                             category=RuntimeWarning)
                     try:
-                        self._querylang.ParseFromString(querylang)
+                        self._pb_body.ParseFromString(querylang)
                     except RuntimeWarning as ex:
                         raise BadQueryLangType('fail to construct a query language') from ex
             elif querylang is not None:
@@ -87,26 +88,18 @@ class QueryLang:
     def priority(self) -> int:
         """Get the priority of this query language. The query language only takes
         effect when if it has a higher priority than the internal one with the same name"""
-        return self._querylang.priority
+        return self._pb_body.priority
 
     @priority.setter
     def priority(self, value: int):
-        self._querylang.priority = value
+        self._pb_body.priority = value
 
     @property
     def name(self) -> str:
         """Get the name of the driver that the query language attached to """
-        return self._querylang.name
+        return self._pb_body.name
 
     @name.setter
     def name(self, value: str):
         """Set the name of the driver that the query language attached to """
-        self._querylang.name = value
-
-    def __getattr__(self, name: str):
-        return getattr(self._querylang, name)
-
-    @property
-    def as_pb_object(self) -> 'jina_pb2.QueryLangProto':
-        """Return a protobuf :class:`jina_pb2.QueryLangProto` object """
-        return self._querylang
+        self._pb_body.name = value

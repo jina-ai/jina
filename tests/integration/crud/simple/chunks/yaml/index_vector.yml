@@ -15,11 +15,9 @@ requests:
           executor: vecidx
           traversal_paths: [ 'c' ]
     DeleteRequest:
-      - !VectorIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: vecidx
-          traversal_paths: [ 'c' ]
     IndexRequest:
       - !VectorIndexDriver
         with:

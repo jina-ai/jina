@@ -4,6 +4,8 @@ from typing import Union, Sequence, Iterable, Tuple
 
 import numpy as np
 
+from ...helper import typename
+
 try:
     # when protobuf using Cpp backend
     from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
@@ -31,14 +33,11 @@ class DocumentSet(MutableSequence):
         self._docs_map = {}
 
     def insert(self, index: int, doc: 'Document') -> None:
-        self._docs_proto.insert(index, doc.as_pb_object)
+        self._docs_proto.insert(index, doc.proto)
 
     def __setitem__(self, key, value: 'Document'):
-        from ..document.uid import UniqueId
         if isinstance(key, int):
             self._docs_proto[key].CopyFrom(value)
-        elif isinstance(key, UniqueId):
-            self._docs_map[str(key)].CopyFrom(value)
         elif isinstance(key, str):
             self._docs_map[key].CopyFrom(value)
         else:
@@ -57,11 +56,8 @@ class DocumentSet(MutableSequence):
 
     def __getitem__(self, item):
         from ..document import Document
-        from ..document.uid import UniqueId
         if isinstance(item, int):
             return Document(self._docs_proto[item])
-        elif isinstance(item, UniqueId):
-            return Document(self._docs_map[str(item)])
         elif isinstance(item, str):
             return Document(self._docs_map[item])
         elif isinstance(item, slice):
@@ -83,14 +79,15 @@ class DocumentSet(MutableSequence):
         return self
 
     def append(self, doc: 'Document') -> 'Document':
-        return self._docs_proto.append(doc.as_pb_object)
+        return self._docs_proto.append(doc.proto)
 
     def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method """
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
-        self._docs_proto.extend(doc.as_pb_object for doc in iterable)
+        for doc in iterable:
+            self.append(doc)
 
     def clear(self):
         del self._docs_proto[:]
@@ -113,7 +110,7 @@ class DocumentSet(MutableSequence):
         """Build a doc_id to doc mapping so one can later index a Document using
         doc_id as string key
         """
-        self._docs_map = {str(d.id): d for d in self._docs_proto}
+        self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
@@ -167,3 +164,16 @@ class DocumentSet(MutableSequence):
         """Create a new empty document appended to the end of the set"""
         from ..document import Document
         return self.append(Document())
+
+    def __str__(self):
+        from ..document import Document
+        content = ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
+        if len(self._docs_proto) > 3:
+            content += f'in total {len(self._docs_proto)} items'
+        return content
+
+    def __repr__(self):
+        content = ' '.join(f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items())
+        content += f' at {id(self)}'
+        content = content.strip()
+        return f'<{typename(self)} {content}>'

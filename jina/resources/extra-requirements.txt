@@ -23,7 +23,7 @@ fluent-logger:              logging, http, sse, dashboard, devel, cicd, test, da
 nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, test, daemon
 torch>=1.1.0:               framework, cicd
-transformers>=2.6.0:        nlp
+transformers>=2.6.0:        nlp, cicd
 flair:                      nlp
 paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
@@ -63,8 +63,7 @@ flaky:                      test
 mock:                       test
 requests:                   http, devel, test, daemon
 prettytable:                devel, test
-sseclient-py:               test
-optuna:                     test, optimizer
+optuna:                     cicd, optimizer
 websockets:                 http, devel, test, ws, daemon
 wsproto:                    http, devel, test, ws, daemon
 pydantic:                   http, devel, test, daemon

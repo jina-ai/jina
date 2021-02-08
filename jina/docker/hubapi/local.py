@@ -84,16 +84,18 @@ def _fetch_access_token(logger):
 
 def _make_hub_table_with_local(images, local_images):
     info_table = [f'found {len(images)} matched hub images',
-                  '{:<50s}{:<25s}{:<25s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
-                                                               colored('Kind', attrs=_header_attrs),
-                                                               colored('Version', attrs=_header_attrs),
-                                                               colored('Local', attrs=_header_attrs),
-                                                               colored('Description', attrs=_header_attrs))]
+                  '{:<50s}{:<25s}{:<30s}{:<25s}{:<30s}{:<50s}'.format(colored('Name', attrs=_header_attrs),
+                                                                      colored('Kind', attrs=_header_attrs),
+                                                                      colored('Version', attrs=_header_attrs),
+                                                                      colored('Local', attrs=_header_attrs),
+                                                                      colored('Jina Version', attrs=_header_attrs),
+                                                                      colored('Description', attrs=_header_attrs))]
     images = sorted(images, key=lambda k: k['name'].lower())
     for image in images:
         image_name = image.get('name', '')
         kind = image.get('kind', '')
         ver = image.get('version', '')
+        jina_ver = image.get('jina-version', '')
         desc = image.get('description', '')[:60].strip() + '...'
         if image_name and ver and desc:
             local_ver = ''
@@ -109,8 +111,9 @@ def _make_hub_table_with_local(images, local_images):
                     color = 'yellow'
             info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
                               f'{colored(kind, color="yellow"):<25s}'
-                              f'{colored(ver, color="green"):<20s}'
-                              f'{colored(local_ver, color=color):<20s}'
+                              f'{colored(ver, color="green"):<25s}'
+                              f'{colored(local_ver, color=color):<25s}'
+                              f'{colored(jina_ver, color="green"):<25s}'
                               f'{desc:<30s}')
     return info_table
 

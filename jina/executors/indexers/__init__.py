@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
-from typing import Tuple, Union, List, Iterator, Optional, Any
+from typing import Tuple, Optional, Any, Iterable
 
 import numpy as np
 
@@ -12,7 +12,7 @@ from ...helper import call_obj_fn, cached_property, get_readable_size
 
 
 class BaseIndexer(BaseExecutor):
-    """ base class for storing and searching any kind of data structure
+    """Base class for storing and searching any kind of data structure.
 
     The key functions here are :func:`add` and :func:`query`.
     One can decorate them with :func:`jina.decorator.require_train`,
@@ -41,6 +41,7 @@ class BaseIndexer(BaseExecutor):
 
     def __init__(self,
                  index_filename: str = None,
+                 key_length: int = 36,
                  *args, **kwargs):
         """
 
@@ -50,9 +51,22 @@ class BaseIndexer(BaseExecutor):
         """
         super().__init__(*args, **kwargs)
         self.index_filename = index_filename  #: the file name of the stored index, no path is required
+        self.key_length = key_length  #: the default minimum length of the key, will be expanded one time on the first batch
         self._size = 0
 
     def add(self, *args, **kwargs):
+        """Add documents to the index.
+        """
+        raise NotImplementedError
+
+    def update(self, *args, **kwargs):
+        """Update documents on the index.
+        """
+        raise NotImplementedError
+
+    def delete(self, *args, **kwargs):
+        """Delete documents from the index.
+        """
         raise NotImplementedError
 
     def post_init(self):
@@ -62,6 +76,8 @@ class BaseIndexer(BaseExecutor):
         self.is_handler_loaded = False
 
     def query(self, *args, **kwargs):
+        """Query documents from the index.
+        """
         raise NotImplementedError
 
     @property
@@ -79,7 +95,7 @@ class BaseIndexer(BaseExecutor):
             :attr:`query_handler` and :attr:`write_handler` are by default mutex
         """
         r = None
-        if (not self.handler_mutex or not self.is_handler_loaded) and self.is_exist:
+        if not self.handler_mutex or not self.is_handler_loaded:
             r = self.get_query_handler()
             if r is None:
                 self.logger.warning(f'you can not query from {self} as its "query_handler" is not set. '
@@ -138,7 +154,7 @@ class BaseIndexer(BaseExecutor):
 
     @property
     def size(self) -> int:
-        """The number of vectors/chunks indexed """
+        """The number of vectors or documents indexed """
         return self._size
 
     def __getstate__(self):
@@ -162,31 +178,13 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(self, keys: Iterator, values: Iterator, existent_keys: Iterator, check_path: str) -> Tuple[List, List]:
-        keys = list(keys)
-        values = list(values)
-        if len(keys) != len(values):
-            raise ValueError(f'Keys of length {len(keys)} did not match values of lenth {len(values)}')
-        indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
-        keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
-        values = [values[i] for i in range(len(values)) if i not in indices_to_drop]
-        return keys, values
+    def _filter_nonexistent_keys_values(self, keys: Iterable, values: Iterable, existent_keys: Iterable) -> Tuple[
+        Iterable, Iterable]:
+        filtered_list = [[key, value] for key, value in zip(keys, values) if key in existent_keys]
+        return [key_value[0] for key_value in filtered_list], [key_value[1] for key_value in filtered_list]
 
-    def _filter_nonexistent_keys(self, keys: Iterator, existent_keys: Iterator, check_path: str) -> List:
-        keys = list(keys)
-        indices_to_drop = self._get_indices_to_drop(keys, existent_keys, check_path)
-        keys = [keys[i] for i in range(len(keys)) if i not in indices_to_drop]
-        return keys
-
-    def _get_indices_to_drop(self, keys: List, existent_keys: Iterator, check_path: str):
-        indices_to_drop = []
-        for key_index, key in enumerate(keys):
-            if key not in existent_keys:
-                indices_to_drop.append(key_index)
-        if indices_to_drop:
-            self.logger.warning(
-                f'Key(s) {[keys[i] for i in indices_to_drop]} were not found in {check_path}. Continuing anyway...')
-        return indices_to_drop
+    def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable) -> Iterable:
+        return [key for key in keys if key in existent_keys]
 
 
 class BaseVectorIndexer(BaseIndexer):
@@ -197,38 +195,44 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
-    def query_by_id(self, ids: Union[List[int], 'np.ndarray'], *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
         """ Get the vectors by id, return a subset of indexed vectors
 
-        :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args:
-        :param kwargs:
-        :return:
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :return: subset of indexed vectors
         """
         raise NotImplementedError
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Add new chunks and their vector representations
 
-        :param keys: ``chunk_id`` in 1D-ndarray, shape B x 1
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
         """
         raise NotImplementedError
 
-    def query(self, keys: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
 
-        :param keys: query vectors in ndarray, shape B x D
+        :param vectors: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
-        :return: a tuple of two ndarray.
-            The first is ids in shape B x K (`dtype=int`), the second is scores in shape B x K (`dtype=float`)
+        :return: ids as ndarray (`dtype=int`) and scores as ndarray (`dtype=float)
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
+        """Update vectors on the index.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param vectors: vector representations in B x D
+        """
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+        """Delete vectors from the index.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        """
         raise NotImplementedError
 
 
@@ -240,29 +244,43 @@ class BaseKVIndexer(BaseIndexer):
     It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
     """
 
-    def add(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
-        raise NotImplementedError
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+        """Add the serialized documents to the index via document ids.
 
-    def query(self, key: Any) -> Optional[Any]:
-        """ Find the protobuf chunk/doc using id
-
-        :param key: ``id``
-        :return: protobuf chunk or protobuf document
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: serialized documents
         """
         raise NotImplementedError
 
-    def update(self, keys: Iterator[str], values: Iterator[bytes], *args, **kwargs):
+    def query(self, key: str) -> Optional[bytes]:
+        """Find the serialized document to the index via document id.
+
+        :param key: document id
+        :return: serialized documents
+        """
         raise NotImplementedError
 
-    def delete(self, keys: Iterator[str], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+        """Update the serialized documents on the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param values: serialized documents
+        """
         raise NotImplementedError
 
-    def __getitem__(self, key: Any) -> Optional[Any]:
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+        """Delete the serialized documents from the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        """
+        raise NotImplementedError
+
+    def __getitem__(self, key: Any) -> Optional[bytes]:
         return self.query(key)
 
 
 class UniqueVectorIndexer(CompoundExecutor):
-    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocIDCache` """
+    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocCache` """
 
 
 class CompoundIndexer(CompoundExecutor):
@@ -276,7 +294,7 @@ class CompoundIndexer(CompoundExecutor):
         - In the query time
             - 1. Find the knn using the vector via :class:`BaseVectorIndexer`
             - 2. remove all vector information (embedding, buffer, blob, text)
-            - 3. Fill in the meta information of the chunk via :class:`BaseKVIndexer`
+            - 3. Fill in the meta information of the document via :class:`BaseKVIndexer`
 
     One can use the :class:`ChunkIndexer` via
 

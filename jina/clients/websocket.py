@@ -68,15 +68,17 @@ class WebSocketClientMixin(BaseClient, ABC):
                         # we need to traverse through the websocket to recv messages.
                         # https://websockets.readthedocs.io/en/stable/faq.html#why-does-the-server-close-the-connection-after-processing-one-message
 
-                        response = Request(response_bytes).to_response()
-                        callback_exec(response=response,
+                        resp = Request(response_bytes)
+                        resp.as_typed_request(resp.request_type)
+                        resp.as_response()
+                        callback_exec(response=resp,
                                       on_error=on_error,
                                       on_done=on_done,
                                       on_always=on_always,
                                       continue_on_error=self.args.continue_on_error,
                                       logger=self.logger)
                         p_bar.update(self.args.request_size)
-                        yield response
+                        yield resp
                         self.num_responses += 1
                         if self.num_requests == self.num_responses:
                             break

@@ -38,7 +38,7 @@ class Zmqlet:
         :param logger: the logger to use
         """
         self.args = args
-        self.identity = hex(id(self))
+        self.identity = random_identity()
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)

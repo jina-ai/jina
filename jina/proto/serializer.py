@@ -10,7 +10,7 @@ class RequestProto:
 
     @staticmethod
     def SerializeToString(x: 'Request'):
-        return x.as_pb_object.SerializeToString()
+        return x.proto.SerializeToString()
 
     @staticmethod
     def FromString(x: bytes):

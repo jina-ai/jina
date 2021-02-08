@@ -92,9 +92,9 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             first_socket_type = SocketType.PUB_BIND
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
-        elif start_node.host != __default_host__ and end_node.host == __default_host__:
+        elif start_node.host != __default_host__ and end_node.host == __default_host__ and end_node.args.pod_role != PodRoleType.JOIN:
             # first node is on remote, second is local. in this case, local node is often behind router/private
-            # network, there is no way that first node can send data "actively" (CONNECT) to it, it
+            # network, there is no way that first node can send data "actively" (CONNECT) to it
             first_socket_type = SocketType.PUSH_BIND
         _connect(start_node, end_node, first_socket_type=first_socket_type)
         flow.logger.debug(f'Connect {start_node_name} '
@@ -155,7 +155,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
                 if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and end_node.is_head_router:
                     flow.logger.info(
                         f'Node {end_node_name} connects to tail of {start_node_name}')
-                    end_node.connect_to_tail_of(start_node)
+                    end_node.optimize_connect_to_tail_of(start_node)
             elif end_node.role == PodRoleType.GATEWAY:
                 # TODO: this part of the code is never executed given the current optimization level. Never tested.
                 if flow.args.optimize_level > FlowOptimizeLevel.IGNORE_GATEWAY and \
@@ -164,16 +164,16 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
                     # as gateway can not block & reduce message
                     flow.logger.info(
                         f'Node {start_node_name} connects to head of {end_node_name}')
-                    start_node.connect_to_head_of(end_node)
+                    start_node.optimize_connect_to_head_of(end_node)
             else:
                 if end_node.is_head_router and not start_node.is_tail_router:
                     flow.logger.info(
                         f'Node {end_node_name} connects to tail of {start_node_name}')
-                    end_node.connect_to_tail_of(start_node)
+                    end_node.optimize_connect_to_tail_of(start_node)
                 elif start_node.is_tail_router and start_node.tail_args.num_part <= 1:
                     flow.logger.info(
                         f'Node {start_node_name} connects to head of {end_node_name}')
-                    start_node.connect_to_head_of(end_node)
+                    start_node.optimize_connect_to_head_of(end_node)
 
     if op_flow.args.optimize_level > FlowOptimizeLevel.NONE:
         return _traverse_graph(op_flow, outgoing_map, _optimize_two_connections)

@@ -39,7 +39,7 @@ def test_numpy_indexer(batch_size, compress_level, test_metas):
 
 def test_numpy_indexer_long_ids(test_metas):
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=0,
-                      metas=test_metas, key_length=20) as indexer:
+                      metas=test_metas) as indexer:
         indexer.batch_size = 4
         long_vec_id = np.array(vec_idx, dtype=(np.str_, 20))
         long_vec_id[0] = '1234512345123451234'
@@ -83,7 +83,7 @@ def test_numpy_indexer_known(batch_size, compress_level, test_metas):
         np.testing.assert_equal(idx, np.array([['4', '5'], ['5', '4'], ['6', '5'], ['7', '6']]))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(indexer.query_by_id(np.array(['7', '4'])), vectors[[3, 0]])
+        np.testing.assert_equal(indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
@@ -120,7 +120,8 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16))
+    # TODO: PLLEASE DO NOT BUILD FLAKY KEYS LIKE THIS
+    keys = np.squeeze(np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16)))
 
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
                       metas=test_metas) as indexer:
@@ -138,7 +139,7 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
             [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'], ['19000']]))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
-        np.testing.assert_equal(indexer.query_by_id(np.array(['10000', '15000'])), vectors[[0, 5000]])
+        np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
 
 
 @pytest.mark.parametrize('compress_level', [0, 1, 2, 3, 4, 5])
@@ -156,7 +157,7 @@ def test_scipy_indexer_known_big(compress_level, test_metas):
         queries[int(idx / 1000)] = array
         vectors[idx] = array
 
-    keys = np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16))
+    keys = np.squeeze(np.array(np.arange(10000, 20000).reshape(-1, 1), dtype=(np.str_, 16)))
 
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', backend='scipy', compress_level=compress_level,
                       metas=test_metas) as indexer:
@@ -174,7 +175,7 @@ def test_scipy_indexer_known_big(compress_level, test_metas):
             [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'], ['19000']]))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
-        np.testing.assert_equal(indexer.query_by_id(['10000', '15000']), vectors[[0, 5000]])
+        np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
 
 
 @pytest.mark.parametrize('batch_size, num_docs, top_k',
@@ -205,8 +206,8 @@ def test_numpy_indexer_empty_data(batch_size, compress_level, test_metas):
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
-        assert idx is None
-        assert dist is None
+        assert len(idx) == 0
+        assert len(dist) == 0
 
 
 @pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
@@ -277,7 +278,7 @@ def test_numpy_update_delete(compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
-        query_results = indexer.query_by_id(vec_idx)
+        query_results = indexer.query_by_key(vec_idx)
         assert np.array_equal(vec, query_results)
 
     # update
@@ -296,7 +297,7 @@ def test_numpy_update_delete(compress_level, test_metas):
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
-        query_results = indexer.query_by_id([key_to_update])
+        query_results = indexer.query_by_key([key_to_update])
         assert np.array_equal(data_to_update, query_results)
 
     # delete
@@ -315,8 +316,8 @@ def test_numpy_update_delete(compress_level, test_metas):
         assert isinstance(indexer, NumpyIndexer)
         assert indexer.size == len(vec_idx) - keys_to_delete
         # random non-existent key
-        assert indexer.query_by_id(['123861942']) is None
-        query_results = indexer.query_by_id(vec_idx[keys_to_delete:])
+        assert indexer.query_by_key(['123861942']) is None
+        query_results = indexer.query_by_key(vec_idx[keys_to_delete:])
         expected = vec[keys_to_delete:]
         np.testing.assert_allclose(query_results, expected, equal_nan=True)
 
@@ -344,7 +345,7 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
         np.testing.assert_equal(idx, np.array([['4', '5', '6'], ['5', '4', '6']]))
         assert idx.shape == dist.shape
         assert idx.shape == (len(queries), top_k)
-        np.testing.assert_equal(indexer.query_by_id(['5', '4', '6']), vectors[[1, 0, 2]])
+        np.testing.assert_equal(indexer.query_by_key(['5', '4', '6']), vectors[[1, 0, 2]])
 
     # update and query again
     key_to_update = np.array(['4'])
@@ -377,12 +378,12 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
         np.testing.assert_equal(idx, np.array([['6', '5'], ['5', '6']]))
         assert idx.shape == dist.shape
         assert idx.shape == (len(queries), top_k)
-        np.testing.assert_equal(indexer.query_by_id(['6', '5']), vectors[[2, 1]])
+        np.testing.assert_equal(indexer.query_by_key(['6', '5']), vectors[[2, 1]])
 
     # test query by nonexistent key
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
-        assert indexer.query_by_id(['91237124']) is None
+        assert indexer.query_by_key(['91237124']) is None
 
 
 @pytest.mark.parametrize('compress_level', [0, 1, 2, 3])
@@ -413,4 +414,4 @@ def test_numpy_indexer_with_ref_indexer(compress_level, test_metas):
         np.testing.assert_equal(idx, np.array([['4', '5'], ['5', '4'], ['6', '5'], ['7', '6']]))
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
-        np.testing.assert_equal(new_indexer.query_by_id(np.array(['7', '4'])), vectors[[3, 0]])
+        np.testing.assert_equal(new_indexer.query_by_key(['7', '4']), vectors[[3, 0]])

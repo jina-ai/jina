@@ -54,7 +54,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
         # on connection the fluentd file may not flushed (aka exist) yet
         while not Path(self.filepath).is_file():
-            daemon_logger.info(f'still waiting {self.filepath} to be ready...')
+            daemon_logger.debug(f'still waiting {self.filepath} to be ready...')
             await asyncio.sleep(1)
 
         with open(self.filepath) as fp:

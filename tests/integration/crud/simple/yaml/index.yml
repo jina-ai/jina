@@ -28,16 +28,12 @@ requests:
           executor: docidx
           traversal_paths: [ 'r' ]
     DeleteRequest:
-      - !VectorIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: vecidx
-          traversal_paths: [ 'r' ]
-      - !KVIndexDriver
+      - !DeleteDriver
         with:
-          method: delete
           executor: docidx
-          traversal_paths: [ 'r' ]
     IndexRequest:
       - !VectorIndexDriver
         with:

@@ -33,7 +33,7 @@ def test_standard_query(tmpdir, test_standard):
     with NumpyIndexer.load(os.path.join(tmpdir, 'a.bin')) as ni:
         ni.batch_size = 256
         print(used_memory_readable())
-        print(ni.raw_ndarray.shape)
+        print(ni._raw_ndarray.shape)
         print(used_memory_readable())
         with TimeContext('query topk') as ti:
             result = ni.query(queries, top_k=10)
