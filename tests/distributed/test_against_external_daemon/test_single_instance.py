@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Flow
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -145,7 +146,7 @@ def test_l_r_l_with_upload(silent_log, parallels, docker_image, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
+@pytest.mark.parametrize('parallels', [2])
 def test_create_pea_timeout(parallels):
     f = (Flow()
          .add()
@@ -153,7 +154,7 @@ def test_create_pea_timeout(parallels):
               host=CLOUD_HOST,
               parallel=parallels,
               upload_files=['delayed_executor.py'],
-              timeout_ready=10000)
+              timeout_ready=20000)
          .add())
     with f:
-        f.index_ndarray(['abc'])
+        f.index(random_docs(10))
