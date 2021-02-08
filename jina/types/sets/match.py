@@ -5,6 +5,15 @@ if False:
 
 
 class MatchSet(DocumentSet):
+    """
+       :class:`MatchSet` inherits from :class:`DocumentSet`.
+       It's a subset of Documents that represents the matches
+
+       :param docs_proto:
+       :type docs_proto: :class:`Document`
+       :para reference_doc:
+       :type reference_doc: :class:`Document`
+       """
     def __init__(self, docs_proto, reference_doc: 'Document'):
         super().__init__(docs_proto)
         self._ref_doc = reference_doc
@@ -12,7 +21,10 @@ class MatchSet(DocumentSet):
     def append(self, document: 'Document', **kwargs) -> 'Document':
         """Add a matched document to the current Document
 
+        :param document: Sub-document to be added
+        :type document: :class: `Document
         :return: the newly added sub-document in :class:`Document` view
+        :rtype: :class:`Document` view
         """
         from ..document import Document
         m = self._docs_proto.add()
