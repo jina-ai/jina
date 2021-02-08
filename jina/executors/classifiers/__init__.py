@@ -14,7 +14,8 @@ class BaseClassifier(BaseExecutor):
     """
 
     def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        """ Perform hard/soft classification on ``data``, the predicted value for each sample in X is returned.
+        """
+        Perform hard/soft classification on ``data``, the predicted value for each sample in X is returned.
 
         The output value can be zero/one, for one-hot label; or float for soft-label or regression label.
         Use the corresponding driver to interpret these labels
@@ -24,9 +25,11 @@ class BaseClassifier(BaseExecutor):
             - (B, L): zero/one one-hot or soft label for L-class multi-class classification
 
         :param data: the input data to be classified, can be a ndim array.
-            where axis=0 represents the batch size, i.e. data[0] is the first sample, data[1] is the second sample, ...
-        :param args:
-        :param kwargs:
-        :return: the predicted value of each sample.
+            where axis=0 represents the batch size, i.e. data[0] is the first sample, data[1] is the second sample, data[n] is the n sample
+        :type data: np.ndarray
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        :return: Predicted value of each sample.
+        :rtype: np.ndarray
         """
         raise NotImplementedError
