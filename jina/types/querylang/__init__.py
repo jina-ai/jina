@@ -44,16 +44,15 @@ class QueryLang(ProtoTypeMixin):
             # to protobuf object
             ql.as_pb_object
 
+    :param querylang: the query language source to construct from, acceptable types include:
+        :class:`jina_pb2.QueryLangProto`, :class:`bytes`, :class:`str`, :class:`Dict`, Tuple.
+    :type querylang: Optional[QueryLangSourceType]
+    :param copy: when ``querylang`` is given as a :class:`QueryLangProto` object, build a
+        view (i.e. weak reference) from it or a deep copy from it.
+    :type copy: bool
     """
 
     def __init__(self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False):
-        """
-
-        :param querylang: the query language source to construct from, acceptable types include:
-            :class:`jina_pb2.QueryLangProto`, :class:`bytes`, :class:`str`, :class:`Dict`, Tuple.
-        :param copy: when ``querylang`` is given as a :class:`QueryLangProto` object, build a
-                view (i.e. weak reference) from it or a deep copy from it.
-        """
         self._pb_body = jina_pb2.QueryLangProto()
         try:
             if isinstance(querylang, jina_pb2.QueryLangProto):
@@ -86,8 +85,12 @@ class QueryLang(ProtoTypeMixin):
 
     @property
     def priority(self) -> int:
-        """Get the priority of this query language. The query language only takes
-        effect when if it has a higher priority than the internal one with the same name"""
+        """
+        Get the priority of this query language. The query language only takes
+        effect when if it has a higher priority than the internal one with the same name
+
+        :rtype: int
+        """
         return self._pb_body.priority
 
     @priority.setter
@@ -96,10 +99,19 @@ class QueryLang(ProtoTypeMixin):
 
     @property
     def name(self) -> str:
-        """Get the name of the driver that the query language attached to """
+        """
+        Get the name of the driver that the query language attached to
+        
+        :rtype: str
+        """
         return self._pb_body.name
 
     @name.setter
     def name(self, value: str):
-        """Set the name of the driver that the query language attached to """
+        """
+        Set the name of the driver that the query language attached to
+
+        :param value: Name of the driver
+        :type value: str
+        """
         self._pb_body.name = value

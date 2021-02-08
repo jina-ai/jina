@@ -5,6 +5,16 @@ if False:
 
 
 class ChunkSet(DocumentSet):
+    """
+    :class:`ChunkSet` inherits from :class:`DocumentSet`.
+    It's a subset of Documents.
+
+    :param docs_proto:
+    :type docs_proto: :class:`Document`
+    :para reference_doc:
+    :type reference_doc: :class:`Document`
+    """
+
     def __init__(self, docs_proto, reference_doc: 'Document'):
         super().__init__(docs_proto)
         self._ref_doc = reference_doc
@@ -35,7 +45,7 @@ class ChunkSet(DocumentSet):
 
     @property
     def parent_doc(self) -> 'Document':
-        """Get the document that this :class:`ChunkSet` belonging to"""
+        """Get the document that :class:`ChunkSet` belongs to"""
         return self._ref_doc
 
     @property
