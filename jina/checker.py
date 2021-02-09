@@ -14,9 +14,14 @@ if False:
 
 
 class ImportChecker:
-    """Check all executors, drivers and handler functions in the package. """
+    """Check all executors, drivers and handler functions in the package."""
 
     def __init__(self, args: 'argparse.Namespace'):
+        """
+        Create a new :class:`ImportChecker`.
+
+        :param args: args provided by the CLI.
+        """
         default_logger.info('\navailable core executors\n'.upper())
 
         _r = import_classes('jina.executors', show_import_table=True, import_once=False)
@@ -48,9 +53,14 @@ class ImportChecker:
 
 
 class NetworkChecker:
-    """Check if a BasePod is running or not """
+    """Check if a BasePod is running or not."""
 
     def __init__(self, args: 'argparse.Namespace'):
+        """
+        Create a new :class:`NetworkChecker`.
+
+        :param args: args provided by the CLI.
+        """
         from .peapods.zmq import send_ctrl_message
         from .logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
