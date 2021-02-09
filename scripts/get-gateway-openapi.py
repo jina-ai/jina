@@ -10,7 +10,7 @@ logger = JinaLogger('')
 app = get_fastapi_app(args, logger)
 schema = app.openapi()
 schema['info']['x-logo'] = {
-    'url': 'https://api.jina.ai/logo/logo-company/logo/light-bg/Company%20logo_light@1x.png'
+    'url': 'https://api.jina.ai/logo/logo-product/jina-core/horizontal-layout/colored/Product%20logo_Core_vertical_colorful%402x-margin.png'
 }
 with open('gateway.json', 'w') as f:
     json.dump(schema, f)
