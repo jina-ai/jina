@@ -1,3 +1,4 @@
+"""Module for helper functions for clients."""
 from typing import Tuple, Sequence
 
 from ... import Document, Request
@@ -54,7 +55,7 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
 def _add_docs_groundtruths(req, batch, data_type, _kwargs):
     for content in batch:
         if isinstance(content, tuple) and len(content) == 2:
-            # content comes in pair,  will take the first as the input and the second as the groundtruth
+            # content comes in pair,  will take the first as the input and the second as the ground truth
 
             # note how data_type is cached
             d, data_type = _new_doc_from_data(content[0], data_type, **_kwargs)

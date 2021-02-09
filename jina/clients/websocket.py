@@ -1,3 +1,4 @@
+"""A module for the websockets-based Client for Jina."""
 import asyncio
 from abc import ABC
 from typing import Callable
@@ -10,6 +11,8 @@ from ..types.request import Request
 
 
 class WebSocketClientMixin(BaseClient, ABC):
+    """A MixIn for Websocket Client."""
+
     async def _get_results(self,
                            input_fn: Callable,
                            on_done: Callable,
@@ -28,6 +31,13 @@ class WebSocketClientMixin(BaseClient, ABC):
             :meth:`send_requests()` keeps track of num_requests sent
             Async recv loop keeps track of num_responses received
             Client exits out of await when num_requests == num_responses
+
+        :param input_fn: the callable
+        :param on_done: the callback for on_done
+        :param on_error: the callback for on_error
+        :param on_always: the callback for on_always
+        :param **kwargs: **kwargs for _get_task_name and _get_requests
+        :yields: generator over results
         """
         with ImportExtensions(required=True):
             import websockets
@@ -48,7 +58,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                 self.num_requests = 0
                 self.num_responses = 0
 
-                async def send_requests(request_iterator):
+                async def _send_requests(request_iterator):
                     for next_request in request_iterator:
                         await websocket.send(next_request.SerializeToString())
                         self.num_requests += 1
@@ -62,7 +72,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                     # Simply iterating through the `req_iter` makes the request-response sequential.
                     # To make client unblocking, :func:`send_requests` and `recv_responses` are separate tasks
 
-                    asyncio.create_task(send_requests(request_iterator=req_iter))
+                    asyncio.create_task(_send_requests(request_iterator=req_iter))
                     async for response_bytes in websocket:
                         # When we have a stream of responses, instead of doing `await websocket.recv()`,
                         # we need to traverse through the websocket to recv messages.

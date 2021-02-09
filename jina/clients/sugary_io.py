@@ -1,3 +1,4 @@
+"""A module for sugary API wrapper around the clients."""
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
@@ -33,7 +34,7 @@ def _input_lines(
         line_format: str = 'json',
         **kwargs
 ) -> Iterator[Union[str, bytes]]:
-    """Input function that iterates over list of strings, it can be used in the Flow API
+    """Input function that iterates over list of strings, it can be used in the Flow API.
 
     :param filepath: a text file that each line contains a document
     :param lines: a list of strings, each is considered as a document
@@ -46,7 +47,6 @@ def _input_lines(
     .. note::
         This function should not be directly used, use :meth:`Flow.index_lines`, :meth:`Flow.search_lines` instead
     """
-
     if filepath:
         file_type = os.path.splitext(filepath)[1]
         with open(filepath, read_mode) as f:
@@ -102,7 +102,7 @@ def _input_files(
         sampling_rate: float = None,
         read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
-    """Input function that iterates over files, it can be used in the Flow API
+    r"""Input function that iterates over files, it can be used in the Flow API.
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
     :param recursive: If recursive is true, the pattern '**' will match any files and
@@ -119,13 +119,13 @@ def _input_files(
     if read_mode not in {'r', 'rb', None}:
         raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
 
-    def iter_file_exts(ps):
+    def _iter_file_exts(ps):
         return it.chain.from_iterable(glob.iglob(p, recursive=recursive) for p in ps)
 
     d = 0
     if isinstance(patterns, str):
         patterns = [patterns]
-    for g in iter_file_exts(patterns):
+    for g in _iter_file_exts(patterns):
         if sampling_rate is None or random.random() < sampling_rate:
             if read_mode is None:
                 yield g
@@ -140,7 +140,7 @@ def _input_files(
 def _input_ndarray(
         array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
 ) -> Iterator[Any]:
-    """Input function that iterates over a numpy array, it can be used in the Flow API
+    """Input function that iterates over a numpy array, it can be used in the Flow API.
 
     :param array: the numpy ndarray data source
     :param axis: iterate over that axis

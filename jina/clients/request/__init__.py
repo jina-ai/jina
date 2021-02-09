@@ -1,3 +1,4 @@
+"""Module for Jina Requests."""
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
@@ -28,12 +29,17 @@ def request_generator(data: GeneratorSourceType,
                       data_type: DataInputType = DataInputType.AUTO,
                       **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
                       ) -> Iterator['Request']:
-    """
+    """Generate a request iterator.
+
+    :param data: the data to use in the request
+    :param request_size: the request size for the client
+    :param mode: the request mode (index, search etc.)
+    :param mime_type: mime type
+    :param queryset: querylang set of queries
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
-            or an interator over possible Document content (set to text, blob and buffer).
+            or an iterator over possible Document content (set to text, blob and buffer).
     :return:
     """
-
     _kwargs = dict(mime_type=mime_type, length=request_size, weight=1.0)
 
     try:
