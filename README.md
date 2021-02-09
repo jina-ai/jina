@@ -882,11 +882,12 @@ Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [
 
 ## Documentation
 
-Apart from the learning resources we provided above, We highly recommended you go through our [**documentation**](https://docs.jina.ai) to master Jina.
-
 <a href="https://docs.jina.ai/">
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
+
+Apart from the learning resources we provided above, We highly recommended you go through our [**documentation**](https://docs.jina.ai) to master Jina.
+
 
 Our docs are built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
 
