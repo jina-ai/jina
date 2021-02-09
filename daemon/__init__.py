@@ -70,6 +70,9 @@ def _get_app():
 def _write_openapi_schema(filename='daemon.json'):
     app = _get_app()
     schema = app.openapi()
+    schema['info']['x-logo'] = {
+        'url': 'https://api.jina.ai/logo/logo-company/logo/light-bg/Company%20logo_light@1x.png'
+    }
     with open(filename, 'w') as f:
         json.dump(schema, f)
 
