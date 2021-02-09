@@ -47,13 +47,22 @@ def test_numpy_indexer_long_ids(test_metas):
         indexer.save()
         assert os.path.exists(indexer.index_abspath)
         save_abspath = indexer.save_abspath
-        # assert False
 
     with BaseIndexer.load(save_abspath) as indexer:
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
+
+
+def test_numpy_indexer_assert_shape_mismatch(test_metas):
+    with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=0,
+                      metas=test_metas) as indexer:
+        indexer.batch_size = 4
+        vec_short = np.array([[1, 1, 1], [2, 2, 2]])
+        vec_keys = np.array([1, 2, 3])
+        with pytest.raises(ValueError):
+            indexer.add(vec_keys, vec_short)
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])

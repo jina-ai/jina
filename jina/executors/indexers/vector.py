@@ -116,7 +116,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         elif self.dtype != vectors.dtype.name:
             raise TypeError(
                 f'vectors\' dtype {vectors.dtype.name} does not match with indexers\'s dtype: {self.dtype}')
-        elif keys.shape[0] != vectors.shape[0]:
+
+        if keys.shape[0] != vectors.shape[0]:
             raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
 
     def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
