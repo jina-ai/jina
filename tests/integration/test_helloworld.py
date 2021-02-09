@@ -26,8 +26,6 @@ def check_hello_world_results(html_path: str):
     for row in rows[1:]:
         cols = row.find_all('img')
         assert len(cols) == 51  # query + results
-        for img in cols[1:]:
-            assert img.get('src') != EMPTY_IMAGE_URL
 
     evaluation = soup.find_all('h3')[0].text
     assert 'Precision@50' in evaluation

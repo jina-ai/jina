@@ -786,12 +786,12 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 
 <table>
   <tr>
-    <td width="30%">
+    <td width="25%">
     <a href="https://101.jina.ai">
       <img src="https://github.com/jina-ai/jina/blob/master/.github/images/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
     </a>
     </td>
-    <td width="70%">
+    <td width="75%">
 &nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/docs/tree/master/chapters/101">Jina 101: First Things to Learn About Jina</a></h3>
 &nbsp;&nbsp;<a href="https://github.com/jina-ai/docs/tree/master/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ja.md">日本語</a> •
@@ -885,7 +885,7 @@ Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [
 Apart from the learning resources we provided above, We highly recommended you go through our [**documentation**](https://docs.jina.ai) to master Jina.
 
 <a href="https://docs.jina.ai/">
-<img align="right" width="350px" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
+<img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
 Our docs are built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
@@ -910,7 +910,6 @@ Our docs are built on every push, merge, and release of Jina's master branch. Do
 - ... [and more](https://docs.jina.ai/index.html)
 
 -->
-
 
 
 Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
@@ -962,7 +961,9 @@ We welcome all kinds of contributions from the open-source community, individual
 
 ## Open Governance
 
-[GitHub milestones](https://github.com/jina-ai/jina/milestones) lay out the path to Jina's future improvements.
+<a href="https://www.youtube.com/c/jina-ai">
+<img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/eah-god.png?raw=true " />
+</a>
 
 As part of our open governance model, we host Jina's [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) in public. This Zoom meeting recurs monthly on the second Tuesday of each month, at 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
 
