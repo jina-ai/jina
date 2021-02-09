@@ -87,4 +87,6 @@ def main():
     from . import api
     args = _get_run_args()
     _is_latest_version()
+    print(args)
+    exit()
     getattr(api, args.cli.replace('-', '_'))(args)
