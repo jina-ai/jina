@@ -77,7 +77,7 @@ class RouteDriver(ControlReqDriver):
         when it first starts.
 
         - The router receives requests from both dealer and upstream pusher.
-         if it is a upstream request, use LB to schedule the receiver,
+         if it is an upstream request, use LB to schedule the receiver,
          mark it in the envelope if it is a control request in
     """
 
