@@ -6,14 +6,14 @@ if False:
 
 class MatchSet(DocumentSet):
     """
-       :class:`MatchSet` inherits from :class:`DocumentSet`.
-       It's a subset of Documents that represents the matches
+    :class:`MatchSet` inherits from :class:`DocumentSet`.
+    It's a subset of Documents that represents the matches
 
-       :param docs_proto: Set of matches of the `reference_doc`
-       :type docs_proto: :class:`Document`
-       :para reference_doc: Reference :class:`Document` for the sub-documents
-       :type reference_doc: :class:`Document`
-       """
+    :param docs_proto: Set of matches of the `reference_doc`
+    :type docs_proto: :class:`Document`
+    :para reference_doc: Reference :class:`Document` for the sub-documents
+    :type reference_doc: :class:`Document`
+    """
     def __init__(self, docs_proto, reference_doc: 'Document'):
         """Set constructor method."""
         super().__init__(docs_proto)
