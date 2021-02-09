@@ -22,12 +22,17 @@ __all__ = ['DocumentSet']
 
 
 class DocumentSet(MutableSequence):
-    """:class:`DocumentSet` is a mutable sequence of :class:`Document`,
-    it gives an efficient view of a list of Document. One can iterate over it like
+    """
+    :class:`DocumentSet` is a mutable sequence of :class:`Document`.
+    It gives an efficient view of a list of Document. One can iterate over it like
     a generator but ALSO modify it, count it, get item, or union two 'DocumentSet's using the '+' and '+=' operators.
+
+    :param docs_proto: A list of :class:`Document`
+    :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
     def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
+        """Set constructor method."""
         super().__init__()
         self._docs_proto = docs_proto
         self._docs_map = {}
@@ -107,9 +112,7 @@ class DocumentSet(MutableSequence):
             self._docs_proto.reverse()
 
     def build(self):
-        """Build a doc_id to doc mapping so one can later index a Document using
-        doc_id as string key
-        """
+        """Build a doc_id to doc mapping so one can later index a Document using doc_id as string key."""
         self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
@@ -123,9 +126,9 @@ class DocumentSet(MutableSequence):
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
 
-        :return a tuple of embedding in :class:`np.ndarray`,
-                the corresponding documents in a :class:`DocumentSet`,
+        :return: The corresponding documents in a :class:`DocumentSet`,
                 and the documents have no embedding in a :class:`DocumentSet`.
+        :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         return self._extract_docs('embedding')
 
@@ -133,9 +136,9 @@ class DocumentSet(MutableSequence):
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
 
-        :return: a tuple of embedding in :class:`np.ndarray`,
-                the corresponding documents in a :class:`DocumentSet`,
+        :return: The corresponding documents in a :class:`DocumentSet`,
                 and the documents have no contents in a :class:`DocumentSet`.
+        :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         return self._extract_docs('content')
 
@@ -161,7 +164,7 @@ class DocumentSet(MutableSequence):
         return len(self) > 0
 
     def new(self) -> 'Document':
-        """Create a new empty document appended to the end of the set"""
+        """Create a new empty document appended to the end of the set."""
         from ..document import Document
         return self.append(Document())
 

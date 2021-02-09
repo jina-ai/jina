@@ -20,17 +20,23 @@ __all__ = ['QueryLangSet', 'AcceptQueryLangType']
 
 
 class QueryLangSet(MutableSequence):
-    """:class:`QueryLangSet` is a mutable sequence of :class:`QueryLang`,
-    it gives an efficient view of a list of Document. One can iterate over it like
+    """
+    :class:`QueryLangSet` is a mutable sequence of :class:`QueryLang`.
+    It gives an efficient view of a list of Document. One can iterate over it like
     a generator but ALSO modify it, count it, get item.
+
+    :param querylang_protos: A list of :class:`QueryLangProto`
+    :type querylang_protos: :class:`RepeatedCompositeContainer`
     """
 
     def __init__(self, querylang_protos: 'RepeatedContainer'):
+        """Set constructor method."""
         super().__init__()
         self._querylangs_proto = querylang_protos
         self._querylangs_map = {}
 
     def insert(self, index: int, ql: 'QueryLang') -> None:
+        """Insert :param:`ql` at :param:`index` into `_querylangs_proto`."""
         self._querylangs_proto.insert(index, ql.proto)
 
     def __setitem__(self, key, value: 'QueryLang'):
@@ -60,6 +66,7 @@ class QueryLangSet(MutableSequence):
             raise IndexError(f'do not support this index {item}')
 
     def append(self, value: 'AcceptQueryLangType'):
+        """Append :param:`value` in `_querylangs_proto`."""
         q_pb = self._querylangs_proto.add()
         if isinstance(value, Dict):
             q_pb.CopyFrom(QueryLang(value).proto)
@@ -75,9 +82,11 @@ class QueryLangSet(MutableSequence):
             self.append(q)
 
     def clear(self):
+        """Clear `_querylangs_proto` set."""
         del self._querylangs_proto[:]
 
     def reverse(self):
+        """Reverse order of `_querylangs_proto` set."""
         size = len(self._querylangs_proto)
         hi_idx = size - 1
         for i in range(int(size / 2)):
@@ -88,8 +97,6 @@ class QueryLangSet(MutableSequence):
             hi_idx -= 1
 
     def build(self):
-        """Build a name to QueryLang mapping so one can later index a QueryLang using
-        name as string key
-        """
+        """Build a name to QueryLang mapping so one can later index a QueryLang using name as string key."""
         # TODO This is a temp fix, QueryLangProto do not have an id field.
         self._querylangs_map = {q.name: q for q in self._querylangs_proto}
