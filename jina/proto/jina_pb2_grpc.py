@@ -6,16 +6,14 @@ from . import serializer as jina__pb2
 
 
 class JinaRPCStub(object):
-    """*
-    jina gRPC service.
+    """
+    Jina gRPC service.
+
+    :param channel: A grpc.Channel.
     """
 
     def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
+        """Set the Constructor."""
         self.Call = channel.stream_stream(
                 '/jina.JinaRPC/Call',
                 request_serializer=jina__pb2.RequestProto.SerializeToString,
@@ -24,12 +22,14 @@ class JinaRPCStub(object):
 
 
 class JinaRPCServicer(object):
-    """*
-    jina gRPC service.
-    """
+    """Jina gRPC service."""
 
     def Call(self, request_iterator, context):
-        """Pass in a Request and a filled Request with matches will be returned.
+        """
+        Pass in a Request and a filled Request with matches will be returned.
+
+        :param request_iterator: An iterator of request.
+        :param context: ServicerContext in gRPC
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -37,6 +37,12 @@ class JinaRPCServicer(object):
 
 
 def add_JinaRPCServicer_to_server(servicer, server):
+    """
+    Add JinaRPCServicer to server.
+
+    :param servicer: JinaRPCServicer.
+    :param server: Target server.
+    """
     rpc_method_handlers = {
             'Call': grpc.stream_stream_rpc_method_handler(
                     servicer.Call,
@@ -51,9 +57,7 @@ def add_JinaRPCServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class JinaRPC(object):
-    """*
-    jina gRPC service.
-    """
+    """Jina gRPC service."""
 
     @staticmethod
     def Call(request_iterator,
