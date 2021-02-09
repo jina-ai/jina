@@ -23,6 +23,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7393,4 +7394,42 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```342d9f8a```](https://github.com/jina-ai/jina/commit/342d9f8a58fd6ecc13a9f9a41fc5582c5f819b0c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```0b5ca8bc```](https://github.com/jina-ai/jina/commit/0b5ca8bc2f2b518afe67cc00269470687f192c44)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```d30a1d67```](https://github.com/jina-ai/jina/commit/d30a1d670199e474dbfe5f2b394176feb07997c8)] __-__ __version__: the next version will be 0.9.32 (*Jina Dev Bot*)
+
+<a name=release-note-0-9-33></a>
+## Release Note (`0.9.33`)
+
+> Release time: 2021-02-09 10:44:45
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Alex Cureton-Griffiths,  Han Xiao,  Yongxuanzhang,  Maximilian Werk,  Jina Dev Bot,  cristian,  🙇
+
+
+### 🆕 New Features
+
+ - [[```3b20fb46```](https://github.com/jina-ai/jina/commit/3b20fb463db09c89609814ecba6c943e5dafe825)] __-__ added base embedding evaluator (#1875) (*Maximilian Werk*)
+
+### 🐞 Bug fixes
+
+ - [[```bbf5d7cc```](https://github.com/jina-ai/jina/commit/bbf5d7cc2121fc1f3a88e037b64b2c619245f8a9)] __-__ size assertion for first add call (#1905) (*Maximilian Werk*)
+ - [[```60aa20a2```](https://github.com/jina-ai/jina/commit/60aa20a2eff1623499edca7084189f359215cf80)] __-__ refactor doccache filename usage (#1900) (*cristian*)
+
+### 📗 Documentation
+
+ - [[```6e1baa5a```](https://github.com/jina-ai/jina/commit/6e1baa5a8201d6f5ca713f221e3c5ab82d512986)] __-__ __checker__: update docstring for checker (#1906) (*Yongxuanzhang*)
+ - [[```6f1b53eb```](https://github.com/jina-ai/jina/commit/6f1b53eb5642acd4e71a4fe5e4a80cbd484d4ac1)] __-__ __enums__: update docstring for enums (#1907) (*Yongxuanzhang*)
+ - [[```6bb0ede2```](https://github.com/jina-ai/jina/commit/6bb0ede2de8a20743682dd9e29430d52727415d7)] __-__ docstrings for cache driver (#1901) (*cristian*)
+ - [[```9f8543c2```](https://github.com/jina-ai/jina/commit/9f8543c29806169ec7eb53699cb90face30b1d2f)] __-__ __excepts__: update excepts docs (#1896) (*Yongxuanzhang*)
+
+### 🍹 Other Improvements
+
+ - [[```f7099663```](https://github.com/jina-ai/jina/commit/f7099663d9908d8cd01d4ae1f2a3e23f3ae29ea3)] __-__ __rel-notes__: upload new banner (#1909) (*Alex Cureton-Griffiths*)
+ - [[```2cead169```](https://github.com/jina-ai/jina/commit/2cead169d8c7272907aafabdd949c9854bc59af3)] __-__ fix image position (*Han Xiao*)
+ - [[```9a94cd88```](https://github.com/jina-ai/jina/commit/9a94cd883dbaec4b9d29c196e2cc60d2d5a6b767)] __-__ update readme image (*Han Xiao*)
+ - [[```7b658e1a```](https://github.com/jina-ai/jina/commit/7b658e1ad1f9cf4471aff24cef7404c9b8733310)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```089df05d```](https://github.com/jina-ai/jina/commit/089df05d4fc94129afc57c271b69b557b3a64563)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```5ec92e21```](https://github.com/jina-ai/jina/commit/5ec92e219f2c8ca1701b82d2fec4a97da94d3210)] __-__ update readme highlight (*Han Xiao*)
+ - [[```bd64bc18```](https://github.com/jina-ai/jina/commit/bd64bc18d32e1526f738ce56b617474eb57a2635)] __-__ update highlights (*Han Xiao*)
+ - [[```3bb84682```](https://github.com/jina-ai/jina/commit/3bb846821fe47f5182dd46773a078deaaa388caf)] __-__ __version__: the next version will be 0.9.33 (*Jina Dev Bot*)
 
