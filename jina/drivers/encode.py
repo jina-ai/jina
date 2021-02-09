@@ -55,7 +55,7 @@ class EncodeDriver(BaseEncodeDriver):
                  *args, **kwargs):
         """
         Extract from different documents.
-        :param batch_size: number of documents to be used simultaniously in the encoder :meth:apply_all.
+        :param batch_size: number of documents to be used simultaneously in the encoder :meth:_apply_all.
         It is specially useful when the same EncoderExecutor can be used for documents of different granularities
          (chunks, chunks of chunks ...)
 

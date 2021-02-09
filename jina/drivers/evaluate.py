@@ -102,6 +102,7 @@ class RankEvaluateDriver(FieldEvaluateDriver):
                  *args,
                  **kwargs):
         """
+        :param field: the field name to be extracted from the Protobuf
         :param args:
         :param kwargs:
         """
@@ -116,8 +117,9 @@ class RankEvaluateDriver(FieldEvaluateDriver):
 class NDArrayEvaluateDriver(FieldEvaluateDriver):
     """Drivers used to pass `embedding` from documents and groundtruths to an executor and add the evaluation value
 
-    - Valid fields:
-        ['blob', 'embedding']
+    .. note::
+        - Valid fields:
+                     ['blob', 'embedding']
 
     """
 
@@ -128,14 +130,9 @@ class NDArrayEvaluateDriver(FieldEvaluateDriver):
 class TextEvaluateDriver(FieldEvaluateDriver):
     """Drivers used to pass a content field from documents and groundtruths to an executor and add the evaluation value
 
-    - Valid fields:
-                ['id',
-                 'level_name',
-                 'parent_id',
-                 'text',
-                 'mime_type',
-                 'uri',
-                 'modality']
+    .. note::
+        - Valid fields:
+                    ['id', 'level_name', 'parent_id', 'text', 'mime_type', 'uri', 'modality']
     """
 
     def __init__(self, field: str = 'text', *args, **kwargs):

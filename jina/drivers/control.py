@@ -27,6 +27,7 @@ class LogInfoDriver(BaseControlDriver):
     def __init__(self, key: str = 'request', json: bool = True, *args, **kwargs):
         """
         :param key: (str) that represents a first level or nested key in the dict
+        :param json: (bool) indicating if the log output should be formatted as json
         :param args:
         :param kwargs:
         """
@@ -52,7 +53,7 @@ class WaitDriver(BaseControlDriver):
 
 
 class ControlReqDriver(BaseControlDriver):
-    """Handling the control request, by default it is installed for all :class:`jina.peapods.runtime.BasePea`"""
+    """Handling the control request, by default it is installed for all :class:`jina.peapods.peas.BasePea`"""
 
     def __call__(self, *args, **kwargs):
         if self.req.command == 'TERMINATE':
@@ -66,17 +67,18 @@ class ControlReqDriver(BaseControlDriver):
 
 
 class RouteDriver(ControlReqDriver):
-    """A simple load balancer forward message to the next available pea
+    """Ensures that data requests are forwarded to the downstream `:class:`BasePea` ensuring
+      that the load is balanced between parallel `:class:`BasePea` if the scheduling `:class:`SchedulerType` is LOAD_BALANCE.
+      
+    .. note::
+        - The dealer never receives a control request from the router,
+        every time it finishes a job and sends via out_sock, it returns the envelope with control
+        request idle back to the router. The dealer also sends control request idle to the router
+        when it first starts.
 
-    - The dealer never receives a control request from the router,
-      everytime it finishes a job and send via out_sock, it returns the envelope with control
-      request idle back to the router. The dealer also sends control request idle to the router
-      when it first starts.
-
-    - The router receives request from both dealer and upstream pusher.
-      if it is a upstream request, use LB to schedule the receiver, mark it in the envelope
-      if it is a control request in
-
+        - The router receives requests from both dealer and upstream pusher.
+         if it is an upstream request, use LB to schedule the receiver,
+         mark it in the envelope if it is a control request in
     """
 
     def __init__(self, raise_no_dealer: bool = False, *args, **kwargs):
