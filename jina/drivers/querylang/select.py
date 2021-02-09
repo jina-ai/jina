@@ -5,6 +5,7 @@ from typing import Union, Tuple
 
 from .. import QuerySetReader, BaseRecursiveDriver
 
+# noinspection PyUnreachableCode
 if False:
     from ...types.sets import DocumentSet
 
@@ -19,13 +20,14 @@ class ExcludeQL(QuerySetReader, BaseRecursiveDriver):
                 - buffer
 
         ExcludeQL will avoid `buffer` and `chunks` fields to be sent to the next `Pod`
+
+        :param fields: the pruned field names in tuple
+        :param traversal_paths: the traversal paths
+        :param *args: *args
+        :param **kwargs: **kwargs
     """
 
     def __init__(self, fields: Union[Tuple, str], traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
-        """
-
-        :param fields: the pruned field names in tuple
-        """
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         if isinstance(fields, str):
             self._fields = [fields]

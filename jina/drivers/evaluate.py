@@ -22,8 +22,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
         :param running_avg: always return running average instead of value of the current run
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
 
         .. warning::
 
@@ -80,8 +80,8 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
         """
 
         :param field: the field name to be extracted from the Protobuf
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.field = field
@@ -103,8 +103,8 @@ class RankEvaluateDriver(FieldEvaluateDriver):
                  **kwargs):
         """
         :param field: the field name to be extracted from the Protobuf
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(field, *args, **kwargs)
 

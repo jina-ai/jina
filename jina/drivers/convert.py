@@ -13,8 +13,8 @@ class ConvertDriver(BaseRecursiveDriver):
     def __init__(self, convert_fn: str, *args, **kwargs):
         """
         :param convert_fn: the method name from `:class:`Document` to be applied
-        :param args:
-        :param kwargs: the set of named arguments to be passed to the method with name `convert_fn`
+        :param *args:
+        :param **kwargs: the set of named arguments to be passed to the method with name `convert_fn`
         """
         super().__init__(*args, **kwargs)
         self._convert_fn = convert_fn

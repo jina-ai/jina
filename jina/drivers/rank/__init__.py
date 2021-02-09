@@ -41,7 +41,8 @@ class Matches2DocRankDriver(BaseRankDriver):
 
         :param docs: the matches of the ``context_doc``, they are at granularity ``k``
         :param context_doc: the query document having ``docs`` as its matches, it is at granularity ``k``
-        :return:
+        :param *args: not used (kept to maintain interface)
+        :param **kwargs: not used (kept to maintain interface)
 
         .. note::
             - This driver will change in place the ordering of ``matches`` of the ``context_doc`.

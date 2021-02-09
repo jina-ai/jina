@@ -22,13 +22,16 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
                  **kwargs):
         """
 
-        :param keep_old_matches_as_chunks: A flag to indicate if the driver must return the old matches of the query or its chunks
-        (at a greater granularity level (k + 1)) as the chunks of the new computed `matches` (at granularity level k).
-
-        Useful to keep track of the chunks that lead to a retrieved result.
+        `keep_old_matches_as_chunks` is useful to keep track of the chunks that lead to a retrieved result.
 
         .. note::
             - The chunks of the matches will only contain the chunks that lead to the document matching, not all the chunks of the match.
+
+        :param keep_source_matches_as_chunks: A flag to indicate if the driver must return the old matches of the query or its chunks
+            (at a greater granularity level (k + 1)) as the chunks of the new computed `matches` (at granularity level k)
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
+
         """
         super().__init__(*args, **kwargs)
         self.keep_source_matches_as_chunks = keep_source_matches_as_chunks
@@ -51,7 +54,6 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
         :param parent_id_chunk_id_map: a map with parent_id as key and list of previous matches ids as values
         :param chunk_matches_by_id: the previous matches of the query (at a higher granularity) grouped by the new map (by its parent)
         :param docs_scores: An `np.ndarray` resulting from the ranker executor with the `scores` of the new matches
-        :return:
         """
 
         op_name = self.exec.__class__.__name__
@@ -101,7 +103,8 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
         """
         :param docs: the chunks of the ``context_doc``, they are at depth_level ``k``
         :param context_doc: the owner of ``docs``, it is at depth_level ``k-1``
-        :return:
+        :param *args: not used (kept to maintain interface)
+        :param **kwargs: not used (kept to maintain interface)
         """
 
         match_idx = []  # type: List[Tuple[str, str, str, float]]
@@ -169,7 +172,8 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRanker):
 
         :param docs: the matches of the ``context_doc``, they are at granularity ``k``
         :param context_doc: the query document having ``docs`` as its matches, it is at granularity ``k``
-        :return:
+        :param *args: not used (kept to maintain interface)
+        :param **kwargs: not used (kept to maintain interface)
 
         .. note::
             - This driver will substitute the ``matches`` of `docs` to the corresponding ``parent documents`` of its current ``matches`` according

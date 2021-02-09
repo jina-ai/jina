@@ -36,6 +36,9 @@ class SortQL(QuerySetReader, BaseRecursiveDriver):
         """
         :param field: the value of the field drives the sort of the iterable docs
         :param reverse: sort the value from big to small
+        :param traversal_paths: the traversal paths
+        :param *args: *args
+        :param **kwargs: **kwargs
         """
 
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)

@@ -92,7 +92,7 @@ class QuerySet:
 
         :param args   : ``Q`` objects
         :param kwargs : _lookup parameters
-        :rtype        : QuerySet
+        :return: QuerySet of the filtered docs
 
         """
         return self.__class__(filter_items(self.data, *args, **kwargs))
@@ -108,7 +108,7 @@ class QuerySet:
 
         :param args   : field names to select
         :param kwargs : optional keyword args
-
+        :return: subset of fields
         """
         flatten = kwargs.pop('flatten', False)
         f = dunder_truncate if flatten else undunder_keys
@@ -132,7 +132,7 @@ def filter_items(items: Iterable, *args, **kwargs) -> Iterable:
     :param items  : iterable
     :param args   : ``Q`` objects
     :param kwargs : _lookup parameters
-    :rtype        : lazy iterable (generator)
+    :return: lazy iterable (generator)
 
     """
     q1 = list(args) if args else []
@@ -156,7 +156,7 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
     :param key  : (str) that represents the field name to find
     :param val  : (mixed) object to match the value in the item against
     :param item : (dict)
-    :rtype      : (boolean) True if field-val exists else False
+    :return: (boolean) True if field-val exists else False
 
     """
     init, last = dunder_partition(key)
@@ -250,7 +250,7 @@ class LookupNode(LookupTreeElem):
         """Evaluates the expression represented by the object for the item
 
         :param item : (dict) item
-        :rtype      : (boolean) whether _lookup passed or failed
+        :return: (boolean) whether _lookup passed or failed
 
         """
         results = map(lambda x: x.evaluate(item), self.children)
@@ -276,7 +276,7 @@ class LookupLeaf(LookupTreeElem):
         """Evaluates the expression represented by the object for the item
 
         :param item : (dict) item
-        :rtype      : (boolean) whether _lookup passed or failed
+        :return: (boolean) whether _lookup passed or failed
 
         """
         result = all(_lookup(k, v, item) for k, v in self.lookups.items())
@@ -307,7 +307,7 @@ def include_keys(items: Iterable[Dict[str, Any]], fields: Iterable[str]) -> Iter
 
     :param items  : iterable of dicts
     :param fields : (iterable) fieldnames to keep
-    :rtype        : lazy iterable
+    :return: lazy iterable
 
     """
     return ({f: dunder_get(item, f) for f in fields} for item in items)

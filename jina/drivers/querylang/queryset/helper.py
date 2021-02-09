@@ -11,9 +11,9 @@ def iff(precond: Callable, val: Union[int, str], f: Callable) -> bool:
     to create partial functions for commonly required preconditions
 
     :param precond : (function) represents the precondition
-    :param val     : (mixed) value to which the functions are applied
-    :param f       : (function) the actual function
-
+    :param val: (mixed) value to which the functions are applied
+    :param f: (function) the actual function
+    :return: whether or not the cond is satisfied
     """
     return False if not precond(val) else f(val)
 
