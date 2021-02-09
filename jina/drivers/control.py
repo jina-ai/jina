@@ -72,7 +72,7 @@ class RouteDriver(ControlReqDriver):
       
     .. note::
         - The dealer never receives a control request from the router,
-        everytime it finishes a job and send via out_sock, it returns the envelope with control
+        every time it finishes a job and sends via out_sock, it returns the envelope with control
         request idle back to the router. The dealer also sends control request idle to the router
         when it first starts.
 
