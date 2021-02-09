@@ -15,7 +15,9 @@ if False:
 
 class MultiModalDriver(BaseEncodeDriver):
     """Extract multimodal embeddings from different modalities.
+
     Input-Output ::
+
         Input:
         document:
                 |- chunk: {modality: mode1}
@@ -28,8 +30,11 @@ class MultiModalDriver(BaseEncodeDriver):
                 |- chunk: {modality: mode2}
 
     .. note::
+
         - It traverses on the ``documents`` for which we want to apply the ``multimodal`` embedding. This way
+
         we can use the `batching` capabilities for the `executor`.
+
     .. warning::
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
     """
@@ -47,11 +52,12 @@ class MultiModalDriver(BaseEncodeDriver):
             raise RuntimeError('Could not know which position of the ndarray to load to each modality')
         return self._exec.positional_modality
 
-    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray']):
-        """
-        From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
+    def _get_executor_input_arguments(self, content_by_modality: Dict[str, 'np.ndarray']) -> List['np.ndarray']:
+        """From a dictionary ``content_by_modality`` it returns the arguments in the proper order so that they can be
         passed to the executor.
+
          :param content_by_modality: a dictionary of `Document content` by modality name
+         :return: list of input arguments as np arrays
         """
         return [content_by_modality[modality] for modality in self.positional_modality]
 
@@ -60,10 +66,11 @@ class MultiModalDriver(BaseEncodeDriver):
             docs: 'DocumentSet',
             *args, **kwargs
     ) -> None:
-        """
+        """Apply the driver to each of the Documents in docs.
+
         :param docs: the docs for which a ``multimodal embedding`` will be computed, whose chunks are of different
-        modalities
-        :return:
+        :param *args: args
+        :param **kwargs: kwargs
         """
         content_by_modality = defaultdict(list)  # array of num_rows equal to num_docs and num_columns equal to
 

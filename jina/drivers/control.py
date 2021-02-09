@@ -28,8 +28,8 @@ class LogInfoDriver(BaseControlDriver):
         """
         :param key: (str) that represents a first level or nested key in the dict
         :param json: (bool) indicating if the log output should be formatted as json
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.key = key
@@ -84,8 +84,8 @@ class RouteDriver(ControlReqDriver):
     def __init__(self, raise_no_dealer: bool = False, *args, **kwargs):
         """
         :param raise_no_dealer: raise a RuntimeError when no available dealer
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.idle_dealer_ids = set()

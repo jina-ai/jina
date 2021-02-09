@@ -54,6 +54,9 @@ class KVSearchDriver(BaseSearchDriver):
 
         :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
             otherwise, it overrides the current message using :meth:`CopyFrom`
+        :param traversal_paths: traversal paths for the driver
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
         """
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_merge = is_merge
@@ -101,8 +104,8 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         :param top_k: top-k document ids to retrieve
         :param fill_embedding: fill in the embedding of the corresponding doc,
                 this requires the executor to implement :meth:`query_by_key`
-        :param args:
-        :param kwargs:
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
         """
         super().__init__(*args, **kwargs)
         self._top_k = top_k

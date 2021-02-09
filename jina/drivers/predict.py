@@ -22,8 +22,8 @@ class BaseLabelPredictDriver(BasePredictDriver):
         """
 
         :param output_tag: output label will be written to ``doc.tags``
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.output_tag = output_tag
@@ -68,8 +68,8 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
 
         :param one_label: label when prediction is one
         :param zero_label: label when prediction is zero
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.one_label = one_label

@@ -4,21 +4,21 @@ from typing import Any, Dict
 from .index import BaseIndexDriver
 from ..executors.indexers.cache import CONTENT_HASH_KEY, ID_KEY
 
+# noinspection PyUnreachableCode
 if False:
     from .. import Document
     from ..types.sets import DocumentSet
 
 
 class BaseCacheDriver(BaseIndexDriver):
-    """A driver related to :class:`BaseCache`."""
+    """A driver related to :class:`BaseCache`.
+
+    :param with_serialization: feed serialized Document to the CacheIndexer
+    :param *args: *args for super
+    :param **kwargs: **kwargs for super
+    """
 
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
-        """Create a new BaseCacheDriver.
-
-        :param with_serialization: feed serialized Document to the CacheIndexer
-        :param args:
-        :param kwargs:
-        """
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
         self.field = None
@@ -57,7 +57,6 @@ class BaseCacheDriver(BaseIndexDriver):
 
         :param req_doc: the document in the request and hitted in the cache
         :param hit_result: the hit result returned by the cache
-        :return:
         """
         pass
 
@@ -69,10 +68,16 @@ class TaggingCacheDriver(BaseCacheDriver):
         """Create a new TaggingCacheDriver.
 
         :param tags: the tags to be updated on hit docs
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
         """
         super().__init__(*args, **kwargs)
         self._tags = tags
 
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
-        """Call when cache is hit for a document."""
+        """Call when cache is hit for a document.
+
+        :param req_doc: the document requested
+        :param hit_result: the result of the hit
+        """
         req_doc.tags.update(self._tags)
