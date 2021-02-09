@@ -76,7 +76,7 @@ class RouteDriver(ControlReqDriver):
         request idle back to the router. The dealer also sends control request idle to the router
         when it first starts.
 
-        - The router receives request from both dealer and upstream pusher.
+        - The router receives requests from both dealer and upstream pusher.
          if it is a upstream request, use LB to schedule the receiver,
          mark it in the envelope if it is a control request in
     """
