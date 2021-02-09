@@ -264,6 +264,7 @@ class BaseRecursiveDriver(BaseDriver):
 
     :param traversal_paths: The describes the leaves of the document tree on which _apply_all are called
     """
+
     def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
