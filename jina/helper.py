@@ -36,12 +36,14 @@ from jina.excepts import NotSupportedError
 
 def deprecated_alias(**aliases):
     """
-    Usage, kwargs with key as the deprecated arg name and value be a tuple,
-     (new_name, deprecate_level). With level 0 means warning, level 1 means exception
+    Usage, kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).
 
-    Example:
+    With level 0 means warning, level 1 means exception.
 
-        @deprecated_alias(buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+    For example:
+        .. highlight:: python
+        .. code-block:: python
+            @deprecated_alias(buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
     """
 
     def rename_kwargs(func_name: str, kwargs, aliases):
@@ -75,6 +77,12 @@ def deprecated_alias(**aliases):
 
 
 def get_readable_size(num_bytes: Union[int, float]) -> str:
+    """
+    Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).
+
+    :param num_bytes: Number of bytes.
+    :return: Human readable string representation.
+    """
     num_bytes = int(num_bytes)
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
@@ -87,17 +95,44 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
 
 
 def call_obj_fn(obj, fn: str):
+    """
+    Get a named attribute from an object; getattr(obj, 'fn') is equivalent to obj.fn.
+
+    :param obj: Target object.
+    :param fn: Desired attribute.
+    """
     if obj is not None and hasattr(obj, fn):
         getattr(obj, fn)()
 
 
 def touch_dir(base_dir: str) -> None:
+    """
+    Create a directory from given path if it doesn't exist.
+
+    :param base_dir: Path of target path.
+    """
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
 
 
 def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
                    yield_slice: bool = False, yield_dict: bool = False) -> Iterator[Any]:
+    """
+    Get an iterator of batches of data.
+
+    For example:
+    .. highlight:: python
+    .. code-block:: python
+            for batch in batch_iterator(data, batch_size, split_over_axis, yield_slice=yield_slice):
+                # Do something with batch
+
+    :param data: Data source.
+    :param batch_size: Size of one batch.
+    :param axis: Determine which axis to iterate for np.ndarray data.
+    :param yield_slice: Return tuple type of data if True else return np.ndarray type.
+    :param yield_dict: Return dict type of data if True else return tuple type.
+    :return: An Iterator of batch data.
+    """
     import numpy as np
     if not batch_size or batch_size <= 0:
         yield data
@@ -141,6 +176,12 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
 
 
 def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
+    """
+    Parse the arguments from string to `Union[bool, int, str, list, float]`.
+
+    :param v: The string of arguments
+    :return: The parsed arguments list.
+    """
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
         tmp = v.replace('[', '').replace(']', '').strip().split(',')
@@ -165,6 +206,17 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
+    """
+    Display the countdown in console.
+
+    For example:
+        .. highlight:: python
+        .. code-block:: python
+            countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
+
+    :param t: Countdown time.
+    :param reason: A string message of reason for this Countdown.
+    """
     try:
         sys.stdout.write('\n')
         sys.stdout.flush()
@@ -193,10 +245,20 @@ _random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young',
 
 
 def random_name() -> str:
+    """
+    Generate a random name from list.
+
+    :return: A Random name.
+    """
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
 def random_port() -> Optional[int]:
+    """
+    Get a random available port number from '49153' to '65535'.
+
+    :return: A random port.
+    """
     import threading
     import multiprocessing
     from contextlib import closing
@@ -225,9 +287,8 @@ def random_port() -> Optional[int]:
 
 
 def random_identity(use_uuid1: bool = False) -> str:
-    """Generate random UUID
-
-    :param use_uuid1: use UUID1 instead of UUID4. This is the default Document ID generator.
+    """
+    Generate random UUID.
 
     ..note::
         A MAC address or time-based ordering (UUID1) can afford increased database performance, since it's less work
@@ -235,15 +296,31 @@ def random_identity(use_uuid1: bool = False) -> str:
 
         A second related issue, is that using UUID1 can be useful in debugging, even if origin data is lost or not
         explicitly stored.
+
+    :param use_uuid1: use UUID1 instead of UUID4. This is the default Document ID generator.
+    :return: A random UUID.
+
     """
     return str(random_uuid(use_uuid1))
 
 
 def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
+    """
+    Get a random UUID.
+
+    :param use_uuid1: Use UUID1 if True, else use UUID4.
+    :return: A random UUID.
+    """
     return uuid.uuid1() if use_uuid1 else uuid.uuid4()
 
 
 def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
+    """
+    Expand the environment variables.
+
+    :param v: String of environment variables.
+    :return: Parsed environment variables.
+    """
     if isinstance(v, str):
         return parse_arg(os.path.expandvars(v))
     else:
@@ -251,6 +328,14 @@ def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Dict[str, Any]:
+    """
+    Expand variables from YAML file.
+
+    :param d: Target Dict.
+    :param expand_fn: Parsed environment variables.
+    :param resolve_cycle_ref:
+    :return: Expanded variables.
+    """
     expand_map = SimpleNamespace()
     pat = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
@@ -369,6 +454,12 @@ url_pat = build_url_regex_pattern()
 
 
 def is_url(text):
+    """
+    Check if the text is URL.
+
+    :param text: The target text.
+    :return: True if text is URL else False.
+    """
     return url_pat.match(text) is not None
 
 
@@ -378,6 +469,43 @@ if os.name == 'nt':
 
 def colored(text: str, color: Optional[str] = None,
             on_color: Optional[str] = None, attrs: Union[str, list, None] = None) -> str:
+    """
+    Give the text with color.
+
+    :param text: The target text.
+    :param color: The color of text. Chosen from the following.
+    {
+        'grey': 30,
+        'red': 31,
+        'green': 32,
+        'yellow': 33,
+        'blue': 34,
+        'magenta': 35,
+        'cyan': 36,
+        'white': 37
+    }
+    :param on_color: The on_color of text. Chosen from the following.
+    {
+        'on_grey': 40,
+        'on_red': 41,
+        'on_green': 42,
+        'on_yellow': 43,
+        'on_blue': 44,
+        'on_magenta': 45,
+        'on_cyan': 46,
+        'on_white': 47
+    }
+    :param attrs: Attributes of color. Chosen from the following.
+    {
+       'bold': 1,
+       'dark': 2,
+       'underline': 4,
+       'blink': 5,
+       'reverse': 7,
+       'concealed': 8
+    }
+    :return: Colored text.
+    """
     if 'JINA_LOG_NO_COLOR' not in os.environ:
         fmt_str = '\033[%dm%s'
         if color:
@@ -397,11 +525,12 @@ def colored(text: str, color: Optional[str] = None,
 
 
 class ArgNamespace:
-    """Helper function for argparse.Namespace object"""
+    """Helper function for argparse.Namespace object."""
 
     @staticmethod
     def kwargs2list(kwargs: Dict) -> List[str]:
-        """Convert dict to an argparse-friendly list
+        """
+        Convert dict to an argparse-friendly list.
 
         :param kwargs: dictionary of key-values to be converted
         """
@@ -423,7 +552,8 @@ class ArgNamespace:
     @staticmethod
     def kwargs2namespace(kwargs: Dict[str, Union[str, int, bool]],
                          parser: ArgumentParser) -> Namespace:
-        """Convert dict to a namespace
+        """
+        Convert dict to a namespace.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
@@ -439,7 +569,8 @@ class ArgNamespace:
     @staticmethod
     def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
                         parser: ArgumentParser) -> Tuple[List[str], Namespace, List[Any]]:
-        """Get all parsed args info in a dict
+        """
+        Get all parsed args info in a dict.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
@@ -461,7 +592,8 @@ class ArgNamespace:
 
     @staticmethod
     def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = None) -> Dict:
-        """Get non-default args in a dict
+        """
+        Get non-default args in a dict.
 
         :param args: the namespace to parse
         :param parser: the parser for referring the default values
@@ -478,7 +610,7 @@ class ArgNamespace:
 
     @staticmethod
     def flatten_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
-        """A helper function to convert argparse.Namespace to dict to be uploaded via REST
+        """Convert argparse.Namespace to dict to be uploaded via REST.
 
         :param args: namespace or dict or namespace to dict.
         """
@@ -498,6 +630,12 @@ class ArgNamespace:
 
 def is_valid_local_config_source(path: str) -> bool:
     # TODO: this function must be refactored before 1.0 (Han 12.22)
+    """
+    Check if the path is valid.
+
+    :param path: Local file path.
+    :return: True if the path is valid else False.
+    """
     try:
         from .jaml import parse_config_source
         parse_config_source(path)
@@ -507,6 +645,11 @@ def is_valid_local_config_source(path: str) -> bool:
 
 
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
+    """
+    Get the version of libraries used in Jina and environment variables.
+
+    :return: Version information and environment variables
+    """
     from . import __version__, __proto_version__, __jina_env__
     from google.protobuf.internal import api_implementation
     import os, zmq, numpy, google.protobuf, grpc, yaml
@@ -543,6 +686,13 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
 
 def format_full_version_info(info: Dict, env_info: Dict) -> str:
+    """
+    Format the version information.
+
+    :param info: Version information of Jina libraries.
+    :param env_info: The Jina environment variables.
+    :return: Formatted version information.
+    """
     version_info = '\n'.join(f'- {k:30s}{v}' for k, v in info.items())
     env_info = '\n'.join(f'* {k:30s}{v}' for k, v in env_info.items())
     return version_info + '\n' + env_info
@@ -558,7 +708,11 @@ def _use_uvloop():
 
 
 def get_or_reuse_loop():
-    """Get a new eventloop or reuse the current opened eventloop"""
+    """
+    Get a new eventloop or reuse the current opened eventloop.
+
+    :return: A new eventloop or reuse the current opened eventloop.
+    """
     try:
         loop = asyncio.get_running_loop()
         if loop.is_closed():
@@ -574,6 +728,12 @@ def get_or_reuse_loop():
 
 
 def typename(obj):
+    """
+    Get the typename of object.
+
+    :param obj: Target object.
+    :return: Typename of the obj.
+    """
     if not isinstance(obj, type):
         obj = obj.__class__
     try:
@@ -598,7 +758,14 @@ def rgetattr(obj, attr: str, *args):
 
 
 class cached_property:
+    """The decorator to cache property of a class."""
+
     def __init__(self, func):
+        """
+        Create the :class:`cached_property`.
+
+        :param func: Cached function.
+        """
         self.func = func
 
     def __get__(self, obj, cls):
@@ -611,11 +778,26 @@ class cached_property:
 
 
 def get_now_timestamp():
+    """
+    Get the datetime.
+
+    :return: The datetime in int format.
+    """
     now = datetime.now()
     return int(datetime.timestamp(now))
 
 
 def get_readable_time(*args, **kwargs):
+    """
+    Get the datetime in human readable format (e.g. 115 days and 17 hours and 46 minutes and 40 seconds).
+
+    For example:
+        .. highlight:: python
+        .. code-block:: python
+            get_readable_time(seconds=1000)
+
+    :return: Datetime in human readable format.
+    """
     import datetime
     secs = float(datetime.timedelta(*args, **kwargs).total_seconds())
     units = [('day', 86400), ('hour', 3600), ('minute', 60), ('second', 1)]
@@ -632,6 +814,11 @@ def get_readable_time(*args, **kwargs):
 
 
 def get_internal_ip():
+    """
+    Return the private IP address of the gateway for connecting from other machine in the same network.
+
+    :return: Private IP address.
+    """
     import socket
     ip = '127.0.0.1'
     try:
@@ -645,6 +832,11 @@ def get_internal_ip():
 
 
 def get_public_ip():
+    """
+    Return the public IP address of the gateway for connecting from other machine in the public network.
+
+    :return: Public IP address.
+    """
     # 'https://api.ipify.org'
     # https://ident.me
     # ipinfo.io/ip
@@ -663,6 +855,12 @@ def get_public_ip():
 
 
 def convert_tuple_to_list(d: Dict):
+    """
+    Convert all the tuple type values from a dict to list.
+
+    :param d: Dict type of data.
+    :return: Converted dict with list type values.
+    """
     for k, v in d.items():
         if isinstance(v, tuple):
             d[k] = list(v)
@@ -671,8 +869,11 @@ def convert_tuple_to_list(d: Dict):
 
 
 def is_jupyter() -> bool:  # pragma: no cover
-    """Check if we're running in a Jupyter notebook,
-    using magic command `get_ipython` that only available in Jupyter"""
+    """
+    Check if we're running in a Jupyter notebook, using magic command `get_ipython` that only available in Jupyter.
+
+    :return: True if run in a Jupyter notebook else False.
+    """
     try:
         get_ipython  # noqa: F821
     except NameError:
@@ -699,7 +900,7 @@ def run_async(func, *args, **kwargs):
     :param func: function to run
     :param args: parameters
     :param kwargs: key-value parameters
-    :return:
+    :return: asyncio.run(func)
     """
 
     class RunThread(threading.Thread):
@@ -735,8 +936,10 @@ def run_async(func, *args, **kwargs):
 
 def slugify(value):
     """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
+    Normalize string, converts to lowercase, removes non-alpha characters, and converts spaces to hyphens.
+
+    :param value: Original string.
+    :return: Processed string.
     """
     s = str(value).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
@@ -746,6 +949,8 @@ def slugify(value):
 def change_cwd(path):
     """
     Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.
+
+    :param path: Target path.
     """
     curdir = os.getcwd()
     os.chdir(path)
@@ -759,6 +964,9 @@ def change_cwd(path):
 def change_env(key, val):
     """
     Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.
+
+    :param key: Old environment variable.
+    :param val: New environment variable.
     """
     old_var = os.environ.get(key, None)
     os.environ[key] = val
@@ -772,15 +980,22 @@ def change_env(key, val):
 
 
 def is_yaml_filepath(val) -> bool:
+    """
+    Check if the file is YAML file.
+
+    :param val: Path of target file.
+    :return: True if the file is YAML else False.
+    """
     r = r'^[/\w\-\_\.]+.ya?ml$'
     return re.match(r, val.strip()) is not None
 
 
 def download_mermaid_url(mermaid_url, output) -> None:
     """
-    Rendering the current flow as a jpg image, this will call :py:meth:`to_mermaid` and it needs internet connection
-    :param path: the file path of the image
-    :param kwargs: keyword arguments of :py:meth:`to_mermaid`
+    Download the jpg image from mermaid_url.
+
+    :param mermaid_url: The URL of the image.
+    :param output: A filename specifying the name of the image to be created, the suffix svg/jpg determines the file type of the output image.
     """
     try:
         req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
