@@ -170,15 +170,15 @@ class BaseClient:
                 raise BadClient(msg) from rpc_ex
 
     def index(self):
-        """Issue an 'index' request to the Flow."""
+        """Issue 'index' request to the Flow."""
         raise NotImplementedError
 
     def search(self):
-        """Issue a 'search' request to the Flow."""
+        """Issue 'search' request to the Flow."""
         raise NotImplementedError
 
     def train(self):
-        """Issue a 'train' request to the Flow."""
+        """Issue 'train' request to the Flow."""
         raise NotImplementedError
 
     @staticmethod

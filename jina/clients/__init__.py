@@ -34,7 +34,7 @@ class Client(BaseClient):
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
               **kwargs) -> None:
-        """Issue the 'train' request to the Flow.
+        """Issue 'train' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -52,7 +52,7 @@ class Client(BaseClient):
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
                **kwargs) -> None:
-        """Issue the 'search' request to the Flow.
+        """Issue 'search' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -71,7 +71,7 @@ class Client(BaseClient):
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
               **kwargs) -> None:
-        """Issue the 'index' request to the Flow.
+        """Issue 'index' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -89,7 +89,7 @@ class Client(BaseClient):
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
                **kwargs) -> None:
-        """Issue the 'update' request to the Flow.
+        """Issue 'update' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -107,7 +107,7 @@ class Client(BaseClient):
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
                **kwargs) -> None:
-        """Issue the 'update' request to the Flow.
+        """Issue 'update' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
