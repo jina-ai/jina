@@ -1,3 +1,5 @@
+"""Module wrapping interactions with the local images."""
+
 import os
 import pkgutil
 from typing import Dict, Any, Optional
@@ -23,7 +25,7 @@ def _load_local_hub_manifest():
                                'try "git submodule update --init" if you are in dev mode')
         return {}
 
-    def add_hub():
+    def _add_hub():
         m_yml = f'{info.module_finder.path}/manifest.yml'
         if info.ispkg and os.path.exists(m_yml):
             try:
@@ -36,12 +38,12 @@ def _load_local_hub_manifest():
     hub_images = {}
 
     for info in pkgutil.iter_modules([path]):
-        add_hub()
+        _add_hub()
 
     for pkg in find_packages(path):
         pkgpath = path + '/' + pkg.replace('.', '/')
         for info in pkgutil.iter_modules([pkgpath]):
-            add_hub()
+            _add_hub()
 
     # filter
     return hub_images
@@ -49,12 +51,10 @@ def _load_local_hub_manifest():
 
 def _list_local(logger) -> Optional[Dict[str, Any]]:
     """
-    List all local hub manifests
+    List the locally-available images.
 
-    .. note:
-
-        This does not implement query langauge
-
+    :param logger: the logger object with which to print
+    :return: the list of manifests (if found)
     """
     manifests = _load_local_hub_manifest()
     if manifests:
