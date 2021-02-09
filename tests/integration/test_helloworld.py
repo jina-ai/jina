@@ -33,7 +33,7 @@ def check_hello_world_results(html_path: str):
     evaluation_results = re.findall(r'\d+\.\d+', evaluation)
     assert len(evaluation_results) == 2
     # not exact to avoid instability, but enough accurate to current results to raise some alarms
-    assert float(evaluation_results[0]) > 65.0
+    assert float(evaluation_results[0]) > 50.0
     assert float(evaluation_results[1]) > 0.5
 
 
