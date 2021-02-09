@@ -63,7 +63,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         default_logger.success(__ready_msg__)
 
     @app.get(path='/status',
-             summary='Get the status of the daemon',
+             summary='Get the status of Jina',
              response_model=JinaStatusModel,
              tags=['jina']
              )
