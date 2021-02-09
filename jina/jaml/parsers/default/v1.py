@@ -8,10 +8,10 @@ class V1Parser(VersionedYAMLParser):
     version = '1'  # the version number this parser designed for
 
     def parse(self, cls: Type['JAMLCompatible'], data: Dict) -> 'JAMLCompatible':
-        """Return the YAML parser given the syntax version number
-
+        """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
+        :return: Return the YAML parser given the syntax version number
         """
         expanded_data = JAML.expand_dict(data, None)
         if 'with' in data:
@@ -21,9 +21,9 @@ class V1Parser(VersionedYAMLParser):
         return obj
 
     def dump(self, data: 'JAMLCompatible') -> Dict:
-        """Return the dictionary given a versioned flow object
-
+        """
         :param data: versioned flow object
+        :return: Return the dictionary given a versioned flow object
         """
         a = V1Parser._dump_instance_to_yaml(data)
         r = {}

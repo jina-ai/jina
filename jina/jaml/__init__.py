@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from typing import Dict, Any, Union, TextIO, Optional
 
 import yaml
+from yaml.constructor import FullConstructor
 
 from .helper import JinaResolver, JinaLoader, parse_config_source, load_py_modules
 
@@ -73,14 +74,17 @@ class JAML:
              context: Dict[str, Any] = None):
         """Parse the first YAML document in a stream and produce the corresponding Python object.
 
-        :param substitute: substitute environment, internal reference and context variables.
-        :param context: context replacement variables in a dict, the value of the dict is the replacement.
-
         .. note::
             :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`
             and all their subclasses have already implemented JAML interfaces,
             to load YAML config into objects, please use :meth:`Flow.load_config`,
             :meth:`BaseExecutor.load_config`, etc.
+
+        :param substitute: substitute environment, internal reference and context variables.
+        :param context: context replacement variables in a dict, the value of the dict is the replacement.
+        :param stream: the stream to load
+        :return: the Python object
+
         """
         r = yaml.load(stream, Loader=JinaLoader)
         if substitute:
@@ -90,6 +94,9 @@ class JAML:
     @staticmethod
     def load_no_tags(stream, **kwargs):
         """Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow
+        :param stream: the output stream
+        :param **kwargs: other kwargs
+        :return: the class
         """
         safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__cls: ') for v in stream)
         return JAML.load(safe_yml, **kwargs)
@@ -228,6 +235,11 @@ class JAML:
         """
         Serialize a Python object into a YAML stream.
         If stream is None, return the produced string instead.
+
+        :param data: the data to serialize
+        :param stream: the output stream
+        :param **kwargs: other kwargs
+        :return: the yaml output
         """
         return yaml.dump(data, stream=stream, default_flow_style=False, sort_keys=False, **kwargs)
 
@@ -237,6 +249,9 @@ class JAML:
             - if it has attribute yaml_tag use that to register, else use class name
             - if it has methods to_yaml/from_yaml use those to dump/load else dump attributes
               as mapping
+
+        :param cls: the class to register
+        :return: the registered class
         """
 
         tag = getattr(cls, 'yaml_tag', '!' + cls.__name__)
@@ -289,18 +304,24 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         .. warning::
             This function should not be used directly, please use :meth:`save_config`.
 
+        :param representer: the class that will serialize
+        :param data: the data to serialize
+        :return: the node's representation
         """
         from .parsers import get_parser
         tmp = get_parser(cls, version=data._version).dump(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
-    def _from_yaml(cls, constructor, node):
+    def _from_yaml(cls, constructor: FullConstructor, node):
         """A low-level interface required by :mod:`pyyaml` load interface
 
         .. warning::
             This function should not be used directly, please use :meth:`load_config`.
 
+        :param constructor: the class that will construct
+        :param node: the node to traverse
+        :return: the parser associated with the class
         """
         data = constructor.construct_mapping(node, deep=True)
         from .parsers import get_parser
@@ -310,7 +331,6 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         """Save the object's config into a YAML file
 
         :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used
-        :return: successfully dumped or not
         """
         f = filename or getattr(self, 'config_abspath', None)
         if not f:
@@ -330,12 +350,6 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         of loading extra py_modules, substitute env & context variables. Any class that
         implements :class:`JAMLCompatible` mixin can enjoy this feature, e.g. :class:`BaseFlow`,
         :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.
-
-        :param source: the multi-kind source of the configs.
-        :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
-        :param substitute: substitute environment, internal reference and context variables.
-        :param context: context replacement variables in a dict, the value of the dict is the replacement.
-        :return: :class:`JAMLCompatible` object
 
         Support substitutions in YAML:
             - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``, ``$VAR``.
@@ -370,6 +384,13 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             # disable substitute
             b = BaseExecutor.load_config('a.yml', substitute=False)
 
+        # noqa: DAR401
+        :param source: the multi-kind source of the configs.
+        :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
+        :param substitute: substitute environment, internal reference and context variables.
+        :param context: context replacement variables in a dict, the value of the dict is the replacement.
+        :param **kwargs: **kwargs for parse_config_source
+        :return: :class:`JAMLCompatible` object
         """
         stream, s_path = parse_config_source(source, **kwargs)
         with stream as fp:
@@ -396,11 +417,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
     def inject_config(cls, raw_config: Dict, *args, **kwargs) -> Dict:
         """Inject/modify the config before loading it into an object.
 
-        :param raw_config: raw config to work on
-
-
          .. note::
             This function is most likely to be overridden by its subclass.
 
+        :param raw_config: raw config to work on
+        :param *args: *args
+        :param **kwargs: **kwargs
+        :return: the config
         """
         return raw_config
