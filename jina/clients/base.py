@@ -1,3 +1,4 @@
+"""Module containing the Base Client for Jina."""
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
@@ -22,17 +23,16 @@ CallbackFnType = Optional[Callable[..., None]]
 
 
 class BaseClient:
-    """A base client for connecting to the gateway.
+    """A base client for connecting to the Flow Gateway.
 
     .. note::
         :class:`BaseClient` does not provide `train`, `index`, `search` interfaces.
         Please use :class:`Client` or :class:`AsyncClient`.
+
+    :param args: the Namespace from argparse
     """
 
     def __init__(self, args: 'argparse.Namespace'):
-        """
-        :param args: args provided by the CLI
-        """
         self.args = args
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
 
@@ -48,6 +48,7 @@ class BaseClient:
 
     @property
     def mode(self) -> str:
+        """The mode for this client (index, query etc.)."""
         return self._mode
 
     @mode.setter
@@ -60,7 +61,7 @@ class BaseClient:
 
     @staticmethod
     def check_input(input_fn: Optional[InputFnType] = None, **kwargs) -> None:
-        """Validate the input_fn and print the first request if success
+        """Validate the input_fn and print the first request if success.
 
         :param input_fn: the input function
         """
@@ -84,7 +85,7 @@ class BaseClient:
             raise BadClientInput from ex
 
     def _get_requests(self, **kwargs) -> Union[Iterator['Request'], AsyncIterator['Request']]:
-        """Get request in generator"""
+        """Get request in generator."""
         _kwargs = vars(self.args)
         _kwargs['data'] = self.input_fn
         # override by the caller-specific kwargs
@@ -105,8 +106,9 @@ class BaseClient:
 
     @property
     def input_fn(self) -> InputFnType:
-        """ An iterator of bytes, each element represents a document's raw content,
-        i.e. ``input_fn`` defined in the protobuf
+        """An iterator of bytes, each element represents a Document's raw content.
+
+        ``input_fn`` defined in the protobuf
         """
         if self._input_fn is not None:
             return self._input_fn
@@ -168,16 +170,24 @@ class BaseClient:
                 raise BadClient(msg) from rpc_ex
 
     def index(self):
+        """Issue an 'index' request to the Flow."""
         raise NotImplementedError
 
     def search(self):
+        """Issue a 'search' request to the Flow."""
         raise NotImplementedError
 
     def train(self):
+        """Issue a 'train' request to the Flow."""
         raise NotImplementedError
 
     @staticmethod
     def add_default_kwargs(kwargs: Dict):
+        """
+        Add the default kwargs to the instance.
+
+        :param kwargs: the kwargs to add
+        """
         # TODO: refactor it into load from config file
         if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
             # associate all VectorSearchDriver and SliceQL driver to use top_k

@@ -1,3 +1,4 @@
+"""A module for the websockets-based Client for Jina."""
 import asyncio
 from abc import ABC
 from typing import Callable
@@ -10,25 +11,27 @@ from ..types.request import Request
 
 
 class WebSocketClientMixin(BaseClient, ABC):
+    """A MixIn for Websocket Client.
+
+    :meth:`send_requests()`
+        Traverses through the request iterator
+        Sends each request & awaits :meth:`websocket.send()`
+        Sends & awaits `byte(True)` to acknowledge request iterator is empty
+    Traversal logic:
+        Starts an independent task :meth:`send_requests()`
+        Awaits on each response from :meth:`websocket.recv()` (done in an async loop)
+        This makes sure client makes concurrent invocations
+    Await exit strategy:
+        :meth:`send_requests()` keeps track of num_requests sent
+        Async recv loop keeps track of num_responses received
+        Client exits out of await when num_requests == num_responses
+    """
+
     async def _get_results(self,
                            input_fn: Callable,
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
-        """
-        :meth:`send_requests()`
-            Traverses through the request iterator
-            Sends each request & awaits :meth:`websocket.send()`
-            Sends & awaits `byte(True)` to acknowledge request iterator is empty
-        Traversal logic:
-            Starts an independent task :meth:`send_requests()`
-            Awaits on each response from :meth:`websocket.recv()` (done in an async loop)
-            This makes sure client makes concurrent invocations
-        Await exit strategy:
-            :meth:`send_requests()` keeps track of num_requests sent
-            Async recv loop keeps track of num_responses received
-            Client exits out of await when num_requests == num_responses
-        """
         with ImportExtensions(required=True):
             import websockets
 
@@ -48,7 +51,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                 self.num_requests = 0
                 self.num_responses = 0
 
-                async def send_requests(request_iterator):
+                async def _send_requests(request_iterator):
                     for next_request in request_iterator:
                         await websocket.send(next_request.SerializeToString())
                         self.num_requests += 1
@@ -62,7 +65,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                     # Simply iterating through the `req_iter` makes the request-response sequential.
                     # To make client unblocking, :func:`send_requests` and `recv_responses` are separate tasks
 
-                    asyncio.create_task(send_requests(request_iterator=req_iter))
+                    asyncio.create_task(_send_requests(request_iterator=req_iter))
                     async for response_bytes in websocket:
                         # When we have a stream of responses, instead of doing `await websocket.recv()`,
                         # we need to traverse through the websocket to recv messages.

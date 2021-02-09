@@ -1,3 +1,4 @@
+"""Helper functions for clients in Jina."""
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
@@ -8,11 +9,12 @@ from .. import Response
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions
+from ..logging import JinaLogger
 from ..proto import jina_pb2
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
-    """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`
+    """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`.
 
     :param resp: the :class:`Response` object
     :param stack_limit: traceback limit
@@ -47,7 +49,7 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
 
 def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
     @wraps(func)
-    def arg_wrapper(*args, **kwargs):
+    def _arg_wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception as ex:
@@ -57,10 +59,19 @@ def _safe_callback(func: Callable, continue_on_error: bool, logger) -> Callable:
             else:
                 raise BadClientCallback(err_msg) from ex
 
-    return arg_wrapper
+    return _arg_wrapper
 
 
-def callback_exec(response, on_done, on_error, on_always, continue_on_error, logger):
+def callback_exec(response, on_done: Callable, on_error: Callable, on_always: Callable, continue_on_error: bool, logger: JinaLogger) -> None:
+    """Execute the callback with the response.
+
+    :param response: the response
+    :param on_done: the on_done callback
+    :param on_error: the on_error callback
+    :param on_always: the on_always callback
+    :param continue_on_error: whether to continue on error
+    :param logger: a logger instance
+    """
     if on_error and response.status.code >= jina_pb2.StatusProto.ERROR:
         _safe_callback(on_error, continue_on_error, logger)(response)
     elif on_done:

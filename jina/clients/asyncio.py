@@ -1,3 +1,4 @@
+"""Module wrapping AsyncIO ops for clients."""
 from typing import Iterable
 
 from .base import InputFnType, BaseClient, CallbackFnType
@@ -8,16 +9,19 @@ from ..helper import deprecated_alias
 
 class AsyncClient(BaseClient):
     """
-    :class:`AsyncClient` is the asynchronous version of the :class:`Client`. They share the same interface, except
-    in :class:`AsyncClient` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
-    (i.e. declared with the async/await syntax), simply calling them will not schedule them to be executed.
-    To actually run a coroutine, user need to put them in an eventloop, e.g. via ``asyncio.run()``,
+    :class:`AsyncClient` is the asynchronous version of the :class:`Client`.
+
+    They share the same interface, except in :class:`AsyncClient` :meth:`train`, :meth:`index`,
+    :meth:`search` methods are coroutines (i.e. declared with the async/await syntax),
+    simply calling them will not schedule them to be executed.
+
+    To actually run a coroutine, user need to put them in an event loop, e.g. via ``asyncio.run()``,
     ``asyncio.create_task()``.
 
     :class:`AsyncClient` can be very useful in
     the integration settings, where Jina/Flow/Client is NOT the main logic, but rather served as a part of other program.
     In this case, users often do not want to let Jina control the ``asyncio.eventloop``. On contrary, :class:`Client`
-    is controlling and wrapping the eventloop internally, making the Client looks synchronous from outside.
+    is controlling and wrapping the event loop internally, making the Client looks synchronous from outside.
 
     For example, say you have the Flow running in remote. You want to use Client to connect to it do
     some index and search, but meanwhile you have some other IO-bounded jobs and want to do them concurrently.
@@ -53,7 +57,7 @@ class AsyncClient(BaseClient):
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
                     **kwargs) -> None:
-        """
+        """Issue the 'train' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -72,7 +76,7 @@ class AsyncClient(BaseClient):
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
                      **kwargs) -> None:
-        """
+        """Issue the 'search' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -92,7 +96,7 @@ class AsyncClient(BaseClient):
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
                     **kwargs) -> None:
-        """
+        """Issue the 'index' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -111,7 +115,7 @@ class AsyncClient(BaseClient):
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
                      **kwargs) -> None:
-        """
+        """Issue the 'delete' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -130,7 +134,7 @@ class AsyncClient(BaseClient):
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
                      **kwargs) -> None:
-        """
+        """Issue the 'update' request to the Flow.
 
         :param input_fn: the input function that generates the content
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -147,6 +151,7 @@ class AsyncClient(BaseClient):
 class AsyncWebSocketClient(AsyncClient, WebSocketClientMixin):
     """
     :class:`AsyncWebSocketClient` is the asynchronous version of the :class:`WebSocketClient`.
+
     They share the same interface, except in :class:`AsyncWebSocketClient` :meth:`train`, :meth:`index`, :meth:`search`
     methods are coroutines (i.e. declared with the async/await syntax), simply calling them will not schedule them to be executed.
     To actually run a coroutine, user need to put them in an eventloop, e.g. via ``asyncio.run()``,
