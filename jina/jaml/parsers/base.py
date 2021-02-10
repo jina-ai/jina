@@ -20,7 +20,7 @@ class VersionedYAMLParser:
     def parse(self, cls: type, data: Dict) -> Union['BaseFlow', 'BaseExecutor', 'BaseDriver']:
         """Return the Flow YAML parser given the syntax version number
 
-         # noqa: DAR401
+        # noqa: DAR401
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
         """
