@@ -16,16 +16,13 @@ def import_classes(namespace: str,
                    show_import_table: bool = False,
                    import_once: bool = False):
     """
-    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML
-    constructor beforehand. It can be also used to import third-part or external executors.
+    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML constructor beforehand. It can be also used to import third-part or external executors.
 
     :param namespace: the namespace to import
     :param show_import_table: show the import result as a table
     :param import_once: import everything only once, to avoid repeated import
-
     :return: the dependency tree of the imported classes under the `namespace`
     """
-
     _namespace2type = {
         'jina.executors': 'ExecutorType',
         'jina.drivers': 'DriverType',
@@ -70,21 +67,17 @@ def import_classes(namespace: str,
 
 class ImportExtensions:
     """
-    A context manager for wrapping extension import and fallback.
-    It guides the user to pip install correct package by looking up
-    extra-requirements.txt
+    A context manager for wrapping extension import and fallback. It guides the user to pip install correct package by looking up extra-requirements.txt.
+
+    :param required: set to True if you want to raise the ModuleNotFound error
+    :param logger: when not given, built-in warnings.warn will be used
+    :param help_text: the help text followed after
+    :param pkg_name: the package name to find in extra_requirements.txt, when not given the ModuleNotFound exec_val will be used as the best guess
     """
 
     def __init__(self, required: bool, logger=None,
                  help_text: str = None, pkg_name: str = None, verbose: bool = True):
-        """
-
-        :param required: set to True if you want to raise the ModuleNotFound error
-        :param logger: when not given, built-in warnings.warn will be used
-        :param help_text: the help text followed after
-        :param pkg_name: the package name to find in extra_requirements.txt, when not given
-                the ModuleNotFound exec_val will be used as the best guess
-        """
+        """Set constructor method."""
         self._required = required
         self._tags = []
         self._help_text = help_text
@@ -167,6 +160,7 @@ def _load_contrib_module(logger=None) -> Optional[List[Any]]:
 
 
 class PathImporter:
+    """The class to import modules from paths."""
 
     @staticmethod
     def _get_module_name(path: str, use_abspath: bool = False, use_basename: bool = True) -> str:
@@ -178,6 +172,12 @@ class PathImporter:
 
     @staticmethod
     def add_modules(*paths) -> Optional[ModuleType]:
+        """
+        Import modules from paths.
+
+        :param paths: Paths of the modules.
+        :return: The target module.
+        """
         for p in paths:
             if not os.path.exists(p):
                 raise FileNotFoundError(f'cannot import module from {p}, file not exist')
