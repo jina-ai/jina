@@ -3,7 +3,6 @@ import json
 import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToDict
-
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
@@ -387,3 +386,67 @@ def test_doc_plot():
     docs[0].matches.append(docs[3])
 
     assert docs[0]._mermaid_to_url('svg')
+
+
+def test_update_include_field():
+    s = Document(id='🐲', content='hello-world', tags={'a': 'b'}, embedding=np.array([1, 2, 3]))
+    d = Document(id='🐦', content='goodbye-world', tags={'c': 'd'}, embedding=np.array([4, 5, 6]))
+
+    d.update(s, exclude_fields=None, include_fields=('id',))
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['c'] == 'd'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check if s stays the same
+    assert s.content == 'hello-world'
+    assert s.id == '🐲'
+    assert s.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check if d stays the same when merge_repeat not turn on
+    d.update(s, exclude_fields=None, include_fields=('tags',))
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['c'] == 'd'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check if d is changed when merge_repeat_field turn on
+    d.update(s, exclude_fields=None, include_fields=('tags',), replace_repeated_field=True)
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check if d is changed when merge_repeat_field turn on
+    d.update(s, exclude_fields=None, include_fields=('tags',), replace_repeated_field=True)
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check copy behavior
+    d.update(s, exclude_fields=None, include_fields=None, replace_repeated_field=True)
+    assert d.content == 'hello-world'
+    assert d.id == '🐲'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
+
+
+def test_update_exclude_field():
+    s = Document(id='🐲', content='hello-world', tags={'a': 'b'},
+                 embedding=np.array([1, 2, 3]),
+                 chunks=[Document(id='🐢')])
+    d = Document(id='🐦', content='goodbye-world', tags={'c': 'd'},
+                 embedding=np.array([4, 5, 6]),
+                 chunks=[Document(id='🐯')])
+
+    d.update(s, exclude_fields=('id','embedding', 'chunks'))
+    assert d.content == 'hello-world'
+    assert d.id == '🐦'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+    assert d.chunks[0].id == '🐯'
+
+    d.update(s, exclude_fields=('chunks', ))
+    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))

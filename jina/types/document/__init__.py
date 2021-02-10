@@ -220,6 +220,77 @@ class Document(ProtoTypeMixin):
     def content_hash(self):
         return self._pb_body.content_hash
 
+    @staticmethod
+    def _update(source: 'Document',
+                destination: 'Document',
+                exclude_fields: Optional[Tuple[str]] = None,
+                include_fields: Optional[Tuple[str]] = None,
+                replace_message_field: bool = False,
+                replace_repeated_field: bool = False) -> None:
+        """Merges fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
+
+        :param source: source :class:`Document` object.
+        :param destination: the destination :class:`Document` object to be merged into.
+        :param exclude_fields: a tuple of field names that excluded from source document
+        :param include_fields: a tuple of field names that included from source document
+        :param replace_message_field: Replace message field if True. Merge message
+                  field if False.
+        :param replace_repeated_field: Replace repeated field if True. Append
+                  elements of repeated field if False.
+
+        .. note::
+            *. ``exclude_fields`` and ``include_fields`` are mutually exclusive, use one only
+            *. ``destination`` will be modified in place, ``source`` will be unchanged
+        """
+
+        if include_fields and exclude_fields:
+            raise ValueError('"exclude_fields" and "exclude_fields" are mutually exclusive, use one only')
+        elif not include_fields and not exclude_fields:
+            # same behavior as copy
+            destination.CopyFrom(source)
+        elif include_fields is not None:
+            FieldMask(paths=include_fields).MergeMessage(source, destination,
+                                                         replace_message_field=replace_message_field,
+                                                         replace_repeated_field=replace_repeated_field)
+        elif exclude_fields is not None:
+            empty_doc = jina_pb2.DocumentProto()
+            # make a copy of the source, this prevent changing the source directly
+            _source = jina_pb2.DocumentProto()
+            _source.CopyFrom(source.proto)
+            # mask out exclude fields in the source
+            FieldMask(paths=exclude_fields).MergeMessage(empty_doc, _source,
+                                                         replace_repeated_field=True,
+                                                         replace_message_field=True)
+            # merge _source to dest
+            FieldMask().MergeMessage(_source, destination.proto,
+                                  replace_message_field=replace_message_field,
+                                  replace_repeated_field=replace_repeated_field)
+
+    def update(self, source: 'Document',
+               exclude_fields: Optional[Tuple[str]] = (
+                       'id', 'chunks', 'matches', 'content_hash', 'parent_id'),
+               include_fields: Optional[Tuple[str]] = None,
+               replace_message_field: bool = False,
+               replace_repeated_field: bool = False) -> None:
+        """Merges fields specified in ``include_fields`` or ``exclude_fields`` from source to current Document.
+
+        :param source: source :class:`Document` object.
+        :param exclude_fields: a tuple of field names that excluded from source document
+        :param include_fields: a tuple of field names that included from source document
+        :param replace_message_field: Replace message field if True. Merge message
+                  field if False.
+        :param replace_repeated_field: Replace repeated field if True. Append
+                  elements of repeated field if False.
+
+        .. note::
+            *. ``exclude_fields`` and ``include_fields`` are mutually exclusive, use one only            *. ``destination`` will be modified in place, ``source`` will be unchanged
+        """
+        self._update(source, self,
+                     exclude_fields=exclude_fields,
+                     include_fields=include_fields,
+                     replace_message_field=replace_message_field,
+                     replace_repeated_field=replace_repeated_field)
+
     def update_content_hash(self,
                             exclude_fields: Optional[Tuple[str]] = (
                                     'id', 'chunks', 'matches', 'content_hash', 'parent_id'),
