@@ -189,7 +189,8 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         """Return line indent level and "sub_indent" for bullet list text.
 
         :param line: the line to check
-        :return: indentation of line and indentation of sub-items"""
+        :return: indentation of line and indentation of sub-items
+        """
         import re
         indent = len(re.match(r'( *)', line).group(1))
         list_match = re.match(r'( *)(([*\-+>]+|\w+\)|\w+\.) +)', line)
