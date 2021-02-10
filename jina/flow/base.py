@@ -39,32 +39,32 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     """An abstract Flow object in Jina.
 
     .. note::
+
         :class:`BaseFlow` does not provide `train`, `index`, `search` interfaces.
         Please use :class:`Flow` or :class:`AsyncFlow`.
+
+    Explanation on ``optimize_level``:
+
+    As an example, the following Flow will generate 6 Peas,
+
+    .. highlight:: python
+    .. code-block:: python
+
+        f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(uses='forward', parallel=3)
+
+    The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
+    will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
+    as the head and tail routers are removed.
+
+    :param kwargs: other keyword arguments that will be shared by all Pods in this Flow
+    :param args: Namespace args
+    :param env: environment variables shared by all Pods
     """
 
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
     def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
-        """Initialize a Flow object
-
-        More explain on ``optimize_level``:
-
-        As an example, the following Flow will generate 6 Peas,
-
-        .. highlight:: python
-        .. code-block:: python
-
-            f = Flow(optimize_level=FlowOptimizeLevel.NONE).add(uses='forward', parallel=3)
-
-        The optimized version, i.e. :code:`Flow(optimize_level=FlowOptimizeLevel.FULL)`
-        will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
-        as the head and tail routers are removed.
-
-        :param kwargs: other keyword arguments that will be shared by all Pods in this Flow
-        :param args: Namespace args
-        :param env: environment variables shared by all Pods
-        """
+        """Initialize a Flow object"""
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'BasePod']
