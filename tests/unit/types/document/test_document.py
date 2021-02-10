@@ -387,3 +387,16 @@ def test_doc_plot():
     docs[0].matches.append(docs[3])
 
     assert docs[0]._mermaid_to_url('svg')
+
+
+@pytest.mark.skip('MergeFrom will duplicate embedding.shape if embedding is already there')
+def test_mergefrom():
+    d1 = Document(text='d1', embedding=np.random.rand(3))
+    d1.matches.append(Document(text='m11'))
+    d1.matches.append(Document(text='m12'))
+    d2 = Document(text='d2', embedding=np.random.rand(3))
+    d2.matches.append(Document(text='m21'))
+    d1.MergeFrom(d2)
+    assert len(d1.matches) == 3
+    assert d1.text == d2.text
+    assert d1.embedding.shape == (3, )
