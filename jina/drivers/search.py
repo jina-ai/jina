@@ -67,13 +67,7 @@ class KVSearchDriver(BaseSearchDriver):
             serialized_doc = self.exec_fn(retrieved_doc.id)
             if serialized_doc:
                 r = Document(serialized_doc)
-
-                # TODO: this isn't perfect though, merge applies recursively on all children
-                #  it will duplicate embedding.shape if embedding is already there
-                if self._is_merge:
-                    retrieved_doc.MergeFrom(r)
-                else:
-                    retrieved_doc.CopyFrom(r)
+                retrieved_doc.update(r)
             else:
                 miss_idx.append(idx)
         # delete non-existed matches in reverse

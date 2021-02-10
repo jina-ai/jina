@@ -6,6 +6,7 @@ from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
+from jina.types.score import NamedScore
 from tests import random_docs
 
 DOCUMENTS_PER_LEVEL = 1
@@ -388,11 +389,20 @@ def test_doc_plot():
     assert docs[0]._mermaid_to_url('svg')
 
 
-def test_update_include_field():
-    s = Document(id='🐲', content='hello-world', tags={'a': 'b'}, embedding=np.array([1, 2, 3]))
-    d = Document(id='🐦', content='goodbye-world', tags={'c': 'd'}, embedding=np.array([4, 5, 6]))
+def get_test_doc():
+    s = Document(id='🐲', content='hello-world', tags={'a': 'b'},
+                 embedding=np.array([1, 2, 3]),
+                 chunks=[Document(id='🐢')])
+    d = Document(id='🐦', content='goodbye-world', tags={'c': 'd'},
+                 embedding=np.array([4, 5, 6]),
+                 chunks=[Document(id='🐯')])
+    return s, d
 
-    d.update(s, exclude_fields=None, include_fields=('id',))
+
+def test_update_include_field():
+    s, d = get_test_doc()
+
+    d.update(s, include_fields=('id',))
     assert d.content == 'goodbye-world'
     assert d.id == '🐲'
     assert d.tags['c'] == 'd'
@@ -404,49 +414,84 @@ def test_update_include_field():
     assert s.tags['a'] == 'b'
     np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
 
-    # check if d stays the same when merge_repeat not turn on
-    d.update(s, exclude_fields=None, include_fields=('tags',))
-    assert d.content == 'goodbye-world'
-    assert d.id == '🐲'
-    assert d.tags['c'] == 'd'
-    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
-
     # check if d is changed when merge_repeat_field turn on
-    d.update(s, exclude_fields=None, include_fields=('tags',), replace_repeated_field=True)
+    d.update(s, include_fields=('tags',))
     assert d.content == 'goodbye-world'
     assert d.id == '🐲'
     assert d.tags['a'] == 'b'
     np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
 
     # check if d is changed when merge_repeat_field turn on
-    d.update(s, exclude_fields=None, include_fields=('tags',), replace_repeated_field=True)
+    d.update(s, include_fields=('tags',))
     assert d.content == 'goodbye-world'
     assert d.id == '🐲'
     assert d.tags['a'] == 'b'
     np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
 
     # check copy behavior
-    d.update(s, exclude_fields=None, include_fields=None, replace_repeated_field=True)
-    assert d.content == 'hello-world'
+    d.update(s, exclude_fields=None, include_fields=('embedding',))
+    assert d.content == 'goodbye-world'
     assert d.id == '🐲'
     assert d.tags['a'] == 'b'
     np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
 
 
-def test_update_exclude_field():
-    s = Document(id='🐲', content='hello-world', tags={'a': 'b'},
-                 embedding=np.array([1, 2, 3]),
-                 chunks=[Document(id='🐢')])
-    d = Document(id='🐦', content='goodbye-world', tags={'c': 'd'},
-                 embedding=np.array([4, 5, 6]),
-                 chunks=[Document(id='🐯')])
+def test_update_on_no_empty_doc():
+    s, d = get_test_doc()
+    d0 = d.dict()
+    # this will not update anything as d and s are in the same structure
+    d.update(s)
+    assert d.dict() == d0
 
-    d.update(s, exclude_fields=('id','embedding', 'chunks'))
+
+def test_update_chunks():
+    s, d = get_test_doc()
+    d.update(s, include_fields=('chunks',), exclude_fields=None)
+    assert len(d.chunks) == 1
+    assert d.chunks[0].id == '🐢'
+
+
+def test_update_embedding():
+    s, d = get_test_doc()
+    d.update(s, include_fields=('embedding',), exclude_fields=tuple())
+    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
+
+
+def test_non_empty_fields():
+    d_score = Document(score=NamedScore(value=42))
+    print(d_score.ListFields())
+    assert d_score.non_empty_fields == ('id', 'score')
+
+    d = Document()
+    assert d.non_empty_fields == ('id',)
+
+    d = Document(id='')
+    assert not d.non_empty_fields
+
+
+def test_update_score_embedding():
+    d = Document()
+    d_score = Document(score=NamedScore(value=42))
+
+    d.update(d_score)
+    assert d.score.value == 42
+
+
+def test_update_exclude_field():
+    s, d = get_test_doc()
+
+    d.update(s, exclude_fields=('id', 'embedding', 'chunks'))
     assert d.content == 'hello-world'
     assert d.id == '🐦'
     assert d.tags['a'] == 'b'
     np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
     assert d.chunks[0].id == '🐯'
 
-    d.update(s, exclude_fields=('chunks', ))
+    d.update(s, exclude_fields=('chunks',))
+    # check if merging on embedding is correct
     np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
+
+    d.update(s, exclude_fields=('embedding',))
+    # check if merging on embedding is correct
+    assert len(d.chunks) == 1
+    assert d.chunks[0].id == '🐢'
