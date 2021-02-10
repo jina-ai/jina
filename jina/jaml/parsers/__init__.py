@@ -47,11 +47,11 @@ def _get_default_parser():
 
 
 def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'VersionedYAMLParser':
-    """ Get parser given the YAML version
-
+    """
+    # noqa: DAR401
     :param cls: the target class to parse
     :param version: yaml version number in "MAJOR[.MINOR]" format
-    :return:
+    :return: parser given the YAML version
     """
     all_parsers, legacy_parser = _get_all_parser(cls)
     if version:
@@ -78,6 +78,7 @@ def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'Versione
 def get_supported_versions(cls) -> List[str]:
     """List all supported versions
 
+    :param cls: the class to check
     :return: supported versions sorted alphabetically
     """
     all_parsers, _ = _get_all_parser(cls)

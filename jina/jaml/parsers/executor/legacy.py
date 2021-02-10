@@ -1,6 +1,6 @@
 import os
 import inspect
-from typing import Dict, Any, Type
+from typing import Dict, Any, Type, Set
 from functools import reduce
 
 from ..base import VersionedYAMLParser
@@ -14,22 +14,23 @@ class LegacyParser(VersionedYAMLParser):
     @staticmethod
     def _get_all_arguments(class_):
         """
-        Returns a list of all the arguments of all the classess from which `class_`
-        inherits
-            
+
         :param class_: target class from which we want to retrieve arguments
+        :return: all the arguments of all the classes from which `class_` inherits
         """
         def get_class_arguments(class_):
             """
-            Retrieves a list containing the arguments from `class_`
+            :param class_: the class to check
+            :return: a list containing the arguments from `class_`
             """
             signature = inspect.signature(class_.__init__)
             class_arguments = [p.name for p in signature.parameters.values()]
             return class_arguments
 
-        def accumulate_classes(cls):
+        def accumulate_classes(cls) -> Set[Type]:
             """
-            Retrieves all classes from which cls inherits from
+            :param cls: the class to check
+            :return: all classes from which cls inherits from
             """
             def _accumulate_classes(c, cs):
                 cs.append(c)
@@ -74,10 +75,10 @@ class LegacyParser(VersionedYAMLParser):
                     return bin_dump_path
 
     def parse(self, cls: Type['BaseExecutor'], data: Dict) -> 'BaseExecutor':
-        """Return the Flow YAML parser given the syntax version number
-
+        """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
+        :return: the Flow YAML parser given the syntax version number
         """
         _meta_config = get_default_metas()
         _meta_config.update(data.get('metas', {}))
@@ -141,9 +142,9 @@ class LegacyParser(VersionedYAMLParser):
         return obj
 
     def dump(self, data: 'BaseExecutor') -> Dict:
-        """Return the dictionary given a versioned flow object
-
+        """
         :param data: versioned executor object
+        :return: the dictionary given a versioned flow object
         """
         # note: we only save non-default property for the sake of clarity
         _defaults = get_default_metas()

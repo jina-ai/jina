@@ -11,10 +11,10 @@ class LegacyParser(VersionedYAMLParser):
     version = 'legacy'  # the version number this parser designed for
 
     def parse(self, cls: Type['BaseFlow'], data: Dict) -> 'BaseFlow':
-        """Return the Flow YAML parser given the syntax version number
-
+        """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
+        :return: the Flow YAML parser given the syntax version number
         """
         p = data.get('with', {})  # type: Dict[str, Any]
         a = p.pop('args') if 'args' in p else ()
@@ -34,9 +34,9 @@ class LegacyParser(VersionedYAMLParser):
         return obj
 
     def dump(self, data: 'BaseFlow') -> Dict:
-        """Return the dictionary given a versioned flow object
-
+        """
         :param data: versioned flow object
+        :return: the dictionary given a versioned flow object
         """
         r = {}
         if data._version:
