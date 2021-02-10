@@ -12,22 +12,19 @@ __all__ = ['SparseNdArray']
 
 
 class SparseNdArray(BaseSparseNdArray):
-    """Scipy powered sparse ndarray
+    """
+    Scipy powered sparse ndarray.
 
     .. warning::
         scipy only supports ndim=2
 
     .. seealso::
         https://docs.scipy.org/doc/scipy/reference/sparse.html
+
+    :param sp_format: the sparse format of the scipy matrix. one of 'coo', 'bsr', 'csc', 'csr'.
     """
 
     def __init__(self, proto: 'jina_pb2.SparseNdArrayProto' = None, sp_format: str = 'coo', *args, **kwargs):
-        """
-
-        :param sp_format: the sparse format of the scipy matrix. one of 'coo', 'bsr', 'csc', 'csr'
-        :param args:
-        :param kwargs:
-        """
         import scipy.sparse
         super().__init__(proto, *args, **kwargs)
         support_fmt = {'coo', 'bsr', 'csc', 'csr'}
