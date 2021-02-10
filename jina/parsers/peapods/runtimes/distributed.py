@@ -1,15 +1,20 @@
+"""Argparser module for runtimes - distributed"""
 from jina.helper import random_identity
 from jina.parsers.helper import add_arg_group
 
 
 def mixin_distributed_feature_parser(parser):
-    """Mixing in arguments required by :class:`BasePod` into the given parser. """
+    """Mixing in arguments required by :class:`BasePod` into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
+
     gp = add_arg_group(parser, title='Distributed')
 
     gp.add_argument('--silent-remote-logs', action='store_true', default=False,
                     help='Do not display the streaming of remote logs on local console')
 
     gp.add_argument('--upload-files', type=str, nargs='*', metavar='FILE',
+
                     help='''
 The files on the host to be uploaded to the remote
 workspace. This can be useful when your Pod has more

@@ -1,3 +1,4 @@
+"""Argparser module for the check functions"""
 from .base import set_base_parser
 
 

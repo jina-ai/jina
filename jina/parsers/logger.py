@@ -1,7 +1,12 @@
+"""Argparser module Loggers"""
 from .base import set_base_parser
 
 
 def set_logger_parser(parser=None):
+    """
+    :param parser: the parser instance to which we add arguments
+    :return: the parser instance
+    """
     if not parser:
         parser = set_base_parser()
 

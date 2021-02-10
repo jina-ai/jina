@@ -1,3 +1,4 @@
+"""Module for argparse for Client"""
 from .helper import add_arg_group
 from ..enums import RequestType
 

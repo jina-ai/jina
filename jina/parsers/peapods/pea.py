@@ -1,3 +1,4 @@
+"""Argparser module for Pea runtimes"""
 import argparse
 
 from ..helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
@@ -7,6 +8,7 @@ from ...peapods.runtimes import list_all_runtimes
 
 def mixin_pea_parser(parser):
     """Mixing in arguments required by :class:`BasePea` into the given parser.
+    :param parser: the parser instance to which we add arguments
     """
 
     gp = add_arg_group(parser, title='Pea')

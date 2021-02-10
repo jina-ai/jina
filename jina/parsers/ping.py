@@ -1,3 +1,4 @@
+"""Argparser module for pinging"""
 from .base import set_base_parser
 
 

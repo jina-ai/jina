@@ -1,3 +1,4 @@
+"""Module for hello world argparser"""
 import argparse
 
 from pkg_resources import resource_filename

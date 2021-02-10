@@ -1,3 +1,4 @@
+"""Argparser module for hub build"""
 from ..helper import add_arg_group
 from ...enums import BuildTestLevel
 

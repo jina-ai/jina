@@ -1,3 +1,4 @@
+"""Argparser module for hub new"""
 from ..helper import add_arg_group
 
 

@@ -1,3 +1,4 @@
+"""Argparser module for Pod runtimes"""
 import argparse
 
 from jina.enums import PollingType, SchedulerType, PodRoleType
@@ -5,7 +6,9 @@ from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 
 
 def mixin_base_pod_parser(parser):
-    """Mixing in arguments required by :class:`BasePod` into the given parser. """
+    """Mixing in arguments required by :class:`BasePod` into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
     gp = add_arg_group(parser, title='Pod')
 
     gp.add_argument('--uses-before', type=str,
