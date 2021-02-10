@@ -38,12 +38,15 @@ class Request(ProtoTypeMixin):
     It overrides :meth:`__getattr__` to provide the same get/set interface as an
     :class:`jina_pb2.RequestProto` object.
 
+    :param request: The request.
+    :param envelope: EnvelopeProto object.
+    :param copy: Copy the request if ``copy`` is True.
     """
 
     def __init__(self, request: Union[bytes, dict, str, 'jina_pb2.RequestProto', None] = None,
                  envelope: Optional['jina_pb2.EnvelopeProto'] = None,
                  copy: bool = False):
-
+        """Set constructor method."""
         self._buffer = None
         self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
         try:
@@ -80,6 +83,7 @@ class Request(ProtoTypeMixin):
 
     @property
     def body(self):
+        """Return the request type, raise ``ValueError`` if request_type not set."""
         if self._request_type:
             return getattr(self.proto, self._request_type)
         else:
@@ -91,12 +95,12 @@ class Request(ProtoTypeMixin):
 
     @property
     def request_type(self) -> Optional[str]:
-        """Return the request body type, when not set yet, return ``None``"""
+        """Return the request body type, when not set yet, return ``None``."""
         if self._request_type:
             return self.body.__class__.__name__
 
     def as_typed_request(self, request_type: str):
-        """Change the request class according to the one_of value in ``body``"""
+        """Change the request class according to the one_of value in ``body``."""
         from .train import TrainRequest
         from .search import SearchRequest
         from .control import ControlRequest
@@ -123,7 +127,7 @@ class Request(ProtoTypeMixin):
 
     @request_type.setter
     def request_type(self, value: str):
-        """Set the type of this request, but keep the body empty"""
+        """Set the type of this request, but keep the body empty."""
         value = value.lower()
         if value in _body_type:
             getattr(self.proto, value).SetInParent()
@@ -158,8 +162,8 @@ class Request(ProtoTypeMixin):
     def proto(self) -> 'jina_pb2.RequestProto':
         """
         Cast ``self`` to a :class:`jina_pb2.RequestProto`. This will trigger
-         :attr:`is_used`. Laziness will be broken and serialization will be recomputed when calling
-         :meth:`SerializeToString`.
+        :attr:`is_used`. Laziness will be broken and serialization will be recomputed when calling
+        :meth:`SerializeToString`.
         """
         if self._pb_body:
             # if request is already given while init
@@ -190,22 +194,23 @@ class Request(ProtoTypeMixin):
 
     @property
     def queryset(self) -> 'QueryLangSet':
+        """Get the queryset in :class:`QueryLangSet` type."""
         self.is_used = True
         return QueryLangSet(self.proto.queryset)
 
     def as_response(self):
-        """Return a weak reference of this object but as :class:`Response` object. It gives a more
+        """
+        Return a weak reference of this object but as :class:`Response` object. It gives a more
         consistent semantics on the client.
         """
-
         base_cls = self.__class__
         base_cls_name = self.__class__.__name__
         self.__class__ = type(base_cls_name, (base_cls, Response), {})
 
 
 class Response:
-    """Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
-       :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
-       the client API: send a :class:`Request` and receive a :class:`Response`.
-
+    """
+    Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
+    :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
+    the client API: send a :class:`Request` and receive a :class:`Response`.
     """

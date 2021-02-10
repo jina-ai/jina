@@ -2,7 +2,7 @@
 <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
 </p>
 <p align="center">
-An easier way to build neural search in the cloud
+An easier way to build neural search on the cloud
 </p>
 <p align=center>
 <a href="#license"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/license-badge.svg?raw=true" alt="Jina" title="Jina is licensed under Apache-2.0"></a>
@@ -792,7 +792,7 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
     </a>
     </td>
     <td width="75%">
-&nbsp;&nbsp;<h3><a href="https://github.com/jina-ai/docs/tree/master/chapters/101">Jina 101: First Things to Learn About Jina</a></h3>
+&nbsp;&nbsp;<h3><a href="https://101.jina.ai">Jina 101: First Things to Learn About Jina</a></h3>
 &nbsp;&nbsp;<a href="https://github.com/jina-ai/docs/tree/master/chapters/101">English</a> •
   <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ja.md">日本語</a> •
   <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.fr.md">Français</a> •

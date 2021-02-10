@@ -5,11 +5,11 @@ __all__ = ['TrainDryRunRequest', 'IndexDryRunRequest', 'SearchDryRunRequest', 'C
 
 
 class DryRunRequest(Request):
-    """Base empty request for dry run"""
+    """Base empty request for dry run."""
 
 
 class TrainDryRunRequest(DryRunRequest):
-    """Empty train request for dry run"""
+    """Empty train request for dry run."""
 
     def __init__(self):
         super().__init__()
@@ -17,7 +17,7 @@ class TrainDryRunRequest(DryRunRequest):
 
 
 class IndexDryRunRequest(DryRunRequest):
-    """Empty index request for dry run"""
+    """Empty index request for dry run."""
 
     def __init__(self):
         super().__init__()
@@ -25,7 +25,7 @@ class IndexDryRunRequest(DryRunRequest):
 
 
 class SearchDryRunRequest(DryRunRequest):
-    """Empty search request for dry run"""
+    """Empty search request for dry run."""
 
     def __init__(self):
         super().__init__()
@@ -33,7 +33,7 @@ class SearchDryRunRequest(DryRunRequest):
 
 
 class ControlDryRunRequest(DryRunRequest):
-    """Empty control request for dry run"""
+    """Empty control request for dry run."""
 
     def __init__(self):
         super().__init__()
