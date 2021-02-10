@@ -283,7 +283,8 @@ class Document(ProtoTypeMixin):
         """Update fields' values specified in ``include_fields`` from the source to current Document.
 
         :param source: source :class:`Document` object.
-        :param exclude_fields: a tuple of field names that excluded from destination document, when not given the the curre
+        :param exclude_fields: a tuple of field names that excluded from destination document,
+                when not given the non-empty fields of the current document is considered as ``exclude_fields``
         :param include_fields: a tuple of field names that included from source document
 
         .. note::
