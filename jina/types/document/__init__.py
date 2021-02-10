@@ -280,12 +280,12 @@ class Document(ProtoTypeMixin):
     def update(self, source: 'Document',
                exclude_fields: Optional[Tuple[str, ...]] = None,
                include_fields: Optional[Tuple[str, ...]] = None) -> None:
-        """Update fields' values specified in ``include_fields`` from the source to current Document.
+        """Updates fields specified in ``include_fields`` from the source to current Document.
 
         :param source: source :class:`Document` object.
-        :param exclude_fields: a tuple of field names that excluded from destination document,
+        :param exclude_fields: a tuple of field names that excluded from the current document,
                 when not given the non-empty fields of the current document is considered as ``exclude_fields``
-        :param include_fields: a tuple of field names that included from source document
+        :param include_fields: a tuple of field names that included from the source document
 
         .. note::
             *. ``destination`` will be modified in place, ``source`` will be unchanged
