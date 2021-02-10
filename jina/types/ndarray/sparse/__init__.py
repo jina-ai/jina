@@ -14,7 +14,7 @@ __all__ = ['BaseSparseNdArray']
 
 class BaseSparseNdArray(BaseNdArray):
     """
-    The base class for SparseNdArray.
+    The base class for :class:`SparseNdArray`.
 
     Do not use this class directly. Subclass should be used.
 

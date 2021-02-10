@@ -21,6 +21,7 @@ class SparseNdArray(BaseSparseNdArray):
     .. seealso::
         https://docs.scipy.org/doc/scipy/reference/sparse.html
 
+    :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
     :param sp_format: the sparse format of the scipy matrix. one of 'coo', 'bsr', 'csc', 'csr'.
     """
 
