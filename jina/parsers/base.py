@@ -1,4 +1,4 @@
-"""Module for """
+"""Module containing the base parser for arguments of Jina."""
 import argparse
 
 from .helper import _chf

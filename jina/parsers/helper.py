@@ -14,7 +14,7 @@ def add_arg_group(parser, title):
     return parser.add_argument_group(f'{title} arguments')
 
 
-def UUIDString(astring):
+def UUIDString(astring) -> str:
     """argparse type to check if a string is a valid UUID string
 
     :param astring: the string to check
@@ -201,7 +201,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return (indent, sub_indent)
 
     def _split_paragraphs(self, text):
-        """Split text in to paragraphs of like-indented lines.
+        """Split text into paragraphs of like-indented lines.
 
         :param text: the text input
         :return: list of paragraphs

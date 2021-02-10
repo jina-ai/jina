@@ -1,4 +1,4 @@
-"""Argparser module for runtimes - distributed"""
+"""Argparser module for distributed runtimes"""
 from jina.helper import random_identity
 from jina.parsers.helper import add_arg_group
 
