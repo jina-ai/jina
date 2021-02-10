@@ -385,7 +385,8 @@ class HubIO:
                                                                         self.args.test_level,
                                                                         self.config_yaml_path,
                                                                         self.args.timeout_ready,
-                                                                        self.args.daemon)
+                                                                        self.args.daemon,
+                                                                        self.logger)
                         if any(test_level in failed_test_levels for test_level in
                                [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
                             is_build_success = False
@@ -467,29 +468,35 @@ class HubIO:
                     test_level: 'BuildTestLevel',
                     config_yaml_path: str,
                     timeout_ready: int,
-                    daemon_arg: bool):
+                    daemon_arg: bool,
+                    logger: 'JinaLogger'):
         p_names = []
         failed_levels = []
-
+        logger.info(f'run tests using test level {test_level}')
         # test uses at executor level
         if test_level >= BuildTestLevel.EXECUTOR:
+            logger.info(f'test executor')
             try:
                 with BaseExecutor.load_config(config_yaml_path):
                     pass
+                logger.info(f'successfully loaded the executor')
             except:
                 failed_levels.append(BuildTestLevel.EXECUTOR)
 
         # test uses at Pod level (no docker)
         if test_level >= BuildTestLevel.POD_NONDOCKER:
+            logger.info(f'test non docker')
             try:
                 with Pod(set_pod_parser().parse_args(
                         ['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
                     pass
+                logger.info(f'successfully tested non docker')
             except:
                 failed_levels.append(BuildTestLevel.POD_NONDOCKER)
 
         # test uses at Pod level (with docker)
         if test_level >= BuildTestLevel.POD_DOCKER:
+            logger.info(f'test pod docker')
             p_name = random_name()
             try:
                 with Pod(set_pod_parser().parse_args(
@@ -498,17 +505,20 @@ class HubIO:
                         ['--daemon'] if daemon_arg else [])):
                     pass
                 p_names.append(p_name)
+                logger.info(f'successfully tested pod docker')
             except:
                 failed_levels.append(BuildTestLevel.POD_DOCKER)
 
         # test uses at Flow level
         if test_level >= BuildTestLevel.FLOW:
+            logger.info(f'test flow')
             p_name = random_name()
             try:
                 with Flow().add(name=random_name(), uses=f'docker://{image.tags[0]}', daemon=daemon_arg,
                                 timeout_ready=timeout_ready):
                     pass
                 p_names.append(p_name)
+                logger.info('successfully tested flow')
             except:
                 failed_levels.append(BuildTestLevel.FLOW)
 
