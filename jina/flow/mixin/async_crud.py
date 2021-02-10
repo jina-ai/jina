@@ -9,13 +9,14 @@ from ...helper import deprecated_alias
 
 
 class AsyncCRUDFlowMixin:
+    """The asynchronous version of the Mixin for CRUD in Flow"""
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def train(self, input_fn: InputFnType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
                     **kwargs):
-        """Do training on the current flow
+        """Do training on the current Flow
 
         :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -38,7 +39,7 @@ class AsyncCRUDFlowMixin:
                             on_error: CallbackFnType = None,
                             on_always: CallbackFnType = None,
                             **kwargs):
-        """Using numpy ndarray as the index source for the current flow
+        """Using numpy ndarray as the index source for the current Flow
 
         :param array: the numpy ndarray data source
         :param axis: iterate over that axis
@@ -66,7 +67,7 @@ class AsyncCRUDFlowMixin:
                              on_error: CallbackFnType = None,
                              on_always: CallbackFnType = None,
                              **kwargs):
-        """Use a numpy ndarray as the query source for searching on the current flow
+        """Use a numpy ndarray as the query source for searching on the current Flow
 
         :param array: the numpy ndarray data source
         :param axis: iterate over that axis
@@ -97,7 +98,7 @@ class AsyncCRUDFlowMixin:
                           on_error: CallbackFnType = None,
                           on_always: CallbackFnType = None,
                           **kwargs):
-        """ Use a list of lines as the index source for indexing on the current flow
+        """ Use a list of lines as the index source for indexing on the current Flow
 
         :param lines: a list of strings, each is considered as d document
         :param filepath: a text file that each line contains a document
@@ -136,7 +137,7 @@ class AsyncCRUDFlowMixin:
                         on_error: CallbackFnType = None,
                         on_always: CallbackFnType = None,
                         **kwargs):
-        """ Use a list of lines as the index source for indexing on the current flow
+        """ Use a list of lines as the index source for indexing on the current Flow
         :param lines: a list of strings, each is considered as d document
         :param size: the maximum number of the documents
         :param sampling_rate: the sampling rate between [0, 1]
@@ -167,7 +168,7 @@ class AsyncCRUDFlowMixin:
                            on_error: CallbackFnType = None,
                            on_always: CallbackFnType = None,
                            **kwargs):
-        """ Use a list of lines as the index source for indexing on the current flow
+        """ Use a list of lines as the index source for indexing on the current Flow
         :param lines: a list of strings, each is considered as d document
         :param size: the maximum number of the documents
         :param sampling_rate: the sampling rate between [0, 1]
@@ -196,7 +197,7 @@ class AsyncCRUDFlowMixin:
                           on_error: CallbackFnType = None,
                           on_always: CallbackFnType = None,
                           **kwargs):
-        """ Use a set of files as the index source for indexing on the current flow
+        """ Use a set of files as the index source for indexing on the current Flow
 
         :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
         :param recursive: If recursive is true, the pattern '**' will match any files and
@@ -227,7 +228,7 @@ class AsyncCRUDFlowMixin:
                            on_error: CallbackFnType = None,
                            on_always: CallbackFnType = None,
                            **kwargs):
-        """ Use a set of files as the query source for searching on the current flow
+        """ Use a set of files as the query source for searching on the current Flow
 
         :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
         :param recursive: If recursive is true, the pattern '**' will match any files and
@@ -257,7 +258,7 @@ class AsyncCRUDFlowMixin:
                             on_error: CallbackFnType = None,
                             on_always: CallbackFnType = None,
                             **kwargs):
-        """ Use a list of files as the query source for searching on the current flow
+        """ Use a list of files as the query source for searching on the current Flow
         :param lines: a list of strings, each is considered as d document
         :param size: the maximum number of the documents
         :param sampling_rate: the sampling rate between [0, 1]
@@ -288,7 +289,7 @@ class AsyncCRUDFlowMixin:
                          on_error: CallbackFnType = None,
                          on_always: CallbackFnType = None,
                          **kwargs):
-        """ Use a list of lines as the index source for indexing on the current flow
+        """ Use a list of lines as the index source for indexing on the current Flow
         :param lines: a list of strings, each is considered as d document
         :param size: the maximum number of the documents
         :param sampling_rate: the sampling rate between [0, 1]
@@ -322,7 +323,7 @@ class AsyncCRUDFlowMixin:
                            on_error: CallbackFnType = None,
                            on_always: CallbackFnType = None,
                            **kwargs):
-        """ Use a list of files as the query source for searching on the current flow
+        """ Use a list of files as the query source for searching on the current Flow
 
         :param filepath: a text file that each line contains a document
         :param lines: a list of strings, each is considered as d document
@@ -358,7 +359,7 @@ class AsyncCRUDFlowMixin:
                     on_error: CallbackFnType = None,
                     on_always: CallbackFnType = None,
                     **kwargs):
-        """Do indexing on the current flow
+        """Do indexing on the current Flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
@@ -378,7 +379,7 @@ class AsyncCRUDFlowMixin:
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
                      **kwargs):
-        """Do updates on the current flow
+        """Do updates on the current Flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`index`.
 
@@ -398,7 +399,7 @@ class AsyncCRUDFlowMixin:
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
                      **kwargs):
-        """Do deletion on the current flow
+        """Do deletion on the current Flow
 
         :param ids: An iterable of ids
         :param on_done: the function to be called when the :class:`Request` object is resolved.
@@ -416,7 +417,7 @@ class AsyncCRUDFlowMixin:
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,
                      **kwargs):
-        """Do searching on the current flow
+        """Do searching on the current Flow
 
         It will start a :py:class:`CLIClient` and call :py:func:`search`.
 

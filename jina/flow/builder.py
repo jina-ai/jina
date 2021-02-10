@@ -69,7 +69,7 @@ def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
 def _hanging_pods(op_flow: 'Flow') -> List[str]:
     """
     :param op_flow: the Flow we're operating on
-    :return: names of hanging pods (nobody recv from them) in the flow.
+    :return: names of hanging Pods (nobody recv from them) in the Flow.
     """
     all_needs = {v for p in op_flow._pod_nodes.values() for v in p.needs}
     all_names = {p for p in op_flow._pod_nodes.keys()}
@@ -143,7 +143,7 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
     def _optimize_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
         """ THIS CODE IS NEVER TESTED AND THE LOGIC MAY NOT APPLIED ANYMORE
 
-        :param flow: the flow we're optimizing
+        :param flow: the Flow we're optimizing
         :param start_node_name: first node of connection
         :param end_node_name: second node of connection
         """

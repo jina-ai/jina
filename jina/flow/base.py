@@ -36,7 +36,7 @@ _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|6
 
 
 class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
-    """An abstract flow object in Jina.
+    """An abstract Flow object in Jina.
 
     .. note::
         :class:`BaseFlow` does not provide `train`, `index`, `search` interfaces.
@@ -46,11 +46,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
     def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
-        """Initialize a flow object
+        """Initialize a Flow object
 
         More explain on ``optimize_level``:
 
-        As an example, the following flow will generate 6 Peas,
+        As an example, the following Flow will generate 6 Peas,
 
         .. highlight:: python
         .. code-block:: python
@@ -61,7 +61,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         will generate 4 Peas, but it will force the :class:`GatewayPea` to take BIND role,
         as the head and tail routers are removed.
 
-        :param kwargs: other keyword arguments that will be shared by all pods in this flow
+        :param kwargs: other keyword arguments that will be shared by all Pods in this Flow
         :param args: Namespace args
         :param env: environment variables shared by all Pods
         """
@@ -91,6 +91,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     def yaml_spec(self):
+        """
+        get the YAML representation of the instance
+        # noqa: DAR401
+        # noqa: DAR201
+        """
         return JAML.dump(self)
 
     @staticmethod
@@ -117,15 +122,19 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     def last_pod(self):
+        """Last pod
+        # noqa: DAR401
+        # noqa: DAR201
+        """
         return self._last_changed_pod[-1]
 
     @last_pod.setter
     def last_pod(self, name: str):
         """
-        Set a pod as the last pod in the flow, useful when modifying the flow.
+        Set a Pod as the last Pod in the Flow, useful when modifying the Flow.
 
         # noqa: DAR401
-        :param name: the name of the existing pod
+        :param name: the name of the existing Pod
         """
         if name not in self._pod_nodes:
             raise FlowMissingPodError(f'{name} can not be found in this Flow')
@@ -158,14 +167,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def needs(self, needs: Union[Tuple[str], List[str]],
               name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
         """
-        Add a blocker to the flow, wait until all peas defined in **needs** completed.
+        Add a blocker to the Flow, wait until all peas defined in **needs** completed.
 
         # noqa: DAR401
         :param needs: list of service names to wait
         :param name: the name of this joiner, by default is ``joiner``
         :param *args: *args for .add
         :param **kwargs: **kwargs for .add
-        :return: the modified flow
+        :return: the modified Flow
         """
         if len(needs) <= 1:
             raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
@@ -178,7 +187,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param name: the name of this joiner (default is ``joiner``)
         :param *args: *args for .add or .needs
         :param **kwargs: **kwargs for .add or .needs
-        :return: the modified flow
+        :return: the modified Flow
         """
         needs = _hanging_pods(self)
         if len(needs) == 1:
@@ -192,20 +201,20 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             pod_role: 'PodRoleType' = PodRoleType.POD,
             **kwargs) -> 'BaseFlow':
         """
-        Add a pod to the current flow object and return the new modified flow object.
-        The attribute of the pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
+        Add a Pod to the current Flow object and return the new modified Flow object.
+        The attribute of the Pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
         Note there are shortcut versions of this method.
         Recommend to use :py:meth:`add_encoder`, :py:meth:`add_preprocessor`,
         :py:meth:`add_router`, :py:meth:`add_indexer` whenever possible.
 
         # noqa: DAR401
-        :param needs: the name of the pod(s) that this pod receives data from.
+        :param needs: the name of the Pod(s) that this Pod receives data from.
                            One can also use 'pod.Gateway' to indicate the connection with the gateway.
         :param pod_role: the role of the Pod, used for visualization and route planning
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
-        :param **kwargs: other keyword-value arguments that the pod CLI supports
-        :return: a (new) flow object with modification
+        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param **kwargs: other keyword-value arguments that the Pod CLI supports
+        :return: a (new) Flow object with modification
         """
 
         op_flow = copy.deepcopy(self) if copy_flow else self
@@ -240,7 +249,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 kwargs['port_expose'] = m.group(2)
                 kwargs['host'] = m.group(1)
 
-        # update kwargs of this pod
+        # update kwargs of this Pod
         kwargs.update(dict(
             name=pod_name,
             pod_role=pod_role,
@@ -261,8 +270,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'BaseFlow':
         """Add an inspection on the last changed Pod in the Flow
 
-        Internally, it adds two pods to the flow. But no worry, the overhead is minimized and you
-        can remove them by simply give `Flow(inspect=FlowInspectType.REMOVE)` before using the flow.
+        Internally, it adds two Pods to the Flow. But don't worry, the overhead is minimized and you
+        can remove them by simply using `Flow(inspect=FlowInspectType.REMOVE)` before using the Flow.
 
         .. highlight:: bash
         .. code-block:: bash
@@ -272,16 +281,16 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                     -- PUB-SUB -- InspectPod (Hanging)
 
         In this way, :class:`InspectPod` looks like a simple ``_pass`` from outside and
-        does not introduce side-effect (e.g. changing the socket type) to the original flow.
+        does not introduce side-effects (e.g. changing the socket type) to the original Flow.
         The original incoming and outgoing socket types are preserved.
 
-        This function is very handy for introducing evaluator into the flow.
+        This function is very handy for introducing an Evaluator into the Flow.
 
         .. seealso::
 
             :meth:`gather_inspect`
 
-        :param name: name of the pod
+        :param name: name of the Pod
         :param *args: *args for .add()
         :param **kwargs: **kwargs for .add()
         :return: the new instance of the Flow
@@ -295,14 +304,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow = op_flow.add(name=f'_aux_{name}', needs=_last_pod,
                               pod_role=PodRoleType.INSPECT_AUX_PASS, *args, **kwargs)
 
-        # register any future connection to _last_pod by the auxiliary pod
+        # register any future connection to _last_pod by the auxiliary Pod
         op_flow._inspect_pods[_last_pod] = op_flow.last_pod
 
         return op_flow
 
     def gather_inspect(self, name: str = 'gather_inspect', uses='_merge_eval', include_last_pod: bool = True, *args,
                        **kwargs) -> 'BaseFlow':
-        """ Gather all inspect pods output into one pod. When the flow has no inspect pod then the flow itself
+        """ Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
         is returned.
 
         .. note::
@@ -310,12 +319,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             If ``--no-inspect`` is **not** given, then :meth:`gather_inspect` is auto called before :meth:`build`. So
             in general you don't need to manually call :meth:`gather_inspect`.
 
-        :param name: the name of the gather pod
+        :param name: the name of the gather Pod
         :param uses: the config of the executor, by default is ``_pass``
-        :param include_last_pod: if to include the last modified pod in the flow
+        :param include_last_pod: if to include the last modified Pod in the Flow
         :param *args: *args for .add()
         :param **kwargs: **kwargs for .add()
-        :return: the modified flow or the copy of it
+        :return: the modified Flow or the copy of it
 
 
         .. seealso::
@@ -334,18 +343,18 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def build(self, copy_flow: bool = False) -> 'BaseFlow':
         """
-        Build the current flow and make it ready to use
+        Build the current Flow and make it ready to use
 
         .. note::
 
-            No need to manually call it since 0.0.8. When using flow with the
+            No need to manually call it since 0.0.8. When using Flow with the
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
-        :param copy_flow: when set to true, then always copy the current flow and do the modification on top of it then return, otherwise, do in-line modification
-        :return: the current flow (by default)
+        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
+        :return: the current Flow (by default)
 
         .. note::
-            ``copy_flow=True`` is recommended if you are building the same flow multiple times in a row. e.g.
+            ``copy_flow=True`` is recommended if you are building the same Flow multiple times in a row. e.g.
 
             .. highlight:: python
             .. code-block:: python
@@ -402,6 +411,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return op_flow
 
     def __call__(self, *args, **kwargs):
+        """Builds the Flow
+        :param *args: *args for build
+        :param **kwargs: **kwargs for build
+        :return: the built Flow
+        """
         return self.build(*args, **kwargs)
 
     def __enter__(self):
@@ -437,7 +451,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
-        # set env only before the pod get started
+        # set env only before the Pod get started
         if self._env:
             for k, v in self._env.items():
                 os.environ[k] = str(v)
@@ -462,22 +476,22 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     def num_pods(self) -> int:
-        """Get the number of pods in this flow
+        """Get the number of Pods in this Flow
         # noqa: DAR201"""
         return len(self._pod_nodes)
 
     @property
     def num_peas(self) -> int:
-        """Get the number of peas (parallel count) in this flow
+        """Get the number of peas (parallel count) in this Flow
         # noqa: DAR201"""
         return sum(v.num_peas for v in self._pod_nodes.values())
 
     def __eq__(self, other: 'BaseFlow') -> bool:
         """
-        Comparing the topology of a flow with another flow.
+        Compare the topology of a Flow with another Flow.
         Identification is defined by whether two flows share the same set of edges.
 
-        :param other: the second flow object
+        :param other: the second Flow object
         :return: result of equality check
         """
 
@@ -573,7 +587,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
              build: bool = True,
              copy_flow: bool = False) -> 'BaseFlow':
         """
-        Visualize the flow up to the current point
+        Visualize the Flow up to the current point
         If a file name is provided it will create a jpg image with that name,
         otherwise it will display the URL for mermaid.
         If called within IPython notebook, it will be rendered inline,
@@ -590,13 +604,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                     the suffix svg/jpg determines the file type of the output image
         :param vertical_layout: top-down or left-right layout
         :param inline_display: show image directly inside the Jupyter Notebook
-        :param build: build the flow first before plotting, gateway connection can be better showed
-        :param copy_flow: when set to true, then always copy the current flow and
+        :param build: build the Flow first before plotting, gateway connection can be better showed
+        :param copy_flow: when set to true, then always copy the current Flow and
                 do the modification on top of it then return, otherwise, do in-line modification
-        :return: the flow
+        :return: the Flow
         """
 
-        # deepcopy causes the below error while reusing a flow in Jupyter
+        # deepcopy causes the below error while reusing a Flow in Jupyter
         # 'Pickling an AuthenticationString object is disallowed for security reasons'
         op_flow = copy.deepcopy(self) if copy_flow else self
 
@@ -636,7 +650,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _mermaid_to_url(self, mermaid_str: str, img_type: str) -> str:
         """
-        Rendering the current flow as a url points to a SVG, it needs internet connection
+        Render the current Flow as URL points to a SVG. It needs internet connection
 
         :param mermaid_str: the mermaid representation
         :param img_type: image type (svg/jpg)
