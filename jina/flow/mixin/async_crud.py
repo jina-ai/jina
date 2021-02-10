@@ -22,6 +22,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         warnings.warn(f'{self.train} is under heavy refactoring', FutureWarning)
         async for r in self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs):
@@ -47,6 +48,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_ndarray
         async for r in self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
@@ -74,6 +76,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_ndarray
         async for r in self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
@@ -110,6 +113,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_lines
         async for r in self._get_client(**kwargs).index(
@@ -143,6 +147,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_csv
         async for r in self._get_client(**kwargs).index(
@@ -173,6 +178,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_ndjson
         async for r in self._get_client(**kwargs).index(
@@ -203,6 +209,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_files
         async for r in self._get_client(**kwargs).index(
@@ -233,6 +240,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_files
         async for r in self._get_client(**kwargs).search(
@@ -260,6 +268,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_ndjson
         async for r in self._get_client(**kwargs).search(
@@ -290,6 +299,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_csv
         async for r in self._get_client(**kwargs).search(
@@ -328,6 +338,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         from ...clients.sugary_io import _input_lines
         async for r in self._get_client(**kwargs).search(
@@ -356,6 +367,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         async for r in self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs):
             yield r
@@ -375,6 +387,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         async for r in self._get_client(**kwargs).update(input_fn, on_done, on_error, on_always, **kwargs):
             yield r
@@ -387,11 +400,12 @@ class AsyncCRUDFlowMixin:
                      **kwargs):
         """Do deletion on the current flow
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param ids: An iterable of ids
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         async for r in self._get_client(**kwargs).delete(ids, on_done, on_error, on_always, **kwargs):
             yield r
@@ -411,6 +425,7 @@ class AsyncCRUDFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :yields: results
         """
         async for r in self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs):
             yield r
