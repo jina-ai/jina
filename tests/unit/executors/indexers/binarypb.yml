@@ -9,7 +9,7 @@ requests:
     SearchRequest:
       - !KVSearchDriver
         with:
-          is_merge: true
+          is_update: true
           traversal_paths: [ 'r' ]
     IndexRequest:
       - !KVIndexDriver {}

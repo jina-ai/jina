@@ -49,17 +49,17 @@ class KVSearchDriver(BaseSearchDriver):
             - K is the top-k
     """
 
-    def __init__(self, is_merge: bool = True, traversal_paths: Tuple[str] = ('m'), *args, **kwargs):
+    def __init__(self, is_update: bool = True, traversal_paths: Tuple[str] = ('m'), *args, **kwargs):
         """Construct the driver.
 
-        :param is_merge: when set to true the retrieved docs are merged into current message using :meth:`MergeFrom`,
-            otherwise, it overrides the current message using :meth:`CopyFrom`
+        :param is_update: when set to true the retrieved docs are merged into current message;
+            otherwise, the retrieved Document overrides the existing Document
         :param traversal_paths: traversal paths for the driver
         :param *args: *args for super
         :param **kwargs: **kwargs for super
         """
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
-        self._is_merge = is_merge
+        self._is_update = is_update
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
@@ -67,7 +67,10 @@ class KVSearchDriver(BaseSearchDriver):
             serialized_doc = self.exec_fn(retrieved_doc.id)
             if serialized_doc:
                 r = Document(serialized_doc)
-                retrieved_doc.update(r)
+                if self._is_update:
+                    retrieved_doc.update(r)
+                else:
+                    retrieved_doc.CopyFrom(r)
             else:
                 miss_idx.append(idx)
         # delete non-existed matches in reverse
