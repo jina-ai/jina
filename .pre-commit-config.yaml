@@ -1,0 +1,16 @@
+repos:
+-   repo: https://github.com/terrencepreilly/darglint
+    rev: v1.5.8
+    hooks:
+    - id: darglint
+      args:
+      - --message-template={path}:{line} {msg_id} {msg}
+      - -s=sphinx
+      - -z=full
+      - -v=2
+-   repo: https://github.com/pycqa/pydocstyle
+    rev: 5.1.1  # pick a git hash / tag to point to
+    hooks:
+    -   id: pydocstyle
+        args:
+        - --select=D101,D102,D103
