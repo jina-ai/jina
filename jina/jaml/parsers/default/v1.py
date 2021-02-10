@@ -23,7 +23,7 @@ class V1Parser(VersionedYAMLParser):
     def dump(self, data: 'JAMLCompatible') -> Dict:
         """
         :param data: versioned flow object
-        :return: Return the dictionary given a versioned flow object
+        :return: the dictionary given a versioned flow object
         """
         a = V1Parser._dump_instance_to_yaml(data)
         r = {}

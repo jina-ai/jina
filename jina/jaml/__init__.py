@@ -96,7 +96,7 @@ class JAML:
         """Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow
         :param stream: the output stream
         :param **kwargs: other kwargs
-        :return: the class
+        :return: the Python object
         """
         safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__cls: ') for v in stream)
         return JAML.load(safe_yml, **kwargs)
