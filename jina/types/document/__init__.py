@@ -239,8 +239,8 @@ class Document(ProtoTypeMixin):
                   elements of repeated field if False.
 
         .. note::
-            *. ``exclude_fields`` and ``include_fields`` are mutually exclusive, use at most one only
-            *. if neither ``exclude_fields`` nor ``include_fields`` is given, then destination is overrided by the source completely
+            *. if neither ``exclude_fields`` nor ``include_fields`` is given,
+                then destination is overrided by the source completely.
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
 
@@ -288,7 +288,7 @@ class Document(ProtoTypeMixin):
         :param include_fields: a tuple of field names that included from source document
 
         .. note::
-            *. ``exclude_fields`` and ``include_fields`` are mutually exclusive, use one only            *. ``destination`` will be modified in place, ``source`` will be unchanged
+            *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
 
         if (include_fields and not isinstance(include_fields, tuple)) or (
