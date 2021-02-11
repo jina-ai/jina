@@ -64,6 +64,15 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
     return png_bytes
 
 
+def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
+    from PIL import Image
+    raw_img = Image.open(source).convert('RGB')
+    img = np.array(raw_img).astype('float32')
+    if color_axis != -1:
+        img = np.moveaxis(img, -1, color_axis)
+    return img
+
+
 def to_datauri(mimetype, data, charset: str = 'utf-8', base64: bool = False, binary: bool = True):
     parts = ['data:', mimetype]
     if charset is not None:

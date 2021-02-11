@@ -1,4 +1,5 @@
 import base64
+import io
 import json
 import mimetypes
 import os
@@ -12,7 +13,7 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import png_to_buffer, to_datauri, guess_mime
+from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray
 from ..score import NamedScore
@@ -612,10 +613,26 @@ class Document(ProtoTypeMixin):
         """
         self.blob = np.frombuffer(self.buffer)
 
+    def convert_buffer_image_to_blob(self, color_axis: int = -1, **kwargs):
+        """ Convert uri to blob
+
+        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
+
     def convert_blob_to_uri(self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly"""
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+
+    def convert_uri_to_blob(self, color_axis: int = -1, **kwargs):
+        """ Convert uri to blob
+
+        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        self.blob = to_image_blob(self.uri, color_axis)
 
     def convert_uri_to_buffer(self, **kwargs):
         """Convert uri to buffer
