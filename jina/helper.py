@@ -47,6 +47,12 @@ def deprecated_alias(**aliases):
     """
 
     def rename_kwargs(func_name: str, kwargs, aliases):
+        """
+        Raise warnings or exceptions for deprecated arguments.
+
+        :param func_name: Name of the function.
+        :param aliases: kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).
+        """
         for alias, new_arg in aliases.items():
             if not isinstance(new_arg, tuple):
                 raise ValueError(f'{new_arg} must be a tuple, with first element as the new name, '
@@ -66,8 +72,11 @@ def deprecated_alias(**aliases):
                     raise NotSupportedError(f'{alias} has been renamed to `{new_name}`')
 
     def deco(f):
+        """Set Decorator function."""
+
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
+            """Set wrapper function."""
             rename_kwargs(f.__name__, kwargs, aliases)
             return f(*args, **kwargs)
 
@@ -421,6 +430,11 @@ _RESET = '\033[0m'
 
 
 def build_url_regex_pattern():
+    """
+    Set up the regex pattern of URL.
+
+    :return: Regex pattern.
+    """
     ul = '\u00a1-\uffff'  # Unicode letters range (must not be a raw string).
 
     # IP patterns
@@ -743,11 +757,41 @@ def typename(obj):
 
 
 def rsetattr(obj, attr: str, val):
+    """
+    Recursively set an attribute. This is useful for nested sub-objects or chained properties.
+
+    Examples:
+        class A(object):
+            def __init__(self, a=0):
+                self.a = a
+        class B(object):
+            def __init__(self, b):
+                self.b = b
+        obj = B(b=A())
+        rsetattr(obj, 'b.a', 1)  # obj.b.a is set to 1 now
+    References:
+        - https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-subobjects-chained-properties
+    """
     pre, _, post = attr.rpartition('.')
     return setattr(rgetattr(obj, pre) if pre else obj, post, val)
 
 
 def rgetattr(obj, attr: str, *args):
+    """
+    Recursively get an attribute. This is useful for nested subobjects or chained properties.
+
+    Examples:
+        class A(object):
+            def __init__(self, a=0):
+                self.a = a
+        class B(object):
+            def __init__(self, b):
+                self.b = b
+        obj = B(b=A())
+        rgetattr(obj, 'b.a')  # this will access obj.b.a and thus print 0
+    References:
+        - https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-subobjects-chained-properties
+    """
     def _getattr(obj, attr):
         if isinstance(obj, dict):
             return obj.get(attr, None)
@@ -904,7 +948,10 @@ def run_async(func, *args, **kwargs):
     """
 
     class RunThread(threading.Thread):
+        """Create a running thread when in Jupyter notebook."""
+
         def run(self):
+            """Run function for thread."""
             self.result = asyncio.run(func(*args, **kwargs))
 
     try:
