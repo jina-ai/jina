@@ -78,11 +78,6 @@ def test_only_tags(tmp_path, mocker):
                  on_done=validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
     mock.assert_called_once()
 
-    with f:
-        f.delete(ids=[d.id for d in all_docs_indexed])
-    # only stored in KV
-    validate_index_size(NR_DOCS_INDEX, expected_indices=1)
-
     mock = mocker.Mock()
     with f:
         f.search(input_fn=docs_search,

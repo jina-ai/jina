@@ -77,11 +77,7 @@ class EncodeDriver(BaseEncodeDriver):
         self._empty_cache()
 
     def _apply_batch(self, batch: 'DocumentSet'):
-        contents, docs_pts, bad_docs = batch.all_contents
-
-        if bad_docs:
-            self.logger.warning(f'these bad docs can not be added: {bad_docs} '
-                                f'from level depth {docs_pts[0].granularity}')
+        contents, docs_pts = batch.all_contents
 
         if docs_pts:
             embeds = self.exec_fn(contents)

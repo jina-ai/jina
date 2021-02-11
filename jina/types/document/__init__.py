@@ -626,13 +626,13 @@ class Document(ProtoTypeMixin):
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    def convert_uri_to_blob(self, color_axis: int = -1, **kwargs):
+    def convert_uri_to_blob(self, color_axis: int = -1, uri_prefix: str = None, **kwargs):
         """ Convert uri to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
-        self.blob = to_image_blob(self.uri, color_axis)
+        self.blob = to_image_blob((uri_prefix + self.uri) if uri_prefix else self.uri, color_axis)
 
     def convert_uri_to_buffer(self, **kwargs):
         """Convert uri to buffer

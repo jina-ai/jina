@@ -128,7 +128,6 @@ def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simp
     simple_vector_indexer_driver_add._apply_all(union)
 
     # make sure the warning for bad docs is triggered
-    assert logger_mock.mock_calls[0][0] == 'warning'
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
         np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
