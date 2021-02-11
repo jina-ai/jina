@@ -72,6 +72,7 @@ class NamedScore(ProtoTypeMixin):
 
     @ref_id.setter
     def ref_id(self, val: str):
+        """Set the ``ref_id`` to :param: `val`."""
         self._pb_body.ref_id = val
 
     def set_attrs(self, **kwargs):
