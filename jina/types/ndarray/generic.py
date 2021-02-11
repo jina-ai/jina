@@ -95,10 +95,12 @@ class NdArray(BaseNdArray):
         self._kwargs = kwargs
 
     def null_proto(self):
+        """Get the new protobuf representation."""
         return jina_pb2.NdArrayProto()
 
     @property
     def value(self):
+        """Get the value of protobuf and return in corresponding type."""
         stype = self._pb_body.WhichOneof('content')
         if stype == 'dense':
             return self.dense_cls(self._pb_body.dense).value
@@ -107,6 +109,7 @@ class NdArray(BaseNdArray):
 
     @value.setter
     def value(self, value):
+        """Set the value of protobuf and with :param:`value`."""
         if self.is_sparse:
             self.sparse_cls(self._pb_body.sparse).value = value
         else:

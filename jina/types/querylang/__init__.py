@@ -94,6 +94,7 @@ class QueryLang(ProtoTypeMixin):
 
     @priority.setter
     def priority(self, value: int):
+        """Set the priority of this query language with :param:`value`."""
         self._pb_body.priority = value
 
     @property
