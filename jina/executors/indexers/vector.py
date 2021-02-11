@@ -127,15 +127,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param vectors: embeddings
         """
         np_keys = np.array(keys, (np.str_, self.key_length))
-
         self._add(np_keys, vectors)
 
     def _add(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
-        self._validate_key_vector_shapes(keys, vectors)
-        self.write_handler.write(vectors.tobytes())
-        self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
-        self.key_bytes += keys.tobytes()
-        self._size += keys.shape[0]
+        if keys.size and vectors.size:
+            self._validate_key_vector_shapes(keys, vectors)
+            self.write_handler.write(vectors.tobytes())
+            self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
+            self.key_bytes += keys.tobytes()
+            self._size += keys.shape[0]
 
     def update(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Update the embeddings on the index via document ids.
@@ -146,9 +146,10 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         # noinspection PyTypeChecker
         if self.size:
             keys, values = self._filter_nonexistent_keys_values(keys, vectors, self._ext2int_id.keys())
-            np_keys = np.array(keys, (np.str_, self.key_length))
-            self._delete(np_keys)
-            self._add(np_keys, np.array(values))
+            if keys:
+                np_keys = np.array(keys, (np.str_, self.key_length))
+                self._delete(np_keys)
+                self._add(np_keys, np.array(values))
         else:
             self.logger.error(f'{self!r} is empty, update is aborted')
 
@@ -166,8 +167,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         """
         if self.size:
             keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
-            np_keys = np.array(keys, (np.str_, self.key_length))
-            self._delete(np_keys)
+            if keys:
+                np_keys = np.array(keys, (np.str_, self.key_length))
+                self._delete(np_keys)
         else:
             self.logger.error(f'{self!r} is empty, deletion is aborted')
 
@@ -215,7 +217,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
                              shape=(self.size + deleted_keys, self.num_dim))
 
-    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> Optional['np.ndarray']:
         """
         Search the index by the external key (passed during `.add(`).
 
