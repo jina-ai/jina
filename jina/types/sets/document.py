@@ -38,6 +38,12 @@ class DocumentSet(MutableSequence):
         self._docs_map = {}
 
     def insert(self, index: int, doc: 'Document') -> None:
+        """
+        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentSet` .
+
+        :param index: Position of the insertion.
+        :param doc: The doc needs to be inserted.
+        """
         self._docs_proto.insert(index, doc.proto)
 
     def __setitem__(self, key, value: 'Document'):
@@ -84,21 +90,29 @@ class DocumentSet(MutableSequence):
         return self
 
     def append(self, doc: 'Document') -> 'Document':
+        """
+        Append :param:`doc` in :class:`DocumentSet`.
+
+        :param doc: The doc needs to be appended.
+        :return: Appended list.
+        """
         return self._docs_proto.append(doc.proto)
 
     def add(self, doc: 'Document') -> 'Document':
-        """Shortcut to :meth:`append`, do not override this method """
+        """Shortcut to :meth:`append`, do not override this method."""
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
+        """Extend an iterable to :class:`DocumentSet`."""
         for doc in iterable:
             self.append(doc)
 
     def clear(self):
+        """Clear the data of :class:`DocumentSet`"""
         del self._docs_proto[:]
 
     def reverse(self):
-        """In-place reverse the sequence """
+        """In-place reverse the sequence."""
         if isinstance(self._docs_proto, RepeatedContainer):
             size = len(self._docs_proto)
             hi_idx = size - 1
@@ -116,9 +130,18 @@ class DocumentSet(MutableSequence):
         self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
+        """Sort the list of :class:`DocumentSet`."""
         self._docs_proto.sort(*args, **kwargs)
 
     def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs):
+        """
+        Traverse the :class:`DocumentSet`.
+
+        :param traversal_paths: Paths of the traversal.
+        :param callback_fn: Callback function.
+        :param args: Additional positional arguments.
+        :param kwargs: Additional keyword arguments.
+        """
         for d in self:
             d.traverse(traversal_paths, callback_fn, *args, **kwargs)
 

@@ -78,6 +78,7 @@ class QueryLangSet(MutableSequence):
             raise TypeError(f'unknown type {typename(value)}')
 
     def extend(self, iterable: Iterable[AcceptQueryLangType]) -> None:
+        """Extend an iterable to :class:QueryLangSet."""
         for q in iterable:
             self.append(q)
 
