@@ -144,12 +144,13 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :param vectors: embeddings
         """
         # noinspection PyTypeChecker
-        keys, values = self._filter_nonexistent_keys_values(keys, vectors, self._ext2int_id.keys())
-        np_keys = np.array(keys, (np.str_, self.key_length))
-
-        if np_keys.size:
+        if self.size:
+            keys, values = self._filter_nonexistent_keys_values(keys, vectors, self._ext2int_id.keys())
+            np_keys = np.array(keys, (np.str_, self.key_length))
             self._delete(np_keys)
             self._add(np_keys, np.array(values))
+        else:
+            self.logger.error(f'{self!r} is empty, update is aborted')
 
     def _delete(self, keys):
         if keys.size:
@@ -163,9 +164,12 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
-        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
-        np_keys = np.array(keys, (np.str_, self.key_length))
-        self._delete(np_keys)
+        if self.size:
+            keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
+            np_keys = np.array(keys, (np.str_, self.key_length))
+            self._delete(np_keys)
+        else:
+            self.logger.error(f'{self!r} is empty, deletion is aborted')
 
     def get_query_handler(self) -> Optional['np.ndarray']:
         """Open a gzip file and load it as a numpy ndarray

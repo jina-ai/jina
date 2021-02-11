@@ -184,7 +184,7 @@ class BaseIndexer(BaseExecutor):
         return [key_value[0] for key_value in filtered_list], [key_value[1] for key_value in filtered_list]
 
     def _filter_nonexistent_keys(self, keys: Iterable, existent_keys: Iterable) -> Iterable:
-        return [key for key in keys if key in existent_keys]
+        return [key for key in keys if key in set(existent_keys)]
 
 
 class BaseVectorIndexer(BaseIndexer):

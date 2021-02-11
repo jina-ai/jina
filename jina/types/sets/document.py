@@ -159,7 +159,7 @@ class DocumentSet(MutableSequence):
 
         contents = np.stack(contents) if contents else None
 
-        if bad_docs:
+        if bad_docs and docs_pts:
             default_logger.warning(f'these docs at granularity {docs_pts[0].granularity} do not have content: {bad_docs}')
 
         return contents, DocumentSet(docs_pts)
