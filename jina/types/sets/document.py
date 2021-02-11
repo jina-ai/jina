@@ -5,6 +5,7 @@ from typing import Union, Sequence, Iterable, Tuple
 import numpy as np
 
 from ...helper import typename
+from ...logging import default_logger
 
 try:
     # when protobuf using Cpp backend
@@ -123,7 +124,7 @@ class DocumentSet(MutableSequence):
             d.traverse(traversal_paths, callback_fn, *args, **kwargs)
 
     @property
-    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
 
         :return: The corresponding documents in a :class:`DocumentSet`,
@@ -133,7 +134,7 @@ class DocumentSet(MutableSequence):
         return self._extract_docs('embedding')
 
     @property
-    def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+    def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
 
         :return: The corresponding documents in a :class:`DocumentSet`,
@@ -142,7 +143,7 @@ class DocumentSet(MutableSequence):
         """
         return self._extract_docs('content')
 
-    def _extract_docs(self, attr: str) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+    def _extract_docs(self, attr: str) -> Tuple['np.ndarray', 'DocumentSet']:
         contents = []
         docs_pts = []
         bad_docs = []
@@ -157,7 +158,11 @@ class DocumentSet(MutableSequence):
                 bad_docs.append(doc)
 
         contents = np.stack(contents) if contents else None
-        return contents, DocumentSet(docs_pts), DocumentSet(bad_docs)
+
+        if bad_docs:
+            default_logger.warning(f'these docs at granularity {docs_pts[0].granularity} do not have content: {bad_docs}')
+
+        return contents, DocumentSet(docs_pts)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...``` """

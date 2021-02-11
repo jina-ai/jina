@@ -31,9 +31,7 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, docs_pts, bad_docs = docs.all_embeddings
-        if bad_docs:
-            self.runtime.logger.warning(f'these bad docs can not be added: {bad_docs}')
+        embed_vecs, docs_pts = docs.all_embeddings
         if docs_pts:
             keys = [doc.id for doc in docs_pts]
             if keys:

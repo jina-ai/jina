@@ -109,7 +109,7 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         self._fill_embedding = fill_embedding
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, doc_pts, bad_docs = docs.all_embeddings
+        embed_vecs, doc_pts = docs.all_embeddings
 
         if not doc_pts:
             return
@@ -118,8 +118,6 @@ class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
         if self._fill_embedding and not fill_fn:
             self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_key" method')
 
-        if bad_docs:
-            self.logger.warning(f'these bad docs can not be added: {bad_docs}')
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
 
         op_name = self.exec.__class__.__name__
