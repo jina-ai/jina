@@ -69,7 +69,7 @@ def test_add_route():
 def test_extract_docs():
     d = Document()
 
-    contents, docs_pts, = DocumentSet([d]).all_embeddings
+    contents, docs_pts = DocumentSet([d]).all_embeddings
     assert contents is None
 
     vec = np.random.random([2, 2])
