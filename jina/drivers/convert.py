@@ -10,6 +10,7 @@ class ConvertDriver(BaseRecursiveDriver):
     .. note::
         The list of functions that can be applied can be found in `:class:`Document`
      """
+
     def __init__(self, convert_fn: str, *args, **kwargs):
         """
         :param convert_fn: the method name from `:class:`Document` to be applied
@@ -42,6 +43,16 @@ class URI2DataURI(ConvertDriver):
 
 class Buffer2URI(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_buffer_to_uri', *args, **kwargs):
+        super().__init__(convert_fn, *args, **kwargs)
+
+
+class BufferImage2Blob(ConvertDriver):
+    def __init__(self, convert_fn: str = 'convert_buffer_image_to_blob', *args, **kwargs):
+        super().__init__(convert_fn, *args, **kwargs)
+
+
+class URI2Blob(ConvertDriver):
+    def __init__(self, convert_fn: str = 'convert_uri_to_blob', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
