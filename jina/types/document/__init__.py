@@ -614,7 +614,7 @@ class Document(ProtoTypeMixin):
         self.blob = np.frombuffer(self.buffer)
 
     def convert_buffer_image_to_blob(self, color_axis: int = -1, **kwargs):
-        """ Convert uri to blob
+        """ Convert an image buffer to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
