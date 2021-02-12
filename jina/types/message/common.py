@@ -8,8 +8,18 @@ __all__ = ['ControlMessage']
 
 
 class ControlMessage(Message):
+    """
+    Class of the protobuf message.
+
+    :param command: Command with string content. (e.g. 'IDLE', 'TERMINATE', 'STATUS')
+    :param pod_name: Name of the current pod.
+    :param identity: The identity of the current pod
+    :param args: Additional positional arguments.
+    :param kwargs: Additional keyword arguments.
+    """
     def __init__(self, command: str, pod_name: str = 'ctl', identity: str = '',
                  *args, **kwargs):
+        """Set constructor method."""
         req = Request(jina_pb2.RequestProto())
         if command in _available_commands:
             req.control.command = getattr(jina_pb2.RequestProto.ControlRequestProto, command)
