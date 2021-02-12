@@ -498,7 +498,7 @@ def test_get_attr():
     d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name', 'tags': {'a': 'b', 'c': 'd'}})
     d.score = NamedScore(value=42)
 
-    res = d.get_attrs(*['id', 'text', 'name', 'feature1', 'score__value', 'tags__c']) #, 'inexistant', 'tags__inexistant'])
+    res = d.get_attrs(*['id', 'text', 'name', 'feature1', 'score__value', 'tags__c', 'inexistant', 'tags__none', 'tags__inexistant'])
 
     assert res['id'] == '123'
     assert res['feature1'] == 121
@@ -506,6 +506,10 @@ def test_get_attr():
     assert res['text'] == 'document'
     assert res['c'] == 'd'
     assert res['value'] == 42
+    assert res['inexistant'] is None
+    assert res['tags__none'] is None
+    assert res['tags__inexistant'] is None
+
     assert 'a' not in res
 
     res2 = d.get_attrs(*['tags', 'text'])

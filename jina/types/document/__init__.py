@@ -469,20 +469,23 @@ class Document(ProtoTypeMixin):
                 assert res['good'] == 'bye'
         """
 
-        docs_fields = _document_fields.intersection(args)
-        remainder = set(args).difference(docs_fields)
-        tags_fields = set(filter(lambda k: k in self._pb_body.tags, remainder))
-        dunder_access_fields = remainder.difference(tags_fields)
-        ret = {k: getattr(self, k) for k in docs_fields}
-        ret.update({k: self._pb_body.tags[k] for k in tags_fields})
-        dunder_ret = {}
-        for k in dunder_access_fields:
-            try:
+        ret = {}
+        for k in args:
+            if k in _document_fields:
+                value = getattr(self, k)
+                ret[k] = value
+            elif k in self._pb_body.tags:
+                value = self._pb_body.tags[k]
+                ret[k] = value
+            elif len(k.split('__')) > 1:
                 value = dunder_get(self._pb_body, k)
-                dunder_ret[k.split('__')[1]] = value
-            except:
-                pass
-        ret.update(dunder_ret)
+                if value:
+                    ret[k.split('__')[1]] = value
+                else:
+                    ret[k] = None
+            else:
+                ret[k] = None
+
         return ret
 
     @property
