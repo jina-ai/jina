@@ -64,6 +64,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
 1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jina-hub-submodule) for details. 
+1. Configure git pre-commit hooks.
 1. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 1. Work on this branch to do the fix/improvement.
 1. Check if your code changes follow the [code review guidelines](.github/CODE_REVIEW_GUIDELINES.md).
@@ -95,6 +96,19 @@ git push --force
 ```
 
 What happens after the merge? [Understand the development stage and release cycles here.](RELEASE.md)
+
+### Install pre-commit hooks
+
+In Jina we use git's pre-commit hooks in order to make sure the code matches our standards of quality and documentation. At the moment we employ them for checking the docstrings of the code. Documentation of code is crucial to maintaining productive developers and clear communication with new users.
+
+It's easy to configure it:
+
+1. `pip install pre-commit`
+1. `pre-commit install .`
+
+Now you will be automatically reminded to add docstrings to your code.
+
+For more about our docstring style, refer to [this guide](https://docs.jina.ai/chapters/docstring/docstring.html).
 
 ### Check out `jina/hub` submodule
 
