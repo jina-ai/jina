@@ -126,14 +126,32 @@ class DocumentSet(MutableSequence):
             self._docs_proto.reverse()
 
     def build(self):
-       """Build a doc_id to doc mapping so one can later index a Document using doc_id as string key."""
-       self._docs_map = {d.id: d for d in self._docs_proto}
+        """Build a doc_id to doc mapping so one can later index a Document using doc_id as string key."""
+        self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
         """Sort the list of :class:`DocumentSet`."""
         self._docs_proto.sort(*args, **kwargs)
 
     def traverse(self, traversal_paths: Iterable[str]) -> Iterable['Document']:
+        """
+        Return an iterator of :class:`Document` that traverses this :class:`DocumentSet` object according to the
+        ``traversal_paths``.
+
+        :param traversal_paths: a list of string that represents the traversal path
+
+
+        Example on ``traversal_paths``:
+
+            - [`r`]: docs in this DocumentSet
+            - [`m`]: all match-documents at adjacency 1
+            - [`c`]: all child-documents at granularity 1
+            - [`cc`]: all child-documents at granularity 2
+            - [`mm`]: all match-documents at adjacency 2
+            - [`cm`]: all match-document at adjacency 1 and granularity 1
+            - [`r`, `c`]: docs in this DocumentSet and all child-documents at granularity 1
+
+        """
         def _traverse(docs: 'DocumentSet', path: str) -> Iterable['Document']:
             if path:
                 loc = path[0]
