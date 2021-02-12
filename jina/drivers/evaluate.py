@@ -37,7 +37,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     def __call__(self, *args, **kwargs):
         docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
                              zip(self.docs, self.req.groundtruths)]
-        self._traverse_apply(docs_groundtruths, *args, **kwargs)
+        self._apply_all(docs_groundtruths, *args, **kwargs)
 
     def _apply_all(
             self,
