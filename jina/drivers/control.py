@@ -6,7 +6,7 @@ import time
 from google.protobuf.json_format import MessageToJson
 
 from . import BaseDriver
-from .querylang.queryset.dunderkey import dunder_get
+from jina.types.querylang.queryset.dunderkey import dunder_get
 from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
 from ..proto import jina_pb2
 

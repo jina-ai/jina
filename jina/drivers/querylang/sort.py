@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple
 
-from .queryset.dunderkey import dunder_get
+from jina.types.querylang.queryset.dunderkey import dunder_get
 from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:

@@ -6,7 +6,7 @@ from typing import Any, Iterator
 import numpy
 
 from . import BaseExecutableDriver
-from .querylang.queryset.dunderkey import dunder_get
+from jina.types.querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
 from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair

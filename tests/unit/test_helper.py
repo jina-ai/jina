@@ -6,7 +6,7 @@ import pytest
 from cli import _is_latest_version
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
-from jina.drivers.querylang.queryset.dunderkey import dunder_get
+from jina.types.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath
 from jina.jaml.helper import complete_path
