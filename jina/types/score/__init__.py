@@ -10,19 +10,19 @@ __all__ = ['NamedScore']
 
 class NamedScore(ProtoTypeMixin):
     """
-     :class:`NamedScore` is one of the **primitive data type** in Jina.
+    :class:`NamedScore` is one of the **primitive data type** in Jina.
 
-     It offers a Pythonic interface to allow users access and manipulate
-     :class:`jina.jina_pb2.NamedScoreProto` object without working with Protobuf itself.
+    It offers a Pythonic interface to allow users access and manipulate
+    :class:`jina.jina_pb2.NamedScoreProto` object without working with Protobuf itself.
 
-     To create a :class:`NamedScore` object, simply:
+    To create a :class:`NamedScore` object, simply:
 
-         .. highlight:: python
-         .. code-block:: python
+        .. highlight:: python
+        .. code-block:: python
 
-             from jina.types.score import NamedScore
-             score = NamedScore()
-             score.value = 10.0
+            from jina.types.score import NamedScore
+            score = NamedScore()
+            score.value = 10.0
 
     :class:`NamedScore` can be built from ``jina_pb2.NamedScoreProto`` (as a weak reference or a deep copy)
     or from a set of `attributes` from ``jina_pb2.NamedScoreProto`` passed to the constructor.
@@ -45,7 +45,7 @@ class NamedScore(ProtoTypeMixin):
     :type copy: bool
     :param kwargs: Other parameters to be set
 
-     """
+    """
 
     def __init__(self, score: Optional[jina_pb2.NamedScoreProto] = None,
                  copy: bool = False, **kwargs):
@@ -67,11 +67,12 @@ class NamedScore(ProtoTypeMixin):
 
     @property
     def ref_id(self) -> str:
-        """Returns computed score between doc ``id`` and ``ref_id``."""
+        """Return computed score between doc ``id`` and ``ref_id``."""
         return self._pb_body.ref_id
 
     @ref_id.setter
     def ref_id(self, val: str):
+        """Set the ``ref_id`` to :param: `val`."""
         self._pb_body.ref_id = val
 
     def set_attrs(self, **kwargs):
