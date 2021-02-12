@@ -4,6 +4,7 @@ import pytest
 
 from jina import Document
 from jina.clients.request import request_generator
+from jina.executors.decorators import batching
 from tests import random_docs
 
 # some random prime number for sanity check
@@ -66,3 +67,15 @@ def test_traverse_root_match_chunk(doc_req):
     ds = list(doc_req.docs.traverse(['r', 'c', 'm', 'cm']))
     assert (len(ds) == num_docs + num_chunks_per_doc * num_docs +
             num_matches_per_doc * num_docs + num_docs * num_chunks_per_doc * num_matches_per_chunk)
+
+
+def test_batching_traverse(doc_req):
+    @batching(batch_size=num_docs, slice_on=0)
+    def foo(docs):
+        print(f'batch_size:{len(docs)}')
+        assert len(docs) == num_docs
+
+    ds = list(doc_req.docs.traverse(['r', 'c', 'm', 'cm']))
+    # under this contruction, num_doc is the common denominator
+
+    foo(ds)
