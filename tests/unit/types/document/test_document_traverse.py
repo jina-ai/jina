@@ -2,7 +2,7 @@ from collections import Iterator
 
 import pytest
 
-from jina import Document
+from jina import Document, DocumentSet
 from jina.clients.request import request_generator
 from jina.executors.decorators import batching
 from tests import random_docs
@@ -79,3 +79,23 @@ def test_batching_traverse(doc_req):
     # under this contruction, num_doc is the common denominator
 
     foo(ds)
+
+
+def test_docuset_traverse_over_iterator_HACKY():
+    # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-documentset
+    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['r'])
+    assert len(list(ds)) == num_docs
+
+    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['c'])
+    assert len(list(ds)) == num_docs * num_chunks_per_doc
+
+
+def test_docuset_traverse_over_iterator_CAVEAT():
+    # HACKY USAGE's CAVEAT: but it can not iterate over an iterator twice
+    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['r', 'c'])
+    # note that random_docs is a generator and can be only used once,
+    # therefore whoever comes first wil get iterated, and then it becomes empty
+    assert len(list(ds)) == num_docs
+
+    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['c', 'r'])
+    assert len(list(ds)) == num_docs * num_chunks_per_doc
