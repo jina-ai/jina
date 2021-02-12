@@ -48,9 +48,9 @@ class Matches2DocRankDriver(BaseRankDriver):
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
 
-        query_meta = context_doc.get_attrs(*self.exec.required_keys) if hasattr(self.exec, 'required_keys') else None
+        query_meta = context_doc.get_attrs(*self.exec.required_keys)
         old_match_scores = {match.id: match.score.value for match in docs}
-        match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs} if hasattr(self.exec, 'required_keys') else None
+        match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs}
 
         # if there are no matches, no need to sort them
         if not old_match_scores:

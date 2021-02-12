@@ -113,11 +113,11 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
         parent_id_chunk_id_map = defaultdict(list)
         matches_by_id = defaultdict(Document)
         for chunk in docs:
-            query_meta[chunk.id] = chunk.get_attrs(*self.exec.required_keys) if hasattr(self.exec, 'required_keys') else None
+            query_meta[chunk.id] = chunk.get_attrs(*self.exec.required_keys)
             for match in chunk.matches:
                 match_info = self._extract_query_match_info(match=match, query=chunk)
                 match_idx.append(match_info)
-                match_meta[match.id] = match.get_attrs(*self.exec.required_keys) if hasattr(self.exec, 'required_keys') else None
+                match_meta[match.id] = match.get_attrs(*self.exec.required_keys)
                 parent_id_chunk_id_map[match.parent_id].append(match.id)
                 matches_by_id[match.id] = match
 
@@ -192,11 +192,11 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRanker):
         parent_id_chunk_id_map = defaultdict(list)
         matches_by_id = defaultdict(Document)
 
-        query_meta[context_doc.id] = context_doc.get_attrs(*self.exec.required_keys) if hasattr(self.exec, 'required_keys') else None
+        query_meta[context_doc.id] = context_doc.get_attrs(*self.exec.required_keys)
         for match in docs:
             match_info = self._extract_query_match_info(match=match, query=context_doc)
             match_idx.append(match_info)
-            match_meta[match.id] = match.get_attrs(*self.exec.required_keys) if hasattr(self.exec, 'required_keys') else None
+            match_meta[match.id] = match.get_attrs(*self.exec.required_keys)
             parent_id_chunk_id_map[match.parent_id].append(match.id)
             matches_by_id[match.id] = match
 

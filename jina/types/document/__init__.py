@@ -35,8 +35,6 @@ DocumentSourceType = TypeVar('DocumentSourceType',
 _document_fields = set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name) + list(
     jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name))
 
-_document_fields_dunder_sub_access = map(lambda x: f'{x}__', _document_fields)
-
 
 class Document(ProtoTypeMixin):
     """
@@ -455,41 +453,51 @@ class Document(ProtoTypeMixin):
 
         .. note::
             Arguments not contained inside the `DocumentProto` definition, will be automatically extracted from `tags`.
-            All those arguments not in `DocumentProto` or not found in `tags` of the `Document`. will be extracted using `dunder_get`,
-            thus allowing to extract from `tags` or other `structures`.
+            All those arguments not in `DocumentProto` or not found in `tags` of the `Document`, will be extracted using `dunder_get`
+            while keeping only the second part of the "dunderkey" ar key of the returned Dict. When this second part collides
+            with the name of a `field` of `DocumentProto`, the full "dunderkey" is used as key.
 
             .. highlight:: python
             .. code-block:: python
 
-                d = Document({'id': '123', 'hello': 'world', 'tags': {'good': 'bye'}})
-                res = d.get_attrs(*['id', 'hello', 'tags__good'])
+                d = Document({'id': '123', 'hello': 'world', 'tags': {'id': 'external_id', 'good': 'bye'}})
 
-                assert res['id'] == '123'
-                assert res['hello'] == 'world'
-                assert res['good'] == 'bye'
+                assert d.id == '123'  # true
+                assert d.tags['hello'] == 'world'  # true
+                assert d.tags['good'] == 'bye'  # true
+                assert d.tags['id'] == 'external_id'  # true
+
+                res = d.get_attrs(*['id', 'hello', 'tags__good', 'tags__id'])
+
+                assert res['id'] == '123' # true
+                assert res['hello'] == 'world' # true
+                assert res['good'] == 'bye' # true
+                assert res['tags__id'] == 'external_id' # true, 'id' collides with field id, therefore full `tags__id` is used as returned key
         """
 
         ret = {}
         for k in args:
-            if k in _document_fields:
+            try:
                 value = getattr(self, k)
                 ret[k] = value
-            elif k in self._pb_body.tags:
-                value = self._pb_body.tags[k]
-                ret[k] = value
-            elif len(k.split('__')) > 1:
-                value = dunder_get(self._pb_body, k)
-                if value:
-                    solved_k = k.split('__')[1]
-                    if hasattr(self, solved_k):
-                        # allow to extract `id` and `tags__id` in the same run
-                        ret[k] = value
-                    else:
-                        ret[k.split('__')[1]] = value
-                else:
-                    ret[k] = None
-            else:
-                ret[k] = None
+            except:
+                try:
+                    value = self._pb_body.tags[k]
+                    ret[k] = value
+                except:
+                    try:
+                        value = dunder_get(self._pb_body, k)
+                        if value:
+                            solved_k = k.split('__', 1)[1]
+                            if hasattr(self, solved_k):
+                                # allow to extract `id` and `tags__id` in the same run
+                                ret[k] = value
+                            else:
+                                ret[k.split('__')[1]] = value
+                        else:
+                            ret[k] = None
+                    except:
+                        ret[k] = None
 
         return ret
 
