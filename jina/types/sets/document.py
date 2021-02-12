@@ -1,5 +1,4 @@
 from collections.abc import MutableSequence
-from typing import Callable
 from typing import Union, Sequence, Iterable, Tuple
 
 import numpy as np
@@ -134,17 +133,41 @@ class DocumentSet(MutableSequence):
         """Sort the list of :class:`DocumentSet`."""
         self._docs_proto.sort(*args, **kwargs)
 
-    def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs):
+    def traverse(self, traversal_paths: Iterable[str]) -> Iterable['Document']:
         """
-        Traverse the :class:`DocumentSet`.
+        Return an iterator of :class:`Document` that traverses this :class:`DocumentSet` object according to the
+        ``traversal_paths``.
 
-        :param traversal_paths: Paths of the traversal.
-        :param callback_fn: Callback function.
-        :param args: Additional positional arguments.
-        :param kwargs: Additional keyword arguments.
+        :param traversal_paths: a list of string that represents the traversal path
+
+
+        Example on ``traversal_paths``:
+
+            - [`r`]: docs in this DocumentSet
+            - [`m`]: all match-documents at adjacency 1
+            - [`c`]: all child-documents at granularity 1
+            - [`cc`]: all child-documents at granularity 2
+            - [`mm`]: all match-documents at adjacency 2
+            - [`cm`]: all match-document at adjacency 1 and granularity 1
+            - [`r`, `c`]: docs in this DocumentSet and all child-documents at granularity 1
+
         """
-        for d in self:
-            d.traverse(traversal_paths, callback_fn, *args, **kwargs)
+        def _traverse(docs: 'DocumentSet', path: str) -> Iterable['Document']:
+            if path:
+                loc = path[0]
+                if loc == 'r':
+                    yield from _traverse(docs, path[1:])
+                elif loc == 'm':
+                    for d in docs:
+                        yield from _traverse(d.matches, path[1:])
+                elif loc == 'c':
+                    for d in docs:
+                        yield from _traverse(d.chunks, path[1:])
+            else:
+                yield from docs
+
+        for p in traversal_paths:
+            yield from _traverse(self, p)
 
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
@@ -183,7 +206,8 @@ class DocumentSet(MutableSequence):
         contents = np.stack(contents) if contents else None
 
         if bad_docs and docs_pts:
-            default_logger.warning(f'these docs at granularity {docs_pts[0].granularity} do not have content: {bad_docs}')
+            default_logger.warning(
+                f'these docs at granularity {docs_pts[0].granularity} do not have content: {bad_docs}')
 
         return contents, DocumentSet(docs_pts)
 

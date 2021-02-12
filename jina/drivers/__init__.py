@@ -235,15 +235,6 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     def __call__(self, *args, **kwargs) -> None:
         raise NotImplementedError
 
-    @staticmethod
-    def _dump_instance_to_yaml(data) -> Dict[str, Dict]:
-        # note: we only save non-default property for the sake of clarity
-        a = {k: v for k, v in data._init_kwargs_dict.items()}
-        r = {}
-        if a:
-            r['with'] = a
-        return r
-
     def __eq__(self, other):
         return self.__class__ == other.__class__
 
