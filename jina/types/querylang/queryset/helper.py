@@ -1,7 +1,7 @@
 from functools import partial
 from typing import Callable, List, Type, Union, Iterable
 
-from jina.excepts import LookupyError
+from ....excepts import LookupyError
 
 
 def iff(precond: Callable, val: Union[int, str], f: Callable) -> bool:
