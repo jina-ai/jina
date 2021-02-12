@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Dict, Any
 
-from .queryset.lookup import Q
+from ...types.querylang.queryset.lookup import Q
 from .. import QuerySetReader, BaseRecursiveDriver
 
 if False:
