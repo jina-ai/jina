@@ -495,16 +495,17 @@ def test_update_exclude_field():
 
 
 def test_get_attr():
-    d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name', 'tags': {'a': 'b', 'c': 'd'}})
+    d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name', 'tags': {'id': 'identity', 'a': 'b', 'c': 'd'}})
     d.score = NamedScore(value=42)
 
-    res = d.get_attrs(*['id', 'text', 'name', 'feature1', 'score__value', 'tags__c', 'inexistant', 'tags__none', 'tags__inexistant'])
+    res = d.get_attrs(*['id', 'text', 'name', 'feature1', 'score__value', 'tags__c', 'tags__id', 'inexistant', 'tags__none', 'tags__inexistant'])
 
     assert res['id'] == '123'
     assert res['feature1'] == 121
     assert res['name'] == 'name'
     assert res['text'] == 'document'
     assert res['c'] == 'd'
+    assert res['tags__id'] == 'identity'
     assert res['value'] == 42
     assert res['inexistant'] is None
     assert res['tags__none'] is None

@@ -480,7 +480,12 @@ class Document(ProtoTypeMixin):
             elif len(k.split('__')) > 1:
                 value = dunder_get(self._pb_body, k)
                 if value:
-                    ret[k.split('__')[1]] = value
+                    solved_k = k.split('__')[1]
+                    if hasattr(self, solved_k):
+                        # allow to extract `id` and `tags__id` in the same run
+                        ret[k] = value
+                    else:
+                        ret[k.split('__')[1]] = value
                 else:
                     ret[k] = None
             else:
