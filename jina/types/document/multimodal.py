@@ -106,6 +106,7 @@ class MultimodalDocument(Document):
 
     @modality_content_map.setter
     def modality_content_map(self, value: Dict[str, Any]):
+        """Set the mapping of modality and content."""
         for modality, content in value.items():
             with Document() as chunk:
                 chunk.modality = modality

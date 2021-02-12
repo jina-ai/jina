@@ -186,6 +186,7 @@ class Request(ProtoTypeMixin):
             return r
 
     def SerializeToString(self) -> bytes:
+        """Convert serialized data to string."""
         if self.is_used:
             return self.proto.SerializeToString()
         else:

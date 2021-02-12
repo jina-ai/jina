@@ -21,10 +21,12 @@ class BaseSparseNdArray(BaseNdArray):
     """
 
     def __init__(self, *args, **kwargs):
+        """Set constructor method."""
         super().__init__(*args, **kwargs)
         self.is_sparse = True
 
     def null_proto(self):
+        """Get the new protobuf representation."""
         return jina_pb2.SparseNdArrayProto()
 
     def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> AnySparseNdArray:
@@ -33,7 +35,7 @@ class BaseSparseNdArray(BaseNdArray):
 
         :param indices: the indices of the sparse array
         :param values: the values of the sparse array
-        :param shape: the shape of the dense array
+        :param shape: the shape of the sparse array
         :return: Sparse NdArray
         """
         raise NotImplementedError
@@ -49,6 +51,7 @@ class BaseSparseNdArray(BaseNdArray):
 
     @property
     def value(self) -> AnySparseNdArray:
+        """Get the value of protobuf message in :class:`SparseNdArray`."""
         idx = DenseNdArray(self._pb_body.indices).value
         val = DenseNdArray(self._pb_body.values).value
         shape = self._pb_body.dense_shape
@@ -57,6 +60,7 @@ class BaseSparseNdArray(BaseNdArray):
 
     @value.setter
     def value(self, value: AnySparseNdArray):
+        """Set the value of protobuf message with :param:`value` in :class:`SparseNdArray`."""
         r = self.sparse_parser(value)
         DenseNdArray(self._pb_body.indices).value = r['indices']
         DenseNdArray(self._pb_body.values).value = r['values']

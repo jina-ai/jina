@@ -31,11 +31,13 @@ class DenseNdArray(BaseDenseNdArray):
     """
 
     def __init__(self, proto: 'jina_pb2.NdArrayProto' = None, quantize: str = None, *args, **kwargs):
+        """Set constructor method."""
         super().__init__(proto, *args, **kwargs)
         self.quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
 
     @property
     def value(self) -> 'np.ndarray':
+        """Get the value of protobuf and return in :class:`np.ndarray`."""
         blob = self._pb_body
         if blob.buffer:
             x = np.frombuffer(blob.buffer, dtype=blob.dtype)
@@ -49,6 +51,7 @@ class DenseNdArray(BaseDenseNdArray):
 
     @value.setter
     def value(self, value: 'np.ndarray'):
+        """Set the value of protobuf with :param:`value` :class:`np.ndarray`."""
         blob = self._pb_body
         x = value
 

@@ -12,8 +12,10 @@ class BaseDenseNdArray(BaseNdArray):
     """
 
     def __init__(self, *args, **kwargs):
+        """Set constructor method."""
         super().__init__(*args, **kwargs)
         self.is_sparse = False
 
     def null_proto(self):
+        """Get the new protobuf representation."""
         return jina_pb2.DenseNdArrayProto()
