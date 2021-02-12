@@ -19,6 +19,7 @@ from ..ndarray.generic import NdArray
 from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
+from ..querylang.queryset.dunderkey import dunder_get
 from ...excepts import BadDocType
 from ...helper import is_url, typename, random_identity, download_mermaid_url
 from ...importer import ImportExtensions
@@ -33,6 +34,8 @@ DocumentSourceType = TypeVar('DocumentSourceType',
 
 _document_fields = set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name) + list(
     jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name))
+
+_document_fields_dunder_sub_access = map(lambda x: f'{x}__', _document_fields)
 
 
 class Document(ProtoTypeMixin):
@@ -450,18 +453,37 @@ class Document(ProtoTypeMixin):
         .. seealso::
             :meth:`update` for bulk set/update attributes
 
-        .. warning::
-            Arguments prefixed with `tags` will be directly extracted from `tags` as if they were direct arguments from documents.
-            This is specially intended to allow RankDrivers to access features and meta info from documents inside tags.
+        .. note::
+            Arguments not contained inside the `DocumentProto` definition, will be automatically extracted from `tags`.
+            All those arguments not in `DocumentProto` or not found in `tags` of the `Document`. will be extracted using `dunder_get`,
+            thus allowing to extract from `tags` or other `structures`.
 
+            .. highlight:: python
+            .. code-block:: python
+
+                d = Document({'id': '123', 'hello': 'world', 'tags': {'good': 'bye'}})
+                res = d.get_attrs(*['id', 'hello', 'tags__good'])
+
+                assert res['id'] == '123'
+                assert res['hello'] == 'world'
+                assert res['good'] == 'bye'
         """
-        # TODO (Joan): Refactor `queryset` into types to have access to `dunder` logic in types module.
-        from itertools import chain
-        tags_prefix = 'tags_'
-        tags_args = list(filter(lambda x: tags_prefix in x, list(args)))
-        attr_no_tags = {k: getattr(self, k) for k in args if hasattr(self, k)}
-        attr_tags = {k: self.tags[k.lstrip(tags_prefix)] for k in tags_args}
-        return dict(chain.from_iterable(d.items() for d in (attr_no_tags, attr_tags)))
+
+        docs_fields = _document_fields.intersection(args)
+        remainder = set(args).difference(docs_fields)
+        tags_fields = set(filter(lambda k: k in self._pb_body.tags, remainder))
+        dunder_access_fields = remainder.difference(tags_fields)
+        ret = {k: getattr(self, k) for k in docs_fields}
+        ret.update({k: self._pb_body.tags[k] for k in tags_fields})
+        dunder_ret = {}
+        for k in dunder_access_fields:
+            try:
+                value = dunder_get(self._pb_body, k)
+                dunder_ret[k.split('__')[1]] = value
+            except:
+                pass
+        ret.update(dunder_ret)
+        return ret
 
     @property
     def buffer(self) -> bytes:

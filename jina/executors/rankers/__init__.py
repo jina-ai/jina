@@ -31,16 +31,19 @@ class Chunk2DocRanker(BaseRanker):
     """
 
     required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
+    """set: Set of required keys to be extracted from matches and query to fill the information of `query` and `chunk` meta information.
+    These are the set of keys to be extracted from `Document`.
+
+    All the keys not found in the `DocumentProto` fields, will be extracted from the `tags` structure of `Document`.
+    .. seealso::
+
+        :meth:`get_attrs` of :class:`Document`
+
+    """
     COL_MATCH_PARENT_ID = 'match_parent_id'
     COL_MATCH_ID = 'match_id'
     COL_DOC_CHUNK_ID = 'doc_chunk_id'
     COL_SCORE = 'score'
-
-    """set: Set of required keys to be extracted from matches and query to fill the information of `query` and `chunk` meta information.
-    These are the set of keys to be extracted from `Document`.
-
-    Keys prefixed with `tags_` will be directly extracted from `Document.tags` as if they were direct arguments from documents.
-    """
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
         """

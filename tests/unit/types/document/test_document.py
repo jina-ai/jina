@@ -9,8 +9,6 @@ from jina.types.document import Document
 from jina.types.score import NamedScore
 from tests import random_docs
 
-DOCUMENTS_PER_LEVEL = 1
-
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
 def test_ndarray_get_set(field):
@@ -497,23 +495,19 @@ def test_update_exclude_field():
 
 
 def test_get_attr():
-    d = Document()
-    with d:
-        d.tags['id'] = 123
-        d.tags['feature1'] = 121
-        d.tags['name'] = 'name'
-        d.tags['a'] = 'b'
-        d.text = 'document'
+    d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name', 'tags': {'a': 'b', 'c': 'd'}})
+    d.score = NamedScore(value=42)
 
-    res = d.get_attrs(*['tags_id', 'text', 'tags_name', 'tags_feature1'])
+    res = d.get_attrs(*['id', 'text', 'name', 'feature1', 'score__value', 'tags__c']) #, 'inexistant', 'tags__inexistant'])
 
-    assert res['tags_id'] == 123
-    assert res['tags_feature1'] == 121
-    assert res['tags_name'] == 'name'
+    assert res['id'] == '123'
+    assert res['feature1'] == 121
+    assert res['name'] == 'name'
     assert res['text'] == 'document'
-    assert 'tags_a' not in res
+    assert res['c'] == 'd'
+    assert res['value'] == 42
+    assert 'a' not in res
 
     res2 = d.get_attrs(*['tags', 'text'])
-    assert 'tags_id' not in res2
     assert res2['text'] == 'document'
     assert res2['tags'] == d.tags
