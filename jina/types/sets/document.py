@@ -1,5 +1,4 @@
 from collections.abc import MutableSequence
-from typing import Callable
 from typing import Union, Sequence, Iterable, Tuple
 
 import numpy as np
@@ -113,15 +112,29 @@ class DocumentSet(MutableSequence):
             self._docs_proto.reverse()
 
     def build(self):
-        """Build a doc_id to doc mapping so one can later index a Document using doc_id as string key."""
-        self._docs_map = {d.id: d for d in self._docs_proto}
+       """Build a doc_id to doc mapping so one can later index a Document using doc_id as string key."""
+       self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
         self._docs_proto.sort(*args, **kwargs)
 
-    def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs):
-        for d in self:
-            d.traverse(traversal_paths, callback_fn, *args, **kwargs)
+    def traverse(self, traversal_paths: Iterable[str]) -> Iterable['Document']:
+        def _traverse(docs: 'DocumentSet', path: str) -> Iterable['Document']:
+            if path:
+                loc = path[0]
+                if loc == 'r':
+                    yield from _traverse(docs, path[1:])
+                elif loc == 'm':
+                    for d in docs:
+                        yield from _traverse(d.matches, path[1:])
+                elif loc == 'c':
+                    for d in docs:
+                        yield from _traverse(d.chunks, path[1:])
+            else:
+                yield from docs
+
+        for p in traversal_paths:
+            yield from _traverse(self, p)
 
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
@@ -160,7 +173,8 @@ class DocumentSet(MutableSequence):
         contents = np.stack(contents) if contents else None
 
         if bad_docs and docs_pts:
-            default_logger.warning(f'these docs at granularity {docs_pts[0].granularity} do not have content: {bad_docs}')
+            default_logger.warning(
+                f'these docs at granularity {docs_pts[0].granularity} do not have content: {bad_docs}')
 
         return contents, DocumentSet(docs_pts)
 
