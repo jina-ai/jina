@@ -756,51 +756,6 @@ def typename(obj):
         return str(obj)
 
 
-def rsetattr(obj, attr: str, val):
-    """
-    Recursively set an attribute. This is useful for nested sub-objects or chained properties.
-
-    Examples:
-        class A(object):
-            def __init__(self, a=0):
-                self.a = a
-        class B(object):
-            def __init__(self, b):
-                self.b = b
-        obj = B(b=A())
-        rsetattr(obj, 'b.a', 1)  # obj.b.a is set to 1 now
-    References:
-        - https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-subobjects-chained-properties
-    """
-    pre, _, post = attr.rpartition('.')
-    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
-
-
-def rgetattr(obj, attr: str, *args):
-    """
-    Recursively get an attribute. This is useful for nested subobjects or chained properties.
-
-    Examples:
-        class A(object):
-            def __init__(self, a=0):
-                self.a = a
-        class B(object):
-            def __init__(self, b):
-                self.b = b
-        obj = B(b=A())
-        rgetattr(obj, 'b.a')  # this will access obj.b.a and thus print 0
-    References:
-        - https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-subobjects-chained-properties
-    """
-    def _getattr(obj, attr):
-        if isinstance(obj, dict):
-            return obj.get(attr, None)
-        else:
-            return getattr(obj, attr, *args)
-
-    return functools.reduce(_getattr, [obj] + attr.split('.'))
-
-
 class cached_property:
     """The decorator to cache property of a class."""
 
@@ -947,11 +902,11 @@ def run_async(func, *args, **kwargs):
     :return: asyncio.run(func)
     """
 
-    class RunThread(threading.Thread):
+    class _RunThread(threading.Thread):
         """Create a running thread when in Jupyter notebook."""
 
         def run(self):
-            """Run function for thread."""
+            """Run given `func` asynchronously."""
             self.result = asyncio.run(func(*args, **kwargs))
 
     try:
@@ -963,7 +918,7 @@ def run_async(func, *args, **kwargs):
         # eventloop already exist
         # running inside Jupyter
         if is_jupyter():
-            thread = RunThread()
+            thread = _RunThread()
             thread.start()
             thread.join()
             try:
