@@ -4,7 +4,6 @@ import numpy as np
 
 from .. import BaseExecutableDriver
 from ...types.document import Document
-from ...types.document.uid import UniqueId
 from ...types.score import NamedScore
 
 if False:
@@ -41,7 +40,8 @@ class Matches2DocRankDriver(BaseRankDriver):
 
         :param docs: the matches of the ``context_doc``, they are at granularity ``k``
         :param context_doc: the query document having ``docs`` as its matches, it is at granularity ``k``
-        :return:
+        :param *args: not used (kept to maintain interface)
+        :param **kwargs: not used (kept to maintain interface)
 
         .. note::
             - This driver will change in place the ordering of ``matches`` of the ``context_doc`.
@@ -49,8 +49,9 @@ class Matches2DocRankDriver(BaseRankDriver):
         """
 
         query_meta = context_doc.get_attrs(*self.exec.required_keys) if hasattr(self.exec, 'required_keys') else None
-        old_match_scores = {int(match.id): match.score.value for match in docs}
-        match_meta = {int(match.id): match.get_attrs(*self.exec.required_keys) for match in docs} if hasattr(self.exec, 'required_keys') else None
+        old_match_scores = {match.id: match.score.value for match in docs}
+        match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs} if hasattr(self.exec, 'required_keys') else None
+
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return
@@ -62,8 +63,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         op_name = self.exec.__class__.__name__
         cm = context_doc.matches
         cm.build()
-        for int_match_id, score in match_scores:
-            match_id = UniqueId(int_match_id)
+        for match_id, score in match_scores:
             cm[match_id].score = NamedScore(value=score, op_name=op_name, ref_id=context_doc.id)
 
         cm.sort(key=lambda x: x.score.value, reverse=True)

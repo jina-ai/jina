@@ -44,10 +44,17 @@ class MultimodalDocument(Document):
         super().__init__(document=document, copy=copy, **kwargs)
         if chunks or modality_content_map:
             if chunks:
-                granularities = [chunk.granularity for chunk in chunks]
-                if len(set(granularities)) != 1:
+                g = {c.granularity for c in chunks}
+                if len(g) != 1:
                     raise BadDocType('Each chunk should have the same granularity.')
                 self.chunks.extend(chunks)
+
+                # in case chunks have granularity defined, override
+                gv = list(g)[0]
+                if gv != 0:
+                    for c in self.chunks:
+                        c.granularity = gv
+
             elif modality_content_map:
                 self.modality_content_map = modality_content_map
             self._handle_chunk_level_attributes()

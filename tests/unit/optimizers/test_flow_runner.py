@@ -1,7 +1,6 @@
 import os
-import pytest
 
-from jina.optimizers.flow_runner import FlowRunner
+from jina.optimizers.flow_runner import SingleFlowRunner
 from tests import random_docs
 
 
@@ -17,11 +16,11 @@ def test_flow_runner(tmpdir, mocker):
 
     workspace = os.path.join(tmpdir, 'test_flow_runner')
 
-    flow_runner = FlowRunner(
+    flow_runner = SingleFlowRunner(
         flow_yaml='flow.yml',
         documents=random_docs(5),
         request_size=1,
-        task='index',
+        execution_method='index',
         overwrite_workspace=True,
     )
 
@@ -29,26 +28,14 @@ def test_flow_runner(tmpdir, mocker):
     # Test overwriting
     flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace})
 
-    flow_runner = FlowRunner(
+    flow_runner = SingleFlowRunner(
         flow_yaml='flow.yml',
         documents=random_docs(5),
         request_size=1,
-        task='search',
-        callback=callback
+        execution_method='search',
     )
 
-    flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace})
+    flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace}, callback=callback)
 
     m.assert_called()
     assert os.path.exists(os.path.join(workspace, 'tmp2'))
-
-
-def test_wrong_task():
-    with pytest.raises(ValueError) as excinfo:
-        _ = FlowRunner(
-            flow_yaml='flow.yml',
-            documents=random_docs(5),
-            request_size=1,
-            task='query',
-        )
-        assert 'task can be either of index or search' == str(excinfo.value)

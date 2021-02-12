@@ -15,4 +15,5 @@ requests:
       - !KVSearchDriver
         with:
           executor: docIndexer
+          is_update: true
           traversal_paths: ['m']

@@ -4,6 +4,7 @@ from jina.proto.jina_pb2 import RequestProto, QueryLangProto
 from jina.types.querylang import QueryLang
 from jina.types.sets.querylang import QueryLangSet
 
+
 @pytest.fixture(scope='function')
 def querylang_protos():
     """:returns: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
@@ -83,8 +84,8 @@ def test_iter(querylang_set):
         assert isinstance(querylang, QueryLang)
 
 
-@pytest.mark.parametrize('querylang_item', [QueryLangProto(), QueryLang()])
-def test_append_success(querylang_set, querylang_item):
+@pytest.mark.parametrize('querylang_item', [QueryLangProto(), QueryLang(), {'name': 'Driver', 'parameters': {'key': 'value'}}])
+def test_append_success_proto(querylang_set, querylang_item):
     """Test :meth:`append`. Expect test three cases depends on the type of :attr:`value`.
     Such as :class:`BaseDriver`, :class:`QueryLangProto` and :class:`QueryLang`.
 

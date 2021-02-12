@@ -3,7 +3,7 @@ on:
     - !ControlReqDriver {}
   SearchRequest:
     - !KVSearchDriver {}
-  [IndexRequest, UpdateRequest, DeleteRequest]:
+  [IndexRequest, UpdateRequest]:
     - !Buffer2URI {}
     - !ExcludeQL
       with:
@@ -11,3 +11,5 @@ on:
           - chunks  # we don't want to save nested structure
           - buffer
     - !KVIndexDriver {}
+  DeleteRequest:
+    - !DeleteDriver {}

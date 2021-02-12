@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Iterable
 
 import numpy as np
 import pytest
@@ -12,10 +12,10 @@ from jina.types.document import Document
 
 class MockGroundTruthIndexer(BaseKVIndexer):
 
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         pass
 
-    def query(self, key: int) -> Optional['Document']:
+    def query(self, key: str) -> Optional[bytes]:
         if key in self.db.keys():
             return self.db[key]
         else:
@@ -42,9 +42,9 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         doc4.id = '04' * 8
         doc4.tags['groundtruth'] = True
         self.db = {
-            int(doc1.id): doc1.SerializeToString(),
-            int(doc2.id): doc2.SerializeToString(),
-            int(doc4.id): doc4.SerializeToString()
+            doc1.id: doc1.SerializeToString(),
+            doc2.id: doc2.SerializeToString(),
+            doc4.id: doc4.SerializeToString()
         }
 
 

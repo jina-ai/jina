@@ -16,8 +16,24 @@ import signal as _signal
 import sys as _sys
 import types as _types
 
-if _sys.version_info < (3, 7, 0):
-    raise OSError(f'Jina requires Python 3.7 and above, but yours is {_sys.version_info}')
+from google.protobuf.internal import api_implementation as _api_implementation
+
+if _api_implementation._default_implementation_type != 'cpp':
+    import warnings as _warnings
+
+    _warnings.warn('''
+    You are using Python protobuf backend, not the C++ version, which is much faster.
+    
+    This is often due to C++ implementation failed to compile while installing Protobuf
+    - You are using in Python 3.9 (https://github.com/jina-ai/jina/issues/1801)
+    - You are using on architecture other than x86_64/armv6/armv7
+    - You installation is broken, try `pip install --force protobuf`
+    - You have C++ backend but you shut it down, try `export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp`
+    
+    ''', RuntimeWarning)
+
+if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
+    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
 if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # temporary fix for python 3.8 on macos where the default start is set to "spawn"
@@ -37,13 +53,13 @@ __license__ = "Apache-2.0"
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '0.9.19'
+__version__ = '1.0.1'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.77'
+__proto_version__ = '0.0.78'
 
-__uptime__ = _datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+__uptime__ = _datetime.datetime.now().isoformat()
 
 # update on MacOS
 # 1. clean this tuple,
@@ -54,11 +70,6 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_CONTRIB_MODULE',
                 'JINA_CONTRIB_MODULE_IS_LOADING',
                 'JINA_CONTROL_PORT',
-                'JINA_DB_COLLECTION',
-                'JINA_DB_HOSTNAME',
-                'JINA_DB_NAME',
-                'JINA_DB_PASSWORD',
-                'JINA_DB_USERNAME',
                 'JINA_DEFAULT_HOST',
                 'JINA_DISABLE_UVLOOP',
                 'JINA_EXECUTOR_WORKDIR',
@@ -66,7 +77,9 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_IPC_SOCK_TMP',
                 'JINA_LOG_CONFIG',
                 'JINA_LOG_ID',
+                'JINA_LOG_LEVEL',
                 'JINA_LOG_NO_COLOR',
+                'JINA_LOG_WORKSPACE',
                 'JINA_POD_NAME',
                 'JINA_RAISE_ERROR_EARLY',
                 'JINA_RANDOM_PORTS',
@@ -74,7 +87,8 @@ __jina_env__ = ('JINA_ARRAY_QUANT',
                 'JINA_RANDOM_PORT_MIN',
                 'JINA_SOCKET_HWM',
                 'JINA_VCS_VERSION',
-                'JINA_WARN_UNNAMED')
+                'JINA_WARN_UNNAMED',
+                'JINA_WORKSPACE')
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
@@ -162,6 +176,7 @@ from jina.clients import Client
 from jina.clients.asyncio import AsyncClient
 
 # Executor
+from jina.executors import BaseExecutor as Executor
 from jina.executors.classifiers import BaseClassifier as Classifier
 from jina.executors.crafters import BaseCrafter as Crafter
 from jina.executors.encoders import BaseEncoder as Encoder

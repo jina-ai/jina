@@ -1,20 +1,21 @@
 !Flow
+version: '1'
 with:
   restful: $RESTFUL
 pods:
-  segmenter:
+  - name: segmenter
     uses: yaml/segmenter.yml
     read_only: true
-  encoder:
+  - name: encoder
     uses: yaml/encoder.yml
     timeout_ready: 60000
     read_only: true
-  chunk_indexer:
+  - name: chunk_indexer
     uses: yaml/index-chunk.yml
-  doc_indexer:
+  - name: doc_indexer
     uses: yaml/index-doc.yml
     needs: gateway
-  join_all:
+  - name: join_all
     uses: _pass
     needs: [doc_indexer, chunk_indexer]
     read_only: true

@@ -14,29 +14,35 @@ from typing import (
 
 from google.protobuf.struct_pb2 import Struct
 
-from ..enums import SkipOnErrorType
+from ..enums import OnErrorStrategy
 from ..executors import BaseExecutor
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
 from ..helper import convert_tuple_to_list
 from ..jaml import JAMLCompatible
+from ..types.querylang import QueryLang
 
+# noinspection PyUnreachableCode
 if False:
     # fix type-hint complain for sphinx and flake
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
     from ..types.message import Message
-    from ..types.request import Request
     from ..types.document import Document
+    from ..types.request import Request
     from ..types.sets import QueryLangSet, DocumentSet
 
 
 def store_init_kwargs(func: Callable) -> Callable:
-    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
+    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML
+
+    :param func: the Callable to wrap
+    :return: the wrapped Callable
+    """
 
     @wraps(func)
-    def arg_wrapper(self, *args, **kwargs):
+    def _arg_wrapper(self, *args, **kwargs):
         if func.__name__ != '__init__':
             raise TypeError(
                 'this decorator should only be used on __init__ method of a driver'
@@ -67,11 +73,12 @@ def store_init_kwargs(func: Callable) -> Callable:
         f = func(self, *args, **kwargs)
         return f
 
-    return arg_wrapper
+    return _arg_wrapper
 
 
 class QuerySetReader:
-    """:class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
+    """
+    :class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
     driver to override its behavior based on the message it receives. Extremely useful in production, for example,
     get ``top_k`` results, doing pagination, filtering.
 
@@ -93,8 +100,20 @@ class QuerySetReader:
 
     .. warning::
         For the sake of cooperative multiple inheritance, do NOT implement :meth:`__init__` for this class
-
     """
+
+    @property
+    def as_querylang(self):
+        parameters = {
+            name: getattr(self, name) for name in self._init_kwargs_dict.keys()
+        }
+        return QueryLang(
+            {
+                'name': self.__class__.__name__,
+                'priority': self._priority,
+                'parameters': parameters,
+            }
+        )
 
     def _get_parameter(self, key: str, default: Any):
         if getattr(self, 'queryset', None):
@@ -144,16 +163,15 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     A :class:`BaseDriver` needs to be :attr:`attached` to a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` before
     using. This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
 
+    :param priority: the priority of its default arg values (hardcoded in Python). If the
+         received ``QueryLang`` has a higher priority, it will override the hardcoded value
+    :param *args: not used (kept to maintain interface)
+    :param **kwargs: not used (kept to maintain interface)
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, priority: int = 0, *args, **kwargs):
-        """
-
-        :param priority: the priority of its default arg values (hardcoded in Python). If the
-             received ``QueryLang`` has a higher priority, it will override the hardcoded value
-        """
         self.attached = False  # : represent if this driver is attached to a
         # :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` (& :class:`jina.executors.BaseExecutor`)
         self.runtime = None  # type: Optional['ZEDRuntime']
@@ -162,7 +180,9 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     def attach(self, runtime: 'ZEDRuntime', *args, **kwargs) -> None:
         """Attach this driver to a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`
 
-        :param runtime: the pea to be attached.
+        :param runtime: the pea to be attached
+        :param *args: not used (kept to maintain interface)
+        :param **kwargs: not used (kept to maintain interface)
         """
         self.runtime = runtime
         self.attached = True
@@ -201,6 +221,13 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
             return []
 
     @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
+
+    @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``"""
         return self.runtime.logger
@@ -221,22 +248,35 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.__class__ == other.__class__
 
     def __getstate__(self) -> Dict[str, Any]:
-        """Do not save the BasePea, as it would be cross-referencing. In other words, a deserialized :class:`BaseDriver` from
-        file is always unattached."""
-        d = dict(self.__dict__)
-        if 'runtime' in d:
-            del d['runtime']
-        d['attached'] = False
+        """
+        Unlike `Executor`, driver is stateless.
+
+        Therefore, on every save, it creates a new & empty driver object and save it.
+        :return: the state in dict form
+        """
+
+        d = dict(self.__class__(**self._init_kwargs_dict).__dict__)
         return d
 
 
 class BaseRecursiveDriver(BaseDriver):
+    """A Driver to traverse a set of Documents with a specific path.
+
+    :param traversal_paths: The describes the leaves of the document tree on which _apply_all are called
+    """
+
     def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
-        """
-        :param traversal_paths: The describes the leaves of the document tree on which _apply_all are called
-        """
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
+
+    def _apply_root(
+        self,
+        docs: 'DocumentSet',
+        field: str,
+        *args,
+        **kwargs,
+    ) -> None:
+        return self._apply_all(docs, None, field, *args, **kwargs)
 
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
@@ -253,14 +293,9 @@ class BaseRecursiveDriver(BaseDriver):
         :param docs: a list of :class:`jina.Document` objects to work on; they could come from ``matches``/``chunks``.
         :param context_doc: the owner of ``docs``
         :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
+        :param *args: *args
+        :param **kwargs: **kwargs
         """
-
-    @property
-    def docs(self):
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
 
     def __call__(self, *args, **kwargs):
         self._traverse_apply(self.docs, *args, **kwargs)
@@ -268,7 +303,7 @@ class BaseRecursiveDriver(BaseDriver):
     def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         for path in self._traversal_paths:
             if path[0] == 'r':
-                self._traverse_rec(docs, None, None, [], *args, **kwargs)
+                self._apply_root(docs, 'docs', *args, **kwargs)
             for doc in docs:
                 self._traverse_rec(
                     [doc],
@@ -309,6 +344,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
         """
         super().__init__(*args, **kwargs)
         self._executor_name = executor
@@ -318,22 +355,30 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
     @property
     def exec(self) -> 'AnyExecutor':
-        """the executor that attached """
+        """the executor that to which the instance is attached"""
         return self._exec
 
     @property
     def exec_fn(self) -> Callable:
-        """the function of :func:`jina.executors.BaseExecutor` to call """
+        """the function of :func:`jina.executors.BaseExecutor` to call
+
+        :return: the Callable to execute in the driver
+        """
         if (
             not self.msg.is_error
-            or self.runtime.args.skip_on_error < SkipOnErrorType.EXECUTOR
+            or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
         ):
             return self._exec_fn
         else:
             return lambda *args, **kwargs: None
 
     def attach(self, executor: 'AnyExecutor', *args, **kwargs) -> None:
-        """Attach the driver to a :class:`jina.executors.BaseExecutor`"""
+        """Attach the driver to a :class:`jina.executors.BaseExecutor`
+
+        :param executor: the executor to which we attach
+        :param *args: *args for super().attach()
+        :param **kwargs: **kwargs for super().attach()
+        """
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
             if self._executor_name in executor:
@@ -364,7 +409,10 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
     def __getstate__(self) -> Dict[str, Any]:
         """Do not save the executor and executor function, as it would be cross-referencing and unserializable.
-        In other words, a deserialized :class:`BaseExecutableDriver` from file is always unattached."""
+        In other words, a deserialized :class:`BaseExecutableDriver` from file is always unattached.
+
+        :return: dictionary of state
+        """
         d = super().__getstate__()
         if '_exec' in d:
             del d['_exec']

@@ -73,16 +73,12 @@ def test_load_yaml2(test_metas):
         ('executors._clear.yml', 'clear', 6),
         ('executors._concat.yml', 'concat', 6),
         ('executors._eval_pr.yml', 'eval_pr', 2),
-        ('executors._forward.yml', 'forward', 6),
         ('executors._logforward.yml', 'logforward', 6),
         ('executors._merge.yml', 'merge', 6),
         ('executors._merge_chunks.yml', 'merge_chunks', 6),
         ('executors._merge_eval.yml', 'merge_eval', 6),
         ('executors._merge_matches.yml', 'merge_matches', 6),
         ('executors._pass.yml', 'forward', 6),
-        ('executors._route.yml', 'route', 6),
-        ('executors._unique.yml', 'unique', 6),
-        ('executors._unique_content.yml', 'unique_content', 6),
     ]
 )
 def test_resource_executor(yaml_path, name, expected):

@@ -1,4 +1,0 @@
-!Flow
-pods:
-  indexer:
-    uses: yaml/index.yml

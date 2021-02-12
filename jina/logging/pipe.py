@@ -13,17 +13,19 @@ if False:
 
 
 class PipeLogger:
-    def __init__(self, args: 'argparse.Namespace'):
-        """ Start a pipe logger to beautify the log
+    """:class: `PipeLogger` is one that beautify the log."""
 
-        :param args: the parsed arguments from the CLI
+    def __init__(self, args: 'argparse.Namespace'):
+        """
+        Start a pipe logger to beautify the log.
+
+        :param args: The parsed arguments from the CLI.
         """
         self.args = args
         self._preserved_logs = defaultdict(str)
 
     def start(self):
-        """ Start to receive logs from pipe"""
-
+        """Start to receive logs from pipe."""
         try:
             for l in sys.stdin:
                 m = re.match(self.args.groupby_regex, l)

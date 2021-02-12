@@ -22,8 +22,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
         :param running_avg: always return running average instead of value of the current run
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
 
         .. warning::
 
@@ -42,8 +42,6 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     def _apply_all(
             self,
             docs: Iterator['DocGroundtruthPair'],
-            context_doc: 'DocGroundtruthPair' = None,
-            field: str = None,
             *args,
             **kwargs
     ) -> None:
@@ -82,8 +80,8 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
         """
 
         :param field: the field name to be extracted from the Protobuf
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.field = field
@@ -104,8 +102,9 @@ class RankEvaluateDriver(FieldEvaluateDriver):
                  *args,
                  **kwargs):
         """
-        :param args:
-        :param kwargs:
+        :param field: the field name to be extracted from the Protobuf
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(field, *args, **kwargs)
 
@@ -118,8 +117,9 @@ class RankEvaluateDriver(FieldEvaluateDriver):
 class NDArrayEvaluateDriver(FieldEvaluateDriver):
     """Drivers used to pass `embedding` from documents and groundtruths to an executor and add the evaluation value
 
-    - Valid fields:
-        ['blob', 'embedding']
+    .. note::
+        - Valid fields:
+                     ['blob', 'embedding']
 
     """
 
@@ -130,14 +130,9 @@ class NDArrayEvaluateDriver(FieldEvaluateDriver):
 class TextEvaluateDriver(FieldEvaluateDriver):
     """Drivers used to pass a content field from documents and groundtruths to an executor and add the evaluation value
 
-    - Valid fields:
-                ['id',
-                 'level_name',
-                 'parent_id',
-                 'text',
-                 'mime_type',
-                 'uri',
-                 'modality']
+    .. note::
+        - Valid fields:
+                    ['id', 'level_name', 'parent_id', 'text', 'mime_type', 'uri', 'modality']
     """
 
     def __init__(self, field: str = 'text', *args, **kwargs):
@@ -158,7 +153,7 @@ class LoadGroundTruthDriver(KVSearchDriver):
     def __call__(self, *args, **kwargs):
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
         for idx, doc in enumerate(self.docs):
-            serialized_groundtruth = self.exec_fn(int(doc.id))
+            serialized_groundtruth = self.exec_fn(doc.id)
             if serialized_groundtruth:
                 self.req.groundtruths.append(Document(serialized_groundtruth))
             else:

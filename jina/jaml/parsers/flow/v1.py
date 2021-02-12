@@ -9,7 +9,9 @@ from ....parsers import set_pod_parser, set_gateway_parser
 
 
 def _get_taboo():
-    """Get a set of keys that should not be dumped"""
+    """
+    :return: set of keys that should not be dumped
+    """
     return {k.dest for k in set_pod_parser()._actions if k.help == argparse.SUPPRESS}
 
 
@@ -48,9 +50,10 @@ class V1Parser(VersionedYAMLParser):
     version = '1'  # the version number this parser designed for
 
     def parse(self, cls: type, data: Dict) -> 'Flow':
-        """Return the Flow YAML parser given the syntax version number
-
+        """
+        :param cls: the class registered for dumping/loading
         :param data: flow yaml file loaded as python dict
+        :return: the Flow YAML parser given the syntax version number
         """
         envs = data.get('env', {})  # type: Dict[str, str]
         p = data.get('with', {})  # type: Dict[str, Any]
@@ -73,9 +76,9 @@ class V1Parser(VersionedYAMLParser):
         return obj
 
     def dump(self, data: 'Flow') -> Dict:
-        """Return the dictionary given a versioned flow object
-
+        """
         :param data: versioned flow object
+        :return: the dictionary given a versioned flow object
         """
         r = {}
         if data._version:

@@ -5,7 +5,6 @@ import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from jina.types.document.uid import UniqueId
 from tests import random_docs, rm_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -14,10 +13,10 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def random_queries(num_docs, chunks_per_doc=5):
     for j in range(num_docs):
         d = jina_pb2.DocumentProto()
-        d.id = UniqueId(j)
+        d.id = j
         for k in range(chunks_per_doc):
             dd = d.chunks.add()
-            dd.id = UniqueId(num_docs + j * chunks_per_doc + k)
+            dd.id = num_docs + j * chunks_per_doc + k
         yield d
 
 
@@ -45,8 +44,7 @@ def test_shards_insufficient_data(mocker, restful):
     f = (Flow(restful=restful)
          .add(name='doc_pb',
               uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
-              parallel=parallel,
-              separated_workspace=True))
+              parallel=parallel))
     with f:
         f.index(input_fn=random_docs(index_docs))
 
@@ -58,12 +56,11 @@ def test_shards_insufficient_data(mocker, restful):
          .add(name='doc_pb',
               uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
               parallel=parallel,
-              separated_workspace=True,
               polling='all',
               uses_after='_merge_chunks'))
     with f:
         f.search(input_fn=random_queries(1, index_docs),
-                 callback_on='body',
+
                  on_done=validate)
     time.sleep(2)
     rm_files(['test-docshard-tmp'])

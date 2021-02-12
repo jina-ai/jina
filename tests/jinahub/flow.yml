@@ -1,10 +1,11 @@
 !Flow
+version: '1'
 with:
   read_only: true
   rest_api: true
   port_expose: 45678
 pods:
-  pod1:
+  - name: pod1
     uses: docker://hubpod:test
-  pod2:
+  - name: pod2
     uses: docker://hubpod:test

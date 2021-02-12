@@ -154,7 +154,7 @@ def test_two_client_route():
 
 
 def test_index(test_workspace_index):
-    f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3, separated_workspace=True)
+    f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3)
     with f:
         f.index(input_fn=random_docs(50))
     for j in range(3):

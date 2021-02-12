@@ -1,7 +1,7 @@
 !Flow
+version: '1'
 pods:
-  pod1:
-    show-exc-info: true
+  - name: pod1
     uses: docker://jinahub/pod
     docker-kwargs:
       hello: 0

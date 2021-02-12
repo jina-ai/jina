@@ -4,7 +4,6 @@ import numpy as np
 
 from jina import Document
 from jina.flow import Flow
-from jina.types.document.uid import UniqueId
 from jina.types.ndarray.generic import NdArray
 
 e1 = np.random.random([7])
@@ -18,13 +17,13 @@ def input_fn():
         doc1.embedding = e1
         with Document() as chunk1:
             chunk1.embedding = e2
-            chunk1.id = UniqueId(1)
+            chunk1.id = 1
         doc1.chunks.add(chunk1)
     with Document() as doc2:
         doc2.embedding = e3
         with Document() as chunk2:
             chunk2.embedding = e4
-            chunk2.id = UniqueId(2)
+            chunk2.id = 2
         doc2.chunks.add(chunk2)
     return [doc1, doc2]
 
@@ -61,6 +60,6 @@ def test_concat_embed_driver(mocker):
             .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
 
     with flow:
-        flow.index(input_fn=input_fn, on_done=validate, callback_on='body')
+        flow.index(input_fn=input_fn, on_done=validate)
 
     mock.assert_called_once()

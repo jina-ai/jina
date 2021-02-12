@@ -1,33 +1,32 @@
+"""Module for wrapping Jina Hub API calls."""
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import argparse
 import glob
 import json
 import time
-import webbrowser
 import urllib.parse
 import urllib.request
-from typing import Dict, Any, Optional
+import webbrowser
+from typing import Dict, Any, Optional, List
 
 from .checker import *
-from ..flow import Flow
-from ..peapods import Pod
-from ..logging import JinaLogger
-from ..enums import BuildTestLevel
-from ..executors import BaseExecutor
 from .helper import credentials_file
-from ..parsers import set_pod_parser
 from .hubapi.local import _list_local
-from ..importer import ImportExtensions
-from .. import __version__ as jina_version
-from ..logging.profile import TimeContext, ProgressBar
 from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
+from .. import __version__ as jina_version
+from ..enums import BuildTestLevel
 from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
+from ..executors import BaseExecutor
+from ..flow import Flow
 from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
     countdown
-
-if False:
-    import argparse
+from ..importer import ImportExtensions
+from ..logging import JinaLogger
+from ..logging.profile import TimeContext, ProgressBar
+from ..parsers import set_pod_parser
+from ..peapods import Pod
 
 _allowed = {'name', 'description', 'author', 'url',
             'documentation', 'version', 'vendor', 'license', 'avatar',
@@ -37,7 +36,8 @@ _label_prefix = 'ai.jina.hub.'
 
 
 class HubIO:
-    """ :class:`HubIO` provides the way to interact with Jina Hub registry.
+    """:class:`HubIO` provides the way to interact with Jina Hub registry.
+
     You can use it with CLI to package a directory into a Jina Hub image and publish it to the world.
 
     Examples:
@@ -47,6 +47,10 @@ class HubIO:
     """
 
     def __init__(self, args: 'argparse.Namespace'):
+        """Create a new HubIO.
+
+        :param args: arguments
+        """
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.args = args
         self._load_docker_client()
@@ -64,7 +68,7 @@ class HubIO:
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
     def new(self) -> None:
-        """Create a new executor using cookiecutter template """
+        """Create a new executor using cookiecutter template."""
         with ImportExtensions(required=True):
             from cookiecutter.main import cookiecutter
             import click  # part of cookiecutter
@@ -82,7 +86,7 @@ class HubIO:
             self.logger.info('nothing is created, bye!')
 
     def login(self) -> None:
-        """Login using Github Device flow to allow push access to Jina Hub Registry"""
+        """Login using Github Device flow to allow push access to Jina Hub Registry."""
         import requests
 
         with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
@@ -151,8 +155,11 @@ class HubIO:
         except KeyError as exp:
             self.logger.error(f'can not read the key in response: {exp}')
 
-    def list(self) -> Dict[str, Any]:
-        """ List all hub images given a filter specified by CLI """
+    def list(self) -> Optional[List[Dict[str, Any]]]:
+        """List all hub images given a filter specified by CLI.
+
+        :return: list of dictionaries of images
+         """
         if self.args.local_only:
             return _list_local(self.logger)
         else:
@@ -162,11 +169,14 @@ class HubIO:
                          image_type=self.args.type,
                          image_keywords=self.args.keywords)
 
-    def push(self, name: Optional[str] = None, readme_path: Optional[str] = None, build_result: Optional[Dict] = None) -> None:
-        """ A wrapper of docker push
-        - Checks for the tempfile, returns without push if it cannot find
-        - Pushes to docker hub, returns withput writing to db if it fails
-        - Writes to the db
+    def push(self, name: Optional[str] = None, readme_path: Optional[str] = None,
+             build_result: Optional[Dict] = None) -> None:
+        """Push image to Jina Hub.
+
+        :param name: name of image
+        :param readme_path: path to readme
+        :param build_result: dictionary containing the build summary
+        :return: None
         """
         name = name or self.args.name
         try:
@@ -206,9 +216,12 @@ class HubIO:
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
-    def _push_docker_hub(self, name: str = None, readme_path: str = None, docker_username: str = None,
-                         docker_password: str = None) -> None:
-        """ Helper push function """
+    def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
+        """Push to Docker Hub.
+
+        :param name: name of image
+        :param readme_path: path to README
+        """
         check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
         self._docker_login()
@@ -247,7 +260,7 @@ class HubIO:
                 f'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!')
 
     def pull(self) -> None:
-        """A wrapper of docker pull """
+        """Pull docker image."""
         check_registry(self.args.registry, self.args.name, self.args.repository)
         try:
             self._docker_login()
@@ -270,10 +283,11 @@ class HubIO:
         try:
             image.labels['ai.jina.hub.jina_version'] = jina_version
             label_info = f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
-                        **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})
+                **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})
             safe_name = safe_url_name(label_info)
             if name != safe_name:
-                raise ValueError(f'image {name} does not match with label info in the image. name should be {safe_name}')
+                raise ValueError(
+                    f'image {name} does not match with label info in the image. name should be {safe_name}')
         except KeyError as e:
             self.logger.error(f'missing key in the label of the image {repr(e)}')
             raise
@@ -281,7 +295,7 @@ class HubIO:
         self.logger.info(f'✅ {name} is a valid Jina Hub image, ready to publish')
 
     def _docker_login(self) -> None:
-        """A wrapper of docker login """
+        """Log-in to Docker."""
         from docker.errors import APIError
         if not (self.args.username and self.args.password):
             self.args.username, self.args.password = _fetch_docker_auth(logger=self.logger)
@@ -293,7 +307,11 @@ class HubIO:
             raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
 
     def build(self) -> Dict:
-        """A wrapper of docker build """
+        """
+        Perform a build of the Docker image.
+
+        :return: dictionary with information on image (manifest)
+        """
         if self.args.dry_run:
             result = self.dry_run()
         else:
@@ -497,6 +515,11 @@ class HubIO:
         return p_names, failed_levels
 
     def dry_run(self) -> Dict:
+        """
+        Perform a dry-run.
+
+        :return: a dict with the manifest info.
+        """
         try:
             s = self._check_completeness()
             s['is_build_success'] = True

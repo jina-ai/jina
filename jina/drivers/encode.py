@@ -55,7 +55,7 @@ class EncodeDriver(BaseEncodeDriver):
                  *args, **kwargs):
         """
         Extract from different documents.
-        :param batch_size: number of documents to be used simultaniously in the encoder :meth:apply_all.
+        :param batch_size: number of documents to be used simultaneously in the encoder :meth:_apply_all.
         It is specially useful when the same EncoderExecutor can be used for documents of different granularities
          (chunks, chunks of chunks ...)
 
@@ -77,20 +77,20 @@ class EncodeDriver(BaseEncodeDriver):
         self._empty_cache()
 
     def _apply_batch(self, batch: 'DocumentSet'):
-        contents, docs_pts, bad_docs = batch.all_contents
-
-        if bad_docs:
-            self.logger.warning(f'these bad docs can not be added: {bad_docs} '
-                                f'from level depth {docs_pts[0].granularity}')
+        contents, docs_pts = batch.all_contents
 
         if docs_pts:
             embeds = self.exec_fn(contents)
-            if len(docs_pts) != embeds.shape[0]:
+            if embeds is None:
+                self.logger.error(
+                    f'{self.exec_fn!r} returns nothing, you may want to check the implementation of {self.exec!r}')
+            elif len(docs_pts) != embeds.shape[0]:
                 self.logger.error(
                     f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
                     f'and a {embeds.shape} shape embedding, the first dimension must be the same')
-            for doc, embedding in zip(docs_pts, embeds):
-                doc.embedding = embedding
+            else:
+                for doc, embedding in zip(docs_pts, embeds):
+                    doc.embedding = embedding
 
     def _empty_cache(self):
         if self.batch_size:

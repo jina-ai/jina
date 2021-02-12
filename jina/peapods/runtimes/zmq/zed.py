@@ -1,4 +1,3 @@
-import os
 import time
 from collections import defaultdict
 from typing import Dict, List
@@ -9,10 +8,11 @@ from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
 from .... import Message
 from .... import Request
-from ....enums import SkipOnErrorType
+from ....enums import OnErrorStrategy
 from ....excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
-    BadConfigSource, RuntimeTerminated, ZMQSocketError
+    BadConfigSource, RuntimeTerminated
 from ....executors import BaseExecutor
+from ....helper import random_identity
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
 
@@ -22,6 +22,7 @@ class ZEDRuntime(ZMQRuntime):
         self._zmqlet.start(self._msg_callback)
 
     def setup(self):
+        self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self._last_dump_time = time.perf_counter()
 
@@ -47,25 +48,16 @@ class ZEDRuntime(ZMQRuntime):
 
     def _load_zmqlet(self):
         """Load ZMQStreamlet to this runtime"""
-        for j in range(self.args.max_socket_retries):
-            try:
-                # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
-                # process/thread
-                self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
-                break
-            except zmq.error.ZMQError:
-                self.logger.warning(f'retry init socket {j + 1}/{self.args.max_socket_retries}')
 
-        if not hasattr(self, '_zmqlet'):
-            raise ZMQSocketError(f'can not open ZMQStreamlet after {self.args.max_socket_retries} retries, '
-                                 f'seems sockets are pretty occupied?')
+        # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
+        # process/thread
+        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument.
         """
         try:
             self._executor = BaseExecutor.load_config(self.args.uses,
-                                                      separated_workspace=self.args.separated_workspace,
                                                       pea_id=self.args.pea_id,
                                                       read_only=self.args.read_only)
             self._executor.attach(runtime=self)
@@ -104,7 +96,7 @@ class ZEDRuntime(ZMQRuntime):
     #: Private methods required by run_forever
     def _pre_hook(self, msg: 'Message') -> 'ZEDRuntime':
         """Pre-hook function, what to do after first receiving the message """
-        msg.add_route(self.name, self.args.identity)
+        msg.add_route(self.name, self._id)
         self._request = msg.request
         self._message = msg
 
@@ -145,7 +137,7 @@ class ZEDRuntime(ZMQRuntime):
             # otherwise a reducer will lose its function when eailier pods raise exception
             raise NoExplicitMessage
 
-        if msg.envelope.status.code != jina_pb2.StatusProto.ERROR or self.args.skip_on_error < SkipOnErrorType.HANDLE:
+        if msg.envelope.status.code != jina_pb2.StatusProto.ERROR or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE:
             self._executor(self.request_type)
         else:
             raise ChainedPodException
@@ -186,20 +178,22 @@ class ZEDRuntime(ZMQRuntime):
             # general runtime error and nothing serious, we simply mark the message to error and pass on
             if not self.is_post_hook_done:
                 self._post_hook(msg)
+
+            if self.args.on_error_strategy == OnErrorStrategy.THROW_EARLY:
+                raise
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
-                self.logger.warning(f'{ex!r}' +
-                                    f'add "--show-exc-info" to see the exception stack in details'
-                                    if not self.args.show_exc_info else '',
-                                    exc_info=self.args.show_exc_info)
+                self.logger.error(f'{ex!r}' +
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
                 self.logger.error(f'{ex!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
-            if 'JINA_RAISE_ERROR_EARLY' in os.environ:
-                raise
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
+
             self._zmqlet.send_message(msg)
 
     #: Some class-specific properties

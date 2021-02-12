@@ -45,8 +45,7 @@ function git_commit {
     git config --local user.email "dev-bot@jina.ai"
     git config --local user.name "Jina Dev Bot"
     git tag "v$RELEASE_VER" -m "$(cat ./CHANGELOG.tmp)"
-    echo -e "$RELEASE_VER" >> docs/versions
-    git add $INIT_FILE ./CHANGELOG.md jina/hub docs/versions jina/resources/extra-requirements.txt
+    git add $INIT_FILE ./CHANGELOG.md jina/hub jina/resources/extra-requirements.txt
     git commit -m "chore(version): the next version will be $NEXT_VER" -m "build($RELEASE_ACTOR): $RELEASE_REASON"
 }
 

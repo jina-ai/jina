@@ -1,21 +1,23 @@
-import json
+"""Module wrapping interactions with the remote Jina Hub."""
 import base64
+import json
+from typing import Dict, Sequence, Any, Optional, List, Tuple
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from pkg_resources import resource_stream
-from typing import Dict, Sequence, Any, Optional, List
 
-from ...jaml import JAML
+from pkg_resources import resource_stream
+
+from .local import _fetch_access_token, _make_hub_table, _make_hub_table_with_local, _load_local_hub_manifest
 from ...helper import colored
 from ...importer import ImportExtensions
+from ...jaml import JAML
 from ...logging.profile import TimeContext
-from .local import _fetch_access_token, _make_hub_table, _make_hub_table_with_local, _load_local_hub_manifest
 
 
 def _list(logger, image_name: str = None, image_kind: str = None,
           image_type: str = None, image_keywords: Sequence = ()) -> Optional[List[Dict[str, Any]]]:
-    """ Use Hub api to get the list of filtered images
+    """Use Hub api to get the list of filtered images.
 
     :param logger: logger to use
     :param image_name: name of hub image
@@ -60,9 +62,10 @@ def _list(logger, image_name: str = None, image_kind: str = None,
         return response
 
 
-def _fetch_docker_auth(logger) -> Optional[Dict[str, str]]:
-    """ Use Hub api to get docker creds
+def _fetch_docker_auth(logger) -> Tuple[str, str]:
+    """Use Hub api to get docker credentials.
 
+    :param logger: the logger instance
     :return: a dict of specifying username and password
     """
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
@@ -91,7 +94,11 @@ def _fetch_docker_auth(logger) -> Optional[Dict[str, str]]:
 
 
 def _register_to_mongodb(logger, summary: Dict = None):
-    """ Hub API Invocation to run `hub push` """
+    """Hub API Invocation to run `hub push`.
+
+    :param logger: the logger instance
+    :param summary: the summary dict object
+    """
     logger.info('registering image to Jina Hub database...')
 
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:

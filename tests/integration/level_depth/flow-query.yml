@@ -1,16 +1,17 @@
 !Flow
+version: '1'
 with:
   restful: $RESTFUL
 pods:
-  encoder:
+  - name: encoder
     uses: yaml/encoder.yml
     read_only: true
-  chunk_indexer:
+  - name: chunk_indexer
     uses: yaml/index-chunk.yml
     read_only: true
-  ranker:
+  - name: ranker
     uses: yaml/rank.yml
     read_only: true
-  doc_indexer:
+  - name: doc_indexer
     uses: yaml/index-doc.yml
     read_only: true

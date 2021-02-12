@@ -141,7 +141,6 @@ def test_evaluation(tmpdir, mocker):
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs,
             on_done=response_mock,
-            callback_on='body',
             top_k=2
         )
 

@@ -99,15 +99,19 @@ class NdArray(BaseNdArray):
 
     @property
     def value(self):
-        stype = self.proto.WhichOneof('content')
+        stype = self._pb_body.WhichOneof('content')
         if stype == 'dense':
-            return self.dense_cls(self.proto.dense).value
+            return self.dense_cls(self._pb_body.dense).value
         elif stype == 'sparse':
-            return self.sparse_cls(self.proto.sparse).value
+            return self.sparse_cls(self._pb_body.sparse).value
 
     @value.setter
     def value(self, value):
         if self.is_sparse:
-            self.sparse_cls(self.proto.sparse).value = value
+            self.sparse_cls(self._pb_body.sparse).value = value
         else:
-            self.dense_cls(self.proto.dense).value = value
+            self.dense_cls(self._pb_body.dense).value = value
+
+    def _build_content_dict(self):
+        return {'value': self.value,
+                'is_sparse': self.is_sparse}

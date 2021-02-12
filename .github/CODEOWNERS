@@ -7,3 +7,4 @@
 # Han Xiao owns CICD and README.md
 .github   @hanxiao
 setup.py  @hanxiao
+extra-requirements.txt  @hanxiao

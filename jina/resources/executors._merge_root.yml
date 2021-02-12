@@ -1,0 +1,14 @@
+!BaseExecutor
+with: {}
+metas:
+  name: merge_root
+requests:
+  on:
+    [SearchRequest, TrainRequest, IndexRequest]:
+      - !ReduceAllDriver
+        with:
+          traversal_paths: ['r']
+    ControlRequest:
+      - !ControlReqDriver {}
+    [DeleteRequest, UpdateRequest]:
+      - !RouteDriver {}

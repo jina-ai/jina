@@ -1,10 +1,12 @@
+import json
+
 import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToDict
-
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.document import Document, BadDocID
+from jina.types.document import Document
+from jina.types.score import NamedScore
 from tests import random_docs
 
 DOCUMENTS_PER_LEVEL = 1
@@ -26,7 +28,7 @@ def test_ndarray_get_set(field):
     b = np.random.random([10, 10])
     c = NdArray()
     c.value = b
-    setattr(a, field, c.proto)
+    setattr(a, field, c._pb_body)
     np.testing.assert_equal(getattr(a, field), b)
 
 
@@ -95,8 +97,7 @@ def test_copy_construct():
 
 def test_bad_good_doc_id():
     b = Document()
-    with pytest.raises(BadDocID):
-        b.id = 'hello'
+    b.id = 'hello'
     b.id = 'abcd' * 4
     b.id = 'de09' * 4
     b.id = 'af54' * 4
@@ -140,7 +141,7 @@ def test_request_docs_mutable_iterator():
         doc_pointers.append(d)
 
     # pb-lize it should see the change
-    rpb = r.as_pb_object
+    rpb = r.proto
 
     for idx, d in enumerate(rpb.index.docs):
         assert isinstance(d, DocumentProto)
@@ -178,7 +179,7 @@ def test_request_docs_chunks_mutable_iterator():
             doc_pointers.append(c)
 
     # pb-lize it should see the change
-    rpb = r.as_pb_object
+    rpb = r.proto
 
     for d in rpb.index.docs:
         assert isinstance(d, DocumentProto)
@@ -318,6 +319,183 @@ def test_include_repeated_fields():
     assert d1.content_hash != d2.content_hash
 
 
+@pytest.mark.parametrize('from_str', [True, False])
+@pytest.mark.parametrize('d_src', [
+    {'id': '123', 'mime_type': 'txt', 'parent_id': '456', 'tags': {'hello': 'world'}},
+    {'id': '123', 'mimeType': 'txt', 'parentId': '456', 'tags': {'hello': 'world'}},
+    {'id': '123', 'mimeType': 'txt', 'parent_id': '456', 'tags': {'hello': 'world'}},
+])
+def test_doc_from_dict_cases(d_src, from_str):
+    # regular case
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.tags['hello'] == 'world'
+    assert d.mime_type == 'txt'
+    assert d.id == '123'
+    assert d.parent_id == '456'
+
+
+@pytest.mark.parametrize('from_str', [True, False])
+def test_doc_arbitrary_dict(from_str):
+    d_src = {'id': '123', 'hello': 'world', 'tags': {'good': 'bye'}}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.id == '123'
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'
+
+    d_src = {'hello': 'world', 'good': 'bye'}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'
+
+
+@pytest.mark.parametrize('from_str', [True, False])
+def test_doc_field_resolver(from_str):
+    d_src = {'music_id': '123', 'hello': 'world', 'tags': {'good': 'bye'}}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src)
+    assert d.id != '123'
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'
+    assert d.tags['music_id'] == '123'
+
+    d_src = {'music_id': '123', 'hello': 'world', 'tags': {'good': 'bye'}}
+    if from_str:
+        d_src = json.dumps(d_src)
+    d = Document(d_src, field_resolver={'music_id': 'id'})
+    assert d.id == '123'
+    assert d.tags['hello'] == 'world'
+    assert d.tags['good'] == 'bye'
+    assert 'music_id' not in d.tags
+
+
+def test_doc_plot():
+    docs = [Document(id='🐲', embedding=np.array([0, 0]), tags={'guardian': 'Azure Dragon', 'position': 'East'}),
+            Document(id='🐦', embedding=np.array([1, 0]), tags={'guardian': 'Vermilion Bird', 'position': 'South'}),
+            Document(id='🐢', embedding=np.array([0, 1]), tags={'guardian': 'Black Tortoise', 'position': 'North'}),
+            Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
+
+    docs[0].chunks.append(docs[1])
+    docs[0].chunks[0].chunks.append(docs[2])
+    docs[0].matches.append(docs[3])
+
+    assert docs[0]._mermaid_to_url('svg')
+
+
+def get_test_doc():
+    s = Document(id='🐲', content='hello-world', tags={'a': 'b'},
+                 embedding=np.array([1, 2, 3]),
+                 chunks=[Document(id='🐢')])
+    d = Document(id='🐦', content='goodbye-world', tags={'c': 'd'},
+                 embedding=np.array([4, 5, 6]),
+                 chunks=[Document(id='🐯')])
+    return s, d
+
+
+def test_update_include_field():
+    s, d = get_test_doc()
+
+    d.update(s, include_fields=('id',))
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['c'] == 'd'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check if s stays the same
+    assert s.content == 'hello-world'
+    assert s.id == '🐲'
+    assert s.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check if d is changed when merge_repeat_field turn on
+    d.update(s, include_fields=('tags',))
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check if d is changed when merge_repeat_field turn on
+    d.update(s, include_fields=('tags',))
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+
+    # check copy behavior
+    d.update(s, exclude_fields=None, include_fields=('embedding',))
+    assert d.content == 'goodbye-world'
+    assert d.id == '🐲'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
+
+
+def test_update_on_no_empty_doc():
+    s, d = get_test_doc()
+    d0 = d.dict()
+    # this will not update anything as d and s are in the same structure
+    d.update(s)
+    assert d.dict() == d0
+
+
+def test_update_chunks():
+    s, d = get_test_doc()
+    d.update(s, include_fields=('chunks',), exclude_fields=None)
+    assert len(d.chunks) == 1
+    assert d.chunks[0].id == '🐢'
+
+
+def test_update_embedding():
+    s, d = get_test_doc()
+    d.update(s, include_fields=('embedding',), exclude_fields=tuple())
+    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
+
+
+def test_non_empty_fields():
+    d_score = Document(score=NamedScore(value=42))
+    print(d_score.ListFields())
+    assert d_score.non_empty_fields == ('id', 'score')
+
+    d = Document()
+    assert d.non_empty_fields == ('id',)
+
+    d = Document(id='')
+    assert not d.non_empty_fields
+
+
+def test_update_score_embedding():
+    d = Document()
+    d_score = Document(score=NamedScore(value=42))
+
+    d.update(d_score)
+    assert d.score.value == 42
+
+
+def test_update_exclude_field():
+    s, d = get_test_doc()
+
+    d.update(s, exclude_fields=('id', 'embedding', 'chunks'))
+    assert d.content == 'hello-world'
+    assert d.id == '🐦'
+    assert d.tags['a'] == 'b'
+    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
+    assert d.chunks[0].id == '🐯'
+
+    d.update(s, exclude_fields=('chunks',))
+    # check if merging on embedding is correct
+    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
+
+    d.update(s, exclude_fields=('embedding',))
+    # check if merging on embedding is correct
+    assert len(d.chunks) == 1
+    assert d.chunks[0].id == '🐢'
+
+
 def test_get_attr():
     d = Document()
     with d:
@@ -339,4 +517,3 @@ def test_get_attr():
     assert 'tags_id' not in res2
     assert res2['text'] == 'document'
     assert res2['tags'] == d.tags
-

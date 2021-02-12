@@ -87,7 +87,7 @@ def test_text2datauri(mocker, restful):
     f = (Flow(restful=restful).add(uses='- !Text2URI {}'))
 
     with f:
-        f.index_lines(lines=['abc', '123', 'hello, world'], on_done=response_mock)
+        f.index(['abc', '123', 'hello, world'], on_done=response_mock)
     response_mock.assert_called()
 
 
@@ -97,5 +97,5 @@ def test_gateway_dataui(mocker, restful):
     f = (Flow(restful=restful).add())
 
     with f:
-        f.index_lines(lines=['abc', '123', 'hello, world'], on_done=response_mock)
+        f.index(['abc', '123', 'hello, world'], on_done=response_mock)
     response_mock.assert_called()

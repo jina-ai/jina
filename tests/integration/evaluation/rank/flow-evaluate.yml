@@ -1,13 +1,14 @@
 !Flow
+version: '1'
 pods:
-  doc_indexer:
+  - name: doc_indexer
     uses: yaml/index-doc.yml
-  evaluate_match:
+  - name: evaluate_match
     uses: yaml/evaluate.yml
     read_only: true
-  ranker:
+  - name: ranker
     uses: yaml/rank.yml
     read_only: true
-  evaluate_rank:
+  - name: evaluate_rank
     uses: yaml/evaluate.yml
     read_only: true

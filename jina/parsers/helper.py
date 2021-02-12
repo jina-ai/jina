@@ -3,6 +3,9 @@ import os
 import uuid
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
+if _SHOW_ALL_ARGS:
+    from jina.logging import default_logger
+    default_logger.warning(f'Setting {_SHOW_ALL_ARGS} will make remote Peas with sharding not work when using JinaD')
 
 
 def add_arg_group(parser, title):
@@ -80,7 +83,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
                 self.formatter._dedent()
 
             # return nothing if the section was empty
-            if not item_help:
+            if not item_help.strip():
                 return ''
 
             # add the heading if the section was non-empty
@@ -103,22 +106,33 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         self._current_section = section
 
     def _get_help_string(self, action):
-        help_string = action.help
+        help_string = ''
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
                 from ..helper import colored
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
 
-                    help_string += colored(' (default: %s)' % (
+                    help_string = colored('default: %s' % (
                         'enabled' if action.default else f'disabled, use "--{action.dest}" to enable it'),
-                                           attrs=['dark'])
+                                          attrs=['dark'])
                 elif action.choices:
                     choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
-                    help_string += colored(' (choose from: ' + choices_str + '; default: %(default)s)', attrs=['dark'])
+                    help_string = colored('choose from: ' + choices_str + '; default: %(default)s', attrs=['dark'])
                 elif action.option_strings or action.nargs in defaulting_nargs:
-                    help_string += colored(' (type: %(type)s; default: %(default)s)', attrs=['dark'])
-        return help_string
+                    help_string = colored('type: %(type)s; default: %(default)s', attrs=['dark'])
+        return f'''
+        
+        {help_string}
+        
+        {action.help}
+        
+        '''
+
+    def _join_parts(self, part_strings):
+        return '\n' + ''.join([part
+                               for part in part_strings
+                               if part and part is not argparse.SUPPRESS])
 
     def _get_default_metavar_for_optional(self, action):
         return ''
@@ -158,8 +172,72 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
         return formatter
 
+    def _split_lines(self, text, width):
+        return self._para_reformat(text, width)
+
     def _fill_text(self, text, width, indent):
-        return ''.join(indent + line for line in text.splitlines(keepends=True))
+        lines = self._para_reformat(text, width)
+        return '\n'.join(lines)
+
+    def _indents(self, line):
+        """Return line indent level and "sub_indent" for bullet list text."""
+        import re
+        indent = len(re.match(r'( *)', line).group(1))
+        list_match = re.match(r'( *)(([*\-+>]+|\w+\)|\w+\.) +)', line)
+        if list_match:
+            sub_indent = indent + len(list_match.group(2))
+        else:
+            sub_indent = indent
+
+        return (indent, sub_indent)
+
+    def _split_paragraphs(self, text):
+        """Split text in to paragraphs of like-indented lines."""
+
+        import textwrap, re
+
+        text = textwrap.dedent(text).strip()
+        text = re.sub('\n\n[\n]+', '\n\n', text)
+
+        last_sub_indent = None
+        paragraphs = list()
+        for line in text.splitlines():
+            (indent, sub_indent) = self._indents(line)
+            is_text = len(line.strip()) > 0
+
+            if is_text and indent == sub_indent == last_sub_indent:
+                paragraphs[-1] += ' ' + line
+            else:
+                paragraphs.append(line)
+
+            if is_text:
+                last_sub_indent = sub_indent
+            else:
+                last_sub_indent = None
+
+        return paragraphs
+
+    def _para_reformat(self, text, width):
+        """Reformat text, by paragraph."""
+
+        import textwrap
+
+        lines = list()
+        for paragraph in self._split_paragraphs(text):
+            (indent, sub_indent) = self._indents(paragraph)
+
+            paragraph = self._whitespace_matcher.sub(' ', paragraph).strip()
+            new_lines = textwrap.wrap(
+                text=paragraph,
+                width=width,
+                initial_indent=' ' * indent,
+                subsequent_indent=' ' * sub_indent,
+            )
+
+            # Blank lines get eaten by textwrap, put it back
+            lines.extend(new_lines or [''])
+
+        return lines
 
 
 _chf = _ColoredHelpFormatter

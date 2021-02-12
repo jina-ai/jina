@@ -4,7 +4,6 @@ import numpy as np
 
 from . import BaseExecutableDriver
 from ..helper import typename
-from ..types.document import Document
 
 if False:
     from ..types.sets import DocumentSet
@@ -23,8 +22,8 @@ class BaseLabelPredictDriver(BasePredictDriver):
         """
 
         :param output_tag: output label will be written to ``doc.tags``
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.output_tag = output_tag
@@ -32,15 +31,10 @@ class BaseLabelPredictDriver(BasePredictDriver):
     def _apply_all(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts, bad_docs = docs.all_embeddings
-
-        if bad_docs:
-            self.runtime.logger.warning(f'these bad docs can not be added: {bad_docs}')
+        embed_vecs, docs_pts = docs.all_embeddings
 
         if docs_pts:
             prediction = self.exec_fn(embed_vecs)
@@ -71,8 +65,8 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
 
         :param one_label: label when prediction is one
         :param zero_label: label when prediction is zero
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.one_label = one_label
@@ -147,15 +141,10 @@ class Prediction2DocBlobDriver(BasePredictDriver):
     def _apply_all(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts, bad_docs = docs.all_embeddings
-
-        if bad_docs:
-            self.runtime.logger.warning(f'these bad docs can not be added: {bad_docs}')
+        embed_vecs, docs_pts = docs.all_embeddings
 
         if docs_pts:
             prediction = self.exec_fn(embed_vecs)

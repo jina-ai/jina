@@ -35,6 +35,7 @@ class BaseEvaluator(BaseExecutor):
 
 
 class FileBasedEvaluator(CompoundExecutor):
+
     """A Frequently used pattern for combining A :class:`BinaryPbIndexer` and :class:`BaseEvaluator`.
      It will be equipped with predefined ``requests.on`` behaviors:
 

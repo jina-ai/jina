@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterable
 
 import pytest
 
@@ -13,15 +13,15 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         super().__init__(*args, **kwargs)
         self.docs = {}
 
-    def add(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def update(self, keys: Iterator[int], values: Iterator[bytes], *args, **kwargs):
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def delete(self, keys: Iterator[int], *args, **kwargs):
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         for key in keys:
             del self.docs[key]
 
@@ -91,7 +91,7 @@ def test_kv_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_
 
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
+        assert mock_groundtruth_indexer.docs[doc.id] == doc.SerializeToString()
 
 
 def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_update,
@@ -104,7 +104,7 @@ def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driv
 
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(updated_documents[:3] + documents[3:5]):
-        assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
+        assert mock_groundtruth_indexer.docs[doc.id] == doc.SerializeToString()
 
 
 def test_kv_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_delete,
@@ -117,7 +117,7 @@ def test_kv_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_driv
 
     assert len(mock_groundtruth_indexer.docs) == 2
     for idx, doc in enumerate(documents[3:5]):
-        assert mock_groundtruth_indexer.docs[int(doc.id)] == doc.SerializeToString()
+        assert mock_groundtruth_indexer.docs[doc.id] == doc.SerializeToString()
 
     for idx, doc in enumerate(deleted_documents[:3]):
-        assert int(doc.id) not in mock_groundtruth_indexer.docs
+        assert doc.id not in mock_groundtruth_indexer.docs

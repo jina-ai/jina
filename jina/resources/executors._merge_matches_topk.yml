@@ -4,10 +4,15 @@ metas:
   name: merge_matches_topk
 requests:
   on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+    [SearchRequest, TrainRequest, IndexRequest]:
       - !ReduceAllDriver
         with:
           traversal_paths: ['m']
+      - !SortQL
+        with:
+          reverse: False
+          traversal_paths: ['m']
+          field: 'score__value'
       - !SliceQL
         with:
           start: 0
@@ -15,3 +20,5 @@ requests:
           traversal_paths: ['m']
     ControlRequest:
       - !ControlReqDriver {}
+    [DeleteRequest, UpdateRequest]:
+      - !RouteDriver {}

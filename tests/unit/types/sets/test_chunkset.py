@@ -1,6 +1,6 @@
 import pytest
-from jina import Request
 
+from jina import Request
 from jina.types.document import Document
 from jina.types.sets.chunk import ChunkSet
 
@@ -32,7 +32,7 @@ def chunks(document_factory):
         document_factory.create(2, 'test 1'),
         document_factory.create(3, 'test 3')
     ])
-    return req.as_pb_object.index.docs
+    return req.proto.index.docs
 
 
 @pytest.fixture
@@ -49,3 +49,11 @@ def test_append_from_documents(chunkset, document_factory, reference_doc):
     assert rv.parent_id == reference_doc.id
     assert rv.granularity == reference_doc.granularity + 1
     assert rv.mime_type == 'text/plain'
+
+
+def test_doc_chunks_init():
+    d = Document(chunks=[Document()], matches=[Document()])
+    assert d.chunks[0].granularity == 1
+    assert d.chunks[0].adjacency == 0
+    assert d.matches[0].adjacency == 1
+    assert d.matches[0].granularity == 0

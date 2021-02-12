@@ -16,3 +16,4 @@ class ControlMessage(Message):
         else:
             raise ValueError(f'command "{command}" is not supported, must be one of {_available_commands}')
         super().__init__(None, req, pod_name=pod_name, identity=identity, *args, **kwargs)
+        req.request_type = 'control'

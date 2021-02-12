@@ -2,10 +2,6 @@ name: CI
 
 on:
   pull_request_target:
-#    paths-ignore:
-#      - 'README.md'
-#      - '.all-contributorsrc'
-#      - 'docs/*'
 
 jobs:
   latency-tracking:

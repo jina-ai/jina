@@ -4,8 +4,7 @@ from typing import Sequence
 import pytest
 
 from jina import Request, QueryLang, Document
-from jina.clients.request import _generate
-from jina.drivers.querylang.slice import SliceQL
+from jina.clients.request import request_generator
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto
 from jina.types.message import Message
@@ -15,7 +14,7 @@ from tests import random_docs
 
 @pytest.mark.parametrize('field', _trigger_fields.difference({'command', 'args', 'flush'}))
 def test_lazy_access(field):
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert not r.is_used
 
@@ -27,7 +26,7 @@ def test_lazy_access(field):
 
 
 def test_multiple_access():
-    reqs = [Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10))]
+    reqs = [Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10))]
     for r in reqs:
         assert not r.is_used
         assert r
@@ -40,7 +39,7 @@ def test_multiple_access():
 
 
 def test_lazy_nest_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -51,7 +50,7 @@ def test_lazy_nest_access():
 
 
 def test_lazy_change_message_type():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -62,9 +61,10 @@ def test_lazy_change_message_type():
 
 
 def test_lazy_append_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert not r.is_used
+        r.request_type = 'index'
         # write access r.train
         r.docs.append(Document())
         # now it is read
@@ -72,7 +72,7 @@ def test_lazy_append_access():
 
 
 def test_lazy_clear_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -82,7 +82,7 @@ def test_lazy_clear_access():
 
 
 def test_lazy_nested_clear_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -93,7 +93,7 @@ def test_lazy_nested_clear_access():
 
 def test_lazy_msg_access():
     reqs = [Message(None, r.SerializeToString(), 'test', '123',
-                    request_id='123', request_type='IndexRequest') for r in _generate(random_docs(10))]
+                    request_id='123', request_type='IndexRequest') for r in request_generator(random_docs(10))]
     for r in reqs:
         assert not r.request.is_used
         assert r.envelope
@@ -114,7 +114,7 @@ def test_lazy_msg_access():
 
 
 def test_message_size():
-    reqs = [Message(None, r, 'test', '123') for r in _generate(random_docs(10))]
+    reqs = [Message(None, r, 'test', '123') for r in request_generator(random_docs(10))]
     for r in reqs:
         assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())
@@ -125,14 +125,14 @@ def test_message_size():
 
 
 def test_lazy_request_fields():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in _generate(random_docs(10)))
+    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())
 
 
 def test_request_extend_queryset():
-    q1 = SliceQL(start=3, end=4)
-    q2 = QueryLang(SliceQL(start=3, end=4, priority=1))
+    q1 = {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}}
+    q2 = QueryLang({'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}, 'priority': 1})
     q3 = jina_pb2.QueryLangProto()
     q3.name = 'SliceQL'
     q3.parameters['start'] = 3
@@ -141,6 +141,7 @@ def test_request_extend_queryset():
     r = Request()
     r.queryset.extend([q1, q2, q3])
     assert isinstance(r.queryset, Sequence)
+    assert len(r.queryset) == 3
     for idx, q in enumerate(r.queryset):
         assert q.priority == idx
         assert q.parameters['start'] == 3
@@ -179,6 +180,7 @@ def test_empty_request_type(typ, pb_typ):
     r.request_type = typ
     assert r._request_type == typ
     assert isinstance(r.body, pb_typ)
+
 
 @pytest.mark.parametrize('typ,pb_typ', [('index', jina_pb2.RequestProto.IndexRequestProto),
                                         ('search', jina_pb2.RequestProto.SearchRequestProto)])

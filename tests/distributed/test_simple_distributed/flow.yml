@@ -1,21 +1,20 @@
 !Flow
+version: '1'
 with:
   read_only: true
   rest_api: true
   port_expose: $JINA_GATEWAY_REST_PORT
 pods:
-  encoder:
+  - name: encoder
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: encode.yml
     host: $JINA_ENCODER_HOST
     port_expose: 8000
-    show_exc_info: true
     upload_files:
       - dummy-encoder.py
-  indexer:
+  - name: indexer
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     uses: index.yml
     read_only: False
     host: $JINA_INDEXER_HOST
     port_expose: 8000
-    show_exc_info: true

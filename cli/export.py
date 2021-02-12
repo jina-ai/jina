@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import argparse
 import os
+from typing import List
 
 
 def api_to_dict():
@@ -66,7 +67,9 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
                     ddd['default_factory'] = random_port.__name__
             else:
                 ddd['default_random'] = False
+            if ddd['type'] == str and (a.nargs == '*' or a.nargs == '+'):
+                ddd['type'] = List[str]
             if type_as_str:
-                ddd['type'] = ddd['type'].__name__
+                ddd['type'] = getattr(ddd['type'], '__name__', str(ddd['type']))
             ddd['name'] = ddd.pop('dest')
             yield ddd

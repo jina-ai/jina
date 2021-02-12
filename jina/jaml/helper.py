@@ -1,4 +1,5 @@
 import collections
+import json
 import os
 from typing import Union, TextIO, Dict, Tuple, Optional
 
@@ -10,8 +11,8 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
-import json
 from jina.excepts import BadConfigSource
+from jina.helper import is_yaml_filepath
 from jina.importer import PathImporter
 
 
@@ -86,8 +87,20 @@ def parse_config_source(path: Union[str, TextIO, Dict],
                         allow_dict: bool = True,
                         allow_json: bool = True,
                         *args, **kwargs) -> Tuple[TextIO, Optional[str]]:
-    """ Check if the text or text stream is valid
+    """Check if the text or text stream is valid.
 
+    # noqa: DAR401
+    :param path: the multi-kind source of the configs.
+    :param allow_stream: flag
+    :param allow_yaml_file: flag
+    :param allow_builtin_resource: flag
+    :param allow_raw_yaml_content: flag
+    :param allow_raw_driver_yaml_content: flag
+    :param allow_class_type: flag
+    :param allow_dict: flag
+    :param allow_json: flag
+    :param *args: *args
+    :param **kwargs: **kwargs
     :return: a tuple, the first element is the text stream, the second element is the file path associate to it
             if available.
     """
@@ -102,22 +115,23 @@ def parse_config_source(path: Union[str, TextIO, Dict],
     elif allow_stream and hasattr(path, 'read'):
         # already a readable stream
         return path, None
-    elif allow_yaml_file and (path.endswith('.yml') or path.endswith('.yaml')):
+    elif allow_yaml_file and is_yaml_filepath(path):
         comp_path = complete_path(path)
         return open(comp_path, encoding='utf8'), comp_path
-    elif allow_builtin_resource and path.startswith('_') and os.path.exists(
+    elif allow_builtin_resource and path.lstrip().startswith('_') and os.path.exists(
             resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))):
         # NOTE: this returns a binary stream
         comp_path = resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
         return open(comp_path, encoding='utf8'), comp_path
-    elif allow_raw_yaml_content and path.startswith('!'):
+    elif allow_raw_yaml_content and path.lstrip().startswith('!'):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
         return io.StringIO(path), None
-    elif allow_raw_driver_yaml_content and path.startswith('- !'):
+    elif allow_raw_driver_yaml_content and path.lstrip().startswith('- !'):
         # possible driver YAML content, right now it is only used for debugging
         with open(resource_filename('jina', '/'.join(
-                ('resources', 'executors.base.all.yml' if path.startswith('- !!') else 'executors.base.yml')))) as fp:
+                ('resources',
+                 'executors.base.all.yml' if path.lstrip().startswith('- !!') else 'executors.base.yml')))) as fp:
             _defaults = fp.read()
         path = path.replace('- !!', '- !').replace('|', '\n        with: ')  # for indent, I know, its nasty
         path = _defaults.replace('*', path)
@@ -132,7 +146,7 @@ def parse_config_source(path: Union[str, TextIO, Dict],
             tmp = JAML.dump(tmp)
             return io.StringIO(tmp), None
         except json.JSONDecodeError:
-            raise BadConfigSource
+            raise BadConfigSource(path)
     else:
         raise BadConfigSource(f'{path} can not be resolved, it should be a readable stream,'
                               ' or a valid file path, or a supported class name.')
@@ -153,6 +167,10 @@ def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) ->
 
 def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None):
     """searches in all dirs of the PATH environment variable and all dirs of files used in the call stack.
+
+    :param path: the path to search for
+    :param extra_search_paths: any extra locations to search for
+    :return: the path (if found)
     """
     import inspect
     search_paths = []
@@ -175,14 +193,18 @@ def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None)
 
 
 def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) -> None:
-    """Find 'py_modules' in the dict recursively and then load them """
+    """Find 'py_modules' in the dict recursively and then load them
+
+    :param d: the dictionary to traverse
+    :param extra_search_paths: any extra paths to search
+    """
     mod = []
 
     def _finditem(obj, key='py_modules'):
         value = obj.get(key, [])
         if isinstance(value, str):
             mod.append(value)
-        elif isinstance(value, list) or isinstance(value, tuple):
+        elif isinstance(value, (list, tuple)):
             mod.extend(value)
         for k, v in obj.items():
             if isinstance(v, dict):

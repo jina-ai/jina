@@ -1,11 +1,11 @@
 import os
-import uuid
 
 import numpy as np
 import pytest
 
-from jina import Flow
-from jina.enums import SocketType
+from jina import Flow, Document
+from jina.enums import SocketType, FlowBuildLevel
+from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
@@ -93,9 +93,11 @@ def test_simple_flow(restful):
         f.index(input_fn=bytes_fn)
         f.index(input_fn=bytes_fn)
 
-    node = f._pod_nodes['gateway']
-    assert node.head_args.socket_in == SocketType.PULL_CONNECT
-    assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+        node = f._pod_nodes['gateway']
+        assert node.head_args.socket_in == SocketType.PULL_CONNECT
+        assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
+
+    assert 'gateway' not in f
 
     node = f._pod_nodes['pod0']
     assert node.head_args.socket_in == SocketType.PULL_BIND
@@ -168,8 +170,7 @@ def test_flow_no_container(restful):
 
 
 def test_shards():
-    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3,
-                   separated_workspace=True)
+    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3)
     with f:
         f.index(input_fn=random_docs(1000), random_doc_id=False)
     with f:
@@ -349,7 +350,7 @@ def test_refactor_num_part_proxy_2(restful):
          .needs(['r2', 'r3']))
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'])
+        f.index(['abbcs', 'efgh'])
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -358,13 +359,13 @@ def test_refactor_num_part_2(restful):
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3, polling='ALL'))
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'])
+        f.index(['abbcs', 'efgh'])
 
     f = (Flow(restful=restful)
          .add(name='r1', uses='_logforward', needs='gateway', parallel=3))
 
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'])
+        f.index(['abbcs', 'efgh'])
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -380,7 +381,7 @@ def test_index_text_files(mocker, restful):
          .add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
 
     with f:
-        f.index_files('*.py', on_done=response_mock, callback_on='body')
+        f.index_files('*.py', on_done=response_mock)
 
     rm_files(['doc.gzip'])
     response_mock.assert_called()
@@ -401,7 +402,7 @@ def test_flow_with_publish_driver(mocker, restful):
          .join(needs=['r2', 'r3']))
 
     with f:
-        f.index_lines(lines=['text_1', 'text_2'], on_done=response_mock)
+        f.index(['text_1', 'text_2'], on_done=response_mock)
 
     response_mock.assert_called()
 
@@ -454,7 +455,7 @@ def test_flow_arbitrary_needs(restful):
          .needs(['r2', 'r3'], name='r4'))
 
     with f:
-        f.index_lines(['abc', 'def'])
+        f.index(['abc', 'def'])
 
 
 @pytest.mark.parametrize('restful', [False])
@@ -545,8 +546,7 @@ def test_flow_host_expose_shortcut(input, expect_host, expect_port):
 def test_flow_workspace_id():
     f = Flow().add().add().add().build()
     assert len(f.workspace_id) == 3
-    assert len(set(f.workspace_id.values())) == 1
-    assert not list(f.workspace_id.values())[0]
+    assert len(set(f.workspace_id.values())) == 3
 
     with pytest.raises(ValueError):
         f.workspace_id = 'hello'
@@ -557,3 +557,107 @@ def test_flow_workspace_id():
     assert list(f.workspace_id.values())[0] == new_id
 
 
+def test_flow_identity():
+    f = Flow().add().add().add().build()
+    assert len(f.identity) == 4
+    assert len(set(f.identity.values())) == 4
+
+    with pytest.raises(ValueError):
+        f.identity = 'hello'
+
+    new_id = random_identity()
+    f.identity = new_id
+    assert len(set(f.identity.values())) == 1
+    assert list(f.identity.values())[0] == new_id
+    assert f.args.identity == new_id
+
+
+def test_flow_identity_override():
+    f = Flow().add().add(parallel=2).add(parallel=2)
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == f.num_pods
+
+    f = Flow(identity='123456').add().add(parallel=2).add(parallel=2)
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == 1
+
+    y = '''
+!Flow
+version: '1.0'
+pods:
+    - uses: _pass
+    - uses: _pass
+      parallel: 3
+    '''
+
+    f = Flow.load_config(y)
+    for _, p in f:
+        p.args.identity = '1234'
+
+    with f:
+        assert len(set(p.args.identity for _, p in f)) == 2
+        for _, p in f:
+            if p.args.identity != '1234':
+                assert p.name == 'gateway'
+
+
+def test_bad_pod_graceful_termination():
+    def asset_bad_flow(f):
+        with pytest.raises(RuntimeFailToStart):
+            with f:
+                assert f._build_level == FlowBuildLevel.EMPTY
+
+    # bad remote pod
+    asset_bad_flow(Flow().add(host='hello-there'))
+
+    # bad local pod
+    asset_bad_flow(Flow().add(uses='hello-there'))
+
+    # bad local pod at second
+    asset_bad_flow(Flow().add().add(uses='hello-there'))
+
+    # bad remote pod at second
+    asset_bad_flow(Flow().add().add(host='hello-there'))
+
+    # bad local pod at second, with correct pod at last
+    asset_bad_flow(Flow().add().add(uses='hello-there').add())
+
+    # bad remote pod at second, with correct pod at last
+    asset_bad_flow(Flow().add().add(host='hello-there').add())
+
+
+def test_socket_types_2_remote_one_local():
+    f = Flow().add(name='pod1', host='0.0.0.1'). \
+        add(name='pod2', parallel=2, host='0.0.0.2'). \
+        add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway']). \
+        join(name='join', needs=['pod2', 'pod3'])
+
+    f.build()
+
+    assert f._pod_nodes['join'].head_args.socket_in == SocketType.PULL_BIND
+    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.PUSH_CONNECT
+    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.PUSH_CONNECT
+
+
+def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote():
+    f = Flow().add(name='pod1', host='0.0.0.1'). \
+        add(name='pod2', parallel=2, host='0.0.0.2'). \
+        add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway']). \
+        join(name='join', needs=['pod2', 'pod3'])
+
+    f.build()
+    for k, v in f:
+        print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
+
+    assert f._pod_nodes['join'].head_args.socket_in == SocketType.PULL_BIND
+    assert f._pod_nodes['pod2'].tail_args.socket_out == SocketType.PUSH_CONNECT
+    assert f._pod_nodes['pod3'].tail_args.socket_out == SocketType.PUSH_CONNECT
+
+
+def test_single_document_flow_index():
+    d = Document()
+    with Flow().add() as f:
+        f.index(d)
+        f.index(lambda: d)

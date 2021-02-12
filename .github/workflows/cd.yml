@@ -41,7 +41,6 @@ jobs:
           python-version: 3.7
       - run: |
           pip install .[daemon] --no-cache-dir
-          jina check --summary-exec ./docs/chapters/all_exec.md --summary-driver ./docs/chapters/all_driver.md
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
           pip install css-html-js-minify
@@ -52,35 +51,29 @@ jobs:
           cd schema
           jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
+          python ../scripts/get-gateway-openapi.py
           cd -
       - name: redoc-cli-jinad
         uses: seeebiii/redoc-cli-github-action@v10
         with:
           args: 'bundle schema/daemon.json -o jinad.html'
+      - name: redoc-cli-gateway
+        uses: seeebiii/redoc-cli-github-action@v10
+        with:
+          args: 'bundle schema/gateway.json -o rest.html'
       - name: push-to-api-repo
         run: |
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/master.html
           rm schema/daemon.json
           rm -rf schema/jinad
+          mkdir -p schema/rest/
+          cp rest.html schema/rest/master.html
+          rm schema/gateway.json
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/jina-docs
-          path: docs/_build/html
-          token: ${{ secrets.JINA_DEV_BOT }}
-      - run: |
-          ./scripts/make-doc.sh commit "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
-      - uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/jina-docs
-          directory: docs/_build/html
-          force: true
-          branch: master
       - name: Pre-release
         run: |
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
@@ -90,6 +83,13 @@ jobs:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
+      # Tell docs repo jina is going to release
+      - name: send-repository-dispatch-event-to-docs
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          repository: jina-ai/docs
+          event-type: jina-merge-event
 
   update-docker:
     needs: update-doc
@@ -98,7 +98,7 @@ jobs:
       fail-fast: false
       matrix:
         tag_stage: ["", "-devel", "-daemon"]
-        tag_pyversion: ["-py37", "-py38"]
+        tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -111,6 +111,8 @@ jobs:
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
+            echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
             echo "TAG_ALIAS=jinaai/jina:master${{ matrix.tag_stage }}" >> $GITHUB_ENV
@@ -197,13 +199,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
-          export JINA_LOG_VERBOSITY="ERROR"
+          export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
-        timeout-minutes: 20
+          if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
+            docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
+            docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            docker rm -f jinad
+          else
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          fi
+        timeout-minutes: 15
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}

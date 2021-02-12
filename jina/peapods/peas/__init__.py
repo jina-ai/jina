@@ -4,7 +4,7 @@ from typing import Type
 
 from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__, __default_host__
-from ...enums import PeaRoleType, RuntimeBackendType, RemoteAccessType
+from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -45,9 +45,9 @@ class BasePea(metaclass=PeaType):
             self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}' +
-                              f'add "--show-exc-info" to see the exception stack in details'
-                              if not self.args.show_exc_info else '',
-                              exc_info=self.args.show_exc_info)
+                              f'\n add "--hide-exc-info" to suppress the exception details'
+                              if not self.args.hide_exc_info else '',
+                              exc_info=not self.args.hide_exc_info)
             raise RuntimeFailToStart from ex
 
     def run(self):
@@ -66,9 +66,9 @@ class BasePea(metaclass=PeaType):
             self.runtime.setup()
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime.setup!r}' +
-                              f'add "--show-exc-info" to see the exception stack in details'
-                              if not self.args.show_exc_info else '',
-                              exc_info=self.args.show_exc_info)
+                              f'\n add "--hide-exc-info" to suppress the exception details'
+                              if not self.args.hide_exc_info else '',
+                              exc_info=not self.args.hide_exc_info)
         else:
             self.is_ready.set()
             try:
@@ -79,17 +79,17 @@ class BasePea(metaclass=PeaType):
                 self.logger.info(f'{self.runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
 
             try:
                 self.runtime.teardown()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.teardown!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
         finally:
             self.is_shutdown.set()
             self.is_ready.clear()
@@ -102,29 +102,43 @@ class BasePea(metaclass=PeaType):
         """
 
         super().start()  #: required here to call process/thread method
+        if not self.args.noblock_on_start:
+            self.wait_start_success()
+
+        return self
+
+    def wait_start_success(self):
+        """Block until all peas starts successfully.
+
+        If not success, it will raise an error hoping the outer function to catch it
+        """
         _timeout = self.args.timeout_ready
         if _timeout <= 0:
             _timeout = None
         else:
             _timeout /= 1e3
-
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
-                                     f'add "--show-exc-info" to see the exception stack in details')
+                if self.args.hide_exc_info:
+                    self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
+                                         f'remove "--hide-exc-info" to see the exception stack in details')
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
         else:
+            self.logger.warning(f'{self.runtime!r} timeout after waiting for {self.args.timeout_ready}ms, '
+                                f'if your executor takes time to load, you may increase --timeout-ready')
             self.close()
             raise TimeoutError(
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')
 
-        return self
-
     def close(self) -> None:
-        # wait 1s for the process/thread to end naturally, in this case no "cancel" is required this is required for
+        """ Close the Pea
+
+        This method makes sure that the `Process/thread` is properly finished and its resources properly released
+        """
+        # wait 0.1s for the process/thread to end naturally, in this case no "cancel" is required this is required for
         # the is case where in subprocess, runtime.setup() fails and _finally() is not yet executed, BUT close() in the
         # main process is calling runtime.cancel(), which is completely unnecessary as runtime.run_forever() is not
         # started yet.
@@ -137,9 +151,9 @@ class BasePea(metaclass=PeaType):
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.cancel!r}' +
-                                  f'add "--show-exc-info" to see the exception stack in details'
-                                  if not self.args.show_exc_info else '',
-                                  exc_info=self.args.show_exc_info)
+                                  f'\n add "--hide-exc-info" to suppress the exception details'
+                                  if not self.args.hide_exc_info else '',
+                                  exc_info=not self.args.hide_exc_info)
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
@@ -180,11 +194,7 @@ class BasePea(metaclass=PeaType):
         v = self.runtime_cls
         if not self.runtime_cls:
             if self.args.host != __default_host__:
-                if self.args.remote_manager == RemoteAccessType.JINAD:
-                    self.args.runtime_cls = 'JinadRuntime'
-                elif self.args.remote_manager == RemoteAccessType.SSH:
-                    self.args.runtime_cls = 'SSHRuntime'
-
+                self.args.runtime_cls = 'JinadRuntime'
             if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith('docker://'):
                 self.args.runtime_cls = 'ContainerRuntime'
 

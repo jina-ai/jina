@@ -12,8 +12,7 @@ def get_index_flow():
     f = Flow() \
         .add(
         uses='vectorindexer.yml',
-        shards=num_shards,
-        separated_workspace=True,
+        shards=num_shards
     )
     return f
 
@@ -24,7 +23,6 @@ def get_search_flow():
         .add(
         uses='vectorindexer.yml',
         shards=num_shards,
-        separated_workspace=True,
         uses_after='_merge_matches',
         polling='all',
         timeout_ready='-1'

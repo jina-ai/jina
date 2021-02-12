@@ -47,7 +47,7 @@ async def _create(pea: 'PeaModel'):
 # order matters! this must be put in front of del {id}
 #  https://fastapi.tiangolo.com/tutorial/path-params/?h=+path#order-matters
 @router.delete(
-    path='/all',
+    path='',
     summary='Terminate all running Peas',
 )
 async def _clear_all():
@@ -59,9 +59,12 @@ async def _clear_all():
     summary='Terminate a running Pea',
     description='Terminate a running Pea and release its resources'
 )
-async def _delete(id: uuid.UUID):
+async def _delete(
+        id: uuid.UUID,
+        workspace: bool = False
+):
     try:
-        del store[id]
+        store.delete(id=id, workspace=workspace)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 

@@ -1,18 +1,19 @@
 import os
+import sys
 
 import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToJson, MessageToDict
 
 from jina import Document, Flow
-from jina.clients.request import _generate, _build_doc
+from jina.clients.request import request_generator
+from jina.clients.request.helper import _new_doc_from_data
 from jina.enums import DataInputType
 from jina.excepts import BadDocType
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
-import sys
 
 @pytest.mark.skipif(sys.version_info < (3, 8, 0), reason='somehow this does not work on Github workflow with Py3.7, '
                                                          'but Py 3.8 is fine, local Py3.7 is fine')
@@ -30,7 +31,7 @@ def test_on_bad_iterator():
 def test_data_type_builder_doc(builder):
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
-    d, t = _build_doc(builder(a), DataInputType.DOCUMENT)
+    d, t = _new_doc_from_data(builder(a), DataInputType.DOCUMENT)
     assert d.id == a.id
     assert t == DataInputType.DOCUMENT
 
@@ -39,13 +40,10 @@ def test_data_type_builder_doc_bad():
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
     with pytest.raises(BadDocType):
-        _build_doc(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT)
+        _new_doc_from_data(b'BREAKIT!' + a.SerializeToString(), DataInputType.DOCUMENT)
 
     with pytest.raises(BadDocType):
-        _build_doc(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
-
-    with pytest.raises(BadDocType):
-        _build_doc({'🍔': '🍔'}, DataInputType.DOCUMENT)
+        _new_doc_from_data(MessageToJson(a) + '🍔', DataInputType.DOCUMENT)
 
 
 @pytest.mark.parametrize('input_type', [DataInputType.AUTO, DataInputType.CONTENT])
@@ -54,20 +52,20 @@ def test_data_type_builder_auto(input_type):
         print(f'quant is on: {os.environ["JINA_ARRAY_QUANT"]}')
         del os.environ['JINA_ARRAY_QUANT']
 
-    d, t = _build_doc('123', input_type)
+    d, t = _new_doc_from_data('123', input_type)
     assert d.text == '123'
     assert t == DataInputType.CONTENT
 
-    d, t = _build_doc(b'45678', input_type)
+    d, t = _new_doc_from_data(b'45678', input_type)
     assert t == DataInputType.CONTENT
     assert d.buffer == b'45678'
 
-    d, t = _build_doc(b'123', input_type)
+    d, t = _new_doc_from_data(b'123', input_type)
     assert t == DataInputType.CONTENT
     assert d.buffer == b'123'
 
     c = np.random.random([10, 10])
-    d, t = _build_doc(c, input_type)
+    d, t = _new_doc_from_data(c, input_type)
     np.testing.assert_equal(d.blob, c)
     assert t == DataInputType.CONTENT
 
@@ -77,7 +75,7 @@ def test_request_generate_lines():
         for j in range(1, num_lines + 1):
             yield f'i\'m dummy doc {j}'
 
-    req = _generate(data=random_lines(100), request_size=100)
+    req = request_generator(data=random_lines(100), request_size=100)
 
     request = next(req)
     assert len(request.index.docs) == 100
@@ -91,7 +89,7 @@ def test_request_generate_lines_from_list():
     def random_lines(num_lines):
         return [f'i\'m dummy doc {j}' for j in range(1, num_lines + 1)]
 
-    req = _generate(data=random_lines(100), request_size=100)
+    req = request_generator(data=random_lines(100), request_size=100)
 
     request = next(req)
     assert len(request.index.docs) == 100
@@ -106,7 +104,7 @@ def test_request_generate_lines_with_fake_url():
         for j in range(1, num_lines + 1):
             yield f'https://github.com i\'m dummy doc {j}'
 
-    req = _generate(data=random_lines(100), request_size=100)
+    req = request_generator(data=random_lines(100), request_size=100)
 
     request = next(req)
     assert len(request.index.docs) == 100
@@ -121,7 +119,7 @@ def test_request_generate_bytes():
         for j in range(1, num_lines + 1):
             yield f'i\'m dummy doc {j}'
 
-    req = _generate(data=random_lines(100), request_size=100)
+    req = request_generator(data=random_lines(100), request_size=100)
 
     request = next(req)
     assert len(request.index.docs) == 100
@@ -141,7 +139,7 @@ def test_request_generate_docs():
             doc.mime_type = 'mime_type'
             yield doc
 
-    req = _generate(data=random_docs(100), request_size=100)
+    req = request_generator(data=random_docs(100), request_size=100)
 
     request = next(req)
     assert len(request.index.docs) == 100
@@ -174,7 +172,7 @@ def test_request_generate_dict():
             }
             yield doc
 
-    req = _generate(data=random_docs(100), request_size=100)
+    req = request_generator(data=random_docs(100), request_size=100)
 
     request = next(req)
     assert len(request.index.docs) == 100
@@ -213,7 +211,7 @@ def test_request_generate_dict_str():
             }
             yield json.dumps(doc)
 
-    req = _generate(data=random_docs(100), request_size=100)
+    req = request_generator(data=random_docs(100), request_size=100)
 
     request = next(req)
     assert len(request.index.docs) == 100
@@ -231,7 +229,7 @@ def test_request_generate_dict_str():
 def test_request_generate_numpy_arrays():
     input_array = np.random.random([10, 10])
 
-    req = _generate(data=input_array, request_size=5)
+    req = request_generator(data=input_array, request_size=5)
 
     request = next(req)
     assert len(request.index.docs) == 5
@@ -253,7 +251,7 @@ def test_request_generate_numpy_arrays_iterator():
         for array in input_array:
             yield array
 
-    req = _generate(data=generator(), request_size=5)
+    req = request_generator(data=generator(), request_size=5)
 
     request = next(req)
     assert len(request.index.docs) == 5

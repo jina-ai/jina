@@ -45,14 +45,14 @@ def dunderkey(*args: str) -> str:
        >>> dunderkey('a', 'b', 'c')
        >>> 'a__b__c'
 
-    :param *args : *String
-    :rtype       : String
+    :param *args: the multiple strings
+    :returns: the joined key
     """
     return '__'.join(args)
 
 
 def dunder_partition(key: str) -> Tuple[str, Optional[str]]:
-    """Splits a dunderkey into 2 parts
+    """Split a dunderkey into 2 parts.
 
     The first part is everything before the final double underscore
     The second part is after the final double underscore
@@ -60,8 +60,8 @@ def dunder_partition(key: str) -> Tuple[str, Optional[str]]:
         >>> dunder_partition('a__b__c')
         >>> ('a__b', 'c')
 
-    :param neskey : String
-    :rtype        : 2 Tuple
+    :param key : the dunder string
+    :return: the two parts
 
     """
     part1: str
@@ -79,8 +79,8 @@ def dunder_init(key: str) -> str:
         >>> dunder_init('a__b__c')
         >>> 'a__b'
 
-    :param neskey : String
-    :rtype        : String
+    :param key : the dunder string
+    :return: the first part (None if invalid dunder str)
     """
     return dunder_partition(key)[0]
 
@@ -91,8 +91,8 @@ def dunder_last(key: str) -> Optional[str]:
         >>> dunder_last('a__b__c')
         >>> 'c'
 
-    :param neskey : String
-    :rtype        : Optional String
+    :param key : the dunder string
+    :return: the last part (None if invalid dunder string)
     """
     return dunder_partition(key)[1]
 
@@ -112,7 +112,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     :param _dict : (dict, list, struct or object) which we want to index into
     :param key   : (str) that represents a first level or nested key in the dict
-    :rtype       : (mixed) value corresponding to the key
+    :return: (mixed) value corresponding to the key
 
     """
 
@@ -128,7 +128,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     if isinstance(part1, int):
         result = guard_iter(_dict)[part1]
-    elif isinstance(_dict, dict) or isinstance(_dict, Struct):
+    elif isinstance(_dict, (dict, Struct)):
         if part1 in _dict:
             result = _dict[part1]
         else:
@@ -148,7 +148,7 @@ def undunder_keys(_dict: Dict) -> Dict:
         {'a': 'hello', 'b': {'c': 'world'}}
 
     :param _dict : (dict) flat dict
-    :rtype       : (dict) nested dict
+    :return: (dict) nested dict
 
     """
 
@@ -185,7 +185,7 @@ def dunder_truncate(_dict: Dict) -> Dict:
         {'a__p': 'yay', 'b__p': 'no', 'z': 'dunno'}
 
     :param _dict : (dict) to flatten
-    :rtype       : (dict) flattened result
+    :return: (dict) flattened result
 
     """
     keylist = list(_dict.keys())

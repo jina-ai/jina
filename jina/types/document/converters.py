@@ -22,9 +22,9 @@ def png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
 
     def png_pack(png_tag, data):
         chunk_head = png_tag + data
-        return (struct.pack('!I', len(data)) +
-                chunk_head +
-                struct.pack('!I', 0xFFFFFFFF & zlib.crc32(chunk_head)))
+        return (struct.pack('!I', len(data))
+                + chunk_head
+                + struct.pack('!I', 0xFFFFFFFF & zlib.crc32(chunk_head)))
 
     png_bytes = b''.join([
         b'\x89PNG\r\n\x1a\n',
@@ -62,6 +62,15 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
         raise ValueError(f'ndim={len(arr.shape)} array is not supported')
 
     return png_bytes
+
+
+def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
+    from PIL import Image
+    raw_img = Image.open(source).convert('RGB')
+    img = np.array(raw_img).astype('float32')
+    if color_axis != -1:
+        img = np.moveaxis(img, -1, color_axis)
+    return img
 
 
 def to_datauri(mimetype, data, charset: str = 'utf-8', base64: bool = False, binary: bool = True):

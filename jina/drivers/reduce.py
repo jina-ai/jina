@@ -29,6 +29,14 @@ class ReduceAllDriver(BaseRecursiveDriver):
         self._traverse_apply(self.docs, *args, **kwargs)
         self.doc_pointers.clear()
 
+    def _apply_root(self, docs: 'DocumentSet', field: str, *args, **kwargs):
+        docs = []
+        for doc in self.docs:
+            docs.append(doc)
+        request = self.msg.request
+        request.body.ClearField(field)
+        request.docs.extend(docs)
+
     def _apply_all(
             self,
             docs: 'DocumentSet',
@@ -36,6 +44,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
             field: str,
             *args,
             **kwargs) -> None:
+
         if context_doc.id not in self.doc_pointers:
             self.doc_pointers[context_doc.id] = context_doc
         else:

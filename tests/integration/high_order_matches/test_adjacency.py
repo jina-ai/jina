@@ -10,7 +10,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 # def test_high_order_matches():
-#     f = Flow(callback_on='body').add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
+#     f = Flow().add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
 #
 #     with f:
 #         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
@@ -31,7 +31,7 @@ def test_high_order_matches_integrated(mocker, restful):
 
     response_mock = mocker.Mock(wrap=validate)
     # this is equivalent to the last test but with simplified YAML spec.
-    f = Flow(restful=restful, callback_on='body').add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
+    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
 
     with f:
         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))

@@ -4,7 +4,7 @@ import copy
 import json
 from argparse import Namespace
 from contextlib import ExitStack
-from typing import Tuple, List, Optional, Sequence, BinaryIO, Dict
+from typing import Optional, Sequence, Dict
 
 from pkg_resources import resource_filename
 
@@ -26,8 +26,8 @@ class DaemonClient:
         """
         :param host: the host address of ``jinad`` instance
         :param port: the port number of ``jinad`` instance
-        :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
         :param logger:
+        :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
         """
         self.logger = logger or JinaLogger(host)
         self.timeout = timeout
@@ -64,6 +64,15 @@ class DaemonClient:
             return False
 
     def get_status(self, identity: str) -> Dict:
+        """ Get status of the remote Pea / Pod
+
+        :param identity: UUID string based identity for the Pea
+        :type identity: str
+        :raises requests.exceptions.RequestException:
+        :return: json response of the remote Pea / Pod status
+        :rtype: Dict
+        """
+
         with ImportExtensions(required=True):
             import requests
 
@@ -76,10 +85,16 @@ class DaemonClient:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')
 
-    def upload(self, dependencies: Sequence[str]) -> str:
+    def upload(self, dependencies: Sequence[str], workspace_id: str = None) -> str:
         """ Upload local file dependencies to remote server by extracting from the pea_args
-        :param args: the arguments in dict that pea can accept
-        :return: the workspace id
+
+        :param dependencies: file dependencies
+        :type dependencies: Sequence[str]
+        :param workspace_id: Workspace to which the files will get uploaded, defaults to None
+        :type workspace_id: str, optional
+        :raises requests.exceptions.RequestException:
+        :return: json response for upload
+        :rtype: str
         """
         import requests
 
@@ -90,7 +105,10 @@ class DaemonClient:
             if files:
                 try:
                     self.logger.info(f'uploading {len(files)} file(s): {dependencies}')
-                    r = requests.post(url=self.upload_api, files=files, timeout=self.timeout)
+                    r = requests.post(url=self.upload_api,
+                                      files=files,
+                                      data={'workspace_id': workspace_id} if workspace_id else None,
+                                      timeout=self.timeout)
                     rj = r.json()
                     if r.status_code == 201:
                         return rj
@@ -100,17 +118,24 @@ class DaemonClient:
                     self.logger.error(f'fail to upload as {ex!r}')
 
     def create(self, args: 'Namespace') -> Optional[str]:
-        """ Create a remote pea/pod
-        :param args: the arguments in dict that pea can accept.
-                     (convert argparse.Namespace to Dict before passing to this method)
-        :return: the identity of the spawned pea/pod
+        """ Create a remote Pea / Pod
+
+        :param args: the arguments for remote Pea
+        :type args: Namespace
+        :raises requests.exceptions.RequestException:
+        :return: the identity of the spawned Pea / Pod
+        :rtype: Optional[str]
         """
+
         with ImportExtensions(required=True):
             import requests
 
         try:
             payload = replace_enum_to_str(vars(self._mask_args(args)))
-            r = requests.post(url=self.store_api, json=payload, timeout=self.timeout)
+            # set timeout to None if args.timeout_ready is -1 (wait forever)
+            r = requests.post(url=self.store_api,
+                              json=payload,
+                              timeout=args.timeout_ready if args.timeout_ready != -1 else None)
             rj = r.json()
             if r.status_code == 201:
                 return rj
@@ -125,11 +150,12 @@ class DaemonClient:
             self.logger.error(f'fail to create as {ex!r}')
 
     async def logstream(self, workspace_id: str, log_id: str):
-        """Websocket log stream from remote pea/pod
+        """Websocket log stream from remote Pea / Pod
 
         :param workspace_id: the identity of the workspace
-        :param log_id: the identity of that pea/pod
-        :return:
+        :type workspace_id: str
+        :param log_id:  the identity of that Pea / Pod
+        :type log_id: str
         """
         with ImportExtensions(required=True):
             import websockets
@@ -179,17 +205,20 @@ class DaemonClient:
     def _mask_args(self, args: 'argparse.Namespace'):
         _args = copy.deepcopy(args)
 
-        # reset the runtime to ZEDRuntime
-        # TODO:/NOTE this prevents to run ContainerRuntime via JinaD (Han: 2021.1.17)
+        # reset the runtime to ZEDRuntime or ContainerRuntime
         if _args.runtime_cls == 'JinadRuntime':
-            _args.runtime_cls = 'ZEDRuntime'
+            if _args.uses.startswith('docker://'):
+                _args.runtime_cls = 'ContainerRuntime'
+            else:
+                _args.runtime_cls = 'ZEDRuntime'
 
         # reset the host default host
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         _args.host = __default_host__
 
         _args.log_config = ''  # do not use local log_config
-        _args.upload_files = ''  # reset upload files
+        _args.upload_files = []  # reset upload files
+        _args.noblock_on_start = False  # wait until start success
 
         changes = []
         for k, v in vars(_args).items():

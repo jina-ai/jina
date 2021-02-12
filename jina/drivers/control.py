@@ -27,15 +27,16 @@ class LogInfoDriver(BaseControlDriver):
     def __init__(self, key: str = 'request', json: bool = True, *args, **kwargs):
         """
         :param key: (str) that represents a first level or nested key in the dict
-        :param args:
-        :param kwargs:
+        :param json: (bool) indicating if the log output should be formatted as json
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.key = key
         self.json = json
 
     def __call__(self, *args, **kwargs):
-        data = dunder_get(self.msg.as_pb_object, self.key)
+        data = dunder_get(self.msg.proto, self.key)
         if self.json:
             self.logger.info(
                 MessageToJson(data)
@@ -52,7 +53,7 @@ class WaitDriver(BaseControlDriver):
 
 
 class ControlReqDriver(BaseControlDriver):
-    """Handling the control request, by default it is installed for all :class:`jina.peapods.runtime.BasePea`"""
+    """Handling the control request, by default it is installed for all :class:`jina.peapods.peas.BasePea`"""
 
     def __call__(self, *args, **kwargs):
         if self.req.command == 'TERMINATE':
@@ -66,24 +67,25 @@ class ControlReqDriver(BaseControlDriver):
 
 
 class RouteDriver(ControlReqDriver):
-    """A simple load balancer forward message to the next available pea
+    """Ensures that data requests are forwarded to the downstream `:class:`BasePea` ensuring
+      that the load is balanced between parallel `:class:`BasePea` if the scheduling `:class:`SchedulerType` is LOAD_BALANCE.
+      
+    .. note::
+        - The dealer never receives a control request from the router,
+        every time it finishes a job and sends via out_sock, it returns the envelope with control
+        request idle back to the router. The dealer also sends control request idle to the router
+        when it first starts.
 
-    - The dealer never receives a control request from the router,
-      everytime it finishes a job and send via out_sock, it returns the envelope with control
-      request idle back to the router. The dealer also sends control request idle to the router
-      when it first starts.
-
-    - The router receives request from both dealer and upstream pusher.
-      if it is a upstream request, use LB to schedule the receiver, mark it in the envelope
-      if it is a control request in
-
+        - The router receives requests from both dealer and upstream pusher.
+         if it is an upstream request, use LB to schedule the receiver,
+         mark it in the envelope if it is a control request in
     """
 
     def __init__(self, raise_no_dealer: bool = False, *args, **kwargs):
         """
         :param raise_no_dealer: raise a RuntimeError when no available dealer
-        :param args:
-        :param kwargs:
+        :param *args:
+        :param **kwargs:
         """
         super().__init__(*args, **kwargs)
         self.idle_dealer_ids = set()
@@ -116,7 +118,7 @@ class RouteDriver(ControlReqDriver):
             # where some dealer is broken/fails to start, so `idle_dealer_ids` is empty
         elif self.req.command == 'IDLE':
             self.idle_dealer_ids.add(self.envelope.receiver_id)
-            self.logger.debug(f'{self.envelope.receiver_id} is idle')
+            self.logger.debug(f'{self.envelope.receiver_id} is idle, now I know these idle peas {self.idle_dealer_ids}')
             if self.is_pollin_paused:
                 self.runtime._zmqlet.resume_pollin()
                 self.is_pollin_paused = False

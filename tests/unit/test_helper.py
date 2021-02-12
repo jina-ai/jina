@@ -1,4 +1,3 @@
-import random
 import time
 from types import SimpleNamespace
 
@@ -8,14 +7,14 @@ from cli import _is_latest_version
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.drivers.querylang.queryset.dunderkey import dunder_get
-from jina.excepts import BadClientCallback
-from jina.helper import cached_property, convert_tuple_to_list
+from jina.excepts import BadClientCallback, NotSupportedError
+from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina.types.document.uid import *
 from tests import random_docs
+import numpy as np
 
 
 def test_cached_property():
@@ -58,11 +57,6 @@ def test_time_context():
 
     assert int(tc.duration) == 2
     assert tc.readable_duration == '2 seconds'
-
-
-def test_np_int():
-    a = random.randint(0, 100000)
-    assert int2bytes(np.int64(a)) == int2bytes(a)
 
 
 def test_dunder_get():
@@ -169,12 +163,12 @@ def test_random_docs():
     chunk_ids = []
     for d2, d1 in zip(docs2, docs1):
         np.testing.assert_almost_equal(d2.embedding, NdArray(d1.embedding).value)
-        doc_ids.append(int(d1.id))
+        doc_ids.append((d1.id))
         assert d2.text == d1.text
         assert d2.tags['id'] == d1.tags['id']
         for c2, c1 in zip(d2.chunks, d1.chunks):
             np.testing.assert_almost_equal(c2.embedding, NdArray(c1.embedding).value)
-            chunk_ids.append(int(c1.id))
+            chunk_ids.append((c1.id))
             assert c2.text == c1.text
             assert c2.tags['id'] == c1.tags['id']
             assert c2.tags['parent_id'] == c1.tags['parent_id']
@@ -192,3 +186,49 @@ def test_complete_path_success():
 def test_complete_path_not_found():
     with pytest.raises(FileNotFoundError):
         assert complete_path('unknown.yaml')
+
+
+def test_deprecated_decor():
+    @deprecated_alias(barbar=('bar', 0), foofoo=('foo', 1))
+    def dummy(bar, foo):
+        return bar, foo
+
+    # normal
+    assert dummy(bar=1, foo=2) == (1, 2)
+
+    # deprecated warn
+    with pytest.deprecated_call():
+        assert dummy(barbar=1, foo=2) == (1, 2)
+
+    # deprecated HARD
+    with pytest.raises(NotSupportedError):
+        dummy(bar=1, foofoo=2)
+
+
+@pytest.mark.parametrize('val', ['merge_and_topk.yml',
+                                 'merge_and_topk.yaml',
+                                 'da.yaml',
+                                 'd.yml',
+                                 '/da/da.yml',
+                                 'das/das.yaml',
+                                 '1234.yml',
+                                 '1234.yml ',
+                                 ' 1234.yml '])
+def test_yaml_filepath_validate_good(val):
+    assert is_yaml_filepath(val)
+
+
+@pytest.mark.parametrize('val', [' .yml',
+                                 'a',
+                                 ' uses: yaml',
+                                 'ayaml',
+                                 '''
+    shards: $JINA_SHARDS_INDEXERS
+    host: $JINA_REDIS_INDEXER_HOST
+    port_expose: 8000
+    polling: all
+    timeout_ready: 100000 # larger timeout as in query time will read all the data
+    uses_after: merge_and_topk.yml
+                                 '''])
+def test_yaml_filepath_validate_bad(val):
+    assert not is_yaml_filepath(val)

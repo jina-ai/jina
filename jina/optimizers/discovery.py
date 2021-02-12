@@ -11,6 +11,7 @@ def _read_file(filename):
         return file.readlines()
 
 
+# TODO use default parser instead
 def _extract_executor_files(flows):
     executor_files = set()
     for flow_file, flow_definition in flows.items():
@@ -59,7 +60,7 @@ def _replace_parameters(executor_yml, default_parameters):
             continue
         executor_yml = executor_yml.replace(
             "\nwith:\n",
-            f"\nwith:\n  {parameter.parameter_name}: ${parameter.env_var}\n",
+            f"\nwith:\n  {parameter.parameter_name}: ${parameter.jaml_variable}\n",
         )
     return executor_yml
 

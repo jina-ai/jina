@@ -6,7 +6,7 @@ from .client import PeaDaemonClient
 from ..asyncio.base import AsyncZMQRuntime
 from ...zmq import Zmqlet
 from ....excepts import DaemonConnectivityError
-from ....helper import cached_property, colored
+from ....helper import cached_property, colored, is_yaml_filepath
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -17,7 +17,8 @@ class JinadRuntime(AsyncZMQRuntime):
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
-        self.api = PeaDaemonClient(host=self.host, port=self.port_expose, logger=self.logger)
+        self.api = PeaDaemonClient(host=self.host, port=self.port_expose, logger=self.logger,
+                                   timeout=self.args.timeout_ready)
 
     def setup(self):
         """
@@ -58,25 +59,27 @@ class JinadRuntime(AsyncZMQRuntime):
     @cached_property
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
-            workspace_id = None
             upload_files = []
-            if self.args.uses.endswith('.yml') or self.args.uses.endswith('.yaml'):
+            if is_yaml_filepath(self.args.uses):
                 upload_files.append(self.args.uses)
-                if not self.args.upload_files:
-                    self.logger.warning(f'will upload {self.args.uses} to remote, to include more local file '
-                                        f'dependencies, please use `--upload-files`')
+
+            if is_yaml_filepath(self.args.uses_internal):
+                upload_files.append(self.args.uses_internal)
+
             if self.args.upload_files:
                 upload_files.extend(self.args.upload_files)
+            else:
+                self.logger.warning(f'will upload {upload_files} to remote, to include more local file '
+                                    f'dependencies, please use `--upload-files`')
 
             if upload_files:
-                workspace_id = self.api.upload(list(set(upload_files)))
+                workspace_id = self.api.upload(dependencies=list(set(upload_files)),
+                                               workspace_id=self.args.workspace_id)
                 if workspace_id:
-                    self.logger.success(f'uploaded to workspace: {workspace_id}')
+                    self.logger.success(f'uploaded to workspace: {colored(workspace_id, "cyan")}')
                 else:
                     raise RuntimeError('can not upload required files to remote')
 
-            # if there is a workspace_id (upload is called), then use it
-            self.args.workspace_id = workspace_id
             _id = self.api.create(self.args)
 
             # if there is a new workspace_id, then use it

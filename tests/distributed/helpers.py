@@ -1,6 +1,6 @@
 from contextlib import ExitStack
 from pathlib import Path
-from typing import Optional, Dict
+from typing import List, Optional, Dict
 
 import requests
 
@@ -10,13 +10,10 @@ def assert_request(method: str,
                    payload: Optional[Dict] = None,
                    expect_rcode: int = 200):
     try:
-        if method in ('get', 'delete'):
-            response = getattr(requests, method)(url)
-        elif method == 'post':
+        if payload:
             response = getattr(requests, method)(url, json=payload)
         else:
-            raise TypeError(f'method: {method} is not supported in this wrapper!')
-        print(f'{response.status_code}: {response.json()}')
+            response = getattr(requests, method)(url)
         assert response.status_code == expect_rcode
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -30,6 +27,34 @@ def get_results(query: str,
     return assert_request(method=method,
                           url=url,
                           payload={'top_k': top_k, 'data': [query]})
+
+
+def create_workspace(filepaths: List[str],
+                     url: str = 'http://localhost:8000/workspaces') -> str:
+    with ExitStack() as file_stack:
+        files = [
+            ('files', file_stack.enter_context(open(filepath, 'rb')))
+            for filepath in filepaths
+        ]
+        print(f'uploading {files}')
+        r = requests.post(url, files=files)
+        assert r.status_code == 201
+
+        workspace_id = r.json()
+        print(f'Got workspace_id: {workspace_id}')
+        return workspace_id
+
+
+def create_flow_2(flow_yaml: str,
+                  workspace_id: str = None,
+                  url: str = 'http://localhost:8000/flows') -> str:
+    with open(flow_yaml, 'rb') as f:
+        r = requests.post(url,
+                          data={'workspace_id': workspace_id},
+                          files={'flow': f})
+        print(f'Checking if the flow creation is succeeded: {r.json()}')
+        assert r.status_code == 201
+        return r.json()
 
 
 def create_flow(flow_yaml: str,

@@ -44,7 +44,7 @@ def _get_run_args(print_args: bool = True):
     if print_args:
         from pkg_resources import resource_filename
         default_args = {a.dest: a.default for a in parser._actions if
-                        isinstance(a, _StoreAction) or isinstance(a, _StoreTrueAction)}
+                        isinstance(a, (_StoreAction, _StoreTrueAction))}
 
         with open(resource_filename('jina', '/'.join(('resources', 'jina.logo')))) as fp:
             logo_str = fp.read()

@@ -1,6 +1,6 @@
 import pytest
 
-from jina.enums import SkipOnErrorType
+from jina.enums import OnErrorStrategy
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -23,7 +23,7 @@ def test_bad_flow_skip_handle(mocker, restful):
         assert bad_routes[2].pod == 'r3'
         assert bad_routes[2].status.code == jina_pb2.StatusProto.ERROR_CHAINED
 
-    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.HANDLE)
+    f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
          .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3'))
@@ -32,7 +32,7 @@ def test_bad_flow_skip_handle(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -58,7 +58,7 @@ def test_bad_flow_skip_handle_join(mocker, restful):
         assert bad_routes[-1].status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[-1].status.exception.name == 'GatewayPartialMessage'
 
-    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.HANDLE)
+    f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
          .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3', needs='r1')
@@ -68,7 +68,7 @@ def test_bad_flow_skip_handle_join(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -81,7 +81,7 @@ def test_bad_flow_skip_exec(mocker, restful):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
 
-    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.EXECUTOR)
+    f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
          .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3'))
@@ -90,7 +90,7 @@ def test_bad_flow_skip_exec(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()
 
@@ -105,7 +105,7 @@ def test_bad_flow_skip_exec_join(mocker, restful):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1'
 
-    f = (Flow(restful=restful, skip_on_error=SkipOnErrorType.EXECUTOR)
+    f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
          .add(name='r1', uses='DummyCrafter')
          .add(name='r2')
          .add(name='r3', needs='r1')
@@ -115,6 +115,6 @@ def test_bad_flow_skip_exec_join(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index_lines(lines=['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
     on_error_mock.assert_called()

@@ -22,7 +22,7 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     elif issubclass(cls, BaseExecutor):
         return _get_exec_parser()
     else:
-        raise NotImplementedError(f'{cls!r} does not implement YAML parser')
+        return _get_default_parser()
 
 
 def _get_flow_parser():
@@ -41,16 +41,21 @@ def _get_driver_parser():
     return [LegacyParser], LegacyParser
 
 
-def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'VersionedYAMLParser':
-    """ Get parser given the YAML version
+def _get_default_parser():
+    from .default.v1 import V1Parser
+    return [V1Parser], V1Parser
 
+
+def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'VersionedYAMLParser':
+    """
+    # noqa: DAR401
     :param cls: the target class to parse
     :param version: yaml version number in "MAJOR[.MINOR]" format
-    :return:
+    :return: parser given the YAML version
     """
     all_parsers, legacy_parser = _get_all_parser(cls)
     if version:
-        if isinstance(version, float) or isinstance(version, int):
+        if isinstance(version, (float, int)):
             version = str(version)
         for p in all_parsers:
             if p.version == version:
@@ -73,6 +78,7 @@ def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'Versione
 def get_supported_versions(cls) -> List[str]:
     """List all supported versions
 
+    :param cls: the class to check
     :return: supported versions sorted alphabetically
     """
     all_parsers, _ = _get_all_parser(cls)

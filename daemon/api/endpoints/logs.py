@@ -1,15 +1,32 @@
 import asyncio
 import json
+import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, WebSocket
+from fastapi.exceptions import HTTPException
+from fastapi.responses import FileResponse
 from starlette.endpoints import WebSocketEndpoint
 from starlette.types import Receive, Scope, Send
 
 from ... import daemon_logger, jinad_args
 from ...stores.helper import get_workspace_path
 
-router = APIRouter()
+router = APIRouter(tags=['logs'])
+
+
+@router.get(
+    path='/logs/{workspace_id}/{log_id}'
+)
+async def _export_logs(
+        workspace_id: uuid.UUID,
+        log_id: uuid.UUID
+):
+    filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
+    if not Path(filepath).is_file():
+        raise HTTPException(status_code=404, detail=f'log file {log_id} not found in workspace {workspace_id}')
+    else:
+        return FileResponse(filepath)
 
 
 class LogStreamingEndpoint(WebSocketEndpoint):
@@ -37,7 +54,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
         # on connection the fluentd file may not flushed (aka exist) yet
         while not Path(self.filepath).is_file():
-            daemon_logger.info(f'still waiting {self.filepath} to be ready...')
+            daemon_logger.debug(f'still waiting {self.filepath} to be ready...')
             await asyncio.sleep(1)
 
         with open(self.filepath) as fp:

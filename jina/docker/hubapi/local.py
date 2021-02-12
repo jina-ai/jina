@@ -1,17 +1,20 @@
+"""Module wrapping interactions with the local images."""
+
 import os
 import pkgutil
-from setuptools import find_packages
+from typing import Dict, Any, Optional
+
 from pkg_resources import parse_version
-from typing import Dict, Sequence, Any, Optional, List
+from setuptools import find_packages
 
-from ...jaml import JAML
-from ...helper import colored
 from ..helper import credentials_file
-from ...logging import default_logger
 from ...excepts import HubLoginRequired
-
+from ...helper import colored
+from ...jaml import JAML
+from ...logging import default_logger
 
 _header_attrs = ['bold', 'underline']
+
 
 def _load_local_hub_manifest():
     namespace = 'jina.hub'
@@ -22,7 +25,7 @@ def _load_local_hub_manifest():
                                'try "git submodule update --init" if you are in dev mode')
         return {}
 
-    def add_hub():
+    def _add_hub():
         m_yml = f'{info.module_finder.path}/manifest.yml'
         if info.ispkg and os.path.exists(m_yml):
             try:
@@ -35,12 +38,12 @@ def _load_local_hub_manifest():
     hub_images = {}
 
     for info in pkgutil.iter_modules([path]):
-        add_hub()
+        _add_hub()
 
     for pkg in find_packages(path):
         pkgpath = path + '/' + pkg.replace('.', '/')
         for info in pkgutil.iter_modules([pkgpath]):
-            add_hub()
+            _add_hub()
 
     # filter
     return hub_images
@@ -48,12 +51,10 @@ def _load_local_hub_manifest():
 
 def _list_local(logger) -> Optional[Dict[str, Any]]:
     """
-    List all local hub manifests
+    List the locally-available images.
 
-    .. note:
-
-        This does not implement query langauge
-
+    :param logger: the logger object with which to print
+    :return: the list of manifests (if found)
     """
     manifests = _load_local_hub_manifest()
     if manifests:
@@ -80,18 +81,21 @@ def _fetch_access_token(logger):
                      f'please re-login using command: {colored("jina hub login", attrs=["bold"])}')
         raise HubLoginRequired
 
+
 def _make_hub_table_with_local(images, local_images):
     info_table = [f'found {len(images)} matched hub images',
-                  '{:<50s}{:<25s}{:<25s}{:<20s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
-                                                               colored('Kind', attrs=_header_attrs),
-                                                               colored('Version', attrs=_header_attrs),
-                                                               colored('Local', attrs=_header_attrs),
-                                                               colored('Description', attrs=_header_attrs))]
+                  '{:<50s}{:<25s}{:<30s}{:<25s}{:<30s}{:<50s}'.format(colored('Name', attrs=_header_attrs),
+                                                                      colored('Kind', attrs=_header_attrs),
+                                                                      colored('Version', attrs=_header_attrs),
+                                                                      colored('Local', attrs=_header_attrs),
+                                                                      colored('Jina Version', attrs=_header_attrs),
+                                                                      colored('Description', attrs=_header_attrs))]
     images = sorted(images, key=lambda k: k['name'].lower())
     for image in images:
         image_name = image.get('name', '')
         kind = image.get('kind', '')
         ver = image.get('version', '')
+        jina_ver = image.get('jina-version', '')
         desc = image.get('description', '')[:60].strip() + '...'
         if image_name and ver and desc:
             local_ver = ''
@@ -107,8 +111,9 @@ def _make_hub_table_with_local(images, local_images):
                     color = 'yellow'
             info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
                               f'{colored(kind, color="yellow"):<25s}'
-                              f'{colored(ver, color="green"):<20s}'
-                              f'{colored(local_ver, color=color):<20s}'
+                              f'{colored(ver, color="green"):<25s}'
+                              f'{colored(local_ver, color=color):<25s}'
+                              f'{colored(jina_ver, color="green"):<25s}'
                               f'{desc:<30s}')
     return info_table
 

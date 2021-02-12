@@ -8,7 +8,7 @@ from ..helper import colored
 
 
 class ColorFormatter(Formatter):
-    """Format the log into colored logs based on the log-level. """
+    """Format the log into colored logs based on the log-level."""
 
     MAPPING = {
         'DEBUG': dict(color='white', on_color=None),  # white
@@ -20,6 +20,12 @@ class ColorFormatter(Formatter):
     }  #: log-level to color mapping
 
     def format(self, record):
+        """
+        Format the LogRecord with corresponding colour.
+
+        :param record: A LogRecord object
+        :returns: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
+        """
         cr = copy(record)
         if cr.levelname != 'INFO':
             seq = self.MAPPING.get(cr.levelname, self.MAPPING['INFO'])  # default white
@@ -28,12 +34,15 @@ class ColorFormatter(Formatter):
 
 
 class PlainFormatter(Formatter):
-    """Remove all control chars from the log and format it as plain text
-
-    Also restrict the max-length of msg to 512
-    """
+    """Remove all control chars from the log and format it as plain text, also restrict the max-length of msg to 512."""
 
     def format(self, record):
+        """
+        Format the LogRecord by removing all control chars and plain text, and restrict the max-length of msg to 512.
+
+        :param record: A LogRecord object.
+        :returns: Formatted plain LogRecord.
+        """
         cr = copy(record)
         if isinstance(cr.msg, str):
             cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))[:512]
@@ -41,13 +50,19 @@ class PlainFormatter(Formatter):
 
 
 class JsonFormatter(Formatter):
-    """Format the log message as a JSON object so that it can be later used/parsed in browser with javascript. """
+    """Format the log message as a JSON object so that it can be later used/parsed in browser with javascript."""
 
     KEYS = {'created', 'filename', 'funcName', 'levelname', 'lineno', 'msg',
             'module', 'name', 'pathname', 'process', 'thread', 'processName',
             'threadName', 'log_id'}  #: keys to extract from the log
 
     def format(self, record):
+        """
+        Format the log message as a JSON object.
+
+        :param record: A LogRecord object.
+        :returns: LogRecord with JSON format.
+        """
         cr = copy(record)
         cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))
         return json.dumps(
@@ -56,9 +71,15 @@ class JsonFormatter(Formatter):
 
 
 class ProfileFormatter(Formatter):
-    """Format the log message as JSON object and add the current used memory into it"""
+    """Format the log message as JSON object and add the current used memory into it."""
 
     def format(self, record):
+        """
+        Format the log message as JSON object and add the current used memory.
+
+        :param record: A LogRecord object.
+        :returns: Return JSON formatted log if msg of LogRecord is dict type else return empty.
+        """
         cr = copy(record)
         if isinstance(cr.msg, dict):
             cr.msg.update({k: getattr(cr, k) for k in ['created', 'module', 'process', 'thread']})
