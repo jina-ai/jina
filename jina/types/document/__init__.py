@@ -186,21 +186,27 @@ class Document(ProtoTypeMixin):
 
     @property
     def length(self) -> int:
+        """Get the length of of the document."""
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
         return self._pb_body.length
 
     @length.setter
     def length(self, value: int):
+        """
+        Set the length of of the document.
+
+        :param value: The int length of the document
+        """
         self._pb_body.length = value
 
     @property
     def weight(self) -> float:
-        """Returns the weight of the document """
+        """Return the weight of the document."""
         return self._pb_body.weight
 
     @weight.setter
     def weight(self, value: float):
-        """Set the weight of the document
+        """Set the weight of the document.
 
         :param value: the float weight of the document.
         """
@@ -208,16 +214,17 @@ class Document(ProtoTypeMixin):
 
     @property
     def modality(self) -> str:
-        """Get the modality of the document """
+        """Get the modality of the document."""
         return self._pb_body.modality
 
     @modality.setter
     def modality(self, value: str):
-        """Set the modality of the document"""
+        """Set the modality of the document."""
         self._pb_body.modality = value
 
     @property
     def content_hash(self):
+        """Get the content hash of the document."""
         return self._pb_body.content_hash
 
     @staticmethod
@@ -227,7 +234,7 @@ class Document(ProtoTypeMixin):
                 include_fields: Optional[Tuple[str]] = None,
                 replace_message_field: bool = True,
                 replace_repeated_field: bool = True) -> None:
-        """Merges fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
+        """Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
 
         :param source: source :class:`Document` object.
         :param destination: the destination :class:`Document` object to be merged into.
@@ -290,7 +297,6 @@ class Document(ProtoTypeMixin):
         .. note::
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
-
         if (include_fields and not isinstance(include_fields, tuple)) or (
                 exclude_fields and not isinstance(exclude_fields, tuple)):
             raise TypeError('include_fields and exclude_fields must be tuple of str')
@@ -381,16 +387,17 @@ class Document(ProtoTypeMixin):
 
     @blob.setter
     def blob(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+        """Set the `blob` to :param:`value`."""
         self._update_ndarray('blob', value)
 
     @property
     def embedding(self) -> 'np.ndarray':
-        """Return ``embedding`` of the content of a Document.
-        """
+        """Return ``embedding`` of the content of a Document."""
         return NdArray(self._pb_body.embedding).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+        """Set the ``embedding`` of the content of a Document."""
         self._update_ndarray('embedding', value)
 
     def _update_ndarray(self, k, v):
@@ -406,12 +413,12 @@ class Document(ProtoTypeMixin):
 
     @property
     def matches(self) -> 'MatchSet':
-        """Get all matches of the current document """
+        """Get all matches of the current document."""
         return MatchSet(self._pb_body.matches, reference_doc=self)
 
     @property
     def chunks(self) -> 'ChunkSet':
-        """Get all chunks of the current document """
+        """Get all chunks of the current document."""
         return ChunkSet(self._pb_body.chunks, reference_doc=self)
 
     def set_attrs(self, **kwargs):
@@ -463,6 +470,7 @@ class Document(ProtoTypeMixin):
 
     @buffer.setter
     def buffer(self, value: bytes):
+        """Set the ``buffer`` to :param:`value`."""
         self._pb_body.buffer = value
         if value:
             with ImportExtensions(required=False,
@@ -484,16 +492,18 @@ class Document(ProtoTypeMixin):
 
     @text.setter
     def text(self, value: str):
+        """Set the `text` to :param:`value`"""
         self._pb_body.text = value
         self.mime_type = 'text/plain'
 
     @property
     def uri(self) -> str:
+        """Return the URI of the document."""
         return self._pb_body.uri
 
     @uri.setter
     def uri(self, value: str):
-        """Set the URI of the document
+        """Set the URI of the document.
 
         .. note::
             :attr:`mime_type` will be updated accordingly
@@ -582,18 +592,22 @@ class Document(ProtoTypeMixin):
 
     @property
     def granularity(self):
+        """Return the granularity of the document."""
         return self._pb_body.granularity
 
     @granularity.setter
     def granularity(self, granularity_value: int):
+        """Set the granularity of the document."""
         self._pb_body.granularity = granularity_value
 
     @property
     def score(self):
+        """Return the score of the document."""
         return NamedScore(self._pb_body.score)
 
     @score.setter
     def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
+        """Set the score of the document."""
         if isinstance(value, jina_pb2.NamedScoreProto):
             self._pb_body.score.CopyFrom(value)
         elif isinstance(value, NamedScore):
@@ -694,9 +708,11 @@ class Document(ProtoTypeMixin):
             raise NotImplementedError
 
     def MergeFrom(self, doc: 'Document'):
+        """Merge the content of target :param:doc into current document."""
         self._pb_body.MergeFrom(doc.proto)
 
     def CopyFrom(self, doc: 'Document'):
+        """Copy the content of target :param:doc into current document."""
         self._pb_body.CopyFrom(doc.proto)
 
     def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) -> None:
@@ -778,7 +794,7 @@ classDiagram
     def plot(self, output: str = None,
              inline_display: bool = False) -> None:
         """
-        Visualize the Document recursively
+        Visualize the Document recursively.
 
         :param output: a filename specifying the name of the image to be created,
                     the suffix svg/jpg determines the file type of the output image

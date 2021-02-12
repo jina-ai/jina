@@ -7,7 +7,7 @@ import zlib
 import numpy as np
 
 
-def png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
+def _png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
     pixels = []
     arr = 255 - arr
     for p in arr[::-1]:
@@ -35,7 +35,7 @@ def png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
     return png_bytes
 
 
-def pillow_image_to_buffer(image, image_format: str) -> bytes:
+def _pillow_image_to_buffer(image, image_format: str) -> bytes:
     import io
     img_byte_arr = io.BytesIO()
     image.save(img_byte_arr, format=image_format)
@@ -44,20 +44,29 @@ def pillow_image_to_buffer(image, image_format: str) -> bytes:
 
 
 def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str):
+    """
+    Convert png to buffer bytes.
+
+    :param arr: Data representations of the png.
+    :param width: Width of the png.
+    :param height: Height of the png.
+    :param resize_method: Resize methods (e.g. `NEAREST`, `BILINEAR`, `BICUBIC`, and `LANCZOS`).
+    :return: Png in buffer bytes.
+    """
     arr = arr.astype(np.uint8)
 
     if arr.ndim == 1:
-        png_bytes = png_to_buffer_1d(arr, width, height)
+        png_bytes = _png_to_buffer_1d(arr, width, height)
     elif arr.ndim == 2:
         from PIL import Image
         im = Image.fromarray(arr).convert('L')
         im = im.resize((width, height), getattr(Image, resize_method))
-        png_bytes = pillow_image_to_buffer(im, image_format='PNG')
+        png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
     elif arr.ndim == 3:
         from PIL import Image
         im = Image.fromarray(arr).convert('RGB')
         im = im.resize((width, height), getattr(Image, resize_method))
-        png_bytes = pillow_image_to_buffer(im, image_format='PNG')
+        png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
     else:
         raise ValueError(f'ndim={len(arr.shape)} array is not supported')
 
@@ -65,6 +74,16 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
 
 
 def to_datauri(mimetype, data, charset: str = 'utf-8', base64: bool = False, binary: bool = True):
+    """
+    Convert data to data URI.
+
+    :param mimetype: MIME types (e.g. 'text/plain','image/png' etc.)
+    :param data: Data representations.
+    :param charset: Charset may be any character set registered with IANA
+    :param base64: Used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
+    :param binary:
+    :return:
+    """
     parts = ['data:', mimetype]
     if charset is not None:
         parts.extend([';charset=', charset])
@@ -86,6 +105,12 @@ def to_datauri(mimetype, data, charset: str = 'utf-8', base64: bool = False, bin
 
 
 def guess_mime(uri):
+    """
+    Guess the type of a file based on its URL.
+
+    :param uri: Data URI.
+    :return: MIME type.
+    """
     # guess when uri points to a local file
     m_type = mimetypes.guess_type(uri)[0]
     # guess when uri points to a remote file

@@ -8,6 +8,7 @@ from ..proto import jina_pb2
 
 
 class ProtoTypeMixin:
+    """Mixin class of `ProtoType`."""
     def json(self) -> str:
         """Return the object in JSON string """
         return MessageToJson(self._pb_body)
