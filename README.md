@@ -816,8 +816,17 @@ Example code to build your own projects
       <h1>📄</h1>
     </td>
     <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/my-first-jina-app">My First Jina App</a></h4>
-      Brand new to neural search? Not for long! Use cookiecutter to search through Star Trek scripts using Jina
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences">Semantic Wikipedia Search with Transformers and DistilBERT</a></h4>
+      Brand new to neural search? See a simple text-search example to understand how Jina works
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h1>📄</h1>
+    </td>
+    <td>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental">Add Incremental Indexing to Wikipedia Search</a></h4>
+      Index more effectively by adding incremental indexing to your Wikipedia search
     </td>
   </tr>
   <tr>
@@ -845,15 +854,6 @@ Example code to build your own projects
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
       Use SOTA visual representation for searching Pokémon!
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h1>🖼️</h1>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/object-search">Object detection with fasterrcnn and MobileNetV2</a></h4>
-      Detect, index and query similar objects
     </td>
   </tr>
   <tr>
