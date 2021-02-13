@@ -321,8 +321,14 @@ class BaseRecursiveDriver(BaseDriver):
             self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
-class FastRecursiveDriverMixin:
-    """A Driver to traverse a set of Documents with a specific path.
+class FastRecursiveMixin:
+    """
+    The optimized version of :class:`BaseRecursiveDriver`,
+     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
+
+     .. seealso::
+        https://github.com/jina-ai/jina/issues/1932
+
     """
 
     def __call__(self, *args, **kwargs):

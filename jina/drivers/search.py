@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple
 
-from . import BaseExecutableDriver, QuerySetReader
+from . import BaseExecutableDriver, QuerySetReader, FastRecursiveMixin
 from ..types.document import Document
 from ..types.score import NamedScore
 
@@ -91,7 +91,7 @@ class VectorFillDriver(QuerySetReader, BaseSearchDriver):
             doc.embedding = embedding
 
 
-class VectorSearchDriver(QuerySetReader, BaseSearchDriver):
+class VectorSearchDriver(FastRecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Extract embeddings from the request for the executor to query.
     """
 

@@ -5,13 +5,13 @@ from typing import Iterable
 
 import numpy as np
 
-from . import BaseExecutableDriver
+from . import BaseExecutableDriver, FastRecursiveMixin
 
 if False:
     from ..types.sets import DocumentSet
 
 
-class BaseIndexDriver(BaseExecutableDriver):
+class BaseIndexDriver(FastRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`add` by default """
 
     def __init__(self, executor: str = None, method: str = 'add', *args, **kwargs):
@@ -34,9 +34,8 @@ class VectorIndexDriver(BaseIndexDriver):
         embed_vecs, docs_pts = docs.all_embeddings
         if docs_pts:
             keys = [doc.id for doc in docs_pts]
-            if keys:
-                self.check_key_length(keys)
-                self.exec_fn(keys, np.stack(embed_vecs))
+            self.check_key_length(keys)
+            self.exec_fn(keys, np.stack(embed_vecs))
 
 
 class KVIndexDriver(BaseIndexDriver):
@@ -44,8 +43,8 @@ class KVIndexDriver(BaseIndexDriver):
     """
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        keys = [doc.id for doc in docs]
-        if keys:
+        info = [(doc.id, doc.SerializeToString()) for doc in docs]
+        if info:
+            keys, values = zip(*info)
             self.check_key_length(keys)
-            values = [doc.SerializeToString() for doc in docs]
             self.exec_fn(keys, values)

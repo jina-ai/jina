@@ -81,6 +81,11 @@ def test_batching_traverse(doc_req):
     foo(ds)
 
 
+def test_traverse_embedding(doc_req):
+    ds = doc_req.docs.traverse(['r', 'c']).all_embeddings
+    assert ds[0].shape == (num_docs + num_chunks_per_doc * num_docs, 10)
+
+
 def test_docuset_traverse_over_iterator_HACKY():
     # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-documentset
     ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['r'])
