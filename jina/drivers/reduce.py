@@ -5,14 +5,14 @@ from typing import Tuple, Dict, Any
 
 import numpy as np
 
-from . import BaseRecursiveDriver
+from . import RecursiveDriverMixin, BaseExecutableDriver
 
 if False:
     from ..types.document import Document
     from ..types.sets import DocumentSet
 
 
-class ReduceAllDriver(BaseRecursiveDriver):
+class ReduceAllDriver(RecursiveDriverMixin, BaseExecutableDriver):
     """:class:`ReduceAllDriver` merges chunks/matches from all requests, recursively.
 
     .. note::
@@ -20,6 +20,7 @@ class ReduceAllDriver(BaseRecursiveDriver):
         It uses the last request as a reference.
     """
 
+    # TOOD (This does not fit specifically BaseExecutableDriver)
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 

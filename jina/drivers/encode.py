@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import warnings
 from typing import Optional
 
-from . import BaseExecutableDriver, FastRecursiveMixin
+from . import BaseExecutableDriver, FastRecursiveMixin, RecursiveDriverMixin
 from ..types.sets import DocumentSet
 
 
@@ -35,7 +35,7 @@ class EncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
                 doc.embedding = embedding
 
 
-class LegacyEncodeDriver(BaseEncodeDriver):
+class LegacyEncodeDriver(RecursiveDriverMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding
     """
 

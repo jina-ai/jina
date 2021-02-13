@@ -13,7 +13,7 @@ if False:
     from ....types.sets import DocumentSet
 
 
-class BaseAggregateMatchesRanker(BaseRankDriver):
+class BaseAggregateMatchesRankerDriver(BaseRankDriver):
     """Drivers inherited from this Driver will focus on aggregating scores from `chunks` to its `parents`."""
 
     def __init__(self,
@@ -67,7 +67,7 @@ class BaseAggregateMatchesRanker(BaseRankDriver):
             query.matches.append(m)
 
 
-class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
+class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
     """Extract matches score from chunks and use the executor to compute the rank and assign the resulting matches to the
     level above.
 
@@ -139,7 +139,7 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRanker):
                                        docs_scores=docs_scores)
 
 
-class AggregateMatches2DocRankDriver(BaseAggregateMatchesRanker):
+class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
     """This Driver is intended to take a `document` with matches at a `given granularity > 0`, clear those matches and substitute
     these matches by the documents at a lower granularity level.
     Input-Output ::

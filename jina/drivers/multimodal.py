@@ -6,6 +6,7 @@ from typing import Tuple, Dict, List
 
 import numpy as np
 
+from . import FastRecursiveMixin
 from .encode import BaseEncodeDriver
 from ..types.document.multimodal import MultimodalDocument
 
@@ -13,7 +14,7 @@ if False:
     from ..types.sets import DocumentSet
 
 
-class MultiModalDriver(BaseEncodeDriver):
+class MultiModalDriver(FastRecursiveMixin, BaseEncodeDriver):
     """Extract multimodal embeddings from different modalities.
 
     Input-Output ::

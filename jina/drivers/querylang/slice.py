@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 import sys
 
-from .. import QuerySetReader, BaseRecursiveDriver
+from .. import QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver
 
 if False:
     from ...types.sets.document import DocumentSet
 
 
-class SliceQL(QuerySetReader, BaseRecursiveDriver):
+class SliceQL(QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver):
     """Restrict the size of the ``docs`` to ``k`` (given by the request)
 
         Example::

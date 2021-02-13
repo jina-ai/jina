@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple
 
-from .. import QuerySetReader, BaseRecursiveDriver
+from .. import QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver
 
 if False:
     from ...types.sets import DocumentSet
 
 
-class ReverseQL(QuerySetReader, BaseRecursiveDriver):
+class ReverseQL(QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver):
     """Reverses the order of the provided ``docs``.
 
         This is often useful when the proceeding Pods require only a signal, not the full message.

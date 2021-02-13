@@ -1,16 +1,17 @@
-from ..drivers import BaseRecursiveDriver
+from ..drivers import RecursiveDriverMixin, BaseExecutableDriver
 
 if False:
     from ..types.sets import DocumentSet
 
 
-class ConvertDriver(BaseRecursiveDriver):
+class ConvertDriver(RecursiveDriverMixin, BaseExecutableDriver):
     """Drivers that make sure that specific conversions are applied to the documents.
 
     .. note::
         The list of functions that can be applied can be found in `:class:`Document`
      """
 
+    # TOOD (This does not fit specifically BaseExecutableDriver)
     def __init__(self, convert_fn: str, *args, **kwargs):
         """
         :param convert_fn: the method name from `:class:`Document` to be applied

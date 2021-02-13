@@ -5,14 +5,14 @@ from typing import Any, Iterator
 
 import numpy
 
-from . import BaseExecutableDriver
+from . import BaseExecutableDriver, RecursiveDriverMixin
 from ..types.querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
 from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair
 
 
-class BaseEvaluateDriver(BaseExecutableDriver):
+class BaseEvaluateDriver(RecursiveDriverMixin, BaseExecutableDriver):
     def __init__(self, executor: str = None,
                  method: str = 'evaluate',
                  running_avg: bool = False,

@@ -3,14 +3,14 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple, Optional
 
-from . import BaseExecutableDriver
+from . import BaseExecutableDriver, FastRecursiveMixin
 from ..types.document import Document
 
 if False:
     from .. import DocumentSet
 
 
-class SegmentDriver(BaseExecutableDriver):
+class SegmentDriver(FastRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`segment` by default """
 
     def __init__(

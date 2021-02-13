@@ -1,15 +1,14 @@
-from jina import DocumentSet, Document
+from jina import DocumentSet
+from jina.drivers import FastRecursiveMixin
 from jina.drivers.encode import BaseEncodeDriver
 
 
-class DummyEncodeDriver(BaseEncodeDriver):
+class DummyEncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
     def _apply_all(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
             *args,
             **kwargs,
     ) -> None:
-        if context_doc:
-            context_doc.text = 'hello from DummyEncodeDriver'
+        for doc in docs:
+            doc.text = 'hello from DummyEncodeDriver'
