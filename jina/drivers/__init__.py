@@ -252,18 +252,77 @@ class BaseRecursiveDriver(BaseDriver):
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
+    @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
+
+    def _apply_root(
+            self,
+            docs: 'DocumentSet',
+            field: str,
+            *args,
+            **kwargs,
+    ) -> None:
+        return self._apply_all(docs, None, field, *args, **kwargs)
+
+    # TODO(Han): probably want to publicize this, as it is not obvious for driver
+    #  developer which one should be inherited
     def _apply_all(
             self,
             docs: 'DocumentSet',
+            context_doc: 'Document',
+            field: str,
             *args,
             **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
         :param docs: a list of :class:`jina.Document` objects to work on; they could come from ``matches``/``chunks``.
+        :param context_doc: the owner of ``docs``
+        :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
         :param *args: *args
         :param **kwargs: **kwargs
         """
+
+    def __call__(self, *args, **kwargs):
+        self._traverse_apply(self.docs, *args, **kwargs)
+
+    def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+        for path in self._traversal_paths:
+            if path[0] == 'r':
+                self._apply_root(docs, 'docs', *args, **kwargs)
+            for doc in docs:
+                self._traverse_rec(
+                    [doc],
+                    None,
+                    None,
+                    path,
+                    *args,
+                    **kwargs,
+                )
+
+    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, *args, **kwargs):
+        if path:
+            next_edge = path[0]
+            for doc in docs:
+                if next_edge == 'm':
+                    self._traverse_rec(
+                        doc.matches, doc, 'matches', path[1:], *args, **kwargs
+                    )
+                if next_edge == 'c':
+                    self._traverse_rec(
+                        doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
+                    )
+        else:
+            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
+
+
+class FastRecursiveDriverMixin:
+    """A Driver to traverse a set of Documents with a specific path.
+    """
 
     def __call__(self, *args, **kwargs):
         self._apply_all(self.docs, *args, **kwargs)
