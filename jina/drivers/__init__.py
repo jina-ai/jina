@@ -29,9 +29,9 @@ if False:
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
     from ..types.message import Message
-    from ..types.document import Document
     from ..types.request import Request
     from ..types.sets import QueryLangSet, DocumentSet
+    from ..types.document import Document
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -119,10 +119,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                    not q.disabled
-                    and self.__class__.__name__ == q.name
-                    and q.priority > self._priority
-                    and key in q.parameters
+                        not q.disabled
+                        and self.__class__.__name__ == q.name
+                        and q.priority > self._priority
+                        and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -221,13 +221,6 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
             return []
 
     @property
-    def docs(self):
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
-
-    @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``"""
         return self.runtime.logger
@@ -260,24 +253,31 @@ class BaseRecursiveDriver(BaseDriver):
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
+    @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
+
     def _apply_root(
-        self,
-        docs: 'DocumentSet',
-        field: str,
-        *args,
-        **kwargs,
+            self,
+            docs: 'DocumentSet',
+            field: str,
+            *args,
+            **kwargs,
     ) -> None:
         return self._apply_all(docs, None, field, *args, **kwargs)
 
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
     def _apply_all(
-        self,
-        docs: 'DocumentSet',
-        context_doc: 'Document',
-        field: str,
-        *args,
-        **kwargs,
+            self,
+            docs: 'DocumentSet',
+            context_doc: 'Document',
+            field: str,
+            *args,
+            **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
@@ -321,6 +321,28 @@ class BaseRecursiveDriver(BaseDriver):
             self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
+class FastRecursiveMixin:
+    """
+    The optimized version of :class:`BaseRecursiveDriver`,
+     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
+
+     .. seealso::
+        https://github.com/jina-ai/jina/issues/1932
+
+    """
+
+    def __call__(self, *args, **kwargs):
+        self._apply_all(self.docs, *args, **kwargs)
+
+    @property
+    def docs(self) -> 'DocumentSet':
+        from ..types.sets import DocumentSet
+        if self.expect_parts > 1:
+            return DocumentSet((d for r in reversed(self.partial_reqs) for d in r.docs)).traverse(self._traversal_paths)
+        else:
+            return self.req.docs.traverse(self._traversal_paths)
+
+
 class BaseExecutableDriver(BaseRecursiveDriver):
     """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` and :class:`jina.executors.BaseExecutor`
     It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
@@ -356,8 +378,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         :return: the Callable to execute in the driver
         """
         if (
-            not self.msg.is_error
-            or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
+                not self.msg.is_error
+                or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
         ):
             return self._exec_fn
         else:
@@ -377,7 +399,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break

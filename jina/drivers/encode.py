@@ -1,9 +1,10 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import warnings
 from typing import Optional
 
-from . import BaseExecutableDriver
+from . import BaseExecutableDriver, FastRecursiveMixin
 from ..types.sets import DocumentSet
 
 
@@ -17,7 +18,24 @@ class BaseEncodeDriver(BaseExecutableDriver):
         super().__init__(executor, method, *args, **kwargs)
 
 
-class EncodeDriver(BaseEncodeDriver):
+class EncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
+    """Extract the content from documents and call executor and do encoding
+    """
+
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+        contents, docs_pts = docs.all_contents
+
+        if docs_pts:
+            embeds = self.exec_fn(contents)
+            if len(docs_pts) != embeds.shape[0]:
+                self.logger.error(
+                    f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
+                    f'and a {embeds.shape} shape embedding, the first dimension must be the same')
+            for doc, embedding in zip(docs_pts, embeds):
+                doc.embedding = embedding
+
+
+class LegacyEncodeDriver(BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding
     """
 
@@ -25,7 +43,6 @@ class EncodeDriver(BaseEncodeDriver):
         """Helper class to accumulate documents from differents document Set in a single DocumentSet
          to help guarantee that the encoder driver can consume documents in fixed batch sizes to allow
          the EncoderExecutors to leverage its batching abilities.
-
          It is useful to have batching even when chunks are involved"""
 
         def __init__(self,
@@ -58,17 +75,16 @@ class EncodeDriver(BaseEncodeDriver):
         :param batch_size: number of documents to be used simultaneously in the encoder :meth:_apply_all.
         It is specially useful when the same EncoderExecutor can be used for documents of different granularities
          (chunks, chunks of chunks ...)
-
         .. warning::
             - This parameter was added to cover the case where root documents had very few chunks, and the encoder executor could
             then only process them in batches of the chunk size of each document, which did not lead to the full use of batching capabilities
             of the powerful Executors
-
         """
         super().__init__(*args, **kwargs)
+        warnings.warn(f'this drivers will be removed soon, use {EncodeDriver!r} instead', DeprecationWarning)
         self.batch_size = batch_size
         if self.batch_size:
-            self.cache_set = EncodeDriver.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = LegacyEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
         else:
             self.cache_set = None
 
@@ -97,7 +113,7 @@ class EncodeDriver(BaseEncodeDriver):
             cached_docs = self.cache_set.get()
             if len(cached_docs) > 0:
                 self._apply_batch(cached_docs)
-            self.cache_set = EncodeDriver.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = LegacyEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         if self.cache_set is not None:

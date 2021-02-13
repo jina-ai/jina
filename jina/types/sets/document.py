@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, Sequence, Iterable, Tuple
+from typing import Union, Iterable, Tuple
 
 import numpy as np
 
@@ -31,7 +31,7 @@ class DocumentSet(MutableSequence):
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
-    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
+    def __init__(self, docs_proto: Union['RepeatedContainer', Iterable['Document']]):
         """Set constructor method."""
         super().__init__()
         self._docs_proto = docs_proto
@@ -133,9 +133,9 @@ class DocumentSet(MutableSequence):
         """Sort the list of :class:`DocumentSet`."""
         self._docs_proto.sort(*args, **kwargs)
 
-    def traverse(self, traversal_paths: Iterable[str]) -> Iterable['Document']:
+    def traverse(self, traversal_paths: Iterable[str]) -> 'DocumentSet':
         """
-        Return an iterator of :class:`Document` that traverses this :class:`DocumentSet` object according to the
+        Return a DocumentSet that traverses this :class:`DocumentSet` object according to the
         ``traversal_paths``.
 
         :param traversal_paths: a list of string that represents the traversal path
@@ -152,7 +152,8 @@ class DocumentSet(MutableSequence):
             - [`r`, `c`]: docs in this DocumentSet and all child-documents at granularity 1
 
         """
-        def _traverse(docs: 'DocumentSet', path: str) -> Iterable['Document']:
+
+        def _traverse(docs: 'DocumentSet', path: str):
             if path:
                 loc = path[0]
                 if loc == 'r':
@@ -166,8 +167,11 @@ class DocumentSet(MutableSequence):
             else:
                 yield from docs
 
-        for p in traversal_paths:
-            yield from _traverse(self, p)
+        def _traverse_all():
+            for p in traversal_paths:
+                yield from _traverse(self, p)
+
+        return DocumentSet(_traverse_all())
 
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
