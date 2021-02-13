@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from jina.executors.encoders import BaseEncoder
-from jina.drivers.encode import EncodeDriver
+from jina.drivers.encode import LegacyEncodeDriver
 from jina.flow import Flow
 from jina import Document, NdArray
 
@@ -106,8 +106,8 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
                           num_docs_in_same_request=request_size,
                           total_num_docs=num_docs)
 
-    driver = EncodeDriver(batch_size=driver_batch_size,
-                          traversal_paths=('r',))
+    driver = LegacyEncodeDriver(batch_size=driver_batch_size,
+                                traversal_paths=('r',))
 
     encoder._drivers.clear()
     encoder._drivers['SearchRequest'] = [driver]
@@ -150,8 +150,8 @@ def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num
                           num_docs_in_same_request=request_size + request_size*num_chunks + request_size*num_chunks*num_chunks_chunks,
                           total_num_docs=num_docs + num_docs*num_chunks + num_docs*num_chunks*num_chunks_chunks)
 
-    driver = EncodeDriver(batch_size=driver_batch_size,
-                          traversal_paths=('r', 'c', 'cc'))
+    driver = LegacyEncodeDriver(batch_size=driver_batch_size,
+                                traversal_paths=('r', 'c', 'cc'))
 
     encoder._drivers.clear()
     encoder._drivers['SearchRequest'] = [driver]
