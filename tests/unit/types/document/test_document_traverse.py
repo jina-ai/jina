@@ -30,11 +30,11 @@ def doc_req():
 
 
 def test_traverse_type(doc_req):
-    assert isinstance(doc_req.docs.traverse(['r']), Iterator)
+    assert isinstance(doc_req.docs.traverse(['r']), DocumentSet)
 
 
 def test_traverse_empty_type(doc_req):
-    assert isinstance(doc_req.docs.traverse([]), Iterator)
+    assert isinstance(doc_req.docs.traverse([]), DocumentSet)
     assert len(list(doc_req.docs.traverse([]))) == 0
 
 

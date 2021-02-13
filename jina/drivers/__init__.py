@@ -269,12 +269,12 @@ class BaseRecursiveDriver(BaseDriver):
         self._apply_all(self.docs, *args, **kwargs)
 
     @property
-    def docs(self):
+    def docs(self) -> 'DocumentSet':
         from ..types.sets import DocumentSet
         if self.expect_parts > 1:
-            return DocumentSet(list(d for r in reversed(self.partial_reqs) for d in r.docs)).traverse(self._traversal_paths)
+            return DocumentSet((d for r in reversed(self.partial_reqs) for d in r.docs)).traverse(self._traversal_paths)
         else:
-            return DocumentSet(list(self.req.docs.traverse(self._traversal_paths)))
+            return self.req.docs.traverse(self._traversal_paths)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
