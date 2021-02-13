@@ -31,6 +31,7 @@ if False:
     from ..types.message import Message
     from ..types.request import Request
     from ..types.sets import QueryLangSet, DocumentSet
+    from ..types.document import Document
 
 
 def store_init_kwargs(func: Callable) -> Callable:
