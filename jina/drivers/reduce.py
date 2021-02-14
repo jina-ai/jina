@@ -5,22 +5,21 @@ from typing import Tuple, Dict, Any
 
 import numpy as np
 
-from . import RecursiveDriverMixin, BaseExecutableDriver
+from . import RecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ..types.document import Document
     from ..types.sets import DocumentSet
 
 
-class ReduceAllDriver(RecursiveDriverMixin, BaseExecutableDriver):
-    """:class:`ReduceAllDriver` merges chunks/matches from all requests, recursively.
+class ReduceAll(RecursiveMixin, BaseRecursiveDriver):
+    """:class:`ReduceAll` merges chunks/matches from all requests, recursively.
 
     .. note::
 
         It uses the last request as a reference.
     """
 
-    # TOOD (This does not fit specifically BaseExecutableDriver)
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
@@ -52,7 +51,7 @@ class ReduceAllDriver(RecursiveDriverMixin, BaseExecutableDriver):
             getattr(self.doc_pointers[context_doc.id], field).extend(docs)
 
 
-class CollectEvaluationDriver(ReduceAllDriver):
+class CollectEvaluationDriver(ReduceAll):
     """Merge all evaluations into one, grouped by ``doc.id`` """
 
     def _apply_all(
@@ -68,7 +67,7 @@ class CollectEvaluationDriver(ReduceAllDriver):
             self.doc_pointers[context_doc.id].extend(context_doc.evaluations)
 
 
-class ConcatEmbedDriver(ReduceAllDriver):
+class ConcatEmbedDriver(ReduceAll):
     """Concat all embeddings into one, grouped by ```doc.id``` """
 
     def __call__(self, *args, **kwargs):

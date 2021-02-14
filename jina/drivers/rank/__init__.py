@@ -2,7 +2,7 @@ from typing import Tuple
 
 import numpy as np
 
-from .. import BaseExecutableDriver, RecursiveDriverMixin
+from .. import BaseExecutableDriver, RecursiveMixin
 from ...types.document import Document
 from ...types.score import NamedScore
 
@@ -11,14 +11,14 @@ if False:
     from ...types.sets import DocumentSet
 
 
-class BaseRankDriver(RecursiveDriverMixin, BaseExecutableDriver):
+class BaseRank(RecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`rank` by default """
 
     def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
 
-class Matches2DocRankDriver(BaseRankDriver):
+class Matches2DocRankDriver(BaseRank):
     """ This driver is intended to only resort the given matches on the 0 level granularity for a document.
     It gets the scores from a Ranking Executor, which does only change the scores of matches.
     Afterwards, the Matches2DocRankDriver resorts all matches for a document.

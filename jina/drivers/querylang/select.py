@@ -3,14 +3,14 @@ __license__ = "Apache-2.0"
 
 from typing import Union, Tuple
 
-from .. import QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver
+from .. import QuerySetReader, RecursiveMixin, BaseRecursiveDriver
 
 # noinspection PyUnreachableCode
 if False:
     from ...types.sets import DocumentSet
 
 
-class ExcludeQL(QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver):
+class ExcludeQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
     """Clean some fields from the document-level protobuf to reduce the total size of the request
         Example::
         - !ExcludeQL

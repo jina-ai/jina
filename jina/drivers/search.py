@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Tuple
 
-from . import BaseExecutableDriver, QuerySetReader, FastRecursiveMixin, RecursiveDriverMixin
+from . import BaseExecutableDriver, QuerySetReader, FastRecursiveMixin, RecursiveMixin
 from ..types.document import Document
 from ..types.score import NamedScore
 
@@ -30,7 +30,7 @@ class BaseSearchDriver(BaseExecutableDriver):
         )
 
 
-class KVSearchDriver(RecursiveDriverMixin, BaseSearchDriver):
+class KVSearch(RecursiveMixin, BaseSearchDriver):
     """Fill in the results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
 
     .. warning::
@@ -78,7 +78,7 @@ class KVSearchDriver(RecursiveDriverMixin, BaseSearchDriver):
             del docs[j]
 
 
-class VectorFillDriver(RecursiveDriverMixin, QuerySetReader, BaseSearchDriver):
+class VectorFill(RecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Fill in the embedding by their document id.
     """
 

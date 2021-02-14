@@ -7,13 +7,13 @@ from ....executors.rankers import Chunk2DocRanker
 from ....types.document import Document
 from ....types.score import NamedScore
 
-from .. import BaseRankDriver
+from .. import BaseRank
 
 if False:
     from ....types.sets import DocumentSet
 
 
-class BaseAggregateMatchesRankerDriver(BaseRankDriver):
+class BaseAggregateMatchesRankerDriver(BaseRank):
     """Drivers inherited from this Driver will focus on aggregating scores from `chunks` to its `parents`."""
 
     def __init__(self,

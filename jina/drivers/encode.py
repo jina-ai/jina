@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import warnings
 from typing import Optional
 
-from . import BaseExecutableDriver, FastRecursiveMixin, RecursiveDriverMixin
+from . import BaseExecutableDriver, FastRecursiveMixin, RecursiveMixin
 from ..types.sets import DocumentSet
 
 
@@ -35,7 +35,7 @@ class EncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
                 doc.embedding = embedding
 
 
-class LegacyEncodeDriver(RecursiveDriverMixin, BaseEncodeDriver):
+class LegacyEncode(RecursiveMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding
     """
 
@@ -84,7 +84,7 @@ class LegacyEncodeDriver(RecursiveDriverMixin, BaseEncodeDriver):
         warnings.warn(f'this drivers will be removed soon, use {EncodeDriver!r} instead', DeprecationWarning)
         self.batch_size = batch_size
         if self.batch_size:
-            self.cache_set = LegacyEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = LegacyEncode.CacheDocumentSet(capacity=self.batch_size)
         else:
             self.cache_set = None
 
@@ -113,7 +113,7 @@ class LegacyEncodeDriver(RecursiveDriverMixin, BaseEncodeDriver):
             cached_docs = self.cache_set.get()
             if len(cached_docs) > 0:
                 self._apply_batch(cached_docs)
-            self.cache_set = LegacyEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = LegacyEncode.CacheDocumentSet(capacity=self.batch_size)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         if self.cache_set is not None:

@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Document, DocumentSet
-from jina.drivers.encode import LegacyEncodeDriver
+from jina.drivers.encode import LegacyEncode
 from jina.executors.encoders import BaseEncoder
 
 
@@ -50,7 +50,7 @@ class MockEncoder(BaseEncoder):
         return data
 
 
-class SimpleEncoderDriverLegacy(LegacyEncodeDriver):
+class SimpleEncoderDriverLegacy(LegacyEncode):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

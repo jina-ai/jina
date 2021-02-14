@@ -4,18 +4,18 @@ __license__ = "Apache-2.0"
 from typing import Tuple
 
 from ...types.querylang.queryset.dunderkey import dunder_get
-from .. import QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver
+from .. import QuerySetReader, RecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ...types.sets import DocumentSet
 
 
-class SortQL(QuerySetReader, RecursiveDriverMixin, BaseExecutableDriver):
+class SortQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
     """Sorts the incoming of the documents by the value of a given field.
      It can also work in reverse mode
 
         Example::
-        - !ReduceAllDriver
+        - !ReduceAll
             with:
                 traversal_paths: ['m']
         - !SortQL

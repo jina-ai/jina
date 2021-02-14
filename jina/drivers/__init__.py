@@ -243,8 +243,8 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return d
 
 
-class RecursiveDriverMixin(BaseDriver):
-    """A mixing  to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseExecutableDriver`
+class RecursiveMixin(BaseDriver):
+    """A mixin to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseRecursiveDriver`
     """
 
     @property
@@ -317,7 +317,7 @@ class RecursiveDriverMixin(BaseDriver):
 
 class FastRecursiveMixin:
     """
-     The optimized version of :class:`RecursiveDriverMixin`, to be mixed in with :class:`BaseExecutableDriver`
+     The optimized version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
      it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
 
      .. seealso::
@@ -337,7 +337,26 @@ class FastRecursiveMixin:
             return self.req.docs.traverse(self._traversal_paths)
 
 
-class BaseExecutableDriver(BaseDriver):
+class BaseRecursiveDriver(BaseDriver):
+    """A :class:`BaseRecursiveDriver` is an abstract Driver class containing information about the `traversal_paths`
+    that a `Driver` must apply its logic.
+    It is intended to be mixed in with either :class:`FastRecursiveMixin` or :class:`RecursiveMixin`
+    """
+
+    def __init__(self,
+                 traversal_paths: Tuple[str] = ('c', 'r'),
+                 *args, **kwargs):
+        """Initialize a :class:`BaseRecursiveDriver`
+
+        :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
+        """
+        super().__init__(*args, **kwargs)
+        self._traversal_paths = [path.lower() for path in traversal_paths]
+
+
+class BaseExecutableDriver(BaseRecursiveDriver):
     """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` and :class:`jina.executors.BaseExecutor`
     It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
     finally it returns the message back to :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`.

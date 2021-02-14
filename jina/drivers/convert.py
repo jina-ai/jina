@@ -1,17 +1,16 @@
-from ..drivers import RecursiveDriverMixin, BaseExecutableDriver
+from ..drivers import RecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ..types.sets import DocumentSet
 
 
-class ConvertDriver(RecursiveDriverMixin, BaseExecutableDriver):
+class Convert(RecursiveMixin, BaseRecursiveDriver):
     """Drivers that make sure that specific conversions are applied to the documents.
 
     .. note::
         The list of functions that can be applied can be found in `:class:`Document`
      """
 
-    # TOOD (This does not fit specifically BaseExecutableDriver)
     def __init__(self, convert_fn: str, *args, **kwargs):
         """
         :param convert_fn: the method name from `:class:`Document` to be applied
@@ -32,41 +31,41 @@ class ConvertDriver(RecursiveDriverMixin, BaseExecutableDriver):
             getattr(d, self._convert_fn)(**self._convert_fn_kwargs)
 
 
-class URI2Buffer(ConvertDriver):
+class URI2Buffer(Convert):
     def __init__(self, convert_fn: str = 'convert_uri_to_buffer', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class URI2DataURI(ConvertDriver):
+class URI2DataURI(Convert):
     def __init__(self, convert_fn: str = 'convert_uri_to_data_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class Buffer2URI(ConvertDriver):
+class Buffer2URI(Convert):
     def __init__(self, convert_fn: str = 'convert_buffer_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class BufferImage2Blob(ConvertDriver):
+class BufferImage2Blob(Convert):
     def __init__(self, convert_fn: str = 'convert_buffer_image_to_blob', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class URI2Blob(ConvertDriver):
+class URI2Blob(Convert):
     def __init__(self, convert_fn: str = 'convert_uri_to_blob', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class Text2URI(ConvertDriver):
+class Text2URI(Convert):
     def __init__(self, convert_fn: str = 'convert_text_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class URI2Text(ConvertDriver):
+class URI2Text(Convert):
     def __init__(self, convert_fn: str = 'convert_uri_to_text', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class Blob2PngURI(ConvertDriver):
+class Blob2PngURI(Convert):
     def __init__(self, convert_fn: str = 'convert_blob_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
