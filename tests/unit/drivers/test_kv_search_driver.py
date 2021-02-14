@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Document, DocumentSet
-from jina.drivers.search import KVSearch
+from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.types.ndarray.generic import NdArray
 
@@ -41,7 +41,7 @@ class MockIndexer(BaseKVIndexer):
             self.db[doc.id] = doc.SerializeToString()
 
 
-class SimpleKVSearchDriver(KVSearch):
+class SimpleKVSearchDriver(KVSearchDriver):
 
     def __init__(self, traversal_paths=['r'], *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)

@@ -12,8 +12,8 @@ if False:
     from ..types.sets import DocumentSet
 
 
-class ReduceAll(RecursiveMixin, BaseRecursiveDriver):
-    """:class:`ReduceAll` merges chunks/matches from all requests, recursively.
+class ReduceAllDriver(RecursiveMixin, BaseRecursiveDriver):
+    """:class:`ReduceAllDriver` merges chunks/matches from all requests, recursively.
 
     .. note::
 
@@ -51,7 +51,7 @@ class ReduceAll(RecursiveMixin, BaseRecursiveDriver):
             getattr(self.doc_pointers[context_doc.id], field).extend(docs)
 
 
-class CollectEvaluationDriver(ReduceAll):
+class CollectEvaluationDriver(ReduceAllDriver):
     """Merge all evaluations into one, grouped by ``doc.id`` """
 
     def _apply_all(
@@ -67,7 +67,7 @@ class CollectEvaluationDriver(ReduceAll):
             self.doc_pointers[context_doc.id].extend(context_doc.evaluations)
 
 
-class ConcatEmbedDriver(ReduceAll):
+class ConcatEmbedDriver(ReduceAllDriver):
     """Concat all embeddings into one, grouped by ```doc.id``` """
 
     def __call__(self, *args, **kwargs):

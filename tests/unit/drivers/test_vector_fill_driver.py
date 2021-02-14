@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Document
-from jina.drivers.search import VectorFill
+from jina.drivers.search import VectorFillDriver
 from jina.executors.indexers import BaseIndexer
 
 
@@ -28,7 +28,7 @@ class MockIndexer(BaseIndexer):
         return np.random.random([len(keys), 5])
 
 
-class SimpleFillDriver(VectorFill):
+class SimpleFillDriver(VectorFillDriver):
 
     @property
     def exec_fn(self):

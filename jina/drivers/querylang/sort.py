@@ -15,7 +15,7 @@ class SortQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
      It can also work in reverse mode
 
         Example::
-        - !ReduceAll
+        - !ReduceAllDriver
             with:
                 traversal_paths: ['m']
         - !SortQL

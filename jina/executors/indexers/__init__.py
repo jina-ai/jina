@@ -339,7 +339,7 @@ class CompoundIndexer(CompoundExecutor):
                   - buffer
                   - blob
                   - text
-            - !KVSearch
+            - !KVSearchDriver
               with:
                 executor: BaseKVIndexer
             IndexRequest:

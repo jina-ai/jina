@@ -13,7 +13,7 @@ class SliceQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
     """Restrict the size of the ``docs`` to ``k`` (given by the request)
 
         Example::
-        - !ReduceAll
+        - !ReduceAllDriver
             with:
                 traversal_paths: ['m']
         - !SortQL

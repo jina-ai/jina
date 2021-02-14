@@ -7,12 +7,12 @@ import numpy
 
 from . import BaseExecutableDriver, RecursiveMixin
 from ..types.querylang.queryset.dunderkey import dunder_get
-from .search import KVSearch
+from .search import KVSearchDriver
 from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair
 
 
-class BaseEvaluate(RecursiveMixin, BaseExecutableDriver):
+class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
     def __init__(self, executor: str = None,
                  method: str = 'evaluate',
                  running_avg: bool = False,
@@ -61,7 +61,7 @@ class BaseEvaluate(RecursiveMixin, BaseExecutableDriver):
 
     def extract(self, doc: 'Document') -> Any:
         """Extracting the to-be-evaluated field from the document.
-        Drivers inherit from :class:`BaseEvaluate` must implement this method.
+        Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
 
         This function will be invoked two times in :meth:`_apply_all`:
         once with actual doc, once with groundtruth doc.
@@ -69,7 +69,7 @@ class BaseEvaluate(RecursiveMixin, BaseExecutableDriver):
         raise NotImplementedError
 
 
-class FieldEvaluateDriver(BaseEvaluate):
+class FieldEvaluateDriver(BaseEvaluateDriver):
     """
     Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`
     """
@@ -139,7 +139,7 @@ class TextEvaluateDriver(FieldEvaluateDriver):
         super().__init__(field, *args, **kwargs)
 
 
-class LoadGroundTruthDriver(KVSearch):
+class LoadGroundTruthDriver(KVSearchDriver):
     """Driver used to search for the `document key` in a KVIndex to find the corresponding groundtruth.
      (This driver does not use the `recursive structure` of jina Documents, and will not consider the `traversal_path` argument.
      It only retrieves `groundtruth` taking documents at root as key)

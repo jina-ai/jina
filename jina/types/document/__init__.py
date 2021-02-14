@@ -620,7 +620,7 @@ class Document(ProtoTypeMixin):
         """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
         set :attr:`blob` accordingly.
 
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
 
         .. note::
             One can only recover values not shape information from pure buffer.
@@ -631,7 +631,7 @@ class Document(ProtoTypeMixin):
         """ Convert an image buffer to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
@@ -644,7 +644,7 @@ class Document(ProtoTypeMixin):
         """ Convert uri to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob((uri_prefix + self.uri) if uri_prefix else self.uri, color_axis)
 
@@ -652,7 +652,7 @@ class Document(ProtoTypeMixin):
         """Convert uri to buffer
         Internally it downloads from the URI and set :attr:`buffer`.
 
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
 
         """
         if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
@@ -671,7 +671,7 @@ class Document(ProtoTypeMixin):
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.convert_uri_to_buffer()
         self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
@@ -684,7 +684,7 @@ class Document(ProtoTypeMixin):
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
          Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
          frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
         if not self.mime_type:
@@ -699,7 +699,7 @@ class Document(ProtoTypeMixin):
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
         Designed to be efficient for non-text 8 bit and binary data.
         Sometimes used for text data that frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
         self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
@@ -707,7 +707,7 @@ class Document(ProtoTypeMixin):
     def convert_uri_to_text(self, **kwargs):
         """Assuming URI is text, convert it to text
 
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.convert_uri_to_buffer()
         self.text = self.buffer.decode()
@@ -715,7 +715,7 @@ class Document(ProtoTypeMixin):
     def convert_content_to_uri(self, **kwargs):
         """Convert content in URI with best effort
 
-        :param kwargs: reserved for maximum compatibility when using with Convert
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         if self.text:
             self.convert_text_to_uri()

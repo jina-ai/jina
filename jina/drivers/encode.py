@@ -35,7 +35,7 @@ class EncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
                 doc.embedding = embedding
 
 
-class LegacyEncode(RecursiveMixin, BaseEncodeDriver):
+class LegacyEncodeDriver(RecursiveMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding
     """
 
@@ -84,7 +84,7 @@ class LegacyEncode(RecursiveMixin, BaseEncodeDriver):
         warnings.warn(f'this drivers will be removed soon, use {EncodeDriver!r} instead', DeprecationWarning)
         self.batch_size = batch_size
         if self.batch_size:
-            self.cache_set = LegacyEncode.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = LegacyEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
         else:
             self.cache_set = None
 
@@ -113,7 +113,7 @@ class LegacyEncode(RecursiveMixin, BaseEncodeDriver):
             cached_docs = self.cache_set.get()
             if len(cached_docs) > 0:
                 self._apply_batch(cached_docs)
-            self.cache_set = LegacyEncode.CacheDocumentSet(capacity=self.batch_size)
+            self.cache_set = LegacyEncodeDriver.CacheDocumentSet(capacity=self.batch_size)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         if self.cache_set is not None:

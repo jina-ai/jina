@@ -5,7 +5,7 @@ from pkg_resources import resource_filename
 
 from jina.drivers import BaseDriver
 from jina.drivers.control import ControlReqDriver
-from jina.drivers.search import KVSearch
+from jina.drivers.search import KVSearchDriver
 from jina.executors import BaseExecutor
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser
@@ -18,7 +18,7 @@ def test_load_yaml1(tmpdir):
     with open(os.path.join(cur_dir, 'yaml/test-driver.yml'), encoding='utf8') as fp:
         a = JAML.load(fp)
 
-    assert isinstance(a[0], KVSearch)
+    assert isinstance(a[0], KVSearchDriver)
     assert isinstance(a[1], ControlReqDriver)
     assert isinstance(a[2], BaseDriver)
 
@@ -28,7 +28,7 @@ def test_load_yaml1(tmpdir):
     with open(os.path.join(tmpdir, 'test_driver.yml'), encoding='utf8') as fp:
         b = JAML.load(fp)
 
-    assert isinstance(b, KVSearch)
+    assert isinstance(b, KVSearchDriver)
     assert b._executor_name == a[0]._executor_name
 
 

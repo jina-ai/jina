@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from jina.executors.encoders import BaseEncoder
-from jina.drivers.encode import LegacyEncode
+from jina.drivers.encode import LegacyEncodeDriver
 from jina.flow import Flow
 from jina import Document, NdArray
 
@@ -94,7 +94,7 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
 
     def validate_response(resp):
         valid_resp_length = (len(resp.search.docs) == request_size) or (
-                    len(resp.search.docs) == num_docs_last_req_batch)
+                len(resp.search.docs) == num_docs_last_req_batch)
         assert valid_resp_length
         for doc in resp.search.docs:
             assert NdArray(doc.embedding).value is not None
@@ -106,8 +106,8 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
                           num_docs_in_same_request=request_size,
                           total_num_docs=num_docs)
 
-    driver = LegacyEncode(batch_size=driver_batch_size,
-                          traversal_paths=('r',))
+    driver = LegacyEncodeDriver(batch_size=driver_batch_size,
+                                traversal_paths=('r',))
 
     encoder._drivers.clear()
     encoder._drivers['SearchRequest'] = [driver]
@@ -134,7 +134,7 @@ def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num
 
     def validate_response(resp):
         valid_resp_length = (len(resp.search.docs) == request_size) or (
-                    len(resp.search.docs) == num_docs_last_req_batch)
+                len(resp.search.docs) == num_docs_last_req_batch)
         assert valid_resp_length
         for doc in resp.search.docs:
             assert NdArray(doc.embedding).value is not None
@@ -147,11 +147,11 @@ def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num
         assert False
 
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
-                          num_docs_in_same_request=request_size + request_size*num_chunks + request_size*num_chunks*num_chunks_chunks,
-                          total_num_docs=num_docs + num_docs*num_chunks + num_docs*num_chunks*num_chunks_chunks)
+                          num_docs_in_same_request=request_size + request_size * num_chunks + request_size * num_chunks * num_chunks_chunks,
+                          total_num_docs=num_docs + num_docs * num_chunks + num_docs * num_chunks * num_chunks_chunks)
 
-    driver = LegacyEncode(batch_size=driver_batch_size,
-                          traversal_paths=('r', 'c', 'cc'))
+    driver = LegacyEncodeDriver(batch_size=driver_batch_size,
+                                traversal_paths=('r', 'c', 'cc'))
 
     encoder._drivers.clear()
     encoder._drivers['SearchRequest'] = [driver]

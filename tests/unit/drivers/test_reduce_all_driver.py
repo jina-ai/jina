@@ -60,7 +60,7 @@ def test_merge_chunks_with_different_modality(mocker, docs):
     flow = Flow().add(name='segmenter', uses='MockSegmenterReduce'). \
         add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
         add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter']). \
-        add(name='reducer', uses='- !ReduceAll | {traversal_paths: [c]}',
+        add(name='reducer', uses='- !ReduceAllDriver | {traversal_paths: [c]}',
             needs=['encoder1', 'encoder2'])
 
     with flow:

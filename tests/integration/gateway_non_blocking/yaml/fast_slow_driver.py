@@ -8,7 +8,7 @@ if False:
     from jina import DocumentSet
 
 
-class FastSlow(RecursiveMixin, BaseExecutableDriver):
+class FastSlowDriver(RecursiveMixin, BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 

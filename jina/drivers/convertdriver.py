@@ -4,7 +4,7 @@ if False:
     from ..types.sets import DocumentSet
 
 
-class Convert(RecursiveMixin, BaseRecursiveDriver):
+class ConvertDriver(RecursiveMixin, BaseRecursiveDriver):
     """Drivers that make sure that specific conversions are applied to the documents.
 
     .. note::
@@ -31,41 +31,41 @@ class Convert(RecursiveMixin, BaseRecursiveDriver):
             getattr(d, self._convert_fn)(**self._convert_fn_kwargs)
 
 
-class URI2Buffer(Convert):
+class URI2Buffer(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_uri_to_buffer', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class URI2DataURI(Convert):
+class URI2DataURI(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_uri_to_data_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class Buffer2URI(Convert):
+class Buffer2URI(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_buffer_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class BufferImage2Blob(Convert):
+class BufferImage2Blob(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_buffer_image_to_blob', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class URI2Blob(Convert):
+class URI2Blob(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_uri_to_blob', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class Text2URI(Convert):
+class Text2URI(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_text_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class URI2Text(Convert):
+class URI2Text(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_uri_to_text', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
-class Blob2PngURI(Convert):
+class Blob2PngURI(ConvertDriver):
     def __init__(self, convert_fn: str = 'convert_blob_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)

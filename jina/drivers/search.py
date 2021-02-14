@@ -30,7 +30,7 @@ class BaseSearchDriver(BaseExecutableDriver):
         )
 
 
-class KVSearch(RecursiveMixin, BaseSearchDriver):
+class KVSearchDriver(RecursiveMixin, BaseSearchDriver):
     """Fill in the results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
 
     .. warning::
@@ -78,7 +78,7 @@ class KVSearch(RecursiveMixin, BaseSearchDriver):
             del docs[j]
 
 
-class VectorFill(RecursiveMixin, QuerySetReader, BaseSearchDriver):
+class VectorFillDriver(RecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Fill in the embedding by their document id.
     """
 

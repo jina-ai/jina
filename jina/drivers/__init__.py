@@ -367,20 +367,17 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
     def __init__(self, executor: Optional[str] = None,
                  method: Optional[str] = None,
-                 traversal_paths: Tuple[str] = ('c', 'r'),
                  *args, **kwargs):
         """Initialize a :class:`BaseExecutableDriver`
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
-        :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
         :param *args: *args for super
         :param **kwargs: **kwargs for super
         """
         super().__init__(*args, **kwargs)
         self._executor_name = executor
         self._method_name = method
-        self._traversal_paths = [path.lower() for path in traversal_paths]
         self._exec = None
         self._exec_fn = None
 
