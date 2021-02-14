@@ -19,6 +19,7 @@ class BaseCacheDriver(BaseIndexDriver):
     """
 
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
+        """Set constructor method."""
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
         self.field = None

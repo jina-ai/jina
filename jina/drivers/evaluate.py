@@ -13,24 +13,28 @@ from ..types.document.helper import DocGroundtruthPair
 
 
 class BaseEvaluateDriver(BaseExecutableDriver):
+    """
+    Drivers inherited from this Driver will bind :meth:`evaluate` by default.
+
+    :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+    :param method: the function name of the executor that the driver feeds to
+    :param running_avg: always return running average instead of value of the current run
+    :param *args:
+    :param **kwargs:
+
+    .. warning::
+
+        When ``running_avg=True``, then the running mean is returned. So far at Jina 0.8.10,
+         there is no way to reset the running statistics. If you have a query Flow running multiple queries,
+         you may want to make sure the running statistics is meaningful across multiple runs.
+    """
+
     def __init__(self, executor: str = None,
                  method: str = 'evaluate',
                  running_avg: bool = False,
                  *args,
                  **kwargs):
-        """
-        :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
-        :param method: the function name of the executor that the driver feeds to
-        :param running_avg: always return running average instead of value of the current run
-        :param *args:
-        :param **kwargs:
-
-        .. warning::
-
-            When ``running_avg=True``, then the running mean is returned. So far at Jina 0.8.10,
-             there is no way to reset the running statistics. If you have a query Flow running multiple queries,
-             you may want to make sure the running statistics is meaningful across multiple runs.
-        """
+        """Set constructor method."""
         super().__init__(executor, method, *args, **kwargs)
         self._running_avg = running_avg
 
@@ -60,7 +64,7 @@ class BaseEvaluateDriver(BaseExecutableDriver):
             evaluation.ref_id = groundtruth.id
 
     def extract(self, doc: 'Document') -> Any:
-        """Extracting the to-be-evaluated field from the document.
+        """Extract the to-be-evaluated field from the document.
         Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
 
         This function will be invoked two times in :meth:`_apply_all`:
@@ -72,21 +76,25 @@ class BaseEvaluateDriver(BaseExecutableDriver):
 class FieldEvaluateDriver(BaseEvaluateDriver):
     """
     Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`
+
+    :param field: the field name to be extracted from the Protobuf
+    :param *args:
+    :param **kwargs:
     """
 
     def __init__(self, field: str,
                  *args,
                  **kwargs):
-        """
-
-        :param field: the field name to be extracted from the Protobuf
-        :param *args:
-        :param **kwargs:
-        """
+        """Set constructor method."""
         super().__init__(*args, **kwargs)
         self.field = field
 
     def extract(self, doc: 'Document') -> Any:
+        """Extract the to-be-evaluated field from the document.
+
+        This function will be invoked two times in :meth:`_apply_all`:
+        once with actual doc, once with groundtruth doc.
+        """
         return dunder_get(doc, self.field)
 
 
@@ -95,20 +103,25 @@ class RankEvaluateDriver(FieldEvaluateDriver):
 
         - Example fields:
         ['tags__id', 'id', 'score__value]
+
+    :param field: the field name to be extracted from the Protobuf
+    :param *args:
+    :param **kwargs:
     """
 
     def __init__(self,
                  field: str = 'tags__id',
                  *args,
                  **kwargs):
-        """
-        :param field: the field name to be extracted from the Protobuf
-        :param *args:
-        :param **kwargs:
-        """
+        """Set constructor method."""
         super().__init__(field, *args, **kwargs)
 
     def extract(self, doc: 'Document'):
+        """Extract the to-be-evaluated field from the matches of the document.
+
+        This function will be invoked two times in :meth:`_apply_all`:
+        once with actual doc, once with groundtruth doc.
+        """
         r = [dunder_get(x, self.field) for x in doc.matches]
         # flatten nested list but useless depth, e.g. [[1,2,3,4]]
         return list(numpy.array(r).flat)
@@ -124,6 +137,7 @@ class NDArrayEvaluateDriver(FieldEvaluateDriver):
     """
 
     def __init__(self, field: str = 'embedding', *args, **kwargs):
+        """Set constructor method."""
         super().__init__(field, *args, **kwargs)
 
 
@@ -136,6 +150,7 @@ class TextEvaluateDriver(FieldEvaluateDriver):
     """
 
     def __init__(self, field: str = 'text', *args, **kwargs):
+        """Set constructor method."""
         super().__init__(field, *args, **kwargs)
 
 

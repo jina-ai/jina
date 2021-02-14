@@ -9,12 +9,19 @@ from ..types.sets import DocumentSet
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
-    """Drivers inherited from this Driver will bind :meth:`encode` by default """
+    """Drivers inherited from this Driver will bind :meth:`encode` by default.
+
+    :param executor: Name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+    :param method: The function name of the executor that the driver feeds to, by default is 'encode'.
+    :param args:
+    :param kwargs:
+    """
 
     def __init__(self,
                  executor: str = None,
                  method: str = 'encode',
                  *args, **kwargs):
+        """Set constructor method."""
         super().__init__(executor, method, *args, **kwargs)
 
 
@@ -40,7 +47,7 @@ class LegacyEncodeDriver(BaseEncodeDriver):
     """
 
     class CacheDocumentSet:
-        """Helper class to accumulate documents from differents document Set in a single DocumentSet
+        """Helper class to accumulate documents from different document Set in a single DocumentSet
          to help guarantee that the encoder driver can consume documents in fixed batch sizes to allow
          the EncoderExecutors to leverage its batching abilities.
          It is useful to have batching even when chunks are involved"""
@@ -48,15 +55,18 @@ class LegacyEncodeDriver(BaseEncodeDriver):
         def __init__(self,
                      capacity: Optional[int] = None,
                      *args, **kwargs):
+            """Set constructor method."""
             super().__init__(*args, **kwargs)
             self.capacity = capacity
             self._doc_set = DocumentSet(docs_proto=[])
 
         @property
         def available_capacity(self):
+            """Get the available capacity of DocumentSet."""
             return self.capacity - len(self._doc_set)
 
         def cache(self, docs: DocumentSet):
+            """Cache the :param:`docs` into current DocumentSet."""
             docs_to_append = min(len(docs), self.available_capacity)
             self._doc_set.extend(docs[: docs_to_append])
             return DocumentSet(docs[docs_to_append:])

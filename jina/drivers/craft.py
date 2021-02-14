@@ -10,9 +10,16 @@ if False:
 
 
 class CraftDriver(BaseExecutableDriver):
-    """Drivers inherited from this Driver will bind :meth:`craft` by default """
+    """Drivers inherited from this Driver will bind :meth:`craft` by default.
+
+    :param executor: Name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+    :param method: the function name of the executor that the driver feeds to, by default is 'craft'.
+    :param args:
+    :param kwargs:
+    """
 
     def __init__(self, executor: Optional[str] = None, method: str = 'craft', *args, **kwargs):
+        """Set constructor method."""
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
