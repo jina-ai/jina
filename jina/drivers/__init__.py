@@ -172,6 +172,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
 
     def __init__(self, priority: int = 0, *args, **kwargs):
+        """Set constructor method."""
         self.attached = False  # : represent if this driver is attached to a
         # :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` (& :class:`jina.executors.BaseExecutor`)
         self.runtime = None  # type: Optional['ZEDRuntime']
@@ -215,6 +216,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     @property
     def queryset(self) -> 'QueryLangSet':
+        """Get the current queryset, shortcut to ``self.msg.request.queryset``."""
         if self.msg:
             return self.msg.request.queryset
         else:
@@ -250,11 +252,13 @@ class BaseRecursiveDriver(BaseDriver):
     """
 
     def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
+        """Set constructor method."""
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
 
     @property
     def docs(self):
+        """Return the docs."""
         if self.expect_parts > 1:
             return (d for r in reversed(self.partial_reqs) for d in r.docs)
         else:
@@ -336,6 +340,7 @@ class FastRecursiveMixin:
 
     @property
     def docs(self) -> 'DocumentSet':
+        """Return the docs in :class:`DocumentSet` type."""
         from ..types.sets import DocumentSet
 
         if self.expect_parts > 1:
