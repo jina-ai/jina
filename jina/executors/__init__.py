@@ -293,7 +293,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         del d['logger']
         for k in self._post_init_vars:
             del d[k]
-        cached = [k for k in d.keys() if k.startswith('CACHED_')]
+        cached = [k for k in d if k.startswith('CACHED_')]
         for k in cached:
             del d[k]
         return d

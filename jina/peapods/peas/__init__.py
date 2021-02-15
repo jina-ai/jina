@@ -181,7 +181,7 @@ class BasePea(metaclass=PeaType):
 
     def _unset_envs(self):
         if self._envs and self.args.runtime_backend != RuntimeBackendType.THREAD:
-            for k in self._envs.keys():
+            for k in self._envs:
                 os.unsetenv(k)
 
     def __enter__(self):
