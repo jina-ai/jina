@@ -43,7 +43,9 @@ class MockIndexer(BaseKVIndexer):
 
 class SimpleKVSearchDriver(KVSearchDriver):
 
-    def __init__(self, traversal_paths=['r'], *args, **kwargs):
+    def __init__(self, traversal_paths=None, *args, **kwargs):
+        if traversal_paths is None:
+            traversal_paths = ['r']
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     @property
