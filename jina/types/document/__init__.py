@@ -454,7 +454,7 @@ class Document(ProtoTypeMixin):
         .. note::
             Arguments not contained inside the `DocumentProto` definition, will be automatically extracted from `tags`.
             All those arguments not in `DocumentProto` or not found in `tags` of the `Document`, will be extracted using `dunder_get`
-            while keeping only the second part of the "dunderkey" ar key of the returned Dict. When this second part collides
+            while keeping only the second part of the "dunderkey" as key of the returned Dict. When this second part collides
             with the name of a `field` of `DocumentProto`, the full "dunderkey" is used as key.
 
             .. highlight:: python
