@@ -6,6 +6,10 @@ from ....helper import random_port
 
 
 def mixin_remote_parser(parser):
+    """
+    Add the options for remote expose
+    :param parser: the parser
+    """
     gp = add_arg_group(parser, title='Expose')
 
     gp.add_argument('--host', type=str, default=__default_host__,
@@ -18,6 +22,10 @@ def mixin_remote_parser(parser):
 
 
 def mixin_grpc_parser(parser=None):
+    """
+    Add the options for gRPC
+    :param parser: the parser
+    """
     gp = add_arg_group(parser, title='GRPC/REST')
 
     gp.add_argument('--max-message-size', type=int, default=-1,

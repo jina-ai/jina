@@ -8,6 +8,12 @@ from ..enums import FlowOptimizeLevel, FlowInspectType
 
 
 def set_flow_parser(parser=None):
+    """
+    Set the parser for the flow
+
+    :param parser: an (optional) initial parser to build upon
+    :return: the parser
+    """
     if not parser:
         parser = set_base_parser()
 

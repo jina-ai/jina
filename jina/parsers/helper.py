@@ -11,6 +11,13 @@ if _SHOW_ALL_ARGS:
 
 
 def add_arg_group(parser, title):
+    """
+    Add the arguments for a specific group to the parser
+
+    :param parser: the parser configure
+    :param title: the group name
+    :return: the new parser
+    """
     return parser.add_argument_group(f'{title} arguments')
 
 
@@ -32,6 +39,15 @@ class KVAppendAction(argparse.Action):
     """
 
     def __call__(self, parser, args, values, option_string=None):
+        """
+        call the KVAppendAction
+
+        # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
         import json
         d = getattr(args, self.dest) or {}
         for value in values:
@@ -54,6 +70,15 @@ class DockerKwargsAppendAction(argparse.Action):
     """
 
     def __call__(self, parser, args, values, option_string=None):
+        """
+        call the DockerKwargsAppendAction
+
+        # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
         import json
         d = getattr(args, self.dest) or {}
 
