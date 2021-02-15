@@ -470,11 +470,19 @@ class Document(ProtoTypeMixin):
                 assert res['tags__good'] == 'bye' # true
                 assert res['tags__id'] == 'external_id' # true
         """
+
         ret = {}
         for k in args:
             try:
-                ret[k] = dunder_get(self._pb_body, k)
+                value = getattr(self, k)
+                ret[k] = value
+                continue
             except AttributeError:
+                pass
+            try:
+                value = dunder_get(self._pb_body, k)
+                ret[k] = value
+            except (AttributeError, ValueError):
                 ret[k] = None
         return ret
 

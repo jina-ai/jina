@@ -520,3 +520,25 @@ def test_get_attr():
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
     res = d.get_attrs(*['tags__outterkey__innerkey'])
     assert res['tags__outterkey__innerkey'] == 'real_value'
+
+
+def test_pb_obj2dict():
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        document.tags['id'] = 'id in tags'
+        document.tags['inner_dict'] = {'id': 'id in inner_dict'}
+        with Document() as chunk:
+            chunk.text = 'text in chunk'
+            chunk.tags['id'] = 'id in chunk tags'
+        document.chunks.add(chunk)
+    res = document.get_attrs('text', 'tags', 'chunks')
+    assert res['text'] == 'this is text'
+    assert res['tags']['id'] == 'id in tags'
+    assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
+    rcs = list(res['chunks'])
+    assert len(rcs) == 1
+    print(f' rcs[0] => {type(rcs[0])}')
+    assert isinstance(rcs[0], Document)
+    assert rcs[0].text == 'text in chunk'
+    assert rcs[0].tags['id'] == 'id in chunk tags'
