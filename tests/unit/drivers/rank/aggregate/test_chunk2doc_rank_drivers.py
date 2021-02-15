@@ -21,8 +21,7 @@ class MockMinRanker(Chunk2DocRanker):
 
 class MockLengthRanker(Chunk2DocRanker):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.required_keys = {'length'}
+        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         return match_idx[0][self.COL_MATCH_PARENT_ID], match_chunk_meta[match_idx[0][self.COL_MATCH_ID]]['length']

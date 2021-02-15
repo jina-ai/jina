@@ -50,10 +50,10 @@ class Matches2DocRankDriver(BaseRankDriver):
         """
 
         # if at the top-level already, no need to aggregate further
-        query_meta = context_doc.get_attrs(*self.exec.required_keys)
+        query_meta = context_doc.get_attrs(*self.exec.query_required_keys) if self.exec.query_required_keys else None
 
         old_match_scores = {match.id: match.score.value for match in docs}
-        match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs}
+        match_meta = {match.id: match.get_attrs(*self.exec.match_required_keys) for match in docs} if self.exec.match_required_keys else None
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return

@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
@@ -10,6 +10,15 @@ from .. import BaseExecutor
 
 class BaseRanker(BaseExecutor):
     """The base class for a `Ranker`"""
+
+    def __init__(self,
+                 query_required_keys: Optional[Tuple[str]],
+                 match_required_keys: Optional[Tuple[str]],
+                 *args,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.query_required_keys = query_required_keys
+        self.match_required_keys = match_required_keys
 
     def score(self, *args, **kwargs):
         raise NotImplementedError
@@ -30,7 +39,6 @@ class Chunk2DocRanker(BaseRanker):
 
     """
 
-    required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
     COL_MATCH_PARENT_ID = 'match_parent_id'
     COL_MATCH_ID = 'match_id'
     COL_DOC_CHUNK_ID = 'doc_chunk_id'
