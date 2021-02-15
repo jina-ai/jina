@@ -119,10 +119,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                        not q.disabled
-                        and self.__class__.__name__ == q.name
-                        and q.priority > self._priority
-                        and key in q.parameters
+                    not q.disabled
+                    and self.__class__.__name__ == q.name
+                    and q.priority > self._priority
+                    and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -255,23 +255,23 @@ class RecursiveMixin(BaseDriver):
             return self.req.docs
 
     def _apply_root(
-            self,
-            docs: 'DocumentSet',
-            field: str,
-            *args,
-            **kwargs,
+        self,
+        docs: 'DocumentSet',
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
         return self._apply_all(docs, None, field, *args, **kwargs)
 
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
     def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
-            *args,
-            **kwargs,
+        self,
+        docs: 'DocumentSet',
+        context_doc: 'Document',
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
@@ -331,8 +331,11 @@ class FastRecursiveMixin:
     @property
     def docs(self) -> 'DocumentSet':
         from ..types.sets import DocumentSet
+
         if self.expect_parts > 1:
-            return DocumentSet((d for r in reversed(self.partial_reqs) for d in r.docs)).traverse(self._traversal_paths)
+            return DocumentSet(
+                (d for r in reversed(self.partial_reqs) for d in r.docs)
+            ).traverse(self._traversal_paths)
         else:
             return self.req.docs.traverse(self._traversal_paths)
 
@@ -393,8 +396,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         :return: the Callable to execute in the driver
         """
         if (
-                not self.msg.is_error
-                or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
+            not self.msg.is_error
+            or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
         ):
             return self._exec_fn
         else:
@@ -414,7 +417,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break

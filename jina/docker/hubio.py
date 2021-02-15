@@ -385,7 +385,8 @@ class HubIO:
                                                                         self.args.test_level,
                                                                         self.config_yaml_path,
                                                                         self.args.timeout_ready,
-                                                                        self.args.daemon)
+                                                                        self.args.daemon,
+                                                                        self.logger)
                         if any(test_level in failed_test_levels for test_level in
                                [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
                             is_build_success = False
@@ -467,30 +468,38 @@ class HubIO:
                     test_level: 'BuildTestLevel',
                     config_yaml_path: str,
                     timeout_ready: int,
-                    daemon_arg: bool):
+                    daemon_arg: bool,
+                    logger: 'JinaLogger'):
         p_names = []
         failed_levels = []
-
+        logger.info(f'run tests using test level {test_level}')
         # test uses at executor level
         if test_level >= BuildTestLevel.EXECUTOR:
+            logger.info(f'test to initialize an executor from yaml configuration: {config_yaml_path}')
             try:
                 with BaseExecutor.load_config(config_yaml_path):
                     pass
+                logger.info(f'successfully tested to initialize an executor')
             except:
+                logger.error(f'failed to initialize an executor')
                 failed_levels.append(BuildTestLevel.EXECUTOR)
 
         # test uses at Pod level (no docker)
         if test_level >= BuildTestLevel.POD_NONDOCKER:
+            logger.info(f'test to initialize a pod from yaml configuration: {config_yaml_path}')
             try:
                 with Pod(set_pod_parser().parse_args(
                         ['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
                     pass
+                logger.info(f'successfully tested to initialize a pod from yaml configuration')
             except:
+                logger.error(f'failed to initialize a pod')
                 failed_levels.append(BuildTestLevel.POD_NONDOCKER)
 
         # test uses at Pod level (with docker)
         if test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
+            logger.info(f'test to initialize a pod via docker image {image.tags[0]} named {p_name}')
             try:
                 with Pod(set_pod_parser().parse_args(
                         ['--uses', f'docker://{image.tags[0]}', '--name', p_name, '--timeout-ready',
@@ -498,20 +507,25 @@ class HubIO:
                         ['--daemon'] if daemon_arg else [])):
                     pass
                 p_names.append(p_name)
+                logger.info(f'successfully tested to initialize a pod via docker')
             except:
+                logger.error(f'failed to initialize a pod via docker image')
                 failed_levels.append(BuildTestLevel.POD_DOCKER)
 
         # test uses at Flow level
         if test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
+            logger.info(f'test to build a flow from docker image {image.tags[0]} named {p_name} '
+                        f'with daemon={daemon_arg} and timeout_ready={timeout_ready}')
             try:
-                with Flow().add(name=random_name(), uses=f'docker://{image.tags[0]}', daemon=daemon_arg,
+                with Flow().add(name=p_name, uses=f'docker://{image.tags[0]}', daemon=daemon_arg,
                                 timeout_ready=timeout_ready):
                     pass
                 p_names.append(p_name)
+                logger.info('successfully tested to build a flow from docker image')
             except:
+                logger.error(f'failed to build a flow from docker image')
                 failed_levels.append(BuildTestLevel.FLOW)
-
         return p_names, failed_levels
 
     def dry_run(self) -> Dict:

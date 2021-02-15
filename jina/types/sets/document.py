@@ -211,7 +211,7 @@ class DocumentSet(MutableSequence):
 
         if bad_docs and docs_pts:
             default_logger.warning(
-                f'these docs at granularity {docs_pts[0].granularity} do not have content: {bad_docs}')
+                f'found {len(bad_docs)} no-content docs at granularity {docs_pts[0].granularity}')
 
         return contents, DocumentSet(docs_pts)
 

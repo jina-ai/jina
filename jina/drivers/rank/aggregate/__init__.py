@@ -14,7 +14,7 @@ if False:
 
 
 class BaseAggregateMatchesRankerDriver(BaseRankDriver):
-    """Drivers inherited from this Driver will focus on aggregating scores from `chunks` to its `parents`."""
+    """Drivers inherited from this Driver focus on aggregating scores from `chunks` to its `parents`."""
 
     def __init__(self,
                  keep_source_matches_as_chunks: bool = False,
@@ -22,15 +22,15 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
                  **kwargs):
         """
 
-        `keep_old_matches_as_chunks` is useful to keep track of the chunks that lead to a retrieved result.
-
-        .. note::
-            - The chunks of the matches will only contain the chunks that lead to the document matching, not all the chunks of the match.
-
         :param keep_source_matches_as_chunks: A flag to indicate if the driver must return the old matches of the query or its chunks
             (at a greater granularity level (k + 1)) as the chunks of the new computed `matches` (at granularity level k)
+            Set it to `True` when keeping track of the chunks that lead to a retrieved result.
         :param *args: *args for super
         :param **kwargs: **kwargs for super
+
+        .. note::
+            When set `keep_source_matches_as_chunks=True`, the chunks of the match contains **ONLY** the chunks leading
+            to the match rather than **ALL** the chunks of the match.
 
         """
         super().__init__(*args, **kwargs)
