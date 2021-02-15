@@ -816,7 +816,7 @@ Example code to build your own projects
       <h1>📄</h1>
     </td>
     <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences">Semantic Wikipedia Search with Transformers and DistilBERT</a></h4>
+      <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences">NLP Semantic Wikipedia Search with Transformers and DistilBERT</a></h4>
       Brand new to neural search? See a simple text-search example to understand how Jina works
     </td>
   </tr>
@@ -827,15 +827,6 @@ Example code to build your own projects
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental">Add Incremental Indexing to Wikipedia Search</a></h4>
       Index more effectively by adding incremental indexing to your Wikipedia search
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h1>📄</h1>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences">Build a NLP Semantic Search System with Transformers</a></h4>
-      Upgrade from plain search to sentence search and practice your Flows and Pods by searching sentences from Wikipedia
     </td>
   </tr>
   <tr>
