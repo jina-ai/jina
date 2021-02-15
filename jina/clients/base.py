@@ -65,7 +65,7 @@ class BaseClient:
 
         :param input_fn: the input function
         """
-        if hasattr(input_fn, '__call__'):
+        if callable(input_fn):
             input_fn = input_fn()
 
         kwargs['data'] = input_fn
@@ -117,7 +117,7 @@ class BaseClient:
 
     @input_fn.setter
     def input_fn(self, bytes_gen: InputFnType) -> None:
-        if hasattr(bytes_gen, '__call__'):
+        if callable(bytes_gen):
             self._input_fn = bytes_gen()
         else:
             self._input_fn = bytes_gen
