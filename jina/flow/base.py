@@ -220,7 +220,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         # pod naming logic
-        pod_name = kwargs.get('name', None)
+        pod_name = kwargs.get('name')
 
         if pod_name in op_flow._pod_nodes:
             new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
