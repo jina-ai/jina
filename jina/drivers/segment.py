@@ -28,7 +28,7 @@ class SegmentDriver(BaseExecutableDriver):
             _args_dict = doc.get_attrs(*self.exec.required_keys)
             ret = self.exec_fn(**_args_dict)
             if ret:
-                SegmentDriver._update(doc, ret)
+                self._update(doc, ret)
 
     @staticmethod
     def _update(doc, ret):

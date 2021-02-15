@@ -1,4 +1,5 @@
 import base64
+import io
 import json
 import mimetypes
 import os
@@ -12,7 +13,7 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .converters import png_to_buffer, to_datauri, guess_mime
+from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray
 from ..score import NamedScore
@@ -186,21 +187,27 @@ class Document(ProtoTypeMixin):
 
     @property
     def length(self) -> int:
+        """Get the length of of the document."""
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
         return self._pb_body.length
 
     @length.setter
     def length(self, value: int):
+        """
+        Set the length of of the document.
+
+        :param value: The int length of the document
+        """
         self._pb_body.length = value
 
     @property
     def weight(self) -> float:
-        """Returns the weight of the document """
+        """Return the weight of the document."""
         return self._pb_body.weight
 
     @weight.setter
     def weight(self, value: float):
-        """Set the weight of the document
+        """Set the weight of the document.
 
         :param value: the float weight of the document.
         """
@@ -208,17 +215,109 @@ class Document(ProtoTypeMixin):
 
     @property
     def modality(self) -> str:
-        """Get the modality of the document """
+        """Get the modality of the document."""
         return self._pb_body.modality
 
     @modality.setter
     def modality(self, value: str):
-        """Set the modality of the document"""
+        """Set the modality of the document."""
         self._pb_body.modality = value
 
     @property
     def content_hash(self):
+        """Get the content hash of the document."""
         return self._pb_body.content_hash
+
+    @staticmethod
+    def _update(source: 'Document',
+                destination: 'Document',
+                exclude_fields: Optional[Tuple[str]] = None,
+                include_fields: Optional[Tuple[str]] = None,
+                replace_message_field: bool = True,
+                replace_repeated_field: bool = True) -> None:
+        """Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
+
+        :param source: source :class:`Document` object.
+        :param destination: the destination :class:`Document` object to be merged into.
+        :param exclude_fields: a tuple of field names that excluded from destination document
+        :param include_fields: a tuple of field names that included from source document
+        :param replace_message_field: Replace message field if True. Merge message
+                  field if False.
+        :param replace_repeated_field: Replace repeated field if True. Append
+                  elements of repeated field if False.
+
+        .. note::
+            *. if neither ``exclude_fields`` nor ``include_fields`` is given,
+                then destination is overrided by the source completely.
+            *. ``destination`` will be modified in place, ``source`` will be unchanged
+        """
+
+        if not include_fields and not exclude_fields:
+            # same behavior as copy
+            destination.CopyFrom(source)
+        elif include_fields is not None and exclude_fields is None:
+            FieldMask(paths=include_fields).MergeMessage(source.proto, destination.proto,
+                                                         replace_message_field=replace_message_field,
+                                                         replace_repeated_field=replace_repeated_field)
+        elif exclude_fields is not None:
+            empty_doc = jina_pb2.DocumentProto()
+
+            _dest = jina_pb2.DocumentProto()
+            # backup exclude fields in destination
+            FieldMask(paths=exclude_fields).MergeMessage(destination.proto, _dest,
+                                                         replace_repeated_field=True,
+                                                         replace_message_field=True)
+
+            if include_fields is None:
+                # override dest with src
+                destination.CopyFrom(source)
+            else:
+                # only update include fields
+                FieldMask(paths=include_fields).MergeMessage(source.proto, destination.proto,
+                                                             replace_message_field=replace_message_field,
+                                                             replace_repeated_field=replace_repeated_field)
+
+            # clear the exclude fields
+            FieldMask(paths=exclude_fields).MergeMessage(empty_doc, destination.proto,
+                                                         replace_repeated_field=True,
+                                                         replace_message_field=True)
+
+            # recover exclude fields
+            destination.proto.MergeFrom(_dest)
+
+    def update(self, source: 'Document',
+               exclude_fields: Optional[Tuple[str, ...]] = None,
+               include_fields: Optional[Tuple[str, ...]] = None) -> None:
+        """Updates fields specified in ``include_fields`` from the source to current Document.
+
+        :param source: source :class:`Document` object.
+        :param exclude_fields: a tuple of field names that excluded from the current document,
+                when not given the non-empty fields of the current document is considered as ``exclude_fields``
+        :param include_fields: a tuple of field names that included from the source document
+
+        .. note::
+            *. ``destination`` will be modified in place, ``source`` will be unchanged
+        """
+        if (include_fields and not isinstance(include_fields, tuple)) or (
+                exclude_fields and not isinstance(exclude_fields, tuple)):
+            raise TypeError('include_fields and exclude_fields must be tuple of str')
+
+        if exclude_fields is None:
+            if include_fields:
+                exclude_fields = tuple(f for f in self.non_empty_fields if f not in include_fields)
+            else:
+                exclude_fields = self.non_empty_fields
+
+        if include_fields and exclude_fields:
+            _intersect = set(include_fields).intersection(exclude_fields)
+            if _intersect:
+                raise ValueError(f'{_intersect} is in both `include_fields` and `exclude_fields`')
+
+        self._update(source, self,
+                     exclude_fields=exclude_fields,
+                     include_fields=include_fields,
+                     replace_message_field=True,
+                     replace_repeated_field=True)
 
     def update_content_hash(self,
                             exclude_fields: Optional[Tuple[str]] = (
@@ -289,16 +388,17 @@ class Document(ProtoTypeMixin):
 
     @blob.setter
     def blob(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+        """Set the `blob` to :param:`value`."""
         self._update_ndarray('blob', value)
 
     @property
     def embedding(self) -> 'np.ndarray':
-        """Return ``embedding`` of the content of a Document.
-        """
+        """Return ``embedding`` of the content of a Document."""
         return NdArray(self._pb_body.embedding).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+        """Set the ``embedding`` of the content of a Document."""
         self._update_ndarray('embedding', value)
 
     def _update_ndarray(self, k, v):
@@ -314,12 +414,12 @@ class Document(ProtoTypeMixin):
 
     @property
     def matches(self) -> 'MatchSet':
-        """Get all matches of the current document """
+        """Get all matches of the current document."""
         return MatchSet(self._pb_body.matches, reference_doc=self)
 
     @property
     def chunks(self) -> 'ChunkSet':
-        """Get all chunks of the current document """
+        """Get all chunks of the current document."""
         return ChunkSet(self._pb_body.chunks, reference_doc=self)
 
     def set_attrs(self, **kwargs):
@@ -371,6 +471,7 @@ class Document(ProtoTypeMixin):
 
     @buffer.setter
     def buffer(self, value: bytes):
+        """Set the ``buffer`` to :param:`value`."""
         self._pb_body.buffer = value
         if value:
             with ImportExtensions(required=False,
@@ -392,16 +493,18 @@ class Document(ProtoTypeMixin):
 
     @text.setter
     def text(self, value: str):
+        """Set the `text` to :param:`value`"""
         self._pb_body.text = value
         self.mime_type = 'text/plain'
 
     @property
     def uri(self) -> str:
+        """Return the URI of the document."""
         return self._pb_body.uri
 
     @uri.setter
     def uri(self, value: str):
-        """Set the URI of the document
+        """Set the URI of the document.
 
         .. note::
             :attr:`mime_type` will be updated accordingly
@@ -490,18 +593,22 @@ class Document(ProtoTypeMixin):
 
     @property
     def granularity(self):
+        """Return the granularity of the document."""
         return self._pb_body.granularity
 
     @granularity.setter
     def granularity(self, granularity_value: int):
+        """Set the granularity of the document."""
         self._pb_body.granularity = granularity_value
 
     @property
     def score(self):
+        """Return the score of the document."""
         return NamedScore(self._pb_body.score)
 
     @score.setter
     def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
+        """Set the score of the document."""
         if isinstance(value, jina_pb2.NamedScoreProto):
             self._pb_body.score.CopyFrom(value)
         elif isinstance(value, NamedScore):
@@ -520,10 +627,26 @@ class Document(ProtoTypeMixin):
         """
         self.blob = np.frombuffer(self.buffer)
 
+    def convert_buffer_image_to_blob(self, color_axis: int = -1, **kwargs):
+        """ Convert an image buffer to blob
+
+        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
+
     def convert_blob_to_uri(self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly"""
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
+
+    def convert_uri_to_blob(self, color_axis: int = -1, uri_prefix: str = None, **kwargs):
+        """ Convert uri to blob
+
+        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        self.blob = to_image_blob((uri_prefix + self.uri) if uri_prefix else self.uri, color_axis)
 
     def convert_uri_to_buffer(self, **kwargs):
         """Convert uri to buffer
@@ -602,9 +725,11 @@ class Document(ProtoTypeMixin):
             raise NotImplementedError
 
     def MergeFrom(self, doc: 'Document'):
+        """Merge the content of target :param:doc into current document."""
         self._pb_body.MergeFrom(doc.proto)
 
     def CopyFrom(self, doc: 'Document'):
+        """Copy the content of target :param:doc into current document."""
         self._pb_body.CopyFrom(doc.proto)
 
     def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) -> None:
@@ -686,7 +811,7 @@ classDiagram
     def plot(self, output: str = None,
              inline_display: bool = False) -> None:
         """
-        Visualize the Document recursively
+        Visualize the Document recursively.
 
         :param output: a filename specifying the name of the image to be created,
                     the suffix svg/jpg determines the file type of the output image
@@ -713,3 +838,8 @@ classDiagram
         elif not showed:
             from jina.logging import default_logger
             default_logger.info(f'Document visualization: {url}')
+
+    @property
+    def non_empty_fields(self) -> Tuple[str]:
+        """Return the set fields of the curren"""
+        return tuple(field[0].name for field in self.ListFields())

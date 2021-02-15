@@ -3,4 +3,6 @@ from .mixin import IdsMixin
 
 
 class DeleteRequest(Request, IdsMixin):
+    """Delete request class."""
+
     pass

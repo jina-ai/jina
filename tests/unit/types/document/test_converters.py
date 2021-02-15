@@ -1,12 +1,31 @@
+import os
+
 import numpy as np
 import pytest
 
 from jina import Document
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def test_uri_to_blob():
+    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
+    doc.convert_uri_to_blob()
+    assert isinstance(doc.blob, np.ndarray)
+    assert doc.blob.shape == (85, 152, 3)  # h,w,c
+
+
+def test_buffer_to_blob():
+    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
+    doc.convert_uri_to_buffer()
+    doc.convert_buffer_image_to_blob()
+    assert isinstance(doc.blob, np.ndarray)
+    assert doc.blob.shape == (85, 152, 3)  # h,w,c
+
 
 def test_convert_buffer_to_blob():
     rand_state = np.random.RandomState(0)
-    array = rand_state.random([10,10])
+    array = rand_state.random([10, 10])
     doc = Document(content=array.tobytes())
     assert doc.content_type == 'buffer'
     intialiazed_buffer = doc.buffer
@@ -62,7 +81,7 @@ def test_convert_text_to_uri(converter):
 def test_convert_uri_to_text(uri, mimetype):
     doc = Document(uri=uri, mime_type=mimetype)
     doc.convert_uri_to_text()
-    if mimetype == 'text/html': 
+    if mimetype == 'text/html':
         assert '<!doctype html>' in doc.text
     elif mimetype == 'text/x-python':
         text_from_file = open(__file__).read()
@@ -89,11 +108,11 @@ def test_convert_content_to_uri():
                                            ('https://google.com/index.html', 'text/html')])
 def test_convert_uri_to_data_uri(uri, mimetype):
     doc = Document(uri=uri, mime_type=mimetype)
-    intialiazed_buffer = doc.buffer 
+    intialiazed_buffer = doc.buffer
     intialiazed_uri = doc.uri
     doc.convert_uri_to_data_uri()
-    converted_buffer = doc.buffer 
-    converted_uri =  doc.uri
+    converted_buffer = doc.buffer
+    converted_uri = doc.uri
     print(doc.content_type)
     assert doc.uri.startswith(f'data:{mimetype}')
     assert intialiazed_uri != converted_uri

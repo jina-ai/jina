@@ -35,10 +35,16 @@ class Message:
     and envelope as if using :class:`jina_pb2.MessageProto` object directly.
 
     This class also collected all helper functions related to :class:`jina_pb2.MessageProto` into one place.
+
+    :param envelope: Represents a Envelope, a part of the Message.
+    :param request: Represents a Request
+    :param args: Additional positional arguments.
+    :param kwargs: Additional keyword arguments.
     """
 
     def __init__(self, envelope: Union[bytes, 'jina_pb2.EnvelopeProto', None],
                  request: Union[bytes, 'jina_pb2.RequestProto'], *args, **kwargs):
+        """Set constructor method."""
         self._size = 0
         if isinstance(envelope, bytes):
             self.envelope = jina_pb2.EnvelopeProto()
@@ -62,6 +68,7 @@ class Message:
 
     @property
     def request(self) -> 'Request':
+        """Get the request."""
         if self.envelope and isinstance(self._request, Request):
             return self._request.as_typed_request(self.envelope.request_type)
         else:
@@ -70,6 +77,7 @@ class Message:
 
     @request.setter
     def request(self, val: Union[bytes, 'jina_pb2.RequestProto']):
+        """Set the request to :param: `val`."""
         if isinstance(val, bytes):
             self._request = Request(val, self.envelope)
             self._size += sys.getsizeof(val)
@@ -80,6 +88,7 @@ class Message:
 
     @property
     def proto(self) -> 'jina_pb2.MessageProto':
+        """Get the RequestProto."""
         r = jina_pb2.MessageProto()
         r.envelope.CopyFrom(self.envelope)
         if isinstance(self.request, jina_pb2.RequestProto):
@@ -152,6 +161,7 @@ class Message:
         return envelope
 
     def dump(self) -> List[bytes]:
+        """Get the message in a list of bytes."""
         r2 = self.request.SerializeToString()
         r2 = self._compress(r2)
 
@@ -228,7 +238,7 @@ class Message:
         :return:
         """
 
-        def pod_str(r):
+        def _pod_str(r):
             result = r.pod
             if r.status.code == jina_pb2.StatusProto.ERROR:
                 result += '✖'
@@ -238,15 +248,20 @@ class Message:
                 result = colored(result, 'grey')
             return result
 
-        route_str = [pod_str(r) for r in self.envelope.routes]
+        route_str = [_pod_str(r) for r in self.envelope.routes]
         route_str.append('⚐')
         return colored('▸', 'green').join(route_str)
 
     def add_route(self, name: str, identity: str):
+        """Add a route to the envelope.
+
+        :param name: the name of the pod service
+        :param identity: the identity of the pod service
+        """
         self._add_route(name, identity, self.envelope)
 
     def _add_route(self, name: str, identity: str, envelope: 'jina_pb2.EnvelopeProto') -> None:
-        """Add a route to the envelope
+        """Add a route to the envelope.
 
         :param name: the name of the pod service
         :param identity: the identity of the pod service
@@ -324,6 +339,11 @@ class Message:
         return self.request
 
     def merge_envelope_from(self, msgs: List['Message']):
+        """
+        Extend the current envelope routes with :param: `msgs`.
+
+        :param msgs: List of msgs.
+        """
         routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}
         self.envelope.ClearField('routes')
         self.envelope.routes.extend(
@@ -351,8 +371,10 @@ class Message:
 
     @property
     def is_error(self) -> bool:
+        """Return if the envelope status is ERROR."""
         return self.envelope.status.code >= jina_pb2.StatusProto.ERROR
 
     @property
     def is_ready(self) -> bool:
+        """Return if the envelope status is READY."""
         return self.envelope.status.code == jina_pb2.StatusProto.READY

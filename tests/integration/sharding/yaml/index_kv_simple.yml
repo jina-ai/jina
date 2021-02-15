@@ -16,5 +16,5 @@ requests:
       - !KVSearchDriver
         with:
           executor: kvidx
-          is_merge: false
+          is_update: false
           traversal_paths: ['r']

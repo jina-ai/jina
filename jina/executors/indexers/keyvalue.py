@@ -106,8 +106,9 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param values: serialized documents
         """
         keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys())
-        self._delete(keys)
-        self.add(keys, values)
+        if keys:
+            self._delete(keys)
+            self.add(keys, values)
 
     def _delete(self, keys: Iterable[str]) -> None:
         self.query_handler.close()
@@ -130,7 +131,8 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         """
         keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
-        self._delete(keys)
+        if keys:
+            self._delete(keys)
 
 
 class DataURIPbIndexer(BinaryPbIndexer):

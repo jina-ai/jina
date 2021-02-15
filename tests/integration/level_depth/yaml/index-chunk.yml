@@ -35,5 +35,5 @@ requests:
       - !KVSearchDriver
         with:
           executor: chunkidx
-          is_merge: true
+          is_update: true
           traversal_paths: ['m']

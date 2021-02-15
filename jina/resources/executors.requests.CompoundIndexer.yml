@@ -10,7 +10,7 @@ on:
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
-        is_merge: True
+        is_update: True
         traversal_paths: ['m']
   [IndexRequest, UpdateRequest]:
     - !VectorIndexDriver

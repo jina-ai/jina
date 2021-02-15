@@ -1,10 +1,10 @@
 from collections.abc import MutableSequence
-from typing import Callable
-from typing import Union, Sequence, Iterable, Tuple
+from typing import Union, Iterable, Tuple
 
 import numpy as np
 
 from ...helper import typename
+from ...logging import default_logger
 
 try:
     # when protobuf using Cpp backend
@@ -31,13 +31,19 @@ class DocumentSet(MutableSequence):
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
-    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
+    def __init__(self, docs_proto: Union['RepeatedContainer', Iterable['Document']]):
         """Set constructor method."""
         super().__init__()
         self._docs_proto = docs_proto
         self._docs_map = {}
 
     def insert(self, index: int, doc: 'Document') -> None:
+        """
+        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentSet` .
+
+        :param index: Position of the insertion.
+        :param doc: The doc needs to be inserted.
+        """
         self._docs_proto.insert(index, doc.proto)
 
     def __setitem__(self, key, value: 'Document'):
@@ -84,21 +90,29 @@ class DocumentSet(MutableSequence):
         return self
 
     def append(self, doc: 'Document') -> 'Document':
+        """
+        Append :param:`doc` in :class:`DocumentSet`.
+
+        :param doc: The doc needs to be appended.
+        :return: Appended list.
+        """
         return self._docs_proto.append(doc.proto)
 
     def add(self, doc: 'Document') -> 'Document':
-        """Shortcut to :meth:`append`, do not override this method """
+        """Shortcut to :meth:`append`, do not override this method."""
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
+        """Extend an iterable to :class:`DocumentSet`."""
         for doc in iterable:
             self.append(doc)
 
     def clear(self):
+        """Clear the data of :class:`DocumentSet`"""
         del self._docs_proto[:]
 
     def reverse(self):
-        """In-place reverse the sequence """
+        """In-place reverse the sequence."""
         if isinstance(self._docs_proto, RepeatedContainer):
             size = len(self._docs_proto)
             hi_idx = size - 1
@@ -116,14 +130,51 @@ class DocumentSet(MutableSequence):
         self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
+        """Sort the list of :class:`DocumentSet`."""
         self._docs_proto.sort(*args, **kwargs)
 
-    def traverse(self, traversal_paths: Sequence[str], callback_fn: Callable, *args, **kwargs):
-        for d in self:
-            d.traverse(traversal_paths, callback_fn, *args, **kwargs)
+    def traverse(self, traversal_paths: Iterable[str]) -> 'DocumentSet':
+        """
+        Return a DocumentSet that traverses this :class:`DocumentSet` object according to the
+        ``traversal_paths``.
+
+        :param traversal_paths: a list of string that represents the traversal path
+
+
+        Example on ``traversal_paths``:
+
+            - [`r`]: docs in this DocumentSet
+            - [`m`]: all match-documents at adjacency 1
+            - [`c`]: all child-documents at granularity 1
+            - [`cc`]: all child-documents at granularity 2
+            - [`mm`]: all match-documents at adjacency 2
+            - [`cm`]: all match-document at adjacency 1 and granularity 1
+            - [`r`, `c`]: docs in this DocumentSet and all child-documents at granularity 1
+
+        """
+
+        def _traverse(docs: 'DocumentSet', path: str):
+            if path:
+                loc = path[0]
+                if loc == 'r':
+                    yield from _traverse(docs, path[1:])
+                elif loc == 'm':
+                    for d in docs:
+                        yield from _traverse(d.matches, path[1:])
+                elif loc == 'c':
+                    for d in docs:
+                        yield from _traverse(d.chunks, path[1:])
+            else:
+                yield from docs
+
+        def _traverse_all():
+            for p in traversal_paths:
+                yield from _traverse(self, p)
+
+        return DocumentSet(_traverse_all())
 
     @property
-    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
 
         :return: The corresponding documents in a :class:`DocumentSet`,
@@ -133,7 +184,7 @@ class DocumentSet(MutableSequence):
         return self._extract_docs('embedding')
 
     @property
-    def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+    def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
 
         :return: The corresponding documents in a :class:`DocumentSet`,
@@ -142,7 +193,7 @@ class DocumentSet(MutableSequence):
         """
         return self._extract_docs('content')
 
-    def _extract_docs(self, attr: str) -> Tuple['np.ndarray', 'DocumentSet', 'DocumentSet']:
+    def _extract_docs(self, attr: str) -> Tuple['np.ndarray', 'DocumentSet']:
         contents = []
         docs_pts = []
         bad_docs = []
@@ -157,7 +208,12 @@ class DocumentSet(MutableSequence):
                 bad_docs.append(doc)
 
         contents = np.stack(contents) if contents else None
-        return contents, DocumentSet(docs_pts), DocumentSet(bad_docs)
+
+        if bad_docs and docs_pts:
+            default_logger.warning(
+                f'found {len(bad_docs)} no-content docs at granularity {docs_pts[0].granularity}')
+
+        return contents, DocumentSet(docs_pts)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...``` """

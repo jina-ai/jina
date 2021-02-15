@@ -7,6 +7,7 @@ from ..enums import SocketType, FlowOptimizeLevel, FlowBuildLevel, PodRoleType
 from ..excepts import FlowBuildLevelError
 from ..peapods.pods import _fill_in_host
 
+# noinspection PyUnreachableCode
 if False:
     from . import Flow
     from ..peapods import BasePod
@@ -14,8 +15,6 @@ if False:
 
 def build_required(required_level: 'FlowBuildLevel'):
     """Annotate a function so that it requires certain build level to run.
-
-    :param required_level: required build level to run this function.
 
     Example:
 
@@ -26,8 +25,9 @@ def build_required(required_level: 'FlowBuildLevel'):
         def foo():
             print(1)
 
+    :param required_level: required build level to run this function.
+    :return: annotated function
     """
-
     def __build_level(func):
         @wraps(func)
         def arg_wrapper(self, *args, **kwargs):
@@ -67,7 +67,10 @@ def _traverse_graph(op_flow: 'Flow', outgoing_map: Dict[str, List[str]],
 
 
 def _hanging_pods(op_flow: 'Flow') -> List[str]:
-    """Return the names of hanging pods (nobody recv from them) in the flow"""
+    """
+    :param op_flow: the Flow we're operating on
+    :return: names of hanging Pods (nobody recv from them) in the Flow.
+    """
     all_needs = {v for p in op_flow._pod_nodes.values() for v in p.needs}
     all_names = {p for p in op_flow._pod_nodes.keys()}
     # all_names is always a superset of all_needs
@@ -107,6 +110,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
 def _connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
     """Connect two Pods
 
+    # noqa: DAR401
     :param first: the first BasePod
     :param second: the second BasePod
     :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
@@ -139,10 +143,9 @@ def _optimize_flow(op_flow, outgoing_map: Dict[str, List[str]], pod_edges: {str,
     def _optimize_two_connections(flow: 'Flow', start_node_name: str, end_node_name: str):
         """ THIS CODE IS NEVER TESTED AND THE LOGIC MAY NOT APPLIED ANYMORE
 
-        :param flow:
-        :param start_node_name:
-        :param end_node_name:
-        :return:
+        :param flow: the Flow we're optimizing
+        :param start_node_name: first node of connection
+        :param end_node_name: second node of connection
         """
         start_node = flow._pod_nodes[start_node_name]
         end_node = flow._pod_nodes[end_node_name]
