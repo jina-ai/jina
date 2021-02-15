@@ -104,7 +104,7 @@ In Jina we use git's pre-commit hooks in order to make sure the code matches our
 It's easy to configure it:
 
 1. `pip install pre-commit`
-1. `pre-commit install .`
+1. `pre-commit install`
 
 Now you will be automatically reminded to add docstrings to your code.
 
