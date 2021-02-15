@@ -12,10 +12,29 @@ class BaseRanker(BaseExecutor):
     """The base class for a `Ranker`"""
 
     def __init__(self,
-                 query_required_keys: Optional[Tuple[str]],
-                 match_required_keys: Optional[Tuple[str]],
+                 query_required_keys: Optional[Tuple[str]] = None,
+                 match_required_keys: Optional[Tuple[str]] = None,
                  *args,
                  **kwargs):
+        """
+
+        :param query_required_keys: Set of keys or features to be extracted from query `Document` by the `Driver` so that
+            they are passed as query features or metainfo.
+        :param match_required_keys: Set of keys or features to be extracted from match `Document` by the `Driver` so that
+            they are passed as match features or metainfo.
+
+        .. note::
+            See how the attributes are accessed in :class:`Document` in :meth:`get_attrs`.
+
+            .. highlight:: python
+            .. code-block:: python
+
+                query = Document({'tags': {'color': 'blue'})
+                match = Document({'tags': {'color': 'blue', 'price': 1000}})
+
+                ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
+        """
+
         super().__init__(*args, **kwargs)
         self.query_required_keys = query_required_keys
         self.match_required_keys = match_required_keys
