@@ -498,15 +498,15 @@ def test_get_attr():
     d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name', 'tags': {'id': 'identity', 'a': 'b', 'c': 'd'}})
     d.score = NamedScore(value=42)
 
-    res = d.get_attrs(*['id', 'text', 'name', 'feature1', 'score__value', 'tags__c', 'tags__id', 'inexistant', 'tags__none', 'tags__inexistant'])
+    res = d.get_attrs(*['id', 'text', 'tags__name', 'tags__feature1', 'score__value', 'tags__c', 'tags__id', 'inexistant', 'tags__none', 'tags__inexistant'])
 
     assert res['id'] == '123'
-    assert res['feature1'] == 121
-    assert res['name'] == 'name'
+    assert res['tags__feature1'] == 121
+    assert res['tags__name'] == 'name'
     assert res['text'] == 'document'
-    assert res['c'] == 'd'
+    assert res['tags__c'] == 'd'
     assert res['tags__id'] == 'identity'
-    assert res['value'] == 42
+    assert res['score__value'] == 42
     assert res['inexistant'] is None
     assert res['tags__none'] is None
     assert res['tags__inexistant'] is None
@@ -516,3 +516,7 @@ def test_get_attr():
     res2 = d.get_attrs(*['tags', 'text'])
     assert res2['text'] == 'document'
     assert res2['tags'] == d.tags
+
+    d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
+    res = d.get_attrs(*['tags__outterkey__innerkey'])
+    assert res['tags__outterkey__innerkey'] == 'real_value'

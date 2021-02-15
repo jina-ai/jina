@@ -452,53 +452,30 @@ class Document(ProtoTypeMixin):
             :meth:`update` for bulk set/update attributes
 
         .. note::
-            Arguments not contained inside the `DocumentProto` definition, will be automatically extracted from `tags`.
-            All those arguments not in `DocumentProto` or not found in `tags` of the `Document`, will be extracted using `dunder_get`
-            while keeping only the second part of the "dunderkey" ar key of the returned Dict. When this second part collides
-            with the name of a `field` of `DocumentProto`, the full "dunderkey" is used as key.
-
+            Arguments will be extracted using `dunder_get`
             .. highlight:: python
             .. code-block:: python
 
                 d = Document({'id': '123', 'hello': 'world', 'tags': {'id': 'external_id', 'good': 'bye'}})
 
                 assert d.id == '123'  # true
-                assert d.tags['hello'] == 'world'  # true
-                assert d.tags['good'] == 'bye'  # true
-                assert d.tags['id'] == 'external_id'  # true
+                assert d.tags['hello'] == 'world' # true
+                assert d.tags['good'] == 'bye' # true
+                assert d.tags['id'] == 'external_id' # true
 
-                res = d.get_attrs(*['id', 'hello', 'tags__good', 'tags__id'])
+                res = d.get_attrs(*['id', 'tags__hello', 'tags__good', 'tags__id'])
 
                 assert res['id'] == '123' # true
-                assert res['hello'] == 'world' # true
-                assert res['good'] == 'bye' # true
-                assert res['tags__id'] == 'external_id' # true, 'id' collides with field id, therefore full `tags__id` is used as returned key
+                assert res['tags__hello'] == 'world' # true
+                assert res['tags__good'] == 'bye' # true
+                assert res['tags__id'] == 'external_id' # true
         """
-
         ret = {}
         for k in args:
             try:
-                value = getattr(self, k)
-                ret[k] = value
-            except:
-                try:
-                    value = self._pb_body.tags[k]
-                    ret[k] = value
-                except:
-                    try:
-                        value = dunder_get(self._pb_body, k)
-                        if value:
-                            solved_k = k.split('__', 1)[1]
-                            if hasattr(self, solved_k):
-                                # allow to extract `id` and `tags__id` in the same run
-                                ret[k] = value
-                            else:
-                                ret[k.split('__')[1]] = value
-                        else:
-                            ret[k] = None
-                    except:
-                        ret[k] = None
-
+                ret[k] = dunder_get(self._pb_body, k)
+            except AttributeError:
+                ret[k] = None
         return ret
 
     @property
