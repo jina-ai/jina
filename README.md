@@ -327,7 +327,7 @@ Get the vibe? Now we are talking! Let's learn more about the basic concepts and 
 #### Feed Data
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-feed-data.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty document and index it:
+To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty documents and index it:
 
 ```python
 from jina import Document
