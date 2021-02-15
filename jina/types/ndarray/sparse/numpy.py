@@ -17,11 +17,25 @@ class SparseNdArray(BaseSparseNdArray):
     """
 
     def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> 'np.ndarray':
+        """
+        Sparse NdArray constructor for np.ndarray.
+
+        :param indices: the indices of the sparse array
+        :param values: the values of the sparse array
+        :param shape: the shape of the sparse array
+        :return: FloatTensor
+        """
         val = np.zeros(shape)
         val[tuple(indices.T)] = values
         return val
 
     def sparse_parser(self, value: 'np.ndarray'):
+        """
+        Parse a np.ndarray to indices, values and shape.
+
+        :param value: the np.ndarray.
+        :return: a Dict with three entries {'indices': ..., 'values':..., 'shape':...}
+        """
         nv = np.nonzero(value)
         val = value[nv]
         indices = np.transpose(nv)

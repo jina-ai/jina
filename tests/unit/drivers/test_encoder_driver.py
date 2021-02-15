@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Document, DocumentSet
-from jina.drivers.encode import EncodeDriver
+from jina.drivers.encode import LegacyEncodeDriver
 from jina.executors.encoders import BaseEncoder
 
 
@@ -50,7 +50,7 @@ class MockEncoder(BaseEncoder):
         return data
 
 
-class SimpleEncoderDriver(EncodeDriver):
+class SimpleEncoderDriverLegacy(LegacyEncodeDriver):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -62,7 +62,7 @@ class SimpleEncoderDriver(EncodeDriver):
 
 @pytest.mark.parametrize('batch_size', [None, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 20, 100, 10000])
 def test_encode_driver(batch_size, docs_to_encode, num_docs):
-    driver = SimpleEncoderDriver(batch_size=batch_size)
+    driver = SimpleEncoderDriverLegacy(batch_size=batch_size)
     executor = MockEncoder(driver_batch_size=batch_size, total_num_docs=num_docs)
     driver.attach(executor=executor, runtime=None)
     assert len(docs_to_encode) == num_docs

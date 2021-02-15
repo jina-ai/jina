@@ -29,9 +29,9 @@ if False:
     from ..executors import AnyExecutor
     from ..logging.logger import JinaLogger
     from ..types.message import Message
-    from ..types.document import Document
     from ..types.request import Request
     from ..types.sets import QueryLangSet, DocumentSet
+    from ..types.document import Document
 
 
 def store_init_kwargs(func: Callable) -> Callable:
@@ -221,28 +221,12 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
             return []
 
     @property
-    def docs(self):
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
-
-    @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``"""
         return self.runtime.logger
 
     def __call__(self, *args, **kwargs) -> None:
         raise NotImplementedError
-
-    @staticmethod
-    def _dump_instance_to_yaml(data) -> Dict[str, Dict]:
-        # note: we only save non-default property for the sake of clarity
-        a = {k: v for k, v in data._init_kwargs_dict.items()}
-        r = {}
-        if a:
-            r['with'] = a
-        return r
 
     def __eq__(self, other):
         return self.__class__ == other.__class__
@@ -268,6 +252,13 @@ class BaseRecursiveDriver(BaseDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
+
+    @property
+    def docs(self):
+        if self.expect_parts > 1:
+            return (d for r in reversed(self.partial_reqs) for d in r.docs)
+        else:
+            return self.req.docs
 
     def _apply_root(
         self,
@@ -328,6 +319,31 @@ class BaseRecursiveDriver(BaseDriver):
                     )
         else:
             self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
+
+
+class FastRecursiveMixin:
+    """
+    The optimized version of :class:`BaseRecursiveDriver`,
+     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
+
+     .. seealso::
+        https://github.com/jina-ai/jina/issues/1932
+
+    """
+
+    def __call__(self, *args, **kwargs):
+        self._apply_all(self.docs, *args, **kwargs)
+
+    @property
+    def docs(self) -> 'DocumentSet':
+        from ..types.sets import DocumentSet
+
+        if self.expect_parts > 1:
+            return DocumentSet(
+                (d for r in reversed(self.partial_reqs) for d in r.docs)
+            ).traverse(self._traversal_paths)
+        else:
+            return self.req.docs.traverse(self._traversal_paths)
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
