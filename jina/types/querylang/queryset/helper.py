@@ -22,6 +22,13 @@ iff_not_none = partial(iff, lambda x: x is not None)
 
 
 def guard_type(classinfo: Union[Type[str], Type[Iterable]], val: Union[str, List[int]]) -> Union[str, List[int]]:
+    """
+    Make sure the type of :param:`val` is :param:`classinfo`.
+
+    :param classinfo: Guard type.
+    :param val: Target object.
+    :return: :param:`val` if it has correct type.
+    """
     if not isinstance(val, classinfo):
         raise LookupyError(f'Value not a {classinfo}')
     return val
