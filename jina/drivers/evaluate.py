@@ -3,6 +3,8 @@ __license__ = "Apache-2.0"
 
 from typing import Any, Iterator, Optional, Tuple, Union
 
+import numpy as np
+
 from . import BaseExecutableDriver, RecursiveMixin
 from ..types.querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
@@ -138,7 +140,10 @@ class RankEvaluateDriver(BaseEvaluateDriver):
     def extract(self, doc: 'Document'):
         single_field = self.single_field
         if single_field:
-            ret = [dunder_get(x, single_field) for x in doc.matches]
+            r = [dunder_get(x, single_field) for x in doc.matches]
+            # TODO: Clean this, optimization for `hello-world` because it passes a list of 6k elements in a single
+            #  match. See `pseudo_match` in helloworld/helper.py _get_groundtruths
+            ret = list(np.array(r).flat)
         else:
             ret = [tuple(dunder_get(x, field) for field in self.fields) for x in doc.matches]
 

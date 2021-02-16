@@ -13,13 +13,13 @@ requests:
     SearchRequest:
       - !RankEvaluateDriver
         with:
-          field: tags__id
+          fields: [tags__id]
           executor: precision
           running_avg: true
           traversal_paths: [ 'r' ]
       - !RankEvaluateDriver
         with:
-          field: tags__id
+          fields: [tags__id]
           executor: recall
           running_avg: true
           traversal_paths: [ 'r' ]
