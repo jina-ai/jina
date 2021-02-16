@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pytest
 
 from jina.drivers.evaluate import RankEvaluateDriver
@@ -8,7 +10,7 @@ from jina.types.document.helper import DocGroundtruthPair
 
 class SimpleRankEvaluateDriver(RankEvaluateDriver):
 
-    def __init__(self, field: str, *args, **kwargs):
+    def __init__(self, field: Tuple[str], *args, **kwargs):
         super().__init__(field, *args, **kwargs)
 
     @property
@@ -22,7 +24,7 @@ class SimpleRankEvaluateDriver(RankEvaluateDriver):
 
 class RunningAvgRankEvaluateDriver(RankEvaluateDriver):
 
-    def __init__(self, field: str, *args, **kwargs):
+    def __init__(self, field: Tuple[str], *args, **kwargs):
         super().__init__(field, runining_avg=True, *args, **kwargs)
 
     @property
@@ -64,7 +66,7 @@ def ground_truth_pairs():
     return pairs
 
 
-@pytest.mark.parametrize('field', ['tags__id', 'score__value'])
+@pytest.mark.parametrize('field', [('tags__id',), ('score__value',)])
 def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
                                         ground_truth_pairs):
     simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
@@ -76,7 +78,24 @@ def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
         assert doc.evaluations[0].value == 1.0
 
 
-@pytest.mark.parametrize('field', ['tags__id', 'score__value'])
+@pytest.mark.parametrize('field', [('tags__id', 'score__value')])
+def test_ranking_evaluate_extract_multiple_fields(simple_rank_evaluate_driver,
+                                                  ground_truth_pairs,
+                                                  mocker):
+    m = mocker.Mock()
+
+    def _eval_fn(actual, desired):
+        m()
+        assert isinstance(actual[0], Tuple)
+        assert isinstance(desired[0], Tuple)
+        return 1.0
+
+    simple_rank_evaluate_driver._exec_fn = _eval_fn
+    simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
+    m.assert_called()
+
+
+@pytest.mark.parametrize('field', [('tags__id',), ('score__value',)])
 def test_ranking_evaluate_runningavg_driver(runningavg_rank_evaluate_driver,
                                             ground_truth_pairs):
     runningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)

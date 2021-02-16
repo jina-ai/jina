@@ -12,5 +12,5 @@ on:
       traversal_paths: ['r']
     - !RankEvaluateDriver
       with:
-        id_tag: 'id'
+        fields: ['id']
         traversal_paths: ['r']
