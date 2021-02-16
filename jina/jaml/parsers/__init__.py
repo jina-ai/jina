@@ -48,7 +48,7 @@ def _get_default_parser():
 
 def get_parser(cls: Type['JAMLCompatible'], version: Optional[str]) -> 'VersionedYAMLParser':
     """
-    # noqa: DAR401
+    .. # noqa: DAR401
     :param cls: the target class to parse
     :param version: yaml version number in "MAJOR[.MINOR]" format
     :return: parser given the YAML version

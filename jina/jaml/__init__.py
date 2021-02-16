@@ -384,7 +384,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             # disable substitute
             b = BaseExecutor.load_config('a.yml', substitute=False)
 
-        # noqa: DAR401
+        .. # noqa: DAR401
         :param source: the multi-kind source of the configs.
         :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
         :param substitute: substitute environment, internal reference and context variables.

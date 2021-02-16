@@ -18,7 +18,7 @@ class BaseControlDriver(BaseDriver):
     @property
     def envelope(self) -> 'jina_pb2.EnvelopeProto':
         """Get the current request, shortcut to ``self.runtime.message``
-        # noqa: DAR201
+        .. # noqa: DAR201
         """
         return self.msg.envelope
 
@@ -57,7 +57,8 @@ class WaitDriver(BaseControlDriver):
 
     def __call__(self, *args, **kwargs):
         """Wait for some seconds, mainly for demo purpose
-        # noqa: DAR101"""
+        .. # noqa: DAR101
+        """
         time.sleep(5)
 
 
@@ -111,7 +112,7 @@ class RouteDriver(ControlReqDriver):
         :param *args: *args for super().__call__
         :param **kwargs: **kwargs for super().__call__
 
-        # noqa: DAR401
+        .. # noqa: DAR401
         """
         if self.msg.is_data_request:
             self.logger.debug(self.idle_dealer_ids)

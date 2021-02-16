@@ -89,7 +89,7 @@ def parse_config_source(path: Union[str, TextIO, Dict],
                         *args, **kwargs) -> Tuple[TextIO, Optional[str]]:
     """Check if the text or text stream is valid.
 
-    # noqa: DAR401
+    .. # noqa: DAR401
     :param path: the multi-kind source of the configs.
     :param allow_stream: flag
     :param allow_yaml_file: flag

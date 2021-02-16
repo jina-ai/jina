@@ -51,8 +51,8 @@ class BaseLabelPredictDriver(BasePredictDriver):
         :param prediction: the float/int numpy ndarray given by :class:`BaseClassifier`
         :return: the readable label to be stored.
 
-        # noqa: DAR401
-        # noqa: DAR202
+        .. # noqa: DAR401
+        .. # noqa: DAR202
         """
         raise NotImplementedError
 
@@ -81,7 +81,7 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
         :param prediction: a (B,) or (B, 1) zero one array
         :return: the labels as either ``self.one_label`` or ``self.zero_label``
 
-        # noqa: DAR401
+        .. # noqa: DAR401
         """
         p = np.squeeze(prediction)
         if p.ndim > 1:
@@ -108,7 +108,7 @@ class OneHotPredictDriver(BaseLabelPredictDriver):
 
         :param prediction: the predictions
 
-        # noqa: DAR401
+        .. # noqa: DAR401
         """
         if prediction.ndim != 2:
             raise ValueError(f'{typename(self)} expects prediction to have ndim=2, but received {prediction.ndim}')
