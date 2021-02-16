@@ -6,7 +6,6 @@ from .. import BaseExecutableDriver, RecursiveMixin
 from ...types.document import Document
 from ...types.score import NamedScore
 
-
 if False:
     from ...types.sets import DocumentSet
 
@@ -49,11 +48,10 @@ class Matches2DocRankDriver(BaseRankDriver):
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
 
-        # if at the top-level already, no need to aggregate further
         query_meta = context_doc.get_attrs(*self.exec.required_keys)
-
         old_match_scores = {match.id: match.score.value for match in docs}
         match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs}
+
         # if there are no matches, no need to sort them
         if not old_match_scores:
             return

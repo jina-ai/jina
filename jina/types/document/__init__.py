@@ -19,10 +19,12 @@ from ..ndarray.generic import NdArray
 from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
+from ..querylang.queryset.dunderkey import dunder_get
 from ...excepts import BadDocType
 from ...helper import is_url, typename, random_identity, download_mermaid_url
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
+from ...logging import default_logger
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -457,8 +459,44 @@ class Document(ProtoTypeMixin):
         .. seealso::
             :meth:`update` for bulk set/update attributes
 
+        .. note::
+            Arguments will be extracted using `dunder_get`
+            .. highlight:: python
+            .. code-block:: python
+
+                d = Document({'id': '123', 'hello': 'world', 'tags': {'id': 'external_id', 'good': 'bye'}})
+
+                assert d.id == '123'  # true
+                assert d.tags['hello'] == 'world' # true
+                assert d.tags['good'] == 'bye' # true
+                assert d.tags['id'] == 'external_id' # true
+
+                res = d.get_attrs(*['id', 'tags__hello', 'tags__good', 'tags__id'])
+
+                assert res['id'] == '123' # true
+                assert res['tags__hello'] == 'world' # true
+                assert res['tags__good'] == 'bye' # true
+                assert res['tags__id'] == 'external_id' # true
         """
-        return {k: getattr(self, k) for k in args if hasattr(self, k)}
+
+        ret = {}
+        for k in args:
+
+            try:
+                if hasattr(self, k):
+                    value = getattr(self, k)
+                else:
+                    value = dunder_get(self._pb_body, k)
+
+                if not value:
+                    raise ValueError
+
+                ret[k] = value
+                continue
+            except (AttributeError, ValueError):
+                default_logger.warning(f'Could not get attribute from key {k}, returning None')
+                ret[k] = None
+        return ret
 
     @property
     def buffer(self) -> bytes:

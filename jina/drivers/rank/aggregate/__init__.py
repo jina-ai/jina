@@ -191,6 +191,7 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
         match_meta = {}
         parent_id_chunk_id_map = defaultdict(list)
         matches_by_id = defaultdict(Document)
+
         query_meta[context_doc.id] = context_doc.get_attrs(*self.exec.required_keys)
         for match in docs:
             match_info = self._extract_query_match_info(match=match, query=context_doc)
