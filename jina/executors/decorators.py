@@ -178,7 +178,7 @@ def _merge_results_after_batching(final_result, merge_over_axis: int = 0):
         # the only result of one batch
         return final_result[0]
 
-    if len(final_result) and merge_over_axis is not None:
+    if final_result and merge_over_axis is not None:
         if isinstance(final_result[0], np.ndarray):
             final_result = np.concatenate(final_result, merge_over_axis)
         elif isinstance(final_result[0], tuple):
@@ -188,7 +188,7 @@ def _merge_results_after_batching(final_result, merge_over_axis: int = 0):
                 reduced_result.append(np.concatenate([row[col] for row in final_result], merge_over_axis))
             final_result = tuple(reduced_result)
 
-    if len(final_result):
+    if final_result:
         return final_result
 
 
