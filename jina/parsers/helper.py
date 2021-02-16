@@ -11,8 +11,7 @@ if _SHOW_ALL_ARGS:
 
 
 def add_arg_group(parser, title):
-    """
-    Add the arguments for a specific group to the parser
+    """Add the arguments for a specific group to the parser
 
     :param parser: the parser configure
     :param title: the group name
@@ -32,8 +31,7 @@ def UUIDString(astring) -> str:
 
 
 class KVAppendAction(argparse.Action):
-    """
-    argparse action to split an argument into KEY=VALUE form
+    """argparse action to split an argument into KEY=VALUE form
     on the first = and append to a dictionary.
     This is used for setting up --env
     """
@@ -63,8 +61,7 @@ class KVAppendAction(argparse.Action):
 
 
 class DockerKwargsAppendAction(argparse.Action):
-    """
-    argparse action to split an argument into KEY: VALUE form
+    """argparse action to split an argument into KEY: VALUE form
     on the first : and append to a dictionary.
     This is used for setting up arbitrary kwargs for docker sdk
     """

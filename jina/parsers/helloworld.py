@@ -9,8 +9,7 @@ from ..helper import random_identity
 
 
 def mixin_hw_base_parser(parser):
-    """
-    Add the arguments for hello world to the parser
+    """Add the arguments for hello world to the parser
 
     :param parser: the parser configure
     """
@@ -23,8 +22,7 @@ def mixin_hw_base_parser(parser):
 
 
 def set_hw_parser(parser=None):
-    """
-    Set the hello world parser
+    """Set the hello world parser
 
     :param parser: the parser configure
     :return: the new parser
@@ -77,8 +75,7 @@ def set_hw_parser(parser=None):
 
 
 def set_hw_chatbot_parser(parser=None):
-    """
-    Set the parser for the hello world chatbot
+    """Set the parser for the hello world chatbot
 
     :param parser: the parser configure
     :return: the new parser

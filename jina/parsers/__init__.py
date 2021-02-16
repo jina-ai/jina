@@ -5,8 +5,7 @@ from jina.parsers.peapods.runtimes.distributed import mixin_distributed_feature_
 
 
 def set_pea_parser(parser=None):
-    """
-    Set the parser for the Pea
+    """Set the parser for the Pea
 
     :param parser: an optional existing parser to build upon
     :return: the parser
@@ -34,8 +33,7 @@ def set_pea_parser(parser=None):
 
 
 def set_pod_parser(parser=None):
-    """
-    Set the parser for the Pod
+    """Set the parser for the Pod
 
     :param parser: an optional existing parser to build upon
     :return: the parser
@@ -54,8 +52,7 @@ def set_pod_parser(parser=None):
 
 
 def set_gateway_parser(parser=None):
-    """
-    Set the parser for the gateway arguments
+    """Set the parser for the gateway arguments
 
     :param parser: an optional existing parser to build upon
     :return: the parser
@@ -92,8 +89,7 @@ def set_gateway_parser(parser=None):
 
 
 def set_client_cli_parser(parser=None):
-    """
-    Set the parser for the cli client
+    """Set the parser for the cli client
 
     :param parser: an optional existing parser to build upon
     :return: the parser
@@ -113,8 +109,7 @@ def set_client_cli_parser(parser=None):
 
 
 def get_main_parser():
-    """
-    The main parser for Jina
+    """The main parser for Jina
 
     :return: the parser
     """

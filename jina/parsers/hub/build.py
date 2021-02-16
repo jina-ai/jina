@@ -4,8 +4,7 @@ from ...enums import BuildTestLevel
 
 
 def mixin_hub_build_parser(parser):
-    """
-    Add the arguments for hub build to the parser
+    """Add the arguments for hub build to the parser
 
     :param parser: the parser configure
     """

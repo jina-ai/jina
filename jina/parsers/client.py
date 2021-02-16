@@ -4,8 +4,7 @@ from ..enums import RequestType
 
 
 def mixin_client_cli_parser(parser):
-    """
-    Add the arguments for the client to the parser
+    """Add the arguments for the client to the parser
 
     :param parser: the parser configure
     """

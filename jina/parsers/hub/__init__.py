@@ -3,8 +3,7 @@ from ..helper import _chf
 
 
 def set_hub_pushpull_parser(parser=None):
-    """
-    Set the parser for the hub push or hub pull
+    """Set the parser for the hub push or hub pull
 
     :param parser: an optional existing parser to build upon
     :return: the parser
@@ -21,8 +20,7 @@ def set_hub_pushpull_parser(parser=None):
 
 
 def set_hub_build_parser(parser=None):
-    """
-    Set the parser for `hub build`
+    """Set the parser for `hub build`
 
     :param parser: the parser configure
     :return: the new parser
@@ -40,8 +38,7 @@ def set_hub_build_parser(parser=None):
 
 
 def set_hub_list_parser(parser=None):
-    """
-    Set the parser for `hub list`
+    """Set the parser for `hub list`
 
     :param parser: the parser configure
     :return: the new parser
@@ -56,8 +53,7 @@ def set_hub_list_parser(parser=None):
 
 
 def set_hub_new_parser(parser=None):
-    """
-    Set the parser for the `hub new` command
+    """Set the parser for the `hub new` command
 
     :param parser: the parser configure
     :return: the new parser
@@ -72,8 +68,7 @@ def set_hub_new_parser(parser=None):
 
 
 def set_hub_parser(parser=None):
-    """
-    Set the parser for the hub
+    """Set the parser for the hub
 
     :param parser: the parser configure
     """

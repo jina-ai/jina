@@ -8,8 +8,7 @@ if False:
 
 
 def set_optimizer_parser(parser: 'ArgumentParser' = None):
-    """
-    Set the parser for the optimizer
+    """Set the parser for the optimizer
 
     :param parser: an optional existing parser to build upon
     :return: the parser

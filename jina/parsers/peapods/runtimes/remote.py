@@ -6,8 +6,7 @@ from ....helper import random_port
 
 
 def mixin_remote_parser(parser):
-    """
-    Add the options for remote expose
+    """Add the options for remote expose
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='Expose')
@@ -22,8 +21,7 @@ def mixin_remote_parser(parser):
 
 
 def mixin_grpc_parser(parser=None):
-    """
-    Add the options for gRPC
+    """Add the options for gRPC
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='GRPC/REST')

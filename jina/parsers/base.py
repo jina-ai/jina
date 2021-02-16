@@ -5,8 +5,7 @@ from .helper import _chf
 
 
 def set_base_parser():
-    """
-    Set the base parser
+    """Set the base parser
 
     :return: the parser
     """

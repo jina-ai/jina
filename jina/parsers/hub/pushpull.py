@@ -3,8 +3,7 @@ from ..helper import add_arg_group
 
 
 def mixin_hub_pushpull_parser(parser):
-    """
-    Add the arguments for hub push pull to the parser
+    """Add the arguments for hub push pull to the parser
 
     :param parser: the parser configure
     """

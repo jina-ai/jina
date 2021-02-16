@@ -3,8 +3,7 @@ from .base import set_base_parser
 
 
 def set_ping_parser(parser=None):
-    """
-    Set the parser for `ping`
+    """Set the parser for `ping`
 
     :param parser: an existing parser to build upon
     :return: the parser
