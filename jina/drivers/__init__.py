@@ -434,7 +434,7 @@ class FastRecursiveMixin:
         from ..types.sets import DocumentSet
 
         if self.expect_parts > 1:
-            return DocumentSet((d for r in reversed(self.partial_reqs) for d in r.docs))
+            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
         else:
             return self.req.docs
 
