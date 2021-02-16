@@ -37,10 +37,25 @@ class EncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
 
 class LegacyEncodeDriver(RecursiveMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding
+
+    .. note::
+
+        ``batch_size`` is specially useful when the same EncoderExecutor can be used for documents of different granularities
+         (chunks, chunks of chunks ...)
+
+    .. warning::
+
+        ``batch_size`` parameter was added to cover the case where root documents had very few chunks, and the encoder executor could
+        then only process them in batches of the chunk size of each document, which did not lead to the full use of batching capabilities
+        of the powerful Executors
+
+    :param batch_size: number of documents to be used simultaneously in the encoder :meth:_apply_all.
+    :param *args: *args for super
+    :param **kwargs: **kwargs for super
     """
 
     class CacheDocumentSet:
-        """Helper class to accumulate documents from differents document Set in a single DocumentSet
+        """Helper class to accumulate documents from different DocumentSets in a single DocumentSet
          to help guarantee that the encoder driver can consume documents in fixed batch sizes to allow
          the EncoderExecutors to leverage its batching abilities.
          It is useful to have batching even when chunks are involved"""
@@ -54,9 +69,17 @@ class LegacyEncodeDriver(RecursiveMixin, BaseEncodeDriver):
 
         @property
         def available_capacity(self):
+            """The capacity left in the cache
+            # noqa: DAR201
+            """
             return self.capacity - len(self._doc_set)
 
         def cache(self, docs: DocumentSet):
+            """Cache the docs in DocumentSet.
+
+            :param docs: the DocumentSet to cache
+            :return: the subset of the docs
+            """
             docs_to_append = min(len(docs), self.available_capacity)
             self._doc_set.extend(docs[: docs_to_append])
             return DocumentSet(docs[docs_to_append:])
@@ -65,21 +88,14 @@ class LegacyEncodeDriver(RecursiveMixin, BaseEncodeDriver):
             return len(self._doc_set)
 
         def get(self):
+            """Get the DocumentSet
+            # noqa: DAR201
+            """
             return self._doc_set
 
     def __init__(self,
                  batch_size: Optional[int] = None,
                  *args, **kwargs):
-        """
-        Extract from different documents.
-        :param batch_size: number of documents to be used simultaneously in the encoder :meth:_apply_all.
-        It is specially useful when the same EncoderExecutor can be used for documents of different granularities
-         (chunks, chunks of chunks ...)
-        .. warning::
-            - This parameter was added to cover the case where root documents had very few chunks, and the encoder executor could
-            then only process them in batches of the chunk size of each document, which did not lead to the full use of batching capabilities
-            of the powerful Executors
-        """
         super().__init__(*args, **kwargs)
         warnings.warn(f'this drivers will be removed soon, use {EncodeDriver!r} instead', DeprecationWarning)
         self.batch_size = batch_size
@@ -89,6 +105,11 @@ class LegacyEncodeDriver(RecursiveMixin, BaseEncodeDriver):
             self.cache_set = None
 
     def __call__(self, *args, **kwargs):
+        """Traverse the documents with the Driver.
+
+        :param *args: *args for ``_traverse_apply``
+        :param **kwargs: **kwargs for ``_traverse_apply``
+        """
         self._traverse_apply(self.docs, *args, **kwargs)
         self._empty_cache()
 

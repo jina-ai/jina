@@ -17,14 +17,14 @@ class BasePredictDriver(FastRecursiveMixin, BaseExecutableDriver):
 
 
 class BaseLabelPredictDriver(BasePredictDriver):
+    """Base class of a Driver for label prediction.
+
+    :param output_tag: output label will be written to ``doc.tags``
+    :param *args: *args for super
+    :param **kwargs: **kwargs for super
+    """
 
     def __init__(self, output_tag: str = 'prediction', *args, **kwargs):
-        """
-
-        :param output_tag: output label will be written to ``doc.tags``
-        :param *args:
-        :param **kwargs:
-        """
         super().__init__(*args, **kwargs)
         self.output_tag = output_tag
 
@@ -50,6 +50,9 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
         :param prediction: the float/int numpy ndarray given by :class:`BaseClassifier`
         :return: the readable label to be stored.
+
+        # noqa: DAR401
+        # noqa: DAR202
         """
         raise NotImplementedError
 
@@ -65,8 +68,8 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
 
         :param one_label: label when prediction is one
         :param zero_label: label when prediction is zero
-        :param *args:
-        :param **kwargs:
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
         """
         super().__init__(*args, **kwargs)
         self.one_label = one_label
@@ -76,7 +79,9 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
         """
 
         :param prediction: a (B,) or (B, 1) zero one array
-        :return:
+        :return: the labels as either ``self.one_label`` or ``self.zero_label``
+
+        # noqa: DAR401
         """
         p = np.squeeze(prediction)
         if p.ndim > 1:
@@ -99,17 +104,23 @@ class OneHotPredictDriver(BaseLabelPredictDriver):
         self.labels = labels
 
     def validate_labels(self, prediction: 'np.ndarray'):
+        """Validate the labels.
+
+        :param prediction: the predictions
+
+        # noqa: DAR401
+        """
         if prediction.ndim != 2:
-            raise ValueError(f'{typename(self)} expects prediction has ndim=2, but receiving {prediction.ndim}')
+            raise ValueError(f'{typename(self)} expects prediction to have ndim=2, but received {prediction.ndim}')
         if prediction.shape[1] != len(self.labels):
             raise ValueError(
-                f'{typename(self)} expects prediction.shape[1]==len(self.labels), but receiving {prediction.shape}')
+                f'{typename(self)} expects prediction.shape[1]==len(self.labels), but received {prediction.shape}')
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[str]:
         """
 
         :param prediction: a (B, C) array where C is the number of classes, only one element can be one
-        :return:
+        :return: the list of labels
         """
         self.validate_labels(prediction)
         p = np.argmax(prediction, axis=1)
@@ -117,7 +128,7 @@ class OneHotPredictDriver(BaseLabelPredictDriver):
 
 
 class MultiLabelPredictDriver(OneHotPredictDriver):
-    """ Mapping prediction to a list of labels
+    """Mapping prediction to a list of labels
 
     Expect prediction to be 2dim array, zero-one valued. Each row corresponds to
     a sample, each column corresponds to a label. Each row can have only multiple 1s.
@@ -126,6 +137,11 @@ class MultiLabelPredictDriver(OneHotPredictDriver):
     """
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[List[str]]:
+        """Transform the prediction into labels.
+
+        :param prediction: the array of predictions
+        :return: nested list of labels
+        """
         self.validate_labels(prediction)
         return [[self.labels[int(pp)] for pp in p.nonzero()[0]] for p in prediction]
 
