@@ -4,13 +4,13 @@ __license__ = "Apache-2.0"
 from typing import Dict, Any
 
 from ...types.querylang.queryset.lookup import Q
-from .. import QuerySetReader, BaseRecursiveDriver
+from .. import QuerySetReader, BaseRecursiveDriver, RecursiveMixin
 
 if False:
     from ...types.sets import DocumentSet
 
 
-class FilterQL(QuerySetReader, BaseRecursiveDriver):
+class FilterQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
     """Filters incoming `docs` by evaluating a series of `lookup rules`.
 
         This is often useful when the proceeding Pods require only a signal, not the full message.

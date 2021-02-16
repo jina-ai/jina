@@ -8,6 +8,6 @@ requests:
     IndexRequest:
       - !DummyEncodeDriver
         with:
-          traversal_paths: ['c'] # cannot be found in dummy_encode_driver.py
+          traversal_paths: ['r']
     SearchRequest:
       - !EncodeDriver {}

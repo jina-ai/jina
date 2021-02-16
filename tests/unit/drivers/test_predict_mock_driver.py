@@ -37,7 +37,7 @@ class MockPrediction2DocBlobDriver(Prediction2DocBlobDriver):
 def test_binary_predict_driver():
     docs = DocumentSet(random_docs(2))
     driver = MockBinaryPredictDriver()
-    driver._traverse_apply(docs)
+    driver._apply_all(docs)
 
     for d in docs:
         assert d.tags['prediction'] in {'yes', 'no'}
@@ -48,7 +48,7 @@ def test_binary_predict_driver():
 def test_one_hot_predict_driver():
     docs = DocumentSet(random_docs(2))
     driver = MockOneHotPredictDriver(labels=['cat', 'dog', 'human'])
-    driver._traverse_apply(docs)
+    driver._apply_all(docs)
 
     for d in docs:
         assert d.tags['prediction'] in {'cat', 'dog', 'human'}
@@ -59,7 +59,7 @@ def test_one_hot_predict_driver():
 def test_multi_label_predict_driver():
     docs = DocumentSet(random_docs(2))
     driver = MockMultiLabelPredictDriver(labels=['cat', 'dog', 'human'])
-    driver._traverse_apply(docs)
+    driver._apply_all(docs)
 
     for d in docs:
         assert isinstance(d.tags['prediction'], ListValue)
@@ -68,7 +68,7 @@ def test_multi_label_predict_driver():
 
     docs = DocumentSet(random_docs(2))
     driver = MockAllLabelPredictDriver(labels=['cat', 'dog', 'human'])
-    driver._traverse_apply(docs)
+    driver._apply_all(docs)
 
     for d in docs:
         assert isinstance(d.tags['prediction'], ListValue)
@@ -78,7 +78,7 @@ def test_multi_label_predict_driver():
 def test_as_blob_driver():
     docs = DocumentSet(random_docs(2))
     driver = MockPrediction2DocBlobDriver()
-    driver._traverse_apply(docs)
+    driver._apply_all(docs)
 
     for d in docs:
         assert NdArray(d.blob).value.shape == (3,)
