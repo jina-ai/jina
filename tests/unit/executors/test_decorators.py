@@ -246,14 +246,14 @@ def test_batching_multi_input_dictionary():
             self, query_meta, old_match_scores, match_meta
         ):
             self.batches.append([query_meta, old_match_scores, match_meta])
-            return np.array([(x,y) for x,y in old_match_scores.items()])
+            return np.array(list(old_match_scores.items()))
     
     query_meta = {'text': 'cool stuff'}
     old_match_scores = {1: 5, 2: 4, 3:4 , 4:0}
     match_meta = {1: {'text': 'cool stuff'}, 2: {'text': 'kewl stuff'},3: {'text': 'kewl stuff'},4: {'text': 'kewl stuff'}}
     instance = MockRanker(batch_size)
     result = instance.score(query_meta,old_match_scores,match_meta)
-    np.testing.assert_almost_equal(result,np.array([(x,y) for x,y in old_match_scores.items()]))
+    np.testing.assert_almost_equal(result,np.array(list(old_match_scores.items())))
     for batch in instance.batches:
         assert batch[0] == query_meta
         assert len(batch[1]) == batch_size

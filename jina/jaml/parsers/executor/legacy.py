@@ -108,7 +108,7 @@ class LegacyParser(VersionedYAMLParser):
                 # tmp_a = (expand_env_var(v) for v in a)
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
                 tmp_a = a
-                tmp_p = {kk: vv for kk, vv in {**k, **p}.items()}
+                tmp_p = dict({**k, **p}.items())
                 obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}), requests=data.get('requests', {}))
             else:
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}

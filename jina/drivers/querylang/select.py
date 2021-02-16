@@ -32,7 +32,7 @@ class ExcludeQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
         if isinstance(fields, str):
             self._fields = [fields]
         else:
-            self._fields = [field for field in fields]
+            self._fields = list(fields)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
         for doc in docs:

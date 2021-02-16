@@ -186,4 +186,4 @@ from jina.executors.rankers import BaseRanker as Ranker
 from jina.executors.segmenters import BaseSegmenter as Segmenter
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
-__all__.extend([_s for _s in _names_with_underscore])
+__all__.extend(list(_names_with_underscore))

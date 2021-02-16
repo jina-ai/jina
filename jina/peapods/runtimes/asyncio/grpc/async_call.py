@@ -74,4 +74,4 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
 
                 # this list dries, clear it and feed it with on_recv_task
                 prefetch_task.clear()
-                prefetch_task = [j for j in onrecv_task]
+                prefetch_task = list(onrecv_task)

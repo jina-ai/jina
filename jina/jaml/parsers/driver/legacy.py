@@ -22,7 +22,7 @@ class LegacyParser(VersionedYAMLParser):
         :param data: versioned flow object
         :return: dictionary given a versioned flow object
         """
-        a = {k: v for k, v in data._init_kwargs_dict.items()}
+        a = dict(data._init_kwargs_dict.items())
         r = {}
         if a:
             r['with'] = a
