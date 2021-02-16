@@ -76,11 +76,11 @@ class Chunk2DocRanker(BaseRanker):
                 - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
         :type match_idx: np.ndarray.
         :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
-            the value is extracted by the ``required_keys``.
+            the value is extracted by the ``query_required_keys``.
         :type query_chunk_meta: Dict.
         :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
-            ``chunk_id``, the value is extracted by the ``required_keys``.
-        :type query_chunk_meta: Dict.
+            ``chunk_id``, the value is extracted by the ``match_required_keys``.
+        :type match_chunk_meta: Dict.
         :return: A [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
                 the second column is the score/distance/metric between the matched doc and the query doc (float).
         :rtype: np.ndarray.

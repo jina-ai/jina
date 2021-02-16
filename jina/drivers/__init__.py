@@ -243,15 +243,9 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return d
 
 
-class BaseRecursiveDriver(BaseDriver):
-    """A Driver to traverse a set of Documents with a specific path.
-
-    :param traversal_paths: The describes the leaves of the document tree on which _apply_all are called
+class RecursiveMixin(BaseDriver):
+    """A mixin to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseRecursiveDriver`
     """
-
-    def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._traversal_paths = [path.lower() for path in traversal_paths]
 
     @property
     def docs(self):
@@ -323,7 +317,7 @@ class BaseRecursiveDriver(BaseDriver):
 
 class FastRecursiveMixin:
     """
-    The optimized version of :class:`BaseRecursiveDriver`,
+     The optimized version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
      it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
 
      .. seealso::
@@ -346,6 +340,25 @@ class FastRecursiveMixin:
             return self.req.docs.traverse(self._traversal_paths)
 
 
+class BaseRecursiveDriver(BaseDriver):
+    """A :class:`BaseRecursiveDriver` is an abstract Driver class containing information about the `traversal_paths`
+    that a `Driver` must apply its logic.
+    It is intended to be mixed in with either :class:`FastRecursiveMixin` or :class:`RecursiveMixin`
+    """
+
+    def __init__(self,
+                 traversal_paths: Tuple[str] = ('c', 'r'),
+                 *args, **kwargs):
+        """Initialize a :class:`BaseRecursiveDriver`
+
+        :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
+        """
+        super().__init__(*args, **kwargs)
+        self._traversal_paths = [path.lower() for path in traversal_paths]
+
+
 class BaseExecutableDriver(BaseRecursiveDriver):
     """A :class:`BaseExecutableDriver` is an intermediate logic unit between the :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` and :class:`jina.executors.BaseExecutor`
     It reads the protobuf message, extracts/modifies the required information and then sends to the :class:`jina.executors.BaseExecutor`,
@@ -355,7 +368,9 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
-    def __init__(self, executor: str = None, method: str = None, *args, **kwargs):
+    def __init__(self, executor: Optional[str] = None,
+                 method: Optional[str] = None,
+                 *args, **kwargs):
         """Initialize a :class:`BaseExecutableDriver`
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used

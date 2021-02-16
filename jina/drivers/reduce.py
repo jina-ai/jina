@@ -5,14 +5,14 @@ from typing import Tuple, Dict, Any
 
 import numpy as np
 
-from . import BaseRecursiveDriver
+from . import RecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ..types.document import Document
     from ..types.sets import DocumentSet
 
 
-class ReduceAllDriver(BaseRecursiveDriver):
+class ReduceAllDriver(RecursiveMixin, BaseRecursiveDriver):
     """:class:`ReduceAllDriver` merges chunks/matches from all requests, recursively.
 
     .. note::

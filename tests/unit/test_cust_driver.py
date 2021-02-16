@@ -1,30 +1,33 @@
-from pathlib import Path
-
+import os
 from jina import Flow, Document
 from jina.executors import BaseExecutor
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 
-cur_dir = Path(__file__).parent
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_load_executor_with_custom_driver():
-    with BaseExecutor.load_config(str(cur_dir / 'yaml/test-executor-with-custom-driver.yml')) as be:
+    with BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-executor-with-custom-driver.yml')) as be:
         assert be._drivers['IndexRequest'][0].__class__.__name__ == 'DummyEncodeDriver'
 
 
 def test_load_pod_with_custom_driver():
-    args = set_pea_parser().parse_args(['--uses', str(cur_dir / 'yaml/test-executor-with-custom-driver.yml')])
+    args = set_pea_parser().parse_args(['--uses', os.path.join(cur_dir, 'yaml/test-executor-with-custom-driver.yml')])
     with BasePea(args):
         # load success with no error
         pass
 
 
-def validate(req):
-    assert len(req.docs) == 1
-    assert req.docs[0].text == 'hello from DummyEncodeDriver'
+def test_load_flow_with_custom_driver(mocker):
+    mock = mocker.Mock()
 
+    def validate(req):
+        mock()
+        assert len(req.docs) == 1
+        assert req.docs[0].text == 'hello from DummyEncodeDriver'
 
-def test_load_flow_with_custom_driver():
-    with Flow().add(uses=str(cur_dir / 'yaml/test-executor-with-custom-driver.yml')) as f:
+    with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-executor-with-custom-driver.yml')) as f:
         f.index([Document()], on_done=validate)
+
+    mock.assert_called()
