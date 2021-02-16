@@ -1,3 +1,4 @@
+"""Base argparser module for Pea and Pod runtime"""
 import argparse
 
 from pkg_resources import resource_filename
@@ -8,6 +9,7 @@ from ...helper import random_identity
 
 def mixin_base_ppr_parser(parser):
     """Mixing in arguments required by pea/pod/runtime module into the given parser.
+    :param parser: the parser instance to which we add arguments
     """
 
     gp = add_arg_group(parser, title='Essential')

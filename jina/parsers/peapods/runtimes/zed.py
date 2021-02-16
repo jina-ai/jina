@@ -1,3 +1,4 @@
+"""Argparser module for ZED runtime"""
 import argparse
 
 from ...helper import add_arg_group, _SHOW_ALL_ARGS
@@ -7,7 +8,9 @@ from ....helper import random_port
 
 
 def mixin_zed_runtime_parser(parser):
-    """Mixing in arguments required by :class:`ZEDRuntime` into the given parser."""
+    """Mixing in arguments required by :class:`ZEDRuntime` into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
 
     gp = add_arg_group(parser, title='ZEDRuntime')
 
@@ -80,4 +83,3 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
     gp.add_argument('--num-part', type=int, default=0,
                     help='the number of messages expected from upstream, 0 and 1 means single part'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
-

@@ -1,8 +1,11 @@
+"""Argparser module for container runtimes"""
 from ...helper import add_arg_group, DockerKwargsAppendAction
 
 
 def mixin_container_runtime_parser(parser):
-    """Mixing in arguments required by :class:`ContainerRuntime` into the given parser."""
+    """Mixing in arguments required by :class:`ContainerRuntime` into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
     gp = add_arg_group(parser, title='ContainerRuntime')
 
     gp.add_argument('--uses-internal', type=str, default='BaseExecutor',

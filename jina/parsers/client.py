@@ -1,8 +1,13 @@
+"""Module for argparse for Client"""
 from .helper import add_arg_group
 from ..enums import RequestType
 
 
 def mixin_client_cli_parser(parser):
+    """Add the arguments for the client to the parser
+
+    :param parser: the parser configure
+    """
     gp = add_arg_group(parser, title='Client')
 
     gp.add_argument('--request-size', type=int, default=100,

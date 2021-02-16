@@ -1,3 +1,4 @@
+"""Argparser module for ZMQ runtimes"""
 import os
 
 from ...helper import add_arg_group
@@ -5,7 +6,9 @@ from ....helper import random_port
 
 
 def mixin_zmq_runtime_parser(parser):
-    """Mixing in arguments required by :class:`ZMQRuntime` into the given parser."""
+    """Mixing in arguments required by :class:`ZMQRuntime` into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
 
     gp = add_arg_group(parser, title='ZMQRuntime')
     gp.add_argument('--port-ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', random_port()),
