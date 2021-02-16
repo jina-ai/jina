@@ -189,16 +189,16 @@ def test_cache_driver_update(tmpdir, test_metas, field_type, mocker):
 
     def validate_delete(self, keys, *args, **kwargs):
         assert len(keys) == len(docs)
-        assert all([k == d.id for k, d in zip(keys, docs)])
+        assert all(k == d.id for k, d in zip(keys, docs))
 
     def validate_update(self, keys, values, *args, **kwargs):
         assert len(keys) == len(docs)
         assert len(values) == len(docs)
-        assert all([k == d.id for k, d in zip(keys, docs)])
+        assert all(k == d.id for k, d in zip(keys, docs))
         if self.field == CONTENT_HASH_KEY:
-            assert all([v == d.content_hash for v, d in zip(values, docs)])
+            assert all(v == d.content_hash for v, d in zip(values, docs))
         elif self.field == ID_KEY:
-            assert all([v == d.id for v, d in zip(values, docs)])
+            assert all(v == d.id for v, d in zip(values, docs))
 
     with DocCache(tmpdir, metas=test_metas, field=field_type) as e:
         mocker.patch.object(DocCache, 'update', validate_update)
@@ -215,7 +215,7 @@ def test_cache_driver_delete(tmpdir, test_metas, field_type, mocker):
 
     def validate_delete(self, keys, *args, **kwargs):
         assert len(keys) == len(docs)
-        assert all([k == d.id for k, d in zip(keys, docs)])
+        assert all(k == d.id for k, d in zip(keys, docs))
 
     with DocCache(tmpdir, metas=test_metas, field=field_type) as e:
         mocker.patch.object(DocCache, 'delete', validate_delete)
