@@ -67,6 +67,10 @@ class ExcludeReqQL(ExcludeQL):
     """
 
     def __call__(self, *args, **kwargs):
+        """
+        # noqa: DAR102
+        # noqa: DAR101
+        """
         for k in self.fields:
             self.req.ClearField(k)
 
@@ -74,9 +78,14 @@ class ExcludeReqQL(ExcludeQL):
 class SelectReqQL(ExcludeReqQL):
     """Clean up request from the request-level protobuf message to reduce the total size of the message, it works with the opposite
     logic as `:class:`ExcludeReqQL`
+    # noqa: DAR101
     """
 
     def __call__(self, *args, **kwargs):
+        """
+        # noqa: DAR102
+        # noqa: DAR101
+        """
         for k in self.req.DESCRIPTOR.fields_by_name.keys():
             if k not in self.fields:
                 self.req.ClearField(k)
