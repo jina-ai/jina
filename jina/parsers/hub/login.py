@@ -1,9 +1,14 @@
+"""Argparser module for hub login"""
 import os
 
 from ..helper import add_arg_group
 
 
 def mixin_hub_docker_login_parser(parser):
+    """Add the options for the docker login
+
+    :param parser: the parser
+    """
     gp = add_arg_group(parser, title='Docker login')
 
     gp.add_argument('--username', type=str, help='The Docker registry username',

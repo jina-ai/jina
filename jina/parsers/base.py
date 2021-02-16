@@ -1,9 +1,14 @@
+"""Module containing the base parser for arguments of Jina."""
 import argparse
 
 from .helper import _chf
 
 
 def set_base_parser():
+    """Set the base parser
+
+    :return: the parser
+    """
     from .. import __version__
     from ..helper import colored, get_full_version, format_full_version_info
     # create the top-level parser

@@ -1,8 +1,13 @@
+"""Argparser module for hub build"""
 from ..helper import add_arg_group
 from ...enums import BuildTestLevel
 
 
 def mixin_hub_build_parser(parser):
+    """Add the arguments for hub build to the parser
+
+    :param parser: the parser configure
+    """
     gp = add_arg_group(parser, title='Build')
     gp.add_argument('path', type=str, help='path to the directory containing '
                                            'Dockerfile, manifest.yml, README.md '
