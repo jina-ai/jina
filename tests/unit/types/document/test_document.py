@@ -2,6 +2,7 @@ import json
 
 import numpy as np
 import pytest
+
 from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
@@ -456,7 +457,6 @@ def test_update_embedding():
 
 def test_non_empty_fields():
     d_score = Document(score=NamedScore(value=42))
-    print(d_score.ListFields())
     assert d_score.non_empty_fields == ('id', 'score')
 
     d = Document()
@@ -495,11 +495,14 @@ def test_update_exclude_field():
 
 
 def test_get_attr():
-    d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name', 'tags': {'id': 'identity', 'a': 'b', 'c': 'd'}})
+    d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name',
+                  'tags': {'id': 'identity', 'a': 'b', 'c': 'd'}})
     d.score = NamedScore(value=42)
 
-    res = d.get_attrs(*['id', 'text', 'tags__name', 'tags__feature1', 'score__value', 'tags__c', 'tags__id', 'inexistant', 'tags__none', 'tags__inexistant'])
+    required_keys = ['id', 'text', 'tags__name', 'tags__feature1', 'score__value', 'tags__c', 'tags__id', 'tags__inexistant', 'inexistant']
+    res = d.get_attrs(*required_keys)
 
+    assert len(res.keys()) == len(required_keys)
     assert res['id'] == '123'
     assert res['tags__feature1'] == 121
     assert res['tags__name'] == 'name'
@@ -507,19 +510,18 @@ def test_get_attr():
     assert res['tags__c'] == 'd'
     assert res['tags__id'] == 'identity'
     assert res['score__value'] == 42
-    assert res['inexistant'] is None
-    assert res['tags__none'] is None
     assert res['tags__inexistant'] is None
-
-    assert 'a' not in res
+    assert res['inexistant'] is None
 
     res2 = d.get_attrs(*['tags', 'text'])
+    assert len(res2.keys()) == 2
     assert res2['text'] == 'document'
     assert res2['tags'] == d.tags
 
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
-    res = d.get_attrs(*['tags__outterkey__innerkey'])
-    assert res['tags__outterkey__innerkey'] == 'real_value'
+    res3 = d.get_attrs(*['tags__outterkey__innerkey'])
+    assert len(res3.keys()) == 1
+    assert res3['tags__outterkey__innerkey'] == 'real_value'
 
 
 def test_pb_obj2dict():
@@ -538,7 +540,6 @@ def test_pb_obj2dict():
     assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
     rcs = list(res['chunks'])
     assert len(rcs) == 1
-    print(f' rcs[0] => {type(rcs[0])}')
     assert isinstance(rcs[0], Document)
     assert rcs[0].text == 'text in chunk'
     assert rcs[0].tags['id'] == 'id in chunk tags'

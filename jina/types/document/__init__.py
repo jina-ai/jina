@@ -24,6 +24,7 @@ from ...excepts import BadDocType
 from ...helper import is_url, typename, random_identity, download_mermaid_url
 from ...importer import ImportExtensions
 from ...proto import jina_pb2
+from ...logging import default_logger
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -480,16 +481,20 @@ class Document(ProtoTypeMixin):
 
         ret = {}
         for k in args:
+
             try:
-                value = getattr(self, k)
+                if hasattr(self, k):
+                    value = getattr(self, k)
+                else:
+                    value = dunder_get(self._pb_body, k)
+
+                if not value:
+                    raise ValueError
+
                 ret[k] = value
                 continue
-            except AttributeError:
-                pass
-            try:
-                value = dunder_get(self._pb_body, k)
-                ret[k] = value
             except (AttributeError, ValueError):
+                default_logger.warning(f'Could not get attribute from key {k}, returning None')
                 ret[k] = None
         return ret
 
