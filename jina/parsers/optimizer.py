@@ -1,11 +1,18 @@
+"""Argparser module for Optimizer"""
 from .base import set_base_parser
 from .peapods.base import mixin_base_ppr_parser
 
+# noinspection PyUnreachableCode
 if False:
     from argparse import ArgumentParser
 
 
 def set_optimizer_parser(parser: 'ArgumentParser' = None):
+    """Set the parser for the optimizer
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
     if not parser:
         parser = set_base_parser()
     mixin_base_ppr_parser(parser)

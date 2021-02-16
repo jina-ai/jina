@@ -13,28 +13,34 @@ from ..types.document.helper import DocGroundtruthPair
 
 
 class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
+    """The Base Driver for evaluation operations.
+
+    .. warning::
+
+        When ``running_avg=True``, then the running mean is returned. So far at Jina 0.8.10,
+         there is no way to reset the running statistics. If you have a query Flow running multiple queries,
+         you may want to make sure the running statistics is meaningful across multiple runs.
+
+    :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
+    :param method: the function name of the executor that the driver feeds to
+    :param running_avg: always return running average instead of value of the current run
+    :param *args:
+    :param **kwargs:
+    """
     def __init__(self, executor: str = None,
                  method: str = 'evaluate',
                  running_avg: bool = False,
                  *args,
                  **kwargs):
-        """
-        :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
-        :param method: the function name of the executor that the driver feeds to
-        :param running_avg: always return running average instead of value of the current run
-        :param *args:
-        :param **kwargs:
-
-        .. warning::
-
-            When ``running_avg=True``, then the running mean is returned. So far at Jina 0.8.10,
-             there is no way to reset the running statistics. If you have a query Flow running multiple queries,
-             you may want to make sure the running statistics is meaningful across multiple runs.
-        """
         super().__init__(executor, method, *args, **kwargs)
         self._running_avg = running_avg
 
     def __call__(self, *args, **kwargs):
+        """Load the ground truth pairs
+
+        :param *args: *args for _traverse_apply
+        :param **kwargs: **kwargs for _traverse_apply
+        """
         docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
                              zip(self.docs, self.req.groundtruths)]
         self._traverse_apply(docs_groundtruths, *args, **kwargs)
@@ -65,6 +71,10 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
 
         This function will be invoked two times in :meth:`_apply_all`:
         once with actual doc, once with groundtruth doc.
+
+        # noqa: DAR401
+
+        :param doc: the Document
         """
         raise NotImplementedError
 
@@ -80,13 +90,18 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
         """
 
         :param field: the field name to be extracted from the Protobuf
-        :param *args:
-        :param **kwargs:
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
         """
         super().__init__(*args, **kwargs)
         self.field = field
 
     def extract(self, doc: 'Document') -> Any:
+        """Extract the field from the Document
+
+        :param doc: the Document
+        :return: the data in the field
+        """
         return dunder_get(doc, self.field)
 
 
@@ -103,12 +118,17 @@ class RankEvaluateDriver(FieldEvaluateDriver):
                  **kwargs):
         """
         :param field: the field name to be extracted from the Protobuf
-        :param *args:
-        :param **kwargs:
+        :param *args: *args for super()
+        :param **kwargs: **kwargs for super()
         """
         super().__init__(field, *args, **kwargs)
 
     def extract(self, doc: 'Document'):
+        """Extract the field from the Document's matches.
+
+        :param doc: the Document
+        :return: list of the fields
+        """
         r = [dunder_get(x, self.field) for x in doc.matches]
         # flatten nested list but useless depth, e.g. [[1,2,3,4]]
         return list(numpy.array(r).flat)
@@ -151,6 +171,11 @@ class LoadGroundTruthDriver(KVSearchDriver):
     """
 
     def __call__(self, *args, **kwargs):
+        """Load the ground truth.
+
+        :param args: unused
+        :param kwargs: unused
+        """
         miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
         for idx, doc in enumerate(self.docs):
             serialized_groundtruth = self.exec_fn(doc.id)

@@ -1,7 +1,13 @@
+"""Argparser module for the export API"""
 from .base import set_base_parser
 
 
 def set_export_api_parser(parser=None):
+    """Set the parser for the API export
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
     if not parser:
         parser = set_base_parser()
 

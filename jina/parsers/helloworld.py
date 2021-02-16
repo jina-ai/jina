@@ -1,3 +1,4 @@
+"""Module for hello world argparser"""
 import argparse
 
 from pkg_resources import resource_filename
@@ -8,6 +9,10 @@ from ..helper import random_identity
 
 
 def mixin_hw_base_parser(parser):
+    """Add the arguments for hello world to the parser
+
+    :param parser: the parser configure
+    """
     gp = add_arg_group(parser, title='General')
     gp.add_argument('--workdir', type=str, default=random_identity(),
                     help='The workdir for hello-world demo'
@@ -17,6 +22,11 @@ def mixin_hw_base_parser(parser):
 
 
 def set_hw_parser(parser=None):
+    """Set the hello world parser
+
+    :param parser: the parser configure
+    :return: the new parser
+    """
     if not parser:
         parser = set_base_parser()
 
@@ -65,6 +75,11 @@ def set_hw_parser(parser=None):
 
 
 def set_hw_chatbot_parser(parser=None):
+    """Set the parser for the hello world chatbot
+
+    :param parser: the parser configure
+    :return: the new parser
+    """
     if not parser:
         parser = set_base_parser()
 

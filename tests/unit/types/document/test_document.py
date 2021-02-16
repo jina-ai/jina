@@ -2,14 +2,13 @@ import json
 
 import numpy as np
 import pytest
+
 from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
 from jina.types.score import NamedScore
 from tests import random_docs
-
-DOCUMENTS_PER_LEVEL = 1
 
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
@@ -230,7 +229,6 @@ def test_doc_setattr():
 
 
 def test_doc_score():
-    from jina import Document
     from jina.types.score import NamedScore
     with Document() as doc:
         doc.text = 'text'
@@ -459,7 +457,6 @@ def test_update_embedding():
 
 def test_non_empty_fields():
     d_score = Document(score=NamedScore(value=42))
-    print(d_score.ListFields())
     assert d_score.non_empty_fields == ('id', 'score')
 
     d = Document()
@@ -495,3 +492,54 @@ def test_update_exclude_field():
     # check if merging on embedding is correct
     assert len(d.chunks) == 1
     assert d.chunks[0].id == '🐢'
+
+
+def test_get_attr():
+    d = Document({'id': '123', 'text': 'document', 'feature1': 121, 'name': 'name',
+                  'tags': {'id': 'identity', 'a': 'b', 'c': 'd'}})
+    d.score = NamedScore(value=42)
+
+    required_keys = ['id', 'text', 'tags__name', 'tags__feature1', 'score__value', 'tags__c', 'tags__id', 'tags__inexistant', 'inexistant']
+    res = d.get_attrs(*required_keys)
+
+    assert len(res.keys()) == len(required_keys)
+    assert res['id'] == '123'
+    assert res['tags__feature1'] == 121
+    assert res['tags__name'] == 'name'
+    assert res['text'] == 'document'
+    assert res['tags__c'] == 'd'
+    assert res['tags__id'] == 'identity'
+    assert res['score__value'] == 42
+    assert res['tags__inexistant'] is None
+    assert res['inexistant'] is None
+
+    res2 = d.get_attrs(*['tags', 'text'])
+    assert len(res2.keys()) == 2
+    assert res2['text'] == 'document'
+    assert res2['tags'] == d.tags
+
+    d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
+    res3 = d.get_attrs(*['tags__outterkey__innerkey'])
+    assert len(res3.keys()) == 1
+    assert res3['tags__outterkey__innerkey'] == 'real_value'
+
+
+def test_pb_obj2dict():
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        document.tags['id'] = 'id in tags'
+        document.tags['inner_dict'] = {'id': 'id in inner_dict'}
+        with Document() as chunk:
+            chunk.text = 'text in chunk'
+            chunk.tags['id'] = 'id in chunk tags'
+        document.chunks.add(chunk)
+    res = document.get_attrs('text', 'tags', 'chunks')
+    assert res['text'] == 'this is text'
+    assert res['tags']['id'] == 'id in tags'
+    assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
+    rcs = list(res['chunks'])
+    assert len(rcs) == 1
+    assert isinstance(rcs[0], Document)
+    assert rcs[0].text == 'text in chunk'
+    assert rcs[0].tags['id'] == 'id in chunk tags'

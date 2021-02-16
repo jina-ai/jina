@@ -1,6 +1,8 @@
+"""Module for helper functions in the parser"""
 import argparse
 import os
 import uuid
+from typing import Tuple
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
@@ -9,23 +11,41 @@ if _SHOW_ALL_ARGS:
 
 
 def add_arg_group(parser, title):
+    """Add the arguments for a specific group to the parser
+
+    :param parser: the parser configure
+    :param title: the group name
+    :return: the new parser
+    """
     return parser.add_argument_group(f'{title} arguments')
 
 
-def UUIDString(astring):
-    """argparse type to check if a string is a valid UUID string"""
+def UUIDString(astring) -> str:
+    """argparse type to check if a string is a valid UUID string
+
+    :param astring: the string to check
+    :return: the string
+    """
     uuid.UUID(astring)
     return astring
 
 
 class KVAppendAction(argparse.Action):
-    """
-    argparse action to split an argument into KEY=VALUE form
+    """argparse action to split an argument into KEY=VALUE form
     on the first = and append to a dictionary.
     This is used for setting up --env
     """
 
     def __call__(self, parser, args, values, option_string=None):
+        """
+        call the KVAppendAction
+
+        # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
         import json
         d = getattr(args, self.dest) or {}
         for value in values:
@@ -41,13 +61,21 @@ class KVAppendAction(argparse.Action):
 
 
 class DockerKwargsAppendAction(argparse.Action):
-    """
-    argparse action to split an argument into KEY: VALUE form
+    """argparse action to split an argument into KEY: VALUE form
     on the first : and append to a dictionary.
     This is used for setting up arbitrary kwargs for docker sdk
     """
 
     def __call__(self, parser, args, values, option_string=None):
+        """
+        call the DockerKwargsAppendAction
+
+        # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
         import json
         d = getattr(args, self.dest) or {}
 
@@ -179,8 +207,12 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         lines = self._para_reformat(text, width)
         return '\n'.join(lines)
 
-    def _indents(self, line):
-        """Return line indent level and "sub_indent" for bullet list text."""
+    def _indents(self, line) -> Tuple[int, int]:
+        """Return line indent level and "sub_indent" for bullet list text.
+
+        :param line: the line to check
+        :return: indentation of line and indentation of sub-items
+        """
         import re
         indent = len(re.match(r'( *)', line).group(1))
         list_match = re.match(r'( *)(([*\-+>]+|\w+\)|\w+\.) +)', line)
@@ -192,7 +224,11 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return (indent, sub_indent)
 
     def _split_paragraphs(self, text):
-        """Split text in to paragraphs of like-indented lines."""
+        """Split text into paragraphs of like-indented lines.
+
+        :param text: the text input
+        :return: list of paragraphs
+        """
 
         import textwrap, re
 
@@ -218,7 +254,12 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return paragraphs
 
     def _para_reformat(self, text, width):
-        """Reformat text, by paragraph."""
+        """Format text, by paragraph.
+
+        :param text: the text to format
+        :param width: the width to apply
+        :return: the new text
+        """
 
         import textwrap
 
