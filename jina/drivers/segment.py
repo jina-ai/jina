@@ -1,13 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Optional
+from typing import Iterable, Optional, Tuple
 
 from . import BaseExecutableDriver, FastRecursiveMixin
 from ..types.document import Document
 
-if False:
-    from .. import DocumentSet
+from .. import DocumentSet
 
 
 class SegmentDriver(FastRecursiveMixin, BaseExecutableDriver):
@@ -23,7 +22,9 @@ class SegmentDriver(FastRecursiveMixin, BaseExecutableDriver):
     ):
         super().__init__(executor, method, traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
+    def _apply_all(self, leaves: Iterable['DocumentSet'], *args, **kwargs):
+        docs = DocumentSet.flatten(leaves)
+
         for doc in docs:
             _args_dict = doc.get_attrs(*self.exec.required_keys)
             ret = self.exec_fn(**_args_dict)

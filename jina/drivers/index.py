@@ -7,8 +7,7 @@ import numpy as np
 
 from . import BaseExecutableDriver, FastRecursiveMixin
 
-if False:
-    from ..types.sets import DocumentSet
+from ..types.sets import DocumentSet
 
 
 class BaseIndexDriver(FastRecursiveMixin, BaseExecutableDriver):
@@ -35,7 +34,8 @@ class VectorIndexDriver(BaseIndexDriver):
     If `method` is not 'delete', documents without content are filtered out.
     """
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, leaves: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        docs = DocumentSet.flatten(leaves)
         embed_vecs, docs_pts = docs.all_embeddings
         if docs_pts:
             keys = [doc.id for doc in docs_pts]
@@ -46,7 +46,8 @@ class VectorIndexDriver(BaseIndexDriver):
 class KVIndexDriver(BaseIndexDriver):
     """Forwards pairs of serialized documents and ids to the executor."""
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, leaves: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        docs = DocumentSet.flatten(leaves)
         info = [(doc.id, doc.SerializeToString()) for doc in docs]
         if info:
             keys, values = zip(*info)

@@ -3,17 +3,10 @@ from typing import Dict
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentSet
 from jina.drivers.craft import CraftDriver
 from jina.executors.crafters import BaseCrafter
 from jina.types.ndarray.generic import NdArray
-
-
-@pytest.fixture(scope='function')
-def docs():
-    doc1 = Document(content='valid')
-    doc2 = Document(content='invalid')
-    return [doc1, doc2]
 
 
 class MockCrafter(BaseCrafter):
@@ -38,13 +31,25 @@ class SimpleCraftDriver(CraftDriver):
         return self._exec_fn
 
 
-def test_craft_driver(docs):
+@pytest.fixture(scope='function')
+def craft_driver():
     driver = SimpleCraftDriver()
     executor = MockCrafter()
     driver.attach(executor=executor, runtime=None)
-    driver._apply_all(docs[:1])
-    np.testing.assert_equal(NdArray(docs[0].blob).value, np.array([0.0, 0.0, 0.0]))
-    assert docs[0].weight == 10
+    return driver
+
+
+def test_valid_document(craft_driver):
+    valid_document = Document(content='valid')
+    leaves = [DocumentSet([valid_document])]
+    craft_driver._apply_all(leaves)
+    np.testing.assert_equal(NdArray(valid_document.blob).value, np.array([0.0, 0.0, 0.0]))
+    assert valid_document.weight == 10
+
+
+def test_invalid_document(craft_driver):
+    invalid_document = Document(content='invalid')
+    leaves = [DocumentSet([invalid_document])]
     with pytest.raises(AttributeError) as error:
-        driver._apply_all(docs[1:2])
+        craft_driver._apply_all(leaves)
         assert error.value.__str__() == '\'non_existing_key\' is not recognized'

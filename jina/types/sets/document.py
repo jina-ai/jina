@@ -1,5 +1,7 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple
+from typing import Union, Iterable, Tuple, Sequence
+
+import itertools
 
 import numpy as np
 
@@ -31,7 +33,7 @@ class DocumentSet(MutableSequence):
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
-    def __init__(self, docs_proto: Union['RepeatedContainer', Iterable['Document']]):
+    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
         """Set constructor method."""
         super().__init__()
         self._docs_proto = docs_proto
@@ -133,7 +135,7 @@ class DocumentSet(MutableSequence):
         """Sort the list of :class:`DocumentSet`."""
         self._docs_proto.sort(*args, **kwargs)
 
-    def traverse(self, traversal_paths: Iterable[str]) -> 'DocumentSet':
+    def traverse(self, traversal_paths: Iterable[str]) -> Iterable['DocumentSet']:
         """
         Return a DocumentSet that traverses this :class:`DocumentSet` object according to the
         ``traversal_paths``.
@@ -165,13 +167,13 @@ class DocumentSet(MutableSequence):
                     for d in docs:
                         yield from _traverse(d.chunks, path[1:])
             else:
-                yield from docs
+                yield docs
 
         def _traverse_all():
             for p in traversal_paths:
                 yield from _traverse(self, p)
 
-        return DocumentSet(_traverse_all())
+        return _traverse_all()
 
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
@@ -236,3 +238,7 @@ class DocumentSet(MutableSequence):
         content += f' at {id(self)}'
         content = content.strip()
         return f'<{typename(self)} {content}>'
+
+    @staticmethod
+    def flatten(doc_set_iterable: Iterable['DocumentSet']) -> 'DocumentSet':
+        return DocumentSet(itertools.chain.from_iterable(doc_set_iterable))

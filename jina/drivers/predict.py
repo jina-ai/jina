@@ -1,12 +1,10 @@
-from typing import List, Any, Union, Tuple
+from typing import List, Any, Iterable, Union, Tuple
 
 import numpy as np
 
 from . import BaseExecutableDriver, FastRecursiveMixin
 from ..helper import typename
-
-if False:
-    from ..types.sets import DocumentSet
+from ..types.sets import DocumentSet
 
 
 class BasePredictDriver(FastRecursiveMixin, BaseExecutableDriver):
@@ -16,7 +14,7 @@ class BasePredictDriver(FastRecursiveMixin, BaseExecutableDriver):
     :param *args: *args for super
     :param **kwargs: **kwargs for super
     """
-    
+
     def __init__(self, executor: str = None, method: str = 'predict', fields: Union[Tuple, str] = 'embedding', *args, **kwargs):
         self.fields = fields
         super().__init__(executor, method, *args, **kwargs)
@@ -36,10 +34,11 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
     def _apply_all(
             self,
-            docs: 'DocumentSet',
+            leaves: Iterable['DocumentSet'],
             *args,
             **kwargs,
     ) -> None:
+        docs = DocumentSet.flatten(leaves)
         if self.fields == 'embedding':
             predict_input, docs_pts = docs.all_embeddings
         elif self.fields == 'content':

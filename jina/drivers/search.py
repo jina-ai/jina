@@ -1,14 +1,12 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
+from typing import Iterable, Tuple
 
 from . import BaseExecutableDriver, QuerySetReader, FastRecursiveMixin, RecursiveMixin
 from ..types.document import Document
 from ..types.score import NamedScore
-
-if False:
-    from ..types.sets import DocumentSet
+from ..types.sets import DocumentSet
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -108,7 +106,8 @@ class VectorSearchDriver(FastRecursiveMixin, QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, leaves: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        docs = DocumentSet.flatten(leaves)
         embed_vecs, doc_pts = docs.all_embeddings
 
         if not doc_pts:
