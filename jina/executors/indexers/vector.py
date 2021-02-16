@@ -212,7 +212,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             return self._load_gzip(self.index_abspath)
         elif self.size is not None and os.stat(self.index_abspath).st_size:
             self.logger.success(f'memmap is enabled for {self.index_abspath}')
-            deleted_keys = len(self.valid_indices[self.valid_indices == False])
+            deleted_keys = len(self.valid_indices[self.valid_indices is False])
             # `==` is required. `is False` does not work in np
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
                              shape=(self.size + deleted_keys, self.num_dim))
