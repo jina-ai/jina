@@ -35,15 +35,15 @@ def test_cache_driver_twice(tmpdir, test_metas):
     with DocCache(tmpdir, metas=test_metas) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
-        driver._traverse_apply(docs)
+        driver._apply_all(docs)
 
         with pytest.raises(NotImplementedError):
             # duplicate docs
-            driver._traverse_apply(docs)
+            driver._apply_all(docs)
 
         # new docs
         docs = DocumentSet(list(random_docs(10, start_id=100)))
-        driver._traverse_apply(docs)
+        driver._apply_all(docs)
         filename = executor.save_abspath
 
     # check persistence
@@ -57,15 +57,15 @@ def test_cache_driver_tmpfile(tmpdir, test_metas):
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
 
-        driver._traverse_apply(docs)
+        driver._apply_all(docs)
 
         with pytest.raises(NotImplementedError):
             # duplicate docs
-            driver._traverse_apply(docs)
+            driver._apply_all(docs)
 
         # new docs
         docs = DocumentSet(list(random_docs(10, start_id=100, embedding=False)))
-        driver._traverse_apply(docs)
+        driver._apply_all(docs)
 
     assert os.path.exists(executor.index_abspath)
 
@@ -86,11 +86,11 @@ def test_cache_driver_from_file(tmpdir, test_metas):
 
         with pytest.raises(NotImplementedError):
             # duplicate docs
-            driver._traverse_apply(docs)
+            driver._apply_all(docs)
 
         # new docs
         docs = DocumentSet(list(random_docs(10, start_id=100)))
-        driver._traverse_apply(docs)
+        driver._apply_all(docs)
 
     # check persistence
     assert os.path.exists(executor.save_abspath)
@@ -129,10 +129,10 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
 
     with DocCache(tmpdir, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         driver.attach(executor=executor, runtime=None)
-        driver._traverse_apply(docs1)
+        driver._apply_all(docs1)
 
         with pytest.raises(NotImplementedError):
-            driver._traverse_apply(docs2)
+            driver._apply_all(docs2)
 
         assert executor.size == 1
         filename = executor.save_abspath
@@ -176,8 +176,8 @@ def test_cache_content_driver_same_id(tmp_path, test_metas):
 
     with DocCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
         driver.attach(executor=executor, runtime=None)
-        driver._traverse_apply(docs1)
-        driver._traverse_apply(docs2)
+        driver._apply_all(docs1)
+        driver._apply_all(docs2)
         assert executor.size == 2
 
 

@@ -1,10 +1,10 @@
-from jina.drivers import BaseRecursiveDriver
+from jina.drivers import RecursiveMixin, BaseExecutableDriver
 from jina.proto import jina_pb2
 
 DOCUMENTS_PER_LEVEL = 1
 
 
-class AppendOneChunkTwoMatchesCrafter(BaseRecursiveDriver):
+class AppendOneChunkTwoMatchesCrafter(RecursiveMixin, BaseExecutableDriver):
 
     def _apply_all(self, docs, *args, **kwargs) -> None:
         for doc in docs:
