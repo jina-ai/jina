@@ -10,9 +10,15 @@ if False:
 
 
 class BasePredictDriver(FastRecursiveMixin, BaseExecutableDriver):
-    """Drivers inherited from this Driver will bind :meth:`predict` by default """
+    """Drivers inherited from this Driver will bind :meth:`predict` by default
 
-    def __init__(self, executor: str = None, method: str = 'predict', *args, **kwargs):
+    :param use_embeddings: use ``doc.embeddings``, else use ``doc.content``, default True
+    :param *args: *args for super
+    :param **kwargs: **kwargs for super
+    """
+    
+    def __init__(self, executor: str = None, method: str = 'predict', use_embeddings: bool = True, *args, **kwargs):
+        self.use_embeddings = use_embeddings
         super().__init__(executor, method, *args, **kwargs)
 
 
@@ -34,7 +40,10 @@ class BaseLabelPredictDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts = docs.all_embeddings
+        if self.use_embeddings:
+            embed_vecs, docs_pts = docs.all_embeddings
+        else:
+            embed_vecs, docs_pts = docs.all_contents
 
         if docs_pts:
             prediction = self.exec_fn(embed_vecs)
@@ -160,7 +169,10 @@ class Prediction2DocBlobDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts = docs.all_embeddings
+        if self.use_embeddings:
+            embed_vecs, docs_pts = docs.all_embeddings
+        else:
+            embed_vecs, docs_pts = docs.all_contents
 
         if docs_pts:
             prediction = self.exec_fn(embed_vecs)
