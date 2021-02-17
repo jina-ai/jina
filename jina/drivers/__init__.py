@@ -22,6 +22,7 @@ from ..executors.decorators import wrap_func
 from ..helper import convert_tuple_to_list
 from ..jaml import JAMLCompatible
 from ..types.querylang import QueryLang
+from ..types.sets import DocumentSet
 
 # noinspection PyUnreachableCode
 if False:
@@ -31,7 +32,7 @@ if False:
     from ..logging.logger import JinaLogger
     from ..types.message import Message
     from ..types.request import Request
-    from ..types.sets import QueryLangSet, DocumentSet
+    from ..types.sets import QueryLangSet
     from ..types.document import Document
 
 
@@ -388,6 +389,49 @@ class RecursiveMixin:
                     )
         else:
             self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
+
+
+class SetRecursiveMixin:
+    """
+     The full datastructure version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
+     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
+
+     .. seealso::
+        https://github.com/jina-ai/jina/issues/1932
+
+    """
+
+    def __call__(self, *args, **kwargs):
+        """Traverse with _apply_all
+
+        :param *args: *args forwarded to ``_apply_all``
+        :param **kwargs: **kwargs forwarded to ``_apply_all``
+        """
+        document_sets = self.docs.traverse(self._traversal_paths)
+        self._apply_all(document_sets, *args, **kwargs)
+
+    def _apply_all(
+        self,
+        doc_sets: Iterable['DocumentSet'],
+        *args,
+        **kwargs,
+    ) -> None:
+        """Apply function works on a list of list of docs, modify the docs in-place.
+
+        Each outer list refers to a leaf (e.g. roots, matches or chunks wrapped
+        in a :class:`jina.DocumentSet`) in the traversal_paths.
+        """
+
+    @property
+    def docs(self) -> 'DocumentSet':
+        """The DocumentSet after applying the traversal
+        # noqa: DAR201"""
+        from ..types.sets import DocumentSet
+
+        if self.expect_parts > 1:
+            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
+        else:
+            return self.req.docs
 
 
 class FastRecursiveMixin:

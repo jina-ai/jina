@@ -1,9 +1,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
+from typing import Iterable, Tuple
 
-from . import BaseExecutableDriver, QuerySetReader, FastRecursiveMixin, RecursiveMixin
+from . import BaseExecutableDriver, QuerySetReader, FastRecursiveMixin, SetRecursiveMixin
 from ..types.document import Document
 from ..types.score import NamedScore
 
@@ -30,7 +30,7 @@ class BaseSearchDriver(BaseExecutableDriver):
         )
 
 
-class KVSearchDriver(RecursiveMixin, BaseSearchDriver):
+class KVSearchDriver(SetRecursiveMixin, BaseSearchDriver):
     """Fill in the results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
 
     .. warning::
@@ -61,24 +61,25 @@ class KVSearchDriver(RecursiveMixin, BaseSearchDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_update = is_update
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
-        for idx, retrieved_doc in enumerate(docs):
-            serialized_doc = self.exec_fn(retrieved_doc.id)
-            if serialized_doc:
-                r = Document(serialized_doc)
-                if self._is_update:
-                    retrieved_doc.update(r)
+    def _apply_all(self, doc_sets: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        for docs in doc_sets:
+            miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
+            for idx, retrieved_doc in enumerate(docs):
+                serialized_doc = self.exec_fn(retrieved_doc.id)
+                if serialized_doc:
+                    r = Document(serialized_doc)
+                    if self._is_update:
+                        retrieved_doc.update(r)
+                    else:
+                        retrieved_doc.CopyFrom(r)
                 else:
-                    retrieved_doc.CopyFrom(r)
-            else:
-                miss_idx.append(idx)
-        # delete non-existed matches in reverse
-        for j in reversed(miss_idx):
-            del docs[j]
+                    miss_idx.append(idx)
+            # delete non-existed matches in reverse
+            for j in reversed(miss_idx):
+                del docs[j]
 
 
-class VectorFillDriver(RecursiveMixin, QuerySetReader, BaseSearchDriver):
+class VectorFillDriver(FastRecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Fill in the embedding by their document id.
     """
 
