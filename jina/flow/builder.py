@@ -110,6 +110,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
 def _connect(first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType') -> None:
     """Connect two Pods
 
+
     .. # noqa: DAR401
     :param first: the first BasePod
     :param second: the second BasePod
