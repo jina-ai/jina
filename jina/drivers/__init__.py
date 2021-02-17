@@ -105,7 +105,7 @@ class QuerySetReader:
     @property
     def as_querylang(self):
         """Render as QueryLang parameters.
-        # noqa: DAR201"""
+        .. # noqa: DAR201"""
         parameters = {
             name: getattr(self, name) for name in self._init_kwargs_dict.keys()
         }
@@ -121,10 +121,10 @@ class QuerySetReader:
         if getattr(self, 'queryset', None):
             for q in self.queryset:
                 if (
-                        not q.disabled
-                        and self.__class__.__name__ == q.name
-                        and q.priority > self._priority
-                        and key in q.parameters
+                    not q.disabled
+                    and self.__class__.__name__ == q.name
+                    and q.priority > self._priority
+                    and key in q.parameters
                 ):
                     ret = q.parameters[key]
                     return dict(ret) if isinstance(ret, Struct) else ret
@@ -208,15 +208,15 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def req(self) -> 'Request':
         """Get the current (typed) request, shortcut to ``self.runtime.request``
-        # noqa: DAR201
+        .. # noqa: DAR201
         """
         return self.runtime.request
 
     @property
     def partial_reqs(self) -> Sequence['Request']:
         """The collected partial requests under the current ``request_id``
-        # noqa: DAR401
-        # noqa: DAR201
+        .. # noqa: DAR401
+        .. # noqa: DAR201
         """
         if self.expect_parts > 1:
             return self.runtime.partial_requests
@@ -229,23 +229,23 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def expect_parts(self) -> int:
         """The expected number of partial messages
-        # noqa: DAR201
+        .. # noqa: DAR201
         """
         return self.runtime.expect_parts
 
     @property
     def msg(self) -> 'Message':
         """Get the current request, shortcut to ``self.runtime.message``
-        # noqa: DAR201
+        .. # noqa: DAR201
         """
         return self.runtime.message
 
     @property
     def queryset(self) -> 'QueryLangSet':
         """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR201
+        .. # noqa: DAR101
+        .. # noqa: DAR102
+        .. # noqa: DAR201
         """
         if self.msg:
             return self.msg.request.queryset
@@ -255,14 +255,14 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``
-        # noqa: DAR201
+        .. # noqa: DAR201
         """
         return self.runtime.logger
 
     def __call__(self, *args, **kwargs) -> None:
         """
-        # noqa: DAR102
-        # noqa: DAR101
+        .. # noqa: DAR102
+        .. # noqa: DAR101
         """
         raise NotImplementedError
 
@@ -282,14 +282,13 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
 
 class RecursiveMixin(BaseDriver):
-    """A mixin to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseRecursiveDriver`
-    """
+    """A mixin to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseRecursiveDriver`"""
 
     @property
     def docs(self):
         """
-        # noqa: DAR102
-        # noqa: DAR201
+        .. # noqa: DAR102
+        .. # noqa: DAR201
         """
         if self.expect_parts > 1:
             return (d for r in reversed(self.partial_reqs) for d in r.docs)
@@ -297,23 +296,23 @@ class RecursiveMixin(BaseDriver):
             return self.req.docs
 
     def _apply_root(
-            self,
-            docs: 'DocumentSet',
-            field: str,
-            *args,
-            **kwargs,
+        self,
+        docs: 'DocumentSet',
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
         return self._apply_all(docs, None, field, *args, **kwargs)
 
     # TODO(Han): probably want to publicize this, as it is not obvious for driver
     #  developer which one should be inherited
     def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
-            *args,
-            **kwargs,
+        self,
+        docs: 'DocumentSet',
+        context_doc: 'Document',
+        field: str,
+        *args,
+        **kwargs,
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place
 
@@ -364,11 +363,11 @@ class RecursiveMixin(BaseDriver):
 
 class FastRecursiveMixin:
     """
-     The optimized version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
-     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
+    The optimized version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
+    it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
 
-     .. seealso::
-        https://github.com/jina-ai/jina/issues/1932
+    .. seealso::
+       https://github.com/jina-ai/jina/issues/1932
 
     """
 
@@ -383,7 +382,7 @@ class FastRecursiveMixin:
     @property
     def docs(self) -> 'DocumentSet':
         """The DocumentSet after applying the traversal
-        # noqa: DAR201"""
+        .. # noqa: DAR201"""
         from ..types.sets import DocumentSet
 
         if self.expect_parts > 1:
@@ -400,9 +399,7 @@ class BaseRecursiveDriver(BaseDriver):
     It is intended to be mixed in with either :class:`FastRecursiveMixin` or :class:`RecursiveMixin`
     """
 
-    def __init__(self,
-                 traversal_paths: Tuple[str] = ('c', 'r'),
-                 *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
         """Initialize a :class:`BaseRecursiveDriver`
 
         :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
@@ -422,9 +419,13 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
-    def __init__(self, executor: Optional[str] = None,
-                 method: Optional[str] = None,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        executor: Optional[str] = None,
+        method: Optional[str] = None,
+        *args,
+        **kwargs,
+    ):
         """Initialize a :class:`BaseExecutableDriver`
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
@@ -441,7 +442,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     @property
     def exec(self) -> 'AnyExecutor':
         """the executor that to which the instance is attached
-        # noqa: DAR201
+        .. # noqa: DAR201
         """
         return self._exec
 
@@ -452,8 +453,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         :return: the Callable to execute in the driver
         """
         if (
-                not self.msg.is_error
-                or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
+            not self.msg.is_error
+            or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
         ):
             return self._exec_fn
         else:
@@ -473,7 +474,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             else:
                 for c in executor.components:
                     if any(
-                            t.__name__ == self._executor_name for t in type.mro(c.__class__)
+                        t.__name__ == self._executor_name for t in type.mro(c.__class__)
                     ):
                         self._exec = c
                         break

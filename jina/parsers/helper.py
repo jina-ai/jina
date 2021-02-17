@@ -40,7 +40,7 @@ class KVAppendAction(argparse.Action):
         """
         call the KVAppendAction
 
-        # noqa: DAR401
+        .. # noqa: DAR401
         :param parser: the parser
         :param args: args to initialize the values
         :param values: the values to add to the parser
@@ -70,7 +70,7 @@ class DockerKwargsAppendAction(argparse.Action):
         """
         call the DockerKwargsAppendAction
 
-        # noqa: DAR401
+        .. # noqa: DAR401
         :param parser: the parser
         :param args: args to initialize the values
         :param values: the values to add to the parser
