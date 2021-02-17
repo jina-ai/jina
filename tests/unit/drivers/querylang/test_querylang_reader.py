@@ -6,29 +6,28 @@ from jina.drivers.querylang.sort import SortQL
 from jina.drivers.querylang.slice import SliceQL
 from jina.drivers.querylang.select import ExcludeQL
 from jina.flow import Flow
-from jina.proto import jina_pb2
+from jina import Document
 from jina.types.querylang import QueryLang
 from jina.types.sets import QueryLangSet
 
 
 def random_docs(num_docs):
     for j in range(num_docs):
-        d = jina_pb2.DocumentProto()
+        d = Document()
         d.tags['id'] = j
         d.text = 'hello world'
-        d.uri = 'doc://'
         for m in range(10):
-            dm = d.matches.add()
+            dm = Document()
             dm.text = 'match to hello world'
-            dm.uri = 'doc://match'
             dm.tags['id'] = m
             dm.score.ref_id = d.id
+            d.matches.add(dm)
             for mm in range(10):
-                dmm = dm.matches.add()
+                dmm = Document()
                 dmm.text = 'nested match to match'
-                dmm.uri = 'doc://match/match'
                 dmm.tags['id'] = mm
                 dmm.score.ref_id = dm.id
+                dm.matches.add(dmm)
         yield d
 
 
