@@ -49,6 +49,28 @@ def test_fill_default_with_index_request():
     print(be._drivers['IndexRequest'][0]._init_kwargs_dict)
 
 
+y_fill_default_with_index_request_no_with = """
+!BaseEncoder
+requests:
+    use_default: true
+    on:
+        IndexRequest:
+            drivers:
+                - !FilterQL
+                  with:
+                    lookups:
+                        mime_type: image/jpeg
+                - !EncodeDriver {}
+"""
+
+
+def test_with_common_kwargs_on_index_no_with():
+    be = BaseExecutor.load_config(y_fill_default_with_index_request_no_with)
+    assert len(be._drivers) == 6
+    assert isinstance(be._drivers['IndexRequest'][1], EncodeDriver)
+    assert isinstance(be._drivers['IndexRequest'][0], FilterQL)
+
+
 y_fill_default_with_index_request_with_common = """
 !BaseEncoder
 requests:
