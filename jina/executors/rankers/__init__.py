@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 
@@ -12,8 +12,8 @@ class BaseRanker(BaseExecutor):
     """The base class for a `Ranker`"""
 
     def __init__(self,
-                 query_required_keys: Optional[Tuple[str]] = None,
-                 match_required_keys: Optional[Tuple[str]] = None,
+                 query_required_keys: Optional[Sequence[str]] = None,
+                 match_required_keys: Optional[Sequence[str]] = None,
                  *args,
                  **kwargs):
         """
