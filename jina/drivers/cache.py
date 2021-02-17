@@ -21,23 +21,20 @@ class BaseCacheDriver(BaseIndexDriver):
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
-        self.field = None
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        self.field = self.exec.field
-
         if self._method_name == 'update':
-            self.exec_fn([d.id for d in docs], [d.id if self.field == ID_KEY else d.content_hash for d in docs])
+            values = [''.join(d.get_attrs(*self.exec.fields).values()) for d in docs]
+            self.exec_fn([d.id for d in docs],
+                         values)
         else:
             for d in docs:
-                data = d.id
-                if self.field == CONTENT_HASH_KEY:
-                    data = d.content_hash
-                result = self.exec[data]
+                value = ''.join(d.get_attrs(*self.exec.fields).values())
+                result = self.exec[value]
                 if result:
                     self.on_hit(d, result)
                 else:
-                    self.on_miss(d, data)
+                    self.on_miss(d, value)
 
     def on_miss(self, req_doc: 'Document', value: str) -> None:
         """Call when document is missing.
