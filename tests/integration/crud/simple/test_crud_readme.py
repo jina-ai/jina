@@ -25,8 +25,6 @@ def test_crud_in_readme(mocker):
             assert m.id != '🐯'
             assert 'position' in m.tags
             assert 'guardian' in m.tags
-            # when is_update set to False, m.score is empty
-            assert m.score.value
             assert m.score.ref_id == req.docs[0].id
 
     m = mocker.Mock()
@@ -51,7 +49,8 @@ def test_crud_in_readme(mocker):
     def validate(req):
         assert len(req.docs[0].matches) == 1
         req.docs[0].matches[0].id = req.docs[0].id
-        np.testing.assert_array_equal(req.docs[0].matches[0].embedding, docs[0].embedding)
+        # embeddings are removed in the CompoundIndexer via ExcludeQL
+        np.testing.assert_array_equal(req.docs[0].matches[0].embedding, np.array(None))
 
     m = mocker.Mock()
 

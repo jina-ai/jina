@@ -49,7 +49,8 @@ def rm_files(file_paths):
 
 
 def validate_callback(mock, validate_func):
-    for request in mock.call_args_list:
-        validate_func(*request.args, **request.kwargs)
+
+    for args, kwargs in mock.call_args_list:
+        validate_func(*args, **kwargs)
 
     mock.assert_called()
