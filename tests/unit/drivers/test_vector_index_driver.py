@@ -108,7 +108,7 @@ def empty_documents():
 
 def test_vector_index_driver_add(mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents):
     simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
-    simple_vector_indexer_driver_add._apply_all([documents])
+    simple_vector_indexer_driver_add._apply_all(documents)
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
         np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
@@ -125,7 +125,7 @@ def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simp
     union = deepcopy(documents)
     for d in empty_documents:
         union.add(d)
-    simple_vector_indexer_driver_add._apply_all([union])
+    simple_vector_indexer_driver_add._apply_all(union)
 
     # make sure the warning for bad docs is triggered
     assert len(mock_groundtruth_indexer.docs) == 5
@@ -139,10 +139,10 @@ def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_inde
                                     simple_vector_indexer_driver_update,
                                     documents, updated_documents):
     simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
-    simple_vector_indexer_driver_add._apply_all([documents])
+    simple_vector_indexer_driver_add._apply_all(documents)
 
     simple_vector_indexer_driver_update.attach(executor=mock_groundtruth_indexer, runtime=None)
-    simple_vector_indexer_driver_update._apply_all([updated_documents])
+    simple_vector_indexer_driver_update._apply_all(updated_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(updated_documents):
@@ -156,7 +156,7 @@ def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_vector_inde
                                     simple_vector_indexer_driver_delete,
                                     documents, deleted_documents, mocker):
     simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
-    simple_vector_indexer_driver_add._apply_all([documents])
+    simple_vector_indexer_driver_add._apply_all(documents)
 
     simple_vector_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, runtime=None)
     mock_load = mocker.patch.object(simple_vector_indexer_driver_delete, 'runtime', autospec=True)

@@ -406,12 +406,13 @@ class FastRecursiveMixin:
         :param *args: *args forwarded to ``_apply_all``
         :param **kwargs: **kwargs forwarded to ``_apply_all``
         """
-        document_set_leaves = self.docs.traverse(self._traversal_paths)
-        self._apply_all(document_set_leaves, *args, **kwargs)
+        document_sets = self.docs.traverse(self._traversal_paths)
+        flattened_documents = DocumentSet.flatten(document_sets)
+        self._apply_all(flattened_documents, *args, **kwargs)
 
     def _apply_all(
         self,
-        leaves: Iterable['DocumentSet'],
+        docs: 'DocumentSet',
         *args,
         **kwargs,
     ) -> None:
@@ -419,10 +420,6 @@ class FastRecursiveMixin:
 
         Each outer list refers to a leaf (e.g. roots, matches or chunks wrapped
         in a :class:`jina.DocumentSet`) in the traversal_paths.
-
-        :param leaves: an iterable of :class:`jina.DocumentSet` where each :class:`jina.DocumentSet` is a leaf in the traversal paths
-        :param *args: *args
-        :param **kwargs: **kwargs
         """
 
     @property

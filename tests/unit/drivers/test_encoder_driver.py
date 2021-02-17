@@ -57,7 +57,7 @@ def test_encode_driver(batch_size, docs_to_encode, num_docs):
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
         assert doc.embedding is None
-    driver._apply_all([docs_to_encode])
+    driver._apply_all(docs_to_encode)
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
         assert doc.embedding == doc.blob

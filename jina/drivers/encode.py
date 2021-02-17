@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import warnings
-from typing import Iterable, Optional
+from typing import Optional
 
 from . import BaseExecutableDriver, FastRecursiveMixin, RecursiveMixin
 from ..types.sets import DocumentSet
@@ -22,8 +22,7 @@ class EncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding
     """
 
-    def _apply_all(self, leaves: Iterable['DocumentSet'], *args, **kwargs) -> None:
-        docs = DocumentSet.flatten(leaves)
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         contents, docs_pts = docs.all_contents
 
         if docs_pts:

@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Tuple, Dict, List, Iterable
+from typing import Tuple, Dict, List
 
 import numpy as np
 
@@ -10,7 +10,8 @@ from . import FastRecursiveMixin
 from .encode import BaseEncodeDriver
 from ..types.document.multimodal import MultimodalDocument
 
-from ..types.sets import DocumentSet
+if False:
+    from ..types.sets import DocumentSet
 
 
 class MultiModalDriver(FastRecursiveMixin, BaseEncodeDriver):
@@ -63,7 +64,7 @@ class MultiModalDriver(FastRecursiveMixin, BaseEncodeDriver):
 
     def _apply_all(
             self,
-            leaves: Iterable['DocumentSet'],
+            docs: 'DocumentSet',
             *args, **kwargs
     ) -> None:
         """Apply the driver to each of the Documents in docs.
@@ -72,7 +73,6 @@ class MultiModalDriver(FastRecursiveMixin, BaseEncodeDriver):
         :param *args: args
         :param **kwargs: kwargs
         """
-        docs = DocumentSet.flatten(leaves)
         content_by_modality = defaultdict(list)  # array of num_rows equal to num_docs and num_columns equal to
 
         valid_docs = []

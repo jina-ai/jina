@@ -41,15 +41,15 @@ def craft_driver():
 
 def test_valid_document(craft_driver):
     valid_document = Document(content='valid')
-    leaves = [DocumentSet([valid_document])]
-    craft_driver._apply_all(leaves)
+    docs = DocumentSet([valid_document])
+    craft_driver._apply_all(docs)
     np.testing.assert_equal(NdArray(valid_document.blob).value, np.array([0.0, 0.0, 0.0]))
     assert valid_document.weight == 10
 
 
 def test_invalid_document(craft_driver):
     invalid_document = Document(content='invalid')
-    leaves = [DocumentSet([invalid_document])]
+    docs = DocumentSet([invalid_document])
     with pytest.raises(AttributeError) as error:
-        craft_driver._apply_all(leaves)
+        craft_driver._apply_all(docs)
         assert error.value.__str__() == '\'non_existing_key\' is not recognized'

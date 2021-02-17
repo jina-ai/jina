@@ -43,7 +43,7 @@ def test_segment_driver():
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
     driver.attach(executor=executor, runtime=None)
-    driver._apply_all([DocumentSet([valid_doc])])
+    driver._apply_all(DocumentSet([valid_doc]))
 
     assert valid_doc.length == 2
 
