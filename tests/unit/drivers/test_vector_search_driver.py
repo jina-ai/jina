@@ -74,7 +74,7 @@ def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search
     monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)
     doc = create_document_to_search
-    driver._apply_all(doc.chunks)
+    driver._apply_all([doc.chunks])
 
     for chunk in doc.chunks:
         assert len(chunk.matches) == 2
@@ -94,7 +94,7 @@ def test_vectorsearch_driver_mock_indexer_with_fill(monkeypatch, create_document
     monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)
     doc = create_document_to_search
-    driver._apply_all(doc.chunks)
+    driver._apply_all([doc.chunks])
 
     for chunk in doc.chunks:
         assert chunk.matches[0].embedding.shape == (7,)
