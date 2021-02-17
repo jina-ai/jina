@@ -492,7 +492,6 @@ class Document(ProtoTypeMixin):
                     raise ValueError
 
                 ret[k] = value
-                continue
             except (AttributeError, ValueError):
                 default_logger.warning(f'Could not get attribute `{typename(self)}.{k}`, returning `None`')
                 ret[k] = None
