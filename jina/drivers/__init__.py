@@ -105,6 +105,8 @@ class QuerySetReader:
     @property
     def as_querylang(self):
         """Render as QueryLang parameters.
+
+
         .. # noqa: DAR201"""
         parameters = {
             name: getattr(self, name) for name in self._init_kwargs_dict.keys()
@@ -208,6 +210,8 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def req(self) -> 'Request':
         """Get the current (typed) request, shortcut to ``self.runtime.request``
+
+
         .. # noqa: DAR201
         """
         return self.runtime.request
@@ -215,7 +219,11 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def partial_reqs(self) -> Sequence['Request']:
         """The collected partial requests under the current ``request_id``
+
+
         .. # noqa: DAR401
+
+
         .. # noqa: DAR201
         """
         if self.expect_parts > 1:
@@ -229,6 +237,8 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def expect_parts(self) -> int:
         """The expected number of partial messages
+
+
         .. # noqa: DAR201
         """
         return self.runtime.expect_parts
@@ -236,6 +246,8 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def msg(self) -> 'Message':
         """Get the current request, shortcut to ``self.runtime.message``
+
+
         .. # noqa: DAR201
         """
         return self.runtime.message
@@ -243,8 +255,14 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def queryset(self) -> 'QueryLangSet':
         """
+
+
         .. # noqa: DAR101
+
+
         .. # noqa: DAR102
+
+
         .. # noqa: DAR201
         """
         if self.msg:
@@ -255,13 +273,19 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     @property
     def logger(self) -> 'JinaLogger':
         """Shortcut to ``self.runtime.logger``
+
+
         .. # noqa: DAR201
         """
         return self.runtime.logger
 
     def __call__(self, *args, **kwargs) -> None:
         """
+
+
         .. # noqa: DAR102
+
+
         .. # noqa: DAR101
         """
         raise NotImplementedError
@@ -287,7 +311,11 @@ class RecursiveMixin(BaseDriver):
     @property
     def docs(self):
         """
+
+
         .. # noqa: DAR102
+
+
         .. # noqa: DAR201
         """
         if self.expect_parts > 1:
@@ -382,6 +410,8 @@ class FastRecursiveMixin:
     @property
     def docs(self) -> 'DocumentSet':
         """The DocumentSet after applying the traversal
+
+
         .. # noqa: DAR201"""
         from ..types.sets import DocumentSet
 
@@ -442,6 +472,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     @property
     def exec(self) -> 'AnyExecutor':
         """the executor that to which the instance is attached
+
+
         .. # noqa: DAR201
         """
         return self._exec

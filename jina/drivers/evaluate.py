@@ -72,8 +72,8 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
         This function will be invoked two times in :meth:`_apply_all`:
         once with actual doc, once with groundtruth doc.
 
-        .. # noqa: DAR401
 
+        .. # noqa: DAR401
         :param doc: the Document
         """
         raise NotImplementedError
