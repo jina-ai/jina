@@ -11,7 +11,7 @@ from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from jina.peapods.pods import BasePod
-from tests import random_docs
+from tests import random_docs, rm_files, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -385,7 +385,7 @@ def test_index_text_files(mocker, restful, datauri_workspace):
         for d in req.docs:
             assert d.text
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow(restful=restful, read_only=True)
          .add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
@@ -393,7 +393,7 @@ def test_index_text_files(mocker, restful, datauri_workspace):
     with f:
         f.index_files('*.py', on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
@@ -403,7 +403,7 @@ def test_flow_with_publish_driver(mocker, restful):
         for d in req.docs:
             assert d.embedding is not None
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow(restful=restful)
          .add(name='r2', uses='!OneHotTextEncoder')
@@ -413,7 +413,7 @@ def test_flow_with_publish_driver(mocker, restful):
     with f:
         f.index(['text_1', 'text_2'], on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -431,7 +431,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
         doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     flow = (Flow(restful=restful)
             .add(name='chunk_seg', parallel=3)
@@ -440,7 +440,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
     with flow:
         flow.index(input_fn=input_fn, on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 def test_flow_arguments_priorities():

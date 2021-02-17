@@ -4,6 +4,7 @@ from jina.enums import OnErrorStrategy
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
+from tests import validate_callback
 
 
 class DummyCrafter(BaseCrafter):
@@ -28,13 +29,13 @@ def test_bad_flow_skip_handle(mocker, restful):
          .add(name='r2')
          .add(name='r3'))
 
-    on_error_mock = mocker.Mock(wrap=validate)
+    on_error_mock = mocker.Mock()
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
         f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
-    on_error_mock.assert_called()
+    validate_callback(on_error_mock, validate)
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -64,13 +65,13 @@ def test_bad_flow_skip_handle_join(mocker, restful):
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))
 
-    on_error_mock = mocker.Mock(wrap=validate)
+    on_error_mock = mocker.Mock()
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
         f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
-    on_error_mock.assert_called()
+    validate_callback(on_error_mock, validate)
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -86,13 +87,13 @@ def test_bad_flow_skip_exec(mocker, restful):
          .add(name='r2')
          .add(name='r3'))
 
-    on_error_mock = mocker.Mock(wrap=validate)
+    on_error_mock = mocker.Mock()
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
         f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
-    on_error_mock.assert_called()
+    validate_callback(on_error_mock, validate)
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -111,10 +112,10 @@ def test_bad_flow_skip_exec_join(mocker, restful):
          .add(name='r3', needs='r1')
          .needs(['r3', 'r2']))
 
-    on_error_mock = mocker.Mock(wrap=validate)
+    on_error_mock = mocker.Mock()
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
         f.index(['abbcs', 'efgh'], on_error=on_error_mock)
 
-    on_error_mock.assert_called()
+    validate_callback(on_error_mock, validate)

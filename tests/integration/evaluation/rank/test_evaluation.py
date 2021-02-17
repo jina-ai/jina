@@ -5,6 +5,8 @@ import numpy as np
 from jina import Document
 from jina.flow import Flow
 
+from tests import validate_callback
+
 
 def test_evaluation(tmpdir, mocker):
     os.environ['JINA_TEST_RANKING_EVALUATION'] = str(tmpdir)
@@ -136,7 +138,7 @@ def test_evaluation(tmpdir, mocker):
         # Recall@2 = 100%
 
         return [(doc0, groundtruth0), (doc1, groundtruth1)]
-    response_mock = mocker.Mock(wrap=validate_evaluation_response)
+    response_mock = mocker.Mock()
     with Flow.load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs,
@@ -145,4 +147,4 @@ def test_evaluation(tmpdir, mocker):
         )
 
     del os.environ['JINA_TEST_RANKING_EVALUATION']
-    response_mock.assert_called()
+    validate_callback(response_mock, validate_evaluation_response)
