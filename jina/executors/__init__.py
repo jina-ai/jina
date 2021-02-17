@@ -172,8 +172,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     drivers = drivers_spec
                     common_kwargs = {}
                 elif isinstance(drivers_spec, dict):
-                    drivers = drivers_spec['drivers']
-                    common_kwargs = drivers_spec['with']
+                    drivers = drivers_spec.get('drivers', [])
+                    common_kwargs = drivers_spec.get('with', {})
                 else:
                     raise TypeError(f'unsupported type of driver spec: {drivers_spec}')
 
@@ -192,6 +192,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                             new_drivers.append(d.__class__(**new_init_kwargs_dict))
                         _drivers[r].clear()
                         _drivers[r] = new_drivers
+
+                    if not _drivers[r]:
+                        _drivers.pop(r)
 
         return _drivers
 
