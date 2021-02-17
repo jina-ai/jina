@@ -48,11 +48,8 @@ def rm_files(file_paths):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
-def validate_callback(mock, validate_func, should_call=True):
+def validate_callback(mock, validate_func):
     for request in mock.call_args_list:
         validate_func(*request.args, **request.kwargs)
 
-    if should_call:
-        mock.assert_called()
-    else:
-        mock.assert_not_called()
+    mock.assert_called()

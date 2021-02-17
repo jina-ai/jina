@@ -133,7 +133,7 @@ def test_no_error_callback(mocker, restful):
         f.index(['abbcs', 'efgh'], on_done=response_mock, on_error=on_error_mock)
 
     validate_callback(response_mock, validate1)
-    validate_callback(on_error_mock, validate2, should_call=False)
+    on_error_mock.assert_not_called()
 
 
 @pytest.mark.parametrize('restful', [False, True])
