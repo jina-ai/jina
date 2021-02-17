@@ -8,7 +8,7 @@ requests:
       with:
         traversal_paths: [ 'm' ]
       drivers:
-        - !ReduceAllDriver
+        - !ReduceAllDriver {}
         - !SortQL
           with:
             reverse: False
