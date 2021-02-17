@@ -18,10 +18,10 @@ def test_bad_flow_skip_handle(mocker, restful):
         bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 3
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1'
-        assert bad_routes[1].pod == 'r2'
+        assert bad_routes[0].pod == 'r1/ZEDRuntime'
+        assert bad_routes[1].pod == 'r2/ZEDRuntime'
         assert bad_routes[1].status.code == jina_pb2.StatusProto.ERROR_CHAINED
-        assert bad_routes[2].pod == 'r3'
+        assert bad_routes[2].pod == 'r3/ZEDRuntime'
         assert bad_routes[2].status.code == jina_pb2.StatusProto.ERROR_CHAINED
 
     f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
@@ -54,10 +54,10 @@ def test_bad_flow_skip_handle_join(mocker, restful):
         # num_part=[1,2] message and raise an error
         assert len(bad_routes) == 4
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1'
-        assert bad_routes[-1].pod == 'gateway'
-        assert bad_routes[-1].status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[-1].status.exception.name == 'GatewayPartialMessage'
+        assert bad_routes[0].pod == 'r1/ZEDRuntime'
+        assert bad_routes[-1].pod == 'joiner/ZEDRuntime'
+        assert bad_routes[-1].status.code == jina_pb2.StatusProto.ERROR_CHAINED
+        assert bad_routes[-1].status.exception.name == ''
 
     f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
          .add(name='r1', uses='DummyCrafter')
@@ -80,7 +80,7 @@ def test_bad_flow_skip_exec(mocker, restful):
         bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 1
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1'
+        assert bad_routes[0].pod == 'r1/ZEDRuntime'
 
     f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
          .add(name='r1', uses='DummyCrafter')
@@ -104,7 +104,7 @@ def test_bad_flow_skip_exec_join(mocker, restful):
         bad_routes = [r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR]
         assert len(bad_routes) == 1
         assert req.status.code == jina_pb2.StatusProto.ERROR
-        assert bad_routes[0].pod == 'r1'
+        assert bad_routes[0].pod == 'r1/ZEDRuntime'
 
     f = (Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
          .add(name='r1', uses='DummyCrafter')
