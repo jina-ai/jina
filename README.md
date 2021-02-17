@@ -455,7 +455,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 #### Add Logic
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-add-logic.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://101.jina.ai/#executors). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
+To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://101.jina.ai/#executor). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
 
 
 ```python
@@ -624,7 +624,7 @@ class MyEncoder(BaseImageEncoder):
         return (data.reshape([-1, 784]) / 255) @ self.oth_mat
 ```
 
-Jina provides [a family of `Executor` classes](https://github.com/jina-ai/jina/tree/master/docs/chapters/101#the-executor-family), which summarize frequently-used algorithmic components in neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers, each with a well-designed interface. You can find the list of [all 107 built-in executors here](https://docs.jina.ai/chapters/all_exec.html). If they don't meet your needs, inheriting from one of them is the easiest way to bootstrap your own Executor. Simply use our Jina Hub CLI:
+Jina provides [a family of `Executor` classes](https://101.jina.ai/#executor), which summarize frequently-used algorithmic components in neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers, each with a well-designed interface. You can find the list of [all 107 built-in executors here](https://docs.jina.ai/chapters/all_exec.html). If they don't meet your needs, inheriting from one of them is the easiest way to bootstrap your own Executor. Simply use our Jina Hub CLI:
 
 
 ```bash
@@ -793,14 +793,6 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
     </td>
     <td width="75%">
 &nbsp;&nbsp;<h3><a href="https://101.jina.ai">Jina 101: First Things to Learn About Jina</a></h3>
-&nbsp;&nbsp;<a href="https://github.com/jina-ai/docs/tree/master/chapters/101">English</a> •
-  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ja.md">日本語</a> •
-  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.fr.md">Français</a> •
-  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.pt.md">Português</a> •
-  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.de.md">Deutsch</a> •
-  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ru.md">Русский язык</a> •
-  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.zh.md">中文</a> •
-  <a href="https://github.com/jina-ai/docs/tree/master/chapters/101/README.ar.md">عربية</a>
     </td>
 
   </tr>

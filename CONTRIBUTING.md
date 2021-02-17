@@ -27,7 +27,7 @@ In this guide, we're going to go through the steps for each kind of contribution
 <a name="-before-you-start"></a>
 ## 🏁 Before you Start
 
-Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](https://github.com/jina-ai/docs/tree/master/chapters/101), and [example tutorials](https://learn.jina.ai) so you have a good understanding of what Jina is and how it works.
+Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](https://101.jina.ai), and [example tutorials](https://learn.jina.ai) so you have a good understanding of what Jina is and how it works.
 
 ### Not a coder but still want to contribute?
 
@@ -279,7 +279,7 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 
 #### General Documentation
 
-This covers files like [Jina 101](https://github.com/jina-ai/docs/tree/master/chapters/101), [Input and Output Functions](https://docs.jina.ai/chapters/io/index.html), etc.
+This covers files like [Jina 101](https://101.jina.ai), [Input and Output Functions](https://docs.jina.ai/chapters/io/index.html), etc.
 
 These are typically written in Markdown, though some may be in RestructuredText.
 
