@@ -128,7 +128,11 @@ class RankEvaluateDriver(BaseEvaluateDriver):
 
     @property
     def single_field(self):
-        """Get single field."""
+        """
+        Get single field.
+
+        Property to guarantee compatibility when only one field is provided either as a string or as a unit length tuple.
+        """
         if isinstance(self.fields, str):
             return self.fields
         elif len(self.fields) == 1:
