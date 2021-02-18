@@ -1,15 +1,16 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Any, Iterator
+from typing import Any, Iterator, Optional, Tuple, Union
 
-import numpy
+import numpy as np
 
 from . import BaseExecutableDriver, RecursiveMixin
 from ..types.querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
 from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair
+from ..helper import deprecated_alias
 
 
 class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
@@ -27,7 +28,8 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
     :param *args:
     :param **kwargs:
     """
-    def __init__(self, executor: str = None,
+
+    def __init__(self, executor: Optional[str] = None,
                  method: str = 'evaluate',
                  running_avg: bool = False,
                  *args,
@@ -72,8 +74,8 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
         This function will be invoked two times in :meth:`_apply_all`:
         once with actual doc, once with groundtruth doc.
 
-        # noqa: DAR401
 
+        .. # noqa: DAR401
         :param doc: the Document
         """
         raise NotImplementedError
@@ -84,7 +86,8 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
     Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`
     """
 
-    def __init__(self, field: str,
+    def __init__(self,
+                 field: str,
                  *args,
                  **kwargs):
         """
@@ -105,33 +108,46 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
         return dunder_get(doc, self.field)
 
 
-class RankEvaluateDriver(FieldEvaluateDriver):
+class RankEvaluateDriver(BaseEvaluateDriver):
     """Drivers used to pass `matches` from documents and groundtruths to an executor and add the evaluation value
 
         - Example fields:
-        ['tags__id', 'id', 'score__value]
+            ['tags__id', 'score__value]
+
+    :param fields: the fields names to be extracted from the Protobuf.
+            The differences with `:class:FieldEvaluateDriver` are:
+                - More than one field is allowed. For instance, for NDCGComputation you may need to have both `ID` and `Relevance` information.
+                - The fields are extracted from the `matches` of the `Documents` and the `Groundtruth` so it returns a sequence of values.
+    :param *args:
+    :param **kwargs:
     """
 
+    @deprecated_alias(field=('fields', 0))
     def __init__(self,
-                 field: str = 'tags__id',
+                 fields: Union[str, Tuple[str]] = ('tags__id',),  # str mantained for backwards compatibility
                  *args,
                  **kwargs):
-        """
-        :param field: the field name to be extracted from the Protobuf
-        :param *args: *args for super()
-        :param **kwargs: **kwargs for super()
-        """
-        super().__init__(field, *args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self.fields = fields
+
+    @property
+    def single_field(self):
+        if isinstance(self.fields, str):
+            return self.fields
+        elif len(self.fields) == 1:
+            return self.fields[0]
 
     def extract(self, doc: 'Document'):
-        """Extract the field from the Document's matches.
+        single_field = self.single_field
+        if single_field:
+            r = [dunder_get(x, single_field) for x in doc.matches]
+            # TODO: Clean this, optimization for `hello-world` because it passes a list of 6k elements in a single
+            #  match. See `pseudo_match` in helloworld/helper.py _get_groundtruths
+            ret = list(np.array(r).flat)
+        else:
+            ret = [tuple(dunder_get(x, field) for field in self.fields) for x in doc.matches]
 
-        :param doc: the Document
-        :return: list of the fields
-        """
-        r = [dunder_get(x, self.field) for x in doc.matches]
-        # flatten nested list but useless depth, e.g. [[1,2,3,4]]
-        return list(numpy.array(r).flat)
+        return ret
 
 
 class NDArrayEvaluateDriver(FieldEvaluateDriver):

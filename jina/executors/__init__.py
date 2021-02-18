@@ -125,26 +125,38 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._post_init_vars = set()
         self._last_snapshot_ts = datetime.now()
 
-
     def _post_init_wrapper(self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True) -> None:
         with TimeContext('post_init may take some time', self.logger):
             if fill_in_metas:
                 if not _metas:
                     _metas = get_default_metas()
 
-                if not _requests:
-                    from ..executors.requests import get_default_reqs
-                    _requests = get_default_reqs(type.mro(self.__class__))
-
                 self._fill_metas(_metas)
-                self._fill_requests(_requests)
+
+                from ..executors.requests import get_default_reqs
+                default_requests = get_default_reqs(type.mro(self.__class__))
+
+                if not _requests:
+                    self._drivers = self._get_drivers_from_requests(default_requests)
+                else:
+                    parsed_drivers = self._get_drivers_from_requests(_requests)
+
+                    if _requests.get('use_default', False):
+                        default_drivers = self._get_drivers_from_requests(default_requests)
+
+                        for k, v in default_drivers.items():
+                            if k not in parsed_drivers:
+                                parsed_drivers[k] = v
+
+                    self._drivers = parsed_drivers
 
             _before = set(list(vars(self).keys()))
             self.post_init()
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
-    def _fill_requests(self, _requests):
-        self._drivers = {}  # type: Dict[str, List['BaseDriver']]
+    @staticmethod
+    def _get_drivers_from_requests(_requests):
+        _drivers = {}  # type: Dict[str, List['BaseDriver']]
 
         if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
             # if control request is forget in YAML, then fill it
@@ -152,14 +164,39 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 from ..drivers.control import ControlReqDriver
                 _requests['on']['ControlRequest'] = [ControlReqDriver()]
 
-            for req_type, drivers in _requests['on'].items():
+            for req_type, drivers_spec in _requests['on'].items():
                 if isinstance(req_type, str):
                     req_type = [req_type]
+                if isinstance(drivers_spec, list):
+                    # old syntax
+                    drivers = drivers_spec
+                    common_kwargs = {}
+                elif isinstance(drivers_spec, dict):
+                    drivers = drivers_spec.get('drivers', [])
+                    common_kwargs = drivers_spec.get('with', {})
+                else:
+                    raise TypeError(f'unsupported type of driver spec: {drivers_spec}')
+
                 for r in req_type:
-                    if r not in self._drivers:
-                        self._drivers[r] = list()
-                    if self._drivers[r] != drivers:
-                        self._drivers[r].extend(drivers)
+                    if r not in _drivers:
+                        _drivers[r] = list()
+                    if _drivers[r] != drivers:
+                        _drivers[r].extend(drivers)
+
+                    # inject common kwargs to drivers
+                    if common_kwargs:
+                        new_drivers = []
+                        for d in _drivers[r]:
+                            new_init_kwargs_dict = {k:v for k, v in d._init_kwargs_dict.items()}
+                            new_init_kwargs_dict.update(common_kwargs)
+                            new_drivers.append(d.__class__(**new_init_kwargs_dict))
+                        _drivers[r].clear()
+                        _drivers[r] = new_drivers
+
+                    if not _drivers[r]:
+                        _drivers.pop(r)
+
+        return _drivers
 
     def _fill_metas(self, _metas):
         unresolved_attr = False

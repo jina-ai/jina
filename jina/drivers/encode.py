@@ -70,7 +70,9 @@ class LegacyEncodeDriver(RecursiveMixin, BaseEncodeDriver):
         @property
         def available_capacity(self):
             """The capacity left in the cache
-            # noqa: DAR201
+
+
+            .. # noqa: DAR201
             """
             return self.capacity - len(self._doc_set)
 
@@ -89,7 +91,9 @@ class LegacyEncodeDriver(RecursiveMixin, BaseEncodeDriver):
 
         def get(self):
             """Get the DocumentSet
-            # noqa: DAR201
+
+
+            .. # noqa: DAR201
             """
             return self._doc_set
 

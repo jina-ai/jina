@@ -488,13 +488,12 @@ class Document(ProtoTypeMixin):
                 else:
                     value = dunder_get(self._pb_body, k)
 
-                if not value:
+                if value is None:
                     raise ValueError
 
                 ret[k] = value
-                continue
             except (AttributeError, ValueError):
-                default_logger.warning(f'Could not get attribute from key {k}, returning None')
+                default_logger.warning(f'Could not get attribute `{typename(self)}.{k}`, returning `None`')
                 ret[k] = None
         return ret
 

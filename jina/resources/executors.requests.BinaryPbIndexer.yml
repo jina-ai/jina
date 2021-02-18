@@ -11,4 +11,4 @@ on:
           - buffer
     - !KVIndexDriver {}
   DeleteRequest:
-    - !DeleteDriver { }
+    - !DeleteDriver {}

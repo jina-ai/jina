@@ -1,3 +1,4 @@
+exclude: tests/
 repos:
 -   repo: https://github.com/terrencepreilly/darglint
     rev: v1.5.8
