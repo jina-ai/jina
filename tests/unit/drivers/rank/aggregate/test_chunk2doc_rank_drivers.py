@@ -24,7 +24,7 @@ class MockLengthRanker(Chunk2DocRanker):
         super().__init__(query_required_keys=['length'], match_required_keys=['length'], *args, **kwargs)
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return match_idx[0][self.COL_MATCH_PARENT_ID], match_chunk_meta[match_idx[0][self.COL_MATCH_ID]]['length']
+        return match_idx[0][self.COL_PARENT_ID], match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length']
 
 
 class MockPriceDiscountRanker(Chunk2DocRanker):
@@ -32,9 +32,9 @@ class MockPriceDiscountRanker(Chunk2DocRanker):
         super().__init__(query_required_keys=('tags__price', 'tags__discount'), match_required_keys=('tags__price', 'tags__discount'), *args, **kwargs)
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        price = match_chunk_meta[match_idx[0][self.COL_MATCH_ID]]['tags__price']
-        discount = match_chunk_meta[match_idx[0][self.COL_MATCH_ID]]['tags__discount']
-        return match_idx[0][self.COL_MATCH_PARENT_ID], \
+        price = match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['tags__price']
+        discount = match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['tags__discount']
+        return match_idx[0][self.COL_PARENT_ID], \
                price - price * discount
 
 

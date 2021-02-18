@@ -3,7 +3,7 @@ from collections import defaultdict, namedtuple
 
 import numpy as np
 
-from ....executors.rankers import Chunk2DocRanker
+from ....executors.rankers import Chunk2DocRanker, COL_STR_TYPE
 from ....types.document import Document
 from ....types.score import NamedScore
 
@@ -124,9 +124,9 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
         if match_idx:
             match_idx = np.array(match_idx,
                                  dtype=[
-                                     (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.object),
-                                     (Chunk2DocRanker.COL_MATCH_ID, np.object),
-                                     (Chunk2DocRanker.COL_DOC_CHUNK_ID, np.object),
+                                     (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
+                                     (Chunk2DocRanker.COL_DOC_CHUNK_ID, COL_STR_TYPE),
+                                     (Chunk2DocRanker.COL_QUERY_CHUNK_ID, COL_STR_TYPE),
                                      (Chunk2DocRanker.COL_SCORE, np.float64)
                                  ]
                                  )
@@ -204,9 +204,9 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
         if match_idx:
             match_idx = np.array(match_idx,
                                  dtype=[
-                                     (Chunk2DocRanker.COL_MATCH_PARENT_ID, np.object),
-                                     (Chunk2DocRanker.COL_MATCH_ID, np.object),
-                                     (Chunk2DocRanker.COL_DOC_CHUNK_ID, np.object),
+                                     (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
+                                     (Chunk2DocRanker.COL_DOC_CHUNK_ID, COL_STR_TYPE),
+                                     (Chunk2DocRanker.COL_QUERY_CHUNK_ID, COL_STR_TYPE),
                                      (Chunk2DocRanker.COL_SCORE, np.float64)
                                  ]
                                  )
