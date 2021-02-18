@@ -64,16 +64,16 @@ def check_image_name(image_name) -> None:
         raise ValueError(f'{image_name} is not a valid image name for a Jina Hub image, it should match with {image_tag_regex}')
 
 
-def check_platform(platform_name) -> None:
+def check_platform(platform_names) -> None:
     """
     Check the platform against the list of supported platforms.
 
-    :param platform_name: the name of the platform
+    :param platform_names: the name of the platforms
     """
     with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'platforms.yml'))) as fp:
         platforms = JAML.load(fp)
 
-    for ss in platform_name:
+    for ss in platform_names:
         if ss not in platforms:
             raise ValueError(f'platform {ss} is not supported, should be one of {platforms}')
 
