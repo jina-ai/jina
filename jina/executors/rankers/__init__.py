@@ -14,6 +14,7 @@ class BaseRanker(BaseExecutor):
     """The base class for a `Ranker`"""
 
     def score(self, *args, **kwargs):
+        """Calculate the score. Base class method needs to be implemented in subclass."""
         raise NotImplementedError
 
 

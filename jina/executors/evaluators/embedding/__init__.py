@@ -20,6 +20,12 @@ class BaseEmbeddingEvaluator(BaseEvaluator):
 
 
 def expand_vector(vec):
+    """
+
+
+    :param vec:
+    :return:
+    """
     if not isinstance(vec, np.ndarray):
         vec = np.array(vec)
     if len(vec.shape) == 1:

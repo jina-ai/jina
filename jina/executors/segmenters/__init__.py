@@ -10,6 +10,7 @@ class BaseSegmenter(BaseExecutor):
         it chunks Documents into set of Chunks """
 
     def __init__(self, *args, **kwargs):
+        """Constructor."""
         super().__init__(*args, **kwargs)
         self.required_keys = {k for k in inspect.getfullargspec(self.segment).args if k != 'self'}
         if not self.required_keys:

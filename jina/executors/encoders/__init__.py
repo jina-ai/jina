@@ -21,6 +21,7 @@ class BaseEncoder(BaseExecutor):
     """
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
+        """Encode the data, needs to be implemented in subclass."""
         raise NotImplementedError
 
 
@@ -66,7 +67,9 @@ class BaseTextEncoder(BaseEncoder):
 
 
 class PipelineEncoder(CompoundExecutor):
+    """PipelineEncoder encodes data through a pipeline which consists of executors."""
     def encode(self, data: Any, *args, **kwargs) -> Any:
+        """Encode the data from the executors."""
         if not self.components:
             raise NotImplementedError
         for be in self.components:
@@ -74,6 +77,7 @@ class PipelineEncoder(CompoundExecutor):
         return data
 
     def train(self, data: Any, *args, **kwargs) -> None:
+        """Train the data from the executors."""
         if not self.components:
             raise NotImplementedError
         for idx, be in enumerate(self.components):
