@@ -9,7 +9,7 @@ import time
 import urllib.parse
 import urllib.request
 import webbrowser
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 
 from .checker import *
 from .helper import credentials_file
