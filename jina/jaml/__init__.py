@@ -105,6 +105,15 @@ class JAML:
     def expand_dict(d: Dict, context: Union[Dict, SimpleNamespace, None] = None,
                     resolve_cycle_ref=True,
                     resolve_passes: int = 3) -> Dict[str, Any]:
+        """
+        Expand variables from YAML file.
+
+        :param d: flow yaml file loaded as python dict
+        :param context: context replacement variables in a dict, the value of the dict is the replacement.
+        :param resolve_cycle_ref: resolve internal reference if True.
+        :param resolve_passes: number of rounds to resolve internal reference.
+        :return: expanded dict.
+        """
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
@@ -260,6 +269,7 @@ class JAML:
             yaml.add_representer(cls, cls._to_yaml)
         except AttributeError:
             def t_y(representer, data):
+                """Inner function, get the representer."""
                 return representer.represent_yaml_object(
                     tag, data, cls, flow_style=representer.default_flow_style
                 )
@@ -270,6 +280,7 @@ class JAML:
         except AttributeError:
 
             def f_y(constructor, node):
+                """Inner function, get the constructor."""
                 return constructor.construct_yaml_object(node, cls)
 
             yaml.add_constructor(tag, f_y, JinaLoader)

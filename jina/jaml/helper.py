@@ -20,6 +20,12 @@ class JinaConstructor(FullConstructor):
     """Convert List into tuple when doing hashing"""
 
     def get_hashable_key(self, key):
+        """
+        Get the hash value of key.
+
+        :param key: key value to be hashed.
+        :return: Hash value of key.
+        """
         try:
             hash(key)
         except:
@@ -33,6 +39,13 @@ class JinaConstructor(FullConstructor):
         return key
 
     def construct_mapping(self, node, deep=True):
+        """
+        Build the mapping between
+
+        :param node: the node to traverse
+        :param deep:
+        :return:
+        """
         if isinstance(node, MappingNode):
             self.flatten_mapping(node)
         return self._construct_mapping(node, deep=deep)
@@ -63,13 +76,20 @@ class JinaResolver(Resolver):
 
 
 class JinaLoader(Reader, Scanner, Parser, Composer, JinaConstructor, JinaResolver):
+    """
+    The Jina loader which should be able to load YAML safely.
+
+    :param stream: the stream to load.
+    """
     def __init__(self, stream):
+        """Set constructor method."""
         Reader.__init__(self, stream)
         Scanner.__init__(self)
         Parser.__init__(self)
         Composer.__init__(self)
         JinaConstructor.__init__(self)
         JinaResolver.__init__(self)
+
 
 
 # remove on|On|ON resolver
@@ -154,6 +174,13 @@ def parse_config_source(path: Union[str, TextIO, Dict],
 
 
 def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
+    """
+    Complete the path of file via searching in abs and relative paths.
+
+    :param path: path of file.
+    :param extra_search_paths: extra paths to conduct search
+    :return: Completed file path.
+    """
     _p = None
     if os.path.exists(path):
         # this checks both abs and relative paths already
