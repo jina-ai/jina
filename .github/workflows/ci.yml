@@ -73,10 +73,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - id: set-matrix
         run: |
           sudo apt-get install jq
           echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
+      - name: Prepare enviroment
+          run: |
+            docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+            python -m pip install --upgrade pip
+            pip install ".[cicd,test,daemon]" --no-cache-dir
+            jina check
+            export JINA_LOG_LEVEL="ERROR"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -109,15 +120,6 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Prepare enviroment
-        run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          python -m pip install --upgrade pip
-          pip install ".[cicd,test,daemon]" --no-cache-dir
-          jina check
-          export JINA_LOG_LEVEL="ERROR"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
         run: |
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
