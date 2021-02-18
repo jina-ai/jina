@@ -38,7 +38,7 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
         self._running_avg = running_avg
 
     def __call__(self, *args, **kwargs):
-        """Load the ground truth pairs
+        """Load the ground truth pairs.
 
         :param *args: *args for _traverse_apply
         :param **kwargs: **kwargs for _traverse_apply
@@ -68,12 +68,10 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
             evaluation.ref_id = groundtruth.id
 
     def extract(self, doc: 'Document') -> Any:
-        """Extracting the to-be-evaluated field from the document.
-        Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
+        """Extract the to-be-evaluated field from the document. Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
 
         This function will be invoked two times in :meth:`_apply_all`:
         once with actual doc, once with groundtruth doc.
-
 
         .. # noqa: DAR401
         :param doc: the Document
@@ -83,24 +81,22 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
 
 class FieldEvaluateDriver(BaseEvaluateDriver):
     """
-    Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`
+    Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`.
+
+    :param field: the field name to be extracted from the Protobuf.
+    :param *args: *args for super
+    :param **kwargs: **kwargs for super
     """
 
     def __init__(self,
                  field: str,
                  *args,
                  **kwargs):
-        """
-
-        :param field: the field name to be extracted from the Protobuf
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
-        """
         super().__init__(*args, **kwargs)
         self.field = field
 
     def extract(self, doc: 'Document') -> Any:
-        """Extract the field from the Document
+        """Extract the field from the Document.
 
         :param doc: the Document
         :return: the data in the field
@@ -109,7 +105,7 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
 
 
 class RankEvaluateDriver(BaseEvaluateDriver):
-    """Drivers used to pass `matches` from documents and groundtruths to an executor and add the evaluation value
+    """Drivers used to pass `matches` from documents and groundtruths to an executor and add the evaluation value.
 
         - Example fields:
             ['tags__id', 'score__value]
@@ -132,12 +128,19 @@ class RankEvaluateDriver(BaseEvaluateDriver):
 
     @property
     def single_field(self):
+        """Get single field."""
         if isinstance(self.fields, str):
             return self.fields
         elif len(self.fields) == 1:
             return self.fields[0]
 
     def extract(self, doc: 'Document'):
+        """
+        Extract values of the matches from documents with fields as keys.
+
+        :param doc: Documents to be extracted.
+        :return: Extracted data.
+        """
         single_field = self.single_field
         if single_field:
             r = [dunder_get(x, single_field) for x in doc.matches]
@@ -151,7 +154,7 @@ class RankEvaluateDriver(BaseEvaluateDriver):
 
 
 class NDArrayEvaluateDriver(FieldEvaluateDriver):
-    """Drivers used to pass `embedding` from documents and groundtruths to an executor and add the evaluation value
+    """Drivers used to pass `embedding` from documents and groundtruths to an executor and add the evaluation value.
 
     .. note::
         - Valid fields:
@@ -164,7 +167,7 @@ class NDArrayEvaluateDriver(FieldEvaluateDriver):
 
 
 class TextEvaluateDriver(FieldEvaluateDriver):
-    """Drivers used to pass a content field from documents and groundtruths to an executor and add the evaluation value
+    """Drivers used to pass a content field from documents and groundtruths to an executor and add the evaluation value.
 
     .. note::
         - Valid fields:

@@ -12,12 +12,17 @@ if False:
 
 
 class BaseIndexDriver(FastRecursiveMixin, BaseExecutableDriver):
-    """Drivers inherited from this Driver will bind :meth:`add` by default """
+    """Drivers inherited from this Driver will bind :meth:`add` by default."""
 
     def __init__(self, executor: str = None, method: str = 'add', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
     def check_key_length(self, val: Iterable[str]):
+        """
+        Check if the max length of val(e.g. doc id) is larger than key_length.
+
+        :param val: The values to be checked
+        """
         m_val = max(len(v) for v in val)
         if m_val > self.exec.key_length:
             raise ValueError(f'{self.exec} allows only keys of length {self.exec.key_length}, '
@@ -39,8 +44,7 @@ class VectorIndexDriver(BaseIndexDriver):
 
 
 class KVIndexDriver(BaseIndexDriver):
-    """Forwards pairs of serialized documents and ids to the executor.
-    """
+    """Forwards pairs of serialized documents and ids to the executor."""
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         info = [(doc.id, doc.SerializeToString()) for doc in docs]
