@@ -6,19 +6,6 @@ To use these enums in YAML config, following the example below:
 .. highlight:: yaml
 .. code-block:: yaml
 
-    !Flow
-    with:
-      optimize_level: !FlowOptimizeLevel IGNORE_GATEWAY
-      # or
-      optimize_level: IGNORE_GATEWAY
-      #or
-      optimize_level: ignore_gateway
-      no_gateway: true
-
-
-.. highlight:: yaml
-.. code-block:: yaml
-
       chunk_idx:
         uses: index/chunk.yml
         parallel: ${{PARALLEL}}
@@ -125,14 +112,6 @@ class PollingType(BetterEnum):
         :return: True if this :class:`PollingType` is requiring `block` protocol else False.
         """
         return self.value == 2
-
-
-class FlowOptimizeLevel(BetterEnum):
-    """The level of flow optimization."""
-
-    NONE = 0
-    IGNORE_GATEWAY = 1
-    FULL = 2
 
 
 class LogVerbosity(BetterEnum):
