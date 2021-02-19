@@ -68,8 +68,9 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
             evaluation.ref_id = groundtruth.id
 
     def extract(self, doc: 'Document') -> Any:
-        """Extract the to-be-evaluated field from the document. Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
+        """Extract the to-be-evaluated field from the document.
 
+        Drivers inherit from :class:`BaseEvaluateDriver` must implement this method.
         This function will be invoked two times in :meth:`_apply_all`:
         once with actual doc, once with groundtruth doc.
 
