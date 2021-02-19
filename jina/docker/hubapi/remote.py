@@ -81,14 +81,13 @@ def _fetch_docker_auth(logger) -> Tuple[str, str]:
             'authorizationToken': _fetch_access_token(logger)
         }
         response = requests.get(url=f'{hubapi_url}', headers=headers)
-        if response.status_code == requests.codes.ok:
-            json_response = json.loads(response.text)
-            username = base64.b64decode(json_response['docker_username']).decode('ascii')
-            password = base64.b64decode(json_response['docker_password']).decode('ascii')
-            logger.debug(f'Successfully fetched docker creds for user')
-            return username, password
-        else:
+        if response.status_code != requests.codes.ok:
             logger.error(f'failed to fetch docker credentials. status code {response.status_code}')
+        json_response = json.loads(response.text)
+        username = base64.b64decode(json_response['docker_username']).decode('ascii')
+        password = base64.b64decode(json_response['docker_password']).decode('ascii')
+        logger.debug(f'Successfully fetched docker creds for user')
+        return username, password
     except Exception as exp:
         logger.error(f'got an exception while fetching docker credentials {exp!r}')
 
