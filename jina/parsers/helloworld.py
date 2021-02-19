@@ -33,13 +33,13 @@ def set_hello_parser(parser=None):
 
     set_hw_parser(
         spp.add_parser('mnist',
-                       help='Start a simple end2end fashion image index and search demo without any extra dependencies.',
-                       description='Run a fashion-mnist search demo',
+                       help='Start a simple end2end fashion images index & search demo without any extra dependencies.',
+                       description='Run a fashion search demo',
                        formatter_class=_chf))
 
     set_hw_chatbot_parser(
         spp.add_parser('chatbot',
-                       help='Start a hello-world demo: a simple Covid-19 chatbot. Pytorch and transformers are '
+                       help='Start a simple Covid-19 chatbot. Pytorch and transformers are '
                             'required to run this demo',
                        description='Run a chatbot QA demo',
                        formatter_class=_chf))
