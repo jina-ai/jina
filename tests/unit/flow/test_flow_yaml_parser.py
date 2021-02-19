@@ -1,17 +1,16 @@
-from pathlib import Path
+import os
 
+from pathlib import Path
 import numpy as np
 import pytest
 
 from jina import Flow, AsyncFlow
-from jina.enums import FlowOptimizeLevel
 from jina.excepts import BadFlowYAMLVersion
 from jina.executors.encoders import BaseEncoder
 from jina.flow import BaseFlow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
-from tests import rm_files
 
 cur_dir = Path(__file__).parent
 
@@ -77,17 +76,14 @@ def test_load_flow_from_cli():
 
 def test_load_flow_from_yaml():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
-        a = Flow.load_config(fp)
+        _ = Flow.load_config(fp)
 
 
-def test_flow_yaml_dump():
-    f = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
-             no_gateway=True)
-    f.save_config('test1.yml')
-
-    fl = Flow.load_config('test1.yml')
-    assert f.args.optimize_level == fl.args.optimize_level
-    rm_files(['test1.yml'])
+def test_flow_yaml_dump(tmpdir):
+    f = Flow()
+    f.save_config(os.path.join(str(tmpdir), 'test1.yml'))
+    fl = Flow.load_config(os.path.join(str(tmpdir), 'test1.yml'))
+    assert f.args.inspect == fl.args.inspect
 
 
 def test_flow_yaml_from_string():
