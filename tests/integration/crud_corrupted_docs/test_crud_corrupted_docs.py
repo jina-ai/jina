@@ -102,7 +102,7 @@ def random_docs_content_field(nr_docs, field, start=0):
                 # mime type will be overridden because it's `str`
                 d.content = 'I am text'
             elif field == 'buffer':
-                # mime type will be detected and overridden
+                # mime type will be preserved and ignored
                 d.buffer = b'hidden text in bytes'
             elif field == 'blob':
                 # mime type is ignored and preserved
@@ -139,8 +139,9 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
                         assert m.content == 'I am text'
                         assert m.mime_type == 'text/plain'
                     elif field == 'buffer':
+                        # mime type will be preserved from when we set it to the Doc
                         assert m.buffer == b'hidden text in bytes'
-                        assert m.mime_type == 'text/plain'
+                        assert m.mime_type == ORIGINAL_MIME_TYPE
                     elif field == 'blob':
                         assert m.blob.shape == (EMBEDDING_SHAPE,)
                         assert m.mime_type == ORIGINAL_MIME_TYPE
