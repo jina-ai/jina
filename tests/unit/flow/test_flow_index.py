@@ -5,7 +5,7 @@ import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
-from tests import random_docs, rm_files
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,9 +20,16 @@ def random_queries(num_docs, chunks_per_doc=5):
         yield d
 
 
+@pytest.fixture
+def docpb_workspace(tmpdir):
+    os.environ['TEST_DOCSHARD_WORKSPACE'] = str(tmpdir)
+    yield
+    del os.environ['TEST_DOCSHARD_WORKSPACE']
+
+
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
 @pytest.mark.parametrize('restful', [False, True])
-def test_shards_insufficient_data(mocker, restful):
+def test_shards_insufficient_data(mocker, restful, docpb_workspace):
     """THIS IS SUPER IMPORTANT FOR TESTING SHARDS
 
     IF THIS FAILED, DONT IGNORE IT, DEBUG IT
@@ -63,5 +70,4 @@ def test_shards_insufficient_data(mocker, restful):
 
                  on_done=validate)
     time.sleep(2)
-    rm_files(['test-docshard-tmp'])
     mock.assert_called_once()
