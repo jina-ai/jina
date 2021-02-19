@@ -108,7 +108,7 @@ class JAML:
         """
         Expand variables from YAML file.
 
-        :param d: flow yaml file loaded as python dict
+        :param d: yaml file loaded as python dict
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
         :param resolve_cycle_ref: resolve internal reference if True.
         :param resolve_passes: number of rounds to resolve internal reference.
