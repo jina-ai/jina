@@ -62,6 +62,7 @@ class Zmqlet:
             self.send_idle()
 
     def register_pollin(self):
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
@@ -274,6 +275,12 @@ class AsyncZmqlet(Zmqlet):
             self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
     async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> 'Message':
+        """
+        Receive a protobuf message in async manner.
+
+        :param callback: Callback function to receive message
+        :return: Received protobuf message.
+        """
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
             self.bytes_recv += msg.size
@@ -298,6 +305,7 @@ class ZmqStreamlet(Zmqlet):
     """
 
     def register_pollin(self):
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
             import tornado.ioloop
             get_or_reuse_loop()
@@ -342,6 +350,11 @@ class ZmqStreamlet(Zmqlet):
         self.in_sock.on_recv(self._in_sock_callback)
 
     def start(self, callback: Callable[['Message'], 'Message']):
+        """
+        Open all sockets and start the ZMQ context associated to this `Zmqlet`.
+
+        :param callback: callback function to receive the protobuf message
+        """
         def _callback(msg, sock_type):
             msg = _parse_from_frames(sock_type, msg)
             self.bytes_recv += msg.size

@@ -18,10 +18,13 @@ from ....proto import jina_pb2
 
 
 class ZEDRuntime(ZMQRuntime):
+    """"""
     def run_forever(self):
+        """Start the `ZmqStreamlet`."""
         self._zmqlet.start(self._msg_callback)
 
     def setup(self):
+        """Initialize private parameters and execute private functions."""
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self._last_dump_time = time.perf_counter()
@@ -41,6 +44,7 @@ class ZEDRuntime(ZMQRuntime):
         self._load_executor()
 
     def teardown(self):
+        """Close the `ZmqStreamlet` and `Executor`."""
         self._zmqlet.close()
         self._executor.close()
 
