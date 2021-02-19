@@ -246,6 +246,19 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.runtime.expect_parts
 
     @property
+    def docs(self) -> 'DocumentSet':
+        """The DocumentSet after applying the traversal
+
+
+        .. # noqa: DAR201"""
+        from ..types.sets import DocumentSet
+
+        if self.expect_parts > 1:
+            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
+        else:
+            return self.req.docs
+
+    @property
     def msg(self) -> 'Message':
         """Get the current request, shortcut to ``self.runtime.message``
 
@@ -386,19 +399,6 @@ class BaseRecursiveDriver(BaseDriver):
         """
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
-
-    @property
-    def docs(self) -> 'DocumentSet':
-        """The DocumentSet after applying the traversal
-
-
-        .. # noqa: DAR201"""
-        from ..types.sets import DocumentSet
-
-        if self.expect_parts > 1:
-            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
-        else:
-            return self.req.docs
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):
