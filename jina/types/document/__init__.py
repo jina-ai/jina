@@ -642,6 +642,16 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.granularity = granularity_value
 
     @property
+    def adjacency(self):
+        """Return the adjacency of the document."""
+        return self._pb_body.adjacency
+
+    @adjacency.setter
+    def adjacency(self, adjacency_value: int):
+        """Set the adjacency of the document."""
+        self._pb_body.adjacency = adjacency_value
+
+    @property
     def score(self):
         """Return the score of the document."""
         return NamedScore(self._pb_body.score)

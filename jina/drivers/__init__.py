@@ -307,94 +307,10 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return d
 
 
-class RecursiveMixin:
-    """A mixin to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseRecursiveDriver`"""
-
-    @property
-    def docs(self):
-        """
-
-
-        .. # noqa: DAR102
-
-
-        .. # noqa: DAR201
-        """
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
-
-    def _apply_root(
-        self,
-        docs: 'DocumentSet',
-        field: str,
-        *args,
-        **kwargs,
-    ) -> None:
-        return self._apply_all(docs, None, field, *args, **kwargs)
-
-    # TODO(Han): probably want to publicize this, as it is not obvious for driver
-    #  developer which one should be inherited
-    def _apply_all(
-        self,
-        docs: 'DocumentSet',
-        context_doc: 'Document',
-        field: str,
-        *args,
-        **kwargs,
-    ) -> None:
-        """Apply function works on a list of docs, modify the docs in-place
-
-        :param docs: a list of :class:`jina.Document` objects to work on; they could come from ``matches``/``chunks``.
-        :param context_doc: the owner of ``docs``
-        :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
-        :param *args: *args
-        :param **kwargs: **kwargs
-        """
-
-    def __call__(self, *args, **kwargs):
-        """Call the Driver.
-
-        :param *args: *args for ``_traverse_apply``
-        :param **kwargs: **kwargs for ``_traverse_apply``
-        """
-        self._traverse_apply(self.docs, *args, **kwargs)
-
-    def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        for path in self._traversal_paths:
-            if path[0] == 'r':
-                self._apply_root(docs, 'docs', *args, **kwargs)
-            for doc in docs:
-                self._traverse_rec(
-                    [doc],
-                    None,
-                    None,
-                    path,
-                    *args,
-                    **kwargs,
-                )
-
-    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, *args, **kwargs):
-        if path:
-            next_edge = path[0]
-            for doc in docs:
-                if next_edge == 'm':
-                    self._traverse_rec(
-                        doc.matches, doc, 'matches', path[1:], *args, **kwargs
-                    )
-                if next_edge == 'c':
-                    self._traverse_rec(
-                        doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
-                    )
-        else:
-            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
-
-
 class ContextAwareRecursiveMixin:
     """
-     The full datastructure version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
-     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
+     The full datastructure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
+     It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
 
      .. seealso::
         https://github.com/jina-ai/jina/issues/1932
@@ -425,7 +341,7 @@ class ContextAwareRecursiveMixin:
 
 class FlatRecursiveMixin:
     """
-    The optimized version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
+    The batch optimized version of :class:`ContextAwareRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
 
     .. seealso::
@@ -453,6 +369,7 @@ class FlatRecursiveMixin:
         Each outer list refers to a leaf (e.g. roots, matches or chunks wrapped
         in a :class:`jina.DocumentSet`) in the traversal_paths.
         """
+
 
 class BaseRecursiveDriver(BaseDriver):
     """A :class:`BaseRecursiveDriver` is an abstract Driver class containing information about the `traversal_paths`
