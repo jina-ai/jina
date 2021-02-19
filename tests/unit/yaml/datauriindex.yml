@@ -3,6 +3,7 @@ with:
   index_filename: doc.gzip
 metas:
   name: doc_indexer  # a customized name
+  workspace: $TEST_DATAURIINDEX_WORKSPACE
 requests:
   on:
     ControlRequest:
