@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable, Tuple
 
-from . import BaseExecutableDriver, QuerySetReader, FastRecursiveMixin, SetRecursiveMixin
+from . import BaseExecutableDriver, QuerySetReader, FlatRecursiveMixin, ContextAwareRecursiveMixin
 from ..types.document import Document
 from ..types.score import NamedScore
 
@@ -30,7 +30,7 @@ class BaseSearchDriver(BaseExecutableDriver):
         )
 
 
-class KVSearchDriver(SetRecursiveMixin, BaseSearchDriver):
+class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
     """Fill in the results using the :class:`jina.executors.indexers.meta.BinaryPbIndexer`
 
     .. warning::
@@ -61,8 +61,8 @@ class KVSearchDriver(SetRecursiveMixin, BaseSearchDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_update = is_update
 
-    def _apply_all(self, doc_sets: Iterable['DocumentSet'], *args, **kwargs) -> None:
-        for docs in doc_sets:
+    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        for docs in doc_sequences:
             miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
             for idx, retrieved_doc in enumerate(docs):
                 serialized_doc = self.exec_fn(retrieved_doc.id)
@@ -79,7 +79,7 @@ class KVSearchDriver(SetRecursiveMixin, BaseSearchDriver):
                 del docs[j]
 
 
-class VectorFillDriver(FastRecursiveMixin, QuerySetReader, BaseSearchDriver):
+class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Fill in the embedding by their document id.
     """
 
@@ -92,7 +92,7 @@ class VectorFillDriver(FastRecursiveMixin, QuerySetReader, BaseSearchDriver):
             doc.embedding = embedding
 
 
-class VectorSearchDriver(FastRecursiveMixin, QuerySetReader, BaseSearchDriver):
+class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Extract embeddings from the request for the executor to query.
     """
 

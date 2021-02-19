@@ -1,16 +1,16 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Any
+from typing import Dict, Any, Iterable
 
 from ...types.querylang.queryset.lookup import Q
-from .. import QuerySetReader, BaseRecursiveDriver, RecursiveMixin
+from .. import QuerySetReader, BaseRecursiveDriver, ContextAwareRecursiveMixin
 
 if False:
     from ...types.sets import DocumentSet
 
 
-class FilterQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
+class FilterQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     """Filters incoming `docs` by evaluating a series of `lookup rules`.
 
         This is often useful when the proceeding Pods require only a signal, not the full message.
@@ -36,14 +36,15 @@ class FilterQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
         super().__init__(*args, **kwargs)
         self._lookups = lookups
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        if self.lookups:
-            _lookups = Q(**self.lookups)
-            miss_idx = []
-            for idx, doc in enumerate(docs):
-                if not _lookups.evaluate(doc):
-                    miss_idx.append(idx)
+    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        for docs in doc_sequences:
+            if self.lookups:
+                _lookups = Q(**self.lookups)
+                miss_idx = []
+                for idx, doc in enumerate(docs):
+                    if not _lookups.evaluate(doc):
+                        miss_idx.append(idx)
 
-            # delete non-exit matches in reverse
-            for j in reversed(miss_idx):
-                del docs[j]
+                # delete non-exit matches in reverse
+                for j in reversed(miss_idx):
+                    del docs[j]

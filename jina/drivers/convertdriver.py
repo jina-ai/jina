@@ -1,10 +1,10 @@
-from ..drivers import FastRecursiveMixin, BaseRecursiveDriver
+from ..drivers import FlatRecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ..types.sets import DocumentSet
 
 
-class ConvertDriver(FastRecursiveMixin, BaseRecursiveDriver):
+class ConvertDriver(FlatRecursiveMixin, BaseRecursiveDriver):
     """Drivers that make sure that specific conversions are applied to the documents.
 
     .. note::

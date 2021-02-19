@@ -3,13 +3,15 @@ __license__ = "Apache-2.0"
 
 import sys
 
-from .. import QuerySetReader, RecursiveMixin, BaseRecursiveDriver
+from typing import Iterable
+
+from .. import QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ...types.sets.document import DocumentSet
 
 
-class SliceQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
+class SliceQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     """Restrict the size of the ``docs`` to ``k`` (given by the request)
 
         Example::
@@ -47,9 +49,10 @@ class SliceQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
         else:
             self._end = int(end)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        if self.start <= 0 and (self.end is None or self.end >= len(docs)):
-            pass
-        else:
-            del docs[int(self.end):]
-            del docs[:int(self.start)]
+    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        for docs in doc_sequences:
+            if self.start <= 0 and (self.end is None or self.end >= len(docs)):
+                pass
+            else:
+                del docs[int(self.end):]
+                del docs[:int(self.start)]

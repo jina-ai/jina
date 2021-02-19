@@ -2,14 +2,14 @@ from typing import List, Any, Iterable, Union, Tuple
 
 import numpy as np
 
-from . import BaseExecutableDriver, FastRecursiveMixin
+from . import BaseExecutableDriver, FlatRecursiveMixin
 from ..helper import typename
 
 if False:
     from ..types.sets import DocumentSet
 
 
-class BasePredictDriver(FastRecursiveMixin, BaseExecutableDriver):
+class BasePredictDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from :class:`BasePredictDriver` will bind :meth:`predict` by default
 
     :param fields: name of fields to be used to predict tags, default "embeddings"

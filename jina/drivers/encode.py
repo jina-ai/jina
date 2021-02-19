@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import warnings
 from typing import Optional
 
-from . import BaseExecutableDriver, FastRecursiveMixin, RecursiveMixin
+from . import BaseExecutableDriver, FlatRecursiveMixin, RecursiveMixin
 from ..types.sets import DocumentSet
 
 
@@ -18,7 +18,7 @@ class BaseEncodeDriver(BaseExecutableDriver):
         super().__init__(executor, method, *args, **kwargs)
 
 
-class EncodeDriver(FastRecursiveMixin, BaseEncodeDriver):
+class EncodeDriver(FlatRecursiveMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding
     """
 

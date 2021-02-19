@@ -391,7 +391,7 @@ class RecursiveMixin:
             self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
 
 
-class SetRecursiveMixin:
+class ContextAwareRecursiveMixin:
     """
      The full datastructure version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
      it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
@@ -412,7 +412,7 @@ class SetRecursiveMixin:
 
     def _apply_all(
         self,
-        doc_sets: Iterable['DocumentSet'],
+        doc_sequences: Iterable['DocumentSet'],
         *args,
         **kwargs,
     ) -> None:
@@ -422,19 +422,8 @@ class SetRecursiveMixin:
         in a :class:`jina.DocumentSet`) in the traversal_paths.
         """
 
-    @property
-    def docs(self) -> 'DocumentSet':
-        """The DocumentSet after applying the traversal
-        # noqa: DAR201"""
-        from ..types.sets import DocumentSet
 
-        if self.expect_parts > 1:
-            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
-        else:
-            return self.req.docs
-
-
-class FastRecursiveMixin:
+class FlatRecursiveMixin:
     """
     The optimized version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
@@ -450,9 +439,8 @@ class FastRecursiveMixin:
         :param *args: *args forwarded to ``_apply_all``
         :param **kwargs: **kwargs forwarded to ``_apply_all``
         """
-        document_sets = self.docs.traverse(self._traversal_paths)
-        flattened_documents = DocumentSet.flatten(document_sets)
-        self._apply_all(flattened_documents, *args, **kwargs)
+        documents = self.docs.traverse_flatten(self._traversal_paths)
+        self._apply_all(documents, *args, **kwargs)
 
     def _apply_all(
         self,
@@ -466,6 +454,22 @@ class FastRecursiveMixin:
         in a :class:`jina.DocumentSet`) in the traversal_paths.
         """
 
+class BaseRecursiveDriver(BaseDriver):
+    """A :class:`BaseRecursiveDriver` is an abstract Driver class containing information about the `traversal_paths`
+    that a `Driver` must apply its logic.
+    It is intended to be mixed in with either :class:`FlatRecursiveMixin` or :class:`ContextAwareRecursiveMixin`
+    """
+
+    def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
+        """Initialize a :class:`BaseRecursiveDriver`
+
+        :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
+        :param *args: *args for super
+        :param **kwargs: **kwargs for super
+        """
+        super().__init__(*args, **kwargs)
+        self._traversal_paths = [path.lower() for path in traversal_paths]
+
     @property
     def docs(self) -> 'DocumentSet':
         """The DocumentSet after applying the traversal
@@ -478,23 +482,6 @@ class FastRecursiveMixin:
             return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
         else:
             return self.req.docs
-
-
-class BaseRecursiveDriver(BaseDriver):
-    """A :class:`BaseRecursiveDriver` is an abstract Driver class containing information about the `traversal_paths`
-    that a `Driver` must apply its logic.
-    It is intended to be mixed in with either :class:`FastRecursiveMixin` or :class:`RecursiveMixin`
-    """
-
-    def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
-        """Initialize a :class:`BaseRecursiveDriver`
-
-        :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
-        """
-        super().__init__(*args, **kwargs)
-        self._traversal_paths = [path.lower() for path in traversal_paths]
 
 
 class BaseExecutableDriver(BaseRecursiveDriver):

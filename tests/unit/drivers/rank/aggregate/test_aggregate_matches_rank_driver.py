@@ -24,9 +24,17 @@ class MockMinRanker(Chunk2DocRanker):
 
 
 class SimpleCollectMatchesRankDriver(AggregateMatches2DocRankDriver):
+    def __init__(self, docs, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._docs = docs
+
     @property
     def exec_fn(self):
         return self._exec_fn
+
+    @property
+    def docs(self):
+        return self._docs
 
 
 class MockLengthRanker(Chunk2DocRanker):
@@ -80,10 +88,10 @@ def create_document_to_score_same_depth_level():
 
 def test_collect_matches2doc_ranker_driver_mock_ranker():
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver()
+    driver = SimpleCollectMatchesRankDriver(docs=DocumentSet([doc]))
     executor = MockLengthRanker()
     driver.attach(executor=executor, runtime=None)
-    driver._traverse_apply(DocumentSet([doc, ]))
+    driver()
     dm = list(doc.matches)
     assert len(dm) == 2
     assert dm[0].id == '20' * 8
@@ -98,7 +106,7 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
 @pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
 def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
+    driver = SimpleCollectMatchesRankDriver(docs=DocumentSet([doc]), keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMinRanker()
     driver.attach(executor=executor, runtime=None)
     import sys
@@ -113,7 +121,7 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
                 min_value_20 = match.score.value
 
     assert min_value_30 < min_value_20
-    driver._traverse_apply(DocumentSet([doc, ]))
+    driver()
     dm = list(doc.matches)
     assert len(dm) == 2
     assert dm[0].id == '30' * 8
@@ -130,10 +138,10 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
 @pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
 def test_collect_matches2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver(keep_source_matches_as_chunks=keep_source_matches_as_chunks)
+    driver = SimpleCollectMatchesRankDriver(docs=DocumentSet([doc]), keep_source_matches_as_chunks=keep_source_matches_as_chunks)
     executor = MockMaxRanker()
     driver.attach(executor=executor, runtime=None)
-    driver._traverse_apply(DocumentSet([doc, ]))
+    driver()
     dm = list(doc.matches)
     assert len(dm) == 2
     assert dm[0].id == '20' * 8

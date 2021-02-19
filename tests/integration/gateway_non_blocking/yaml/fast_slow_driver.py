@@ -1,18 +1,19 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from jina.drivers import RecursiveMixin, BaseExecutableDriver
+from jina.drivers import FlatRecursiveMixin, BaseExecutableDriver
 import time
 
 if False:
     from jina import DocumentSet
 
 
-class FastSlowDriver(RecursiveMixin, BaseExecutableDriver):
+class FastSlowDriver(FlatRecursiveMixin, BaseExecutableDriver):
     def __init__(self, executor: str = None, method: str = 'craft', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
+        docs = list(docs)
         if docs:
             assert len(docs) == 1
             if docs[0].text == 'slow':

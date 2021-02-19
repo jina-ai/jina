@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable, Tuple
 
-from .. import QuerySetReader, SetRecursiveMixin, BaseRecursiveDriver
+from .. import QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ...types.sets import DocumentSet
 
 
-class ReverseQL(QuerySetReader, SetRecursiveMixin, BaseRecursiveDriver):
+class ReverseQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     """Reverses the order of the provided ``docs``.
 
         This is often useful when the proceeding Pods require only a signal, not the full message.
@@ -24,6 +24,6 @@ class ReverseQL(QuerySetReader, SetRecursiveMixin, BaseRecursiveDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, doc_sets: Iterable['DocumentSet'], *args, **kwargs) -> None:
-        for docs in doc_sets:
+    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        for docs in doc_sequences:
             docs.reverse()

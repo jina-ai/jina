@@ -1,10 +1,19 @@
-from jina.drivers import RecursiveMixin, BaseExecutableDriver
+from jina.drivers import FlatRecursiveMixin, BaseExecutableDriver
 from jina.proto import jina_pb2
+from jina import DocumentSet
 
 DOCUMENTS_PER_LEVEL = 1
 
 
-class AppendOneChunkTwoMatchesCrafter(RecursiveMixin, BaseExecutableDriver):
+class AppendOneChunkTwoMatchesCrafter(FlatRecursiveMixin, BaseExecutableDriver):
+
+    def __init__(self, docs, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._docs = docs
+
+    @property
+    def docs(self):
+        return self._docs
 
     def _apply_all(self, docs, *args, **kwargs) -> None:
         for doc in docs:
@@ -49,13 +58,13 @@ def build_docs():
         document.adjacency = 0
         docs.append(document)
         iterate_build(document, 0, 0)
-    return docs
+    return DocumentSet(docs)
 
 
 def apply_traversal_path(traversal_paths):
     docs = build_docs()
-    driver = AppendOneChunkTwoMatchesCrafter(traversal_paths=traversal_paths)
-    driver._traverse_apply(docs)
+    driver = AppendOneChunkTwoMatchesCrafter(docs=docs, traversal_paths=traversal_paths)
+    driver()
     return docs
 
 

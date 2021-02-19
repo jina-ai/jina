@@ -98,44 +98,38 @@ def test_batching_traverse(doc_req):
 
 
 def test_traverse_flatten_embedding(doc_req):
-    flattened_results = DocumentSet.flatten(doc_req.docs.traverse(['r', 'c']))
+    flattened_results = doc_req.docs.traverse_flatten(['r', 'c'])
     ds = flattened_results.all_embeddings
     assert ds[0].shape == (num_docs + num_chunks_per_doc * num_docs, 10)
 
 
 def test_traverse_flatten_root(doc_req):
-    ds = list(doc_req.docs.traverse(['r']))
-    ds = list(DocumentSet.flatten(ds))
+    ds = list(doc_req.docs.traverse_flatten(['r']))
     assert len(ds) == num_docs
 
 
 def test_traverse_flatten_chunk(doc_req):
-    ds = list(doc_req.docs.traverse(['c']))
-    ds = list(DocumentSet.flatten(ds))
+    ds = list(doc_req.docs.traverse_flatten(['c']))
     assert len(ds) == num_docs * num_chunks_per_doc
 
 
 def test_traverse_flatten_root_plus_chunk(doc_req):
-    ds = list(doc_req.docs.traverse(['c', 'r']))
-    ds = list(DocumentSet.flatten(ds))
+    ds = list(doc_req.docs.traverse_flatten(['c', 'r']))
     assert len(ds) == num_docs + num_docs * num_chunks_per_doc
 
 
 def test_traverse_flatten_match(doc_req):
-    ds = list(doc_req.docs.traverse(['m']))
-    ds = list(DocumentSet.flatten(ds))
+    ds = list(doc_req.docs.traverse_flatten(['m']))
     assert len(ds) == num_docs * num_matches_per_doc
 
 
 def test_traverse_flatten_match_chunk(doc_req):
-    ds = list(doc_req.docs.traverse(['cm']))
-    ds = list(DocumentSet.flatten(ds))
+    ds = list(doc_req.docs.traverse_flatten(['cm']))
     assert len(ds) == num_docs * num_chunks_per_doc * num_matches_per_chunk
 
 
 def test_traverse_flatten_root_match_chunk(doc_req):
-    ds = list(doc_req.docs.traverse(['r', 'c', 'm', 'cm']))
-    ds = list(DocumentSet.flatten(ds))
+    ds = list(doc_req.docs.traverse_flatten(['r', 'c', 'm', 'cm']))
     assert (len(ds) == num_docs + num_chunks_per_doc * num_docs
             + num_matches_per_doc * num_docs + num_docs * num_chunks_per_doc * num_matches_per_chunk)
 
@@ -146,9 +140,8 @@ def test_batching_flatten_traverse(doc_req):
         print(f'batch_size:{len(docs)}')
         assert len(docs) == num_docs
 
-    ds = list(doc_req.docs.traverse(['r', 'c', 'm', 'cm']))
+    ds = list(doc_req.docs.traverse_flatten(['r', 'c', 'm', 'cm']))
     # under this contruction, num_doc is the common denominator
-    ds = list(DocumentSet.flatten(ds))
     foo(ds)
 
 
