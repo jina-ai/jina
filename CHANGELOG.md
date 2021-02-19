@@ -26,6 +26,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7526,4 +7527,62 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```482903d7```](https://github.com/jina-ai/jina/commit/482903d7a8206d046b2df8a3477cb7ab63e7254c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```305804b0```](https://github.com/jina-ai/jina/commit/305804b08eaa0031f774750e1f65ef7321d0e970)] __-__ fix broken link in readme (*Han Xiao*)
  - [[```8f5b252f```](https://github.com/jina-ai/jina/commit/8f5b252f7536892600c2f9aeb0052fed06ec9120)] __-__ __version__: the next version will be 1.0.1 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-2></a>
+## Release Note (`1.0.2`)
+
+> Release time: 2021-02-19 12:30:03
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Yongxuanzhang,  Jina Dev Bot,  Alex Cureton-Griffiths,  cristian,  Wang Bo,  Nan Wang,  Florian Hönicke,  🙇
+
+
+### 🆕 New Features
+
+ - [[```b2c2a97c```](https://github.com/jina-ai/jina/commit/b2c2a97cef06a8f75a0227199a8948bf8152a4ce)] __-__ __document__: add data_uri2blob converter (#1982) (*Han Xiao*)
+ - [[```9cea5e71```](https://github.com/jina-ai/jina/commit/9cea5e712246e4ab89c58ea13c61d090a89ec0b1)] __-__ ranking evaluate driver may need more than one field (#1953) (*Joan Fontanals*)
+ - [[```60b6dae9```](https://github.com/jina-ai/jina/commit/60b6dae9eae4f06743f12dcfc4568a0311dc42ba)] __-__ __executor__: add use_default and with to requests field (#1959) (*Han Xiao*)
+ - [[```5bc49550```](https://github.com/jina-ai/jina/commit/5bc495509cfb51873554e93d45fc72255913db84)] __-__ allow rank driver access info in tags (#1718) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```c379b092```](https://github.com/jina-ai/jina/commit/c379b092d54a39ec9855c2ad728eb585737f1aa4)] __-__ __ranker__: correct column names in ranker score matrix (#1973) (*Han Xiao*)
+ - [[```f03a8b46```](https://github.com/jina-ai/jina/commit/f03a8b46ed3afa0f528e1e62123eb4d8d7e67672)] __-__ __contributing, readme__: all 101 links go to 101.jina.ai (#1965) (*Alex Cureton-Griffiths*)
+ - [[```f2046fab```](https://github.com/jina-ai/jina/commit/f2046fab375ed752c9b74fdd8c66192bf257746f)] __-__ __executor__: allowing missing with/drivers keywords (#1967) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```6bf1d207```](https://github.com/jina-ai/jina/commit/6bf1d2073c00aecb64a8e87ad64aca1c0f89bfaf)] __-__ __cli__: add hello subparser (#1985) (*Han Xiao*)
+ - [[```97b6637b```](https://github.com/jina-ai/jina/commit/97b6637b38c60888cd42e6dde4107d8975ea6684)] __-__ remove flow optimization options (#1975) (*Joan Fontanals*)
+ - [[```d153381b```](https://github.com/jina-ai/jina/commit/d153381b42a9ff195fc38ff8bafb8f255318c902)] __-__ detach BaseExecutable from Recursivity (#1939) (*Joan Fontanals*)
+ - [[```47ae81fa```](https://github.com/jina-ai/jina/commit/47ae81fa94dba80134540126cb9904556427dd10)] __-__ logging for hub build tests (#1923) (*Florian Hönicke*)
+
+### 📗 Documentation
+
+ - [[```f02f30cb```](https://github.com/jina-ai/jina/commit/f02f30cb92f611328bebabbd54aa138bb81404c0)] __-__ add two empty spaces before noqa (#1961) (*Wang Bo*)
+ - [[```9a844b6f```](https://github.com/jina-ai/jina/commit/9a844b6f2593a9fc41ae7b5b13eed30e1e4ea8fe)] __-__ ignore noqa in docstring (#1955) (*Wang Bo*)
+ - [[```3e3949a6```](https://github.com/jina-ai/jina/commit/3e3949a681a189fcbb2672e5bd1ce909026a2d57)] __-__ add darglint config (#1954) (*cristian*)
+ - [[```adba5aaf```](https://github.com/jina-ai/jina/commit/adba5aaf9ede43776714916d224db2cc3a17e193)] __-__ continued docstring for drivers (#1951) (*cristian*)
+ - [[```2143fa22```](https://github.com/jina-ai/jina/commit/2143fa224b8479d61d9000aea39e02b65a7a99b3)] __-__ docstrings for parsers (#1924) (*cristian*)
+ - [[```92960e7c```](https://github.com/jina-ai/jina/commit/92960e7cc69c42670a19ba07659cbc6fef5c53c2)] __-__ __types__: add queryset docstrings (#1948) (*Yongxuanzhang*)
+ - [[```d33552ab```](https://github.com/jina-ai/jina/commit/d33552abf1a7eef4b56e08d22ca7db74200ca5fe)] __-__ __readme__: rm duplicate wikipedia example (#1946) (*Alex Cureton-Griffiths*)
+ - [[```3b95d78f```](https://github.com/jina-ai/jina/commit/3b95d78f7c9eb114588b46cfe9dc3acad274dc28)] __-__ fix the typos and add links (#1942) (*Nan Wang*)
+ - [[```e2971d22```](https://github.com/jina-ai/jina/commit/e2971d22c9d965d2b9cadf661c28ea86016570d9)] __-__ remove dot from precommit install (#1944) (*cristian*)
+ - [[```ce384298```](https://github.com/jina-ai/jina/commit/ce3842984a805cdf4a4f57904622f1b0d5cc7aa9)] __-__ __drivers__: remove the legacy docstring (#1941) (*Nan Wang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```cb32309d```](https://github.com/jina-ai/jina/commit/cb32309d8df9bbd0e009ad5274f9956847d08231)] __-__ test if ubuntu 18.04 has tests working (#1981) (*Joan Fontanals*)
+ - [[```0f2dc892```](https://github.com/jina-ai/jina/commit/0f2dc892a7642c7a3bb0e04151afb9e60684aab9)] __-__ __logging__: add timedict test (#1969) (*Yongxuanzhang*)
+ - [[```b1fab678```](https://github.com/jina-ai/jina/commit/b1fab678ca863cccd8653142671e09fca8aa56c7)] __-__ refactor querylang test use types (#1963) (*Joan Fontanals*)
+ - [[```89cf0bc3```](https://github.com/jina-ai/jina/commit/89cf0bc3f0060a1a81239899cdb8d1a6d88562c0)] __-__ do not lint docstrings in tests (#1962) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```e7588031```](https://github.com/jina-ai/jina/commit/e75880315157e98861889f7cd71dcc442bd92a78)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```aedb2940```](https://github.com/jina-ai/jina/commit/aedb294067e1c94cea194dd746df6499e918861c)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
+ - [[```caaf59c8```](https://github.com/jina-ai/jina/commit/caaf59c86ab9c6f66e1b305032a1ecda5bf7dc68)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d79585ac```](https://github.com/jina-ai/jina/commit/d79585acbf67709923ded439ff81a09db4effe23)] __-__ __version__: the next version will be 1.0.2 (*Jina Dev Bot*)
 
