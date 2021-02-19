@@ -9,7 +9,7 @@ on:
 
 jobs:
   commit-lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: find the prev warning if exist
         uses: peter-evans/find-comment@v1
@@ -54,7 +54,7 @@ jobs:
 
   lint-flake-8:
     needs: commit-lint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
@@ -70,7 +70,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
   prep-testbed:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - id: set-matrix
@@ -82,7 +82,7 @@ jobs:
 
   docker-image-test:
     needs: commit-lint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: |
@@ -95,7 +95,7 @@ jobs:
 
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -149,6 +149,6 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
     needs: [core-test, docker-image-test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - run: echo "All Done"

@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import pytest
-
 from jina import Document
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +10,14 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def test_uri_to_blob():
     doc = Document(uri=os.path.join(cur_dir, 'test.png'))
     doc.convert_uri_to_blob()
+    assert isinstance(doc.blob, np.ndarray)
+    assert doc.blob.shape == (85, 152, 3)  # h,w,c
+
+
+def test_datauri_to_blob():
+    doc = Document(uri=os.path.join(cur_dir, 'test.png'))
+    doc.convert_uri_to_data_uri()
+    doc.convert_data_uri_to_blob()
     assert isinstance(doc.blob, np.ndarray)
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
