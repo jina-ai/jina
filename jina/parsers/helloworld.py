@@ -4,7 +4,7 @@ import argparse
 from pkg_resources import resource_filename
 
 from .base import set_base_parser
-from .helper import add_arg_group, _SHOW_ALL_ARGS
+from .helper import add_arg_group, _SHOW_ALL_ARGS, _chf
 from ..helper import random_identity
 
 
@@ -19,6 +19,30 @@ def mixin_hw_base_parser(parser):
                          'all data, indices, shards and outputs will be saved there')
     gp.add_argument('--download-proxy', type=str,
                     help='The proxy when downloading sample data')
+
+
+def set_hello_parser(parser=None):
+    """Set the hello parser"""
+
+    if not parser:
+        parser = set_base_parser()
+
+    spp = parser.add_subparsers(dest='hello',
+                                description='use `%(prog)-8s [sub-command] --help` '
+                                            'to get detailed information about each sub-command', required=True)
+
+    set_hw_parser(
+        spp.add_parser('mnist',
+                       help='Start a simple end2end fashion images index & search demo without any extra dependencies.',
+                       description='Run a fashion search demo',
+                       formatter_class=_chf))
+
+    set_hw_chatbot_parser(
+        spp.add_parser('chatbot',
+                       help='Start a simple Covid-19 chatbot. Pytorch and transformers are '
+                            'required to run this demo',
+                       description='Run a chatbot QA demo',
+                       formatter_class=_chf))
 
 
 def set_hw_parser(parser=None):

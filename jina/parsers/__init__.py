@@ -1,8 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from jina.parsers.peapods.runtimes.distributed import mixin_distributed_feature_parser
-
 
 def set_pea_parser(parser=None):
     """Set the parser for the Pea
@@ -20,6 +18,7 @@ def set_pea_parser(parser=None):
     from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import mixin_remote_parser
     from .peapods.pea import mixin_pea_parser
+    from .peapods.runtimes.distributed import mixin_distributed_feature_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
@@ -114,7 +113,7 @@ def get_main_parser():
     :return: the parser
     """
     from .base import set_base_parser
-    from .helloworld import set_hw_parser, set_hw_chatbot_parser
+    from .helloworld import set_hw_parser, set_hello_parser
     from .helper import _chf, _SHOW_ALL_ARGS
     from .check import set_check_parser
     from .export_api import set_export_api_parser
@@ -131,11 +130,10 @@ def get_main_parser():
                                description='use `%(prog)-8s [sub-command] --help` '
                                            'to get detailed information about each sub-command', required=True)
 
-    set_hw_parser(sp.add_parser('hello-world',
-                                help='👋 Hello World! Hello Jina!',
-                                description='Start the hello-world demo, a simple end2end image index and search demo '
-                                            'without any extra dependencies.',
-                                formatter_class=_chf))
+    set_hello_parser(sp.add_parser('hello',
+                                   help='👋 Hello World! Hello Jina!',
+                                   description='Start hello-world demos',
+                                   formatter_class=_chf))
 
     set_pod_parser(sp.add_parser('pod',
                                  help='Start a Pod',
@@ -194,9 +192,10 @@ def get_main_parser():
                                         formatter_class=_chf,
                                         **(dict(help='export Jina API to file')) if _SHOW_ALL_ARGS else {}))
 
-    set_hw_chatbot_parser(sp.add_parser('hello-world-chatbot',
-                                        **(dict(help='Covid-19 chatbot based on DistilBERT')) if _SHOW_ALL_ARGS else {},
-                                        description='Start a hello-world demo: a simple Covid-19 chatbot. '
-                                                    'Pytorch and transformers are required to run this demo',
-                                        formatter_class=_chf))
+    set_hw_parser(sp.add_parser('hello-world',
+                                description='Start the hello-world demo, a simple end2end image index and search demo '
+                                            'without any extra dependencies.',
+                                formatter_class=_chf,
+                                **(dict(help='👋 Hello World! Hello Jina!')) if _SHOW_ALL_ARGS else {}))
+
     return parser
