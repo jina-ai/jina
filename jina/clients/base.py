@@ -168,6 +168,8 @@ class BaseClient:
                                      'please double check your input iterator') from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
+        except Exception as ex:
+            self.logger.error(f'Exception: {ex!r}')
 
     def index(self):
         """Issue 'index' request to the Flow."""
