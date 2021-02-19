@@ -40,11 +40,11 @@ class JinaConstructor(FullConstructor):
 
     def construct_mapping(self, node, deep=True):
         """
-        Build the mapping between
+        Build the mapping from node.
 
         :param node: the node to traverse
-        :param deep:
-        :return:
+        :param deep: required param from YAML constructor
+        :return: Mapped data
         """
         if isinstance(node, MappingNode):
             self.flatten_mapping(node)
