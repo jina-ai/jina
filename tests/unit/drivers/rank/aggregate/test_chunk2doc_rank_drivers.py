@@ -6,6 +6,7 @@ from jina.executors.rankers import Chunk2DocRanker
 from jina.proto import jina_pb2
 from jina.types.sets import DocumentSet
 
+DISCOUNT_VAL = 0.5
 
 class MockMaxRanker(Chunk2DocRanker):
 
@@ -74,7 +75,7 @@ def create_document_to_score():
             match.score.ref_id = chunk.id
             match.score.value = int(match_id)
             match.tags['price'] = match.score.value
-            match.tags['discount'] = 0.5
+            match.tags['discount'] = DISCOUNT_VAL
     return Document(doc)
 
 
@@ -147,7 +148,7 @@ def test_chunk2doc_ranker_driver_mock_ranker(keep_source_matches_as_chunks, exec
     driver.attach(executor=executor, runtime=None)
     driver._traverse_apply(DocumentSet([doc, ]))
 
-    scale = 1 if not isinstance(executor, MockPriceDiscountRanker) else 0.5
+    scale = 1 if not isinstance(executor, MockPriceDiscountRanker) else DISCOUNT_VAL
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '70'
 
