@@ -68,8 +68,10 @@ class HubIO:
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
     def new(self, no_input: bool = False) -> None:
-        """Create a new executor using cookiecutter template.
-            :param no_input: Argument to avoid prompting dialogue (just to be used for testing)
+        """
+        Create a new executor using cookiecutter template.
+        
+        :param no_input: Argument to avoid prompting dialogue (just to be used for testing)
         """
         with ImportExtensions(required=True):
             from cookiecutter.main import cookiecutter
