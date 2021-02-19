@@ -149,6 +149,12 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
     needs: [core-test, docker-image-test]
+    if: always()
     runs-on: ubuntu-18.04
     steps:
-      - run: echo "All Done"
+      - name: Success
+        if: ${{ success() }}
+        run: echo "All Done"
+      - name: Fail
+        if: ${{ failure() }}
+        run: exit 1
