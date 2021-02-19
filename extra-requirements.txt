@@ -71,4 +71,4 @@ python-multipart:           http, devel, test, daemon
 aiofiles:                   devel, cicd, http, test, daemon
 pytest-custom_exit_code:    cicd, test
 bs4:                        test
-aiostream:                  devel, cicd
+aiostream:                  devel, cicd, test
