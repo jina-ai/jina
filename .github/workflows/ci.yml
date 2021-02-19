@@ -152,9 +152,11 @@ jobs:
     if: always()
     runs-on: ubuntu-18.04
     steps:
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
       - name: Success
         if: ${{ success() }}
         run: echo "All Done"
-      - name: Fail
-        if: ${{ failure() }}
-        run: exit 1
+
