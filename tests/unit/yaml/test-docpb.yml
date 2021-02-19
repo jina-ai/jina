@@ -3,4 +3,4 @@ with:
   index_filename: test-doc-shard.gz
 metas:
   name: docpb2
-  workspace: ./test-docshard-tmp
+  workspace: $TEST_DOCSHARD_WORKSPACE/test-docshard-tmp
