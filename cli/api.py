@@ -80,8 +80,14 @@ def hello_world(args: 'Namespace'):
     hello_world(args)
 
 
-def hello_world_chatbot(args: 'Namespace'):
-    from jina.helloworld.chatbot import hello_world
+def hello(args: 'Namespace'):
+    if args.hello == 'mnist':
+        from jina.helloworld import hello_world
+    elif args.hello == 'chatbot':
+        from jina.helloworld.chatbot import hello_world
+    else:
+        raise ValueError(f'{args.hello} must be one of [`mnist`, `chatbot`]')
+
     hello_world(args)
 
 

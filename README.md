@@ -57,13 +57,13 @@ Just starting out? Try Jina's "Hello, World" - a simple image neural search demo
 
 
 ```bash
-jina hello-world  # more options in --help
+jina hello mnist  # more options in --help
 ```
 
 ...or even easier for Docker users, **no install required**:
 
 ```bash
-docker run -v "$(pwd)/j:/j" jinaai/jina hello-world --workdir /j && open j/hello-world.html
+docker run -v "$(pwd)/j:/j" jinaai/jina hello mnist --workdir /j && open j/hello-world.html
 # replace "open" with "xdg-open" on Linux
 ```
 
@@ -88,7 +88,7 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. You will need PyTorch and Transformers, which can be installed along with Jina:
 ```bash
 pip install "jina[torch,transformers]"
-jina hello-world-chatbot
+jina hello chatbot
 ```
 
 This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
@@ -774,7 +774,7 @@ with f:
 ```
 
 
-That is the essence behind `jina hello-world`. It is merely a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
+That is the essence behind `jina hello mnist`. It is merely a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
 
 ```bash
 pip install jina[hub] && jina hub new --type app
