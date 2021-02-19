@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 
@@ -12,6 +12,34 @@ COL_STR_TYPE = 'U64'  #: the ID column data type for score matrix
 
 class BaseRanker(BaseExecutor):
     """The base class for a `Ranker`"""
+
+    def __init__(self,
+                 query_required_keys: Optional[Sequence[str]] = None,
+                 match_required_keys: Optional[Sequence[str]] = None,
+                 *args,
+                 **kwargs):
+        """
+
+        :param query_required_keys: Set of keys or features to be extracted from query `Document` by the `Driver` so that
+            they are passed as query features or metainfo.
+        :param match_required_keys: Set of keys or features to be extracted from match `Document` by the `Driver` so that
+            they are passed as match features or metainfo.
+
+        .. note::
+            See how the attributes are accessed in :class:`Document` in :meth:`get_attrs`.
+
+            .. highlight:: python
+            .. code-block:: python
+
+                query = Document({'tags': {'color': 'blue'})
+                match = Document({'tags': {'color': 'blue', 'price': 1000}})
+
+                ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
+        """
+
+        super().__init__(*args, **kwargs)
+        self.query_required_keys = query_required_keys
+        self.match_required_keys = match_required_keys
 
     def score(self, *args, **kwargs):
         raise NotImplementedError
@@ -32,16 +60,6 @@ class Chunk2DocRanker(BaseRanker):
 
     """
 
-    required_keys = {'text'}  #: a set of ``str``, key-values to extracted from the chunk-level protobuf message
-    """set: Set of required keys to be extracted from matches and query to fill the information of `query` and `chunk` meta information.
-    These are the set of keys to be extracted from `Document`.
-
-    All the keys not found in the `DocumentProto` fields, will be extracted from the `tags` structure of `Document`.
-    .. seealso::
-
-        :meth:`get_attrs` of :class:`Document`
-
-    """
     COL_PARENT_ID = 'match_parent_id'
     COL_DOC_CHUNK_ID = 'match_doc_chunk_id'
     COL_QUERY_CHUNK_ID = 'match_query_chunk_id'
@@ -60,11 +78,11 @@ class Chunk2DocRanker(BaseRanker):
                 - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
         :type match_idx: np.ndarray.
         :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
-            the value is extracted by the ``required_keys``.
+            the value is extracted by the ``query_required_keys``.
         :type query_chunk_meta: Dict.
         :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
-            ``chunk_id``, the value is extracted by the ``required_keys``.
-        :type query_chunk_meta: Dict.
+            ``chunk_id``, the value is extracted by the ``match_required_keys``.
+        :type match_chunk_meta: Dict.
         :return: A [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
                 the second column is the score/distance/metric between the matched doc and the query doc (float).
         :rtype: np.ndarray.

@@ -8,12 +8,16 @@ from jina.types.sets import DocumentSet
 
 
 class MockMaxRanker(Chunk2DocRanker):
+    def __init__(self, *args, **kwargs):
+        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         return self.get_doc_id(match_idx), match_idx[self.COL_SCORE].max()
 
 
 class MockMinRanker(Chunk2DocRanker):
+    def __init__(self, *args, **kwargs):
+        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())
@@ -27,8 +31,7 @@ class SimpleCollectMatchesRankDriver(AggregateMatches2DocRankDriver):
 
 class MockLengthRanker(Chunk2DocRanker):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.required_keys = {'length'}
+        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         return match_idx[0][self.COL_PARENT_ID], match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length']
