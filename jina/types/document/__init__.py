@@ -510,7 +510,7 @@ class Document(ProtoTypeMixin):
     def buffer(self, value: bytes):
         """Set the ``buffer`` to :param:`value`."""
         self._pb_body.buffer = value
-        if value:
+        if value and not self._pb_body.mime_type:
             with ImportExtensions(required=False,
                                   pkg_name='python-magic',
                                   help_text=f'can not sniff the MIME type '
@@ -684,6 +684,17 @@ class Document(ProtoTypeMixin):
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob((uri_prefix + self.uri) if uri_prefix else self.uri, color_axis)
+
+    def convert_data_uri_to_blob(self, color_axis: int = -1, **kwargs):
+        """ Convert data URI to image blob
+
+        :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
+        req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as fp:
+            buffer = fp.read()
+        self.blob = to_image_blob(io.BytesIO(buffer), color_axis)
 
     def convert_uri_to_buffer(self, **kwargs):
         """Convert uri to buffer
