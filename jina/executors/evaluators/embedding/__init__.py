@@ -21,10 +21,10 @@ class BaseEmbeddingEvaluator(BaseEvaluator):
 
 def expand_vector(vec):
     """
+    Expand 1d vector with one dimension axis == 0.
 
-
-    :param vec:
-    :return:
+    :param vec: Vector to be expanded.
+    :return: Expanded vector,
     """
     if not isinstance(vec, np.ndarray):
         vec = np.array(vec)

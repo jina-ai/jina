@@ -272,7 +272,7 @@ class CompoundExecutor(BaseExecutor):
         :param compound_workspace: Workspace of the compound executor.
         :param compound_name: Name of the compound executor.
         :param pea_id: Id of the pea.
-        :return:
+        :return: The name of workspace.
         """
         import os
         return BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id) if pea_id > 0 else \

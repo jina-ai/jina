@@ -367,8 +367,8 @@ class NumpyIndexer(BaseNumpyIndexer):
         """
         Build advanced index structure based on in-memory numpy ndarray, e.g. graph, tree, etc.
 
-        :param vecs: the raw numpy ndarray
-        :return:
+        :param vecs: The raw numpy ndarray.
+        :return: Advanced index.
         """
         return vecs
 
