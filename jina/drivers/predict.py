@@ -17,7 +17,7 @@ class BasePredictDriver(FastRecursiveMixin, BaseExecutableDriver):
     :param **kwargs: **kwargs for super
     """
     
-    def __init__(self, executor: str = None, method: str = 'predict', fields: Union[Tuple, str] = 'embeddings', *args, **kwargs):
+    def __init__(self, executor: str = None, method: str = 'predict', fields: Union[Tuple, str] = 'embedding', *args, **kwargs):
         self.fields = fields
         super().__init__(executor, method, *args, **kwargs)
 
@@ -40,9 +40,9 @@ class BaseLabelPredictDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        if self.fields == 'embeddings':
+        if self.fields == 'embedding':
             predict_input, docs_pts = docs.all_embeddings
-        elif self.fields == 'contents':
+        elif self.fields == 'content':
             predict_input, docs_pts = docs.all_contents
         else:
             raise ValueError(f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents')
@@ -171,9 +171,9 @@ class Prediction2DocBlobDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        if self.fields == 'embeddings':
+        if self.fields == 'embedding':
             predict_input, docs_pts = docs.all_embeddings
-        elif self.fields == 'contents':
+        elif self.fields == 'content':
             predict_input, docs_pts = docs.all_contents
         else:
             raise ValueError(f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents')

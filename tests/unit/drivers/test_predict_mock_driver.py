@@ -118,7 +118,7 @@ def test_as_blob_driver():
 
 def test_predict_driver_without_embeddings(docs_to_encode, num_docs):
     executor = MockClassifier(total_num_docs=num_docs)
-    driver = MockClassifierDriver(fields='contents') #uses doc.contents to predict tags
+    driver = MockClassifierDriver(fields='content') #use doc.content to predict tags
     driver.attach(executor=executor, runtime=None)
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
