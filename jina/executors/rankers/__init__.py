@@ -42,6 +42,7 @@ class BaseRanker(BaseExecutor):
         self.match_required_keys = match_required_keys
 
     def score(self, *args, **kwargs):
+        """Calculate the score. Base class method needs to be implemented in subclass."""
         raise NotImplementedError
 
 

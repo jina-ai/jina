@@ -7,16 +7,13 @@ from ..helper import cached_property
 
 
 class BaseDevice:
-    """
-    :class:`BaseFrameworkExecutor` is the base class for the executors using other frameworks internally, including
-        `tensorflow`, `pytorch`, `onnx`, `faiss` and `paddlepaddle`.
-
-    """
+    """:class:`BaseFrameworkExecutor` is the base class for the executors using other frameworks internally, including `tensorflow`, `pytorch`, `onnx`, `faiss` and `paddlepaddle`."""
 
     @cached_property
     @abstractmethod
     def device(self):
-        """Set the device on which the executor will be running.
+        """
+        Set the device on which the executor will be running.
 
         ..notes:
             In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
@@ -25,13 +22,12 @@ class BaseDevice:
 
     @abstractmethod
     def to_device(self, *args, **kwargs):
-        """Move the computation from GPU to CPU or vice versa"""
+        """Move the computation from GPU to CPU or vice versa."""
 
 
 class TorchDevice(BaseDevice):
     """
-    :class:`BaseTorchDeviceHandler` implements the base class for the executors using :mod:`torch` library. The common setups
-         go into this class.
+    :class:`BaseTorchDeviceHandler` implements the base class for the executors using :mod:`torch` library. The common setups go into this class.
 
     To implement your own executor with the :mod:`torch` library,
 
@@ -59,17 +55,24 @@ class TorchDevice(BaseDevice):
 
     @cached_property
     def device(self):
+        """
+        Set the device on which the executors using :mod:`torch` library will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
         import torch
         return torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
 
     def to_device(self, model, *args, **kwargs):
+        """Load the model to device."""
         model.to(self.device)
 
 
 class PaddleDevice(BaseDevice):
     """
-    :class:`BasePaddleExecutor` implements the base class for the executors using :mod:`paddlepaddle` library. The
-        common setups go into this class.
+    :class:`BasePaddleExecutor` implements the base class for the executors using :mod:`paddlepaddle` library. The common setups go into this class.
 
     To implement your own executor with the :mod:`paddlepaddle` library,
 
@@ -99,18 +102,26 @@ class PaddleDevice(BaseDevice):
 
     @cached_property
     def device(self):
+        """
+        Set the device on which the executors using :mod:`paddlepaddle` library will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
         import paddle.fluid as fluid
         return fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
 
     def to_device(self):
+        """Load the model to device."""
         import paddle.fluid as fluid
         return fluid.Executor(self.device)
 
 
 class TFDevice(BaseDevice):
     """
-    :class:`BaseTFDeviceHandler` implements the base class for the executors using :mod:`tensorflow` library. The common
-        setups go into this class.
+    :class:`BaseTFDeviceHandler` implements the base class for the executors using :mod:`tensorflow` library. The common setups go into this class.
+
     To implement your own executor with the :mod:`tensorflow` library,
 
     .. highlight:: python
@@ -136,6 +147,13 @@ class TFDevice(BaseDevice):
 
     @cached_property
     def device(self):
+        """
+        Set the device on which the executors using :mod:`tensorflow` library will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
         import tensorflow as tf
         cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
         gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
@@ -144,14 +162,14 @@ class TFDevice(BaseDevice):
         return cpus
 
     def to_device(self):
+        """Load the model to device."""
         import tensorflow as tf
         tf.config.experimental.set_visible_devices(devices=self.device)
 
 
 class OnnxDevice(BaseDevice):
     """
-    :class:`OnnxDevice` implements the base class for the executors using :mod:`onnxruntime` library. The common
-        setups go into this class.
+    :class:`OnnxDevice` implements the base class for the executors using :mod:`onnxruntime` library. The common setups go into this class.
 
     To implement your own executor with the :mod:`onnxruntime` library,
 
@@ -183,40 +201,58 @@ class OnnxDevice(BaseDevice):
 
     @cached_property
     def device(self):
+        """
+        Set the device on which the executors using :mod:`onnxruntime` library will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
         return ['CUDAExecutionProvider'] if self.on_gpu else ['CPUExecutionProvider']
 
     def to_device(self, model, *args, **kwargs):
+        """Load the model to device."""
         model.set_providers(self.device)
 
 
 class FaissDevice(BaseDevice):
-    """
-    :class:`FaissDevice` implements the base class for the executors using :mod:`faiss` library. The common
-        setups go into this class.
-    """
+    """:class:`FaissDevice` implements the base class for the executors using :mod:`faiss` library. The common setups go into this class."""
 
     @cached_property
     def device(self):
+        """
+        Set the device on which the executors using :mod:`faiss` library will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
         import faiss
         # For now, consider only one GPU, do not distribute the index
         return faiss.StandardGpuResources() if self.on_gpu else None
 
     def to_device(self, index, *args, **kwargs):
+        """Load the model to device."""
         import faiss
         device = self.device
         return faiss.index_cpu_to_gpu(device, 0, index, None) if device is not None else index
 
 
 class MindsporeDevice(BaseDevice):
-    """
-    :class:`MindsporeDevice` implements the base classes for the executors using :mod:`mindspore` library. The
-        common setups go into this class.
-    """
+    """:class:`MindsporeDevice` implements the base classes for the executors using :mod:`mindspore` library. The common setups go into this class."""
 
     @cached_property
     def device(self):
+        """
+        Set the device on which the executors using :mod:`mindspore` library will be running.
+
+        ..notes:
+            In the case of using GPUs, we only use the first gpu from the visible gpus. To specify which gpu to use,
+            please use the environment variable `CUDA_VISIBLE_DEVICES`.
+        """
         return 'GPU' if self.on_gpu else 'CPU'
 
     def to_device(self):
+        """Load the model to device."""
         import mindspore.context as context
         context.set_context(mode=context.GRAPH_MODE, device_target=self.device)
