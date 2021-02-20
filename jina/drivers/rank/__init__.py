@@ -26,7 +26,7 @@ class BaseRankDriver(RecursiveMixin, BaseExecutableDriver):
     @property
     def _exec_query_keys(self):
         """Property to provide backward compatibility to executors relying in `required_keys`"""
-        return self.exec.match_required_keys if hasattr(self.exec, 'query_required_keys') else getattr(self.exec,
+        return self.exec.query_required_keys if hasattr(self.exec, 'query_required_keys') else getattr(self.exec,
                                                                                                        'required_keys',
                                                                                                        None)
 
