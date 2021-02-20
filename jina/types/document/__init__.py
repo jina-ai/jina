@@ -571,11 +571,10 @@ class Document(ProtoTypeMixin):
         :param value: the acceptable MIME type, raise ``ValueError`` when MIME type is not
                 recognizable.
         """
+        if value == 'audio/wav':
+            value = 'audio/x-wav'
         if value in mimetypes.types_map.values():
             self._pb_body.mime_type = value
-        if value == 'audio/wav':
-            self._pb_body.mime_type = 'audio/x-wav'
-            return
         elif value:
             # given but not recognizable, do best guess
             r = mimetypes.guess_type(f'*.{value}')[0]
