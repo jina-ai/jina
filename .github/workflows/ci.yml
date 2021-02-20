@@ -149,6 +149,14 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
     needs: [core-test, docker-image-test]
+    if: always()
     runs-on: ubuntu-18.04
     steps:
-      - run: echo "All Done"
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
+      - name: Success
+        if: ${{ success() }}
+        run: echo "All Done"
+
