@@ -26,7 +26,7 @@ def build_model_from_pb(name, pb_model):
 
 
 JinaDocumentModel = build_model_from_pb('Document', DocumentProto)
-JinaDocumentModel.update_forward_refs()
+#JinaDocumentModel.update_forward_refs()
 JinaQueryLangModel = build_model_from_pb('QueryLang', QueryLangProto)
 
 
