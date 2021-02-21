@@ -114,7 +114,7 @@ jina hello multimodal
 This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a webpage where you can query multimodal document. We have prepared [a Youtube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
 
 
-<br><br><br><br>
+<br><br><br>
 
 ## Get Started
 
