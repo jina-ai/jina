@@ -34,12 +34,14 @@ if __name__ == '__main__':
 ac_table = {
     'commands': ['--help', '--version', '--version-full', 'hello', 'pod', 'flow', 'optimizer', 'gateway', 'ping',
                  'check', 'hub', 'pea', 'log', 'client', 'export-api', 'hello-world'], 'completions': {
-        'hello mnist': ['--help', '--workdir', '--download-proxy', '--shards', '--parallel', '--uses-index',
-                        '--index-data-url', '--index-labels-url', '--index-request-size', '--uses-query',
-                        '--query-data-url', '--query-labels-url', '--query-request-size', '--num-query', '--top-k'],
+        'hello fashion': ['--help', '--workdir', '--download-proxy', '--shards', '--parallel', '--uses-index',
+                          '--index-data-url', '--index-labels-url', '--index-request-size', '--uses-query',
+                          '--query-data-url', '--query-labels-url', '--query-request-size', '--num-query', '--top-k'],
         'hello chatbot': ['--help', '--workdir', '--download-proxy', '--uses', '--index-data-url', '--demo-url',
                           '--port-expose', '--parallel', '--unblock-query-flow'],
-        'hello': ['--help', 'mnist', 'chatbot'],
+        'hello multimodal': ['--help', '--workdir', '--download-proxy', '--uses', '--index-data-url', '--demo-url',
+                             '--port-expose', '--unblock-query-flow'],
+        'hello': ['--help', 'fashion', 'chatbot', 'multimodal'],
         'pod': ['--help', '--name', '--log-config', '--identity', '--hide-exc-info', '--port-ctrl', '--ctrl-with-ipc',
                 '--timeout-ctrl', '--ssh-server', '--ssh-keyfile', '--ssh-password', '--uses', '--py-modules',
                 '--port-in', '--port-out', '--host-in', '--host-out', '--socket-in', '--socket-out', '--dump-interval',

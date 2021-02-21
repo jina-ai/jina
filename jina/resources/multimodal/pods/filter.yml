@@ -1,0 +1,10 @@
+!BaseExecutor
+requests:
+  uses_default: true
+  on:
+    [IndexRequest, SearchRequest]:
+      - !FilterQL
+        with:
+          lookups:
+            mime_type: '${{ENV.filter_mime}}'
+          traversal_paths: ['c']
