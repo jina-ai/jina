@@ -98,7 +98,7 @@ jina hello chatbot
 
 This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
 
-<br><br><br><br>
+<br><br>
 
 ### 🪆 Multimodal Document Search
 
