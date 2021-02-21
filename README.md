@@ -90,11 +90,13 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that, 
 ```bash
 pip install "jina[chatbot]"
+
 jina hello chatbot
 ```
 
 This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
 
+<br><br><br><br>
 
 ### Multimodal Document Search
 
@@ -105,10 +107,14 @@ This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tell
 A multimodality document contains multiple data types at the same time, e.g. a PDF document often contains figure and text. We provide a minimum multimodal document search demo. To run that,
 ```bash
 pip install "jina[multimodal]"
+
 jina hello multimodal
 ```
 
 This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a webpage where you can query multimodal document. We have prepared [a Youtube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
+
+
+<br><br><br><br>
 
 ## Get Started
 
