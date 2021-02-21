@@ -29,7 +29,7 @@ paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 tensorflow>=2.0:            framework, cicd
 tensorflow-hub:             framework, py37
-torchvision>=0.3.0:         framework, cv, multimodal
+torchvision>=0.3.0:         framework, cv, multimodal, cicd
 onnx:                       framework, py37
 onnxruntime:                framework, py37
 Pillow:                     cv, cicd, multimodal
