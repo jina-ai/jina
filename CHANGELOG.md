@@ -27,6 +27,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7586,4 +7587,46 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```aedb2940```](https://github.com/jina-ai/jina/commit/aedb294067e1c94cea194dd746df6499e918861c)] __-__ __style__: reformatted by jina-dev-bot (*Jina Dev Bot*)
  - [[```caaf59c8```](https://github.com/jina-ai/jina/commit/caaf59c86ab9c6f66e1b305032a1ecda5bf7dc68)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d79585ac```](https://github.com/jina-ai/jina/commit/d79585acbf67709923ded439ff81a09db4effe23)] __-__ __version__: the next version will be 1.0.2 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-3></a>
+## Release Note (`1.0.3`)
+
+> Release time: 2021-02-21 06:19:03
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Yongxuanzhang,  Joan Fontanals,  cristian,  🙇
+
+
+### 🆕 New Features
+
+ - [[```b8fdb1a3```](https://github.com/jina-ai/jina/commit/b8fdb1a335c9a2c97a62bbf501c056aa88a23af3)] __-__ __demo__: add multimodal hello-world (#2002) (*Han Xiao*)
+ - [[```12596bff```](https://github.com/jina-ai/jina/commit/12596bffca623cb114be13375696bcdea174f337)] __-__ have required keys for queries and matches and as instance attr (#1947) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```a93a6cf6```](https://github.com/jina-ai/jina/commit/a93a6cf66da195c122ccdd76730b2480373b31a3)] __-__ mixin should not be inherited from BaseDriver (#1980) (*Joan Fontanals*)
+ - [[```66267555```](https://github.com/jina-ai/jina/commit/66267555936ddcf7b03ce375e9477340f8221cad)] __-__ fix broken tests (#1987) (*cristian*)
+ - [[```5797167a```](https://github.com/jina-ai/jina/commit/5797167a51eab9dc2fe1fbe1ae1e5e6614514bee)] __-__ __driver__: bug in query required keys (#1995) (*Han Xiao*)
+ - [[```81c4e80e```](https://github.com/jina-ai/jina/commit/81c4e80e0070340a366dcb015ae51579ae4ade0c)] __-__ CI should never skip last step (#1990) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```4a2623c6```](https://github.com/jina-ai/jina/commit/4a2623c611e7cfa7b9e37e17143ad4f0bf1e895d)] __-__ __executors__: add missing docstrings (#1977) (*Yongxuanzhang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```816d19da```](https://github.com/jina-ai/jina/commit/816d19dadfde30dd9c4e0334ac34ad4455daa052)] __-__ add extra tests to flow (#1991) (*Joan Fontanals*)
+ - [[```eaa6a235```](https://github.com/jina-ai/jina/commit/eaa6a2357ef1f6d1e6795f589e4680a169139d29)] __-__ try to add codecov for daemon (#1993) (*Joan Fontanals*)
+ - [[```e5087081```](https://github.com/jina-ai/jina/commit/e5087081c0f10601dcc0dba93ce65d7818fdeb03)] __-__ test asyncio req generator (#1992) (*Joan Fontanals*)
+ - [[```5165c4d3```](https://github.com/jina-ai/jina/commit/5165c4d323f4ddc945097a060a42fd2d30cc777e)] __-__ add test for log formatter (#1983) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```85f20d08```](https://github.com/jina-ai/jina/commit/85f20d086acfedc9f397acbb18501ff8300e6e97)] __-__ update readme (*Han Xiao*)
+ - [[```a853858a```](https://github.com/jina-ai/jina/commit/a853858a26f70c315c03b10365a11d6c2b6d1315)] __-__ update readme layout (*Han Xiao*)
+ - [[```071b7cde```](https://github.com/jina-ai/jina/commit/071b7cded2f02a320b4eda0840d67414481c7a2d)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```d148b016```](https://github.com/jina-ai/jina/commit/d148b016f0a282be31d1563baa1f06bb16abc0e3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```704679e5```](https://github.com/jina-ai/jina/commit/704679e561faff1f8965632abcd94afa327b82d7)] __-__ __version__: the next version will be 1.0.3 (*Jina Dev Bot*)
 
