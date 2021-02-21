@@ -97,7 +97,6 @@ jobs:
     needs: [prep-testbed, commit-lint, lint-flake-8]
     runs-on: ubuntu-18.04
     strategy:
-      max-parallel: 5
       fail-fast: false
       matrix:
         python-version: [3.7]
