@@ -16,9 +16,16 @@ def default_logger_propagate():
 def test_logging_profile_profiling(caplog, default_logger_propagate):
     @profiling
     def foo():
-        print(1)
+        time.sleep(1)
+        temp_data = [i for i in range(0, 10000)]
+
     foo()
-    assert "memory" in caplog.text
+    # profiling format: JINA@79684[I]: foo time: 0.00042528799999996814s memory Δ 376.0 KB 47.3 MB -> 47.7 MB
+    captured_list = caplog.text.split()
+    assert captured_list[3] == 'time:'
+    assert float(captured_list[4][:-1]) > 1
+    assert captured_list[5] == 'memory'
+    assert float(captured_list[7]) > 0
 
 
 def test_logging_profile_timedict():
