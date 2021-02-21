@@ -14,20 +14,36 @@ HEADER_NONE_ENTRY = (-1, -1, -1)
 
 class BinaryPbIndexer(BaseKVIndexer):
     class WriteHandler:
+        """
+        Write file handler.
+
+        :param path: Path of the file.
+        :param mode: Writing mode. (e.g. 'ab', 'wb')
+        """
         def __init__(self, path, mode):
+            """Constructor."""
             self.body = open(path, mode)
             self.header = open(path + '.head', mode)
 
         def close(self):
+            """Close the file."""
             self.body.close()
             self.header.close()
 
         def flush(self):
+            """Clear the body and header."""
             self.body.flush()
             self.header.flush()
 
     class ReadHandler:
+        """
+        Read file handler.
+
+        :param path: Path of the file.
+        :param key_length: Length of key.
+        """
         def __init__(self, path, key_length):
+            """Constructor."""
             with open(path + '.head', 'rb') as fp:
                 tmp = np.frombuffer(fp.read(),
                                     dtype=[('', (np.str_, key_length)), ('', np.int64), ('', np.int64), ('', np.int64)])
@@ -38,6 +54,7 @@ class BinaryPbIndexer(BaseKVIndexer):
             self.body = self._body.fileno()
 
         def close(self):
+            """Close the file."""
             self._body.close()
 
     def get_add_handler(self) -> 'WriteHandler':
@@ -58,6 +75,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         return self.ReadHandler(self.index_abspath, self.key_length)
 
     def __init__(self, *args, **kwargs):
+        """Constructor."""
         super().__init__(*args, **kwargs)
         self._total_byte_len = 0
         self._start = 0

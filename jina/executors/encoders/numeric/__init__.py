@@ -30,6 +30,7 @@ class TransformEncoder(BaseNumericEncoder):
         self.random_state = random_state
 
     def post_init(self) -> None:
+        """Load the model from path if :param:`model_path` is set."""
         import pickle
         self.model = None
         if self.model_path:
@@ -38,6 +39,7 @@ class TransformEncoder(BaseNumericEncoder):
 
     @batching
     def train(self, data: 'np.ndarray', *args, **kwargs) -> None:
+        """Train the :param:`data` with model."""
         if not self.model:
             raise UndefinedModel(
                 'Model is not defined: Provide a loadable pickled model, or defined any specific TransformEncoder')

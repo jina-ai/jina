@@ -11,14 +11,16 @@ from ...helper import is_url, cached_property
 
 # mixin classes go first, base classes are read from right to left.
 class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
-    def __init__(self, output_feature: str = None, model_path: str = None, *args, **kwargs):
-        """
+    """
+    :class:`BasePaddleEncoder` is the base class for implementing Encoders with models from :mod:`onnxruntime` library.
 
-        :param output_feature: the name of the layer for feature extraction.
-        :param model_path: the path of the model in the format of `.onnx`. Check a list of available pretrained
-            models at https://github.com/onnx/models#image_classification and download the git LFS to your local path.
-            The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
-        """
+    :param output_feature: the name of the layer for feature extraction.
+    :param model_path: the path of the model in the format of `.onnx`. Check a list of available pretrained
+        models at https://github.com/onnx/models#image_classification and download the git LFS to your local path.
+        The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
+    """
+    def __init__(self, output_feature: str = None, model_path: str = None, *args, **kwargs):
+        """Constructor."""
         super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
@@ -61,14 +63,17 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
 
 
 class BaseTFEncoder(TFDevice, BaseEncoder):
+    """:class:`BasePaddleEncoder` is the base class for implementing Encoders with models from :mod:`tensorflow` library."""
     pass
 
 
 class BaseTorchEncoder(TorchDevice, BaseEncoder):
+    """Base encoder class for :mod:`pytorch` library."""
     pass
 
 
 class BasePaddleEncoder(PaddleDevice, BaseEncoder):
+    """:class:`BasePaddleEncoder` is the base class for implementing Encoders with models from :mod:`paddlepaddle` library."""
     pass
 
 
@@ -122,6 +127,7 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
 
     @cached_property
     def model(self):
+        """Get the Mindspore Neural Networks Cells."""
         return self.get_cell()
 
     def get_cell(self):

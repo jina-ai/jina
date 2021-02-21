@@ -10,6 +10,7 @@ from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
+from jina.peapods.pods import BasePod
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -669,3 +670,31 @@ def test_single_document_flow_index():
     with Flow().add() as f:
         f.index(d)
         f.index(lambda: d)
+
+
+def test_flow_equalities():
+    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
+    f2 = Flow().add(name='pod0').add(name='pod1', needs='gateway').add(name='joiner', needs=['pod0', 'pod1'])
+    assert f1 == f2
+
+    f2 = f2.add()
+    assert f1 != f2
+
+
+def test_flow_get_item():
+    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
+    assert isinstance(f1[1], BasePod)
+    assert isinstance(f1['pod0'], BasePod)
+
+
+def test_flow_yaml_dump():
+    import io
+    f = io.StringIO()
+    f1 = Flow().add()
+    with f1:
+        f1.to_swarm_yaml(path=f)
+        assert 'gateway' in f.getvalue()
+        assert 'services' in f.getvalue()
+        assert 'jina pod' in f.getvalue()
+
+    assert '!Flow' in f1.yaml_spec

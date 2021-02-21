@@ -72,6 +72,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     @property
     def workspace_name(self):
+        """Get the workspace name."""
         return self.name if self.ref_indexer_workspace_name is None else self.ref_indexer_workspace_name
 
     @property
@@ -363,6 +364,12 @@ class NumpyIndexer(BaseNumpyIndexer):
         return indices, dist
 
     def build_advanced_index(self, vecs: 'np.ndarray') -> 'np.ndarray':
+        """
+        Build advanced index structure based on in-memory numpy ndarray, e.g. graph, tree, etc.
+
+        :param vecs: The raw numpy ndarray.
+        :return: Advanced index.
+        """
         return vecs
 
     @batching(merge_over_axis=1, slice_on=2)
