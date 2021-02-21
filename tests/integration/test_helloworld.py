@@ -81,7 +81,7 @@ def test_helloworld_py_multimodal(tmpdir):
 def test_helloworld_flow(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
@@ -111,7 +111,7 @@ def test_helloworld_flow(tmpdir):
 def test_helloworld_flow_dry_run(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
