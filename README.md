@@ -49,6 +49,8 @@ Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/ma
 
 ## Jina "Hello, World!" 👋🌍
 
+### Fashion Image Search
+
 Just starting out? Try Jina's "Hello, World" - a simple image neural search demo for [Fashion-MNIST](https://hanxiao.io/2018/09/28/Fashion-MNIST-Year-In-Review/). No extra dependencies needed, simply run:
 
 <a href="https://docs.jina.ai/">
@@ -57,13 +59,13 @@ Just starting out? Try Jina's "Hello, World" - a simple image neural search demo
 
 
 ```bash
-jina hello mnist  # more options in --help
+jina hello fashion  # more options in --help
 ```
 
 ...or even easier for Docker users, **no install required**:
 
 ```bash
-docker run -v "$(pwd)/j:/j" jinaai/jina hello mnist --workdir /j && open j/hello-world.html
+docker run -v "$(pwd)/j:/j" jinaai/jina hello fashion --workdir /j && open j/hello-world.html
 # replace "open" with "xdg-open" on Linux
 ```
 
@@ -85,13 +87,28 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
 </a>
 
-For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. You will need PyTorch and Transformers, which can be installed along with Jina:
+For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that, 
 ```bash
-pip install "jina[torch,transformers]"
+pip install "jina[chatbot]"
 jina hello chatbot
 ```
 
 This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
+
+
+### Multimodal Document Search
+
+<a href="https://youtu.be/B_nH8GCmBfc">
+<img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-multimodal.gif?raw=true" />
+</a>
+
+A multimodality document contains multiple data types at the same time, e.g. a PDF document often contains figure and text. We provide a minimum multimodal document search demo. To run that,
+```bash
+pip install "jina[multimodal]"
+jina hello multimodal
+```
+
+This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a webpage where you can query multimodal document. We have prepared [a Youtube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
 
 ## Get Started
 
@@ -774,7 +791,7 @@ with f:
 ```
 
 
-That is the essence behind `jina hello mnist`. It is merely a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
+That is the essence behind `jina hello fashion`. It is merely a taste of what Jina can do. We’re really excited to see what you do with Jina! You can easily create a Jina project from templates with one terminal command:
 
 ```bash
 pip install jina[hub] && jina hub new --type app

@@ -112,7 +112,7 @@ def write_html(html_path):
 
     colored_url = colored('https://opensource.jina.ai', color='cyan', attrs='underline')
     default_logger.success(
-        f'🤩 Intrigued? Play with "jina hello mnist --help" and learn more about Jina at {colored_url}')
+        f'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at {colored_url}')
 
 
 def download_data(targets, download_proxy=None, task_name='download fashion-mnist'):
