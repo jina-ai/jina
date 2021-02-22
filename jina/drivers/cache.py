@@ -23,11 +23,11 @@ class BaseCacheDriver(BaseIndexDriver):
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         if self._method_name == 'update':
-            values = [BaseCacheDriver.hash(d, self.exec.fields) for d in docs]
+            values = [BaseCacheDriver.hash_doc(d, self.exec.fields) for d in docs]
             self.exec_fn([d.id for d in docs], values)
         else:
             for d in docs:
-                value = BaseCacheDriver.hash(d, self.exec.fields)
+                value = BaseCacheDriver.hash_doc(d, self.exec.fields)
                 result = self.exec[value]
                 if result:
                     self.on_hit(d, result)
@@ -56,7 +56,7 @@ class BaseCacheDriver(BaseIndexDriver):
         pass
 
     @staticmethod
-    def hash(doc: 'Document', fields: List[str]) -> str:
+    def hash_doc(doc: 'Document', fields: List[str]) -> str:
         """Calculate hash by which we cache.
 
         :param doc: the Document
