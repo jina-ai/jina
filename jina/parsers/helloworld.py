@@ -91,7 +91,7 @@ def set_hw_parser(parser=None):
                     help='The number of parallel when index and query')
     gp = add_arg_group(parser, title='Index')
     gp.add_argument('--uses-index', type=str,
-                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
+                    default=resource_filename('jina', '/'.join(('resources', 'fashion', 'helloworld.flow.index.yml'))),
                     help='The yaml path of the index flow')
     gp.add_argument('--index-data-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz',
@@ -106,7 +106,7 @@ def set_hw_parser(parser=None):
 
     gp = add_arg_group(parser, title='Search')
     gp.add_argument('--uses-query', type=str,
-                    default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml'))),
+                    default=resource_filename('jina', '/'.join(('resources', 'fashion', 'helloworld.flow.query.yml'))),
                     help='The yaml path of the query flow')
     gp.add_argument('--query-data-url', type=str,
                     default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz',
@@ -136,7 +136,7 @@ def set_hw_chatbot_parser(parser=None):
 
     mixin_hw_base_parser(parser)
     parser.add_argument('--uses', type=str,
-                        default=resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))),
+                        default=resource_filename('jina', '/'.join(('resources', 'chatbot', 'helloworld.flow.index.yml'))),
                         help='The yaml path of the index flow')
     parser.add_argument('--index-data-url', type=str,
                         default='https://static.jina.ai/chatbot/dataset.csv',
