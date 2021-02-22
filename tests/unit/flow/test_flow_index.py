@@ -5,7 +5,6 @@ import pytest
 
 from jina import Document
 from jina.flow import Flow
-from jina.proto import jina_pb2
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

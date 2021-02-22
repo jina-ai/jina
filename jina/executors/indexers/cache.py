@@ -76,9 +76,8 @@ class DocCache(BaseCache):
             # create a new temp file if not exist
             index_filename = tempfile.NamedTemporaryFile(delete=False).name
         super().__init__(index_filename, *args, **kwargs)
-        fields = fields or self.default_fields
         # order shouldn't matter
-        self.fields = sorted(fields)
+        self.fields = sorted(fields or self.default_fields)
 
     def add(self, keys: Iterable[str], values: Iterable[str], *args, **kwargs) -> None:
         """Add a document to the cache depending.
