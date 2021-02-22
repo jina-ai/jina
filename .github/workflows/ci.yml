@@ -80,6 +80,8 @@ jobs:
       - id: file_changes
         uses: trilom/file-changes-action@v1.2.3
         with:
+          pushBefore: ${{github.event.pull_request.base.sha}}
+          pushAfter: ${{github.event.pull_request.head.sha}}
           prNumber: ${{github.event.number}}
       - name: docstring check with darlint
         run: |
