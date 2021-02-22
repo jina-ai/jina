@@ -77,15 +77,17 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.7
-      - id: files
-        uses: jitterbit/get-changed-files@v1
+      - id: file_changes
+        uses: trilom/file-changes-action@v1.2.3
+        with:
+          prNumber: ${{github.event.number}}
       - name: docstring check with darlint
         run: |
           pip install darglint
-          for changed_file in ${{ steps.files.outputs.all }}; do
+          for changed_file in ${{ steps.file_changes.outputs.files}}; do
             darglint -v 2 -s sphinx ${changed_file}
           done
-          
+
 
   prep-testbed:
     runs-on: ubuntu-18.04
