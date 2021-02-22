@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pkg_resources import resource_filename
 
-from .. import download_data
+from ..helper import download_data
 from ... import Flow
 from ...importer import ImportExtensions
 from ...logging import default_logger
@@ -36,7 +36,7 @@ def hello_world(args):
 
     f = (Flow()
          .add(uses='TransformerTorchEncoder', parallel=args.parallel)
-         .add(uses=f'{resource_filename("jina", "resources")}/helloworld.indexer.yml'))
+         .add(uses=f'{resource_filename("jina", "resources")}/chatbot/helloworld.indexer.yml'))
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:

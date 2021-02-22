@@ -88,7 +88,7 @@ def write_html(html_path):
     global num_docs_evaluated
     global evaluation_value
 
-    with open(resource_filename('jina', '/'.join(('resources', 'helloworld.html'))), 'r') as fp, \
+    with open(resource_filename('jina', '/'.join(('resources', 'fashion', 'helloworld.html'))), 'r') as fp, \
             open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
