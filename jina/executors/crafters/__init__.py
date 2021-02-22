@@ -21,6 +21,7 @@ class BaseCrafter(BaseExecutor):
     """
 
     def __init__(self, *args, **kwargs):
+        """Constructor."""
         super().__init__(*args, **kwargs)
         self.required_keys = {k for k in inspect.getfullargspec(self.craft).args if k != 'self'}
         if not self.required_keys:

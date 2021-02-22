@@ -4,8 +4,8 @@ with:
   compress_hwm: 1024
 pods:
   - name: encode
-    uses: $RESOURCE_DIR/helloworld.encoder.yml
+    uses: helloworld.encoder.yml
     parallel: $PARALLEL
   - name: index
-    uses: $RESOURCE_DIR/helloworld.indexer.yml
+    uses: helloworld.indexer.yml
     shards: $SHARDS

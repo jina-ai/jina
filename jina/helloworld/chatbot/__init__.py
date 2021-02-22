@@ -51,7 +51,7 @@ def hello_world(args):
         except:
             pass  # intentional pass, browser support isn't cross-platform
         finally:
-            default_logger.success(f'You should see a chatbot page opened in your browser, '
-                                   f'if not you may open {args.demo_url} manually')
+            default_logger.success(f'You should see a demo page opened in your browser, '
+                                   f'if not, you may open {args.demo_url} manually')
         if not args.unblock_query_flow:
             f.block()

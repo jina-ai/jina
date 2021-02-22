@@ -56,6 +56,7 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
         search_flow.search(
             input_fn=search_data,
             on_done=validate_granularity_1,
+            on_error=lambda r: print(r)
 
         )
 

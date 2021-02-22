@@ -1,7 +1,7 @@
-!SimpleAggregateRanker
-with:
-  aggregate_function: 'min'
-  is_reversed_score: True
+!MockMinRanker
+metas:
+    py_modules:
+    - custom.py
 requests:
   on:
     SearchRequest:

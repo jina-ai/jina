@@ -1,9 +1,10 @@
-from typing import Dict, Any, Optional, List, Union
+from typing import Callable, Dict, Any, Optional, List, Union
 
-from pydantic import Field
-from pydantic.main import BaseModel, create_model
+from pydantic import Field, BaseModel, create_model
 
 from jina.enums import DataInputType
+from jina.types.document import Document
+from jina.parsers import set_client_cli_parser
 from jina.proto.jina_pb2 import DocumentProto, QueryLangProto
 
 
@@ -13,7 +14,7 @@ class JinaStatusModel(BaseModel):
     used_memory: str
 
 
-def build_model_from_pb(name, pb_model):
+def build_model_from_pb(name: str, pb_model: Callable):
     from google.protobuf.json_format import MessageToDict
 
     dp = MessageToDict(pb_model(), including_default_value_fields=True)
@@ -28,12 +29,15 @@ def build_model_from_pb(name, pb_model):
 JinaDocumentModel = build_model_from_pb('Document', DocumentProto)
 JinaDocumentModel.update_forward_refs()
 JinaQueryLangModel = build_model_from_pb('QueryLang', QueryLangProto)
+default_request_size = set_client_cli_parser().parse_args([]).request_size
 
 
 class JinaRequestModel(BaseModel):
-    data: Union[List[JinaDocumentModel], List[Dict[str, Any]], List[str], List[bytes]]
-    request_size: Optional[int] = 0
-    mime_type: Optional[str] = None
+    # To avoid an error while loading the request model schema on swagger, we've added an example.
+    data: Union[List[JinaDocumentModel], List[Dict[str, Any]], List[str], List[bytes]] = \
+        Field(..., example=[Document().dict()])
+    request_size: Optional[int] = default_request_size
+    mime_type: Optional[str] = ''
     queryset: Optional[List[JinaQueryLangModel]] = None
     data_type: DataInputType = DataInputType.AUTO
 

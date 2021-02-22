@@ -119,6 +119,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
+        id: test
         run: |
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
@@ -126,7 +127,20 @@ jobs:
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             docker rm -f jinad
           else
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            SUB='daemon'
+            if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            else
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            fi
+          fi
+          SUB='daemon'
+          if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
+            echo "flag it as daemon for codeoverage"
+            echo "::set-output name=codecov_flag::daemon"
+          else
+            echo "flag it as jina for codeoverage"
+            echo "::set-output name=codecov_flag::jina"
           fi
         timeout-minutes: 15
         env:
@@ -144,11 +158,20 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
     needs: [core-test, docker-image-test]
+    if: always()
     runs-on: ubuntu-18.04
     steps:
-      - run: echo "All Done"
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
+      - name: Success
+        if: ${{ success() }}
+        run: echo "All Done"
+

@@ -17,6 +17,7 @@ class BaseTFServingClientEncoder(BaseTFServingClientExecutor, BaseEncoder):
     """
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
+        """Encode method."""
         _req = self.get_request(data)
         return self.get_response(_req)
 
@@ -38,7 +39,9 @@ class UnaryTFServingClientEncoder(BaseTFServingClientEncoder):
         self.output_name = output_name
 
     def get_input(self, data):
+        """Get the input dict with input name as key and :param:`data` as value."""
         return {self.input_name: data.astype(np.float32)}
 
     def get_output(self, response):
+        """Get the output data from :param:`response`"""
         return np.array(response.result().outputs[self.output_name].float_val)

@@ -106,6 +106,13 @@ class BaseTFServingClientExecutor(BaseClientExecutor):
         return self.fill_request(_request, _data_dict)
 
     def fill_request(self, request, input_dict):
+        """
+        Fill the gRPC request to the tf server.
+
+        :param request: gRPC request.
+        :param input_dict: input dictionary.
+        :return:
+        """
         return getattr(self, self.method_name)(request, input_dict)
 
     def get_input(self, data) -> Dict:

@@ -214,7 +214,8 @@ class BasePod(ExitStack):
         """
 
         if not self.args.noblock_on_start:
-            raise ValueError(f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True')
+            raise ValueError(
+                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True')
 
         try:
             for p in self.peas:
@@ -246,7 +247,7 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _set_conditional_args(args):
-        if 'pod_role' in args and args.pod_role == PodRoleType.GATEWAY:
+        if args.pod_role == PodRoleType.GATEWAY:
             if args.restful:
                 args.runtime_cls = 'RESTRuntime'
             else:
