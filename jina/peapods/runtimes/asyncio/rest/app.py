@@ -75,7 +75,10 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'used_memory': used_memory_readable()
         }
 
-    @app.post(path='/api/{mode}', deprecated=True)
+    @app.post(
+        path='/api/{mode}',
+        deprecated=True
+    )
     async def api(mode: str, body: Any = Body(...)):
         warnings.warn('this interface will be retired soon', DeprecationWarning)
         if mode.upper() not in RequestType.__members__:
@@ -94,10 +97,11 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     async def get_result_in_json(req_iter):
         return [MessageToDict(k) async for k in servicer.Call(request_iterator=req_iter, context=None)]
 
-    @app.post(path='/index',
-              summary='Index documents into Jina',
-              tags=['CRUD']
-              )
+    @app.post(
+        path='/index',
+        summary='Index documents into Jina',
+        tags=['CRUD']
+    )
     async def index_api(body: JinaIndexRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
@@ -105,33 +109,36 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.post(path='/search',
-              summary='Search documents from Jina',
-              tags=['CRUD']
-              )
-    async def index_api(body: JinaSearchRequestModel):
+    @app.post(
+        path='/search',
+        summary='Search documents from Jina',
+        tags=['CRUD']
+    )
+    async def search_api(body: JinaSearchRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
         bd['mode'] = RequestType.SEARCH
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.put(path='/update',
-             summary='Update documents in Jina',
-             tags=['CRUD']
-             )
-    async def index_api(body: JinaUpdateRequestModel):
+    @app.put(
+        path='/update',
+        summary='Update documents in Jina',
+        tags=['CRUD']
+    )
+    async def update_api(body: JinaUpdateRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
         bd['mode'] = RequestType.UPDATE
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.delete(path='/delete',
-                summary='Delete documents in Jina',
-                tags=['CRUD']
-                )
-    async def index_api(body: JinaDeleteRequestModel):
+    @app.delete(
+        path='/delete',
+        summary='Delete documents in Jina',
+        tags=['CRUD']
+    )
+    async def delete_api(body: JinaDeleteRequestModel):
         from .....clients import BaseClient
         bd = body.dict()
         bd['mode'] = RequestType.DELETE

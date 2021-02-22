@@ -3,9 +3,9 @@ from datetime import datetime
 
 import pytest
 
-from jina import __uptime__
-from jina.logging import JinaLogger
+from jina import __uptime__, Flow, Document
 from jina.enums import LogVerbosity
+from jina.logging import JinaLogger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -89,3 +89,22 @@ def test_logging_fluentd(monkeypatch, log_config):
         logger.info('logging progress')
 
 
+def test_logging_quiet(caplog):
+    # no way to capture logs in multiprocessing
+    # see discussion here: https://github.com/pytest-dev/pytest/issues/3037#issuecomment-745050393
+
+    f = Flow().add().add()
+    with f:
+        f.index(Document())
+
+    f = Flow().add(quiet=True).add()
+    with f:
+        f.index(Document())
+
+    f = Flow().add(quiet=True).add(quiet=True)
+    with f:
+        f.index(Document())
+
+    f = Flow(quiet=True).add().add()
+    with f:
+        f.index(Document())

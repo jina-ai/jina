@@ -6,7 +6,7 @@ with:
 metas:
   name: sentencizer
   py_modules:
-    - custom_executor.py
+    - custom.py
 requests:
   on:
     [SearchRequest, IndexRequest]:

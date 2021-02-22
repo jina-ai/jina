@@ -305,7 +305,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return d
 
 
-class RecursiveMixin(BaseDriver):
+class RecursiveMixin:
     """A mixin to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseRecursiveDriver`"""
 
     @property

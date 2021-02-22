@@ -184,15 +184,15 @@ class ZEDRuntime(ZMQRuntime):
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
                 self.logger.error(f'{ex!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                                  f'\n add "--quiet-error" to suppress the exception details'
+                                  if not self.args.quiet_error else '',
+                                  exc_info=not self.args.quiet_error)
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
                 self.logger.error(f'{ex!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                                  f'\n add "--quiet-error" to suppress the exception details'
+                                  if not self.args.quiet_error else '',
+                                  exc_info=not self.args.quiet_error)
 
             self._zmqlet.send_message(msg)
 

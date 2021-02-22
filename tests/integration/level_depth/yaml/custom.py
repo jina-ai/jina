@@ -2,6 +2,7 @@ import re
 import string
 from typing import Dict, List
 
+from jina.executors.rankers import Chunk2DocRanker
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -35,3 +36,8 @@ class DummySentencizer(BaseSegmenter):
                     text=f
                 ))
         return results
+
+class MockMinRanker(Chunk2DocRanker):
+
+    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())

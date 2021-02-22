@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import numpy as np
 
@@ -13,8 +13,22 @@ if False:
 class BaseRankDriver(RecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`rank` by default """
 
-    def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
+    def __init__(self, executor: Optional[str] = None, method: str = 'score', *args, **kwargs):
         super().__init__(executor, method, *args, **kwargs)
+
+    @property
+    def _exec_match_keys(self):
+        """Property to provide backward compatibility to executors relying in `required_keys`"""
+        return self.exec.match_required_keys if hasattr(self.exec, 'match_required_keys') else getattr(self.exec,
+                                                                                                       'required_keys',
+                                                                                                       None)
+
+    @property
+    def _exec_query_keys(self):
+        """Property to provide backward compatibility to executors relying in `required_keys`"""
+        return self.exec.query_required_keys if hasattr(self.exec, 'query_required_keys') else getattr(self.exec,
+                                                                                                       'required_keys',
+                                                                                                       None)
 
 
 class Matches2DocRankDriver(BaseRankDriver):
@@ -48,9 +62,10 @@ class Matches2DocRankDriver(BaseRankDriver):
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
 
-        query_meta = context_doc.get_attrs(*self.exec.required_keys)
+        query_meta = context_doc.get_attrs(*self._exec_query_keys) if self._exec_query_keys else None
         old_match_scores = {match.id: match.score.value for match in docs}
-        match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs}
+        match_meta = {match.id: match.get_attrs(*self._exec_match_keys) for match in
+                      docs} if self._exec_match_keys else None
 
         # if there are no matches, no need to sort them
         if not old_match_scores:

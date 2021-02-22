@@ -9,7 +9,7 @@ on:
 
 jobs:
   commit-lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - name: find the prev warning if exist
         uses: peter-evans/find-comment@v1
@@ -54,7 +54,7 @@ jobs:
 
   lint-flake-8:
     needs: commit-lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
@@ -70,7 +70,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
   prep-testbed:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - id: set-matrix
@@ -82,7 +82,7 @@ jobs:
 
   docker-image-test:
     needs: commit-lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - run: |
@@ -95,7 +95,7 @@ jobs:
 
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
@@ -119,6 +119,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
+        id: test
         run: |
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
@@ -126,7 +127,20 @@ jobs:
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             docker rm -f jinad
           else
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            SUB='daemon'
+            if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            else
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            fi
+          fi
+          SUB='daemon'
+          if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
+            echo "flag it as daemon for codeoverage"
+            echo "::set-output name=codecov_flag::daemon"
+          else
+            echo "flag it as jina for codeoverage"
+            echo "::set-output name=codecov_flag::jina"
           fi
         timeout-minutes: 15
         env:
@@ -144,11 +158,20 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
     needs: [core-test, docker-image-test]
-    runs-on: ubuntu-latest
+    if: always()
+    runs-on: ubuntu-18.04
     steps:
-      - run: echo "All Done"
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
+      - name: Success
+        if: ${{ success() }}
+        run: echo "All Done"
+

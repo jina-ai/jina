@@ -15,22 +15,27 @@ class BaseEvaluator(BaseExecutor):
     metric = ''  #: Get the name of the evaluation metric
 
     def post_init(self):
+        """Initialize running stats."""
         super().post_init()
         self._running_stats = RunningStats()
 
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
+        """Evaluates difference between param:`actual` and `param:desired`, needs to be implemented in subclass."""
         raise NotImplementedError
 
     @property
     def mean(self) -> float:
+        """Get the running mean."""
         return self._running_stats.mean
 
     @property
     def std(self) -> float:
+        """Get the running standard variance."""
         return self._running_stats.std
 
     @property
     def variance(self) -> float:
+        """Get the running variance."""
         return self._running_stats.variance
 
 

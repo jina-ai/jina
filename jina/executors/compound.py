@@ -266,6 +266,14 @@ class CompoundExecutor(BaseExecutor):
 
     @staticmethod
     def get_component_workspace_from_compound_workspace(compound_workspace: str, compound_name: str, pea_id: int) -> str:
+        """
+        Get the name of workspace.
+
+        :param compound_workspace: Workspace of the compound executor.
+        :param compound_name: Name of the compound executor.
+        :param pea_id: Id of the pea.
+        :return: The name of workspace.
+        """
         import os
         return BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id) if pea_id > 0 else \
             os.path.join(compound_workspace, compound_name)
