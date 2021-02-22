@@ -85,6 +85,7 @@ jobs:
           prNumber: ${{github.event.number}}
       - name: docstring check with darlint
         run: |
+          echo '${{ steps.file_changes.outputs.files}}'
           pip install darglint
           pip install pydocstyle
           for changed_file in ${{ steps.file_changes.outputs.files}}; do
