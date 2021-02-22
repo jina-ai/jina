@@ -89,6 +89,7 @@ jobs:
           pip install darglint
           pip install pydocstyle
           for changed_file in ${{ steps.file_changes.outputs.files }}; do
+            echo '${changed_file}'
             darglint -v 2 -s sphinx ${changed_file}
             pydocstyle --select=D101,D102,D103 ${changed_file}
           done
