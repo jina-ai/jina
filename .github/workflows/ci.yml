@@ -81,11 +81,12 @@ jobs:
           python-version: 3.7
       - id: file_changes
         uses: jitterbit/get-changed-files@v1
-      - name: docstring check with darlint
+      - name: docstring check with darglint and pydocstyle
         run: |
           pip install darglint
           pip install pydocstyle
           for changed_file in ${{ steps.file_changes.outputs.all }}; do
+            echo ${changed_file}
             darglint -v 2 -s sphinx ${changed_file}
             pydocstyle --select=D101,D102,D103 ${changed_file}
           done
