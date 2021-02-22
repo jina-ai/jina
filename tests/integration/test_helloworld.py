@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from jina.clients.sugary_io import _input_ndarray
 from jina.flow import Flow
-from jina.helloworld import download_data
+from jina.helloworld.helper import download_data
 from jina.helper import random_port
 from jina.parsers.helloworld import set_hw_parser, set_hw_chatbot_parser, set_hw_multimodal_parser
 from pkg_resources import resource_filename
