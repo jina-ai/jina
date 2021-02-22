@@ -85,16 +85,18 @@ def test_ranking_evaluate_extract_multiple_fields(simple_rank_evaluate_driver,
                                                   ground_truth_pairs,
                                                   mocker):
 
-    def _eval_fn(actual, desired):
+    m = mocker.Mock()
+    m.return_value = 1.0
+
+    def eval_function(actual, desired):
         assert isinstance(actual[0], Tuple)
         assert isinstance(desired[0], Tuple)
         return 1.0
 
-    m = mocker.Mock()
     simple_rank_evaluate_driver._exec_fn = m
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
 
-    validate_callback(m, _eval_fn)
+    validate_callback(m, eval_function)
 
 
 @pytest.mark.parametrize('fields', [('tags__id',), ('score__value',)])
