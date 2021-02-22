@@ -9,7 +9,8 @@ def validate(x):
     raise NotImplementedError
 
 
-@pytest.mark.parametrize('restful', [True, False])
+@pytest.mark.skip(reason='something wrong with parametrize in the following, setting either False or True work, but combining them does not. see discussion in https://jinaai.slack.com/archives/C018F60RBL5/p1613984424012700?thread_ts=1613954151.005100&cid=C018F60RBL5')
+@pytest.mark.parametrize('restful', [False, True])
 def test_client_on_error(restful):
     # In this particular test, when you write two tests in a row, you are testing the following case:
     #
