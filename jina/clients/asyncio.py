@@ -1,7 +1,7 @@
 """Module wrapping AsyncIO ops for clients."""
 from typing import Iterable
 
-from .base import InputFnType, BaseClient, CallbackFnType
+from .base import InputFnType, BaseClient, CallbackFnType, InputFnDeleteType
 from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
@@ -110,7 +110,7 @@ class AsyncClient(BaseClient):
             yield r
 
     @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def delete(self, input_fn: Iterable[str],
+    async def delete(self, input_fn: InputFnDeleteType,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
                      on_always: CallbackFnType = None,

@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 
 import argparse
 import os
-from typing import Callable, Union, Optional, Iterator, List, Dict, AsyncIterator
+from typing import Callable, Union, Optional, Iterator, List, Dict, AsyncIterator, Iterable
 
 import grpc
 import inspect
@@ -19,6 +19,7 @@ from ..proto import jina_pb2_grpc
 from ..types.request import Request
 
 InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
+InputFnDeleteType = Union[str, Iterable[str], Callable[..., Iterable[str]]]
 CallbackFnType = Optional[Callable[..., None]]
 
 
