@@ -30,12 +30,6 @@ def gateway(args: 'Namespace'):
     pod(args)
 
 
-def log(args: 'Namespace'):
-    """Receive piped log output and beautify the log"""
-    from jina.logging.pipe import PipeLogger
-    PipeLogger(args).start()
-
-
 def check(args: 'Namespace'):
     """Check jina config, settings, imports, network etc"""
     from jina.checker import ImportChecker
