@@ -25,7 +25,7 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 
 🧠 **First-Class AI Models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
 
-🌩️ **Fast & Cloud Ready** - Decentralized architecture from day one. Scalabe & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
+🌩️ **Fast & Cloud Ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ❤️  **Made with Love** - Never compromise on quality, actively maintained by a [passionate full-time, venture-backed team](https://jina.ai).
 
@@ -96,7 +96,7 @@ pip install "jina[chatbot]"
 jina hello chatbot
 ```
 
-This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
+This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a web page where you can input questions and ask Jina.
 
 <br><br>
 
@@ -113,7 +113,7 @@ pip install "jina[multimodal]"
 jina hello multimodal
 ```
 
-This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a webpage where you can query multimodal document. We have prepared [a Youtube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
+This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a web page where you can query multimodal document. We have prepared [a YouTube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
 
 
 <br><br><br>
@@ -293,14 +293,14 @@ document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
 
 ##### Fusion Embeddings from Different Modalities
 
-To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
+To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unique `encode` interface.
 
 ```python
 def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
     ...
 ```
 
-`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the endoder as the first argument, and `text` as the second.
+`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the encoder as the first argument, and `text` as the second.
 
 ```yaml
 !MyMultimodalEncoder
