@@ -73,27 +73,22 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
           python-version: 3.7
       - id: file_changes
-        uses: trilom/file-changes-action@v1.2.3
-        with:
-          pushBefore: ${{github.event.pull_request.base.sha}}
-          pushAfter: ${{github.event.pull_request.head.sha}}
-          prNumber: ${{github.event.number}}
+        uses: jitterbit/get-changed-files@v1
       - name: docstring check with darlint
         run: |
-          echo '${{ steps.file_changes.outputs.files}}'
           pip install darglint
           pip install pydocstyle
-          for changed_file in ${{ steps.file_changes.outputs.files }}; do
-            echo ${changed_file}
+          for changed_file in ${{ steps.file_changes.outputs.all }}; do
             darglint -v 2 -s sphinx ${changed_file}
             pydocstyle --select=D101,D102,D103 ${changed_file}
           done
-
 
   prep-testbed:
     runs-on: ubuntu-18.04
