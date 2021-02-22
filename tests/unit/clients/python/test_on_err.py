@@ -9,7 +9,7 @@ def validate(x):
     raise NotImplementedError
 
 
-@pytest.mark.parametrize('restful', [False, True])
+@pytest.mark.parametrize('restful', [True, False])
 def test_client_on_error(restful):
     # In this particular test, when you write two tests in a row, you are testing the following case:
     #
