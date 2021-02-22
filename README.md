@@ -25,7 +25,7 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 
 🧠 **First-Class AI Models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
 
-🌩️ **Fast & Cloud Ready** - Decentralized architecture from day one. Scalabe & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
+🌩️ **Fast & Cloud Ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ❤️  **Made with Love** - Never compromise on quality, actively maintained by a [passionate full-time, venture-backed team](https://jina.ai).
 
@@ -89,14 +89,14 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
 </a>
 
-For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that, 
+For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that:
 ```bash
 pip install "jina[chatbot]"
 
 jina hello chatbot
 ```
 
-This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a webpage where you can input questions and ask Jina.
+This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tells Jina to index 418 question-answer pairs with DistilBERT. The index process takes about 1 minute on CPU. Then it opens a web page where you can input questions and ask Jina.
 
 <br><br>
 
@@ -106,14 +106,14 @@ This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tell
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-multimodal.gif?raw=true" />
 </a>
 
-A multimodal-document contains multiple data types, e.g. a PDF document often contains figure and text. Jina enables one to build a multimodal search solution in just minutes. To run our minimum multimodal document search demo,
+A multimodal-document contains multiple data types, e.g. a PDF document often contains figures and text. Jina lets you build a multimodal search solution in just minutes. To run our minimum multimodal document search demo:
 ```bash
 pip install "jina[multimodal]"
 
 jina hello multimodal
 ```
 
-This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a webpage where you can query multimodal document. We have prepared [a Youtube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
+This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2,000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a web page where you can query multimodal documents. We have prepared [a YouTube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
 
 
 <br><br><br>
@@ -126,7 +126,7 @@ This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/imag
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
-### 🥚 Fundamental
+### 🥚 Fundamentals
 
 #### CRUD Functions
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -148,7 +148,7 @@ from jina import Flow
 f = Flow().add(uses='_index')
 ```
 
-`Document` and `Flow` are basic concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured storage that one can use out of the box.
+`Document` and `Flow` are basic concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured storage that you can use out of the box.
 
 <table>
   <tr>
@@ -220,7 +220,7 @@ with f:
 #### Document
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. To construct a Document, one can use:
+`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and be accompanied by rich meta information. To construct a Document, you can use:
 
 ```python
 import numpy
@@ -230,7 +230,7 @@ doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text doc
 doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
 ```
 
-Document can be recurred both vertically and horizontally to have nested documents and matched documents. To better see the recursive structure of a document, one can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
+A Document can be recursed both vertically and horizontally to have nested Documents and matched Documents. To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
 
 <table>
   <tr>
@@ -267,7 +267,7 @@ d0.plot()  # simply `d0` on JupyterLab
 
 A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
 
-Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content in a `dict`:
+Jina provides multiple ways to build a multimodal Document. For example, you can provide the modality names and the content in a `dict`:
 
 ```python
 from jina import MultimodalDocument
@@ -293,14 +293,14 @@ document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
 
 ##### Fusion Embeddings from Different Modalities
 
-To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unqiue `encode` interface.
+To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unique `encode` interface.
 
 ```python
 def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
     ...
 ```
 
-`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the endoder as the first argument, and `text` as the second.
+`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the encoder as the first argument, and `text` as the second.
 
 ```yaml
 !MyMultimodalEncoder
@@ -326,7 +326,7 @@ from jina import Flow
 f = Flow().add()
 ```
 
-This creates a simple Flow with one [Pod](https://101.jina.ai). You can chain multiple `.add()`s in a single Flow.
+This creates a simple Flow with one [Pod](https://101.jina.ai/#pod). You can chain multiple `.add()`s in a single Flow.
 
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-visualize-a-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
@@ -336,7 +336,7 @@ To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are u
 
 `Gateway` is the entrypoint of the Flow.
 
-Get the vibe? Now we are talking! Let's learn more about the basic concepts and features in Jina.
+Get the vibe? Now we're talking! Let's learn more about the basic concepts and features of Jina:
 
 ---
 
@@ -352,7 +352,7 @@ Get the vibe? Now we are talking! Let's learn more about the basic concepts and 
 #### Feed Data
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-feed-data.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty document and index it:
+To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty Documents and index them:
 
 ```python
 from jina import Document
@@ -361,7 +361,7 @@ with Flow().add() as f:
     f.index((Document() for _ in range(10)))
 ```
 
-Flow supports CRUD operations: `index`, `search`, `update`, `delete`. Besides, it also provides sugary syntax on `ndarray`, `csv`, `ndjson` and arbitrary files.
+Flow supports CRUD operations: `index`, `search`, `update`, `delete`. In addition, it also provides sugary syntax on `ndarray`, `csv`, `ndjson` and arbitrary files.
 
 
 <table>
@@ -370,7 +370,7 @@ Flow supports CRUD operations: `index`, `search`, `update`, `delete`. Besides, i
     Input
     </td>
     <td>
-     Example on <code>index</code>/<code>search</code>
+     Example of <code>index</code>/<code>search</code>
     </td>
 <td>
 Explain
@@ -392,7 +392,7 @@ with f:
   </td>
 <td>
 
-Input four `Document`, each `document.blob` is a `ndarray([2])`
+Input four `Document`s, each `document.blob` is an `ndarray([2])`
 
 </td>
 </tr>
@@ -413,7 +413,7 @@ with f, open('index.csv') as fp:
 
 <td>
 
-Each line in the `index.csv` is constructed as `Document`, CSV's field `pic_url` is mapped to `document.uri`.
+Each line in `index.csv` is constructed as a `Document`, CSV field `pic_url` mapped to `document.uri`.
 
 </td>
 </tr>
@@ -434,13 +434,13 @@ with f, open('index.ndjson') as fp:
   </td>
 <td>
 
-Each line in `index.ndjson` is constructed as `Document`, JSON's field `question_id` is mapped to `document.id`.
+Each line in `index.ndjson` is constructed as a `Document`, JSON field `question_id` mapped to `document.id`.
 
 </td>
 </tr>
 <tr>
     <td>
-    Files with wildcard
+    Files with wildcards
     </td>
     <td>
       <sup>
@@ -454,7 +454,7 @@ with f:
   </td>
 <td>
 
-Each file captured is constructed as a `Document`, whose content (`text`, `blob`, `buffer`) is auto-guessed & filled.
+Each file captured is constructed as a `Document`, and Document content (`text`, `blob`, `buffer`) is auto-guessed & filled.
 
 </td>
 </tr>
@@ -464,7 +464,7 @@ Each file captured is constructed as a `Document`, whose content (`text`, `blob`
 #### Fetch Result
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-fetch-result.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Once a request is done, callback functions are fired. Jina Flow implements Promise-like interface, you can add callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes the message then prints the result when successful. If something wrong, it beeps. Finally, the result is written to `output.txt`.
+Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface: You can add callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written to `output.txt`.
 
 ```python
 def beep(*args):
@@ -492,7 +492,7 @@ f = (Flow().add(uses='MyBertEncoder')  # class name of a Jina Executor
            .add(uses={'__cls': 'MyBertEncoder', 'with': {'param': 1.23}}))  # dict config object with __cls keyword
 ```
 
-The power of Jina lies in its decentralized architecture: each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
+The power of Jina lies in its decentralized architecture: Each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
 
 #### Inter & Intra Parallelism
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -522,7 +522,7 @@ f = (Flow().add(name='p1', needs='gateway')
 #### Decentralized Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=decentralized-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-A Flow does not have to be local-only, one can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod` is put to a remote machine for parallelization, whereas other pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
+A Flow does not have to be local-only: You can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod`, is put to a remote machine for parallelization, whereas other Pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
 
 <table>
     <tr>
@@ -576,9 +576,9 @@ with Flow().add().add(host='cloud.jina.ai:8000') as f:
 #### Asynchronous Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-Synchronous from outside, Jina runs asynchronously underneath: it manages the eventloop(s) for scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` comes to use.
+While synchronous from outside, Jina runs asynchronously under the hood: it manages the eventloop(s) for scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
 
-Unlike `Flow`, the CRUD of `AsyncFlow` accepts input & output functions as [async generator](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other asynchronous libraries (e.g. motor for MongoDB):
+Unlike `Flow`, the CRUD of `AsyncFlow` accepts input and output functions as [async generators](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other asynchronous libraries (e.g. motor for MongoDB):
 
 ```python
 from jina import AsyncFlow
@@ -593,7 +593,7 @@ with AsyncFlow().add() as f:
         print(resp)
 ```
 
-`AsyncFlow` is particular useful when Jina is using as part of the integration, where another heavy-lifting job is running concurrently:
+`AsyncFlow` is particularly useful when Jina is using as part of integration, where another heavy-lifting job is running concurrently:
 
 ```python
 async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
@@ -613,9 +613,9 @@ if __name__ == '__main__':
     asyncio.run(concurrent_main())
 ```
 
-`AsyncFlow` is very useful when using Jina inside the Jupyter Notebook. As Jupyter/ipython already manages an eventloop and thanks to [`autoawait`](https://ipython.readthedocs.io/en/stable/interactive/autoawait.html), `AsyncFlow` can run out-of-the-box in Jupyter.
+`AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. As Jupyter/ipython already manages an eventloop and thanks to [`autoawait`](https://ipython.readthedocs.io/en/stable/interactive/autoawait.html), `AsyncFlow` can run out-of-the-box in Jupyter.
 
-That's all you need to know for understanding the magic behind `hello-world`. Now let's dive into it!
+That's all you need to know for understanding the magic behind `hello-world`. Now let's dive deeper into it!
 
 ---
 
@@ -879,7 +879,7 @@ Example code to build your own projects
     </td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Search Tumblr GIFs with KerasEncoder</a></h4>
-      Use prefetching and sharding to improve the performance of your index and query flow when searching animated GIFs.
+      Use prefetching and sharding to improve the performance of your index and query Flow when searching animated GIFs.
     </td>
   </tr>
 </table>
@@ -894,32 +894,10 @@ Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/jina-docs.png?raw=true " />
 </a>
 
-Apart from the learning resources we provided above, We highly recommended you go through our [**documentation**](https://docs.jina.ai) to master Jina.
+Apart from the learning resources above, We highly recommended you go through our [**documentation**](https://docs.jina.ai) to master Jina.
 
 
 Our docs are built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
-
-<!--
-
-#### The Basics
-
-- [Use Flow API to Compose Your Search Workflow](https://docs.jina.ai/chapters/flow/index.html)
-- [Input and Output Functions in Jina](https://docs.jina.ai/chapters/io/index.html)
-- [Use Dashboard to Get Insight of Jina Workflow](https://github.com/jina-ai/dashboard)
-- [Distribute Your Workflow Remotely](https://docs.jina.ai/chapters/remote/index.html)
-- [Run Jina Pods via Docker Container](https://docs.jina.ai/chapters/hub/index.html)
-
-#### Reference
-
-- [Command line interface arguments](https://docs.jina.ai/chapters/cli/index.html)
-- [Python API interface](https://docs.jina.ai/api/jina.html)
-- [YAML syntax for Executor, Driver and Flow](https://docs.jina.ai/chapters/yaml/yaml.html)
-- [Protobuf schema](https://docs.jina.ai/chapters/proto/index.html)
-- [Environment variables](https://docs.jina.ai/chapters/envs.html)
-- ... [and more](https://docs.jina.ai/index.html)
-
--->
-
 
 Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
 
