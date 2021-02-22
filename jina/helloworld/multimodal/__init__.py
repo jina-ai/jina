@@ -19,32 +19,36 @@ def hello_world(args):
         assert [torch, transformers]  #: prevent pycharm auto remove the above line
 
     targets = {
-        'covid-csv': {
+        'people-img': {
             'url': args.index_data_url,
-            'filename': os.path.join(args.workdir, 'dataset.csv')
+            'filename': os.path.join(args.workdir, 'dataset.zip')
         }
     }
 
     # download the data
-    download_data(targets, args.download_proxy, task_name='download csv data')
+    download_data(targets, args.download_proxy, task_name='download zip data')
+    import zipfile
+    with zipfile.ZipFile(targets['people-img']['filename'], 'r') as fp:
+        fp.extractall(args.workdir)
 
     # this envs are referred in index and query flow YAMLs
     os.environ['HW_WORKDIR'] = args.workdir
+    os.environ['PATH'] += os.pathsep + os.path.join(resource_filename('jina', 'resources'), 'multimodal')
 
     # now comes the real work
     # load index flow from a YAML file
 
-    f = (Flow()
-         .add(uses='TransformerTorchEncoder', parallel=args.parallel)
-         .add(uses=f'{resource_filename("jina", "resources")}/helloworld.indexer.yml'))
-
     # index it!
-    with f, open(targets['covid-csv']['filename']) as fp:
-        f.index_csv(fp, field_resolver={'question': 'text',
-                                        'url': 'uri'})
+    f = Flow.load_config('flow-index.yml')
+    with f, open(f'{args.workdir}/people-img/meta.csv') as fp:
+        f.index_csv(fp)
 
+    # search it!
+
+    f = Flow.load_config('flow-query.yml')
     # switch to REST gateway
     f.use_rest_gateway(args.port_expose)
+
     with f:
         try:
             webbrowser.open(args.demo_url, new=2)

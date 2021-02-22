@@ -124,6 +124,7 @@ class JinaLogger:
                  log_config: Optional[str] = None,
                  identity: Optional[str] = None,
                  workspace_path: Optional[str] = None,
+                 quiet: bool = False,
                  **kwargs):
         """
         Build a logger for a context.
@@ -140,6 +141,11 @@ class JinaLogger:
             log_config = os.getenv('JINA_LOG_CONFIG',
                                    resource_filename('jina', '/'.join(
                                        ('resources', 'logging.default.yml'))))
+
+        if quiet or os.getenv('JINA_LOG_CONFIG', None) == 'QUIET':
+            log_config = resource_filename('jina', '/'.join(
+                ('resources', 'logging.quiet.yml')))
+
         if not identity:
             identity = os.getenv('JINA_LOG_ID', None)
 

@@ -1,0 +1,9 @@
+!TransformerTorchEncoder
+requests:
+  uses_default: true
+  on:
+    [SearchRequest, IndexRequest]:
+      with:
+        traversal_paths: ['c']
+      drivers:
+        - !EncodeDriver {}

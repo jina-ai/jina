@@ -119,7 +119,6 @@ def get_main_parser():
     from .export_api import set_export_api_parser
     from .flow import set_flow_parser
     from .hub import set_hub_parser
-    from .logger import set_logger_parser
     from .ping import set_ping_parser
     from .optimizer import set_optimizer_parser
 
@@ -175,12 +174,6 @@ def get_main_parser():
                                              'You should rarely use this directly unless you '
                                              'are doing low-level orchestration',
                                  formatter_class=_chf, **(dict(help='start a pea')) if _SHOW_ALL_ARGS else {}))
-
-    set_logger_parser(sp.add_parser('log',
-                                    description='Receive piped log output and beautify the log. '
-                                                'Depreciated, use Jina Dashboard instead',
-                                    formatter_class=_chf,
-                                    **(dict(help='beautify the log')) if _SHOW_ALL_ARGS else {}))
 
     set_client_cli_parser(sp.add_parser('client',
                                         description='Start a Python client that connects to a remote Jina gateway',

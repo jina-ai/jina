@@ -30,12 +30,6 @@ def gateway(args: 'Namespace'):
     pod(args)
 
 
-def log(args: 'Namespace'):
-    """Receive piped log output and beautify the log"""
-    from jina.logging.pipe import PipeLogger
-    PipeLogger(args).start()
-
-
 def check(args: 'Namespace'):
     """Check jina config, settings, imports, network etc"""
     from jina.checker import ImportChecker
@@ -81,12 +75,14 @@ def hello_world(args: 'Namespace'):
 
 
 def hello(args: 'Namespace'):
-    if args.hello == 'mnist':
+    if args.hello == 'fashion':
         from jina.helloworld import hello_world
     elif args.hello == 'chatbot':
         from jina.helloworld.chatbot import hello_world
+    elif args.hello == 'multimodal':
+        from jina.helloworld.multimodal import hello_world
     else:
-        raise ValueError(f'{args.hello} must be one of [`mnist`, `chatbot`]')
+        raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`]')
 
     hello_world(args)
 

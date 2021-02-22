@@ -19,23 +19,30 @@ The name of this object.
 
 This will be used in the following places:
 - how you refer to this object in Python/YAML/CLI
-- log message
+- visualization
+- log message header
+- automatics docs UI
 - ...
 
-When not given, then the default naming strategy will apply.
+When not given, then the default naming strategy will apply. 
                     ''')
+
+    gp.add_argument('--description', type=str,
+                    help='The description of this object. It will be used in automatics docs UI.')
 
     gp.add_argument('--log-config', type=str,
                     default=resource_filename('jina',
                                               '/'.join(('resources', 'logging.default.yml'))),
                     help='The YAML config of the logger used in this object.')
 
+    gp.add_argument('--quiet', action='store_true', default=False,
+                    help='If set, then no log will be emitted from this object.')
+
+    gp.add_argument('--quiet-error', action='store_true', default=False,
+                    help='If set, then exception stack information will not be added to the log')
+
     # hidden CLI used for internal only
 
     gp.add_argument('--identity', type=str, default=random_identity(),
-                    help='A UUID string to represent the identity of this object'
+                    help='A UUID string to represent the logger identity of this object'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
-
-    gp.add_argument('--hide-exc-info', action='store_true', default=False,
-                    help='If set, then exception stack information to be added to the logging message, '
-                         'useful in debugging')
