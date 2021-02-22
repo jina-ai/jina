@@ -30,10 +30,13 @@ When not given, then the default naming strategy will apply.
                                               '/'.join(('resources', 'logging.default.yml'))),
                     help='The YAML config of the logger used in this object.')
 
+    gp.add_argument('--quiet', action='store_true', default=False,
+                    help='If set, then no log will be emitted from this object.')
+
     # hidden CLI used for internal only
 
     gp.add_argument('--identity', type=str, default=random_identity(),
-                    help='A UUID string to represent the identity of this object'
+                    help='A UUID string to represent the logger identity of this object'
                     if _SHOW_ALL_ARGS else argparse.SUPPRESS)
 
     gp.add_argument('--hide-exc-info', action='store_true', default=False,

@@ -38,6 +38,8 @@ class BasePea(metaclass=PeaType):
 
         self._envs = {'JINA_POD_NAME': self.name,
                       'JINA_LOG_ID': self.args.identity}
+        if self.args.quiet:
+            self._envs['JINA_LOG_CONFIG'] = 'QUIET'
         if self.args.env:
             self._envs.update(self.args.env)
 
