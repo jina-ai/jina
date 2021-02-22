@@ -7,6 +7,8 @@ from jina.executors.evaluators.rank.precision import PrecisionEvaluator
 from jina.proto import jina_pb2
 from jina.types.document.helper import DocGroundtruthPair
 
+from tests import validate_callback
+
 
 class SimpleRankEvaluateDriver(RankEvaluateDriver):
 
@@ -82,17 +84,17 @@ def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
 def test_ranking_evaluate_extract_multiple_fields(simple_rank_evaluate_driver,
                                                   ground_truth_pairs,
                                                   mocker):
-    m = mocker.Mock()
 
     def _eval_fn(actual, desired):
-        m()
         assert isinstance(actual[0], Tuple)
         assert isinstance(desired[0], Tuple)
         return 1.0
 
-    simple_rank_evaluate_driver._exec_fn = _eval_fn
+    m = mocker.Mock()
+    simple_rank_evaluate_driver._exec_fn = m
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
-    m.assert_called()
+
+    validate_callback(m, _eval_fn)
 
 
 @pytest.mark.parametrize('fields', [('tags__id',), ('score__value',)])

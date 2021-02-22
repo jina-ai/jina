@@ -5,6 +5,8 @@ import pytest
 from jina.flow import Flow
 from jina import Document
 
+from tests import validate_callback
+
 
 @pytest.fixture
 def index_groundtruth():
@@ -75,10 +77,7 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
     with Flow.load_config(index_yaml) as index_gt_flow:
         index_gt_flow.index(input_fn=index_groundtruth, request_size=10)
 
-    m = mocker.Mock()
-
     def validate_evaluation_response(resp):
-        m()
         assert len(resp.docs) == 97
         assert len(resp.groundtruths) == 97
         for doc in resp.docs:
@@ -88,10 +87,12 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
         for gt in resp.groundtruths:
             assert gt.tags['groundtruth']
 
+    m = mocker.Mock()
     with Flow.load_config(search_yaml) as evaluate_flow:
         evaluate_flow.search(
             input_fn=evaluate_docs,
-            on_done=validate_evaluation_response
+            on_done=m
         )
 
     m.assert_called_once()
+    validate_callback(m, validate_evaluation_response)
