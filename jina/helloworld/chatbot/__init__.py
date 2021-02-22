@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pkg_resources import resource_filename
 
-from .. import download_data
+from ..helper import download_data
 from ... import Flow
 from ...importer import ImportExtensions
 from ...logging import default_logger
