@@ -89,7 +89,7 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
 </a>
 
-For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that, 
+For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that:
 ```bash
 pip install "jina[chatbot]"
 
@@ -106,14 +106,14 @@ This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tell
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-multimodal.gif?raw=true" />
 </a>
 
-A multimodal-document contains multiple data types, e.g. a PDF document often contains figure and text. Jina enables one to build a multimodal search solution in just minutes. To run our minimum multimodal document search demo,
+A multimodal-document contains multiple data types, e.g. a PDF document often contains figures and text. Jina lets you build a multimodal search solution in just minutes. To run our minimum multimodal document search demo:
 ```bash
 pip install "jina[multimodal]"
 
 jina hello multimodal
 ```
 
-This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a web page where you can query multimodal document. We have prepared [a YouTube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
+This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/images2000) and tells Jina to index 2,000 image-caption pairs with MobileNet and DistilBERT. The index process takes about 3 minute on CPU. Then it opens a web page where you can query multimodal documents. We have prepared [a YouTube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
 
 
 <br><br><br>
@@ -126,7 +126,7 @@ This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/imag
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
-### 🥚 Fundamental
+### 🥚 Fundamentals
 
 #### CRUD Functions
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
@@ -148,7 +148,7 @@ from jina import Flow
 f = Flow().add(uses='_index')
 ```
 
-`Document` and `Flow` are basic concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured storage that one can use out of the box.
+`Document` and `Flow` are basic concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured storage that you can use out of the box.
 
 <table>
   <tr>
@@ -220,7 +220,7 @@ with f:
 #### Document
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and accompanied by rich meta information. To construct a Document, one can use:
+`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and be accompanied by rich meta information. To construct a Document, you can use:
 
 ```python
 import numpy
@@ -230,7 +230,7 @@ doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text doc
 doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
 ```
 
-Document can be recurred both vertically and horizontally to have nested documents and matched documents. To better see the recursive structure of a document, one can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
+A Document can be recursed both vertically and horizontally to have nested Documents and matched Documents. To better see the recursive structure of a Document, you can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
 
 <table>
   <tr>
@@ -267,7 +267,7 @@ d0.plot()  # simply `d0` on JupyterLab
 
 A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
 
-Jina provides multiple ways to build a multimodal Document. For example, one can provide the modality names and the content in a `dict`:
+Jina provides multiple ways to build a multimodal Document. For example, you can provide the modality names and the content in a `dict`:
 
 ```python
 from jina import MultimodalDocument
@@ -522,7 +522,7 @@ f = (Flow().add(name='p1', needs='gateway')
 #### Decentralized Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=decentralized-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
-A Flow does not have to be local-only, one can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod` is put to a remote machine for parallelization, whereas other pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
+A Flow does not have to be local-only, you can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod` is put to a remote machine for parallelization, whereas other pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
 
 <table>
     <tr>
