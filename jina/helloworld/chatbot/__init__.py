@@ -36,7 +36,7 @@ def hello_world(args):
 
     f = (Flow()
          .add(uses='TransformerTorchEncoder', parallel=args.parallel)
-         .add(uses=f'{resource_filename("jina", "resources")}/helloworld.indexer.yml'))
+         .add(uses=f'{resource_filename("jina", "resources")}/chatbot/helloworld.indexer.yml'))
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:

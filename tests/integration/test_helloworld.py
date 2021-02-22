@@ -81,12 +81,12 @@ def test_helloworld_py_multimodal(tmpdir):
 def test_helloworld_flow(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources/fashion')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
 
-    f = Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))))
+    f = Flow.load_config('helloworld.flow.index.yml')
 
     targets = {
         'index': {
@@ -111,17 +111,17 @@ def test_helloworld_flow(tmpdir):
 def test_helloworld_flow_dry_run(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources/fashion')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
 
     # run it!
-    with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml')))):
+    with Flow.load_config('helloworld.flow.index.yml'):
         pass
 
     # run it!
-    with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml')))):
+    with Flow.load_config('helloworld.flow.query.yml'):
         pass
 
 

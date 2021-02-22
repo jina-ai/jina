@@ -76,7 +76,7 @@ def hello_world(args: 'Namespace'):
 
 def hello(args: 'Namespace'):
     if args.hello == 'fashion':
-        from jina.helloworld import hello_world
+        from jina.helloworld.fashion import hello_world
     elif args.hello == 'chatbot':
         from jina.helloworld.chatbot import hello_world
     elif args.hello == 'multimodal':
