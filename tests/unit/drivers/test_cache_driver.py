@@ -31,7 +31,6 @@ class MockCacheDriver(BaseCacheDriver):
 def test_cache_driver_twice(tmpdir, test_metas):
     docs = DocumentSet(list(random_docs(10)))
     driver = MockCacheDriver()
-    # FIXME DocCache doesn't use tmpdir, it saves in curdir
     with DocCache(tmpdir, metas=test_metas) as executor:
         assert not executor.handler_mutex
         driver.attach(executor=executor, runtime=None)
@@ -76,8 +75,8 @@ def test_cache_driver_from_file(tmpdir, test_metas):
     folder = os.path.join(test_metas["workspace"])
     bin_full_path = os.path.join(folder, filename)
     docs = DocumentSet(list(random_docs(10, embedding=False)))
-    pickle.dump({doc.id: doc.content_hash for doc in docs}, open(f'{bin_full_path}.bin.ids', 'wb'))
-    pickle.dump({doc.content_hash: doc.id for doc in docs}, open(f'{bin_full_path}.bin.cache', 'wb'))
+    pickle.dump({doc.id: BaseCacheDriver.hash(doc, ['content_hash']) for doc in docs}, open(f'{bin_full_path}.bin.ids', 'wb'))
+    pickle.dump({BaseCacheDriver.hash(doc, ['content_hash']): doc.id for doc in docs}, open(f'{bin_full_path}.bin.cache', 'wb'))
 
     driver = MockCacheDriver()
     with DocCache(metas=test_metas, fields=(CONTENT_HASH_KEY,)) as executor:
@@ -256,3 +255,14 @@ def test_cache_driver_multiple_fields(test_metas):
         with pytest.raises(AssertionError):
             # TODO(cristian): size should be loaded if there is an existing cache?
             assert executor.size == len(docs1)
+
+
+def test_hash():
+    d1 = Document()
+    d1.tags['a'] = '123'
+    d1.tags['b'] = '456'
+    d2 = Document()
+    d2.tags['a'] = '1'
+    d2.tags['b'] = '23456'
+    assert BaseCacheDriver.hash(d1, ['tags__a', 'tags__b']) == BaseCacheDriver.hash(d1, ['tags__a', 'tags__b'])
+    assert BaseCacheDriver.hash(d1, ['tags__a', 'tags__b']) != BaseCacheDriver.hash(d2, ['tags__a', 'tags__b'])

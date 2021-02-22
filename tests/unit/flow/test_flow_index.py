@@ -3,6 +3,7 @@ import time
 
 import pytest
 
+from jina import Document
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import random_docs
@@ -12,12 +13,14 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def random_queries(num_docs, chunks_per_doc=5):
     for j in range(num_docs):
-        d = jina_pb2.DocumentProto()
+        d = Document()
         d.id = j
         for k in range(chunks_per_doc):
-            dd = d.chunks.add()
+            dd = Document()
             dd.id = num_docs + j * chunks_per_doc + k
+            d.chunks.add(dd)
         yield d
+
 
 
 @pytest.fixture
