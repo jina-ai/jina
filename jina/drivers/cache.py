@@ -1,4 +1,5 @@
 """Module for the Drivers for the Cache."""
+import hashlib
 from typing import Any, Dict, List
 
 from .index import BaseIndexDriver
@@ -34,7 +35,7 @@ class BaseCacheDriver(BaseIndexDriver):
                 else:
                     self.on_miss(d, value)
 
-    def on_miss(self, req_doc: 'Document', value: str) -> None:
+    def on_miss(self, req_doc: 'Document', value: bytes) -> None:
         """Call when document is missing.
 
         The default behavior is to add to cache when miss.
@@ -56,14 +57,19 @@ class BaseCacheDriver(BaseIndexDriver):
         pass
 
     @staticmethod
-    def hash_doc(doc: 'Document', fields: List[str]) -> str:
+    def hash_doc(doc: 'Document', fields: List[str]) -> bytes:
         """Calculate hash by which we cache.
 
         :param doc: the Document
         :param fields: the list of fields
         :return: the hash value of the fields
         """
-        return str(hash(tuple((doc.get_attrs(*fields).values()))))
+        values = doc.get_attrs(*fields).values()
+        data = ''
+        for field, value in zip(fields, values):
+            data += f'{field}:{value};'
+        digest = hashlib.sha256(bytes(data.encode('utf8'))).digest()
+        return digest
 
 
 class TaggingCacheDriver(BaseCacheDriver):

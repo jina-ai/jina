@@ -79,7 +79,7 @@ class DocCache(BaseCache):
         # order shouldn't matter
         self.fields = sorted(fields or self.default_fields)
 
-    def add(self, keys: Iterable[str], values: Iterable[str], *args, **kwargs) -> None:
+    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Add a document to the cache depending.
 
         :param keys: document ids to be added
@@ -102,7 +102,7 @@ class DocCache(BaseCache):
         """
         return key in self.query_handler.cache_val_to_id
 
-    def update(self, keys: Iterable[str], values: Iterable[str], *args, **kwargs) -> None:
+    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
         """Update cached documents.
 
         :param keys: list of Document.id
