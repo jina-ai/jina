@@ -56,7 +56,7 @@ def test_helloworld_execution(tmpdir):
 
 @pytest.mark.timeout(360)
 def test_helloworld_py(tmpdir):
-    from jina.helloworld import hello_world
+    from jina.helloworld.fashion import hello_world
     hello_world(set_hw_parser().parse_args(['--workdir', str(tmpdir)]))
     check_hello_world_results(os.path.join(str(tmpdir), 'hello-world.html'))
 
