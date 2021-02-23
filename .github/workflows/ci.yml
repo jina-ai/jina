@@ -88,13 +88,14 @@ jobs:
           echo ====================================================================================
           echo DOCSTRINGS LINT: checking ${{ steps.file_changes.outputs.all }}
           echo ------------------------------------------------------------------------------------
+          echo 'removing files under /tests...'
           arrVar=()
           # we ignore tests files
           for changed_file in ${{ steps.file_changes.outputs.all }}; do
-            echo ${changed_file}
             if [[ ${changed_file}} != tests/* ]]; then
+              echo keeping ${changed_file}
               arrVar+=(${changed_file})
-            done
+            fi
           done
           # required in order to get the status of all the files at once
           darglint -v 2 -s sphinx "${arrVar[@]}" & pydocstyle --select=D101,D102,D103 "${arrVar[@]}"
