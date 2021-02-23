@@ -46,6 +46,7 @@ def _make_or_event(obj, *events) -> Event:
 
 
 class PeaType(type):
+    """Type of `Pea`, metaclass of `BasePea`."""
     _dct = {}
 
     def __new__(cls, name, bases, dct):

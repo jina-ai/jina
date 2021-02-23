@@ -18,6 +18,7 @@ class SSHRuntime(ZMQManyRuntime):
     """
 
     def setup(self):
+        """Setup the ssh communication to host."""
         self._ssh_proc = Popen(['ssh', self.args.host], stdout=PIPE, stdin=PIPE, bufsize=0, universal_newlines=True)
         self._ssh_proc.stdin.write(self._pea_command + '\n')
         while self._ssh_proc.poll() is None and not self.is_ready:
@@ -28,10 +29,12 @@ class SSHRuntime(ZMQManyRuntime):
             raise Exception('the subprocess fails to start, check the arguments or entrypoint')
 
     def run_forever(self):
+        """Method to block the main thread and print logs."""
         for line in self._ssh_proc.stdout:
             self.logger.info(line.strip())
 
     def teardown(self):
+        """Close the ssh communication."""
         self._ssh_proc.stdin.write('logout\n')
         self._ssh_proc.stdin.close()
         self._ssh_proc.stdout.close()

@@ -10,7 +10,7 @@ from ....helper import cached_property, colored, is_yaml_filepath
 
 
 class JinadRuntime(AsyncZMQRuntime):
-
+    """Runtime procedure for Jinad."""
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]

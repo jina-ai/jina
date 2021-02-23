@@ -16,6 +16,14 @@ from ....logging import JinaLogger
 
 
 class DaemonClient:
+    """
+    Jina Daemon client.
+
+    :param host: the host address of ``jinad`` instance
+    :param port: the port number of ``jinad`` instance
+    :param logger:
+    :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
+    """
     kind = 'pea'  # select from pea/pod, TODO: enum
 
     def __init__(self,
@@ -23,12 +31,6 @@ class DaemonClient:
                  port: int,
                  logger: 'JinaLogger' = None,
                  timeout: int = 5, **kwargs):
-        """
-        :param host: the host address of ``jinad`` instance
-        :param port: the port number of ``jinad`` instance
-        :param logger:
-        :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
-        """
         self.logger = logger or JinaLogger(host)
         self.timeout = timeout
         # for now it is http. but it can be https or unix socket or fd

@@ -11,6 +11,7 @@ __all__ = ['AsyncPrefetchCall']
 
 
 class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
+    """JinaRPCServicer """
 
     def __init__(self, args, zmqlet):
         super().__init__()
@@ -21,12 +22,15 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
         self._id = random_identity()
 
     async def Call(self, request_iterator, context):
+        """Async gRPC call."""
 
         def handle(msg: 'Message') -> 'Request':
+            """Add route into the `message` and return response of the message."""
             msg.add_route(self.name, self._id)
             return msg.response
 
         async def prefetch_req(num_req, fetch_to):
+            """Fetch and send request."""
             for _ in range(num_req):
                 try:
                     if hasattr(request_iterator, '__anext__'):
