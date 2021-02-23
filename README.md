@@ -129,7 +129,7 @@ This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/imag
 ### 🥚 Fundamentals
 
 #### CRUD Functions
-<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With Documents below as an example:
 ```python

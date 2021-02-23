@@ -52,6 +52,7 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
     def teardown(self):
         self._loop.stop()
         self._loop.close()
+        super().teardown()
 
     async def async_setup(self):
         pass
