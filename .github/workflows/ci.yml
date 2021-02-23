@@ -82,31 +82,9 @@ jobs:
       - id: file_changes
         uses: jitterbit/get-changed-files@v1
       - name: docstring check with darglint and pydocstyle
-        run: |
-          pip install darglint==1.6.0
-          pip install pydocstyle==5.1.1
-          echo ====================================================================================
-          echo DOCSTRINGS LINT: checking ${{ steps.file_changes.outputs.all }}
-          echo ------------------------------------------------------------------------------------
-          echo 'removing files under /tests...'
-          arrVar=()
-          # we ignore tests files
-          for changed_file in ${{ steps.file_changes.outputs.all }}; do
-            if [[ ${changed_file}} != tests/* ]]; then
-              echo keeping ${changed_file}
-              arrVar+=(${changed_file})
-            fi
-          done
-          # required in order to get the status of all the files at once
-          darglint -v 2 -s sphinx "${arrVar[@]}"; export DARGLINT_STATUS=$?; pydocstyle --select=D101,D102,D103 "${arrVar[@]}"; export PYDOCSTYLE_STATUS=$?
-          if [[ $DARGLINT_STATUS -eq 0 ]] && [[ $DARGLINT_STATUS -eq 0 ]]; then
-            echo 'failed'
-            exit 0
-          else:
-            echo 'OK'
-            exit 1
-          fi
-          echo ====================================================================================
+        run: ./scripts/docstrings_lint.sh
+        env:
+          CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
 
   prep-testbed:
     runs-on: ubuntu-18.04
