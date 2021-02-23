@@ -115,6 +115,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
+      max-parallel: 6
       matrix:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
