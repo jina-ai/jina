@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from jina.clients.sugary_io import _input_ndarray
 from jina.flow import Flow
-from jina.helloworld import download_data
+from jina.helloworld.helper import download_data
 from jina.helper import random_port
 from jina.parsers.helloworld import set_hw_parser, set_hw_chatbot_parser, set_hw_multimodal_parser
 from pkg_resources import resource_filename
@@ -56,7 +56,7 @@ def test_helloworld_execution(tmpdir):
 
 @pytest.mark.timeout(360)
 def test_helloworld_py(tmpdir):
-    from jina.helloworld import hello_world
+    from jina.helloworld.fashion import hello_world
     hello_world(set_hw_parser().parse_args(['--workdir', str(tmpdir)]))
     check_hello_world_results(os.path.join(str(tmpdir), 'hello-world.html'))
 
@@ -81,12 +81,12 @@ def test_helloworld_py_multimodal(tmpdir):
 def test_helloworld_flow(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources/fashion')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
 
-    f = Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))))
+    f = Flow.load_config('helloworld.flow.index.yml')
 
     targets = {
         'index': {
@@ -111,17 +111,17 @@ def test_helloworld_flow(tmpdir):
 def test_helloworld_flow_dry_run(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources/fashion')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
 
     # run it!
-    with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml')))):
+    with Flow.load_config('helloworld.flow.index.yml'):
         pass
 
     # run it!
-    with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml')))):
+    with Flow.load_config('helloworld.flow.query.yml'):
         pass
 
 

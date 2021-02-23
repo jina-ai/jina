@@ -3,11 +3,12 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow, Document
+from jina import Flow
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.cache import DocCache
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.vector import NumpyIndexer
+from tests import get_documents
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,37 +38,6 @@ def config_env(field, tmp_workspace, shards, indexers, polling):
         os.environ['JINA_MERGER_NEEDS'] = 'kv'
 
 
-np.random.seed(0)
-d_embedding = np.array([1, 1, 1, 1, 1, 1, 1])
-c_embedding = np.array([2, 2, 2, 2, 2, 2, 2])
-
-
-def get_documents(chunks, same_content, nr=10, index_start=0):
-    next_chunk_id = nr + index_start
-    for i in range(index_start, nr + index_start):
-        with Document() as d:
-            d.id = i
-            if same_content:
-                d.text = 'hello world'
-                d.embedding = d_embedding
-            else:
-                d.text = f'hello world {i}'
-                d.embedding = np.random.random(d_embedding.shape)
-            for j in range(chunks):
-                with Document() as c:
-                    c.id = next_chunk_id
-                    if same_content:
-                        c.text = 'hello world from chunk'
-                        c.embedding = c_embedding
-                    else:
-                        c.text = f'hello world from chunk {j}'
-                        c.embedding = np.random.random(d_embedding.shape)
-
-                next_chunk_id += 1
-                d.chunks.append(c)
-        yield d
-
-
 def get_index_flow(field, tmp_path, shards, indexers):
     config_env(field, tmp_path, shards, indexers, polling='any')
     f = Flow.load_config(os.path.join(cur_dir, 'crud_cache_flow_index.yml'))
@@ -87,58 +57,6 @@ def get_delete_flow(field, tmp_path, shards, indexers):
     return f
 
 
-@pytest.mark.parametrize('chunks', [0, 3, 5])
-@pytest.mark.parametrize('same_content', [False, True])
-@pytest.mark.parametrize('nr', [0, 10, 100, 201])
-def test_docs_generator(chunks, same_content, nr):
-    chunk_content = None
-    docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr))
-    assert len(docs) == nr
-    ids_used = set()
-    check_docs(chunk_content, chunks, same_content, docs, ids_used)
-
-    if nr > 0:
-        index_start = 1 + len(list(ids_used))
-    else:
-        index_start = 1
-    new_docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr, index_start=index_start))
-    new_ids = set([d.id for d in new_docs])
-    assert len(new_ids.intersection(ids_used)) == 0
-
-    check_docs(chunk_content, chunks, same_content, new_docs, ids_used, index_start)
-
-
-def check_docs(chunk_content, chunks, same_content, docs, ids_used, index_start=0):
-    for i, d in enumerate(docs):
-        i += index_start
-        id_int = d.id
-        assert id_int not in ids_used
-        ids_used.add(id_int)
-
-        if same_content:
-            assert d.text == 'hello world'
-            np.testing.assert_almost_equal(d.embedding, d_embedding)
-        else:
-            assert d.text == f'hello world {i}'
-            assert d.embedding.shape == d_embedding.shape
-
-        assert len(d.chunks) == chunks
-
-        for j, c in enumerate(d.chunks):
-            id_int = c.id
-            assert id_int not in ids_used
-            ids_used.add(id_int)
-            if same_content:
-                if chunk_content is None:
-                    chunk_content = c.content_hash
-                assert c.content_hash == chunk_content
-                assert c.text == 'hello world from chunk'
-                np.testing.assert_almost_equal(c.embedding, c_embedding)
-            else:
-                assert c.text == f'hello world from chunk {j}'
-                assert c.embedding.shape == c_embedding.shape
-
-
 def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, post_op):
     cache_indexer_path = os.path.join(tmp_path, 'cache.bin')
     with BaseIndexer.load(cache_indexer_path) as cache:
@@ -153,7 +71,7 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
             compound_name = 'inc_docindexer' if KV_IDX_FILENAME in indexer_fname else 'inc_vecindexer'
             workspace_folder = CompoundExecutor.get_component_workspace_from_compound_workspace(tmp_path,
                                                                                                 compound_name,
-                                                                                                i + 1 if shards > 1 else 0 )
+                                                                                                i + 1 if shards > 1 else 0)
             indexer_path = os.path.join(BaseIndexer.get_shard_workspace(workspace_folder=workspace_folder,
                                                                         workspace_name=indexer_fname.rstrip('.bin'),
                                                                         pea_id=i + 1 if shards > 1 else 0),

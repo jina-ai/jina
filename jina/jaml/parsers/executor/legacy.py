@@ -9,6 +9,7 @@ from ....executors.compound import CompoundExecutor
 
 
 class LegacyParser(VersionedYAMLParser):
+    """Legacy parser for executor."""
     version = 'legacy'  # the version number this parser designed for
 
     @staticmethod
