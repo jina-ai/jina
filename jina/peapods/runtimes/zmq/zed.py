@@ -43,6 +43,7 @@ class ZEDRuntime(ZMQRuntime):
     def teardown(self):
         self._zmqlet.close()
         self._executor.close()
+        super().teardown()
 
     #: Private methods required by :meth:`setup`
 
