@@ -21,7 +21,7 @@ class DaemonClient:
 
     :param host: the host address of ``jinad`` instance
     :param port: the port number of ``jinad`` instance
-    :param logger:
+    :param logger: Jinalogger to log information.
     :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
     """
     kind = 'pea'  # select from pea/pod, TODO: enum

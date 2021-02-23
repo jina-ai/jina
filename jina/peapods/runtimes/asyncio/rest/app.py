@@ -24,7 +24,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     :param args: passed arguments.
     :param logger: Jina logger.
-    :return:
     """
     with ImportExtensions(required=True):
         from fastapi import FastAPI, WebSocket, Body

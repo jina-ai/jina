@@ -132,6 +132,7 @@ class ZEDRuntime(ZMQRuntime):
         this message if its envelope's  status is not ERROR, else skip handling of message.
 
         :param msg: the message received
+        :return: ZEDRuntime procedure.
         """
         if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
             # NOTE: reduce priority is higher than chain exception
