@@ -35,6 +35,7 @@ class SSHRuntime(ZMQManyRuntime):
         self._ssh_proc.stdin.write('logout\n')
         self._ssh_proc.stdin.close()
         self._ssh_proc.stdout.close()
+        super().teardown()
 
     @property
     def _pea_command(self) -> str:
