@@ -255,12 +255,13 @@ class JinaLogger:
             elif h == 'FluentHandler':
                 from ..importer import ImportExtensions
                 with ImportExtensions(required=False, verbose=False):
-                    from fluent import asynchandler as fluentasynchandler
+                    from fluent import handler as fluenthandler
                     from fluent.handler import FluentRecordFormatter
 
-                    handler = fluentasynchandler.FluentHandler(cfg['tag'],
-                                                               host=cfg['host'],
-                                                               port=cfg['port'], queue_circular=True)
+                    handler = fluenthandler.FluentHandler(cfg['tag'],
+                                                          host=cfg['host'],
+                                                          port=cfg['port'],
+                                                          queue_circular=True)
 
                     cfg['format'].update(kwargs)
                     fmt = FluentRecordFormatter(cfg['format'])
