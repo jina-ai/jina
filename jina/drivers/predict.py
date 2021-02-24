@@ -1,4 +1,4 @@
-from typing import List, Any, Union
+from typing import List, Any, Union, Tuple
 
 import numpy as np
 
@@ -10,9 +10,15 @@ if False:
 
 
 class BasePredictDriver(FastRecursiveMixin, BaseExecutableDriver):
-    """Drivers inherited from this Driver will bind :meth:`predict` by default """
+    """Drivers inherited from :class:`BasePredictDriver` will bind :meth:`predict` by default
 
-    def __init__(self, executor: str = None, method: str = 'predict', *args, **kwargs):
+    :param fields: name of fields to be used to predict tags, default "embeddings"
+    :param *args: *args for super
+    :param **kwargs: **kwargs for super
+    """
+    
+    def __init__(self, executor: str = None, method: str = 'predict', fields: Union[Tuple, str] = 'embedding', *args, **kwargs):
+        self.fields = fields
         super().__init__(executor, method, *args, **kwargs)
 
 
@@ -34,10 +40,15 @@ class BaseLabelPredictDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts = docs.all_embeddings
+        if self.fields == 'embedding':
+            predict_input, docs_pts = docs.all_embeddings
+        elif self.fields == 'content':
+            predict_input, docs_pts = docs.all_contents
+        else:
+            raise ValueError(f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents')
 
         if docs_pts:
-            prediction = self.exec_fn(embed_vecs)
+            prediction = self.exec_fn(predict_input)
             labels = self.prediction2label(prediction)  # type: List[Union[str, List[str]]]
             for doc, label in zip(docs_pts, labels):
                 doc.tags[self.output_tag] = label
@@ -166,9 +177,14 @@ class Prediction2DocBlobDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        embed_vecs, docs_pts = docs.all_embeddings
+        if self.fields == 'embedding':
+            predict_input, docs_pts = docs.all_embeddings
+        elif self.fields == 'content':
+            predict_input, docs_pts = docs.all_contents
+        else:
+            raise ValueError(f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents')
 
         if docs_pts:
-            prediction = self.exec_fn(embed_vecs)
+            prediction = self.exec_fn(predict_input)
             for doc, pred in zip(docs_pts, prediction):
                 doc.blob = pred
