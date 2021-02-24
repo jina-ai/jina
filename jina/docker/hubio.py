@@ -347,7 +347,8 @@ class HubIO:
                 image, log = self._client.images.build(path=self.args.path,
                                                        tag=self.tag,
                                                        pull=self.args.pull,
-                                                       dockerfile=self.dockerfile_path_revised,
+                                                       dockerfile=_dockerfile_path,
+                                                       labels=_labels,
                                                        rm=True)
 
                 # success
@@ -597,7 +598,6 @@ class HubIO:
 
         self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
-        self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
         self.executor_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}')
         self.tag = self.executor_name + f':{self.manifest["version"]}-{jina_version}'
@@ -649,27 +649,6 @@ class HubIO:
         # show manifest key-values
         for k, v in manifest.items():
             self.logger.debug(f'{k}: {v}')
-
-    def _get_revised_dockerfile(self, dockerfile_path: str, manifest: Dict) -> str:
-        # modify dockerfile
-        revised_dockerfile = []
-        with open(dockerfile_path) as fp:
-            _last_from_ln = None
-            for _ln, l in enumerate(fp):
-                revised_dockerfile.append(l)
-                if l.startswith('FROM'):
-                    _last_from_ln = _ln
-        _label_l = ['LABEL ', ' \\      \n'.join(f'{_label_prefix}{k}="{v}"' for k, v in manifest.items())]
-        _insert_ln = _last_from_ln + 1
-        revised_dockerfile = revised_dockerfile[:_insert_ln] + _label_l + revised_dockerfile[_insert_ln:]
-
-        f = tempfile.NamedTemporaryFile('w', delete=False).name
-        with open(f, 'w', encoding='utf8') as fp:
-            fp.writelines(revised_dockerfile)
-
-        for k in revised_dockerfile:
-            self.logger.debug(k)
-        return f
 
     def _write_slack_message(self, *args):
         def _expand_fn(v):

@@ -88,44 +88,6 @@ def test_jina_version_freeze_no_jina_dependency(requirements, tmpdir):
         assert len(list(filter(lambda x: 'jina' in str(x), requirements))) == 0
 
 
-@pytest.fixture()
-def dockerfile(request, tmpdir):
-    dockerfile_fn = os.path.join(tmpdir, 'Dockerfile')
-    if request.param == 'single_staged':
-        _str = '''
-FROM jinaai/jina
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
-'''
-    elif request.param == 'multi_staged':
-        _str = '''
-FROM jinaai/jina AS base
-COPY . /workspace
-FROM base
-RUN pip install pytest && pytest
-FROM base
-ENTRYPOINT ["jina", "pod", "--uses", "config.yml"]
-'''
-    else:
-        raise NotImplementedError
-    with open(dockerfile_fn, 'w') as fp:
-        fp.write(_str)
-
-
-@pytest.mark.parametrize('dockerfile', ['single_staged', 'multi_staged'], indirect=True)
-def test_get_revised_dockerfile(dockerfile, tmpdir):
-    args = set_hub_build_parser().parse_args([str(tmpdir)])
-    hubio = HubIO(args)
-    manifest_dict = {'version': '0.0.6'}
-    dockerfile_fn = os.path.join(tmpdir, 'Dockerfile')
-    revised_fn = hubio._get_revised_dockerfile(dockerfile_fn, manifest_dict)
-    with open(revised_fn, 'r') as f:
-        _label_count = 0
-        for _ln, _l in enumerate(f):
-            if _l.startswith('LABEL'):
-                _label_count += 1
-    assert _label_count == 1
-
-
 def test_labels():
     class MockContainers:
         def __init__(self):
@@ -146,3 +108,10 @@ def test_labels():
 
     with pytest.raises(BaseException, match='labels all good'):
         hubio.build()
+
+
+@pytest.mark.timeout(360)
+def test_hub_build_multistage():
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu-multistage'), '--test-uses', '--raise-error'])
+    HubIO(args).build()
