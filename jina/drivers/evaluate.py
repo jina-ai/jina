@@ -121,7 +121,7 @@ class RankEvaluateDriver(BaseEvaluateDriver):
 
     @deprecated_alias(field=('fields', 0))
     def __init__(self,
-                 fields: Union[str, Tuple[str]] = ('tags__id',),  # str maintained for backwards compatibility
+                 fields: Union[str, Tuple[str]] = ('id',),  # str maintained for backwards compatibility
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
