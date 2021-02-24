@@ -3,7 +3,7 @@
 ## Scope
 These guidelines serve as a primary document for explaining how GitHub issues are labeled in Jina repos. For community members reading this document, it should explain how a label was assigned to your issue, and what that label means. For Jina staff, it describes how to assign labels correctly.
 
-**Note:** These guidelines only apply to the following repos; [Jina](https://github.com/jina-ai/jina), [Jina-hub](https://github.com/jina-ai/jina-hub), [Dashboard](https://github.com/jina-ai/dashboard), [docs](https://github.com/jina-ai/docs), [cloud-ops](https://github.com/jina-ai/cloud-ops),  [Jinabox.js](https://github.com/jina-ai/jinabox.js)
+**Note:** These guideline only apply to the following repos; [Jina](https://github.com/jina-ai/jina), [Jina-hub](https://github.com/jina-ai/jina-hub), [Dashboard](https://github.com/jina-ai/dashboard), [docs](https://github.com/jina-ai/docs), [cloud-ops](https://github.com/jina-ai/cloud-ops),  [Jinabox.js](https://github.com/jina-ai/jinabox.js)
 
 ## Why is labeling important?
 * Labels provide a good starting point for community members to contribute to Jina.
@@ -18,6 +18,10 @@ Labels added by community members are automatically assigned the label `needs-tr
 An issue added by a Jina staff member can skip triage and directly be assigned a type, priority, status and area label.
 
 All issues are assigned a type label. Some issues may be assigned a priority, status, and area label. **An issue should only ever have one type label, one status label, one priority label, and one area label.**
+
+This is an example of a correctly labelled issue
+![alt text](.github/images/github_issue_label.png)
+
 
 
 ## How to assign: a step-by-step flow
@@ -58,7 +62,7 @@ This aims to walk you through a standard triaging process.
 |`status/done`|This issue is complete.|
 
 
-#### 4. Assign an area:
+#### 4. Assign an area label:
 
 *Only issues of type bug - feature_request - maintenance are assigned an area label.*
 
