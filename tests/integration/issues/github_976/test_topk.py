@@ -8,7 +8,7 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
 
-from pytest import validate_callback
+from tests import validate_callback
 
 
 @pytest.fixture
