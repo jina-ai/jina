@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from ..mixin import ProtoTypeMixin
 from ...excepts import BadNamedScoreType
@@ -49,7 +49,6 @@ class NamedScore(ProtoTypeMixin):
 
     def __init__(self, score: Optional[jina_pb2.NamedScoreProto] = None,
                  copy: bool = False, **kwargs):
-        """Set constructor."""
         self._pb_body = jina_pb2.NamedScoreProto()
         try:
             if isinstance(score, jina_pb2.NamedScoreProto):
@@ -67,27 +66,54 @@ class NamedScore(ProtoTypeMixin):
 
     @property
     def ref_id(self) -> str:
-        """Return computed score between doc ``id`` and ``ref_id``."""
+        """
+        Return computed score between doc ``id`` and ``ref_id``.
+        :returns: the ref_id
+        """
         return self._pb_body.ref_id
 
     @ref_id.setter
     def ref_id(self, val: str):
-        """Set the ``ref_id`` to :param: `val`."""
+        """
+        Set the ``ref_id`` to :param: `val`.
+        :param val: The ref_id value to set
+        """
         self._pb_body.ref_id = val
+
+    @property
+    def operands(self) -> List['NamedScore']:
+        """
+        Returns list of nested NamedScore operands.
+        :returns: list of nested NamedScore operands.
+        """
+        return [NamedScore(operand) for operand in self._pb_body.operands]
 
     def set_attrs(self, **kwargs):
         """Udate Document fields with key-value specified in kwargs.
 
-        .. seealso::
-            :meth:`get_attrs` for bulk get attributes
+        :param kwargs: Key-value parameters to be set
         """
         for k, v in kwargs.items():
             if isinstance(v, (list, tuple)):
                 self._pb_body.ClearField(k)
-                getattr(self._pb_body, k).extend(v)
-            elif isinstance(v, dict):
-                self._pb_body.ClearField(k)
-                getattr(self._pb_body, k).update(v)
+                if k == 'operands':
+                    scores_to_add = []
+                    for item in v:
+                        if isinstance(item, NamedScore):
+                            score_to_add = item
+                        elif isinstance(item, jina_pb2.NamedScoreProto):
+                            score_to_add = NamedScore(item)
+                        elif isinstance(item, dict):
+                            score_to_add = NamedScore(**item)
+                        else:
+                            raise AttributeError(f'{item} is not recognized.')
+                        scores_to_add.append(score_to_add)
+
+                    for score_to_add in scores_to_add:
+                        s = self._pb_body.operands.add()
+                        s.CopyFrom(score_to_add._pb_body)
+                else:
+                    raise AttributeError(f'{k} is not recognized, the only list argument is operands')
             else:
                 if hasattr(NamedScore, k) and isinstance(getattr(NamedScore, k), property) and getattr(NamedScore,
                                                                                                        k).fset:
