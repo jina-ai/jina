@@ -18,12 +18,20 @@ class ZMQRuntime(BaseRuntime, ABC):
 
     @property
     def status(self):
-        """Send get status control message."""
+        """
+        Send get status control message.
+
+        :return: control message.
+        """
         return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
 
     @property
     def is_ready(self) -> bool:
-        """Check if status is ready."""
+        """
+        Check if status is ready.
+
+        :return: True if status is ready else False.
+        """
         status = self.status
         return status and status.is_ready
 
@@ -55,7 +63,11 @@ class ZMQManyRuntime(BaseRuntime, ABC):
 
     @property
     def status(self):
-        """Send get status control messages to all control address."""
+        """
+        Send get status control messages to all control address.
+
+        :return: received messages
+        """
         # TODO: can use send_ctrl_message to avoid sequential waiting
         result = []
         for ctrl_addr in self.many_ctrl_addr:
@@ -64,6 +76,10 @@ class ZMQManyRuntime(BaseRuntime, ABC):
 
     @property
     def is_ready(self) -> bool:
-        """Check if all the status are ready."""
+        """
+        Check if all the status are ready.
+
+        :return: True if all status are ready else False
+        """
         status = self.status
         return status and all(s.is_ready for s in status)

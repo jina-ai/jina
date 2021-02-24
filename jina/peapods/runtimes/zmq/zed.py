@@ -97,7 +97,12 @@ class ZEDRuntime(ZMQRuntime):
 
     #: Private methods required by run_forever
     def _pre_hook(self, msg: 'Message') -> 'ZEDRuntime':
-        """Pre-hook function, what to do after first receiving the message."""
+        """
+        Pre-hook function, what to do after first receiving the message.
+
+        :param msg: received message
+        :return: `ZEDRuntime`
+        """
         msg.add_route(self.name, self._id)
         self._request = msg.request
         self._message = msg
@@ -114,7 +119,12 @@ class ZEDRuntime(ZMQRuntime):
         return self
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
-        """Post-hook function, what to do before handing out the message."""
+        """
+        Post-hook function, what to do before handing out the message.
+
+        :param msg: received message
+        :return: `ZEDRuntime`
+        """
         self._last_active_time = time.perf_counter()
         self._save_executor()
         self._zmqlet.print_stats()
@@ -153,8 +163,11 @@ class ZEDRuntime(ZMQRuntime):
         return msg
 
     def _msg_callback(self, msg: 'Message') -> None:
-        """Callback function after receiving the message
+        """
+        Callback function after receiving the message
         When nothing is returned then nothing is send out via :attr:`zmqlet.sock_out`.
+
+        :param msg: received message
         """
         try:
             # notice how executor related exceptions are handled here
@@ -203,35 +216,63 @@ class ZEDRuntime(ZMQRuntime):
 
     @property
     def is_idle(self) -> bool:
-        """Return ``True`` when current time is ``max_idle_time`` seconds late than the last active time"""
+        """
+        Return ``True`` when current time is ``max_idle_time`` seconds late than the last active time
+
+        :return: True if idle else false.
+        """
         return (time.perf_counter() - self._last_active_time) > self.args.max_idle_time
 
     @property
     def request(self) -> 'Request':
-        """Get the current request body inside the protobuf message"""
+        """
+        Get the current request body inside the protobuf message
+
+        :return: :class:`ZEDRuntime` request
+        """
         return self._request
 
     @property
     def message(self) -> 'Message':
-        """Get the current protobuf message to be processed"""
+        """
+        Get the current protobuf message to be processed
+
+        :return: :class:`ZEDRuntime` message
+        """
         return self._message
 
     @property
     def request_type(self) -> str:
-        """Get the type of message being processed"""
+        """
+        Get the type of message being processed
+
+        :return: request type
+        """
         return self._message.envelope.request_type
 
     @property
     def expect_parts(self) -> int:
-        """The expected number of partial messages before trigger :meth:`handle` """
+        """
+        The expected number of partial messages before trigger :meth:`handle`
+
+        :return: expected number of partial messages
+        """
         return self.args.num_part if self.message.is_data_request else 1
 
     @property
     def partial_requests(self) -> List['Request']:
-        """The collected partial requests under the current ``request_id`` """
+        """
+        The collected partial requests under the current ``request_id``
+
+        :return: collected partial requests
+        """
         return self._partial_requests
 
     @property
     def partial_messages(self) -> List['Message']:
-        """The collected partial messages under the current ``request_id`` """
+        """
+        The collected partial messages under the current ``request_id`` "
+        :return: collected partial messages
+
+        """
         return self._partial_messages

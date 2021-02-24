@@ -194,7 +194,7 @@ class DaemonClient:
         Delete a remote pea/pod
 
         :param remote_id: the identity of that pea/pod
-        :param kwargs: key-value arguments
+        :param kwargs: keyword arguments
         :return: True if the deletion is successful
         """
         with ImportExtensions(required=True):
