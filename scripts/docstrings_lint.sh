@@ -20,7 +20,7 @@ if [[ -z "$PYDOCSTYLE_OUTPUT" ]] && [[ -z "$DARGLINT_OUTPUT" ]]; then
   echo 'OK'
   exit 0
 else
-  echo 'failure'
+  echo 'failure. make sure to check the guide for docstrings: https://docs.jina.ai/chapters/docstring.html'
   echo $DARGLINT_OUTPUT
   echo $PYDOCSTYLE_OUTPUT
   exit 1
