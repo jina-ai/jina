@@ -70,5 +70,7 @@ pydantic:                   http, devel, cicd, daemon
 python-multipart:           http, devel, cicd, daemon
 aiofiles:                   devel, cicd, http, daemon
 pytest-custom_exit_code:    cicd, test
-bs4:                        cicd
+bs4:                        test
 aiostream:                  devel, cicd
+click:                      cicd
+

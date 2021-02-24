@@ -5,6 +5,8 @@ import numpy as np
 from jina import Document
 from jina.flow import Flow
 
+from tests import validate_callback
+
 
 def test_evaluation(tmpdir, mocker):
     os.environ['JINA_TEST_RANKING_EVALUATION'] = str(tmpdir)
@@ -48,41 +50,41 @@ def test_evaluation(tmpdir, mocker):
 
         doc = resp.docs[0]
         assert len(doc.matches) == 2
-        assert doc.evaluations[0].op_name == 'evaluate_match-Precision@1'
+        assert doc.evaluations[0].op_name == 'PrecisionEvaluator@1'
         assert doc.evaluations[0].value == 1.0
-        assert doc.evaluations[1].op_name == 'evaluate_match-Precision@2'
+        assert doc.evaluations[1].op_name == 'PrecisionEvaluator@2'
         assert doc.evaluations[1].value == 0.5
-        assert doc.evaluations[2].op_name == 'evaluate_match-Recall@1'
+        assert doc.evaluations[2].op_name == 'RecallEvaluator@1'
         assert doc.evaluations[2].value == 0.5
-        assert doc.evaluations[3].op_name == 'evaluate_match-Recall@2'
+        assert doc.evaluations[3].op_name == 'RecallEvaluator@2'
         assert doc.evaluations[3].value == 0.5
 
-        assert doc.evaluations[4].op_name == 'evaluate_rank-Precision@1'
+        assert doc.evaluations[4].op_name == 'PrecisionEvaluator@1'
         assert doc.evaluations[4].value == 1.0
-        assert doc.evaluations[5].op_name == 'evaluate_rank-Precision@2'
+        assert doc.evaluations[5].op_name == 'PrecisionEvaluator@2'
         assert doc.evaluations[5].value == 0.5
-        assert doc.evaluations[6].op_name == 'evaluate_rank-Recall@1'
+        assert doc.evaluations[6].op_name == 'RecallEvaluator@1'
         assert doc.evaluations[6].value == 0.5
-        assert doc.evaluations[7].op_name == 'evaluate_rank-Recall@2'
+        assert doc.evaluations[7].op_name == 'RecallEvaluator@2'
         assert doc.evaluations[7].value == 0.5
 
         doc = resp.docs[1]
-        assert doc.evaluations[0].op_name == 'evaluate_match-Precision@1'
+        assert doc.evaluations[0].op_name == 'PrecisionEvaluator@1'
         assert doc.evaluations[0].value == 1.0
-        assert doc.evaluations[1].op_name == 'evaluate_match-Precision@2'
+        assert doc.evaluations[1].op_name == 'PrecisionEvaluator@2'
         assert doc.evaluations[1].value == 1.0
-        assert doc.evaluations[2].op_name == 'evaluate_match-Recall@1'
+        assert doc.evaluations[2].op_name == 'RecallEvaluator@1'
         assert doc.evaluations[2].value == 0.5
-        assert doc.evaluations[3].op_name == 'evaluate_match-Recall@2'
+        assert doc.evaluations[3].op_name == 'RecallEvaluator@2'
         assert doc.evaluations[3].value == 1.0
 
-        assert doc.evaluations[4].op_name == 'evaluate_rank-Precision@1'
+        assert doc.evaluations[4].op_name == 'PrecisionEvaluator@1'
         assert doc.evaluations[4].value == 1.0
-        assert doc.evaluations[5].op_name == 'evaluate_rank-Precision@2'
+        assert doc.evaluations[5].op_name == 'PrecisionEvaluator@2'
         assert doc.evaluations[5].value == 1.0
-        assert doc.evaluations[6].op_name == 'evaluate_rank-Recall@1'
+        assert doc.evaluations[6].op_name == 'RecallEvaluator@1'
         assert doc.evaluations[6].value == 0.5
-        assert doc.evaluations[7].op_name == 'evaluate_rank-Recall@2'
+        assert doc.evaluations[7].op_name == 'RecallEvaluator@2'
         assert doc.evaluations[7].value == 1.0
 
     def doc_groundtruth_evaluation_pairs():
@@ -136,7 +138,7 @@ def test_evaluation(tmpdir, mocker):
         # Recall@2 = 100%
 
         return [(doc0, groundtruth0), (doc1, groundtruth1)]
-    response_mock = mocker.Mock(wrap=validate_evaluation_response)
+    response_mock = mocker.Mock()
     with Flow.load_config('flow-evaluate.yml') as evaluate_flow:
         evaluate_flow.search(
             input_fn=doc_groundtruth_evaluation_pairs,
@@ -145,4 +147,4 @@ def test_evaluation(tmpdir, mocker):
         )
 
     del os.environ['JINA_TEST_RANKING_EVALUATION']
-    response_mock.assert_called()
+    validate_callback(response_mock, validate_evaluation_response)

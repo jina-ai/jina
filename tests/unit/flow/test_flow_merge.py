@@ -4,7 +4,7 @@ import pytest
 
 from jina.executors.segmenters import BaseSegmenter
 from jina.flow import Flow
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 
 class DummySegment(BaseSegmenter):
@@ -35,12 +35,12 @@ def test_this_will_fail(mocker, restful):
          .add(name='r2', uses='_merge_chunks', needs=['a21', 'a22'])
          .add(uses='_merge_chunks', needs=['r1', 'r2']))
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
@@ -58,10 +58,10 @@ def test_this_should_work(mocker, restful):
          .add(name='r2', uses='_merge_chunks', needs=['a21', 'a22'])
          .add(uses='_merge_chunks', needs=['r1', 'r2']))
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     with f:
         f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
