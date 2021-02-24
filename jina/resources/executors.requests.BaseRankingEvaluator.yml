@@ -14,5 +14,5 @@ on:
             - text
       - !RankEvaluateDriver
         with:
-          fields: ['tags__id']
+          fields: ['id']
 

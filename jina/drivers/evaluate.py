@@ -124,7 +124,7 @@ class RankEvaluateDriver(BaseEvaluateDriver):
 
     @deprecated_alias(field=('fields', 0))
     def __init__(self,
-                 fields: Union[str, Tuple[str]] = ('tags__id',),  # str mantained for backwards compatibility
+                 fields: Union[str, Tuple[str]] = ('tags__id',),  # str maintained for backwards compatibility
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -132,12 +132,23 @@ class RankEvaluateDriver(BaseEvaluateDriver):
 
     @property
     def single_field(self):
+        """
+        Get the field when fields is a str or one-element list. This is maintained for backward compatibility.
+
+        :return: a list of fields
+        """
         if isinstance(self.fields, str):
             return self.fields
         elif len(self.fields) == 1:
             return self.fields[0]
 
     def extract(self, doc: 'Document'):
+        """
+        Extracting the to-be-evaluated field from the document.
+
+        :param doc: a :class:`Document` object to be extracted from.
+        :return: a list of tuples consisted of the values from the fields.
+        """
         single_field = self.single_field
         if single_field:
             r = [dunder_get(x, single_field) for x in doc.matches]
