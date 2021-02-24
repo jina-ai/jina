@@ -67,7 +67,7 @@ class NamedScore(ProtoTypeMixin):
     @property
     def ref_id(self) -> str:
         """
-        Return computed score between doc ``id`` and ``ref_id``.
+        Return the ``ref_id`` of this NamedScore, the `id` of which this NamedScore is a score. 
         :returns: the ref_id
         """
         return self._pb_body.ref_id
