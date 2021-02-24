@@ -283,10 +283,13 @@ class AsyncZmqlet(Zmqlet):
         """
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
-            self.bytes_recv += msg.size
             self.msg_recv += 1
-            if callback:
-                return callback(msg)
+            if msg is not None:
+                self.bytes_recv += msg.size
+                if callback:
+                    return callback(msg)
+            else:
+                self.logger.error('received an empty message')
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'receiving message error: {ex!r}, gateway cancelled?')
 
