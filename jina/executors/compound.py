@@ -265,7 +265,8 @@ class CompoundExecutor(BaseExecutor):
             self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
 
     @staticmethod
-    def get_component_workspace_from_compound_workspace(compound_workspace: str, compound_name: str, pea_id: int) -> str:
+    def get_component_workspace_from_compound_workspace(compound_workspace: str, compound_name: str,
+                                                        pea_id: int) -> str:
         """
         Get the name of workspace.
 
@@ -275,14 +276,16 @@ class CompoundExecutor(BaseExecutor):
         :return: The name of workspace.
         """
         import os
-        return BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id) if pea_id > 0 else \
+        return BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id) if (
+                    isinstance(pea_id, int) and pea_id > 0) else \
             os.path.join(compound_workspace, compound_name)
 
     def _set_comp_workspace(self) -> None:
         # overrides the workspace setting for all components
         for c in self.components:
             if not c.workspace and self.workspace:
-                c_workspace = CompoundExecutor.get_component_workspace_from_compound_workspace(self.workspace, self.name, self.pea_id)
+                c_workspace = CompoundExecutor.get_component_workspace_from_compound_workspace(self.workspace,
+                                                                                               self.name, self.pea_id)
                 self.logger.warning(f'Setting workspace of {c.name} to {c_workspace}')
                 c.workspace = c_workspace
 
