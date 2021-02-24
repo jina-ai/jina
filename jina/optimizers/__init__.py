@@ -25,14 +25,16 @@ class OptimizerCallback(JAMLCompatible):
 
     def get_empty_copy(self) -> 'OptimizerCallback':
         """
-        :returns: An empty copy of the :class:`OptimizerCallback`.
+        Return an empty copy of the :class:`OptimizerCallback`.
+
         :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
         """
         raise NotImplementedError
 
     def get_final_evaluation(self) -> float:
         """
-        :returns: The aggregation of all evaluation collected via :method:`__call__`
+        Return the aggregation of all evaluation collected via :method:`__call__`
+
         :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
         """
         raise NotImplementedError
@@ -62,6 +64,11 @@ class MeanEvaluationCallback(OptimizerCallback):
         self._n_docs = 0
 
     def get_empty_copy(self):
+        """
+        Return an empty copy of the :class:`OptimizerCallback`.
+
+        :return: Evaluation values
+        """
         return MeanEvaluationCallback(self._eval_name)
 
     def get_final_evaluation(self):
@@ -81,6 +88,11 @@ class MeanEvaluationCallback(OptimizerCallback):
         return self._evaluation_values[evaluation_name] / self._n_docs
 
     def __call__(self, response):
+        """
+        Store the evaluation values
+
+        :param response: response message
+        """
         self._n_docs += len(response.search.docs)
         logger.info(f'Num of docs evaluated: {self._n_docs}')
         for doc in response.search.docs:

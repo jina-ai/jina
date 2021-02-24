@@ -51,6 +51,8 @@ def profiling(func):
         def foo():
             print(1)
 
+    :param func: function to be profiled
+    :return: arguments wrapper
     """
     from . import default_logger
 
@@ -97,15 +99,19 @@ class TimeDict:
             self.reset()
 
     def __call__(self, key: str, *args, **kwargs):
+        """
+        Add time counter.
+
+        :param key: key name of the counter
+        :param args: extra arguments
+        :param kwargs: keyword arguments
+        :return: self object
+        """
         self._key_stack.append(key)
         return self
 
     def reset(self):
-        """
-        Clear the time information.
-
-        :return: None
-        """
+        """Clear the time information."""
         if self._key_stack:
             self._pending_reset = True
         else:
@@ -163,6 +169,11 @@ class TimeContext:
         self._exit_msg()
 
     def now(self) -> float:
+        """
+        Get the passed time from start to now.
+
+        :return: passed time
+        """
         return time.perf_counter() - self.start
 
     def _exit_msg(self):
@@ -215,6 +226,8 @@ class ProgressBar(TimeContext):
         Increment the progress bar by one unit.
 
         :param progress: The number of unit to increment.
+        :param args: extra arguments
+        :param kwargs: keyword arguments
         """
         self.num_reqs += 1
         sys.stdout.write('\r')
