@@ -53,7 +53,7 @@ def hello_world(args):
     download_data(targets, args.download_proxy)
 
     # this envs are referred in index and query flow YAMLs
-    os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = args.workdir

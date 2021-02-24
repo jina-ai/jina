@@ -18,8 +18,7 @@ class MockMatches2DocRankDriver(Matches2DocRankDriver):
 
 class MockAbsoluteLengthRanker(Match2DocRanker):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.required_keys = {'length'}
+        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
 
     def score(self, query_meta, old_match_scores, match_meta):
         new_scores = [

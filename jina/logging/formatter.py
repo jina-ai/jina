@@ -6,6 +6,9 @@ from logging import Formatter
 from .profile import used_memory
 from ..helper import colored
 
+if False:
+    from logging import LogRecord
+
 
 class ColorFormatter(Formatter):
     """Format the log into colored logs based on the log-level."""
@@ -56,7 +59,7 @@ class JsonFormatter(Formatter):
             'module', 'name', 'pathname', 'process', 'thread', 'processName',
             'threadName', 'log_id'}  #: keys to extract from the log
 
-    def format(self, record):
+    def format(self, record: 'LogRecord'):
         """
         Format the log message as a JSON object.
 
@@ -73,7 +76,7 @@ class JsonFormatter(Formatter):
 class ProfileFormatter(Formatter):
     """Format the log message as JSON object and add the current used memory into it."""
 
-    def format(self, record):
+    def format(self, record: 'LogRecord'):
         """
         Format the log message as JSON object and add the current used memory.
 

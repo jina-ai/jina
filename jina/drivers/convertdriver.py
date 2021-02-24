@@ -33,6 +33,7 @@ class ConvertDriver(RecursiveMixin, BaseRecursiveDriver):
 
 class URI2Buffer(ConvertDriver):
     """Driver to convert URI to buffer"""
+
     def __init__(self, convert_fn: str = 'convert_uri_to_buffer', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
@@ -40,6 +41,7 @@ class URI2Buffer(ConvertDriver):
 class URI2DataURI(ConvertDriver):
     """Driver to convert URI to data URI
     """
+
     def __init__(self, convert_fn: str = 'convert_uri_to_data_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
@@ -47,6 +49,7 @@ class URI2DataURI(ConvertDriver):
 class Buffer2URI(ConvertDriver):
     """Driver to convert buffer to URI
     """
+
     def __init__(self, convert_fn: str = 'convert_buffer_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
@@ -54,6 +57,7 @@ class Buffer2URI(ConvertDriver):
 class BufferImage2Blob(ConvertDriver):
     """Driver to convert image buffer to blob
     """
+
     def __init__(self, convert_fn: str = 'convert_buffer_image_to_blob', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
@@ -61,13 +65,23 @@ class BufferImage2Blob(ConvertDriver):
 class URI2Blob(ConvertDriver):
     """Driver to convert URI to blob
     """
+
     def __init__(self, convert_fn: str = 'convert_uri_to_blob', *args, **kwargs):
+        super().__init__(convert_fn, *args, **kwargs)
+
+
+class DataURI2Blob(ConvertDriver):
+    """Driver to convert Data URI to image blob
+    """
+
+    def __init__(self, convert_fn: str = 'convert_data_uri_to_blob', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
 
 class Text2URI(ConvertDriver):
     """Driver to convert text to URI
     """
+
     def __init__(self, convert_fn: str = 'convert_text_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
@@ -75,6 +89,7 @@ class Text2URI(ConvertDriver):
 class URI2Text(ConvertDriver):
     """Driver to convert URI to text
     """
+
     def __init__(self, convert_fn: str = 'convert_uri_to_text', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
 
@@ -82,5 +97,6 @@ class URI2Text(ConvertDriver):
 class Blob2PngURI(ConvertDriver):
     """Driver to convert blob to URI
     """
+
     def __init__(self, convert_fn: str = 'convert_blob_to_uri', *args, **kwargs):
         super().__init__(convert_fn, *args, **kwargs)
