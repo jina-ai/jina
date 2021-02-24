@@ -523,6 +523,10 @@ def test_get_attr():
     assert len(res3.keys()) == 1
     assert res3['tags__outterkey__innerkey'] == 'real_value'
 
+    d = Document(content=np.array([1,2,3]))
+    res4 = d.get_attrs(*['blob'])
+    np.testing.assert_equal(res4['blob'], np.array([1,2,3]))
+
 
 def test_pb_obj2dict():
     document = Document()

@@ -74,11 +74,11 @@ def test_flow_with_jump(tmpdir):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_simple_flow(restful):
-    bytes_gen = (b'aaa' for _ in range(10))
+    bytes_gen = (Document() for _ in range(10))
 
     def bytes_fn():
         for _ in range(100):
-            yield b'aaa'
+            yield Document()
 
     f = Flow(restful=restful).add()
 

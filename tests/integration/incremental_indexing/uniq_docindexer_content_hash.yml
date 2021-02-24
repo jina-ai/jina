@@ -2,7 +2,7 @@
 components:
   - !DocCache
     with:
-      field: content_hash
+      fields: [content_hash]
     metas:
       name: cache
   - !BinaryPbIndexer
