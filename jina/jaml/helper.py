@@ -17,9 +17,15 @@ from jina.importer import PathImporter
 
 
 class JinaConstructor(FullConstructor):
-    """Convert List into tuple when doing hashing"""
+    """Convert List into tuple when doing hashing."""
 
     def get_hashable_key(self, key):
+        """
+        Get the hash value of key.
+
+        :param key: key value to be hashed.
+        :return: Hash value of key.
+        """
         try:
             hash(key)
         except:
@@ -33,6 +39,13 @@ class JinaConstructor(FullConstructor):
         return key
 
     def construct_mapping(self, node, deep=True):
+        """
+        Build the mapping from node.
+
+        :param node: the node to traverse
+        :param deep: required param from YAML constructor
+        :return: Mapped data
+        """
         if isinstance(node, MappingNode):
             self.flatten_mapping(node)
         return self._construct_mapping(node, deep=deep)
@@ -58,11 +71,18 @@ class JinaConstructor(FullConstructor):
 
 
 class JinaResolver(Resolver):
-    """Remove `on|On|ON` as bool resolver"""
+    """Remove `on|On|ON` as bool resolver."""
+
     pass
 
 
 class JinaLoader(Reader, Scanner, Parser, Composer, JinaConstructor, JinaResolver):
+    """
+    The Jina loader which should be able to load YAML safely.
+
+    :param stream: the stream to load.
+    """
+
     def __init__(self, stream):
         Reader.__init__(self, stream)
         Scanner.__init__(self)
@@ -70,6 +90,7 @@ class JinaLoader(Reader, Scanner, Parser, Composer, JinaConstructor, JinaResolve
         Composer.__init__(self)
         JinaConstructor.__init__(self)
         JinaResolver.__init__(self)
+
 
 
 # remove on|On|ON resolver
@@ -87,8 +108,8 @@ def parse_config_source(path: Union[str, TextIO, Dict],
                         allow_dict: bool = True,
                         allow_json: bool = True,
                         *args, **kwargs) -> Tuple[TextIO, Optional[str]]:
-    """Check if the text or text stream is valid.
-
+    """
+    Check if the text or text stream is valid.
 
     .. # noqa: DAR401
     :param path: the multi-kind source of the configs.
@@ -154,6 +175,13 @@ def parse_config_source(path: Union[str, TextIO, Dict],
 
 
 def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) -> str:
+    """
+    Complete the path of file via searching in abs and relative paths.
+
+    :param path: path of file.
+    :param extra_search_paths: extra paths to conduct search
+    :return: Completed file path.
+    """
     _p = None
     if os.path.exists(path):
         # this checks both abs and relative paths already
@@ -167,7 +195,8 @@ def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) ->
 
 
 def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None):
-    """searches in all dirs of the PATH environment variable and all dirs of files used in the call stack.
+    """
+    Search in all dirs of the PATH environment variable and all dirs of files used in the call stack.
 
     :param path: the path to search for
     :param extra_search_paths: any extra locations to search for
@@ -194,7 +223,8 @@ def _search_file_in_paths(path, extra_search_paths: Optional[Tuple[str]] = None)
 
 
 def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) -> None:
-    """Find 'py_modules' in the dict recursively and then load them
+    """
+    Find 'py_modules' in the dict recursively and then load them.
 
     :param d: the dictionary to traverse
     :param extra_search_paths: any extra paths to search

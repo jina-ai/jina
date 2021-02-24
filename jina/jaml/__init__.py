@@ -93,7 +93,9 @@ class JAML:
 
     @staticmethod
     def load_no_tags(stream, **kwargs):
-        """Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow
+        """
+        Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow.
+
         :param stream: the output stream
         :param **kwargs: other kwargs
         :return: the Python object
@@ -105,6 +107,15 @@ class JAML:
     def expand_dict(d: Dict, context: Union[Dict, SimpleNamespace, None] = None,
                     resolve_cycle_ref=True,
                     resolve_passes: int = 3) -> Dict[str, Any]:
+        """
+        Expand variables from YAML file.
+
+        :param d: yaml file loaded as python dict
+        :param context: context replacement variables in a dict, the value of the dict is the replacement.
+        :param resolve_cycle_ref: resolve internal reference if True.
+        :param resolve_passes: number of rounds to resolve internal reference.
+        :return: expanded dict.
+        """
         from ..helper import parse_arg
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
@@ -234,6 +245,7 @@ class JAML:
     def dump(data, stream=None, **kwargs):
         """
         Serialize a Python object into a YAML stream.
+
         If stream is None, return the produced string instead.
 
         :param data: the data to serialize
@@ -245,7 +257,9 @@ class JAML:
 
     @staticmethod
     def register(cls):
-        """register a class for dumping loading
+        """
+        Register a class for dumping loading.
+
             - if it has attribute yaml_tag use that to register, else use class name
             - if it has methods to_yaml/from_yaml use those to dump/load else dump attributes
               as mapping
@@ -253,13 +267,13 @@ class JAML:
         :param cls: the class to register
         :return: the registered class
         """
-
         tag = getattr(cls, 'yaml_tag', '!' + cls.__name__)
 
         try:
             yaml.add_representer(cls, cls._to_yaml)
         except AttributeError:
             def t_y(representer, data):
+                """Inner function, get the representer."""
                 return representer.represent_yaml_object(
                     tag, data, cls, flow_style=representer.default_flow_style
                 )
@@ -270,6 +284,7 @@ class JAML:
         except AttributeError:
 
             def f_y(constructor, node):
+                """Inner function, get the constructor."""
                 return constructor.construct_yaml_object(node, cls)
 
             yaml.add_constructor(tag, f_y, JinaLoader)
@@ -277,8 +292,11 @@ class JAML:
 
 
 class JAMLCompatibleType(type):
-    """Metaclass for :class:`JAMLCompatible`.
-    It enables any class inherit from :class:`JAMLCompatible` to auto-register itself at :class:`JAML`"""
+    """
+    Metaclass for :class:`JAMLCompatible`.
+
+    It enables any class inherit from :class:`JAMLCompatible` to auto-register itself at :class:`JAML`
+    """
 
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
@@ -288,6 +306,7 @@ class JAMLCompatibleType(type):
 
 class JAMLCompatible(metaclass=JAMLCompatibleType):
     """:class:`JAMLCompatible` is a mixin class designed to be used with multiple inheritance.
+
     It will add :meth:`to_yaml` and :meth:`from_yaml` to the target class,
     making that class JAML-friendly.
 
@@ -299,7 +318,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
     @classmethod
     def _to_yaml(cls, representer, data):
-        """A low-level interface required by :mod:`pyyaml` write interface
+        """
+        A low-level interface required by :mod:`pyyaml` write interface.
 
         .. warning::
             This function should not be used directly, please use :meth:`save_config`.
@@ -314,7 +334,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
     @classmethod
     def _from_yaml(cls, constructor: FullConstructor, node):
-        """A low-level interface required by :mod:`pyyaml` load interface
+        """A low-level interface required by :mod:`pyyaml` load interface.
 
         .. warning::
             This function should not be used directly, please use :meth:`load_config`.
@@ -328,7 +348,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         return get_parser(cls, version=data.get('version', None)).parse(cls, data)
 
     def save_config(self, filename: Optional[str] = None):
-        """Save the object's config into a YAML file
+        """
+        Save the object's config into a YAML file.
 
         :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used
         """

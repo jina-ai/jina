@@ -70,13 +70,13 @@ def export_api(args: 'Namespace'):
 
 
 def hello_world(args: 'Namespace'):
-    from jina.helloworld import hello_world
+    from jina.helloworld.fashion import hello_world
     hello_world(args)
 
 
 def hello(args: 'Namespace'):
     if args.hello == 'fashion':
-        from jina.helloworld import hello_world
+        from jina.helloworld.fashion import hello_world
     elif args.hello == 'chatbot':
         from jina.helloworld.chatbot import hello_world
     elif args.hello == 'multimodal':
