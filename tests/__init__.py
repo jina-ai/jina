@@ -49,6 +49,14 @@ def rm_files(file_paths):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
+def validate_callback(mock, validate_func):
+
+    for args, kwargs in mock.call_args_list:
+        validate_func(*args, **kwargs)
+
+    mock.assert_called()
+
+    
 np.random.seed(0)
 d_embedding = np.array([1, 1, 1, 1, 1, 1, 1])
 c_embedding = np.array([2, 2, 2, 2, 2, 2, 2])
