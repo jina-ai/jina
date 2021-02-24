@@ -37,6 +37,7 @@ class NTLogger:
         """
         Log info-level message.
 
+        :param kwargs: Keyword arguments.
         :param msg: Context of log.
         """
         if self.log_level <= LogVerbosity.INFO:
@@ -46,6 +47,7 @@ class NTLogger:
         """
         Log critical-level message.
 
+        :param kwargs: Keyword arguments.
         :param msg: Context of log.
         """
         if self.log_level <= LogVerbosity.CRITICAL:
@@ -55,6 +57,7 @@ class NTLogger:
         """
         Log debug-level message.
 
+        :param kwargs: Keyword arguments.
         :param msg: Content of log.
         """
         if self.log_level <= LogVerbosity.DEBUG:
@@ -64,6 +67,7 @@ class NTLogger:
         """
         Log error-level message.
 
+        :param kwargs: Keyword arguments.
         :param msg: Context of log.
         """
         if self.log_level <= LogVerbosity.ERROR:
@@ -73,6 +77,7 @@ class NTLogger:
         """
         Log warning-level message.
 
+        :param kwargs: Keyword arguments.
         :param msg: Context of log.
         """
         if self.log_level <= LogVerbosity.WARNING:
@@ -83,13 +88,14 @@ class NTLogger:
         Log success-level message.
 
         :param msg: Context of log.
+        :param kwargs: Keyword arguments.
         """
         if self.log_level <= LogVerbosity.SUCCESS:
             sys.stdout.write(f'{self.context}[S]:{self._planify(msg)}')
 
 
 class PrintLogger(NTLogger):
-
+    """Print the message."""
     @staticmethod
     def _planify(msg):
         return msg
@@ -116,6 +122,16 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
 
 
 class JinaLogger:
+    """
+    Build a logger for a context.
+
+    :param context: The context identifier of the class, module or method.
+    :param log_config: The configuration file for the logger.
+    :param identity: The id of the group the messages from this logger will belong, used by fluentd default
+    configuration to group logs by pod.
+    :param workspace_path: The workspace path where the log will be stored at (only apply to fluentd)
+    :returns: an executor object.
+    """
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
     def __init__(self,
@@ -126,16 +142,6 @@ class JinaLogger:
                  workspace_path: Optional[str] = None,
                  quiet: bool = False,
                  **kwargs):
-        """
-        Build a logger for a context.
-
-        :param context: The context identifier of the class, module or method.
-        :param log_config: The configuration file for the logger.
-        :param identity: The id of the group the messages from this logger will belong, used by fluentd default
-        configuration to group logs by pod.
-        :param workspace_path: The workspace path where the log will be stored at (only apply to fluentd)
-        :returns: an executor object.
-        """
         from .. import __uptime__
         if not log_config:
             log_config = os.getenv('JINA_LOG_CONFIG',
@@ -199,11 +205,7 @@ class JinaLogger:
         self.close()
 
     def close(self):
-        """
-        Close all the handlers.
-
-        :returns: None
-        """
+        """Close all the handlers."""
         for handler in self.logger.handlers:
             handler.close()
 
@@ -213,7 +215,6 @@ class JinaLogger:
 
         :param config_path: Path of config file.
         :param kwargs: Extra parameters.
-        :returns: None
         """
         self.logger.handlers = []
 

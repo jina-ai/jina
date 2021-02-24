@@ -21,5 +21,13 @@ class MyEncoder(BaseImageEncoder):
         self.touch()
 
     def encode(self, data: 'np.ndarray', *args, **kwargs):
+        """
+        Encode data and reduce dimension
+
+        :param data: image data
+        :param args: arguments
+        :param kwargs: keyword arguments
+        :return: encoded data
+        """
         # reduce dimension to 50 by random orthogonal projection
         return (data.reshape([-1, 784]) / 255) @ self.oth_mat

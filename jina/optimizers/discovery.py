@@ -39,6 +39,12 @@ def _extract_parameters(executor_yml):
 
 
 def print_parameter(discovered_parameters):
+    """
+    Print the optimized parameters
+
+    :param discovered_parameters: optimized parameters
+    """
+
     for filename, (
         encoder_name,
         default_parameters,
@@ -96,6 +102,13 @@ def _write_to(filepath, content, create_backup=True):
 
 
 def run_parameter_discovery(flow_files, target_file, overwrite_parameter_file):
+    """
+    Discover optimized parameters.
+
+    :param flow_files: YAML configuration files for flow
+    :param target_file: YAML files of parameters results
+    :param overwrite_parameter_file: True of want to overwrite existing parameter file
+    """
     flows = {flow_file: _read_file(flow_file) for flow_file in flow_files}
     executor_files = _extract_executor_files(flows)
     executor_configurations = {}
@@ -111,11 +124,13 @@ def run_parameter_discovery(flow_files, target_file, overwrite_parameter_file):
 
 
 def config_global_environment():
+    """Config global environment variables."""
     os.environ.setdefault("JINA_WORKSPACE", "workspace_discovery")
     os.environ.setdefault("JINA_MYENCODER_TARGET_DIMENSION", "64")
 
 
 def main():
+    """Main function."""
     config_global_environment()
 
     run_parameter_discovery(
