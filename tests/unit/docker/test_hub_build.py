@@ -124,3 +124,25 @@ def test_get_revised_dockerfile(dockerfile, tmpdir):
             if _l.startswith('LABEL'):
                 _label_count += 1
     assert _label_count == 1
+
+
+def test_labels():
+    class MockContainers:
+        def __init__(self):
+            pass
+
+        def build(self, *args, **kwargs):
+            labels = kwargs['labels']
+            assert all([isinstance(v, str) for k, v in labels.items()])
+            assert 'ai.jina.hub.version' in labels
+            assert 'ai.jina.hub.name' in labels
+
+            raise BaseException('labels all good')
+
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error'])
+    hubio = HubIO(args)
+    hubio._raw_client = MockContainers()
+
+    with pytest.raises(BaseException, match='labels all good'):
+        hubio.build()

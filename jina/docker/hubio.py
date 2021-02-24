@@ -309,15 +309,18 @@ class HubIO:
 
             with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
                 try:
-                    self._check_completeness()
+                    _check_result = self._check_completeness()
                     self._freeze_jina_version()
 
+                    _dockerfile_path = _check_result['Dockerfile']
+                    _labels = {_label_prefix + k: str(v) for k, v in self.manifest.items()}
                     streamer = self._raw_client.build(
                         decode=True,
                         path=self.args.path,
                         tag=self.tag,
                         pull=self.args.pull,
-                        dockerfile=self.dockerfile_path_revised,
+                        dockerfile=_dockerfile_path,
+                        labels=_labels,
                         rm=True
                     )
 
