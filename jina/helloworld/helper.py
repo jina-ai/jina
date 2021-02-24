@@ -48,6 +48,13 @@ def _get_groundtruths(target, pseudo_match=True):
 
 
 def index_generator(num_docs: int, target: dict):
+    """
+    Generate the index data.
+
+    :param num_docs: Number of documents to be indexed.
+    :param target: Dictionary which stores the data paths
+    :yields: index data
+    """
     for internal_doc_id in range(num_docs):
         d = Document(content=target['index']['data'][internal_doc_id])
         d.tags['id'] = internal_doc_id
@@ -55,6 +62,14 @@ def index_generator(num_docs: int, target: dict):
 
 
 def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
+    """
+    Generate the query data.
+
+    :param num_docs: Number of documents to be queried
+    :param target: Dictionary which stores the data paths
+    :param with_groundtruth: True if want to include labels into query data
+    :yields: query data
+    """
     gts = _get_groundtruths(target)
     for _ in range(num_docs):
         num_data = len(target['query-labels']['data'])
@@ -67,6 +82,11 @@ def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
 
 
 def print_result(resp):
+    """
+    Callback function to receive results.
+
+    :param resp: returned response with data
+    """
     global evaluation_value
     global top_k
     for d in resp.search.docs:
@@ -85,6 +105,11 @@ def print_result(resp):
 
 
 def write_html(html_path):
+    """
+    Method to present results in browser.
+
+    :param html_path: path of the written html
+    """
     global num_docs_evaluated
     global evaluation_value
 
@@ -116,6 +141,13 @@ def write_html(html_path):
 
 
 def download_data(targets, download_proxy=None, task_name='download fashion-mnist'):
+    """
+    Download data.
+
+    :param targets: target path for data.
+    :param download_proxy: download proxy (e.g. 'http', 'https')
+    :param task_name: name of the task
+    """
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     if download_proxy:
@@ -133,10 +165,23 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
 
 
 def load_mnist(path):
+    """
+    Load MNIST data
+
+    :param path: path of data
+    :return: MNIST data in np.array
+    """
+
     with gzip.open(path, 'rb') as fp:
         return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 784])
 
 
 def load_labels(path: str):
+    """
+    Load labels from path
+
+    :param path: path of labels
+    :return: labels in np.array
+    """
     with gzip.open(path, 'rb') as fp:
         return np.frombuffer(fp.read(), dtype=np.uint8, offset=8).reshape([-1, 1])

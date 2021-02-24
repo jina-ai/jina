@@ -18,7 +18,7 @@ from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
 from ..types.request import Request
 
-InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
+InputFnType: object = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 CallbackFnType = Optional[Callable[..., None]]
 
 
@@ -48,11 +48,20 @@ class BaseClient:
 
     @property
     def mode(self) -> str:
-        """The mode for this client (index, query etc.)."""
+        """
+        Get the mode for this client (index, query etc.).
+
+        :return: Mode of the client.
+        """
         return self._mode
 
     @mode.setter
     def mode(self, value: RequestType) -> None:
+        """
+        Set the mode.
+
+        :param value: Request type. (e.g. INDEX, SEARCH, DELETE, UPDATE, CONTROL, TRAIN)
+        """
         if isinstance(value, RequestType):
             self._mode = value
             self.args.mode = value
@@ -64,6 +73,7 @@ class BaseClient:
         """Validate the input_fn and print the first request if success.
 
         :param input_fn: the input function
+        :param kwargs: keyword arguments
         """
         if hasattr(input_fn, '__call__'):
             input_fn = input_fn()
@@ -85,7 +95,12 @@ class BaseClient:
             raise BadClientInput from ex
 
     def _get_requests(self, **kwargs) -> Union[Iterator['Request'], AsyncIterator['Request']]:
-        """Get request in generator."""
+        """
+        Get request in generator.
+
+        :param kwargs: Keyword arguments.
+        :return: Iterator of request.
+        """
         _kwargs = vars(self.args)
         _kwargs['data'] = self.input_fn
         # override by the caller-specific kwargs
@@ -106,9 +121,12 @@ class BaseClient:
 
     @property
     def input_fn(self) -> InputFnType:
-        """An iterator of bytes, each element represents a Document's raw content.
+        """
+        An iterator of bytes, each element represents a Document's raw content.
 
         ``input_fn`` defined in the protobuf
+
+        :return: input function
         """
         if self._input_fn is not None:
             return self._input_fn
@@ -117,6 +135,11 @@ class BaseClient:
 
     @input_fn.setter
     def input_fn(self, bytes_gen: InputFnType) -> None:
+        """
+        Set the input data.
+
+        :param bytes_gen: input function type
+        """
         if hasattr(bytes_gen, '__call__'):
             self._input_fn = bytes_gen()
         else:
