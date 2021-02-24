@@ -26,17 +26,16 @@ class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
     has three sockets for input, output and control.
 
+    :param args: the parsed arguments from the CLI
+    :param logger: the logger to use
+    :param ctrl_addr: control address
+
     .. warning::
         Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`.
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
     def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr: str = None):
-        """
-
-        :param args: the parsed arguments from the CLI
-        :param logger: the logger to use
-        """
         self.args = args
         self.identity = random_identity()
         self.name = args.name or self.__class__.__name__
@@ -62,6 +61,7 @@ class Zmqlet:
             self.send_idle()
 
     def register_pollin(self):
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
@@ -264,6 +264,7 @@ class AsyncZmqlet(Zmqlet):
         :param msg: the protobuf message to send
         :param sleep: the sleep time of every two sends in millisecond.
                 A near-zero value could result in bad load balancing in the proceeding pods.
+        :param kwargs: keyword arguments
         """
         # await asyncio.sleep(sleep)  # preventing over-speed sending
         try:
@@ -274,6 +275,12 @@ class AsyncZmqlet(Zmqlet):
             self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
     async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> 'Message':
+        """
+        Receive a protobuf message in async manner.
+
+        :param callback: Callback function to receive message
+        :return: Received protobuf message.
+        """
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
             self.bytes_recv += msg.size
@@ -298,6 +305,7 @@ class ZmqStreamlet(Zmqlet):
     """
 
     def register_pollin(self):
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
             import tornado.ioloop
             get_or_reuse_loop()
@@ -342,6 +350,11 @@ class ZmqStreamlet(Zmqlet):
         self.in_sock.on_recv(self._in_sock_callback)
 
     def start(self, callback: Callable[['Message'], 'Message']):
+        """
+        Open all sockets and start the ZMQ context associated to this `Zmqlet`.
+
+        :param callback: callback function to receive the protobuf message
+        """
         def _callback(msg, sock_type):
             msg = _parse_from_frames(sock_type, msg)
             self.bytes_recv += msg.size
@@ -368,6 +381,7 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
     :param address: the socket address to send
     :param cmd: the control command to send
     :param timeout: the waiting time (in ms) for the response
+    :return: received message
     """
     # control message is short, set a timeout and ask for quick response
     with zmq.Context() as ctx:
@@ -391,6 +405,7 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'Message', timeout
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
+    :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
     num_bytes = 0
@@ -434,6 +449,7 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'Message', timeout: int = 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
+    :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
     try:
@@ -462,6 +478,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
+    :param kwargs: keyword arguments
     :return: a tuple of two pieces
 
             - the received protobuf message
@@ -488,6 +505,7 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
+    :param kwargs: keyword arguments
     :return: a tuple of two pieces
 
             - the received protobuf message
@@ -541,7 +559,11 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
 
 
 def _get_random_ipc() -> str:
-    """Get a random IPC address for control port """
+    """
+    Get a random IPC address for control port
+
+    :return: random IPC address
+    """
     try:
         tmp = os.environ['JINA_IPC_SOCK_TMP']
         if not os.path.exists(tmp):
