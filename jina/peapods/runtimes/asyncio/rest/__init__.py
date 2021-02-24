@@ -19,7 +19,11 @@ class RESTRuntime(AsyncNewLoopRuntime):
         class UviServer(Server):
             """The uvicorn server."""
             async def setup(self, sockets=None):
-                """Setup uvicorn server."""
+                """
+                Setup uvicorn server.
+
+                :param sockets: sockets of server.
+                """
                 config = self.config
                 if not config.loaded:
                     config.load()
@@ -30,7 +34,11 @@ class RESTRuntime(AsyncNewLoopRuntime):
                     return
 
             async def serve(self, sockets=None):
-                """Start the server."""
+                """
+                Start the server.
+
+                :param sockets: sockets of server.
+                """
                 await self.main_loop()
                 await self.shutdown(sockets=sockets)
 
