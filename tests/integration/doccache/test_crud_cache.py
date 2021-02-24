@@ -8,7 +8,7 @@ from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.cache import DocCache
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.vector import NumpyIndexer
-from tests import get_documents
+from tests import get_documents, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -137,7 +137,6 @@ def test_cache_crud(
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
-            mock()
             assert len(resp.docs) == DOCS_TO_SEARCH
             for d in resp.docs:
                 matches = list(d.matches)
@@ -179,9 +178,10 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            on_done=validate_result_factory(TOP_K)
+            on_done=mock
         )
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(TOP_K))
 
     # UPDATE
     docs.extend(new_docs)
@@ -209,9 +209,10 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            on_done=validate_result_factory(TOP_K)
+            on_done=mock
         )
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(TOP_K))
 
     # DELETE
     delete_ids = []
@@ -229,6 +230,7 @@ def test_cache_crud(
     with flow_query as f:
         f.search(
             search_docs,
-            on_done=validate_result_factory(0)
+            on_done=mock
         )
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))
