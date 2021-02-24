@@ -48,7 +48,7 @@ def test_hub_build_level_pass(monkeypatch, test_workspace, docker_image):
 
 def test_hub_build_level_fail(monkeypatch, test_workspace, docker_image):
     args = set_hub_build_parser().parse_args(['path/hub-mwu', '--push', '--host-info', '--test-level', 'FLOW'])
-    expected_failed_levels = [BuildTestLevel.POD_NONDOCKER, BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]
+    expected_failed_levels = [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]
 
     _, failed_levels = HubIO(args)._test_build(docker_image, BuildTestLevel.FLOW,
                                                os.path.join(cur_dir, 'yaml/test-joint.yml'), 60000, True,
