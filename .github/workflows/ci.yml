@@ -69,6 +69,23 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
+  check-docstring:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - id: file_changes
+        uses: jitterbit/get-changed-files@v1
+      - name: docstring check with darglint and pydocstyle
+        run: ./scripts/docstrings_lint.sh
+        env:
+          CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
+
   prep-testbed:
     runs-on: ubuntu-18.04
     steps:
