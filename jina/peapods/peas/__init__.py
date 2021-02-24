@@ -38,6 +38,8 @@ class BasePea(metaclass=PeaType):
 
         self._envs = {'JINA_POD_NAME': self.name,
                       'JINA_LOG_ID': self.args.identity}
+        if self.args.quiet:
+            self._envs['JINA_LOG_CONFIG'] = 'QUIET'
         if self.args.env:
             self._envs.update(self.args.env)
 
@@ -45,9 +47,9 @@ class BasePea(metaclass=PeaType):
             self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}' +
-                              f'\n add "--hide-exc-info" to suppress the exception details'
-                              if not self.args.hide_exc_info else '',
-                              exc_info=not self.args.hide_exc_info)
+                              f'\n add "--quiet-error" to suppress the exception details'
+                              if not self.args.quiet_error else '',
+                              exc_info=not self.args.quiet_error)
             raise RuntimeFailToStart from ex
 
     def run(self):
@@ -66,9 +68,9 @@ class BasePea(metaclass=PeaType):
             self.runtime.setup()
         except Exception as ex:
             self.logger.error(f'{ex!r} during {self.runtime.setup!r}' +
-                              f'\n add "--hide-exc-info" to suppress the exception details'
-                              if not self.args.hide_exc_info else '',
-                              exc_info=not self.args.hide_exc_info)
+                              f'\n add "--quiet-error" to suppress the exception details'
+                              if not self.args.quiet_error else '',
+                              exc_info=not self.args.quiet_error)
         else:
             self.is_ready.set()
             try:
@@ -79,17 +81,17 @@ class BasePea(metaclass=PeaType):
                 self.logger.info(f'{self.runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                                  f'\n add "--quiet-error" to suppress the exception details'
+                                  if not self.args.quiet_error else '',
+                                  exc_info=not self.args.quiet_error)
 
             try:
                 self.runtime.teardown()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.teardown!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                                  f'\n add "--quiet-error" to suppress the exception details'
+                                  if not self.args.quiet_error else '',
+                                  exc_info=not self.args.quiet_error)
         finally:
             self.is_shutdown.set()
             self.is_ready.clear()
@@ -120,9 +122,9 @@ class BasePea(metaclass=PeaType):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                if self.args.hide_exc_info:
+                if self.args.quiet_error:
                     self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
-                                         f'remove "--hide-exc-info" to see the exception stack in details')
+                                         f'remove "--quiet-error" to see the exception stack in details')
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
@@ -151,9 +153,9 @@ class BasePea(metaclass=PeaType):
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(f'{ex!r} during {self.runtime.cancel!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                                  f'\n add "--quiet-error" to suppress the exception details'
+                                  if not self.args.quiet_error else '',
+                                  exc_info=not self.args.quiet_error)
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:

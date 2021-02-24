@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from ..executors.encoders import BaseImageEncoder
+from jina.executors.encoders import BaseImageEncoder
 
 
 class MyEncoder(BaseImageEncoder):

@@ -11,3 +11,4 @@ root_workspace: ${{root.metas.workspace}} # needed to extract the `dump path` fo
 root_name: ${{root.metas.name}} # needed to extract the `dump path` for inner executor of CompoundExecutors
 pea_id: ${{root.metas.pea_id}}  # this may result in self-referred
 read_only: false
+description: # the description of this executor. It will be used in automatics docs UI

@@ -5,6 +5,8 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
 
+from tests import validate_callback
+
 random_np_array = np.random.randint(10, size=(50, 10))
 buffer = 'text_buffer'.encode()
 text = 'text_content'
@@ -162,9 +164,10 @@ def test_message_docs_different_chunks_and_matches_types(input_doc_chunks_and_ma
         assert int(match2.tags['id']) == 30
         assert match2.buffer == buffer
 
-    response_mock = mocker.Mock(wrap=validate_chunks_and_matches_fn)
+    response_mock = mocker.Mock()
 
     with Flow().add() as f:
         f.search(input_fn=[input_doc_chunks_and_matches], on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate_chunks_and_matches_fn)
+

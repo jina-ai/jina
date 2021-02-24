@@ -7,24 +7,28 @@ class RunningStats:
     """Computes running mean and standard deviation"""
 
     def __init__(self):
+        """Constructor."""
         self._n = 0
         self._m = None
         self._s = None
 
     def clear(self):
-        """Reset the stats"""
+        """Reset the stats."""
         self._n = 0.
 
     @property
     def mean(self):
+        """Get the running mean."""
         return self._m if self._n else 0.0
 
     @property
     def variance(self):
+        """Get the running variance."""
         return self._s / self._n if self._n else 0.0
 
     @property
     def std(self):
+        """Get the standard variance."""
         return sqrt(self.variance)
 
     def __add__(self, x: float):

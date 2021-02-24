@@ -88,7 +88,7 @@ def write_html(html_path):
     global num_docs_evaluated
     global evaluation_value
 
-    with open(resource_filename('jina', '/'.join(('resources', 'helloworld.html'))), 'r') as fp, \
+    with open(resource_filename('jina', '/'.join(('resources', 'fashion', 'helloworld.html'))), 'r') as fp, \
             open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
@@ -112,7 +112,7 @@ def write_html(html_path):
 
     colored_url = colored('https://opensource.jina.ai', color='cyan', attrs='underline')
     default_logger.success(
-        f'🤩 Intrigued? Play with "jina hello-world --help" and learn more about Jina at {colored_url}')
+        f'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at {colored_url}')
 
 
 def download_data(targets, download_proxy=None, task_name='download fashion-mnist'):

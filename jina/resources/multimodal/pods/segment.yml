@@ -1,0 +1,22 @@
+!CompoundExecutor
+components:
+  - !SimpleCrafter
+    metas:
+      name: craft
+  - !BiSegmenter
+    metas:
+      name: seg
+metas:
+  name: converter
+  py_modules:
+    - segmenter.py
+requests:
+  use_default: true
+  on:
+    [IndexRequest, SearchRequest]:
+      - !CraftDriver
+        with:
+          executor: craft
+      - !SegmentDriver
+        with:
+          executor: seg

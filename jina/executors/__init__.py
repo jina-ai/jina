@@ -32,6 +32,7 @@ _ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
 
 
 class ExecutorType(type(JAMLCompatible), type):
+    """The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""
 
     def __new__(cls, *args, **kwargs):
         _cls = super().__new__(cls, *args, **kwargs)
@@ -55,6 +56,12 @@ class ExecutorType(type(JAMLCompatible), type):
 
     @staticmethod
     def register_class(cls):
+        """
+        Register a class and wrap update, train, aggregate functions.
+
+        :param cls: The class.
+        :return: The class, after being registered.
+        """
         update_funcs = ['train', 'add', 'delete', 'update']
         train_funcs = ['train']
         aggregate_funcs = ['evaluate']
@@ -116,6 +123,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     'delete', 'update']
 
     def __init__(self, *args, **kwargs):
+        """Constructor."""
         if isinstance(args, tuple) and len(args) > 0:
             self.args = args[0]
         else:
@@ -187,7 +195,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     if common_kwargs:
                         new_drivers = []
                         for d in _drivers[r]:
-                            new_init_kwargs_dict = {k:v for k, v in d._init_kwargs_dict.items()}
+                            new_init_kwargs_dict = {k: v for k, v in d._init_kwargs_dict.items()}
                             new_init_kwargs_dict.update(common_kwargs)
                             new_drivers.append(d.__class__(**new_init_kwargs_dict))
                         _drivers[r].clear()
@@ -279,11 +287,21 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @staticmethod
     def get_shard_workspace(workspace_folder: str, workspace_name: str, pea_id: int) -> str:
+        """
+        Get the path of the current shard.
+
+        :param workspace_folder: Folder of the workspace.
+        :param workspace_name: Name of the workspace.
+        :param pea_id: Id of the pea,
+        :return: Return the workspace of the shard of this Executor.
+        """
         # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
-        return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}') if pea_id > 0 else workspace_folder
+        return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}') if (
+                    isinstance(pea_id, int) and pea_id > 0) else workspace_folder
 
     @property
     def workspace_name(self):
+        """Get the name of the workspace."""
         return self.name
 
     @property

@@ -1,16 +1,13 @@
 import os
-import multiprocessing as mp
 
 import pytest
 import numpy as np
 
-from jina.enums import FlowOptimizeLevel
 from jina.executors.indexers.vector import NumpyIndexer
 from jina.flow import Flow
-from jina.parsers.flow import set_flow_parser
 from jina.proto import jina_pb2
 from jina import Document
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -107,52 +104,6 @@ def test_update_method(test_metas):
         assert os.path.exists(indexer.index_abspath)
 
 
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_two_client_route_parallel():
-    fa1 = set_flow_parser().parse_args(['--optimize-level', str(FlowOptimizeLevel.NONE)])
-    f1 = Flow(fa1).add(parallel=3)
-    f2 = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY).add(parallel=3)
-
-    def start_client(fl):
-        fl.index(input_fn=random_docs(10))
-
-    with f1:
-        assert f1.num_peas == 6
-        t1 = mp.Process(target=start_client, args=(f1,))
-        t1.daemon = True
-        t2 = mp.Process(target=start_client, args=(f1,))
-        t2.daemon = True
-
-        t1.start()
-        t2.start()
-
-    with f2:
-        # no optimization can be made because we ignored the gateway
-        assert f2.num_peas == 6
-        t1 = mp.Process(target=start_client, args=(f2,))
-        t1.daemon = True
-        t2 = mp.Process(target=start_client, args=(f2,))
-        t2.daemon = True
-
-        t1.start()
-        t2.start()
-
-
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-def test_two_client_route():
-    def start_client(fl):
-        fl.index(input_fn=random_docs(10))
-
-    with Flow().add() as f:
-        t1 = mp.Process(target=start_client, args=(f,))
-        t1.daemon = True
-        t2 = mp.Process(target=start_client, args=(f,))
-        t2.daemon = True
-
-        t1.start()
-        t2.start()
-
-
 def test_index(test_workspace_index):
     f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3)
     with f:
@@ -169,8 +120,8 @@ def test_compound_idx(test_workspace_joint, mocker):
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as f:
         f.index(random_docs(100, chunks_per_doc=0))
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as g:
         g.search(random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)

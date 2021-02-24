@@ -5,13 +5,13 @@ with:
   compress_hwm: 1024
 pods:
   - name: encode
-    uses: $RESOURCE_DIR/helloworld.encoder.yml
+    uses: helloworld.encoder.yml
     parallel: $PARALLEL
   - name: index
-    uses: $RESOURCE_DIR/helloworld.indexer.yml
+    uses: helloworld.indexer.yml
     shards: $SHARDS
     polling: all
-    uses_after: $RESOURCE_DIR/helloworld.reduce.yml
+    uses_after: helloworld.reduce.yml
     timeout_ready: 100000 # larger timeout as in query time will read all the data
   - name: evaluate  # optional evaluation, do another step for precision/recall computing
     uses: _eval_pr  # use internal evaluator on precision & recall
