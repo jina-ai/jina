@@ -17,7 +17,8 @@ Labels added by community members are automatically assigned the label `needs-tr
 
 An issue added by a Jina staff member can skip triage and directly be assigned a type, priority, status and area label.
 
-All issues are assigned a type label. Some issues may be assigned a priority, status, and area label. **An issue should only ever have one type label, one status label, one priority label, and one area label.**
+All issues are assigned a type label. Some issues may be assigned a priority, status, and area label.
+**An issue should only ever have one type label, one status label, one priority label, and one area label.**
 
 This is an example of a correctly labelled issue
 ![alt text](.github/images/github_issue_label.png)
@@ -27,7 +28,9 @@ This is an example of a correctly labelled issue
 ## How to assign: a step-by-step flow
 This aims to walk you through a standard triaging process.
 
-#### 1. Assign a type label:
+#### 1. Assign one type label:
+You should only assign one type label at a time. If an issue applies to many types, choose the most relevant type. If an issue contains both a feature request and a separate question, you should suggest they open two separate issues.
+
 | Label | Description and action to be taken  |
 |--|--|
 |`type/irrelevant` | This issue is completely unrelated to Jina and should be closed.|
@@ -63,8 +66,7 @@ This aims to walk you through a standard triaging process.
 
 
 #### 4. Assign an area label:
-
-*Only issues of type bug - feature_request - maintenance are assigned an area label.*
+Only one area label should be assigned. If an issue applies to many area, choose the most relevant area.
 
 Area labels are similar to epics in Jira. They group similar issues by workstream. For example, all issues that affect CRUD operations should be assigned the `area/crud` label.
 
