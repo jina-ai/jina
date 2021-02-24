@@ -18,7 +18,7 @@ from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
 from ..types.request import Request
 
-InputFnType: object = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
+InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 CallbackFnType = Optional[Callable[..., None]]
 
 
