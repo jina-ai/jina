@@ -1,4 +1,3 @@
-
 # Jina Issue Labeling
 
 ## Scope
@@ -14,9 +13,9 @@ These guidelines serve as a primary document for explaining how GitHub issues ar
 
 ## How labels are used in Jina repos.
 
-Labels added by community members are automatically assigned the label `needs-triage`. A Jina staff member should then read the issue and assign it to correct the labels.
+Labels added by community members are automatically assigned the label `needs-triage`. A Jina staff member should then read the issue and assign it to the correct labels.
 
-An issue added by a Jina staff member can skip triage and directly be assigned a type.
+An issue added by a Jina staff member can skip triage and directly be assigned a type, priority, status and area label.
 
 All issues are assigned a type label. Some issues may be assigned a priority, status, and area label. **An issue should only ever have one type label, one status label, one priority label, and one area label.**
 
@@ -83,6 +82,6 @@ These issues should not require detailed knowledge of Jina architecture or desig
 **Specifications**
 The issue should naturally explain what the problem is. It should also include some tips and starting point for how to solve the problem. For example, link to the relevant pages on the documentation site that someone might read to understand how to begin fixing the problem.
 
-**Acceptance Criteria **
+**Acceptance Criteria**
 
 The issue should include a list of acceptance criteria. These are requirements that must be met for the issue to be marked done. By adding clear and understandable acceptance criteria, it helps the community members work towards an end goal.
