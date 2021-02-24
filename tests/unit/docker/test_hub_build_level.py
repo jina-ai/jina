@@ -40,7 +40,7 @@ def test_hub_build_level_pass(monkeypatch, test_workspace, docker_image):
     expected_failed_levels = []
 
     _, failed_levels = HubIO(args)._test_build(docker_image, BuildTestLevel.EXECUTOR,
-                                               os.path.join(cur_dir, 'yaml/test-joint.yml'), 60, True,
+                                               os.path.join(cur_dir, 'yaml/test-joint.yml'), 60000, True,
                                                JinaLogger('unittest'))
 
     assert expected_failed_levels == failed_levels
@@ -51,7 +51,7 @@ def test_hub_build_level_fail(monkeypatch, test_workspace, docker_image):
     expected_failed_levels = [BuildTestLevel.POD_NONDOCKER, BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]
 
     _, failed_levels = HubIO(args)._test_build(docker_image, BuildTestLevel.FLOW,
-                                               os.path.join(cur_dir, 'yaml/test-joint.yml'), 60, True,
+                                               os.path.join(cur_dir, 'yaml/test-joint.yml'), 60000, True,
                                                JinaLogger('unittest'))
 
     assert expected_failed_levels == failed_levels
