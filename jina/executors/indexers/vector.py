@@ -47,7 +47,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.dtype = None
         self.compress_level = compress_level
         self.key_bytes = b''
-        self.valid_indices = np.array([], dtype=bool)
         self.ref_indexer_workspace_name = None
 
         if ref_indexer:
@@ -60,7 +59,6 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
-            self.valid_indices = ref_indexer.valid_indices
             self.index_filename = ref_indexer.index_filename
             self.logger.warning(f'\n'
                                 f'num_dim extracted from `ref_indexer` to {ref_indexer.num_dim} \n'
@@ -69,6 +67,19 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                                 f'compress_level overriden from `ref_indexer` to {ref_indexer.compress_level} \n'
                                 f'index_filename overriden from `ref_indexer` to {ref_indexer.index_filename}')
             self.ref_indexer_workspace_name = ref_indexer.workspace_name
+
+    def post_init(self):
+        super().post_init()
+        self.valid_indices = np.array([], dtype=bool)
+
+    def _delete_invalid_indices(self):
+        """Here rebuild the index with only valid entries"""
+        pass
+
+    def __getstate__(self):
+        self._delete_invalid_indices()
+        d = super().__getstate__()
+        return d
 
     @property
     def workspace_name(self):
