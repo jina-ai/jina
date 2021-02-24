@@ -75,8 +75,10 @@ def test_cache_driver_from_file(tmpdir, test_metas):
     folder = os.path.join(test_metas["workspace"])
     bin_full_path = os.path.join(folder, filename)
     docs = DocumentSet(list(random_docs(10, embedding=False)))
-    pickle.dump({doc.id: BaseCacheDriver.hash_doc(doc, ['content_hash']) for doc in docs}, open(f'{bin_full_path}.bin.ids', 'wb'))
-    pickle.dump({BaseCacheDriver.hash_doc(doc, ['content_hash']): doc.id for doc in docs}, open(f'{bin_full_path}.bin.cache', 'wb'))
+    pickle.dump({doc.id: BaseCacheDriver.hash_doc(doc, ['content_hash']) for doc in docs},
+                open(f'{bin_full_path}.bin.ids', 'wb'))
+    pickle.dump({BaseCacheDriver.hash_doc(doc, ['content_hash']): doc.id for doc in docs},
+                open(f'{bin_full_path}.bin.cache', 'wb'))
 
     driver = MockCacheDriver()
     with DocCache(metas=test_metas, fields=(CONTENT_HASH_KEY,)) as executor:
@@ -266,3 +268,36 @@ def test_hash():
     d2.tags['b'] = '23456'
     assert BaseCacheDriver.hash_doc(d1, ['tags__a', 'tags__b']) == BaseCacheDriver.hash_doc(d1, ['tags__a', 'tags__b'])
     assert BaseCacheDriver.hash_doc(d1, ['tags__a', 'tags__b']) != BaseCacheDriver.hash_doc(d2, ['tags__a', 'tags__b'])
+
+
+def test_cache_legacy_field_type(tmp_path, test_metas):
+    filename = os.path.join(tmp_path, 'DocCache.bin')
+    doc1 = Document(id=1)
+    doc1.text = 'blabla'
+    doc1.update_content_hash()
+    docs1 = DocumentSet([doc1])
+
+    doc2 = Document(id=1)
+    doc2.text = 'blabla2'
+    doc2.update_content_hash()
+    docs2 = DocumentSet([doc2])
+
+    doc3 = Document(id=12312)
+    doc3.text = 'blabla'
+    doc3.update_content_hash()
+    docs3 = DocumentSet([doc3])
+
+    driver = MockBaseCacheDriver()
+
+    with DocCache(filename, metas=test_metas, field=CONTENT_HASH_KEY) as executor:
+        driver.attach(executor=executor, runtime=None)
+        assert executor.fields == [CONTENT_HASH_KEY]
+        driver._apply_all(docs1)
+        driver._apply_all(docs2)
+        assert executor.size == 2
+
+    with BaseExecutor.load(executor.save_abspath) as executor:
+        driver.attach(executor=executor, runtime=None)
+        assert executor.fields == [CONTENT_HASH_KEY]
+        with pytest.raises(NotImplementedError):
+            driver._apply_all(docs3)
