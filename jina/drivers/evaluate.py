@@ -146,7 +146,7 @@ class RankEvaluateDriver(BaseEvaluateDriver):
         Extract values of the matches from documents with fields as keys.
 
         :param doc: Documents to be extracted.
-        :return: a list of tuples consisted of the values from the fields.
+        :return: a list of tuples consisting of the values from the fields.
         """
         single_field = self.single_field
         if single_field:
