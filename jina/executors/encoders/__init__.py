@@ -21,7 +21,12 @@ class BaseEncoder(BaseExecutor):
     """
 
     def encode(self, data: Any, *args, **kwargs) -> Any:
-        """Encode the data, needs to be implemented in subclass."""
+        """Encode the data, needs to be implemented in subclass.
+        :param data: the data to be encoded
+        :param args: additional positional arguments
+        :param kwargs: additional key-value arguments
+        """
+
         raise NotImplementedError
 
 
@@ -31,7 +36,8 @@ class BaseNumericEncoder(BaseEncoder):
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         :param data: a `B x ([T] x D)` numpy ``ndarray``, `B` is the size of the batch
-        :return: a `B x D` numpy ``ndarray``
+        :param args: additional positional arguments
+        :param kwargs: additional key-value arguments
         """
         raise NotImplementedError
 
@@ -54,35 +60,13 @@ class BaseAudioEncoder(BaseNumericEncoder):
 class BaseTextEncoder(BaseEncoder):
     """
     BaseTextEncoder encodes data from an array of string type (data.dtype.kind == 'U') of size B into a ndarray of B x D.
-
     """
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
         :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
-        :return: an ndarray of `B x D`
+        :param args: additional positional arguments
+        :param kwargs: additional key-value arguments
         """
         raise NotImplementedError
-
-
-class PipelineEncoder(CompoundExecutor):
-    """PipelineEncoder encodes data through a pipeline which consists of executors."""
-    def encode(self, data: Any, *args, **kwargs) -> Any:
-        """Encode the data from the executors."""
-        if not self.components:
-            raise NotImplementedError
-        for be in self.components:
-            data = be.encode(data, *args, **kwargs)
-        return data
-
-    def train(self, data: Any, *args, **kwargs) -> None:
-        """Train the data from the executors."""
-        if not self.components:
-            raise NotImplementedError
-        for idx, be in enumerate(self.components):
-            if not be.is_trained:
-                be.train(data, *args, **kwargs)
-
-            if idx + 1 < len(self.components):
-                data = be.encode(data, *args, **kwargs)
