@@ -115,7 +115,6 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
-      max-parallel: 6
       matrix:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
@@ -164,7 +163,7 @@ jobs:
             echo "flag it as jina for codeoverage"
             echo "::set-output name=codecov_flag::jina"
           fi
-        timeout-minutes: 30
+        timeout-minutes: 15
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
