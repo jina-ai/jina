@@ -32,6 +32,7 @@ class ContainerRuntime(ZMQRuntime):
     def teardown(self):
         """Stop the container."""
         self._container.stop()
+        super().teardown()
 
     def _stream_logs(self):
         for line in self._container.logs(stream=True):

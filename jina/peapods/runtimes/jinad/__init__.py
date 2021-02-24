@@ -55,6 +55,7 @@ class JinadRuntime(AsyncZMQRuntime):
         Closes the remote Pod/Pea using :class:`JinadAPI`
         """
         self.api.delete(remote_id=self._remote_id)
+        super().teardown()
 
     @cached_property
     def _remote_id(self) -> Optional[str]:

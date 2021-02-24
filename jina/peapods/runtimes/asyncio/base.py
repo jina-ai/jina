@@ -72,6 +72,7 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         """Stop and close the event loop."""
         self._loop.stop()
         self._loop.close()
+        super().teardown()
 
     async def async_setup(self):
         """The async method to setup."""

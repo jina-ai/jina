@@ -48,6 +48,7 @@ class ZEDRuntime(ZMQRuntime):
         """Close the `ZmqStreamlet` and `Executor`."""
         self._zmqlet.close()
         self._executor.close()
+        super().teardown()
 
     #: Private methods required by :meth:`setup`
 
