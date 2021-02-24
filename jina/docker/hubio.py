@@ -9,7 +9,7 @@ import time
 import urllib.parse
 import urllib.request
 import webbrowser
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 
 from .checker import *
 from .helper import credentials_file
@@ -67,8 +67,12 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
-    def new(self) -> None:
-        """Create a new executor using cookiecutter template."""
+    def new(self, no_input: bool = False) -> None:
+        """
+        Create a new executor using cookiecutter template.
+        
+        :param no_input: Argument to avoid prompting dialogue (just to be used for testing)
+        """
         with ImportExtensions(required=True):
             from cookiecutter.main import cookiecutter
             import click  # part of cookiecutter
@@ -80,8 +84,8 @@ class HubIO:
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
 
         try:
-            cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite,
-                         output_dir=self.args.output_dir)
+            cookiecutter(template=cookiecutter_template, overwrite_if_exists=self.args.overwrite,
+                         output_dir=self.args.output_dir, no_input=no_input)
         except click.exceptions.Abort:
             self.logger.info('nothing is created, bye!')
 
@@ -228,25 +232,8 @@ class HubIO:
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
             for line in self._client.images.push(name, stream=True, decode=True):
                 t.update(1)
-                if 'error' in line and 'authentication required' in line['error']:
-                    raise DockerLoginFailed('user not logged in to docker.')
                 self.logger.debug(line)
         self.logger.success(f'🎉 {name} is now published!')
-
-        if False and readme_path:
-            # unfortunately Docker Hub Personal Access Tokens cannot be used as they are not supported by the API
-            _volumes = {os.path.dirname(os.path.abspath(readme_path)): {'bind': '/workspace'}}
-            _env = {
-                'DOCKERHUB_USERNAME': self.args.username,
-                'DOCKERHUB_PASSWORD': self.args.password,
-                'DOCKERHUB_REPOSITORY': self.args.repository,
-                'README_FILEPATH': '/workspace/README.md',
-            }
-
-            self._client.containers.run('peterevans/dockerhub-description:2.1',
-                                        auto_remove=True,
-                                        volumes=_volumes,
-                                        environment=_env)
 
         share_link = f'https://api.jina.ai/hub/?jh={urllib.parse.quote_plus(name)}'
 
