@@ -156,7 +156,7 @@ def test_expand_env():
 
 
 def test_enum_yaml():
-    assert JAML.load(JAML.dump(SocketType.PAIR_BIND)) == SocketType.PAIR_BIND
+    assert JAML.load(JAML.dump(SocketType.PAIR_BIND)) == 'PAIR_BIND'
 
 
 def test_encoder_name_env_replace():
