@@ -317,7 +317,7 @@ class HubIO:
                         path=self.args.path,
                         tag=self.tag,
                         pull=self.args.pull,
-                        dockerfile='random string',
+                        dockerfile='Dockerfile',
                         rm=True
                     )
 
@@ -344,7 +344,7 @@ class HubIO:
                 image, log = self._client.images.build(path=self.args.path,
                                                        tag=self.tag,
                                                        pull=self.args.pull,
-                                                       dockerfile='random string',
+                                                       dockerfile='Dockerfile',
                                                        rm=True)
 
                 # success
