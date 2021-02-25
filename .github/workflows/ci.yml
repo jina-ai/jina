@@ -60,7 +60,7 @@ jobs:
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.7.9
       - name: Lint with flake8
         run: |
           pip install flake8
@@ -78,7 +78,7 @@ jobs:
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.7.9
       - id: file_changes
         uses: jitterbit/get-changed-files@v1
       - name: docstring check with darglint and pydocstyle
@@ -116,7 +116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.7.9]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
