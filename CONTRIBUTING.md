@@ -51,7 +51,7 @@ There are also a couple of nice to haves:
 * **Environment:** You can find this with `jina --version-full`
 * **Screenshots:** If they're relevant
 
-To understand how our issues are labeled, check out our [issue label guide](https://github.com/jina-ai/jina/blob/master/github_issue_label_guide.md).
+To understand how our issues are labeled, check out our [issue label guide](./github_issue_label_guide.md).
 
 ### Fixing and Discussing Issues
 
