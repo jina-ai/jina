@@ -29,6 +29,7 @@ from ..peapods import BasePod
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
+    """Type of Flow, metaclass of :class:`BaseFlow`"""
     pass
 
 
@@ -60,7 +61,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
     def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
-        """Initialize a Flow object"""
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'BasePod']

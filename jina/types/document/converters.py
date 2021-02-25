@@ -74,6 +74,13 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
 
 
 def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
+    """
+    Convert an image buffer to blob
+
+    :param source: image bytes buffer
+    :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+    :return: image blob
+    """
     from PIL import Image
     raw_img = Image.open(source).convert('RGB')
     img = np.array(raw_img).astype('float32')
@@ -90,8 +97,8 @@ def to_datauri(mimetype, data, charset: str = 'utf-8', base64: bool = False, bin
     :param data: Data representations.
     :param charset: Charset may be any character set registered with IANA
     :param base64: Used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
-    :param binary:
-    :return:
+    :param binary: True if from binary data False for other data (e.g. text)
+    :return: URI data
     """
     parts = ['data:', mimetype]
     if charset is not None:
