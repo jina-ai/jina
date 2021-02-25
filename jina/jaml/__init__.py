@@ -92,25 +92,33 @@ class JAML:
         return r
 
     @staticmethod
-    def escape(value: str) -> str:
+    def escape(value: str, include_unknown_tags: bool = True) -> str:
         """
         Escape the YAML content by replacing all customized tags ``!`` to ``jtype: ``.
 
         :param value: the original YAML content
+        :param include_unknown_tags: if to include unknown tags during escaping
         """
-        r = '|'.join(JAML.registered_tags())
-        r = rf'!({r}|\w+)\b'
+        if include_unknown_tags:
+            r = r'!(\w+)\b'
+        else:
+            r = '|'.join(JAML.registered_tags())
+            r = rf'!({r})\b'
         return re.sub(r, r'jtype: \1', value)
 
     @staticmethod
-    def unescape(value: str) -> str:
+    def unescape(value: str, include_unknown_tags: bool = True) -> str:
         """
         Unescape the YAML content by replacing all ``jtype: `` to tags.
 
         :param value: the escaped YAML content
+        :param include_unknown_tags: if to include unknown tags during unescaping
         """
-        r = '|'.join(JAML.registered_tags())
-        r = rf'jtype: ({r}|\w+)\b'
+        if include_unknown_tags:
+            r = r'jtype: (\w+)\b'
+        else:
+            r = '|'.join(JAML.registered_tags())
+            r = rf'jtype: ({r})\b'
         return re.sub(r, r'!\1', value)
 
     @staticmethod

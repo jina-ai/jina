@@ -1,13 +1,36 @@
 import pytest
+
 from jina.executors import BaseExecutor
 from jina.jaml import JAML
+
 
 class MyExecutor(BaseExecutor):
     pass
 
+
 def test_non_empty_reg_tags():
     assert JAML.registered_tags()
-    assert '!BaseExecutor' in JAML.registered_tags()
+    assert 'BaseExecutor' in JAML.registered_tags()
+
+
+@pytest.mark.parametrize('include_unk, expected', [
+    (True, '''
+jtype: BaseExecutor {}
+jtype: Blah {}
+'''
+     ),
+    (False, '''
+jtype: BaseExecutor {}
+!Blah {}
+'''
+     )
+])
+def test_include_unknown(include_unk, expected):
+    y = '''
+!BaseExecutor {}
+!Blah {}
+    '''
+    assert JAML.escape(y, include_unknown_tags=include_unk).strip() == expected.strip()
 
 
 @pytest.mark.parametrize('original, escaped',
@@ -75,7 +98,7 @@ metas:
   name: indexer
   workspace: $JINA_WORKSPACE
                                  '''
-                         ),(
+                         ), (
                                  '''
 !CompoundIndexer
 metas:
@@ -155,7 +178,6 @@ requests:
                          ),
                          ])
 def test_escape(original, escaped):
-    print(JAML.escape(original.strip()))
-    print(escaped.strip())
-    assert JAML.escape(original.strip()) == escaped.strip()
-    assert JAML.unescape(JAML.escape(original.strip())) == original.strip()
+    assert JAML.escape(original, include_unknown_tags=False).strip() == escaped.strip()
+    assert JAML.unescape(JAML.escape(original, include_unknown_tags=False),
+                         include_unknown_tags=False).strip() == original.strip()
