@@ -5,6 +5,7 @@ __license__ = "Apache-2.0"
 import argparse
 import os
 from typing import Callable, Union, Optional, Iterator, List, Dict, AsyncIterator
+from concurrent.futures._base import CancelledError
 
 import grpc
 import inspect
@@ -171,7 +172,7 @@ class BaseClient:
                                       logger=self.logger)
                         p_bar.update(self.args.request_size)
                         yield resp
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, CancelledError):
             self.logger.warning('user cancel the process')
         except grpc.aio._call.AioRpcError as rpc_ex:
             # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
