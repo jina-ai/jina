@@ -8,9 +8,12 @@ import itertools as it
 import json
 import os
 import random
-from typing import List, Union, Iterator, Any, Iterable, Dict
+from typing import List, Union, Iterator, Any, Iterable, Dict, TextIO
 
 import numpy as np
+
+if False:
+    from jina import Document
 
 # https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
 _jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
@@ -23,57 +26,51 @@ def _sample(iterable, sampling_rate: float = None):
             yield i
 
 
-def _subsample(iterable, sampling_rate: float = None, size: int = None, **kwargs):
+def _subsample(iterable, sampling_rate: float = None, size: int = None):
     yield from it.islice(_sample(iterable, sampling_rate), size)
 
 
 def _input_lines(
         lines: Iterable[str] = None,
         filepath: str = None,
-        read_mode: str = 'r',
         line_format: str = 'json',
-        **kwargs
-) -> Iterator[Union[str, bytes]]:
-    """Input function that iterates over list of strings, it can be used in the Flow API.
+) -> Iterator[Union[str, 'Document']]:
+    """Generator function for lines, json and sc. Yields documents or strings.
 
     :param filepath: a text file that each line contains a document
     :param lines: a list of strings, each is considered as a document
-    :param size: the maximum number of the documents
-    :param sampling_rate: the sampling rate between [0, 1]
-    :param read_mode: specifies the mode in which the file
-            is opened. 'r' for reading in text mode, 'rb' for reading in binary
     :param line_format: the format of each line ``json`` or ``csv``
+    :yields: documents
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_lines`, :meth:`Flow.search_lines` instead
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
-        with open(filepath, read_mode) as f:
+        with open(filepath, 'r') as f:
             if file_type in _jsonl_ext:
-                yield from _input_ndjson(f, **kwargs)
+                yield from _input_ndjson(f)
             elif file_type in _csv_ext:
-                yield from _input_csv(f, **kwargs)
+                yield from _input_csv(f)
             else:
-                yield from _subsample(f, **kwargs)
+                yield from _subsample(f)
     elif lines:
         if line_format == 'json':
-            yield from _input_ndjson(lines, **kwargs)
+            yield from _input_ndjson(lines)
         elif line_format == 'csv':
-            yield from _input_csv(lines, **kwargs)
+            yield from _input_csv(lines)
         else:
-            yield from _subsample(lines, **kwargs)
+            yield from _subsample(lines)
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
 
 def _input_ndjson(
-        fp: Iterable[str],
+        fp: Union[Iterable[str], TextIO],
         field_resolver: Dict[str, str] = None,
-        **kwargs
 ):
     from jina import Document
 
-    for line in _subsample(fp, **kwargs):
+    for line in _subsample(fp):
         value = json.loads(line)
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
@@ -82,13 +79,12 @@ def _input_ndjson(
 
 
 def _input_csv(
-        fp: Iterable[str],
+        fp: Union[Iterable[str], TextIO],
         field_resolver: Dict[str, str] = None,
-        **kwargs
 ):
     from jina import Document
     lines = csv.DictReader(fp)
-    for value in _subsample(lines, **kwargs):
+    for value in _subsample(lines):
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
         else:
@@ -102,7 +98,7 @@ def _input_files(
         sampling_rate: float = None,
         read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
-    r"""Input function that iterates over files, it can be used in the Flow API.
+    r"""Input function that iterates over files, it can be used in the Flow API. Yields file paths or binary content.
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
     :param recursive: If recursive is true, the pattern '**' will match any files and
@@ -112,6 +108,7 @@ def _input_files(
     :param read_mode: specifies the mode in which the file
             is opened. 'r' for reading in text mode, 'rb' for reading in binary mode.
             If `read_mode` is None, will iterate over filenames
+    :yields: file paths or binary content
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
@@ -139,13 +136,14 @@ def _input_files(
 
 def _input_ndarray(
         array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
-) -> Iterator[Any]:
-    """Input function that iterates over a numpy array, it can be used in the Flow API.
+) -> Iterator['np.ndarray']:
+    """Input function that iterates over a numpy array, it can be used in the Flow API. Yields ndarrays.
 
     :param array: the numpy ndarray data source
     :param axis: iterate over that axis
     :param size: the maximum number of the sub arrays
     :param shuffle: shuffle the numpy data source beforehand
+    :yields: ndarrays
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead
