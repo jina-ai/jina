@@ -130,6 +130,7 @@ jobs:
         run: |
           docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
+          python -m pip install wheel
           pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
           export JINA_LOG_LEVEL="ERROR"
@@ -138,10 +139,6 @@ jobs:
       - name: Test
         id: test
         run: |
-          nproc
-          hostname -I
-          vmstat -s
-          cat /proc/meminfo
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
