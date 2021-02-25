@@ -104,7 +104,7 @@ def test_flow_uses_from_dict():
     class DummyEncoder(BaseEncoder):
         pass
 
-    d1 = {'__cls': 'DummyEncoder',
+    d1 = {'jtype': 'DummyEncoder',
           'metas': {'name': 'dummy1'}}
     with Flow().add(uses=d1):
         pass

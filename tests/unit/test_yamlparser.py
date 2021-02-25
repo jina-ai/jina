@@ -189,7 +189,7 @@ def test_load_from_dict():
     #   workspace: ${{this.name}}-${{this.batch_size}}
 
     d1 = {
-        '__cls': 'BaseEncoder',
+        'jtype': 'BaseEncoder',
         'metas': {'name': '${{BE_TEST_NAME}}',
                   'batch_size': '${{BATCH_SIZE}}',
                   'pea_id': '${{pea_id}}',
@@ -212,16 +212,16 @@ def test_load_from_dict():
     #   name: compound1
 
     d2 = {
-        '__cls': 'CompoundExecutor',
+        'jtype': 'CompoundExecutor',
         'components':
             [
                 {
-                    '__cls': 'BinaryPbIndexer',
+                    'jtype': 'BinaryPbIndexer',
                     'with': {'index_filename': 'tmp1'},
                     'metas': {'name': 'test1'}
                 },
                 {
-                    '__cls': 'BinaryPbIndexer',
+                    'jtype': 'BinaryPbIndexer',
                     'with': {'index_filename': 'tmp2'},
                     'metas': {'name': 'test2'}
                 },
