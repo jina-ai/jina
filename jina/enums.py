@@ -68,7 +68,7 @@ class BetterEnum(IntEnum, metaclass=EnumType):
             In principle, this should inherit from :class:`JAMLCompatible` directly,
             however, this method is too simple and thus replaced the parent method.
         """
-        return representer.represent_scalar('!' + cls.__name__, str(data))
+        return representer.represent_scalar('tag:yaml.org,2002:str', str(data), style='"')
 
     @classmethod
     def _from_yaml(cls, constructor, node):
