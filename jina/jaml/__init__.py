@@ -123,6 +123,10 @@ class JAML:
 
     @staticmethod
     def registered_tags() -> List[str]:
+        """
+        Return a list of :class:`JAMLCompatible` classes that have been registered.
+
+        """
         return list(v[1:] for v in set(JinaLoader.yaml_constructors.keys()) if v and v.startswith('!'))
 
     @staticmethod
