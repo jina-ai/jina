@@ -347,7 +347,7 @@ class HubIO:
                 image, log = self._client.images.build(path=self.args.path,
                                                        tag=self.tag,
                                                        pull=self.args.pull,
-                                                       dockerfile=_dockerfile_path,
+                                                       dockerfile=_dockerfile,
                                                        labels=_labels,
                                                        rm=True)
 
