@@ -3,7 +3,7 @@ import re
 import tempfile
 import warnings
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TextIO, Optional
+from typing import Dict, Any, Union, TextIO, Optional, List
 
 import yaml
 from yaml.constructor import FullConstructor
@@ -92,6 +92,32 @@ class JAML:
         return r
 
     @staticmethod
+    def escape(value: str) -> str:
+        """
+        Escape the YAML content by replacing all customized tags ``!`` to ``jtype: ``.
+
+        :param value: the original YAML content
+        """
+        r = '|'.join(JAML.registered_tags())
+        r = rf'!({r}|\w+)\b'
+        return re.sub(r, r'jtype: \1', value)
+
+    @staticmethod
+    def unescape(value: str) -> str:
+        """
+        Unescape the YAML content by replacing all ``jtype: `` to tags.
+
+        :param value: the escaped YAML content
+        """
+        r = '|'.join(JAML.registered_tags())
+        r = rf'jtype: ({r}|\w+)\b'
+        return re.sub(r, r'!\1', value)
+
+    @staticmethod
+    def registered_tags() -> List[str]:
+        return list(v[1:] for v in set(JinaLoader.yaml_constructors.keys()) if v and v.startswith('!'))
+
+    @staticmethod
     def load_no_tags(stream, **kwargs):
         """
         Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow.
@@ -100,7 +126,7 @@ class JAML:
         :param **kwargs: other kwargs
         :return: the Python object
         """
-        safe_yml = '\n'.join(v if not re.match(r'^[\s-]*?!\b', v) else v.replace('!', '__cls: ') for v in stream)
+        safe_yml = JAML.escape('\n'.join(v for v in stream))
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
@@ -430,10 +456,10 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # also add YAML parent path to the search paths
                 load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(s_path),) if s_path else None)
             # revert yaml's tag and load again, this time with substitution
-            revert_tag_yml = JAML.dump(no_tag_yml).replace('__cls: ', '!')
+            tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
 
             # load into object, no more substitute
-            return JAML.load(revert_tag_yml, substitute=False)
+            return JAML.load(tag_yml, substitute=False)
 
     @classmethod
     def inject_config(cls, raw_config: Dict, *args, **kwargs) -> Dict:
