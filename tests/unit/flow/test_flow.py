@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import pytest
-import time
 
 from jina import Flow, Document
 from jina.enums import SocketType, FlowBuildLevel
@@ -12,7 +11,7 @@ from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from jina.peapods.pods import BasePod
-from tests import random_docs, rm_files, validate_callback
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -67,8 +66,6 @@ def test_flow_with_jump(tmpdir):
         _validate(f)
 
     f.save_config(os.path.join(str(tmpdir), 'tmp.yml'))
-    with open(os.path.join(str(tmpdir), 'tmp.yml')) as file_:
-        print(file_.readlines())
     Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
 
     with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
