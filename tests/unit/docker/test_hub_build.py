@@ -108,10 +108,3 @@ def test_labels():
 
     with pytest.raises(BaseException, match='labels all good'):
         hubio.build()
-
-
-@pytest.mark.timeout(360)
-def test_hub_build_multistage():
-    args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu-multistage'), '--test-uses', '--raise-error'])
-    HubIO(args).build()
