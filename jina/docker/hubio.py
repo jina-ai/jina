@@ -450,9 +450,8 @@ class HubIO:
             # remove the very verbose build log when throw error
             if 'build_history' in result:
                 result['build_history'].pop('logs', None)
-            self.logger.error('building docker image failed, ',
-                              self.args.path,
-                              _dockerfile)
+            self.logger.error(
+                f'building docker image failed, {self.args.path}, {_dockerfile}')
             raise HubBuilderError(_excepts)
 
         return result

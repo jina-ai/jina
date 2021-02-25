@@ -82,7 +82,10 @@ def test_hub_build_push(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
     mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
-    args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), '--push', '--host-info'])
+    args = set_hub_build_parser().parse_args([
+        os.path.join(cur_dir, 'hub-mwu'),
+        '--push',
+        '--host-info'])
     summary = HubIO(args).build()
 
     with open(cur_dir + '/hub-mwu' + '/manifest.yml') as fp:
