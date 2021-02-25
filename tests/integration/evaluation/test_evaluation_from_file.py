@@ -87,12 +87,12 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
         for gt in resp.groundtruths:
             assert gt.tags['groundtruth']
 
-    m = mocker.Mock()
+    mock = mocker.Mock()
     with Flow.load_config(search_yaml) as evaluate_flow:
         evaluate_flow.search(
             input_fn=evaluate_docs,
-            on_done=m
+            on_done=mock
         )
 
-    m.assert_called_once()
-    validate_callback(m, validate_evaluation_response)
+    mock.assert_called_once()
+    validate_callback(mock, validate_evaluation_response)

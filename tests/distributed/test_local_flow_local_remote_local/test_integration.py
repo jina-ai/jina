@@ -30,9 +30,9 @@ def test_flow(docker_compose, tmpdir, mocker, encoder_needs, indexer_needs, inde
     with Document() as doc:
         doc.content = text
 
-    m = mocker.Mock()
+    mock = mocker.Mock()
     with Flow.load_config(flow_yml) as f:
-        f.index([doc], on_done=m)
+        f.index([doc], on_done=mock)
 
-    m.assert_called_once()
-    validate_callback(m, validate_output)
+    mock.assert_called_once()
+    validate_callback(mock, validate_output)

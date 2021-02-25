@@ -33,8 +33,8 @@ def test_flow_runner(tmpdir, mocker):
         execution_method='search',
     )
 
-    m = mocker.Mock()
-    flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace}, callback=m)
+    mock = mocker.Mock()
+    flow_runner.run(workspace=workspace, trial_parameters={'JINA_TEST_FLOW_RUNNER_WORKSPACE': workspace}, callback=mock)
 
-    validate_callback(m, callback)
+    validate_callback(mock, callback)
     assert os.path.exists(os.path.join(workspace, 'tmp2'))

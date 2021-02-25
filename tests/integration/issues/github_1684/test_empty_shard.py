@@ -33,6 +33,7 @@ def test_empty_shard(mocker, workdir):
     with Flow.load_config(os.path.join(cur_dir, 'flow.yml')) as f:
         f.search([doc], on_done=mock, on_error=error_mock)
 
+    mock.assert_called_once()
     validate_callback(mock, validate_response)
 
     error_mock.assert_not_called()
