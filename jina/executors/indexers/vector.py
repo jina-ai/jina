@@ -47,6 +47,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.dtype = None
         self.compress_level = compress_level
         self.key_bytes = b''
+        self.valid_indices = np.array([], dtype=bool)
         self.ref_indexer_workspace_name = None
 
         if ref_indexer:
@@ -59,6 +60,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self._size = ref_indexer._size
             # point to the ref_indexer.index_filename
             # so that later in `post_init()` it will load from the referred index_filename
+            self.valid_indices = ref_indexer.valid_indices
             self.index_filename = ref_indexer.index_filename
             self.logger.warning(f'\n'
                                 f'num_dim extracted from `ref_indexer` to {ref_indexer.num_dim} \n'
@@ -70,15 +72,36 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     def post_init(self):
         super().post_init()
-        self.valid_indices = np.array([], dtype=bool)
 
     def _delete_invalid_indices(self):
-        """Here rebuild the index with only valid entries"""
-        pass
+        # problem is data is not flushed there yet.
+        # self.write_handler.close()
+        # self.handler_mutex = False
+        valid = self.valid_indices[self.valid_indices == True]  # noqa
+        if len(valid) != len(self.valid_indices):
 
-    def __getstate__(self):
+            deleted_keys = len(self.valid_indices[self.valid_indices == False])
+            tmp_ndarray = np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
+                                 shape=(self.size + deleted_keys, self.num_dim))
+            open(self.index_abspath+'tmp', 'wb')
+            valid_ndarray = np.memmap(self.index_abspath+'tmp', dtype=self.dtype, mode='r+',
+                                 shape=(len(valid), self.num_dim))
+            valid_ndarray[:] = tmp_ndarray[self.valid_indices]
+            valid_ndarray.flush()
+            del tmp_ndarray
+            os.remove(self.index_abspath)
+            os.rename(self.index_abspath+'tmp', self.index_abspath)
+
+            valid_key_bytes = np.frombuffer(self.key_bytes, dtype=(np.str_, self.key_length))[self.valid_indices].tobytes()
+            self.key_bytes = valid_key_bytes
+            self._size = len(valid)
+            self.valid_indices = valid
+            # self._int2ext_id = self._int2ext_id[valid]
+
+    def __setstate__(self, d):
+        # called on load
+        d = super().__setstate__(d)
         self._delete_invalid_indices()
-        d = super().__getstate__()
         return d
 
     @property
@@ -226,6 +249,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self.logger.success(f'memmap is enabled for {self.index_abspath}')
             deleted_keys = len(self.valid_indices[self.valid_indices == False])
             # `==` is required. `is False` does not work in np
+            print(f'self.size when loading ndarray: {self.size}; deleted keys = {deleted_keys}')
             return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
                              shape=(self.size + deleted_keys, self.num_dim))
 
@@ -245,7 +269,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     @cached_property
     def _int2ext_id(self) -> Optional['np.ndarray']:
-        """Convert internal ids (0,1,2,3,4,...) to external ids (random index) """
+        """Convert internal ids (0,1,2,3,4,...) to external ids (random strings) """
         if self.key_bytes:
             r = np.frombuffer(self.key_bytes, dtype=(np.str_, self.key_length))
             # `==` is required. `is False` does not work in np
@@ -260,7 +284,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
     @cached_property
     def _ext2int_id(self) -> Optional[Dict]:
-        """Convert external ids (random index) to internal ids (0,1,2,3,4,...) """
+        """Convert external ids (random strings) to internal ids (0,1,2,3,4,...) """
         if self._int2ext_id is not None:
             return {k: idx for idx, k in enumerate(self._int2ext_id)}
 
