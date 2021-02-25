@@ -312,14 +312,14 @@ class HubIO:
                     _check_result = self._check_completeness()
                     self._freeze_jina_version()
 
-                    _dockerfile_path = _check_result['Dockerfile']
+                    _dockerfile = os.path.basename(_check_result['Dockerfile'])
                     _labels = {_label_prefix + k: str(v) for k, v in self.manifest.items()}
                     streamer = self._raw_client.build(
                         decode=True,
                         path=self.args.path,
                         tag=self.tag,
                         pull=self.args.pull,
-                        dockerfile=_dockerfile_path,
+                        dockerfile=_dockerfile,
                         labels=_labels,
                         rm=True
                     )
