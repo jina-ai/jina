@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pytest
+import time
 
 from jina import Flow, Document
 from jina.enums import SocketType, FlowBuildLevel
@@ -66,6 +67,8 @@ def test_flow_with_jump(tmpdir):
         _validate(f)
 
     f.save_config(os.path.join(str(tmpdir), 'tmp.yml'))
+    with open(os.path.join(str(tmpdir), 'tmp.yml')) as file_:
+        print(file_.readlines())
     Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
 
     with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
