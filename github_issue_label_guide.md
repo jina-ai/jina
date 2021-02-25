@@ -1,21 +1,21 @@
 # Jina Issue Labeling
 
 ## Scope
-These guidelines serve as a primary document for explaining how GitHub issues are labeled in Jina repos. For community members reading this document, it should explain how a label was assigned to your issue, and what that label means. For Jina staff, it describes how to assign labels correctly.
+These guidelines serve as a primary document for explaining how GitHub issues are labeled in Jina repos. For community members reading this document, it should explain how a label was assigned to your issue, and what that label means. For Jina maintainers, it describes how to assign labels correctly.
 
 **Note:** These guideline only apply to the following repos; [Jina](https://github.com/jina-ai/jina), [Jina-hub](https://github.com/jina-ai/jina-hub), [Dashboard](https://github.com/jina-ai/dashboard), [docs](https://github.com/jina-ai/docs), [cloud-ops](https://github.com/jina-ai/cloud-ops),  [Jinabox.js](https://github.com/jina-ai/jinabox.js)
 
 ## Why is labeling important?
 * Labels provide a good starting point for community members to contribute to Jina.
-* Labels provide status for both community members and Jina staff on ongoing workstreams and feature requests.
+* Labels provide status for both community members and Jina maintainers on ongoing workstreams and feature requests.
 * Labels provide an overview of the development status of Jina, highlighting areas of issue that need attention. They can be used as metrics of productivity and health of the project.
 
 
 ## How labels are used in Jina repos.
 
-Labels added by community members are automatically assigned the label `needs-triage`. A Jina staff member should then read the issue and assign it to the correct labels.
+Labels added by community members are automatically assigned the label `needs-triage`. A Jina maintainers member should then read the issue and assign it to the correct labels.
 
-An issue added by a Jina staff member can skip triage and directly be assigned a type, priority, status and area label.
+An issue added by a Jina maintainers member can skip triage and directly be assigned a type, priority, status and area label.
 
 All issues are assigned a type label. Some issues may be assigned a priority, status, and area label.
 **An issue should only ever have one type label, one status label, one priority label, and one area label.**
@@ -47,8 +47,8 @@ You should only assign one type label at a time. If an issue applies to many typ
 |Label  |Description |
 |--|--|
 |`priority/critical`| Team leaders are responsible for making sure that these issues (in their area) are being actively worked on—i.e., drop what you're doing. Stuff is burning. These should be fixed before the next release.|
-|`priority/important-soon`|Must be staffed and worked on either currently or very soon—ideally in time for the next release.|
-|`priority/important-longterm`|Important over the long term, but may not be currently staffed and/or may require multiple releases to complete.|
+|`priority/important-soon`|Must be maintainersed and worked on either currently or very soon—ideally in time for the next release.|
+|`priority/important-longterm`|Important over the long term, but may not be currently maintainersed and/or may require multiple releases to complete.|
 |`priority/backlog`|General agreement that this is a nice-to-have, but no one's available to work on it anytime soon. Community contributions would be most welcome in the meantime.|
 |`priority/research`|Possibly useful, but not yet enough research to actually get it done.|
 
@@ -61,7 +61,7 @@ You should only assign one type label at a time. If an issue applies to many typ
 |`status/in-progess`|This issue is activity being worked on.|
 |`status/blocked-upstream`|This issue is blocked by an upstream issue.|
 |`status/blocked-internal`|This issue is blocked by another internal issue.|
-|`status/blocked-help_needed`| This issue is blocked and needs support. Likely used by a community member who needs support from a Jina professional staff.|
+|`status/blocked-help_needed`| This issue is blocked and needs support. Likely used by a community member who needs support from a Jina professional maintainers.|
 |`status/done`|This issue is complete.|
 
 
