@@ -151,7 +151,9 @@ def test_hub_build_push_push_again(monkeypatch, mocker):
 
 
 @pytest.mark.timeout(360)
-@pytest.mark.parametrize('dockerfile_path', [os.path.join(cur_dir, 'hub-mwu-multistage'), 'hub-mwu-multistage'])
+@pytest.mark.parametrize('dockerfile_path',
+                         [os.path.join(cur_dir, 'hub-mwu-multistage'),
+                          os.path.relpath('hub-mwu-multistage', os.getcwd())])
 def test_hub_build_multistage(dockerfile_path):
     args = set_hub_build_parser().parse_args([dockerfile_path, '--raise-error'])
     result = HubIO(args).build()
