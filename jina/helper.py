@@ -191,6 +191,10 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
     :param v: The string of arguments
     :return: The parsed arguments list.
     """
+    m = re.match(r'^[\'"](.*)[\'"]$', v)
+    if m:
+        return m.group(1)
+
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
         tmp = v.replace('[', '').replace(']', '').strip().split(',')

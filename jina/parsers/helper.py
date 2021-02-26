@@ -47,17 +47,18 @@ class KVAppendAction(argparse.Action):
         :param values: the values to add to the parser
         :param option_string: inherited, not used
         """
-        import json
+        import json, re
+        from ..helper import parse_arg
         d = getattr(args, self.dest) or {}
         for value in values:
             try:
                 d.update(json.loads(value))
             except json.JSONDecodeError:
                 try:
-                    (k, v) = value.split('=', 2)
+                    k, v = re.split(r'[:=]\s*', value)
                 except ValueError:
                     raise argparse.ArgumentTypeError(f'could not parse argument \"{values[0]}\" as k=v format')
-                d[k] = v
+                d[k] = parse_arg(v)
         setattr(args, self.dest, d)
 
 
