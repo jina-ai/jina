@@ -13,12 +13,12 @@ REQUEST_SIZE = 10
 
 @pytest.mark.asyncio
 async def test_asyncio_req_generator():
-    async def inputs():
+    async def input_function():
         data = [Document() for _ in range(NUM_INPUT_DOCS)]
         for doc in data:
             yield doc
 
-    generator = request_generator(inputs(), request_size=REQUEST_SIZE, mode=RequestType.INDEX)
+    generator = request_generator(input_function(), request_size=REQUEST_SIZE, mode=RequestType.INDEX)
     i = 0
     async for req in generator:
         i += 1
