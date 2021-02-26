@@ -72,7 +72,7 @@ class BaseClient:
     def check_input(inputs: Optional[InputType] = None, **kwargs) -> None:
         """Validate the inputs and print the first request if success.
 
-        :param inputs: the input function
+        :param inputs: the inputs
         :param kwargs: keyword arguments
         """
         if hasattr(inputs, '__call__'):
@@ -126,7 +126,7 @@ class BaseClient:
 
         ``inputs`` defined in the protobuf
 
-        :return: input function
+        :return: inputs
         """
         if self._inputs is not None:
             return self._inputs
@@ -138,7 +138,7 @@ class BaseClient:
         """
         Set the input data.
 
-        :param bytes_gen: input function type
+        :param bytes_gen: input type
         """
         if hasattr(bytes_gen, '__call__'):
             self._inputs = bytes_gen()

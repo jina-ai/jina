@@ -59,7 +59,7 @@ class AsyncClient(BaseClient):
                     **kwargs) -> None:
         """Issue 'train' request to the Flow.
 
-        :param inputs: the input function that generates the content
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -78,7 +78,7 @@ class AsyncClient(BaseClient):
                      **kwargs) -> None:
         """Issue 'search' request to the Flow.
 
-        :param inputs: the input function that generates the content
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -98,7 +98,7 @@ class AsyncClient(BaseClient):
                     **kwargs) -> None:
         """Issue 'index' request to the Flow.
 
-        :param inputs: the input function that generates the content
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -117,7 +117,7 @@ class AsyncClient(BaseClient):
                      **kwargs) -> None:
         """Issue 'delete' request to the Flow.
 
-        :param inputs: the input function that generates the content
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -136,7 +136,7 @@ class AsyncClient(BaseClient):
                      **kwargs) -> None:
         """Issue 'update' request to the Flow.
 
-        :param inputs: the input function that generates the content
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.

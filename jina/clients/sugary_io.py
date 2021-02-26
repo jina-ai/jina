@@ -34,7 +34,7 @@ def _input_lines(
         line_format: str = 'json',
         **kwargs
 ) -> Iterator[Union[str, bytes]]:
-    """Input function that iterates over list of strings, it can be used in the Flow API.
+    """Create a generator from either an Iterable of lines, or a file.
 
     :param filepath: a text file that each line contains a document
     :param lines: a list of strings, each is considered as a document
@@ -102,7 +102,7 @@ def _input_files(
         sampling_rate: float = None,
         read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
-    r"""Input function that iterates over files, it can be used in the Flow API.
+    r"""Creates an iterator over a list of file path or the content of the files.
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
     :param recursive: If recursive is true, the pattern '**' will match any files and
@@ -140,7 +140,7 @@ def _input_files(
 def _input_ndarray(
         array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
 ) -> Iterator[Any]:
-    """Input function that iterates over a numpy array, it can be used in the Flow API.
+    """Create a generator for a given dimension of a numpy array.
 
     :param array: the numpy ndarray data source
     :param axis: iterate over that axis
