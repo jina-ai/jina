@@ -274,12 +274,12 @@ class AsyncZmqlet(Zmqlet):
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
-    async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> 'Message':
+    async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> Optional['Message']:
         """
         Receive a protobuf message in async manner.
 
         :param callback: Callback function to receive message
-        :return: Received protobuf message.
+        :return: Received protobuf message. Or None in case of any error.
         """
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)

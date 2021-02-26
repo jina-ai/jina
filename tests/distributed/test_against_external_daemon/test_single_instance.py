@@ -131,7 +131,7 @@ def docker_image():
 
 @pytest.mark.parametrize('silent_log', [True, False])
 @pytest.mark.parametrize('parallels', [1, 2, 3])
-def test_l_r_l_with_upload_docker(silent_log, parallels, docker_image, mocker):
+def test_l_r_l_with_upload_remote(silent_log, parallels, docker_image, mocker):
     response_mock = mocker.Mock()
     f = (Flow()
          .add()
