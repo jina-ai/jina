@@ -13,6 +13,7 @@ HEADER_NONE_ENTRY = (-1, -1, -1)
 
 
 class BinaryPbIndexer(BaseKVIndexer):
+    """Simple Key-value indexer."""
     class WriteHandler:
         """
         Write file handler.
@@ -21,7 +22,6 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param mode: Writing mode. (e.g. 'ab', 'wb')
         """
         def __init__(self, path, mode):
-            """Constructor."""
             self.body = open(path, mode)
             self.header = open(path + '.head', mode)
 
@@ -43,7 +43,6 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param key_length: Length of key.
         """
         def __init__(self, path, key_length):
-            """Constructor."""
             with open(path + '.head', 'rb') as fp:
                 tmp = np.frombuffer(fp.read(),
                                     dtype=[('', (np.str_, key_length)), ('', np.int64), ('', np.int64), ('', np.int64)])
@@ -58,24 +57,32 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._body.close()
 
     def get_add_handler(self) -> 'WriteHandler':
-        """Get write file handler.
+        """
+        Get write file handler.
+
+        :return: write handler
         """
         # keep _start position as in pickle serialization
         return self.WriteHandler(self.index_abspath, 'ab')
 
     def get_create_handler(self) -> 'WriteHandler':
-        """Get write file handler.
+        """
+        Get write file handler.
+
+        :return: write handler.
         """
         self._start = 0  # override _start position
         return self.WriteHandler(self.index_abspath, 'wb')
 
     def get_query_handler(self) -> 'ReadHandler':
-        """Get read file handler.
+        """
+        Get read file handler.
+
+        :return: read handler.
         """
         return self.ReadHandler(self.index_abspath, self.key_length)
 
     def __init__(self, *args, **kwargs):
-        """Constructor."""
         super().__init__(*args, **kwargs)
         self._total_byte_len = 0
         self._start = 0
@@ -86,6 +93,8 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
+        :param args: extra arguments
+        :param kwargs: keyword arguments
         """
         if not keys:
             return
@@ -122,6 +131,8 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
+        :param args: extra arguments
+        :param kwargs: keyword arguments
         """
         keys, values = self._filter_nonexistent_keys_values(keys, values, self.query_handler.header.keys())
         if keys:
@@ -147,6 +158,8 @@ class BinaryPbIndexer(BaseKVIndexer):
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param args: extra arguments
+        :param kwargs: keyword arguments
         """
         keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
         if keys:

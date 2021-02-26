@@ -7,7 +7,7 @@ import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
-from typing import Union, Dict, Optional, TypeVar, Any, Callable, Sequence, Tuple
+from typing import Union, Dict, Optional, TypeVar, Any, Tuple
 
 import numpy as np
 from google.protobuf import json_format
@@ -16,15 +16,15 @@ from google.protobuf.field_mask_pb2 import FieldMask
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray
+from ..querylang.queryset.dunderkey import dunder_get
 from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
-from ..querylang.queryset.dunderkey import dunder_get
 from ...excepts import BadDocType
 from ...helper import is_url, typename, random_identity, download_mermaid_url
 from ...importer import ImportExtensions
-from ...proto import jina_pb2
 from ...logging import default_logger
+from ...proto import jina_pb2
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -35,6 +35,8 @@ DocumentSourceType = TypeVar('DocumentSourceType',
 
 _document_fields = set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name) + list(
     jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name))
+
+_all_mime_types = set(mimetypes.types_map.values())
 
 
 class Document(ProtoTypeMixin):
@@ -571,7 +573,7 @@ class Document(ProtoTypeMixin):
         :param value: the acceptable MIME type, raise ``ValueError`` when MIME type is not
                 recognizable.
         """
-        if value in mimetypes.types_map.values():
+        if value in _all_mime_types:
             self._pb_body.mime_type = value
         elif value:
             # given but not recognizable, do best guess
@@ -779,30 +781,6 @@ class Document(ProtoTypeMixin):
     def CopyFrom(self, doc: 'Document'):
         """Copy the content of target :param:doc into current document."""
         self._pb_body.CopyFrom(doc.proto)
-
-    def traverse(self, traversal_path: str, callback_fn: Callable, *args, **kwargs) -> None:
-        """Traverse leaves of the document."""
-        from ..sets import DocumentSet
-        self._traverse_rec(DocumentSet([self]), None, None, traversal_path, callback_fn, *args, **kwargs)
-
-    def _traverse_rec(self, docs: Sequence['Document'], parent_doc: Optional['Document'],
-                      parent_edge_type: Optional[str], traversal_path: str, callback_fn: Callable, *args, **kwargs):
-        if traversal_path:
-            next_edge = traversal_path[0]
-            for doc in docs:
-                if next_edge == 'm':
-                    self._traverse_rec(
-                        doc.matches, doc, 'matches', traversal_path[1:], callback_fn, *args, **kwargs
-                    )
-                elif next_edge == 'c':
-                    self._traverse_rec(
-                        doc.chunks, doc, 'chunks', traversal_path[1:], callback_fn, *args, **kwargs
-                    )
-                else:
-                    raise ValueError(f'"{next_edge}" in "{traversal_path}" is not a valid traversal path')
-        else:
-            for d in docs:
-                callback_fn(d, parent_doc, parent_edge_type, *args, **kwargs)
 
     def __mermaid_str__(self):
         results = []

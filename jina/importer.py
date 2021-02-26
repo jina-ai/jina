@@ -77,7 +77,6 @@ class ImportExtensions:
 
     def __init__(self, required: bool, logger=None,
                  help_text: str = None, pkg_name: str = None, verbose: bool = True):
-        """Set constructor method."""
         self._required = required
         self._tags = []
         self._help_text = help_text
@@ -138,37 +137,8 @@ class ImportExtensions:
                 return True  # suppress the error
 
 
-def _load_contrib_module(logger=None) -> Optional[List[Any]]:
-    if 'JINA_CONTRIB_MODULE_IS_LOADING' not in os.environ:
-
-        contrib = os.getenv('JINA_CONTRIB_MODULE')
-        os.environ['JINA_CONTRIB_MODULE_IS_LOADING'] = 'true'
-
-        modules = []
-
-        if contrib:
-            pr = logger.info if logger else print
-            pr(f'find a value in $JINA_CONTRIB_MODULE={contrib}, will load them as external modules')
-            for p in contrib.split(','):
-                m = PathImporter.add_modules(p)
-                modules.append(m)
-                pr(f'successfully registered {m} class, you can now use it via yaml.')
-    else:
-        modules = None
-
-    return modules
-
-
 class PathImporter:
     """The class to import modules from paths."""
-
-    @staticmethod
-    def _get_module_name(path: str, use_abspath: bool = False, use_basename: bool = True) -> str:
-        module_name = os.path.dirname(os.path.abspath(path) if use_abspath else path)
-        if use_basename:
-            module_name = os.path.basename(module_name)
-        module_name = module_name.replace('/', '.').strip('.')
-        return module_name
 
     @staticmethod
     def add_modules(*paths) -> Optional[ModuleType]:
@@ -188,9 +158,6 @@ class PathImporter:
     def _path_import(absolute_path: str) -> Optional[ModuleType]:
         import importlib.util
         try:
-            # module_name = (PathImporter._get_module_name(absolute_path) or
-            #                PathImporter._get_module_name(absolute_path, use_abspath=True) or 'jinahub')
-
             # I dont want to trust user path based on directory structure, "jinahub", period
             spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
             module = importlib.util.module_from_spec(spec)
@@ -223,19 +190,6 @@ def _print_load_table(load_stat: Dict[str, List[Any]], logger=None):
         load_table.sort()
         load_table = ['', '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
                       '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10)] + load_table
-        pr = logger.info if logger else print
-        pr('\n'.join(load_table))
-
-
-def _print_load_csv_table(load_stat: Dict[str, List[Any]], logger=None):
-    from .helper import colored
-
-    load_table = []
-    for k, v in load_stat.items():
-        for cls_name, import_stat, err_reason in v:
-            load_table.append(
-                f'{colored("✓", "green") if import_stat else colored("✗", "red")} {cls_name if cls_name else colored("Module_load_error", "red")} {k} {str(err_reason)}')
-    if load_table:
         pr = logger.info if logger else print
         pr('\n'.join(load_table))
 

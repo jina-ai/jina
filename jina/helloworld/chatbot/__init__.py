@@ -11,6 +11,11 @@ from ...logging import default_logger
 
 
 def hello_world(args):
+    """
+    Execute the chatbot example.
+
+    :param args: arguments passed from CLI
+    """
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
     with ImportExtensions(required=True, help_text='this demo requires Pytorch and Transformers to be installed, '

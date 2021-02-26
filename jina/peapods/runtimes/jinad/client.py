@@ -16,6 +16,14 @@ from ....logging import JinaLogger
 
 
 class DaemonClient:
+    """
+    Jina Daemon client.
+
+    :param host: the host address of ``jinad`` instance
+    :param port: the port number of ``jinad`` instance
+    :param logger: Jinalogger to log information.
+    :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
+    """
     kind = 'pea'  # select from pea/pod, TODO: enum
 
     def __init__(self,
@@ -23,12 +31,6 @@ class DaemonClient:
                  port: int,
                  logger: 'JinaLogger' = None,
                  timeout: int = 5, **kwargs):
-        """
-        :param host: the host address of ``jinad`` instance
-        :param port: the port number of ``jinad`` instance
-        :param logger:
-        :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
-        """
         self.logger = logger or JinaLogger(host)
         self.timeout = timeout
         # for now it is http. but it can be https or unix socket or fd
@@ -50,8 +52,10 @@ class DaemonClient:
 
     @property
     def is_alive(self) -> bool:
-        """ Return True if ``jinad`` is alive at remote
-        :return:
+        """
+        Return True if ``jinad`` is alive at remote
+
+        :return: True if ``jinad`` is alive at remote else false
         """
         with ImportExtensions(required=True):
             import requests
@@ -67,8 +71,7 @@ class DaemonClient:
         """ Get status of the remote Pea / Pod
 
         :param identity: UUID string based identity for the Pea
-        :type identity: str
-        :raises requests.exceptions.RequestException:
+        :raises: requests.exceptions.RequestException
         :return: json response of the remote Pea / Pod status
         :rtype: Dict
         """
@@ -91,8 +94,8 @@ class DaemonClient:
         :param dependencies: file dependencies
         :type dependencies: Sequence[str]
         :param workspace_id: Workspace to which the files will get uploaded, defaults to None
-        :type workspace_id: str, optional
-        :raises requests.exceptions.RequestException:
+        :type workspace_id: str
+        :raises: requests.exceptions.RequestException
         :return: json response for upload
         :rtype: str
         """
@@ -122,7 +125,7 @@ class DaemonClient:
 
         :param args: the arguments for remote Pea
         :type args: Namespace
-        :raises requests.exceptions.RequestException:
+        :raises: requests.exceptions.RequestException
         :return: the identity of the spawned Pea / Pod
         :rtype: Optional[str]
         """
@@ -187,8 +190,11 @@ class DaemonClient:
                 l.close()
 
     def delete(self, remote_id: str, **kwargs) -> bool:
-        """ Delete a remote pea/pod
+        """
+        Delete a remote pea/pod
+
         :param remote_id: the identity of that pea/pod
+        :param kwargs: keyword arguments
         :return: True if the deletion is successful
         """
         with ImportExtensions(required=True):

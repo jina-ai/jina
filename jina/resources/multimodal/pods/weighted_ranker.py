@@ -2,6 +2,11 @@ from jina.executors.rankers import Chunk2DocRanker
 
 
 class WeightedRanker(Chunk2DocRanker):
+    """
+    Ranker for multimodal example.
+
+    Will give the scores to chunk data according to weight.
+    """
     required_keys = {'weight'}
 
     def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):

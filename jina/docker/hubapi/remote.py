@@ -76,24 +76,23 @@ def _fetch_docker_auth(logger) -> Tuple[str, str]:
         with ImportExtensions(required=True,
                               help_text='missing "requests" dependency, please do pip install "jina[http]"'):
             import requests
-            headers = {
-                'Accept': 'application/json',
-                'authorizationToken': _fetch_access_token(logger)
-            }
-            response = requests.get(url=f'{hubapi_url}', headers=headers)
-            if response.status_code == requests.codes.ok:
-                json_response = json.loads(response.text)
-                username = base64.b64decode(json_response['docker_username']).decode('ascii')
-                password = base64.b64decode(json_response['docker_password']).decode('ascii')
-                logger.debug(f'Successfully fetched docker creds for user')
-                return username, password
-            else:
-                logger.error(f'failed to fetch docker credentials. status code {response.status_code}')
+        headers = {
+            'Accept': 'application/json',
+            'authorizationToken': _fetch_access_token(logger)
+        }
+        response = requests.get(url=f'{hubapi_url}', headers=headers)
+        if response.status_code != requests.codes.ok:
+            logger.error(f'failed to fetch docker credentials. status code {response.status_code}')
+        json_response = json.loads(response.text)
+        username = base64.b64decode(json_response['docker_username']).decode('ascii')
+        password = base64.b64decode(json_response['docker_password']).decode('ascii')
+        logger.debug(f'Successfully fetched docker creds for user')
+        return username, password
     except Exception as exp:
         logger.error(f'got an exception while fetching docker credentials {exp!r}')
 
 
-def _register_to_mongodb(logger, summary: Dict = None):
+def _register_to_mongodb(logger, summary: Optional[Dict] = None):
     """Hub API Invocation to run `hub push`.
 
     :param logger: the logger instance
@@ -122,9 +121,8 @@ def _register_to_mongodb(logger, summary: Dict = None):
                 logger.critical(f'user is unauthorized to perform push operation. '
                                 f'please login using command: {colored("jina hub login", attrs=["bold"])}')
             elif response.status_code == requests.codes.internal_server_error:
-                if 'auth' in response.text.lower():
-                    logger.critical(f'authentication issues!'
-                                    f'please login using command: {colored("jina hub login", attrs=["bold"])}')
-                logger.critical(f'got an error from the API: {response.text}')
+                logger.critical(f'got an error from the API: {response.text}. If there are any authentication issues, '
+                                f'please remember to login using command: '
+                                f'{colored("jina hub login", attrs=["bold"])}')
     except Exception as exp:
         logger.error(f'got an exception while invoking hubapi for push {exp!r}')

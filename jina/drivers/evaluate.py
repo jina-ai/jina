@@ -121,7 +121,7 @@ class RankEvaluateDriver(BaseEvaluateDriver):
 
     @deprecated_alias(field=('fields', 0))
     def __init__(self,
-                 fields: Union[str, Tuple[str]] = ('tags__id',),  # str mantained for backwards compatibility
+                 fields: Union[str, Tuple[str]] = ('id',),  # str maintained for backwards compatibility
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -133,6 +133,8 @@ class RankEvaluateDriver(BaseEvaluateDriver):
         Get single field.
 
         Property to guarantee compatibility when only one field is provided either as a string or as a unit length tuple.
+
+        :return: a list of fields
         """
         if isinstance(self.fields, str):
             return self.fields
@@ -144,7 +146,7 @@ class RankEvaluateDriver(BaseEvaluateDriver):
         Extract values of the matches from documents with fields as keys.
 
         :param doc: Documents to be extracted.
-        :return: Extracted data.
+        :return: a list of tuples consisting of the values from the fields.
         """
         single_field = self.single_field
         if single_field:

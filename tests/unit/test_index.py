@@ -7,7 +7,7 @@ from jina.executors.indexers.vector import NumpyIndexer
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina import Document
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -120,8 +120,8 @@ def test_compound_idx(test_workspace_joint, mocker):
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as f:
         f.index(random_docs(100, chunks_per_doc=0))
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
     with Flow().add(uses=os.path.join(cur_dir, 'yaml/test-joint.yml')) as g:
         g.search(random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)

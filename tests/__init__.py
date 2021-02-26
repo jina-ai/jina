@@ -49,6 +49,13 @@ def rm_files(file_paths):
                 shutil.rmtree(file_path, ignore_errors=False, onerror=None)
 
 
+def validate_callback(mock, validate_func):
+    for args, kwargs in mock.call_args_list:
+        validate_func(*args, **kwargs)
+
+    mock.assert_called()
+
+
 np.random.seed(0)
 d_embedding = np.array([1, 1, 1, 1, 1, 1, 1])
 c_embedding = np.array([2, 2, 2, 2, 2, 2, 2])
@@ -135,5 +142,4 @@ def test_docs_generator(chunks, same_content, nr):
     new_docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr, index_start=index_start))
     new_ids = set([d.id for d in new_docs])
     assert len(new_ids.intersection(ids_used)) == 0
-
     check_docs(chunk_content, chunks, same_content, new_docs, ids_used, index_start)

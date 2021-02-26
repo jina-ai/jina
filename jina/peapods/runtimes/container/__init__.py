@@ -12,12 +12,14 @@ from ....jaml.helper import complete_path
 
 
 class ContainerRuntime(ZMQRuntime):
+    """Runtime procedure for container."""
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self._set_network_for_dind_linux()
 
     def setup(self):
+        """Run the container."""
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
             time.sleep(1)
@@ -28,13 +30,16 @@ class ContainerRuntime(ZMQRuntime):
             raise Exception('the container fails to start, check the arguments or entrypoint')
 
     def teardown(self):
+        """Stop the container."""
         self._container.stop()
+        super().teardown()
 
     def _stream_logs(self):
         for line in self._container.logs(stream=True):
             self.logger.info(line.strip().decode())
 
     def run_forever(self):
+        """Stream the logs while running."""
         self._stream_logs()
 
     def _set_network_for_dind_linux(self):

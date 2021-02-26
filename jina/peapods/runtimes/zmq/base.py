@@ -7,25 +7,37 @@ from ...zmq import Zmqlet, send_ctrl_message
 
 
 class ZMQRuntime(BaseRuntime, ABC):
-
+    """Runtime procedure leveraging ZMQ."""
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.ctrl_addr = Zmqlet.get_ctrl_address(self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc)[0]
 
     def cancel(self):
+        """Send cancel control message."""
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
+        """
+        Send get status control message.
+
+        :return: control message.
+        """
         return send_ctrl_message(self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl)
 
     @property
     def is_ready(self) -> bool:
+        """
+        Check if status is ready.
+
+        :return: True if status is ready else False.
+        """
         status = self.status
         return status and status.is_ready
 
 
 class ZMQManyRuntime(BaseRuntime, ABC):
+    """Multiple Runtime leveraging ZMQ."""
     def __init__(self, args: Union['argparse.Namespace', Dict]):
         super().__init__(args)
         self.many_ctrl_addr = []
@@ -44,12 +56,18 @@ class ZMQManyRuntime(BaseRuntime, ABC):
             self.port_expose = args.port_expose
 
     def cancel(self):
+        """Send cancel control messages to all control address."""
         # TODO: can use send_message_async to avoid sequential waiting
         for ctrl_addr in self.many_ctrl_addr:
             send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=self.timeout_ctrl)
 
     @property
     def status(self):
+        """
+        Send get status control messages to all control address.
+
+        :return: received messages
+        """
         # TODO: can use send_ctrl_message to avoid sequential waiting
         result = []
         for ctrl_addr in self.many_ctrl_addr:
@@ -58,5 +76,10 @@ class ZMQManyRuntime(BaseRuntime, ABC):
 
     @property
     def is_ready(self) -> bool:
+        """
+        Check if all the status are ready.
+
+        :return: True if all status are ready else False
+        """
         status = self.status
         return status and all(s.is_ready for s in status)

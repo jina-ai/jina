@@ -1,20 +1,21 @@
+import os
 import time
 from types import SimpleNamespace
 
+import numpy as np
 import pytest
 
 from cli import _is_latest_version
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
-from jina.types.querylang.queryset.dunderkey import dunder_get
 from jina.excepts import BadClientCallback, NotSupportedError
-from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath
+from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath, touch_dir, random_port
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
+from jina.types.querylang.queryset.dunderkey import dunder_get
 from tests import random_docs
-import numpy as np
 
 
 def test_cached_property():
@@ -232,3 +233,21 @@ def test_yaml_filepath_validate_good(val):
                                  '''])
 def test_yaml_filepath_validate_bad(val):
     assert not is_yaml_filepath(val)
+
+
+def test_touch_dir(tmpdir):
+    touch_dir(tmpdir)
+    assert os.path.exists(tmpdir)
+
+
+@pytest.fixture
+def config():
+    os.environ['JINA_RANDOM_PORTS'] = "True"
+    yield
+    del os.environ['JINA_RANDOM_PORTS']
+
+
+def test_random_port(config):
+    assert os.environ['JINA_RANDOM_PORTS']
+    port = random_port()
+    assert 49153 <= port <= 65535

@@ -1,4 +1,5 @@
 import asyncio
+from typing import Iterable, Any
 
 from .....helper import random_identity, typename
 from .....logging import JinaLogger
@@ -6,11 +7,11 @@ from .....logging.profile import TimeContext
 from .....proto import jina_pb2_grpc
 from .....types.message import Message
 from .....types.request import Request
-
 __all__ = ['AsyncPrefetchCall']
 
 
 class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
+    """JinaRPCServicer """
 
     def __init__(self, args, zmqlet):
         super().__init__()
@@ -21,12 +22,32 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
         self._id = random_identity()
 
     async def Call(self, request_iterator, context):
+        """
+        Async gRPC call.
+
+        :param request_iterator: iterator of request.
+        :param context: gRPC context:
+        :yield: task
+        """
 
         def handle(msg: 'Message') -> 'Request':
+            """
+            Add route into the `message` and return response of the message.
+
+            :param msg: gRPC message.
+            :return: message with route added.
+            """
             msg.add_route(self.name, self._id)
             return msg.response
 
         async def prefetch_req(num_req, fetch_to):
+            """
+            Fetch and send request.
+
+            :param num_req: number of requests
+            :param fetch_to: the task list storing requests
+            :return: False if append task to :param:`fetch_to` else False
+            """
             for _ in range(num_req):
                 try:
                     if hasattr(request_iterator, '__anext__'):

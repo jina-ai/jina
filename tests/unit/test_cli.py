@@ -33,8 +33,8 @@ def test_parse_env_map():
                                      '--env', 'key2=value2'])
     assert a.env == {'key1': 'value1', 'key2': 'value2'}
 
-    a = set_pod_parser().parse_args(['--env', 'key1=value1', 'key2=value2'])
-    assert a.env == {'key1': 'value1', 'key2': 'value2'}
+    a = set_pod_parser().parse_args(['--env', 'key1=value1', 'key2=value2', 'key3=3'])
+    assert a.env == {'key1': 'value1', 'key2': 'value2', 'key3': 3}
 
 
 def test_ping():
