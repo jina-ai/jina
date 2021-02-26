@@ -55,7 +55,7 @@ class KVAppendAction(argparse.Action):
                 d.update(json.loads(value))
             except json.JSONDecodeError:
                 try:
-                    k, v = re.split(r'[:=]\s*', value)
+                    k, v = re.split(r'[:=]\s*', value, maxsplit=1)
                 except ValueError:
                     raise argparse.ArgumentTypeError(f'could not parse argument \"{values[0]}\" as k=v format')
                 d[k] = parse_arg(v)
