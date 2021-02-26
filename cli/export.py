@@ -47,10 +47,12 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
         if a.default != b.default:
             random_dest.add(a.dest)
     for a in parser._actions:
-        if isinstance(a, (_StoreAction, _StoreTrueAction)) and a.help != argparse.SUPPRESS:
+        if isinstance(a, (_StoreAction, _StoreTrueAction, KVAppendAction)) and a.help != argparse.SUPPRESS:
             ddd = {p: getattr(a, p) for p in port_attr}
             if isinstance(a, _StoreTrueAction):
                 ddd['type'] = bool
+            elif isinstance(a, KVAppendAction):
+                ddd['type'] = dict
             else:
                 ddd['type'] = a.type
             if ddd['choices']:
@@ -61,9 +63,6 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
                 ddd['type'] = str
             if ddd['type'] == str and (a.nargs == '*' or a.nargs == '+'):
                 ddd['type'] = List[str]
-        elif isinstance(a, KVAppendAction):
-            ddd = {p: getattr(a, p) for p in port_attr}
-            ddd['type'] = dict
         else:
             continue
 
