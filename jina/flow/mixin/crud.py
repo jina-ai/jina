@@ -27,7 +27,7 @@ class CRUDFlowMixin:
         warnings.warn(f'{self.train} is under heavy refactoring', FutureWarning)
         return self._get_client(**kwargs).train(inputs, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_ndarray(self, array: 'np.ndarray',
                       axis: int = 0,
                       size: int = None,
@@ -52,7 +52,7 @@ class CRUDFlowMixin:
         return self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        on_done: CallbackFnType = None,
                        on_error: CallbackFnType = None,
@@ -73,7 +73,7 @@ class CRUDFlowMixin:
         self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_lines(self,
                     lines: Union[Iterable[str], TextIO] = None,
                     filepath: str = None,
@@ -203,7 +203,7 @@ class CRUDFlowMixin:
                        field_resolver=field_resolver),
             on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
                     on_done: CallbackFnType = None,
@@ -228,7 +228,7 @@ class CRUDFlowMixin:
         return self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
                      on_done: CallbackFnType = None,
@@ -254,7 +254,7 @@ class CRUDFlowMixin:
                                                  on_done, on_error, on_always, data_type=DataInputType.CONTENT,
                                                  **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_lines(self,
                      lines: Union[Iterable[str], TextIO] = None,
                      filepath: str = None,
@@ -324,7 +324,7 @@ class CRUDFlowMixin:
                           field_resolver=field_resolver),
             on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index(self, inputs: InputType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -370,7 +370,7 @@ class CRUDFlowMixin:
         """
         self._get_client(**kwargs).delete(ids, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search(self, inputs: InputType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,

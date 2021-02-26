@@ -28,7 +28,7 @@ class Client(BaseClient):
         if self.args.return_results:
             return result
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def train(self, inputs: InputType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -46,7 +46,7 @@ class Client(BaseClient):
         self.mode = RequestType.TRAIN
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search(self, inputs: InputType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -65,7 +65,7 @@ class Client(BaseClient):
         self.add_default_kwargs(kwargs)
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index(self, inputs: InputType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -83,7 +83,7 @@ class Client(BaseClient):
         self.mode = RequestType.INDEX
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def update(self, inputs: InputType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
@@ -101,7 +101,7 @@ class Client(BaseClient):
         self.mode = RequestType.UPDATE
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def delete(self, inputs: Iterable[str],
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,

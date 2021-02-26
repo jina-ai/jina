@@ -43,7 +43,7 @@ def deprecated_alias(**aliases):
     For example:
         .. highlight:: python
         .. code-block:: python
-            @deprecated_alias(buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+            @deprecated_alias(input_fn=('inputs', 0), buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
     """
 
     def rename_kwargs(func_name: str, kwargs, aliases):

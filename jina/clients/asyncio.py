@@ -51,7 +51,7 @@ class AsyncClient(BaseClient):
     One can think of :class:`Client` as Jina-managed eventloop, whereas :class:`AsyncClient` is self-managed eventloop.
     """
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def train(self, inputs: InputType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
@@ -70,7 +70,7 @@ class AsyncClient(BaseClient):
         async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
             yield r
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def search(self, inputs: InputType,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
@@ -90,7 +90,7 @@ class AsyncClient(BaseClient):
         async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
             yield r
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def index(self, inputs: InputType,
                     on_done: CallbackFnType = None,
                     on_error: CallbackFnType = None,
@@ -109,7 +109,7 @@ class AsyncClient(BaseClient):
         async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
             yield r
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def delete(self, inputs: Iterable[str],
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
@@ -128,7 +128,7 @@ class AsyncClient(BaseClient):
         async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
             yield r
 
-    @deprecated_alias(buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     async def update(self, inputs: InputType,
                      on_done: CallbackFnType = None,
                      on_error: CallbackFnType = None,
