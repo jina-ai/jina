@@ -64,10 +64,8 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
         elif isinstance(a, KVAppendAction):
             ddd = {p: getattr(a, p) for p in port_attr}
             ddd['type'] = dict
-        elif isinstance(a, (_HelpAction, _SubParsersAction, _StoreAction, _StoreTrueAction)):
-            continue
         else:
-            raise TypeError(f'unsupported arg type: {a}')
+            continue
 
         if a.dest in random_dest:
             ddd['default_random'] = True
