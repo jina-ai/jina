@@ -1,6 +1,6 @@
 !TransformerTorchEncoder
 requests:
-  uses_default: true
+  use_default: true
   on:
     [SearchRequest, IndexRequest]:
       with:

@@ -2,7 +2,7 @@
 with:
   channel_axis: -1
 requests:
-  uses_default: true
+  use_default: true
   on:
     [IndexRequest, SearchRequest]:
       with:
