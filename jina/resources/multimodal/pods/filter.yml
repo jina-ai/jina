@@ -1,6 +1,6 @@
 !BaseExecutor
 requests:
-  uses_default: true
+  use_default: true
   on:
     [IndexRequest, SearchRequest]:
       - !FilterQL
