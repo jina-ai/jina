@@ -9,7 +9,7 @@ from cli import _is_latest_version
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
-from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath, touch_dir, random_port, ArgNamespace
+from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath, touch_dir, random_port
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
