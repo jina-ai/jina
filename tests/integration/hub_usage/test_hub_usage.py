@@ -82,7 +82,10 @@ def test_hub_build_push(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
     mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
     mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
-    args = set_hub_build_parser().parse_args([str(cur_dir + '/hub-mwu'), '--push', '--host-info'])
+    args = set_hub_build_parser().parse_args([
+        os.path.join(cur_dir, 'hub-mwu'),
+        '--push',
+        '--host-info'])
     summary = HubIO(args).build()
 
     with open(cur_dir + '/hub-mwu' + '/manifest.yml') as fp:
@@ -148,3 +151,15 @@ def test_hub_build_push_push_again(monkeypatch, mocker):
         # try and push same version again should fail with `--no-overwrite`
         args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info', '--no-overwrite'])
         HubIO(args).build()
+
+
+@pytest.mark.timeout(360)
+@pytest.mark.parametrize('dockerfile_path',
+                         [os.path.join(cur_dir, 'hub-mwu-multistage'),
+                          os.path.relpath(
+                              os.path.join(cur_dir, 'hub-mwu-multistage'),
+                              os.getcwd())])
+def test_hub_build_multistage(dockerfile_path):
+    args = set_hub_build_parser().parse_args([dockerfile_path, '--raise-error'])
+    result = HubIO(args).build()
+    assert result['is_build_success']
