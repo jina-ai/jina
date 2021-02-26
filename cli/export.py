@@ -47,11 +47,7 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
         if a.default != b.default:
             random_dest.add(a.dest)
     for a in parser._actions:
-        if isinstance(a, KVAppendAction):
-            ddd = {p: getattr(a, p) for p in port_attr}
-            ddd['type'] = dict
-            yield ddd
-        elif isinstance(a, (_StoreAction, _StoreTrueAction)) and a.help != argparse.SUPPRESS:
+        if isinstance(a, (_StoreAction, _StoreTrueAction)) and a.help != argparse.SUPPRESS:
             ddd = {p: getattr(a, p) for p in port_attr}
             if isinstance(a, _StoreTrueAction):
                 ddd['type'] = bool
@@ -63,21 +59,26 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
             if isinstance(ddd['default'], BetterEnum):
                 ddd['default'] = str(ddd['default'])
                 ddd['type'] = str
-            if a.dest in random_dest:
-                ddd['default_random'] = True
-                from jina.helper import random_identity, random_port
-                if isinstance(a.default, str):
-                    ddd['default_factory'] = random_identity.__name__
-                elif isinstance(a.default, int):
-                    ddd['default_factory'] = random_port.__name__
-            else:
-                ddd['default_random'] = False
             if ddd['type'] == str and (a.nargs == '*' or a.nargs == '+'):
                 ddd['type'] = List[str]
+        elif isinstance(a, KVAppendAction):
+            ddd = {p: getattr(a, p) for p in port_attr}
+            ddd['type'] = dict
         elif isinstance(a, (_HelpAction, _SubParsersAction, _StoreAction, _StoreTrueAction)):
             continue
         else:
             raise TypeError(f'unsupported arg type: {a}')
+
+        if a.dest in random_dest:
+            ddd['default_random'] = True
+            from jina.helper import random_identity, random_port
+            if isinstance(a.default, str):
+                ddd['default_factory'] = random_identity.__name__
+            elif isinstance(a.default, int):
+                ddd['default_factory'] = random_port.__name__
+        else:
+            ddd['default_random'] = False
+
         if type_as_str:
             ddd['type'] = getattr(ddd['type'], '__name__', str(ddd['type']))
         ddd['name'] = ddd.pop('dest')
