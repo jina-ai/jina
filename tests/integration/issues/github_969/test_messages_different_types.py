@@ -31,7 +31,6 @@ def input_doc_with_chunks():
 
 def test_message_docs_different_chunk_types(input_doc_with_chunks, mocker):
     def validate_chunks_fn(resp):
-        mock()
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
         assert int(doc.tags['id']) == 1
@@ -53,9 +52,10 @@ def test_message_docs_different_chunk_types(input_doc_with_chunks, mocker):
     mock = mocker.Mock()
 
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_with_chunks], on_done=validate_chunks_fn)
+        f.search(input_fn=[input_doc_with_chunks], on_done=mock)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_chunks_fn)
 
 
 @pytest.fixture
@@ -77,7 +77,6 @@ def input_doc_with_matches():
 
 def test_message_docs_different_matches_types(input_doc_with_matches, mocker):
     def validate_matches_fn(resp):
-        mock()
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
         assert int(doc.tags['id']) == 1
@@ -98,8 +97,9 @@ def test_message_docs_different_matches_types(input_doc_with_matches, mocker):
 
     mock = mocker.Mock()
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_with_matches], on_done=validate_matches_fn)
+        f.search(input_fn=[input_doc_with_matches], on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_matches_fn)
 
 
 @pytest.fixture
@@ -164,10 +164,10 @@ def test_message_docs_different_chunks_and_matches_types(input_doc_chunks_and_ma
         assert int(match2.tags['id']) == 30
         assert match2.buffer == buffer
 
-    response_mock = mocker.Mock()
+    mock = mocker.Mock()
 
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_chunks_and_matches], on_done=response_mock)
+        f.search(input_fn=[input_doc_chunks_and_matches], on_done=mock)
 
-    validate_callback(response_mock, validate_chunks_and_matches_fn)
+    validate_callback(mock, validate_chunks_and_matches_fn)
 

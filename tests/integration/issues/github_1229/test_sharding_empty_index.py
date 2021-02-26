@@ -4,6 +4,8 @@ import pytest
 
 from jina import Flow, Document
 
+from tests import validate_callback
+
 callback_was_called = False
 
 
@@ -60,13 +62,13 @@ def test_sharding_empty_index(tmpdir, execution_number, mocker):
             query.append(doc)
 
     def callback(result):
-        mock()
         assert len(result.docs) == num_query
         for d in result.docs:
             assert len(list(d.matches)) == num_docs
 
     mock = mocker.Mock()
     with f:
-        f.search(query, on_done=callback)
+        f.search(query, on_done=mock)
 
     mock.assert_called_once()
+    validate_callback(mock, callback)

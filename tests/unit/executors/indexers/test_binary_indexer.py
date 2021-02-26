@@ -7,8 +7,7 @@ import pytest
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
-from jina.types.ndarray.generic import NdArray
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_WORKSPACE_BINARY_PB'])
@@ -16,7 +15,6 @@ def test_binarypb_in_flow(test_metas, mocker):
     docs = list(random_docs(10))
 
     def validate(req):
-        mock()
         assert len(docs) == len(req.docs)
         for d, d0 in zip(req.docs, docs):
             np.testing.assert_almost_equal(d.embedding,
@@ -33,9 +31,10 @@ def test_binarypb_in_flow(test_metas, mocker):
 
     mock = mocker.Mock()
     with f:
-        f.search(docs_no_embedding, on_done=validate)
+        f.search(docs_no_embedding, on_done=mock)
 
     mock.assert_called_once()
+    validate_callback(mock, validate)
 
 
 def test_binarypb_update1(test_metas):

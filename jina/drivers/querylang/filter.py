@@ -28,12 +28,12 @@ class FilterQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
     """
 
     def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
-        super().__init__(*args, **kwargs)
         """
         :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
         an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
         an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
         """
+        super().__init__(*args, **kwargs)
         self._lookups = lookups
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:

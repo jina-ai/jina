@@ -7,6 +7,8 @@ import pytest
 
 from jina import Document, Flow
 
+from tests import validate_callback
+
 random.seed(0)
 np.random.seed(0)
 
@@ -34,7 +36,6 @@ def test_search_non_existent(config, mocker):
     yaml_file = 'index_kv_simple.yml'
 
     def validate_results(resp):
-        mock()
         assert len(resp.docs) == 3
 
     with Flow().add(
@@ -50,8 +51,11 @@ def test_search_non_existent(config, mocker):
             uses_after='_merge_root',
             polling='all'
     ) as search_flow:
-        search_flow.search(input_fn=random_docs(0, 5),
-                           on_done=validate_results,
-                           request_size=5
-                           )
+        search_flow.search(
+            input_fn=random_docs(0, 5),
+            on_done=mock,
+            request_size=5
+        )
+
     mock.assert_called_once()
+    validate_callback(mock, validate_results)

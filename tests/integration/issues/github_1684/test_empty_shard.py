@@ -6,6 +6,8 @@ import numpy as np
 from jina.flow import Flow
 from jina import Document
 
+from tests import validate_callback
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -20,20 +22,18 @@ def test_empty_shard(mocker, workdir):
     doc = Document()
     doc.text = 'text'
     doc.embedding = np.array([1, 1, 1])
-    mock = mocker.Mock()
 
     def validate_response(resp):
-        mock()
         assert len(resp.docs) == 1
         assert len(resp.docs[0].matches) == 0
 
+    mock = mocker.Mock()
     error_mock = mocker.Mock()
 
-    def on_error_call():
-        error_mock()
-
     with Flow.load_config(os.path.join(cur_dir, 'flow.yml')) as f:
-        f.search([doc], on_done=validate_response, on_error=on_error_call)
+        f.search([doc], on_done=mock, on_error=error_mock)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_response)
+
     error_mock.assert_not_called()

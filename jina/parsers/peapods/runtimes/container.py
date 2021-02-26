@@ -1,5 +1,5 @@
 """Argparser module for container runtimes"""
-from ...helper import add_arg_group, DockerKwargsAppendAction
+from ...helper import add_arg_group, KVAppendAction
 
 
 def mixin_container_runtime_parser(parser):
@@ -18,8 +18,8 @@ the Docker container.
     gp.add_argument('--entrypoint', type=str,
                     help='The entrypoint command overrides the ENTRYPOINT in Docker image. '
                          'when not set then the Docker image ENTRYPOINT takes effective.')
-    gp.add_argument('--docker-kwargs', action=DockerKwargsAppendAction,
-                    metavar='KEY:VALUE', nargs='*',
+    gp.add_argument('--docker-kwargs', action=KVAppendAction,
+                    metavar='KEY=VALUE', nargs='*',
                     help='''
 Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
 container. 

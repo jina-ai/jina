@@ -95,9 +95,9 @@ def test_mime_type(restful):
 def test_client_ndjson(restful, mocker, func_name):
     with Flow(restful=restful).add() as f, \
             open(os.path.join(cur_dir, 'docs.jsonlines')) as fp:
-        m = mocker.Mock()
-        getattr(f, f'{func_name}_ndjson')(fp, on_done=m)
-        m.assert_called_once()
+        mock = mocker.Mock()
+        getattr(f, f'{func_name}_ndjson')(fp, on_done=mock)
+        mock.assert_called_once()
 
 
 @pytest.mark.parametrize('func_name', ['index', 'search'])
@@ -105,6 +105,6 @@ def test_client_ndjson(restful, mocker, func_name):
 def test_client_csv(restful, mocker, func_name):
     with Flow(restful=restful).add() as f, \
             open(os.path.join(cur_dir, 'docs.csv')) as fp:
-        m = mocker.Mock()
-        getattr(f, f'{func_name}_csv')(fp, on_done=m)
-        m.assert_called_once()
+        mock = mocker.Mock()
+        getattr(f, f'{func_name}_csv')(fp, on_done=mock)
+        mock.assert_called_once()
