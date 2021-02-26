@@ -3,7 +3,7 @@ import asyncio
 from abc import ABC
 from typing import Callable
 
-from .base import BaseClient
+from .base import BaseClient, InputType
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
@@ -14,7 +14,7 @@ class WebSocketClientMixin(BaseClient, ABC):
     """A MixIn for Websocket Client."""
 
     async def _get_results(self,
-                           inputs: Callable,
+                           inputs: InputType,
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
