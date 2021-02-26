@@ -40,7 +40,6 @@ class BaseLabelPredictDriver(BasePredictDriver):
             *args,
             **kwargs,
     ) -> None:
-        docs = DocumentSet.flatten(docs)
         if self.fields == 'embedding':
             predict_input, docs_pts = docs.all_embeddings
         elif self.fields == 'content':
