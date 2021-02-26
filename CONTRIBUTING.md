@@ -2,7 +2,7 @@
 
 Thanks for your interest in contributing to Jina. We're grateful for your initiative! ❤️
 
-I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below. 
+I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below.
 
 # Join Us on Slack!
 
@@ -51,6 +51,8 @@ There are also a couple of nice to haves:
 * **Environment:** You can find this with `jina --version-full`
 * **Screenshots:** If they're relevant
 
+To understand how our issues are labeled, check out our [issue label guide](./github_issue_label_guide.md).
+
 ### Fixing and Discussing Issues
 
 Right now we're working on a list of things we want help with and easy-to-fix bugs suitable for first-time contributors. Stay tuned to:
@@ -60,16 +62,16 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 * [Discussion required](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22discussion+required%22)
 
 <a name="-making-your-first-submission"></a>
-## 🥇 Making Your First Submission 
+## 🥇 Making Your First Submission
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
-1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jina-hub-submodule) for details. 
+1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jina-hub-submodule) for details.
 1. Configure git pre-commit hooks. Please follow [the steps](#install-pre-commit-hooks)
 1. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 1. Work on this branch to do the fix/improvement.
 1. Check if your code changes follow the [code review guidelines](.github/CODE_REVIEW_GUIDELINES.md).
 1. Commit the changes with the [correct commit style](#writing-your-commit-message).
-1. Make a pull request. 
+1. Make a pull request.
 1. Submit your pull request and wait for all checks to pass.
 1. Request reviews from one of [the code owners](.github/CODEOWNERS).
 1. Get a LGTM 👍 and PR gets merged.
@@ -173,10 +175,10 @@ Your branch name should follow the format `type-scope(-issue_id)`:
 
 * `type` is one of the [types above](#specify-the-correct-types)
 * `scope` is optional, and represents the module your branch is working on.
-* `issue_id` is [the GitHub issue](https://github.com/jina-ai/jina/issues) number. Having the correct issue number will automatically link the Pull Request on this branch to that issue. 
+* `issue_id` is [the GitHub issue](https://github.com/jina-ai/jina/issues) number. Having the correct issue number will automatically link the Pull Request on this branch to that issue.
 
 > Good examples:
-> 
+>
 ```text
 fix-executor-loader-113
 chore-update-version
@@ -205,7 +207,7 @@ Commit messages should stick to our [naming conventions](#naming-conventions) ou
 For example, a commit that fixes a bug in the executor module should be phrased as: `fix(executor): fix the bad naming in init function`
 
 > Good examples:
-> 
+>
 ```text
 fix(indexer): fix wrong sharding number in indexer
 feat: add remote api
@@ -240,7 +242,7 @@ We don't enforce naming of PRs and branches, but we recommend you follow the sam
 <a name="-testing-jina-locally-and-on-ci"></a>
 ## 💥 Testing Jina Locally and on CI
 
-You need to build a local docker image tagged 'jinaai/jina:test-pip' for all the tests to run as in the CI, via: 
+You need to build a local docker image tagged 'jinaai/jina:test-pip' for all the tests to run as in the CI, via:
 
 ```bash
 docker build --build-arg PIP_TAG="[devel]" -f ${PATH_TO_JINA}/Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip ${PATH_TO_JINA}
@@ -295,7 +297,7 @@ If you're making small tweaks to an existing example, make a pull request. For b
 
 #### Docstrings
 
-Docstrings are how we document Jina's functions. This is suitable for more experienced documentation writers who understand Python functions, docstring formatting, and RestructuredText format. 
+Docstrings are how we document Jina's functions. This is suitable for more experienced documentation writers who understand Python functions, docstring formatting, and RestructuredText format.
 
 #### Building Documentation Locally
 
