@@ -10,6 +10,8 @@ from ...helper import deprecated_alias
 
 class CRUDFlowMixin:
     """The synchronous version of the Mixin for CRUD in Flow"""
+
+    @deprecated_alias(input_fn=('inputs', 0))
     def train(self, inputs: InputType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
@@ -340,6 +342,7 @@ class CRUDFlowMixin:
         """
         return self._get_client(**kwargs).index(inputs, on_done, on_error, on_always, **kwargs)
 
+    @deprecated_alias(input_fn=('inputs', 0))
     def update(self, inputs: InputType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
