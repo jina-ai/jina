@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 
 import argparse
 import os
-from typing import Callable, Union, Optional, Iterator, List, Dict, AsyncIterator
+from typing import Callable, Union, Optional, Iterator, Dict, AsyncIterator
 
 import grpc
 import inspect
@@ -131,7 +131,7 @@ class BaseClient:
         if self._inputs is not None:
             return self._inputs
         else:
-            raise BadClient('inputs is empty or not set')
+            raise BadClient('inputs are not defined')
 
     @inputs.setter
     def inputs(self, bytes_gen: InputType) -> None:
@@ -146,7 +146,7 @@ class BaseClient:
             self._inputs = bytes_gen
 
     async def _get_results(self,
-                           inputs: Callable,
+                           inputs: InputType,
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
