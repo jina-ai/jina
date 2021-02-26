@@ -32,10 +32,10 @@ def test_login(tmpdir, monkeypatch, mocker):
         def status_code(self):
             return requests.codes.ok
 
-    m = mocker.Mock()
+    mock = mocker.Mock()
 
     def _mock_post(url, headers, data):
-        m(url=url, headers=headers, data=data)
+        mock(url=url, headers=headers, data=data)
         resp = {'device_code': 'device',
                 'user_code': 'user',
                 'verification_uri': 'verification',
@@ -51,13 +51,13 @@ def test_login(tmpdir, monkeypatch, mocker):
     monkeypatch.setattr(webbrowser, 'open', None)
     monkeypatch.setattr(Path, 'home', _mock_home)
     HubIO(args).login()
-    device_request_kwargs = m.call_args_list[0][1]
+    device_request_kwargs = mock.call_args_list[0][1]
     assert device_request_kwargs['url'] == 'https://github.com/login/device/code'
     assert device_request_kwargs['headers'] == {'Accept': 'application/json'}
     assert 'client_id' in device_request_kwargs['data']
     assert 'scope' in device_request_kwargs['data']
 
-    access_request_kwargs = m.call_args_list[1][1]
+    access_request_kwargs = mock.call_args_list[1][1]
     assert access_request_kwargs['url'] == 'https://github.com/login/oauth/access_token'
     assert access_request_kwargs['headers'] == {'Accept': 'application/json'}
     assert 'client_id' in access_request_kwargs['data']

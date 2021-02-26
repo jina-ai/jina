@@ -1,9 +1,11 @@
 import os
+import pytest
 
 from jina import Document
 from jina.executors.indexers import BaseIndexer
 from jina.flow import Flow
-import pytest
+
+from tests import validate_callback
 
 
 @pytest.fixture
@@ -117,10 +119,8 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
             ('vecidx.bin', 10)
         ]
     )
-    mock = mocker.Mock()
 
     def validate_granularity_1(resp):
-        mock()
         assert len(resp.docs) == 3
         for doc in resp.docs:
             assert doc.granularity == 0
@@ -151,11 +151,12 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
         'm',
     ]
 
+    mock = mocker.Mock()
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
             input_fn=search_data,
-            on_done=validate_granularity_1,
-
+            on_done=mock,
         )
 
     mock.assert_called_once()
+    validate_callback(mock, validate_granularity_1)

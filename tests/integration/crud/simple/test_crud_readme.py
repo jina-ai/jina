@@ -12,37 +12,37 @@ def test_crud_in_readme(mocker):
             Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
 
     # create
-    m = mocker.Mock()
+    mock = mocker.Mock()
     with Flow().add(uses='_index') as f:
-        f.index(docs, on_done=m)
+        f.index(docs, on_done=mock)
 
-    m.assert_called_once()
+    mock.assert_called_once()
 
     # read
     def validate(req):
         assert len(req.docs[0].matches) == 3
-        for m in req.docs[0].matches:
-            assert m.id != '🐯'
-            assert 'position' in m.tags
-            assert 'guardian' in m.tags
-            assert m.score.ref_id == req.docs[0].id
+        for match in req.docs[0].matches:
+            assert match.id != '🐯'
+            assert 'position' in match.tags
+            assert 'guardian' in match.tags
+            assert match.score.ref_id == req.docs[0].id
 
-    m = mocker.Mock()
+    mock = mocker.Mock()
 
     with f:
         f.search(docs[0],
                  top_k=3,
-                 on_done=m)
-    validate_callback(m, validate)
+                 on_done=mock)
+    validate_callback(mock, validate)
 
     # update
-    m = mocker.Mock()
+    mock = mocker.Mock()
 
     d = docs[0]
     d.embedding = np.array([1, 1])
     with f:
-        f.update(d, on_done=m)
-    m.assert_called_once()
+        f.update(d, on_done=mock)
+    mock.assert_called_once()
 
     # search again
 
@@ -52,30 +52,30 @@ def test_crud_in_readme(mocker):
         # embeddings are removed in the CompoundIndexer via ExcludeQL
         np.testing.assert_array_equal(req.docs[0].matches[0].embedding, np.array(None))
 
-    m = mocker.Mock()
+    mock = mocker.Mock()
 
     with f:
         f.search(docs[0],
                  top_k=1,
-                 on_done=m)
-    validate_callback(m, validate)
+                 on_done=mock)
+    validate_callback(mock, validate)
 
     # delete
-    m = mocker.Mock()
+    mock = mocker.Mock()
 
     with f:
-        f.delete(['🐦', '🐲'], on_done=m)
-    m.assert_called_once()
+        f.delete(['🐦', '🐲'], on_done=mock)
+    mock.assert_called_once()
 
     # search again
 
     def validate(req):
         assert len(req.docs[0].matches) == 2
 
-    m = mocker.Mock()
+    mock = mocker.Mock()
 
     with f:
         f.search(docs[0],
                  top_k=4,
-                 on_done=m)
-    validate_callback(m, validate)
+                 on_done=mock)
+    validate_callback(mock, validate)
