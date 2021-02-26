@@ -38,11 +38,11 @@ def test_topk(config, mocker):
             assert len(doc.matches) == TOPK
 
     with Flow.load_config('flow.yml') as index_flow:
-        index_flow.index(input_fn=random_docs(100))
+        index_flow.index(inputs=random_docs(100))
 
     mock = mocker.Mock()
     with Flow.load_config('flow.yml') as search_flow:
-        search_flow.search(input_fn=random_docs(NDOCS),
+        search_flow.search(inputs=random_docs(NDOCS),
                            on_done=validate)
 
     mock.assert_called_once()
@@ -62,10 +62,10 @@ def test_topk_override(config, mocker):
     top_k_queryset = QueryLang({'name': 'VectorSearchDriver', 'parameters': {'top_k': TOPK_OVERRIDE}, 'priority': 1})
 
     with Flow.load_config('flow.yml') as index_flow:
-        index_flow.index(input_fn=random_docs(100))
+        index_flow.index(inputs=random_docs(100))
 
     mock = mocker.Mock()
     with Flow.load_config('flow.yml') as search_flow:
-        search_flow.search(input_fn=random_docs(NDOCS),
+        search_flow.search(inputs=random_docs(NDOCS),
                            on_done=validate, queryset=[top_k_queryset])
     mock.assert_called_once()

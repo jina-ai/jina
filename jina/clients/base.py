@@ -18,7 +18,7 @@ from ..logging.profile import TimeContext, ProgressBar
 from ..proto import jina_pb2_grpc
 from ..types.request import Request
 
-InputFnType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
+InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 CallbackFnType = Optional[Callable[..., None]]
 
 
@@ -44,7 +44,7 @@ class BaseClient:
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._mode = args.mode
-        self._input_fn = None
+        self._inputs = None
 
     @property
     def mode(self) -> str:
@@ -69,29 +69,29 @@ class BaseClient:
             raise ValueError(f'{value} must be one of {RequestType}')
 
     @staticmethod
-    def check_input(input_fn: Optional[InputFnType] = None, **kwargs) -> None:
-        """Validate the input_fn and print the first request if success.
+    def check_input(inputs: Optional[InputType] = None, **kwargs) -> None:
+        """Validate the inputs and print the first request if success.
 
-        :param input_fn: the input function
+        :param inputs: the input function
         :param kwargs: keyword arguments
         """
-        if hasattr(input_fn, '__call__'):
-            input_fn = input_fn()
+        if hasattr(inputs, '__call__'):
+            inputs = inputs()
 
-        kwargs['data'] = input_fn
+        kwargs['data'] = inputs
 
-        if inspect.isasyncgenfunction(input_fn) or inspect.isasyncgen(input_fn):
+        if inspect.isasyncgenfunction(inputs) or inspect.isasyncgen(inputs):
             raise NotImplementedError('checking the validity of an async generator is not implemented yet')
 
         try:
             from .request import request_generator
             r = next(request_generator(**kwargs))
             if isinstance(r, Request):
-                default_logger.success(f'input_fn is valid')
+                default_logger.success(f'inputs is valid')
             else:
                 raise TypeError(f'{typename(r)} is not a valid Request')
         except Exception as ex:
-            default_logger.error(f'input_fn is not valid!')
+            default_logger.error(f'inputs is not valid!')
             raise BadClientInput from ex
 
     def _get_requests(self, **kwargs) -> Union[Iterator['Request'], AsyncIterator['Request']]:
@@ -102,11 +102,11 @@ class BaseClient:
         :return: Iterator of request.
         """
         _kwargs = vars(self.args)
-        _kwargs['data'] = self.input_fn
+        _kwargs['data'] = self.inputs
         # override by the caller-specific kwargs
         _kwargs.update(kwargs)
 
-        if inspect.isasyncgen(self.input_fn):
+        if inspect.isasyncgen(self.inputs):
             from .request.asyncio import request_generator
             return request_generator(**_kwargs)
         else:
@@ -120,38 +120,38 @@ class BaseClient:
         return tname
 
     @property
-    def input_fn(self) -> InputFnType:
+    def inputs(self) -> InputType:
         """
         An iterator of bytes, each element represents a Document's raw content.
 
-        ``input_fn`` defined in the protobuf
+        ``inputs`` defined in the protobuf
 
         :return: input function
         """
-        if self._input_fn is not None:
-            return self._input_fn
+        if self._inputs is not None:
+            return self._inputs
         else:
-            raise BadClient('input_fn is empty or not set')
+            raise BadClient('inputs is empty or not set')
 
-    @input_fn.setter
-    def input_fn(self, bytes_gen: InputFnType) -> None:
+    @inputs.setter
+    def inputs(self, bytes_gen: InputType) -> None:
         """
         Set the input data.
 
         :param bytes_gen: input function type
         """
         if hasattr(bytes_gen, '__call__'):
-            self._input_fn = bytes_gen()
+            self._inputs = bytes_gen()
         else:
-            self._input_fn = bytes_gen
+            self._inputs = bytes_gen
 
     async def _get_results(self,
-                           input_fn: Callable,
+                           inputs: Callable,
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
         try:
-            self.input_fn = input_fn
+            self.inputs = inputs
             tname = self._get_task_name(kwargs)
             req_iter = self._get_requests(**kwargs)
             async with grpc.aio.insecure_channel(f'{self.args.host}:{self.args.port_expose}',

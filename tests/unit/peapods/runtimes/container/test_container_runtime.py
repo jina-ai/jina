@@ -57,7 +57,7 @@ def test_flow_with_one_container_pod(docker_image_built):
          .add(name='dummyEncoder1', uses=f'docker://{img_name}'))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_flow_with_one_container_ext_yaml(docker_image_built):
@@ -66,7 +66,7 @@ def test_flow_with_one_container_ext_yaml(docker_image_built):
               uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_ext.yml')))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_flow_with_replica_container_ext_yaml(docker_image_built):
@@ -77,9 +77,9 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
               parallel=3))
 
     with f:
-        f.index(input_fn=random_docs(10))
-        f.index(input_fn=random_docs(10))
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
+        f.index(inputs=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_flow_topo1(docker_image_built):
@@ -91,7 +91,7 @@ def test_flow_topo1(docker_image_built):
          .join(['d2', 'd1']))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_flow_topo_mixed(docker_image_built):
@@ -103,7 +103,7 @@ def test_flow_topo_mixed(docker_image_built):
          .join(['d6', 'd5']))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_flow_topo_parallel(docker_image_built):
@@ -115,7 +115,7 @@ def test_flow_topo_parallel(docker_image_built):
          .join(['d9', 'd8']))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_flow_topo_ldl_parallel(docker_image_built):
@@ -125,7 +125,7 @@ def test_flow_topo_ldl_parallel(docker_image_built):
          .add(name='d12'))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_container_volume(docker_image_built, tmpdir):

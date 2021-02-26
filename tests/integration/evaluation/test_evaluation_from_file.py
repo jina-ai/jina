@@ -73,7 +73,7 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
     monkeypatch.setenv("RESTFUL", restful)
 
     with Flow.load_config(index_yaml) as index_gt_flow:
-        index_gt_flow.index(input_fn=index_groundtruth, request_size=10)
+        index_gt_flow.index(inputs=index_groundtruth, request_size=10)
 
     m = mocker.Mock()
 
@@ -90,7 +90,7 @@ def test_evaluation_from_file(random_workspace, index_groundtruth, evaluate_docs
 
     with Flow.load_config(search_yaml) as evaluate_flow:
         evaluate_flow.search(
-            input_fn=evaluate_docs,
+            inputs=evaluate_docs,
             on_done=validate_evaluation_response
         )
 

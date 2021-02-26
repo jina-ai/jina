@@ -42,4 +42,4 @@ async def request_generator(data: GeneratorSourceType,
             yield _new_request_from_batch(_kwargs, batch, data_type, mode, queryset)
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception
-        default_logger.critical(f'input_fn is not valid! {ex!r}', exc_info=True)
+        default_logger.critical(f'inputs is not valid! {ex!r}', exc_info=True)

@@ -30,7 +30,7 @@ def test_lb():
         uses='SlowWorker',
         parallel=10)
     with f:
-        f.index(input_fn=random_docs(100), request_size=10)
+        f.index(inputs=random_docs(100), request_size=10)
 
 
 def test_roundrobin():
@@ -39,4 +39,4 @@ def test_roundrobin():
         uses='SlowWorker',
         parallel=10, scheduling=SchedulerType.ROUND_ROBIN)
     with f:
-        f.index(input_fn=random_docs(100), request_size=10)
+        f.index(inputs=random_docs(100), request_size=10)

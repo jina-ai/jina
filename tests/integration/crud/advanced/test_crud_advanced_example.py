@@ -153,7 +153,7 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
 
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
-            input_fn=search_data,
+            inputs=search_data,
             on_done=validate_granularity_1,
 
         )

@@ -7080,7 +7080,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🆕 New Features
 
- - [[```72aa9071```](https://github.com/jina-ai/jina/commit/72aa9071dfd088a4606ce81446635542c589dd3d)] __-__ __client__: input_fn can now be async generator (#1543) (#1808) (*Han Xiao*)
+ - [[```72aa9071```](https://github.com/jina-ai/jina/commit/72aa9071dfd088a4606ce81446635542c589dd3d)] __-__ __client__: inputs can now be async generator (#1543) (#1808) (*Han Xiao*)
  - [[```300931a7```](https://github.com/jina-ai/jina/commit/300931a70cd2162c16e23c277b038222a5461040)] __-__ crud asyncio (#1810) (*Florian Hönicke*)
 
 ### 🐞 Bug fixes

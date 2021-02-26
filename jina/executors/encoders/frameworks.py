@@ -53,9 +53,9 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
             raise ModelCheckpointNotExist(f'model at {tmp_model_path} does not exist')
 
     @staticmethod
-    def _append_outputs(input_fn, outputs_name_to_append, output_fn):
+    def _append_outputs(inputs, outputs_name_to_append, output_fn):
         import onnx
-        model = onnx.load(input_fn)
+        model = onnx.load(inputs)
         feature_map = onnx.helper.ValueInfoProto()
         feature_map.name = outputs_name_to_append
         model.graph.output.append(feature_map)

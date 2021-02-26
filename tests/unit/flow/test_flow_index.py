@@ -55,7 +55,7 @@ def test_shards_insufficient_data(mocker, restful, docpb_workspace):
               uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
               parallel=parallel))
     with f:
-        f.index(input_fn=random_docs(index_docs))
+        f.index(inputs=random_docs(index_docs))
 
     time.sleep(2)
     with f:
@@ -68,7 +68,7 @@ def test_shards_insufficient_data(mocker, restful, docpb_workspace):
               polling='all',
               uses_after='_merge_chunks'))
     with f:
-        f.search(input_fn=random_queries(1, index_docs),
+        f.search(inputs=random_queries(1, index_docs),
 
                  on_done=validate)
     time.sleep(2)

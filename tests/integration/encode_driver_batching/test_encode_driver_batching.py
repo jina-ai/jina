@@ -116,7 +116,7 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
     encoder.save_config(executor_yml_file)
 
     with Flow().add(uses=executor_yml_file) as f:
-        f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
+        f.search(inputs=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  request_size=request_size,
                  on_done=validate_response,
                  on_error=fail_if_error)
@@ -160,7 +160,7 @@ def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num
     encoder.save_config(executor_yml_file)
 
     with Flow().add(uses=executor_yml_file) as f:
-        f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
+        f.search(inputs=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  request_size=request_size,
                  on_done=validate_response,
                  on_error=fail_if_error)

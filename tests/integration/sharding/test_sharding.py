@@ -111,7 +111,7 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=random_docs(0, 201),
+            inputs=random_docs(0, 201),
             request_size=100
         )
 
@@ -136,7 +136,7 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
-            input_fn=random_docs(28, 35),
+            inputs=random_docs(28, 35),
             on_done=_validate_result_factory(10),
             request_size=100
         )
@@ -159,7 +159,7 @@ def test_delete_kv(config, mocker, num_shards):
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=random_docs(0, 201),
+            inputs=random_docs(0, 201),
             request_size=100)
 
     validate_index_size(201, index_name)
@@ -179,7 +179,7 @@ def test_delete_kv(config, mocker, num_shards):
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards, '_merge_root') as search_flow:
         search_flow.search(
-            input_fn=random_docs(28, 35),
+            inputs=random_docs(28, 35),
             on_done=_validate_result_factory(5),
             request_size=100)
     mock.assert_called_once()
@@ -213,7 +213,7 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=docs_before,
+            inputs=docs_before,
             request_size=100)
 
     for index_name in index_names:
@@ -221,7 +221,7 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_update_flow(index_conf, num_shards) as update_flow:
         update_flow.update(
-            input_fn=docs_updated,
+            inputs=docs_updated,
             request_size=100)
 
     for index_name in index_names:
@@ -231,7 +231,7 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
-            input_fn=random_docs(0, 1),
+            inputs=random_docs(0, 1),
             on_done=_validate_result_factory(),
             request_size=100)
     assert mock.call_count == 1
@@ -279,14 +279,14 @@ def test_update_kv(config, mocker, num_shards):
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=docs_before,
+            inputs=docs_before,
             request_size=100)
 
     validate_index_size(201, index_name)
 
     with get_update_flow(index_conf, num_shards) as update_flow:
         update_flow.update(
-            input_fn=docs_updated,
+            inputs=docs_updated,
             request_size=100)
 
     validate_index_size(201, index_name)
@@ -299,7 +299,7 @@ def test_update_kv(config, mocker, num_shards):
     ):
         with get_search_flow(index_conf, num_shards, '_merge_root') as search_flow:
             search_flow.search(
-                input_fn=random_docs(start, end),
+                inputs=random_docs(start, end),
                 on_done=validate_results,
                 request_size=100)
     assert mock.call_count == 3

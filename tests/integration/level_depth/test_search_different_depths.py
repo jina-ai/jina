@@ -54,7 +54,7 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
 
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
-            input_fn=search_data,
+            inputs=search_data,
             on_done=validate_granularity_1,
             on_error=lambda r: print(r)
 
