@@ -1,12 +1,12 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
       metric: cosine
     metas:
       name: vecidx  # a customized name
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: chunk.gz
     metas:
@@ -19,15 +19,15 @@ requests:
   on:
     SearchRequest:
       drivers:
-        - !VectorSearchDriver
+        - jtype: VectorSearchDriver
           with:
             executor: BaseVectorIndexer
             traversal_paths: [ 'c' ]
-        - !KVSearchDriver
+        - jtype: KVSearchDriver
           with:
             executor: BaseKVIndexer
             traversal_paths: [ 'cm' ]
-        - !ExcludeQL
+        - jtype: ExcludeQL
           with:
             fields:
               - embedding
@@ -37,14 +37,14 @@ requests:
       with:
         traversal_paths: [ 'c' ]
       drivers:
-        - !VectorIndexDriver
+        - jtype: VectorIndexDriver
           with:
             executor: BaseVectorIndexer
-        - !ExcludeQL
+        - jtype: ExcludeQL
           with:
             fields:
               - embedding
               - blob
-        - !KVIndexDriver
+        - jtype: KVIndexDriver
           with:
             executor: BaseKVIndexer
