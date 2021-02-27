@@ -1,3 +1,6 @@
+__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 schema_requests = {
     'Jina::Requests': {
         'description': 'Define how the Executor behaves under network requests.',
