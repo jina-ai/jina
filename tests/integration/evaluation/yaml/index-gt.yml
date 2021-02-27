@@ -1,4 +1,4 @@
-!BinaryPbIndexer
+jtype: BinaryPbIndexer
 with:
   index_filename: gt.gz
 metas:
@@ -7,6 +7,6 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !KVIndexDriver {}
+      - jtype: KVIndexDriver {}
     SearchRequest:
-      - !LoadGroundTruthDriver {}
+      - jtype: LoadGroundTruthDriver {}

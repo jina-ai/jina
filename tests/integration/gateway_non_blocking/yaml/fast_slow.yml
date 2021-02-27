@@ -1,7 +1,7 @@
-!BaseCrafter
+jtype: BaseCrafter
 metas:
   py_modules: fast_slow_driver.py
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !FastSlowDriver {}
+      - jtype: FastSlowDriver {}

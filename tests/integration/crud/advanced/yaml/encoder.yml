@@ -1,4 +1,4 @@
-!DummyOneHotTextEncoder
+jtype: DummyOneHotTextEncoder
 metas:
   name: encoder
   py_modules:
@@ -6,12 +6,12 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           traversal_paths: ['c']
     SearchRequest:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           traversal_paths: ['r']
     DeleteRequest:
-      - !ForwardDriver {}
+      - jtype: ForwardDriver {}

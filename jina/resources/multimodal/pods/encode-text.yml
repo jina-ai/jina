@@ -1,4 +1,4 @@
-!TransformerTorchEncoder
+jtype: TransformerTorchEncoder
 requests:
   use_default: true
   on:
@@ -6,4 +6,4 @@ requests:
       with:
         traversal_paths: ['c']
       drivers:
-        - !EncodeDriver {}
+        - jtype: EncodeDriver {}

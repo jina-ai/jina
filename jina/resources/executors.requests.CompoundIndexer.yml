@@ -1,34 +1,34 @@
 on:
   SearchRequest:
-    - !VectorSearchDriver
+    - jtype: VectorSearchDriver
       with:
         executor: BaseVectorIndexer
-    - !ExcludeQL
+    - jtype: ExcludeQL
       with:
         fields:
           - embedding
-    - !KVSearchDriver
+    - jtype: KVSearchDriver
       with:
         executor: BaseKVIndexer
         is_update: True
         traversal_paths: ['m']
   [IndexRequest, UpdateRequest]:
-    - !VectorIndexDriver
+    - jtype: VectorIndexDriver
       with:
         executor: BaseVectorIndexer
-    - !ExcludeQL
+    - jtype: ExcludeQL
       with:
         fields:
           - embedding
-    - !KVIndexDriver
+    - jtype: KVIndexDriver
       with:
         executor: BaseKVIndexer
   ControlRequest:
-    - !ControlReqDriver {}
+    - jtype: ControlReqDriver {}
   DeleteRequest:
-    - !DeleteDriver
+    - jtype: DeleteDriver
       with:
         executor: BaseKVIndexer
-    - !DeleteDriver
+    - jtype: DeleteDriver
       with:
         executor: BaseVectorIndexer

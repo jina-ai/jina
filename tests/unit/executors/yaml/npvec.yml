@@ -1,6 +1,6 @@
-!CompoundExecutor
+jtype: CompoundExecutor
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       metric: euclidean
       num_dim: -1
@@ -9,7 +9,7 @@ components:
     metas:
       name: my_vec_indexer  # a customized name
       workspace: $JINA_TEST_COMPOUND_FROM_YAML
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: chunk.gzip
     metas:

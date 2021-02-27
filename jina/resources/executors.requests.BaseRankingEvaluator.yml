@@ -1,16 +1,16 @@
 on:
   ControlRequest:
-    - !ControlReqDriver {}
+    - jtype: ControlReqDriver {}
   SearchRequest:
     with:
       traversal_paths: ['r']
     drivers:
-      - !ExcludeQL
+      - jtype: ExcludeQL
         with:
           fields:
             - embedding
             - buffer
             - blob
             - text
-      - !RankEvaluateDriver {}
+      - jtype: RankEvaluateDriver {}
 

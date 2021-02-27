@@ -1,4 +1,4 @@
-!DummyPretrainedExecutor
+jtype: DummyPretrainedExecutor
 with:
   {}
 metas:

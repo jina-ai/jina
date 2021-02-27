@@ -1,11 +1,11 @@
-!CompoundExecutor
+jtype: CompoundExecutor
 components:
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: metaproto
     metas:
       name: test_meta
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       metric: euclidean
       index_filename: npidx

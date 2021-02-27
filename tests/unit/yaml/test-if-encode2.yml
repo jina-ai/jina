@@ -1,6 +1,6 @@
-!Encode2
+jtype: Encode2
 requests:
   on:
     IndexRequest:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         if: doc.mime_type.startswith('image')

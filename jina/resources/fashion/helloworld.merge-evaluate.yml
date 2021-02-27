@@ -1,10 +1,10 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: merge
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
-      - !CollectEvaluationDriver {}
+      - jtype: CollectEvaluationDriver {}
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}

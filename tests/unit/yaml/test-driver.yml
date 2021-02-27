@@ -1,6 +1,6 @@
-- !KVSearchDriver
+- jtype: KVSearchDriver
   with:
     executor: blah
     method: goto
-- !ControlReqDriver {}
-- !BaseDriver {}
+- jtype: ControlReqDriver {}
+- jtype: BaseDriver {}

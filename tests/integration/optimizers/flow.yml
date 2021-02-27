@@ -1,4 +1,4 @@
-!Flow
+jtype: Flow
 version: '1'
 env:
   JINA_DUMMYCRAFTER_PARAM1_VAR: ${{JINA_DUMMYCRAFTER_PARAM1}}

@@ -1,4 +1,4 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   index_filename: tmp2
 metas:
@@ -6,6 +6,6 @@ metas:
 requests:
   on:
     SearchRequest:
-      - !VectorSearchDriver {}
+      - jtype: VectorSearchDriver {}
     IndexRequest:
-      - !VectorIndexDriver {}
+      - jtype: VectorIndexDriver {}

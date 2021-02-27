@@ -1,4 +1,4 @@
-!BinaryPbIndexer
+jtype: BinaryPbIndexer
 with:
   index_filename: test-docs
 metas:
@@ -7,9 +7,9 @@ metas:
 requests:
   on:
     SearchRequest:
-      - !KVSearchDriver
+      - jtype: KVSearchDriver
         with:
           is_update: true
           traversal_paths: [ 'r' ]
     IndexRequest:
-      - !KVIndexDriver {}
+      - jtype: KVIndexDriver {}

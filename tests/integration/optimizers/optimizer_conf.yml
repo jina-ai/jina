@@ -1,7 +1,7 @@
- !FlowOptimizer
+ jtype: FlowOptimizer
  version: '1'
  with:
-   flow_runner: !SingleFlowRunner
+   flow_runner: jtype: SingleFlowRunner
      with:
        flow_yaml: flow.yml
        overwrite_workspace: True
@@ -9,7 +9,7 @@
        request_size: 1
        execution_method: 'search_lines'
        documents_parameter_name: 'filepath'
-   evaluation_callback: !MeanEvaluationCallback {}
+   evaluation_callback: jtype: MeanEvaluationCallback {}
    parameter_yaml: ${{JINA_OPTIMIZER_PARAMETER_FILE}}
    workspace_base_dir: ${{JINA_OPTIMIZER_WORKSPACE_DIR}}
    n_trials: 5

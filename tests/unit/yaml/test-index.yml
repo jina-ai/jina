@@ -1,4 +1,4 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   metric: euclidean
   index_filename: tmp2
@@ -8,12 +8,12 @@ metas:
 requests:
   on:
     SearchRequest:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           method: query
     IndexRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           method: add
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}

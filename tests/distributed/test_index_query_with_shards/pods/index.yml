@@ -1,12 +1,12 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
       metric: euclidean
     metas:
       name: vecidx
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: doc.gz
     metas:

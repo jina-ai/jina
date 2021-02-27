@@ -1,11 +1,11 @@
-!UniquePbIndexer
+jtype: UniquePbIndexer
 components:
-  - !DocCache
+  - jtype: DocCache
     with:
       fields: [content_hash]
     metas:
       name: cache
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: doc.gz
     metas:

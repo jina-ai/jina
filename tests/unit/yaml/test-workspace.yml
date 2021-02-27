@@ -1,4 +1,4 @@
-!BaseExecutor
+jtype: BaseExecutor
 metas:
   name: test1
   workspace: $JINA_TEST_WORKSPACE

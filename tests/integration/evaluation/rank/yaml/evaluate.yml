@@ -1,21 +1,21 @@
-!CompoundExecutor
+jtype: CompoundExecutor
 components:
-  - !PrecisionEvaluator
+  - jtype: PrecisionEvaluator
     with:
       eval_at: 1
     metas:
       name: precision-1
-  - !PrecisionEvaluator
+  - jtype: PrecisionEvaluator
     with:
       eval_at: 2
     metas:
       name: precision-2
-  - !RecallEvaluator
+  - jtype: RecallEvaluator
     with:
       eval_at: 1
     metas:
       name: recall-1
-  - !RecallEvaluator
+  - jtype: RecallEvaluator
     with:
       eval_at: 2
     metas:
@@ -25,22 +25,22 @@ metas:
 requests:
   on:
     [ SearchRequest ]:
-      - !RankEvaluateDriver
+      - jtype: RankEvaluateDriver
         with:
           executor: precision-1
           traversal_paths: [ 'r' ]
           fields: ['tags__id']
-      - !RankEvaluateDriver
+      - jtype: RankEvaluateDriver
         with:
           executor: precision-2
           traversal_paths: [ 'r' ]
           fields: ['tags__id']
-      - !RankEvaluateDriver
+      - jtype: RankEvaluateDriver
         with:
           executor: recall-1
           traversal_paths: [ 'r' ]
           fields: ['tags__id']
-      - !RankEvaluateDriver
+      - jtype: RankEvaluateDriver
         with:
           executor: recall-2
           traversal_paths: [ 'r' ]

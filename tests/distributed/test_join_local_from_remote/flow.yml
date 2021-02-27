@@ -1,4 +1,4 @@
-!Flow
+jtype: Flow
 version: '1'
 with:
   port_expose: 45678

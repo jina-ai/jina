@@ -1,6 +1,6 @@
-!Encode1
+jtype: Encode1
 requests:
   on:
     IndexRequest:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         if: doc.mime_type.startswith('text')

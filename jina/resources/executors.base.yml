@@ -1,4 +1,4 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: clear
@@ -7,4 +7,4 @@ requests:
     [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
       *  # replace by drivers
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}

@@ -1,13 +1,13 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
       metric: cosine
     metas:
       name: vecidx
       workspace: $JINA_TEST_LEVEL_DEPTH_WORKSPACE
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: chunk.gz
     metas:
@@ -19,20 +19,20 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           executor: vecidx
           traversal_paths: ['c']
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           executor: chunkidx
           traversal_paths: ['c']
     SearchRequest:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           executor: vecidx
           traversal_paths: ['r']
-      - !KVSearchDriver
+      - jtype: KVSearchDriver
         with:
           executor: chunkidx
           is_update: true

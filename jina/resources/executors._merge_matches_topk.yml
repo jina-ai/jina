@@ -1,4 +1,4 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: merge_matches_topk
@@ -8,16 +8,16 @@ requests:
       with:
         traversal_paths: [ 'm' ]
       drivers:
-        - !ReduceAllDriver {}
-        - !SortQL
+        - jtype: ReduceAllDriver {}
+        - jtype: SortQL
           with:
             reverse: False
             field: 'score__value'
-        - !SliceQL
+        - jtype: SliceQL
           with:
             start: 0
             end: 10 # is overwritten by the QueryLangDriver
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     [DeleteRequest, UpdateRequest]:
-      - !RouteDriver {}
+      - jtype: RouteDriver {}

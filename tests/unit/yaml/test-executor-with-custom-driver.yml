@@ -1,4 +1,4 @@
-!DummyEncoder
+jtype: DummyEncoder
 metas:
   py_modules:
     - dummy_encode.py
@@ -6,8 +6,8 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !DummyEncodeDriver
+      - jtype: DummyEncodeDriver
         with:
           traversal_paths: ['r']
     SearchRequest:
-      - !EncodeDriver {}
+      - jtype: EncodeDriver {}

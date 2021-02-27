@@ -1,4 +1,4 @@
-!DataURIPbIndexer
+jtype: DataURIPbIndexer
 with:
   index_filename: doc.gzip
 metas:
@@ -7,17 +7,17 @@ metas:
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     SearchRequest:
-      - !KVSearchDriver {}
+      - jtype: KVSearchDriver {}
     IndexRequest:
-      - !URI2DataURI
+      - jtype: URI2DataURI
         with:
           override: true
-      - !URI2Text {}
-      - !ExcludeQL
+      - jtype: URI2Text {}
+      - jtype: ExcludeQL
         with:
           fields:
             - buffer
             - chunks
-      - !KVIndexDriver {}
+      - jtype: KVIndexDriver {}

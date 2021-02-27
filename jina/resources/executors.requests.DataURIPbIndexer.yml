@@ -1,15 +1,15 @@
 on:
   ControlRequest:
-    - !ControlReqDriver {}
+    - jtype: ControlReqDriver {}
   SearchRequest:
-    - !KVSearchDriver {}
+    - jtype: KVSearchDriver {}
   [IndexRequest, UpdateRequest]:
-    - !Buffer2URI {}
-    - !ExcludeQL
+    - jtype: Buffer2URI {}
+    - jtype: ExcludeQL
       with:
         fields:
           - chunks  # we don't want to save nested structure
           - buffer
-    - !KVIndexDriver {}
+    - jtype: KVIndexDriver {}
   DeleteRequest:
-    - !DeleteDriver {}
+    - jtype: DeleteDriver {}

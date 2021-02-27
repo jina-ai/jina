@@ -1,4 +1,4 @@
-!Flow
+jtype: Flow
 version: '1'
 env:
   key_parent: value3  # all pods share this env var

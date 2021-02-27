@@ -1,4 +1,4 @@
-!Flow
+jtype: Flow
 version: '1'
 with:
   sse_logger: false

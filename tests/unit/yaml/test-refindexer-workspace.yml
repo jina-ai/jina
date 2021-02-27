@@ -1,7 +1,7 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   ref_indexer:
-    !NumpyIndexer
+    jtype: NumpyIndexer
     metas:
       name: ref_indexer
       workspace: $JINA_TEST_WORKSPACE

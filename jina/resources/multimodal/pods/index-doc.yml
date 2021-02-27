@@ -1,4 +1,4 @@
-!BinaryPbIndexer
+jtype: BinaryPbIndexer
 with:
   index_filename: 'doc.gz'
 metas:
@@ -8,13 +8,13 @@ requests:
   use_default: true
   on:
     IndexRequest:
-      - !ExcludeQL
+      - jtype: ExcludeQL
         with:
           fields:
             - chunks
-      - !URI2DataURI {}
-      - !ExcludeQL
+      - jtype: URI2DataURI {}
+      - jtype: ExcludeQL
         with:
           fields:
             - buffer
-      - !KVIndexDriver {}
+      - jtype: KVIndexDriver {}

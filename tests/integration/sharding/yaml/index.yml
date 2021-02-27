@@ -1,13 +1,13 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
       metric: cosine
     metas:
       name: vecidx
       workspace: $JINA_SHARDING_DIR
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: doc.gz
     metas:
@@ -19,39 +19,39 @@ metas:
 requests:
   on:
     UpdateRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           method: update
           executor: vecidx
           traversal_paths: [ 'r' ]
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           method: update
           executor: kvidx
           traversal_paths: [ 'r' ]
     DeleteRequest:
-      - !DeleteDriver
+      - jtype: DeleteDriver
         with:
           executor: vecidx
-      - !DeleteDriver
+      - jtype: DeleteDriver
         with:
           executor: kvidx
     IndexRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           executor: vecidx
           traversal_paths: ['r']
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           executor: kvidx
           traversal_paths: ['r']
     SearchRequest:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           executor: vecidx
           top_k: $JINA_TOPK
           traversal_paths: ['r']
-      - !KVSearchDriver
+      - jtype: KVSearchDriver
         with:
           executor: kvidx
           traversal_paths: ['m']

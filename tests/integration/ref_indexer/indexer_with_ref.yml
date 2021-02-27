@@ -1,7 +1,7 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   ref_indexer:
-    !NumpyIndexer
+    jtype: NumpyIndexer
     with:
       index_filename: 'index.gz'
     metas:

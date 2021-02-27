@@ -1,4 +1,4 @@
-!BaseEncoder
+jtype: BaseEncoder
 with: {}
 metas:
   name: blah
@@ -6,10 +6,10 @@ metas:
 requests:
   on:
     [SearchRequest]:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           method: encode
-      - !ExcludeQL
+      - jtype: ExcludeQL
         with:
           fields:
             - embedding

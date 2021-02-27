@@ -1,4 +1,4 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   index_filename: tmp2
   metric: euclidean
@@ -8,32 +8,32 @@ metas:
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     SearchRequest:
-      - !VectorSearchDriver {}  # first match on the doc
-      - !SliceQL
+      - jtype: VectorSearchDriver {}  # first match on the doc
+      - jtype: SliceQL
         with:
           start: 0
           end: 5
           traversal_paths: ['m']
-      - !VectorFillDriver
+      - jtype: VectorFillDriver
         with:
           traversal_paths: ['r', 'm']
-      - !VectorSearchDriver  # then go for the first-degree matches
+      - jtype: VectorSearchDriver  # then go for the first-degree matches
         with:
           traversal_paths: ['m']
-      - !SliceQL
+      - jtype: SliceQL
         with:
           start: 0
           end: 5
           traversal_paths: ['m', 'mm']
-      - !VectorFillDriver
+      - jtype: VectorFillDriver
         with:
           traversal_paths: ['r', 'm', 'mm', 'mmm']
     IndexRequest:
-      - !ExcludeQL
+      - jtype: ExcludeQL
         with:
           fields:
             - buffer
             - chunks
-      - !VectorIndexDriver {}
+      - jtype: VectorIndexDriver {}

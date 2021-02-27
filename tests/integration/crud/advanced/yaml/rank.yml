@@ -1,4 +1,4 @@
-!DummyMinRanker
+jtype: DummyMinRanker
 metas:
   name: ranker
   py_modules:
@@ -6,6 +6,6 @@ metas:
 requests:
   on:
     SearchRequest:
-      - !AggregateMatches2DocRankDriver
+      - jtype: AggregateMatches2DocRankDriver
         with:
           traversal_paths: ['m']
