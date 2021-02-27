@@ -10,6 +10,8 @@ IMPORTED.executors = False
 IMPORTED.executors = False
 IMPORTED.drivers = False
 IMPORTED.hub = False
+IMPORTED.schema_executors = {}
+IMPORTED.schema_drivers = {}
 
 
 def import_classes(namespace: str,
@@ -292,6 +294,8 @@ def _update_depend_tree(cls_obj, module_name, cur_tree):
 def _import_module(module_name, import_type, depend_tree, load_stat):
     from importlib import import_module
     from .helper import colored
+    from .schemas.helper import _jina_class_to_schema
+
     bad_imports = []
     _mod_obj = import_module(module_name)
     for _attr in dir(_mod_obj):
@@ -303,6 +307,9 @@ def _import_module(module_name, import_type, depend_tree, load_stat):
             _update_depend_tree(_cls_obj, module_name, depend_tree)
             if _cls_obj.__class__.__name__ == 'ExecutorType':
                 _load_default_exc_config(_cls_obj)
+                IMPORTED.schema_executors[f'Jina::Executors::{_cls_obj.__name__}'] = _jina_class_to_schema(_cls_obj)
+            else:
+                IMPORTED.schema_drivers[f'Jina::Drivers::{_cls_obj.__name__}'] = _jina_class_to_schema(_cls_obj)
             # TODO: _success_msg is never used
             _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1])
             load_stat[module_name].append((_attr, True, _success_msg))

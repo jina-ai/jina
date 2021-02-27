@@ -48,24 +48,35 @@ def client(args: 'Namespace'):
 
 
 def export_api(args: 'Namespace'):
+    import json
     from .export import api_to_dict
+    from jina.jaml import JAML
     from jina import __version__
     from jina.logging import default_logger
+    from jina.schemas import get_full_schema
 
     if args.yaml_path:
+        dump_api = api_to_dict()
         for yp in args.yaml_path:
             f_name = (yp % __version__) if '%s' in yp else yp
-            from jina.jaml import JAML
             with open(f_name, 'w', encoding='utf8') as fp:
-                JAML.dump(api_to_dict(), fp)
+                JAML.dump(dump_api, fp)
             default_logger.info(f'API is exported to {f_name}')
 
     if args.json_path:
+        dump_api = api_to_dict()
         for jp in args.json_path:
             f_name = (jp % __version__) if '%s' in jp else jp
-            import json
             with open(f_name, 'w', encoding='utf8') as fp:
-                json.dump(api_to_dict(), fp, sort_keys=True)
+                json.dump(dump_api, fp, sort_keys=True)
+            default_logger.info(f'API is exported to {f_name}')
+
+    if args.schema_path:
+        dump_api = get_full_schema()
+        for jp in args.schema_path:
+            f_name = (jp % __version__) if '%s' in jp else jp
+            with open(f_name, 'w', encoding='utf8') as fp:
+                json.dump(dump_api, fp, sort_keys=True)
             default_logger.info(f'API is exported to {f_name}')
 
 
