@@ -26,7 +26,8 @@ def _cli_to_schema(api_dict, target,
                    extras=None,
                    required=None,
                    allow_addition=False,
-                   namespace='Jina'):
+                   namespace='Jina',
+                   description=''):
     pod_api = None
 
     for d in api_dict['methods']:
@@ -38,7 +39,9 @@ def _cli_to_schema(api_dict, target,
         'properties': {},
         'type': 'object',
         'required': [],
-        'additionalProperties': allow_addition}
+        'additionalProperties': allow_addition,
+        'description': description
+    }
 
     for p in pod_api:
         dtype = _python_type_to_schema_type(p['type'])
