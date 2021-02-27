@@ -1,4 +1,4 @@
-!DummyEncoder
+jtype: DummyEncoder
 with:
   {}
 metas:
@@ -6,6 +6,6 @@ metas:
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           traversal_paths: ['c']

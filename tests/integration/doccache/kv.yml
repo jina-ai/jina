@@ -1,6 +1,6 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: doc.gz
     metas:
@@ -11,25 +11,25 @@ metas:
 requests:
   on:
     UpdateRequest:
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           method: update
           executor: $JINA_KV_IDX_NAME
           traversal_paths: [r, c]
     DeleteRequest:
-      - !DeleteDriver
+      - jtype: DeleteDriver
         with:
           executor: $JINA_KV_IDX_NAME
     IndexRequest:
-      - !FilterQL
+      - jtype: FilterQL
         with:
           lookups: {tags__is_indexed__neq: true}
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           executor: $JINA_KV_IDX_NAME
           traversal_paths: [r, c]
     SearchRequest:
-      - !KVSearchDriver
+      - jtype: KVSearchDriver
         with:
           is_update: false
           executor: $JINA_KV_IDX_NAME

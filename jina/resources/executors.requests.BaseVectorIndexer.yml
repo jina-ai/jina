@@ -1,14 +1,14 @@
 on:
   ControlRequest:
-    - !ControlReqDriver {}
+    - jtype: ControlReqDriver {}
   SearchRequest:
-    - !VectorSearchDriver {}
+    - jtype: VectorSearchDriver {}
   [IndexRequest, UpdateRequest]:
-    - !ExcludeQL
+    - jtype: ExcludeQL
       with:
         fields:
           - buffer
           - chunks
-    - !VectorIndexDriver {}
+    - jtype: VectorIndexDriver {}
   DeleteRequest:
-    - !DeleteDriver {}
+    - jtype: DeleteDriver {}

@@ -1,9 +1,9 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       ref_indexer:
-        !NumpyIndexer
+        jtype: NumpyIndexer
         metas:
           name: wrapidx
     metas:
@@ -14,17 +14,17 @@ metas:
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     SearchRequest:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           executor: outeridx
     [IndexRequest, UpdateRequest]:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           executor: outeridx
     DeleteRequest:
-      - !DeleteDriver
+      - jtype: DeleteDriver
         with:
           executor: outeridx
 

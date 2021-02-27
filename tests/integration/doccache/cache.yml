@@ -1,4 +1,4 @@
-!DocCache
+jtype: DocCache
 with:
   fields: [$JINA_CACHE_FIELD]
   index_filename: cache
@@ -8,18 +8,18 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !TaggingCacheDriver
+      - jtype: TaggingCacheDriver
         with:
           executor: cache
           traversal_paths: [r, c]
           tags:
             is_indexed: true
     UpdateRequest:
-      - !BaseCacheDriver
+      - jtype: BaseCacheDriver
         with:
           method: update
           executor: cache
           traversal_paths: [r, c]
     DeleteRequest:
-      - !DeleteDriver { }
+      - jtype: DeleteDriver { }
 

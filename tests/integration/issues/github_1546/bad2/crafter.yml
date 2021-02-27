@@ -1,4 +1,4 @@
-!CustomCrafter2
+jtype: CustomCrafter2
 metas:
   py_modules:
     - __init__.py

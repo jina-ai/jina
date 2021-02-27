@@ -1,5 +1,5 @@
-!BaseExecutor
+jtype: BaseExecutor
 requests:
   on:
     IndexRequest:
-      - !FilterDriver {}
+      - jtype: FilterDriver {}

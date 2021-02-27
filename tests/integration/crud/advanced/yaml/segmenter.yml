@@ -1,4 +1,4 @@
-!DummySentencizer
+jtype: DummySentencizer
 with:
   min_sent_len: 3
   max_sent_len: 128
@@ -10,6 +10,6 @@ metas:
 requests:
   on:
     [SearchRequest, IndexRequest]:
-      - !SegmentDriver {}
+      - jtype: SegmentDriver {}
     DeleteRequest:
-      - !ForwardDriver {}
+      - jtype: ForwardDriver {}

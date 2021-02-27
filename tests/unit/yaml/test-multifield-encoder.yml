@@ -1,7 +1,7 @@
-!OneHotTextEncoder
+jtype: OneHotTextEncoder
 requests:
   on:
     [SearchRequest, IndexRequest]:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           filter_by: $FILTER_BY

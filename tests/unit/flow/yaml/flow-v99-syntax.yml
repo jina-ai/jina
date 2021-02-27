@@ -1,4 +1,4 @@
-!Flow
+jtype: Flow
 version: '99.99'
 pods:
   - name: pod0  # notice the change here, name is now an attribute

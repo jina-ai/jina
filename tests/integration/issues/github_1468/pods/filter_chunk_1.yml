@@ -1,8 +1,8 @@
-!BaseExecutor
+jtype: BaseExecutor
 requests:
   on:
     SearchRequest:
-      - !FilterQL
+      - jtype: FilterQL
         with:
           traversal_paths: ['c']
           lookups: {'modality': '1'}

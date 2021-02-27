@@ -1,4 +1,4 @@
-!CustomCrafter4
+jtype: CustomCrafter4
 metas:
   py_modules:
     - helper.py

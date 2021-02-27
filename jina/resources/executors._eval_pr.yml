@@ -1,9 +1,9 @@
-!CompoundExecutor
+jtype: CompoundExecutor
 components:
-  - !PrecisionEvaluator
+  - jtype: PrecisionEvaluator
     metas:
       name: precision  # a customized name
-  - !RecallEvaluator
+  - jtype: RecallEvaluator
     metas:
       name: recall  # a customized name
 metas:
@@ -16,9 +16,9 @@ requests:
         running_avg: true
         fields: [tags__id]
       drivers:
-        - !RankEvaluateDriver
+        - jtype: RankEvaluateDriver
           with:
             executor: precision
-        - !RankEvaluateDriver
+        - jtype: RankEvaluateDriver
           with:
             executor: recall

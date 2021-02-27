@@ -1,4 +1,4 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   index_filename: vec.gz
 metas:

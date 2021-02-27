@@ -1,16 +1,16 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !AnnoyIndexer
+  - jtype: AnnoyIndexer
     with:
       ref_indexer:
-        !NumpyIndexer
+        jtype: NumpyIndexer
         with:
           metric: euclidean
           index_filename: vec.gz
         metas:
           name: vecidx  # a customized name
           workspace: $TEST_WORKDIR
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: chunk.gz
     metas:

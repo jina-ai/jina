@@ -1,10 +1,10 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: concat
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
-      - !ConcatEmbedDriver {}
+      - jtype: ConcatEmbedDriver {}
     [DeleteRequest, UpdateRequest]:
-      - !RouteDriver {}
+      - jtype: RouteDriver {}

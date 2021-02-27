@@ -1,4 +1,4 @@
-!BinaryPbIndexer
+jtype: BinaryPbIndexer
 with:
   index_filename: test-doc-shard.gz
 metas:

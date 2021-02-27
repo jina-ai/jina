@@ -1,12 +1,12 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
       metric: cosine
     metas:
       name: vecidx
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: doc.gz
     metas:
@@ -17,21 +17,21 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           executor: vecidx
           traversal_paths: ['r']
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           executor: docidx
           traversal_paths: ['r']
     [SearchRequest]:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           executor: vecidx
           top_k: $JINA_TOPK
           traversal_paths: ['r']
-      - !KVSearchDriver
+      - jtype: KVSearchDriver
         with:
           executor: docidx
           traversal_paths: ['m']

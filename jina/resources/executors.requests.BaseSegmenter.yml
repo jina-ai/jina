@@ -1,7 +1,7 @@
 on:
   ControlRequest:
-    - !ControlReqDriver {}
+    - jtype: ControlReqDriver {}
   [SearchRequest, TrainRequest, IndexRequest]:
-    - !SegmentDriver {}
+    - jtype: SegmentDriver {}
   [DeleteRequest, UpdateRequest]:
-    - !RouteDriver {}
+    - jtype: RouteDriver {}

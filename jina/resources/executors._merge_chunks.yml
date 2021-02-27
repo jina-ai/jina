@@ -1,12 +1,12 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: merge_chunks
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
-      - !ReduceAllDriver {}
+      - jtype: ReduceAllDriver {}
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     [DeleteRequest, UpdateRequest]:
-      - !RouteDriver {}
+      - jtype: RouteDriver {}

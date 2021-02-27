@@ -1,9 +1,9 @@
-!DummySegment
+jtype: DummySegment
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     [SearchRequest, TrainRequest, IndexRequest]:
-    - !SegmentDriver
+    - jtype: SegmentDriver
       with:
         method: segment

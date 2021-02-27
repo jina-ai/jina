@@ -1,33 +1,33 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: clear
 requests:
   on:
     SearchRequest:
-      - !ExcludeReqQL
+      - jtype: ExcludeReqQL
         with:
           fields:
             - search
     TrainRequest:
-      - !ExcludeReqQL
+      - jtype: ExcludeReqQL
         with:
           fields:
             - train
     IndexRequest:
-      - !ExcludeReqQL
+      - jtype: ExcludeReqQL
         with:
           fields:
             - index
     DeleteRequest:
-      - !ExcludeReqQL
+      - jtype: ExcludeReqQL
         with:
           fields:
             - delete
     UpdateRequest:
-      - !ExcludeReqQL
+      - jtype: ExcludeReqQL
         with:
           fields:
             - update
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}

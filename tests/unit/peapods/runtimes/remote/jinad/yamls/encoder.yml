@@ -1,16 +1,16 @@
-!DummyExecutor
+jtype: DummyExecutor
 metas:
   name: myenc
   py_modules: tests/unit/peapods/runtimes/remote/jinad/yamls/dummy.py
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !Blob2PngURI
+      - jtype: Blob2PngURI
         with:
           height: 32
           width: 32
-      - !EncodeDriver {}
-      - !ExcludeQL
+      - jtype: EncodeDriver {}
+      - jtype: ExcludeQL
         with:
           fields:
             - buffer

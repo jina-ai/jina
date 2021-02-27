@@ -1,4 +1,4 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   index_filename: tmp2
   metric: euclidean
@@ -8,23 +8,23 @@ metas:
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     SearchRequest:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           top_k: 5
           priority: 4
           fill_embedding: true
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           top_k: 5
           priority: 4
           fill_embedding: true
           traversal_paths: ['m']
     IndexRequest:
-      - !ExcludeQL
+      - jtype: ExcludeQL
         with:
           fields:
             - buffer
             - chunks
-      - !VectorIndexDriver {}
+      - jtype: VectorIndexDriver {}

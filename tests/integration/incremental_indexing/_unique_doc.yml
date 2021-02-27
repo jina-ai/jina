@@ -1,4 +1,4 @@
-!DocCache
+jtype: DocCache
 with:
   index_path: cache.tmp
 metas:
@@ -7,12 +7,12 @@ metas:
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest, ControlRequest]:
-      - !RouteDriver {}
+      - jtype: RouteDriver {}
     IndexRequest:
-      - !TaggingCacheDriver
+      - jtype: TaggingCacheDriver
         with:
           tags:
             is_indexed: true
-      - !FilterQL
+      - jtype: FilterQL
         with:
           lookups: {tags__is_indexed__neq: true}

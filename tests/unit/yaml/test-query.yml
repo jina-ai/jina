@@ -1,4 +1,4 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   metric: euclidean
   index_filename: tmp2

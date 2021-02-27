@@ -1,6 +1,6 @@
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
       metric: euclidean
@@ -12,25 +12,25 @@ metas:
 requests:
   on:
     UpdateRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           method: update
           executor: $JINA_VEC_IDX_NAME
           traversal_paths: [r, c]
     DeleteRequest:
-      - !DeleteDriver
+      - jtype: DeleteDriver
         with:
           executor: $JINA_VEC_IDX_NAME
     IndexRequest:
-      - !FilterQL
+      - jtype: FilterQL
         with:
           lookups: {tags__is_indexed__neq: true}
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           executor: $JINA_VEC_IDX_NAME
           traversal_paths: [r, c]
     SearchRequest:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           executor: $JINA_VEC_IDX_NAME
           top_k: $JINA_TOPK

@@ -1,12 +1,12 @@
-!MockEncoder
+jtype: MockEncoder
 requests:
   on:
     IndexRequest:
-      - !FilterQL
+      - jtype: FilterQL
         with:
           lookups: {modality__in: [mode1]}
           traversal_paths: ['c']
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           method: encode
           traversal_paths: ['c']

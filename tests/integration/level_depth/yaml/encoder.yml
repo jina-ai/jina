@@ -1,13 +1,13 @@
-!OneHotTextEncoder
+jtype: OneHotTextEncoder
 metas:
   name: encoder
 requests:
   on:
     IndexRequest:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           traversal_paths: ['c']
     SearchRequest:
-      - !EncodeDriver
+      - jtype: EncodeDriver
         with:
           traversal_paths: ['r']

@@ -1,14 +1,14 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: merge_root
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
-      - !ReduceAllDriver
+      - jtype: ReduceAllDriver
         with:
           traversal_paths: ['r']
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     [DeleteRequest, UpdateRequest]:
-      - !RouteDriver {}
+      - jtype: RouteDriver {}

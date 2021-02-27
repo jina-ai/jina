@@ -1,4 +1,4 @@
-!MWUEncoder
+jtype: MWUEncoder
 with:
   greetings: hello there!
 metas:
@@ -10,4 +10,4 @@ metas:
 requests:
   on:
     ControlRequest:
-      - !MyAwesomeDriver {}
+      - jtype: MyAwesomeDriver {}

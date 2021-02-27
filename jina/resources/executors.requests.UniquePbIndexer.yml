@@ -1,24 +1,24 @@
 on:
   [IndexRequest, UpdateRequest]:
-    - !TaggingCacheDriver
+    - jtype: TaggingCacheDriver
       with:
         executor: DocCache
         tags:
           is_indexed: true
-    - !FilterQL
+    - jtype: FilterQL
       with:
         lookups: {tags__is_indexed__neq: true}
-    - !ExcludeQL
+    - jtype: ExcludeQL
       with:
         fields:
           - chunks
           - buffer
-    - !KVIndexDriver
+    - jtype: KVIndexDriver
       with:
         executor: BinaryPbIndexer
   SearchRequest:
-    - !KVSearchDriver
+    - jtype: KVSearchDriver
       with:
         executor: BinaryPbIndexer
   ControlRequest:
-    - !ControlReqDriver {}
+    - jtype: ControlReqDriver {}

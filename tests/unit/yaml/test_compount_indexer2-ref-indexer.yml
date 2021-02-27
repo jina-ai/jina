@@ -1,14 +1,14 @@
-!CompoundExecutor
+jtype: CompoundExecutor
 components:
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: metaproto
     metas:
       name: test_meta
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       ref_indexer:
-        !NumpyIndexer
+        jtype: NumpyIndexer
         metas:
           name: test_numpy
           workspace: $JINA_TEST_WORKSPACE

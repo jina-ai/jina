@@ -1,12 +1,12 @@
-!FileBasedEvaluator
+jtype: FileBasedEvaluator
 components:
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: gt.gz
     metas:
       name: gtidx
       workspace: $JINA_TEST_EVALUATION_FROM_FILE
-  - !TextLengthEvaluator
+  - jtype: TextLengthEvaluator
     metas:
       name: length-evaluator
 metas:
@@ -15,10 +15,10 @@ metas:
 requests:
   on:
     SearchRequest:
-      - !LoadGroundTruthDriver
+      - jtype: LoadGroundTruthDriver
         with:
           executor: gtidx
-      - !TextEvaluateDriver
+      - jtype: TextEvaluateDriver
         with:
           executor: length-evaluator
           traversal_paths: [ 'r' ]

@@ -1,9 +1,9 @@
-!CompoundExecutor
+jtype: CompoundExecutor
 components:
-  - !BaseExecutor
+  - jtype: BaseExecutor
     metas:
       name: test1
-  - !BaseExecutor
+  - jtype: BaseExecutor
     metas:
       name: test2
 metas:

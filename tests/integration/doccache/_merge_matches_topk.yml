@@ -1,19 +1,19 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: merge_matches_topk
 requests:
   on:
     [SearchRequest, TrainRequest, IndexRequest]:
-      - !ReduceAllDriver
+      - jtype: ReduceAllDriver
         with:
           traversal_paths: ['m']
-      - !SliceQL
+      - jtype: SliceQL
         with:
           start: 0
           end: $JINA_TOPK
           traversal_paths: ['m']
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     [DeleteRequest, UpdateRequest]:
-      - !RouteDriver {}
+      - jtype: RouteDriver {}

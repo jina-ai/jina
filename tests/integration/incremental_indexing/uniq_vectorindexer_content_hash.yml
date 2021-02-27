@@ -1,11 +1,11 @@
-!UniqueVectorIndexer
+jtype: UniqueVectorIndexer
 components:
-  - !DocCache
+  - jtype: DocCache
     with:
       fields: [content_hash]
     metas:
       name: cache
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
       metric: euclidean

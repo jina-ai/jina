@@ -1,4 +1,4 @@
-!ConcatenateMultiModalEncoder
+jtype: ConcatenateMultiModalEncoder
 with:
   positional_modality:
     - modality1
@@ -8,6 +8,6 @@ metas:
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !MultiModalDriver
+      - jtype: MultiModalDriver
         with:
           traversal_paths: ['r']

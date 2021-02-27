@@ -1,4 +1,4 @@
-!NumpyIndexer
+jtype: NumpyIndexer
 with:
   index_filename: vec.gz
   metric: cosine
@@ -9,20 +9,20 @@ metas:
 requests:
   on:
     UpdateRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           method: update
           executor: vecidx
           traversal_paths: [ 'r' ]
     DeleteRequest:
-      - !DeleteDriver {}
+      - jtype: DeleteDriver {}
     IndexRequest:
-      - !VectorIndexDriver
+      - jtype: VectorIndexDriver
         with:
           executor: vecidx
           traversal_paths: ['r']
     SearchRequest:
-      - !VectorSearchDriver
+      - jtype: VectorSearchDriver
         with:
           executor: vecidx
           top_k: $JINA_TOPK

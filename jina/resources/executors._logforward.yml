@@ -1,10 +1,10 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: logforward
 requests:
   on:
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
     [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
-      - !LogInfoDriver {}
+      - jtype: LogInfoDriver {}

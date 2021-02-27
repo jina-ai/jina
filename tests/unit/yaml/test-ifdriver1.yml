@@ -1,6 +1,6 @@
-!BaseExecutor
+jtype: BaseExecutor
 requests:
   on:
     IndexRequest:
-      - !BaseDriver
+      - jtype: BaseDriver
         if: '2 > 1'

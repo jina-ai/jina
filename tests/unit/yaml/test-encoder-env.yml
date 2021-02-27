@@ -1,4 +1,4 @@
-!BaseEncoder
+jtype: BaseEncoder
 metas:
   name: ${{BE_TEST_NAME}}
   batch_size: ${{BATCH_SIZE}}

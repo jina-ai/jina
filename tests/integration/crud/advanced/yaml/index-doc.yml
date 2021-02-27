@@ -1,4 +1,4 @@
-!BinaryPbIndexer
+jtype: BinaryPbIndexer
 with:
   index_filename: doc.gzip
 metas:
@@ -7,18 +7,18 @@ metas:
 requests:
   on:
     IndexRequest:
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           executor: docIndexer
           traversal_paths: ['r']
     SearchRequest:
-      - !KVSearchDriver
+      - jtype: KVSearchDriver
         with:
           executor: docIndexer
           is_update: true
           traversal_paths: ['m']
     DeleteRequest:
-      - !DeleteDriver
+      - jtype: DeleteDriver
         with:
           executor: docIndexer
 

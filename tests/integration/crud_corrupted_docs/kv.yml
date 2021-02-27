@@ -1,4 +1,4 @@
-!BinaryPbIndexer
+jtype: BinaryPbIndexer
 with:
   index_filename: doc.gz
 metas:
@@ -7,20 +7,20 @@ metas:
 requests:
   on:
     UpdateRequest:
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           method: update
           executor: docidx
           traversal_paths: [ 'r' ]
     DeleteRequest:
-      - !DeleteDriver {}
+      - jtype: DeleteDriver {}
     IndexRequest:
-      - !KVIndexDriver
+      - jtype: KVIndexDriver
         with:
           executor: docidx
           traversal_paths: ['r']
     SearchRequest:
-      - !KVSearchDriver
+      - jtype: KVSearchDriver
         with:
           executor: docidx
           top_k: $JINA_TOPK
