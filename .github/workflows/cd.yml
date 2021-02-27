@@ -49,7 +49,8 @@ jobs:
           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
-          jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
+          mkdir -p schemas
+          jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/master.json schemas/master --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           python ../scripts/get-gateway-openapi.py
           cd -
