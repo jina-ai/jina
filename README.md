@@ -303,13 +303,13 @@ def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
 `MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the encoder as the first argument, and `text` as the second.
 
 ```yaml
-!MyMultimodalEncoder
+jtype: MyMultimodalEncoder
 with:
   positional_modality: ['image', 'text']
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !MultiModalDriver {}
+      - jtype: MultiModalDriver {}
 ```
 
 Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
@@ -692,12 +692,12 @@ with f:
 Now we need to add an indexer to store all the embeddings and the image for later retrieval. Jina provides a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combine them in a single YAML file:
 
 ```yaml
-!CompoundIndexer
+jtype: CompoundIndexer
 components:
-  - !NumpyIndexer
+  - jtype: NumpyIndexer
     with:
       index_filename: vec.gz
-  - !BinaryPbIndexer
+  - jtype: BinaryPbIndexer
     with:
       index_filename: chunk.gz
 metas:
@@ -733,7 +733,7 @@ f = Flow().add(uses='MyEncoder', parallel=2).add(uses='myindexer.yml', shards=2)
 When you have many arguments, constructing a Flow in Python can get cumbersome. In that case, you can simply move all arguments into one `flow.yml`:
 
 ```yaml
-!Flow
+jtype: Flow
 version: '1.0'
 pods:
   - name: encode
