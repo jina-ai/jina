@@ -1,4 +1,4 @@
-!BaseExecutor
+jtype: BaseExecutor
 with: {}
 metas:
   name: top50
@@ -8,14 +8,14 @@ requests:
       with:
         traversal_paths: ['m']
       drivers:
-        - !ReduceAllDriver {}
-        - !SortQL
+        - jtype: ReduceAllDriver {}
+        - jtype: SortQL
           with:
             reverse: true
             field: 'score__value'
-        - !SliceQL
+        - jtype: SliceQL
           with:
             start: 0
             end: 20
     ControlRequest:
-      - !ControlReqDriver {}
+      - jtype: ControlReqDriver {}
