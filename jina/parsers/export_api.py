@@ -15,4 +15,6 @@ def set_export_api_parser(parser=None):
                         help='The YAML file path for storing the exported API')
     parser.add_argument('--json-path', type=str, nargs='*', metavar='PATH',
                         help='The JSON file path for storing the exported API')
+    parser.add_argument('--schema-path', type=str, nargs='*', metavar='PATH',
+                        help='The JSONSchema file path for storing the exported API')
     return parser
