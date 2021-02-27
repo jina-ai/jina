@@ -30,6 +30,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7729,4 +7730,27 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```c7d78c41```](https://github.com/jina-ai/jina/commit/c7d78c41afd16647abebce04b428c2ae0f3594cd)] __-__ Add issue label guide (#2034) (*Fionn Delahunty*)
  - [[```834a3c11```](https://github.com/jina-ai/jina/commit/834a3c11495fe918a7be124c8c61ca7ac99db3e6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1c32eb66```](https://github.com/jina-ai/jina/commit/1c32eb66351057abb77cbc1dcaa610e5d6ee65ab)] __-__ __version__: the next version will be 1.0.5 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-6></a>
+## Release Note (`1.0.6`)
+
+> Release time: 2021-02-27 13:27:48
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```bb27bb13```](https://github.com/jina-ai/jina/commit/bb27bb13365832e0cd12bd7938c91b697e84b135)] __-__ __schema__: fix flow subschema (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```7419ada9```](https://github.com/jina-ai/jina/commit/7419ada926d0fef0abf9cb5c27071bd0bb20aae3)] __-__ __yaml__: rename yaml tag to jtype in resources (#2061) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```8a84062f```](https://github.com/jina-ai/jina/commit/8a84062f54f0f3a7b5b9e2f50b60639ab48102ac)] __-__ __version__: the next version will be 1.0.6 (*Jina Dev Bot*)
 
