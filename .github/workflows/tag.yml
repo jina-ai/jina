@@ -30,7 +30,8 @@ jobs:
           echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
           pip install .[daemon] --no-cache-dir
           cd schema
-          jina export-api --yaml-path "$JINA_VERSION.yml" latest.yml --json-path "$JINA_VERSION.json" latest.json latest
+          mkdir -p schemas
+          jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/latest.json schemas/latest --yaml-path "$JINA_VERSION.yml" latest.yml --json-path "$JINA_VERSION.json" latest.json latest
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           python ../scripts/get-gateway-openapi.py
           cd -

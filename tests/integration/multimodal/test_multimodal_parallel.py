@@ -7,6 +7,8 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
 
+from tests import validate_callback
+
 NUM_DOCS = 100
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,7 +45,6 @@ def test_multimodal_embedding_parallel(multimodal_documents, mocker, monkeypatch
     monkeypatch.setenv("RESTFUL", restful)
 
     def validate_response(resp):
-        mock()
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
             np.testing.assert_almost_equal(NdArray(doc.embedding).value, np.array([idx, idx, idx, idx, idx]))
@@ -51,8 +52,9 @@ def test_multimodal_embedding_parallel(multimodal_documents, mocker, monkeypatch
     mock = mocker.Mock()
     with Flow.load_config(os.path.join(cur_dir, 'flow-embedding-multimodal-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(inputs=multimodal_documents,
-                            on_done=validate_response)
+                            on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 @pytest.fixture
@@ -93,7 +95,6 @@ def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker, m
     monkeypatch.setenv("RESTFUL", restful)
 
     def validate_response(resp):
-        mock()
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
             np.testing.assert_almost_equal(NdArray(doc.embedding).value,
@@ -102,5 +103,6 @@ def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker, m
     mock = mocker.Mock()
     with Flow.load_config(os.path.join(cur_dir, 'flow-multimodal-all-types-parallel.yml')) as index_gt_flow:
         index_gt_flow.index(inputs=multimodal_all_types_documents,
-                            on_done=validate_response)
+                            on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_response)

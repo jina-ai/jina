@@ -17,7 +17,7 @@ jobs:
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -49,7 +49,8 @@ jobs:
           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
-          jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
+          mkdir -p schemas
+          jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/master.json schemas/master --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           python ../scripts/get-gateway-openapi.py
           cd -
@@ -93,7 +94,7 @@ jobs:
 
   update-docker:
     needs: update-doc
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -150,7 +151,7 @@ jobs:
 
   prep-testbed:
     needs: update-doc
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -177,7 +178,7 @@ jobs:
 
   core-test:
     needs: prep-testbed
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -197,6 +198,7 @@ jobs:
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
+          python -m pip install wheel
           pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
           export JINA_LOG_LEVEL="ERROR"
@@ -208,14 +210,14 @@ jobs:
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=300 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             docker rm -f jinad
           else
             SUB='daemon'
             if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
-              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=300 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             else
-              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=300 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             fi
           fi
           SUB='daemon'

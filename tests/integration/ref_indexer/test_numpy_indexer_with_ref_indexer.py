@@ -7,6 +7,8 @@ import pytest
 from jina.flow import Flow
 from jina import Document
 
+from tests import validate_callback
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -59,16 +61,16 @@ def test_indexer_with_ref_indexer(random_workspace, parallel, index_docs, mocker
     mock = mocker.Mock()
 
     def validate_response(resp):
-        mock()
         assert len(resp.search.docs) == 1
         assert len(resp.search.docs[0].matches) == top_k
 
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join('query.yml')) as query_flow:
-        query_flow.search(inputs=[query_document], on_done=validate_response, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
@@ -80,16 +82,16 @@ def test_indexer_with_ref_indexer_compound(random_workspace, parallel, index_doc
     mock = mocker.Mock()
 
     def validate_response(resp):
-        mock()
         assert len(resp.search.docs) == 1
         assert len(resp.search.docs[0].matches) == top_k
 
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'compound-query.yml')) as query_flow:
-        query_flow.search(inputs=[query_document], on_done=validate_response, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 @pytest.fixture
@@ -115,16 +117,16 @@ def test_indexer_with_ref_indexer_move(random_workspace_move, parallel, index_do
     shutil.rmtree(os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'])
 
     def validate_response(resp):
-        mock()
         assert len(resp.search.docs) == 1
         assert len(resp.search.docs[0].matches) == top_k
 
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'query.yml')) as query_flow:
-        query_flow.search(inputs=[query_document], on_done=validate_response, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
@@ -141,16 +143,16 @@ def test_indexer_with_ref_indexer_compound_move(random_workspace_move, parallel,
     shutil.rmtree(os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'])
 
     def validate_response(resp):
-        mock()
         assert len(resp.search.docs) == 1
         assert len(resp.search.docs[0].matches) == top_k
 
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'compound-query.yml')) as query_flow:
-        query_flow.search(inputs=[query_document], on_done=validate_response, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 @pytest.fixture
@@ -194,16 +196,16 @@ def test_indexer_with_ref_indexer_in_docker(random_workspace_in_docker, parallel
     mock = mocker.Mock()
 
     def validate_response(resp):
-        mock()
         assert len(resp.search.docs) == 1
         assert len(resp.search.docs[0].matches) == top_k
 
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join('query.yml')) as query_flow:
-        query_flow.search(inputs=[query_document], on_done=validate_response, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
@@ -215,13 +217,13 @@ def test_indexer_with_ref_indexer_compound_in_docker(random_workspace_in_docker,
     mock = mocker.Mock()
 
     def validate_response(resp):
-        mock()
         assert len(resp.search.docs) == 1
         assert len(resp.search.docs[0].matches) == top_k
 
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'compound-query.yml')) as query_flow:
-        query_flow.search(inputs=[query_document], on_done=validate_response, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
+    validate_callback(mock, validate_response)

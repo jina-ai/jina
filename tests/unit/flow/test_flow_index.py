@@ -5,7 +5,7 @@ import pytest
 
 from jina import Document
 from jina.flow import Flow
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,7 +19,6 @@ def random_queries(num_docs, chunks_per_doc=5):
             dd.id = num_docs + j * chunks_per_doc + k
             d.chunks.add(dd)
         yield d
-
 
 
 @pytest.fixture
@@ -42,7 +41,6 @@ def test_shards_insufficient_data(mocker, restful, docpb_workspace):
     mock = mocker.Mock()
 
     def validate(req):
-        mock()
         assert len(req.docs) == 1
         assert len(req.docs[0].matches) == index_docs
 
@@ -70,6 +68,7 @@ def test_shards_insufficient_data(mocker, restful, docpb_workspace):
     with f:
         f.search(inputs=random_queries(1, index_docs),
 
-                 on_done=validate)
+                 on_done=mock)
     time.sleep(2)
     mock.assert_called_once()
+    validate_callback(mock, validate)

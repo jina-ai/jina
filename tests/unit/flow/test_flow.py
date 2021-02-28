@@ -11,7 +11,7 @@ from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from jina.peapods.pods import BasePod
-from tests import random_docs, rm_files, validate_callback
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
