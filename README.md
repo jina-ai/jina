@@ -47,6 +47,50 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). To install Jina with extra dependencies [please refer to the docs](https://docs.jina.ai/chapters/install/via-pip.html). Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
+### Setup Code Completion in Dev Environments
+
+When developing Jina applications, you often need to write YAML configs. We provide a [JSONSchema](https://json-schema.org/) that offers rich features on code completion, syntax validation, arguments filtering and displaying help text. To enable these features, please set up your IDE as following:
+
+<table>
+  <tr>
+    <td>
+<img width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/pycharm-schema.gif?raw=true" />
+    </td>
+    <td>
+
+*PyCharm*
+
+1. Click menu `Perferences` -> `JSON Schema mappings`;
+2. Add a new schema, in the `Schema File or URL` write `https://api.jina.ai/schemas/latest.json`; select `JSON Schema Version 7`;
+3. Add file path pattern and link to `*.jaml` and `*.jina.yml`
+
+</td>
+</tr>
+<tr>
+    <td>
+<img width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/vscode-schema.gif?raw=true" />
+    </td>
+    <td>
+
+*VSCode*
+
+1. Install the extension: `YAML Language Support by Red Hat`;
+2. In IDE-level `settings.json` add:
+
+```json
+{
+    "yaml.schemas": {
+        "https://api.jina.ai/schemas/latest.json": ["/*.jina.yml", "/*.jaml"],
+    }
+}
+```
+
+</td>
+</tr>
+</table>
+
+Here is a [video tutorial](https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI) to walk you through the setup.
+
 ## Jina "Hello, World!" 👋🌍
 
 Just starting out? Try Jina's "Hello, World" - `jina hello --help`
