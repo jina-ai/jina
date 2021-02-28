@@ -127,7 +127,10 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
 
     @cached_property
     def model(self):
-        """Get the Mindspore Neural Networks Cells."""
+        """
+        Get the Mindspore Neural Networks Cells.
+        :return: model property
+        """
         return self.get_cell()
 
     def get_cell(self):
@@ -137,7 +140,5 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
         Pre-defined building blocks or computing units to construct Neural Networks.
         A ``Cell`` could be a single neural network cell, such as conv2d, relu, batch_norm, etc.
         or a composition of cells to constructing a network.
-
-        :return: :class:`mindspore.nn.Cell`
         """
         raise NotImplementedError
