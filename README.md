@@ -54,7 +54,7 @@ When developing Jina applications, you often need to write YAML configs. We prov
 <table>
   <tr>
     <td>
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/pycharm-schema.gif?raw=true" />
+<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/pycharm-schema.gif?raw=true" /></a>
     </td>
     <td>
 
@@ -62,13 +62,13 @@ When developing Jina applications, you often need to write YAML configs. We prov
 
 1. Click menu `Perferences` -> `JSON Schema mappings`;
 2. Add a new schema, in the `Schema File or URL` write `https://api.jina.ai/schemas/latest.json`; select `JSON Schema Version 7`;
-3. Add file path pattern and link to `*.jaml` and `*.jina.yml`
+3. Add a file path pattern and link it to `*.jaml` and `*.jina.yml`.
 
 </td>
 </tr>
 <tr>
     <td>
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/vscode-schema.gif?raw=true" />
+<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/vscode-schema.gif?raw=true" /></a>
     </td>
     <td>
 
@@ -78,10 +78,8 @@ When developing Jina applications, you often need to write YAML configs. We prov
 2. In IDE-level `settings.json` add:
 
 ```json
-{
-    "yaml.schemas": {
-        "https://api.jina.ai/schemas/latest.json": ["/*.jina.yml", "/*.jaml"],
-    }
+"yaml.schemas": {
+    "https://api.jina.ai/schemas/latest.json": ["/*.jina.yml", "/*.jaml"],
 }
 ```
 
