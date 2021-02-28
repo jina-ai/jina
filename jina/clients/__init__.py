@@ -40,8 +40,8 @@ class Client(BaseClient):
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs:
-        :return:
+        :param kwargs: additional parameters
+        :return: None
         """
         self.mode = RequestType.TRAIN
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
@@ -58,8 +58,8 @@ class Client(BaseClient):
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs:
-        :return:
+        :param kwargs: additional parameters
+        :return: None
         """
         self.mode = RequestType.SEARCH
         self.add_default_kwargs(kwargs)
@@ -77,8 +77,8 @@ class Client(BaseClient):
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs:
-        :return:
+        :param kwargs: additional parameters
+        :return: None
         """
         self.mode = RequestType.INDEX
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
@@ -95,8 +95,8 @@ class Client(BaseClient):
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs:
-        :return:
+        :param kwargs: additional parameters
+        :return: None
         """
         self.mode = RequestType.UPDATE
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
@@ -113,8 +113,8 @@ class Client(BaseClient):
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs:
-        :return:
+        :param kwargs: additional parameters
+        :return: Returns nothing
         """
         self.mode = RequestType.DELETE
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
