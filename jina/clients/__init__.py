@@ -114,7 +114,7 @@ class Client(BaseClient):
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: additional parameters
-        :return: Returns nothing
+        :return: None
         """
         self.mode = RequestType.DELETE
         return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
