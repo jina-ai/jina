@@ -76,6 +76,7 @@ class BaseClient:
         :param kwargs: keyword arguments
         """
         if hasattr(inputs, '__call__'):
+            # it is a function
             inputs = inputs()
 
         kwargs['data'] = inputs

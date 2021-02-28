@@ -422,7 +422,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
         for d in req.index.docs:
             assert d.modality in ['mode1', 'mode2']
 
-    def inputs():
+    def input_function():
         doc1 = DocumentProto()
         doc1.modality = 'mode1'
         doc2 = DocumentProto()
@@ -438,7 +438,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
             .add(name='encoder12', parallel=2,
                  uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}'))
     with flow:
-        flow.index(inputs=inputs, on_done=response_mock)
+        flow.index(inputs=input_function, on_done=response_mock)
 
     validate_callback(response_mock, validate)
 

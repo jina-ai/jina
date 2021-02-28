@@ -44,13 +44,13 @@ async def test_run_async_flow(restful, mocker):
     validate_callback(r_val, validate)
 
 
-async def ainputs():
+async def async_input_function():
     for _ in range(num_docs):
         yield np.random.random([4])
         await asyncio.sleep(0.1)
 
 
-async def ainputs2():
+async def async_input_function2():
     for _ in range(num_docs):
         yield Document(content=np.random.random([4]))
         await asyncio.sleep(0.1)
@@ -58,7 +58,7 @@ async def ainputs2():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('restful', [False])
-@pytest.mark.parametrize('inputs', [ainputs, ainputs(), ainputs2(), ainputs2])
+@pytest.mark.parametrize('inputs', [async_input_function, async_input_function(), async_input_function2(), async_input_function2])
 async def test_run_async_flow_async_input(restful, inputs, mocker):
     r_val = mocker.Mock()
     with AsyncFlow(restful=restful).add() as f:

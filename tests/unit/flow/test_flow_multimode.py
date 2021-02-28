@@ -39,7 +39,7 @@ class MockEncoder(BaseEncoder):
 def test_flow_with_modalities(tmpdir, restful):
     os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE'] = str(tmpdir)
 
-    def inputs():
+    def input_function():
         doc1 = jina_pb2.DocumentProto()
         doc1.text = 'title: this is mode1 from doc1, body: this is mode2 from doc1'
         doc1.id = '1'
@@ -63,7 +63,7 @@ def test_flow_with_modalities(tmpdir, restful):
             .join(['indexer1', 'indexer2']))
 
     with flow:
-        flow.index(inputs=inputs)
+        flow.index(inputs=input_function)
 
     with open(os.path.join(tmpdir, 'compound', 'vec1.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])

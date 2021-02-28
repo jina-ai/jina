@@ -2,7 +2,7 @@ from jina.flow import Flow
 from jina.proto.jina_pb2 import DocumentProto
 
 
-def inputs():
+def input_function():
     doc1 = DocumentProto()
     doc2 = DocumentProto()
     # doc1 and doc2 should have the same id
@@ -29,6 +29,6 @@ def test_collect_evals_driver(mocker):
             .add(name='b', needs='gateway')
             .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
     with flow:
-        flow.index(inputs=inputs, on_done=validate)
+        flow.index(inputs=input_function, on_done=validate)
 
     mock.assert_called_once()

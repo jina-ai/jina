@@ -12,7 +12,7 @@ e3 = np.random.random([3])
 e4 = np.random.random([9])
 
 
-def inputs():
+def input_function():
     with Document() as doc1:
         doc1.embedding = e1
         with Document() as chunk1:
@@ -60,6 +60,6 @@ def test_concat_embed_driver(mocker):
             .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
 
     with flow:
-        flow.index(inputs=inputs, on_done=validate)
+        flow.index(inputs=input_function, on_done=validate)
 
     mock.assert_called_once()
