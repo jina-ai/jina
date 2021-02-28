@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import pickle
 
 from jina.excepts import UndefinedModel
 from jina.executors.encoders.numeric import TransformEncoder
@@ -38,3 +39,10 @@ def test_transform_encoder_test():
     encoded_data = encoder.encode(test_data)
     assert encoded_data.shape == (test_data.shape[0], target_output_dim)
     assert type(encoded_data) == np.ndarray
+
+
+def test__transform_encoder_model_path(tmpdir):
+    with open(str(tmpdir)+'.pkl', 'wb') as output:
+        pickle.dump(simple_model, output)
+    encoder_path = TransformEncoder(model_path=str(tmpdir)+'.pkl', output_dim=target_output_dim)
+    assert encoder_path.model
