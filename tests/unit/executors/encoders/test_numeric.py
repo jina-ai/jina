@@ -41,7 +41,7 @@ def test_transform_encoder_test():
     assert type(encoded_data) == np.ndarray
 
 
-def test__transform_encoder_model_path(tmpdir):
+def test_transform_encoder_model_path(tmpdir):
     with open(str(tmpdir)+'.pkl', 'wb') as output:
         pickle.dump(simple_model, output)
     encoder_path = TransformEncoder(model_path=str(tmpdir)+'.pkl', output_dim=target_output_dim)
