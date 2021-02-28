@@ -54,11 +54,11 @@ When developing Jina applications, you often need to write YAML configs. We prov
 <table>
   <tr>
     <td>
-<img width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/pycharm-schema.gif?raw=true" />
+<img src="https://github.com/jina-ai/jina/blob/master/.github/images/pycharm-schema.gif?raw=true" />
     </td>
     <td>
 
-*PyCharm*
+**PyCharm**
 
 1. Click menu `Perferences` -> `JSON Schema mappings`;
 2. Add a new schema, in the `Schema File or URL` write `https://api.jina.ai/schemas/latest.json`; select `JSON Schema Version 7`;
@@ -68,11 +68,11 @@ When developing Jina applications, you often need to write YAML configs. We prov
 </tr>
 <tr>
     <td>
-<img width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/vscode-schema.gif?raw=true" />
+<img src="https://github.com/jina-ai/jina/blob/master/.github/images/vscode-schema.gif?raw=true" />
     </td>
     <td>
 
-*VSCode*
+**VSCode**
 
 1. Install the extension: `YAML Language Support by Red Hat`;
 2. In IDE-level `settings.json` add:
