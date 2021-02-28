@@ -49,7 +49,7 @@ Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/ma
 
 ### Setup Code Completion in Dev Environments
 
-When developing Jina applications, you often need to write YAML configs. We provide a [JSONSchema](https://json-schema.org/) that offers rich features on code completion, syntax validation, arguments filtering and displaying help text. To enable these features, please set up your IDE as following:
+When developing Jina applications, you often need to write YAML configs. We provide a [JSONSchema](https://json-schema.org/) that offers code completion, syntax validation, members listing and displaying help text. To enable these features:
 
 <table>
   <tr>
