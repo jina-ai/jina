@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina.executors.indexers import BaseIndexer
+from jina.executors.indexers import BaseIndexer, BaseVectorIndexer
 from jina.executors.indexers.vector import NumpyIndexer, BaseNumpyIndexer
 
 # fix the seed here
@@ -426,7 +426,7 @@ def test_numpy_indexer_with_ref_indexer(compress_level, test_metas):
         np.testing.assert_equal(new_indexer.query_by_key(['7', '4']), vectors[[3, 0]])
 
 
-def test_raised_exception():
+def test_numpy_indexer_raised_exception():
     with pytest.raises(ValueError):
         base_idx = BaseNumpyIndexer()
         keys = np.array(['4', '5', '6', '7'], dtype=(np.str_, 16))
@@ -460,3 +460,36 @@ def test_raised_exception():
         base_idx.num_dim = 1
         base_idx.compress_level = 1
         base_idx.get_query_handler()
+
+
+def test_base_indexer_raised_exception():
+    base_idx = BaseIndexer()
+    with pytest.raises(NotImplementedError):
+        base_idx.add()
+    with pytest.raises(NotImplementedError):
+        base_idx.update()
+    with pytest.raises(NotImplementedError):
+        base_idx.delete()
+    with pytest.raises(NotImplementedError):
+        base_idx.query()
+    with pytest.raises(NotImplementedError):
+        base_idx.get_query_handler()
+    with pytest.raises(NotImplementedError):
+        base_idx.get_add_handler()
+    with pytest.raises(NotImplementedError):
+        base_idx.get_create_handler()
+
+    base_vec_idx = BaseVectorIndexer()
+    keys = np.array(['4', '5', '6', '7'], dtype=(np.str_, 16))
+    vectors = np.random.random([4,4])
+    top_k = 3
+    with pytest.raises(NotImplementedError):
+        base_vec_idx.add(keys, vectors)
+    with pytest.raises(NotImplementedError):
+        base_vec_idx.query(keys, vectors)
+    with pytest.raises(NotImplementedError):
+        base_vec_idx.update(vectors, top_k)
+    with pytest.raises(NotImplementedError):
+        base_vec_idx.delete(keys, vectors)
+    with pytest.raises(NotImplementedError):
+        base_vec_idx.query_by_key(keys)
