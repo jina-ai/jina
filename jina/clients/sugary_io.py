@@ -36,13 +36,12 @@ def _input_lines(
 ) -> Iterator[Union[str, bytes]]:
     """Create a generator from either an Iterable of lines, or a file.
 
-    :param filepath: a text file that each line contains a document
     :param lines: a list of strings, each is considered as a document
-    :param size: the maximum number of the documents
-    :param sampling_rate: the sampling rate between [0, 1]
+    :param filepath: a text file that each line contains a document
     :param read_mode: specifies the mode in which the file
             is opened. 'r' for reading in text mode, 'rb' for reading in binary
     :param line_format: the format of each line ``json`` or ``csv``
+    :param kwargs: additional key word arguments
     :yield: data from input lines
 
     .. note::
@@ -103,7 +102,7 @@ def _input_files(
         sampling_rate: float = None,
         read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
-    r"""Creates an iterator over a list of file path or the content of the files.
+    """Creates an iterator over a list of file path or the content of the files.
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
     :param recursive: If recursive is true, the pattern '**' will match any files
@@ -114,6 +113,7 @@ def _input_files(
         'r' for reading in text mode, 'rb' for reading in binary mode.
         If `read_mode` is None, will iterate over filenames.
     :yield: file paths or content
+    
     .. note::
         This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
     """
