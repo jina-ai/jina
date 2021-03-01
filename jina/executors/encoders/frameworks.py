@@ -20,7 +20,6 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
         The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
     """
     def __init__(self, output_feature: str = None, model_path: str = None, *args, **kwargs):
-        """Constructor."""
         super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
@@ -102,13 +101,12 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
             def get_cell(self):
                 return YourAwesomeModel()
 
+        :param model_path: the path of the model's checkpoint.
+        :param args: additional arguments
+        :param kwargs: additional key value arguments
     """
 
     def __init__(self, model_path: str = None, *args, **kwargs):
-        """
-
-        :param model_path: the path of the model's checkpoint.
-        """
         super().__init__(*args, **kwargs)
         self.model_path = model_path
 
