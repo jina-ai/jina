@@ -54,7 +54,7 @@ def deprecated_alias(**aliases):
         Raise warnings or exceptions for deprecated arguments.
 
         :param func_name: Name of the function.
-        :param kwargs: kew word arguments from the function which is decorated.
+        :param kwargs: key word arguments from the function which is decorated.
         :param aliases: kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).
         """
         for alias, new_arg in aliases.items():
