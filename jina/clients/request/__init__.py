@@ -38,6 +38,7 @@ def request_generator(data: GeneratorSourceType,
     :param queryset: querylang set of queries
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
+    :param kwargs: additional arguments
     :yield: request
     """
     _kwargs = dict(mime_type=mime_type, length=request_size, weight=1.0)
