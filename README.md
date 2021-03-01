@@ -47,9 +47,9 @@ Jina is a deep learning-powered search framework for building <strong>cross-/mul
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). To install Jina with extra dependencies [please refer to the docs](https://docs.jina.ai/chapters/install/via-pip.html). Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
-### Code Completion in IDE
+### YAML Completion in IDE
 
-When developing Jina applications, you often need to write YAML configs. We provide a [JSONSchema](https://json-schema.org/) that offers code completion, syntax validation, members listing and displaying help text. To enable these features:
+Developing Jina app often means writing YAML configs. We provide a [JSON Schema](https://json-schema.org/) for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a [video tutorial](https://youtu.be/qOD-6mihUzQ) to walk you through the setup.
 
 <table>
   <tr>
@@ -87,7 +87,6 @@ When developing Jina applications, you often need to write YAML configs. We prov
 </tr>
 </table>
 
-Here is a [video tutorial](https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI) to walk you through the setup.
 
 ## Jina "Hello, World!" 👋🌍
 
