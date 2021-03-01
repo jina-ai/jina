@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina.executors.indexers import BaseIndexer
-from jina.executors.indexers.vector import NumpyIndexer
+from jina.executors.indexers.vector import NumpyIndexer, BaseNumpyIndexer
 
 # fix the seed here
 
@@ -424,3 +424,39 @@ def test_numpy_indexer_with_ref_indexer(compress_level, test_metas):
         assert idx.shape == dist.shape
         assert idx.shape == (4, 2)
         np.testing.assert_equal(new_indexer.query_by_key(['7', '4']), vectors[[3, 0]])
+
+
+def test_raised_exception():
+    with pytest.raises(ValueError):
+        base_idx = BaseNumpyIndexer()
+        keys = np.array(['4', '5', '6', '7'], dtype=(np.str_, 16))
+        vectors = np.random.random(1)
+        base_idx.add(keys, vectors)
+
+    with pytest.raises(ValueError):
+        base_idx = BaseNumpyIndexer()
+        base_idx.num_dim = 5
+        keys = np.array(['4', '5', '6', '7'], dtype=(np.str_, 16))
+        vectors = np.random.random([10,10])
+        base_idx.add(keys, vectors)
+
+    with pytest.raises(TypeError):
+        base_idx = BaseNumpyIndexer()
+        base_idx.num_dim = 10
+        keys = np.array(['4', '5', '6', '7'], dtype=(np.str_, 16))
+        vectors = np.random.random([10,10])
+        base_idx.add(keys, vectors)
+
+    with pytest.raises(NotImplementedError):
+        base_idx = BaseNumpyIndexer()
+        vectors = np.random.random(1)
+        base_idx.build_advanced_index(vectors)
+
+    base_idx = BaseNumpyIndexer()
+    assert not base_idx.get_query_handler()
+
+    with pytest.raises(FileNotFoundError):
+        base_idx = BaseNumpyIndexer()
+        base_idx.num_dim = 1
+        base_idx.compress_level = 1
+        base_idx.get_query_handler()
