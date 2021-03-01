@@ -349,13 +349,18 @@ class ContextAwareRecursiveMixin:
 
         Each outer list refers to a leaf (e.g. roots, matches or chunks wrapped
         in a :class:`jina.DocumentSet`) in the traversal_paths.
+
+        :param doc_sequences: the Documents that should be handled
+        :param *args: driver specific arguments, which might be forwarded to the Executor
+        :param **kwargs: driver specific arguments, which might be forwarded to the Executor
         """
 
 
 class FlatRecursiveMixin:
     """
-    The batch optimized version of :class:`ContextAwareRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
-    it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
+    The batch optimized version of :class:`ContextAwareRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
+    It uses :meth:`traverse_flattened_per_path` in :class:`DocumentSet` and yield much better performance
+    when no context is needed and batching is possible.
 
     .. seealso::
        https://github.com/jina-ai/jina/issues/1932
@@ -368,8 +373,9 @@ class FlatRecursiveMixin:
         :param *args: *args forwarded to ``_apply_all``
         :param **kwargs: **kwargs forwarded to ``_apply_all``
         """
-        documents = self.docs.traverse_flatten(self._traversal_paths)
-        self._apply_all(documents, *args, **kwargs)
+        path_documents = self.docs.traverse_flattened_per_path(self._traversal_paths)
+        for documents in path_documents:
+            self._apply_all(documents, *args, **kwargs)
 
     def _apply_all(
         self,
@@ -377,10 +383,14 @@ class FlatRecursiveMixin:
         *args,
         **kwargs,
     ) -> None:
-        """Apply function works on a list of list of docs, modify the docs in-place.
+        """Apply function works on a list of docs, modify the docs in-place.
 
-        Each outer list refers to a leaf (e.g. roots, matches or chunks wrapped
-        in a :class:`jina.DocumentSet`) in the traversal_paths.
+        The list refers to all reachable leafes of a single ``traversal_path``.
+
+        :param docs: the Documents that should be handled
+        :param *args: driver specific arguments, which might be forwarded to the Executor
+        :param **kwargs: driver specific arguments, which might be forwarded to the Executor
+
         """
 
 

@@ -145,6 +145,49 @@ def test_batching_flatten_traverse(doc_req):
     foo(ds)
 
 
+def test_traverse_flattened_per_path_embedding(doc_req):
+    flattened_results = list(doc_req.docs.traverse_flattened_per_path(['r', 'c']))
+    ds = flattened_results[0].all_embeddings
+    assert ds[0].shape == (num_docs, 10)
+
+    ds = flattened_results[1].all_embeddings
+    assert ds[0].shape == (num_docs * num_chunks_per_doc, 10)
+
+
+def test_traverse_flattened_per_path_root(doc_req):
+    ds = list(doc_req.docs.traverse_flattened_per_path(['r']))
+    assert len(ds[0]) == num_docs
+
+
+def test_traverse_flattened_per_path_chunk(doc_req):
+    ds = list(doc_req.docs.traverse_flattened_per_path(['c']))
+    assert len(ds[0]) == num_docs * num_chunks_per_doc
+
+
+def test_traverse_flattened_per_path_root_plus_chunk(doc_req):
+    ds = list(doc_req.docs.traverse_flattened_per_path(['c', 'r']))
+    assert len(ds[0]) == num_docs * num_chunks_per_doc
+    assert len(ds[1]) == num_docs
+
+
+def test_traverse_flattened_per_path_match(doc_req):
+    ds = list(doc_req.docs.traverse_flattened_per_path(['m']))
+    assert len(ds[0]) == num_docs * num_matches_per_doc
+
+
+def test_traverse_flattened_per_path_match_chunk(doc_req):
+    ds = list(doc_req.docs.traverse_flattened_per_path(['cm']))
+    assert len(ds[0]) == num_docs * num_chunks_per_doc * num_matches_per_chunk
+
+
+def test_traverse_flattened_per_path_root_match_chunk(doc_req):
+    ds = list(doc_req.docs.traverse_flattened_per_path(['r', 'c', 'm', 'cm']))
+    assert len(ds[0]) == num_docs
+    assert len(ds[1]) == num_chunks_per_doc * num_docs
+    assert len(ds[2]) == num_matches_per_doc * num_docs
+    assert len(ds[3]) == num_docs * num_chunks_per_doc * num_matches_per_chunk
+
+
 def test_docuset_traverse_over_iterator_HACKY():
     # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-documentset
     ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['r'])
