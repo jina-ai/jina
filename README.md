@@ -745,8 +745,10 @@ metas:
   workspace: ./
 ```
 
-- `!` tags a structure with a class name
-- `with` defines arguments for initializing this class object.
+- `jtype:` defines the class name of the structure;
+- `with:` defines arguments for initializing this class object.
+
+[💡 Config your IDE to enable autocompletion on YAML](#yaml-completion-in-ide)
 
 Essentially, the above YAML config is equivalent to the following Python code:
 
