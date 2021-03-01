@@ -1,4 +1,4 @@
-!ImageTorchEncoder
+jtype: ImageTorchEncoder
 with:
   channel_axis: -1
 requests:
@@ -8,8 +8,8 @@ requests:
       with:
         traversal_paths: ['c']
       drivers:
-        - !EncodeDriver {}
-        - !ExcludeQL
+        - jtype: EncodeDriver {}
+        - jtype: ExcludeQL
           with:
             fields:
               - blob

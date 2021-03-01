@@ -1,9 +1,9 @@
-!CompoundExecutor
+jtype: CompoundExecutor
 components:
-  - !SimpleCrafter
+  - jtype: SimpleCrafter
     metas:
       name: craft
-  - !BiSegmenter
+  - jtype: BiSegmenter
     metas:
       name: seg
 metas:
@@ -14,9 +14,9 @@ requests:
   use_default: true
   on:
     [IndexRequest, SearchRequest]:
-      - !CraftDriver
+      - jtype: CraftDriver
         with:
           executor: craft
-      - !SegmentDriver
+      - jtype: SegmentDriver
         with:
           executor: seg
