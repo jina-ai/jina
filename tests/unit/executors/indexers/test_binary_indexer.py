@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pytest
 
-from jina.executors.indexers import BaseIndexer
+from jina.executors.indexers import BaseIndexer, BaseKVIndexer
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
 from tests import random_docs, validate_callback
@@ -141,3 +141,17 @@ def test_binarypb_update_twice(test_metas):
     with BaseIndexer.load(save_abspath) as idxer:
         assert idxer.query('1') == b'newvalue'
         assert idxer.query('2') == b'othernewvalue'
+
+
+def test_base_indexer_raised_exception():
+    base_kv_idx = BaseKVIndexer()
+    keys = ['1', '2', '3']
+    values = [b'oldvalue', b'same', b'random']
+    with pytest.raises(NotImplementedError):
+        base_kv_idx.add(keys, values)
+    with pytest.raises(NotImplementedError):
+        base_kv_idx.query(keys)
+    with pytest.raises(NotImplementedError):
+        base_kv_idx.update(values, values)
+    with pytest.raises(NotImplementedError):
+        base_kv_idx.delete(keys)
