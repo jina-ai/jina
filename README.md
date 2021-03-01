@@ -60,7 +60,7 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 **PyCharm**
 
-1. Click menu `Perferences` -> `JSON Schema mappings`;
+1. Click menu `Preferences` -> `JSON Schema mappings`;
 2. Add a new schema, in the `Schema File or URL` write `https://api.jina.ai/schemas/latest.json`; select `JSON Schema Version 7`;
 3. Add a file path pattern and link it to `*.jaml` and `*.jina.yml`.
 
