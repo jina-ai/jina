@@ -425,6 +425,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def __enter__(self):
         class CatchAllCleanupContextManager():
+            """
+            This context manager guarantees, that the :method:``__exit__`` of the
+            sub context is called, even when there is an Exception in the
+            :method:``__enter__``.
+
+            :param sub_context: The context, that should be taken care of.
+            """
+
             def __init__(self, sub_context):
                 self.sub_context = sub_context
 
@@ -445,8 +453,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._env:
             for k in self._env.keys():
                 os.unsetenv(k)
-
-        self._pod_nodes.pop('gateway')
+        if 'gateway' in self._pod_nodes:
+            self._pod_nodes.pop('gateway')
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources are released, current build level is {self._build_level}')
