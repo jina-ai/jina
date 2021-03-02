@@ -20,7 +20,7 @@ pods:
     port_expose: 8000
     needs: [gateway]
   - name: join_all
-    uses: _merge
+    uses: _pass
     method: needs
     needs: [pod2, pod3]
     read_only: true
