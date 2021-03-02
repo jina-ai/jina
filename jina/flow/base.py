@@ -432,13 +432,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 pass
 
             def __exit__(self, exc_type, exc_val, exc_tb):
-                try:
-                    if exc_type is not None:
-                        self.sub_context.__exit__(exc_type, exc_val, exc_tb)
-                except:
-                    raise
+                if exc_type is not None:
+                    self.sub_context.__exit__(exc_type, exc_val, exc_tb)
+
         with CatchAllCleanupContextManager(self):
-            self.start()
+            return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -448,8 +446,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             for k in self._env.keys():
                 os.unsetenv(k)
 
-        if 'gateway' in self._pod_nodes:
-            self._pod_nodes.pop('gateway')
+        self._pod_nodes.pop('gateway')
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources are released, current build level is {self._build_level}')
