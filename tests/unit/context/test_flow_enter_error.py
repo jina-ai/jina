@@ -38,8 +38,6 @@ class BrokenFlow(Flow):
             v.args.noblock_on_start = True
             self.enter_context(v)
 
-        raise FlowStartupException
-
         for k, v in self:
             try:
                 v.wait_start_success()
@@ -47,6 +45,8 @@ class BrokenFlow(Flow):
                 self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
                 self.close()
                 raise
+
+        raise FlowStartupException
 
         self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
 

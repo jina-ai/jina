@@ -123,7 +123,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Prepare enviroment
@@ -142,14 +142,14 @@ jobs:
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=300 -v -s ${{ matrix.test-path }}
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=180 -v -s ${{ matrix.test-path }}
             docker rm -f jinad
           else
             SUB='daemon'
             if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
-              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=300 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=180 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             else
-              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=300 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=180 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             fi
           fi
           SUB='daemon'
