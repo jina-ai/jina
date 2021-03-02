@@ -133,3 +133,6 @@ shell/jina-wizard.sh
 # IntelliJ IDEA
 *.iml
 .idea
+
+# test with config in resources
+tests/integration/crud/simple/simple_indexer/

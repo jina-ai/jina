@@ -31,6 +31,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -187,6 +188,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`1.0.4`)](#release-note-104)
 - [Release Note (`1.0.5`)](#release-note-105)
 - [Release Note (`1.0.6`)](#release-note-106)
+- [Release Note (`1.0.7`)](#release-note-107)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -7755,4 +7757,27 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```8a84062f```](https://github.com/jina-ai/jina/commit/8a84062f54f0f3a7b5b9e2f50b60639ab48102ac)] __-__ __version__: the next version will be 1.0.6 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-7></a>
+## Release Note (`1.0.7`)
+
+> Release time: 2021-02-28 23:12:35
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🏁 Unit Test and CICD
+
+ - [[```360fe617```](https://github.com/jina-ai/jina/commit/360fe617fe17e21888f4a0fb324da09112d0b171)] __-__ increase timeout (#2057) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```651c1d43```](https://github.com/jina-ai/jina/commit/651c1d43b909b990a9671ca73e89c38f17550ac9)] __-__ update readme (*Han Xiao*)
+ - [[```35d85f64```](https://github.com/jina-ai/jina/commit/35d85f646a1d6eb37e3cd8875a015d5a17d41ffd)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```20f2d466```](https://github.com/jina-ai/jina/commit/20f2d46680603dadf069a5e5add8623366b9fa16)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```5071ca5b```](https://github.com/jina-ai/jina/commit/5071ca5be17864c1fe7f111636805f62f06b477b)] __-__ __copyright__: update copyright header (*Jina Dev Bot*)
+ - [[```2f29a40b```](https://github.com/jina-ai/jina/commit/2f29a40b08ea8bc06be43b3f1fa3d1a8cc0993af)] __-__ __version__: the next version will be 1.0.7 (*Jina Dev Bot*)
 
