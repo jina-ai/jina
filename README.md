@@ -624,13 +624,13 @@ Unlike `Flow`, the CRUD of `AsyncFlow` accepts input and output functions as [as
 ```python
 from jina import AsyncFlow
 
-async def input_fn():
+async def input_function():
     for _ in range(10):
         yield Document()
         await asyncio.sleep(0.1)
 
 with AsyncFlow().add() as f:
-    async for resp in f.index(input_fn):
+    async for resp in f.index(input_function):
         print(resp)
 ```
 

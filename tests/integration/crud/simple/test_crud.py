@@ -78,12 +78,12 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
         return validate_results
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.index(input_fn=random_docs(0, 10))
+        index_flow.index(inputs=random_docs(0, 10))
     validate_index_size(10, compound)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
+        search_flow.search(inputs=random_docs(0, NUMBER_OF_SEARCHES),
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(TOPK))
@@ -100,7 +100,7 @@ def test_delete_vector(config, mocker, flow_file, has_content, compound):
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
+        search_flow.search(inputs=random_docs(0, NUMBER_OF_SEARCHES),
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(0))
@@ -117,11 +117,11 @@ def test_delete_kv(config, mocker, as_string):
         return validate_results
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.index(input_fn=random_docs(0, 10))
+        index_flow.index(inputs=random_docs(0, 10))
     validate_index_size(10)
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=chain(random_docs(2, 5), random_docs(100, 120)),
+        search_flow.search(inputs=chain(random_docs(2, 5), random_docs(100, 120)),
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(3))
@@ -132,7 +132,7 @@ def test_delete_kv(config, mocker, as_string):
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=random_docs(2, 4),
+        search_flow.search(inputs=random_docs(2, 4),
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(1))
@@ -167,25 +167,25 @@ def test_update_vector(config, mocker, flow_file, compound):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(
-            input_fn=docs_before
+            inputs=docs_before
         )
     validate_index_size(10, compound)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_docs = list(random_docs(0, NUMBER_OF_SEARCHES))
-        search_flow.search(input_fn=search_docs,
+        search_flow.search(inputs=search_docs,
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(has_changed=False))
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.update(input_fn=docs_updated)
+        index_flow.update(inputs=docs_updated)
     validate_index_size(10, compound)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
+        search_flow.search(inputs=random_docs(0, NUMBER_OF_SEARCHES),
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(has_changed=True))
@@ -202,25 +202,25 @@ def test_update_kv(config, mocker):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(
-            input_fn=docs_before
+            inputs=docs_before
         )
     validate_index_size(10)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_docs = list(random_docs(0, NUMBER_OF_SEARCHES))
-        search_flow.search(input_fn=search_docs,
+        search_flow.search(inputs=search_docs,
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_results)
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.update(input_fn=docs_updated)
+        index_flow.update(inputs=docs_updated)
     validate_index_size(10)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
-        search_flow.search(input_fn=random_docs(0, NUMBER_OF_SEARCHES),
+        search_flow.search(inputs=random_docs(0, NUMBER_OF_SEARCHES),
                            on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_results)

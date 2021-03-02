@@ -14,4 +14,4 @@ def multimodal_generator():
 @pytest.mark.timeout(10)
 def test_reduce_route():
     with Flow.load_config('flow.yml') as f:
-        f.search(input_fn=multimodal_generator())
+        f.search(inputs=multimodal_generator())

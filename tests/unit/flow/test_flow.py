@@ -83,14 +83,14 @@ def test_simple_flow(restful):
     f = Flow(restful=restful).add()
 
     with f:
-        f.index(input_fn=bytes_gen)
+        f.index(inputs=bytes_gen)
 
     with f:
-        f.index(input_fn=bytes_fn)
+        f.index(inputs=bytes_fn)
 
     with f:
-        f.index(input_fn=bytes_fn)
-        f.index(input_fn=bytes_fn)
+        f.index(inputs=bytes_fn)
+        f.index(inputs=bytes_fn)
 
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.PULL_CONNECT
@@ -163,7 +163,7 @@ def test_flow_no_container(restful):
          .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 @pytest.fixture
@@ -176,7 +176,7 @@ def docpb_workspace(tmpdir):
 def test_shards(docpb_workspace):
     f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3)
     with f:
-        f.index(input_fn=random_docs(1000), random_doc_id=False)
+        f.index(inputs=random_docs(1000), random_doc_id=False)
     with f:
         pass
 
@@ -422,7 +422,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
         for d in req.index.docs:
             assert d.modality in ['mode1', 'mode2']
 
-    def input_fn():
+    def input_function():
         doc1 = DocumentProto()
         doc1.modality = 'mode1'
         doc2 = DocumentProto()
@@ -438,7 +438,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
             .add(name='encoder12', parallel=2,
                  uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}'))
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock)
+        flow.index(inputs=input_function, on_done=response_mock)
 
     validate_callback(response_mock, validate)
 

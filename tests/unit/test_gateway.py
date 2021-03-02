@@ -48,7 +48,7 @@ def test_grpc_gateway_concurrency(rest_api):
     def _request(f, status_codes, durations, index):
         start = time.time()
         f.index(
-            input_fn=(Document() for _ in range(256)),
+            inputs=(Document() for _ in range(256)),
             on_done=functools.partial(
                 _validate,
                 start=start,
