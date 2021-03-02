@@ -106,7 +106,6 @@ class Document(ProtoTypeMixin, Traversable):
                  field_resolver: Dict[str, str] = None,
                  copy: bool = False, **kwargs):
         """
-
         :param document: the document to construct from. If ``bytes`` is given
                 then deserialize a :class:`DocumentProto`; ``dict`` is given then
                 parse a :class:`DocumentProto` from it; ``str`` is given, then consider
@@ -192,27 +191,33 @@ class Document(ProtoTypeMixin, Traversable):
 
     @property
     def length(self) -> int:
-        """Get the length of of the document."""
+        """
+        The number of siblings of the :class:``Document``
+
+        .. # noqa: DAR201
+        :getter: number of siblings
+        :setter: number of siblings
+        :type: int
+        """
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
+
         return self._pb_body.length
 
     @length.setter
     def length(self, value: int):
-        """
-        Set the length of of the document.
-
-        :param value: The int length of the document
-        """
         self._pb_body.length = value
 
     @property
     def weight(self) -> float:
-        """Return the weight of the document."""
+        """
+        :return: the weight of the document
+        """
         return self._pb_body.weight
 
     @weight.setter
     def weight(self, value: float):
-        """Set the weight of the document.
+        """
+        Set the weight of the document.
 
         :param value: the float weight of the document.
         """
@@ -220,7 +225,8 @@ class Document(ProtoTypeMixin, Traversable):
 
     @property
     def modality(self) -> str:
-        """Get the modality of the document."""
+        """
+        :return: the modality of the document."""
         return self._pb_body.modality
 
     @modality.setter

@@ -25,14 +25,15 @@ class FilterQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
 
         ensures that the EncodeDriver will only get documents which modality field value is `mode2` by filtering
         those documents at the specific levels that do not comply with this condition
-    """
 
-    def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
-        """
         :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
         an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
         an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
-        """
+        :param *args: *args for super
+        :param *kwargs: **kwargs for super
+    """
+
+    def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._lookups = lookups
 

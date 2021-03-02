@@ -18,14 +18,19 @@ class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
 
     @property
     def _exec_match_keys(self):
-        """Property to provide backward compatibility to executors relying in `required_keys`"""
+        """ Property to provide backward compatibility to executors relying in `required_keys`
+        :return: keys for attribute lookup in matches
+        """
         return self.exec.match_required_keys if hasattr(self.exec, 'match_required_keys') else getattr(self.exec,
                                                                                                        'required_keys',
                                                                                                        None)
 
     @property
     def _exec_query_keys(self):
-        """Property to provide backward compatibility to executors relying in `required_keys`"""
+        """ Property to provide backward compatibility to executors relying in `required_keys`
+
+        :return: keys for attribute lookup in matches
+        """
         return self.exec.query_required_keys if hasattr(self.exec, 'query_required_keys') else getattr(self.exec,
                                                                                                        'required_keys',
                                                                                                        None)
@@ -52,7 +57,6 @@ class Matches2DocRankDriver(BaseRankDriver):
         """
 
         :param docs: the matches of the ``context_doc``, they are at granularity ``k``
-        :param context_doc: the query document having ``docs`` as its matches, it is at granularity ``k``
         :param *args: not used (kept to maintain interface)
         :param **kwargs: not used (kept to maintain interface)
 
