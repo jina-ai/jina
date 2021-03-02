@@ -30,7 +30,8 @@ jobs:
           echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
           pip install .[daemon] --no-cache-dir
           cd schema
-          jina export-api --yaml-path "$JINA_VERSION.yml" latest.yml --json-path "$JINA_VERSION.json" latest.json latest
+          mkdir -p schemas
+          jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/latest.json schemas/latest --yaml-path "$JINA_VERSION.yml" latest.yml --json-path "$JINA_VERSION.json" latest.json latest
           python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
           python ../scripts/get-gateway-openapi.py
           cd -
@@ -73,6 +74,17 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
           ref: refs/heads/master
           inputs: '{ "version": "${{ env.JINA_VERSION }}" }'
+
+  deploy-jinad-cloud-jina-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Destroy previous & Deploy new JinaD
+          repo: jina-ai/jina-terraform
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: refs/heads/main
+          inputs: '{ "TFID": "cloud.jina.ai", "instance_type": "t2.micro", "region": "us-east-1", "cloudflare_record_name": "cloud" }'
 
   update-doc:
     runs-on: ubuntu-latest

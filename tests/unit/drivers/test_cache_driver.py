@@ -187,7 +187,6 @@ def test_cache_driver_update(tmpdir, test_metas, field_type, mocker):
     driver = MockBaseCacheDriver(method='update', traversal_paths=['r'])
 
     docs = [Document(text=f'doc_{i}') for i in range(5)]
-    # TODO
     [d.update_content_hash() for d in docs]
 
     def validate_delete(self, keys, *args, **kwargs):

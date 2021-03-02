@@ -29,6 +29,7 @@ def get_docs_to_delete(doc_id_to_chunk_ids):
         document.id = str(f'{i}' * 16)
         for chunk in chunks:
             document.chunks.append(chunk)
+            assert chunk.parent_id == document.id
         yield document
 
 
@@ -46,11 +47,11 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
     '''
 
     # generate documents to index
-    index_data = get_docs_to_index([
+    index_data = list(get_docs_to_index([
         '0,1,2,3,4,5,6,7,8,9',
         'a ijk,b ijk,c jk',
         'w mno,x no,y op,z i',
-    ])
+    ]))
 
     response_docs = []
 
@@ -77,20 +78,25 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
     )
 
     # pick document 0 to be deleted
-    delete_data = get_docs_to_delete({
+    delete_data = list(get_docs_to_delete({
         0: response_docs[0].chunks
-    })
+    }))
 
     # delete the docs and all its chunks
+    # 'a ijk,b ijk,c jk' is deleted?
     delete_idx = []
+
     for d in delete_data:
         delete_idx.append(d.id)
         for c in d.chunks:
             delete_idx.append(c.id)
+    # assert ids not overlapping
+    assert len(delete_idx) == len(set(delete_idx))
 
     # run flow for deletion
     with Flow.load_config('flow-index.yml') as delete_flow:
         delete_flow.delete(delete_idx)
+    print('kvsearch vectorsearch after delete')
 
     validate_index(
         tmpdir,
@@ -107,8 +113,7 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
     ])
 
     # insert the updated document
-    index_flow = Flow.load_config('flow-index.yml')
-    with index_flow:
+    with Flow.load_config('flow-index.yml') as index_flow:
         index_flow.index(updated_data)
 
     validate_index(

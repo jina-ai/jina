@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina.executors.decorators import as_update_method, as_train_method, as_ndarray, batching, \
-    require_train, store_init_kwargs, batching_multi_input
+    require_train, store_init_kwargs, batching_multi_input, single
 
 
 def test_as_update_method():
@@ -87,6 +87,22 @@ def test_store_init_kwargs():
 
     with pytest.raises(TypeError):
         instance.f('a', 'b', c='c')
+
+
+def test_single():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single
+        def f(self, data):
+            self.call_nbr += 1
+            return data
+
+    instance = A()
+    result = instance.f([1, 1, 1, 1])
+    assert result == [1, 1, 1, 1]
+    assert instance.call_nbr == 4
 
 
 def test_batching():
@@ -234,28 +250,30 @@ def test_batching_multi():
     for batch in instance.batching:
         assert batch.shape == (batch_size, result_dim)
 
+
 def test_batching_multi_input_dictionary():
     batch_size = 2
+
     class MockRanker:
         def __init__(self, batch_size):
-            self.batch_size=batch_size
+            self.batch_size = batch_size
             self.batches = []
 
-        @batching_multi_input(slice_on=2,num_data=2)
+        @batching_multi_input(slice_on=2, num_data=2)
         def score(
-            self, query_meta, old_match_scores, match_meta
+                self, query_meta, old_match_scores, match_meta
         ):
             self.batches.append([query_meta, old_match_scores, match_meta])
-            return np.array([(x,y) for x,y in old_match_scores.items()])
-    
+            return np.array([(x, y) for x, y in old_match_scores.items()])
+
     query_meta = {'text': 'cool stuff'}
-    old_match_scores = {1: 5, 2: 4, 3:4 , 4:0}
-    match_meta = {1: {'text': 'cool stuff'}, 2: {'text': 'kewl stuff'},3: {'text': 'kewl stuff'},4: {'text': 'kewl stuff'}}
+    old_match_scores = {1: 5, 2: 4, 3: 4, 4: 0}
+    match_meta = {1: {'text': 'cool stuff'}, 2: {'text': 'kewl stuff'}, 3: {'text': 'kewl stuff'},
+                  4: {'text': 'kewl stuff'}}
     instance = MockRanker(batch_size)
-    result = instance.score(query_meta,old_match_scores,match_meta)
-    np.testing.assert_almost_equal(result,np.array([(x,y) for x,y in old_match_scores.items()]))
+    result = instance.score(query_meta, old_match_scores, match_meta)
+    np.testing.assert_almost_equal(result, np.array([(x, y) for x, y in old_match_scores.items()]))
     for batch in instance.batches:
         assert batch[0] == query_meta
         assert len(batch[1]) == batch_size
         assert len(batch[2]) == batch_size
-

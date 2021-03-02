@@ -18,6 +18,8 @@ from itertools import islice
 def as_aggregate_method(func: Callable) -> Callable:
     """Mark a function so that it keeps track of the number of documents evaluated and a running sum
     to have always access to average value
+    :param func: the function to decorate
+    :return: the wrapped function
     """
 
     @wraps(func)
@@ -33,6 +35,8 @@ def as_update_method(func: Callable) -> Callable:
     """Mark the function as the updating function of this executor,
     calling this function will change the executor so later you can save the change via :func:`save`
     Will set the is_updated property after function is called.
+    :param func: the function to decorate
+    :return: the wrapped function
     """
 
     @wraps(func)
@@ -47,6 +51,8 @@ def as_update_method(func: Callable) -> Callable:
 def as_train_method(func: Callable) -> Callable:
     """Mark a function as the training function of this executor.
     Will set the is_trained property after function is called.
+    :param func: the function to decorate
+    :return: the wrapped function
     """
 
     @wraps(func)
@@ -67,7 +73,6 @@ def wrap_func(cls, func_lst, wrapper):
     :param cls: class
     :param func_lst: function list to wrap
     :param wrapper: the wrapper
-    :return:
     """
     for f_name in func_lst:
         if hasattr(cls, f_name) and all(getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]):
@@ -80,6 +85,7 @@ def as_ndarray(func: Callable, dtype=np.float32) -> Callable:
 
     :param func: the function to decorate
     :param dtype: the converted dtype of the ``numpy.ndarray``
+    :return: the wrapped function
     """
 
     @wraps(func)
@@ -96,7 +102,10 @@ def as_ndarray(func: Callable, dtype=np.float32) -> Callable:
 
 def require_train(func: Callable) -> Callable:
     """Mark an :class:`BaseExecutor` function as training required, so it can only be called
-    after the function decorated by ``@as_train_method``. """
+    after the function decorated by ``@as_train_method``.
+     :param func: the function to decorate
+     :return: the wrapped function
+     """
 
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
@@ -112,7 +121,10 @@ def require_train(func: Callable) -> Callable:
 
 
 def store_init_kwargs(func: Callable) -> Callable:
-    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML """
+    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML
+    :param func: the function to decorate
+    :return: the wrapped function
+    """
 
     @wraps(func)
     def arg_wrapper(self, *args, **kwargs):
@@ -146,12 +158,15 @@ def store_init_kwargs(func: Callable) -> Callable:
 
     return arg_wrapper
 
-def _get_slice(data: Union[Iterator[Any], List[Any], np.ndarray], total_size: int) -> Union[Iterator[Any], List[Any], np.ndarray]:
+
+def _get_slice(data: Union[Iterator[Any], List[Any], np.ndarray], total_size: int) -> Union[
+    Iterator[Any], List[Any], np.ndarray]:
     if isinstance(data, Dict):
         data = islice(data.items(), total_size)
     else:
         data = data[:total_size]
     return data
+
 
 def _get_size(data: Union[Iterator[Any], List[Any], np.ndarray], axis: int = 0) -> int:
     if isinstance(data, np.ndarray):
@@ -359,9 +374,9 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
             full_data_size = _get_size(args[slice_on], split_over_axis)
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
-            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0,num_data)]
-            data_iterators = [batch_iterator(_get_slice(args[slice_on + i], total_size), b_size , split_over_axis,
-                            yield_dict=yield_dict[i]) for i in range(0, num_data)]
+            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0, num_data)]
+            data_iterators = [batch_iterator(_get_slice(args[slice_on + i], total_size), b_size, split_over_axis,
+                                             yield_dict=yield_dict[i]) for i in range(0, num_data)]
 
             for batch in data_iterators[0]:
                 args[slice_on] = batch
@@ -381,3 +396,49 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
         return _batching(func)
     else:
         return _batching
+
+
+def single(func: Callable[[Any], np.ndarray] = None,
+           merge_over_axis: int = 0,
+           slice_on: int = 1) -> Any:
+    """
+    Guarantee that the input of a function is provided as a single instance and not in batches
+
+    :param func: function to decorate
+    :param merge_over_axis: merge over which axis into a single result
+    :param slice_on: the location of the data. When using inside a class,
+            ``slice_on`` should take ``self`` into consideration.
+    :return: the merged result as if run :func:`func` once on the input.
+
+    Example:
+        .. highlight:: python
+        .. code-block:: python
+
+            class OneByOneCrafter:
+                @single
+                def craft(self, text: str) -> Dict:
+    """
+
+    def _single(func):
+        @wraps(func)
+        def arg_wrapper(*args, **kwargs):
+            # priority: decorator > class_attribute
+            # by default data is in args[1] (self needs to be taken into account)
+            data = args[slice_on]
+            args = list(args)
+
+            default_logger.debug(
+                f'batching disabled for {func.__qualname__}')
+
+            final_result = []
+            for instance in data:
+                args[slice_on] = instance
+                r = func(*args, **kwargs)
+                if r is not None:
+                    final_result.append(r)
+
+            return _merge_results_after_batching(final_result, merge_over_axis)
+
+        return arg_wrapper
+
+    return _single(func)
