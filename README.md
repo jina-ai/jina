@@ -854,15 +854,21 @@ This creates a Python entrypoint, YAML configs and a Dockerfile. You can start f
 
 <table>
   <tr>
-    <td width="25%">
-    <a href="https://101.jina.ai">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/ILLUS12.png?raw=true" alt="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited" title="Jina 101 Concept Illustration Book, Copyright by Jina AI Limited"/>
+    <td width="33%">
+    <a href="https://youtu.be/zvXkQkqd2I8">
+      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/basic-concept.png?raw=true"/>
     </a>
     </td>
-    <td width="75%">
-&nbsp;&nbsp;<h3><a href="https://101.jina.ai">Jina 101: First Things to Learn About Jina</a></h3>
+    <td width="33%">
+    <a href="https://youtu.be/qOD-6mihUzQ">
+      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/speedup.png?raw=true"/>
+    </a>
     </td>
-
+    <td width="33%">
+    <a href="https://youtu.be/B_nH8GCmBfc">
+      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/multimodal-search.png?raw=true"/>
+    </a>
+    </td>
   </tr>
 </table>
 
