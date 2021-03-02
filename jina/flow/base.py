@@ -189,7 +189,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
         """
         Collect all hanging Pods so far and add a blocker to the Flow; wait until all handing peas completed.
-        
+
         :param name: the name of this joiner (default is ``joiner``)
         :param *args: *args for .add or .needs
         :param **kwargs: **kwargs for .add or .needs
@@ -424,7 +424,27 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return self.build(*args, **kwargs)
 
     def __enter__(self):
-        return self.start()
+        class CatchAllCleanupContextManager():
+            """
+            This context manager guarantees, that the :method:``__exit__`` of the
+            sub context is called, even when there is an Exception in the
+            :method:``__enter__``.
+
+            :param sub_context: The context, that should be taken care of.
+            """
+
+            def __init__(self, sub_context):
+                self.sub_context = sub_context
+
+            def __enter__(self):
+                pass
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                if exc_type is not None:
+                    self.sub_context.__exit__(exc_type, exc_val, exc_tb)
+
+        with CatchAllCleanupContextManager(self):
+            return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -433,8 +453,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if self._env:
             for k in self._env.keys():
                 os.unsetenv(k)
-
-        self._pod_nodes.pop('gateway')
+        if 'gateway' in self._pod_nodes:
+            self._pod_nodes.pop('gateway')
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources are released, current build level is {self._build_level}')
