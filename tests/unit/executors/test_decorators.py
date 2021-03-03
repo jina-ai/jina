@@ -290,7 +290,6 @@ def test_batching_as_ndarray():
         @batching
         def f(self, data):
             self.batch_sizes.append(len(data))
-            print(f' data JOAN {data}')
             return np.array(data)
 
     instance = A(1)

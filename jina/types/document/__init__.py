@@ -191,7 +191,10 @@ class Document(ProtoTypeMixin):
 
     @property
     def length(self) -> int:
-        """Get the length of of the document."""
+        """Get the length of of the document.
+
+        :return: the length from the proto
+        """
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
         return self._pb_body.length
 
@@ -206,7 +209,10 @@ class Document(ProtoTypeMixin):
 
     @property
     def weight(self) -> float:
-        """Return the weight of the document."""
+        """Return the weight of the document.
+
+        :return: the weight from the proto
+        """
         return self._pb_body.weight
 
     @weight.setter
@@ -219,17 +225,26 @@ class Document(ProtoTypeMixin):
 
     @property
     def modality(self) -> str:
-        """Get the modality of the document."""
+        """Get the modality of the document.
+
+        :return: the modality from the proto
+        """
         return self._pb_body.modality
 
     @modality.setter
     def modality(self, value: str):
-        """Set the modality of the document."""
+        """Set the modality of the document.
+
+        :param value: The modality of the document
+        """
         self._pb_body.modality = value
 
     @property
     def content_hash(self):
-        """Get the content hash of the document."""
+        """Get the content hash of the document.
+
+        :return: the content_hash from the proto
+        """
         return self._pb_body.content_hash
 
     @staticmethod
@@ -308,7 +323,7 @@ class Document(ProtoTypeMixin):
 
         if exclude_fields is None:
             if include_fields:
-                exclude_fields = tuple(f for f in self.non_empty_fields if f not in include_fields)
+                exclude_fields = set(f for f in self.non_empty_fields if f not in include_fields)
             else:
                 exclude_fields = self.non_empty_fields
 
@@ -353,6 +368,8 @@ class Document(ProtoTypeMixin):
     def id(self) -> str:
         """The document id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
+
+        :return: the id from the proto
         """
         return self._pb_body.id
 
@@ -360,6 +377,8 @@ class Document(ProtoTypeMixin):
     def parent_id(self) -> str:
         """The document's parent id in hex string, for non-binary environment such as HTTP, CLI, HTML and also human-readable.
         it will be used as the major view.
+
+        :return: the parent id from the proto
         """
         return self._pb_body.parent_id
 
@@ -368,7 +387,6 @@ class Document(ProtoTypeMixin):
         """Set document id to a string value.
 
         :param value: id as bytes, int or str
-        :return:
         """
         self._pb_body.id = str(value)
 
@@ -377,7 +395,6 @@ class Document(ProtoTypeMixin):
         """Set document's parent id to a string value.
 
         :param value: id as bytes, int or str
-        :return:
         """
         self._pb_body.parent_id = str(value)
 
@@ -387,22 +404,33 @@ class Document(ProtoTypeMixin):
 
         .. note::
             Use :attr:`content` to return the content of a Document
+
+        :return: the blob content from the proto
         """
         return NdArray(self._pb_body.blob).value
 
     @blob.setter
     def blob(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
-        """Set the `blob` to :param:`value`."""
+        """Set the `blob` to :param:`value`.
+
+         :param value: the array value to set the blob
+        """
         self._update_ndarray('blob', value)
 
     @property
     def embedding(self) -> 'np.ndarray':
-        """Return ``embedding`` of the content of a Document."""
+        """Return ``embedding`` of the content of a Document.
+
+        :return: the embedding from the proto
+        """
         return NdArray(self._pb_body.embedding).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
-        """Set the ``embedding`` of the content of a Document."""
+        """Set the ``embedding`` of the content of a Document.
+
+        :param value: the array value to set the embedding
+        """
         self._update_ndarray('embedding', value)
 
     def _update_ndarray(self, k, v):
@@ -418,12 +446,18 @@ class Document(ProtoTypeMixin):
 
     @property
     def matches(self) -> 'MatchSet':
-        """Get all matches of the current document."""
+        """Get all matches of the current document.
+
+        :return: the set of matches attached to this document
+        """
         return MatchSet(self._pb_body.matches, reference_doc=self)
 
     @property
     def chunks(self) -> 'ChunkSet':
-        """Get all chunks of the current document."""
+        """Get all chunks of the current document.
+
+        :return: the set of chunks of this document
+        """
         return ChunkSet(self._pb_body.chunks, reference_doc=self)
 
     def __getattr__(self, item):
@@ -439,6 +473,7 @@ class Document(ProtoTypeMixin):
         .. seealso::
             :meth:`get_attrs` for bulk get attributes
 
+        :param kwargs: the keyword arguments to set the values, where the keys are the fields to set
         """
         for k, v in kwargs.items():
             if isinstance(v, (list, tuple)):
@@ -486,6 +521,9 @@ class Document(ProtoTypeMixin):
                 assert res['tags__hello'] == 'world' # true
                 assert res['tags__good'] == 'bye' # true
                 assert res['tags__id'] == 'external_id' # true
+
+        :param args: the variable length values to extract from the document
+        :return: a dictionary mapping the fields in `:param:args` to the actual attributes of this document
         """
 
         ret = {}
@@ -505,7 +543,6 @@ class Document(ProtoTypeMixin):
     def get_attrs_values(self, *args) -> List[Any]:
         """Bulk fetch Document fields and return a list of the values of these fields
 
-
         .. note::
             Arguments will be extracted using `dunder_get`
             .. highlight:: python
@@ -522,10 +559,8 @@ class Document(ProtoTypeMixin):
 
                 assert res == ['123', 'world', 'bye', 'external_id']
 
-                assert res['id'] == '123' # true
-                assert res['tags__hello'] == 'world' # true
-                assert res['tags__good'] == 'bye' # true
-                assert res['tags__id'] == 'external_id' # true
+        :param args: the variable length values to extract from the document
+        :return: a list with the attributes of this document ordered as the args
         """
 
         ret = []
@@ -550,12 +585,17 @@ class Document(ProtoTypeMixin):
 
         .. note::
             Use :attr:`content` to return the content of a Document
+
+        :return: the buffer bytes from this document
         """
         return self._pb_body.buffer
 
     @buffer.setter
     def buffer(self, value: bytes):
-        """Set the ``buffer`` to :param:`value`."""
+        """Set the ``buffer`` to :param:`value`.
+
+        :param value: the bytes value to set the buffer
+        """
         self._pb_body.buffer = value
         if value and not self._pb_body.mime_type:
             with ImportExtensions(required=False,
@@ -572,18 +612,26 @@ class Document(ProtoTypeMixin):
 
         .. note::
             Use :attr:`content` to return the content of a Document
+
+        :return: the text from this document content
         """
         return self._pb_body.text
 
     @text.setter
     def text(self, value: str):
-        """Set the `text` to :param:`value`"""
+        """Set the `text` to :param:`value`
+
+        :param value: the text value to set as content
+        """
         self._pb_body.text = value
         self.mime_type = 'text/plain'
 
     @property
     def uri(self) -> str:
-        """Return the URI of the document."""
+        """Return the URI of the document.
+
+        :return: the uri from this document proto
+        """
         return self._pb_body.uri
 
     @uri.setter
@@ -594,7 +642,6 @@ class Document(ProtoTypeMixin):
             :attr:`mime_type` will be updated accordingly
 
         :param value: acceptable URI/URL, raise ``ValueError`` when it is not a valid URI
-        :return:
         """
         scheme = urllib.parse.urlparse(value).scheme
         if ((scheme in {'http', 'https'} and is_url(value))
@@ -608,7 +655,10 @@ class Document(ProtoTypeMixin):
 
     @property
     def mime_type(self) -> str:
-        """Get MIME type of the document"""
+        """Get MIME type of the document
+
+        :return: the mime_type from this document proto
+        """
         return self._pb_body.mime_type
 
     @mime_type.setter
@@ -636,7 +686,10 @@ class Document(ProtoTypeMixin):
 
     @property
     def content_type(self) -> str:
-        """Return the content type of the document, possible values: text, blob, buffer"""
+        """Return the content type of the document, possible values: text, blob, buffer
+
+        :return: the type of content present in this document proto
+        """
         return self._pb_body.WhichOneof('content')
 
     @property
@@ -646,6 +699,8 @@ class Document(ProtoTypeMixin):
 
         .. seealso::
             :attr:`blob`, :attr:`buffer`, :attr:`text`
+
+        :return: the value of the content depending on `:meth:`content_type`
         """
         attr = self.content_type
         if attr:
@@ -657,6 +712,8 @@ class Document(ProtoTypeMixin):
 
         .. seealso::
             :attr:`blob`, :attr:`buffer`, :attr:`text`
+
+        :param value: the value from which to set the content of the Document
         """
         if isinstance(value, bytes):
             self.buffer = value
@@ -677,22 +734,34 @@ class Document(ProtoTypeMixin):
 
     @property
     def granularity(self):
-        """Return the granularity of the document."""
+        """Return the granularity of the document.
+
+        :return: the granularity from this document proto
+        """
         return self._pb_body.granularity
 
     @granularity.setter
-    def granularity(self, granularity_value: int):
-        """Set the granularity of the document."""
-        self._pb_body.granularity = granularity_value
+    def granularity(self, value: int):
+        """Set the granularity of the document.
+
+        :param value: the value of the granularity to be set
+        """
+        self._pb_body.granularity = value
 
     @property
     def score(self):
-        """Return the score of the document."""
+        """Return the score of the document.
+
+        :return: the score attached to this document as `:class:NamedScore`
+        """
         return NamedScore(self._pb_body.score)
 
     @score.setter
     def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
-        """Set the score of the document."""
+        """Set the score of the document.
+
+        :param value: the value to set the score of the Document from
+        """
         if isinstance(value, jina_pb2.NamedScoreProto):
             self._pb_body.score.CopyFrom(value)
         elif isinstance(value, NamedScore):
@@ -720,14 +789,20 @@ class Document(ProtoTypeMixin):
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
     def convert_blob_to_uri(self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs):
-        """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly"""
+        """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
+        :param width: the width of the blob
+        :param height: the height of the blob
+        :param resize_method: the resize method name
+        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
+        """
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    def convert_uri_to_blob(self, color_axis: int = -1, uri_prefix: str = None, **kwargs):
+    def convert_uri_to_blob(self, color_axis: int = -1, uri_prefix: Optional[str] = None, **kwargs):
         """ Convert uri to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
+        :param uri_prefix: the prefix of the uri
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob((uri_prefix + self.uri) if uri_prefix else self.uri, color_axis)
@@ -777,8 +852,8 @@ class Document(ProtoTypeMixin):
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-         Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
-         frequently uses non-US-ASCII characters.
+            Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
+            frequently uses non-US-ASCII characters.
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
@@ -792,8 +867,8 @@ class Document(ProtoTypeMixin):
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
-        Designed to be efficient for non-text 8 bit and binary data.
-        Sometimes used for text data that frequently uses non-US-ASCII characters.
+            Designed to be efficient for non-text 8 bit and binary data.
+            Sometimes used for text data that frequently uses non-US-ASCII characters.
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
@@ -820,11 +895,17 @@ class Document(ProtoTypeMixin):
             raise NotImplementedError
 
     def MergeFrom(self, doc: 'Document'):
-        """Merge the content of target :param:doc into current document."""
+        """Merge the content of target :param:doc into current document.
+
+        :param doc: the document to merge from
+        """
         self._pb_body.MergeFrom(doc.proto)
 
     def CopyFrom(self, doc: 'Document'):
-        """Copy the content of target :param:doc into current document."""
+        """Copy the content of target :param:doc into current document.
+
+        :param doc: the document to copy from
+        """
         self._pb_body.CopyFrom(doc.proto)
 
     def __mermaid_str__(self):
@@ -856,11 +937,12 @@ class Document(ProtoTypeMixin):
 
         return '\n'.join(results)
 
-    def _mermaid_to_url(self, img_type) -> str:
+    def _mermaid_to_url(self, img_type: str) -> str:
         """
         Rendering the current flow as a url points to a SVG, it needs internet connection
-        :param kwargs: keyword arguments of :py:meth:`to_mermaid`
-        :return: the url points to a SVG
+
+        :param img_type: the type of image to be generated
+        :return: the url pointing to a SVG
         """
         if img_type == 'jpg':
             img_type = 'img'
@@ -911,6 +993,9 @@ classDiagram
             default_logger.info(f'Document visualization: {url}')
 
     @property
-    def non_empty_fields(self) -> Tuple[str]:
-        """Return the set fields of the curren"""
-        return tuple(field[0].name for field in self.ListFields())
+    def non_empty_fields(self) -> set:
+        """Return the set fields of the current document that are not empty
+
+        :return: the set of non-empty fields
+        """
+        return set(field[0].name for field in self.ListFields())
