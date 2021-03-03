@@ -13,7 +13,6 @@ class FastSlowDriver(FlatRecursiveMixin, BaseExecutableDriver):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
-        docs = list(docs)
         if docs:
             assert len(docs) == 1
             if docs[0].text == 'slow':

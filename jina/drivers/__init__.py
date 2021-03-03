@@ -345,10 +345,12 @@ class ContextAwareRecursiveMixin:
         *args,
         **kwargs,
     ) -> None:
-        """Apply function works on a list of list of docs, modify the docs in-place.
+        """Apply function works on an Iterable of DocumentSet, modify the docs in-place.
 
-        Each outer list refers to a leaf (e.g. roots, matches or chunks wrapped
-        in a :class:`jina.DocumentSet`) in the traversal_paths.
+        Each DocumentSet refers to a leaf (e.g. roots, matches or chunks wrapped
+        in a :class:`jina.DocumentSet`) in the traversal_paths. Modifications on the
+        DocumentSets (e.g. adding or deleting Documents) are directly applied on the underlying objects.
+        Adding a chunk to a ChunkSet results in adding a chunk to the parent Document.
 
         :param doc_sequences: the Documents that should be handled
         :param *args: driver specific arguments, which might be forwarded to the Executor

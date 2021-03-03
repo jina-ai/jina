@@ -31,7 +31,7 @@ __all__ = ['batch_iterator',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
            'run_async', 'deprecated_alias']
 
-from jina.excepts import NotSupportedError, NoAvailablePortError
+from jina.excepts import NotSupportedError
 
 
 def deprecated_alias(**aliases):
