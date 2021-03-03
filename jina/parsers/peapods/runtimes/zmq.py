@@ -2,7 +2,7 @@
 import os
 
 from ...helper import add_arg_group
-from ....helper import random_port
+from .... import helper
 
 
 def mixin_zmq_runtime_parser(parser):
@@ -11,7 +11,7 @@ def mixin_zmq_runtime_parser(parser):
     """
 
     gp = add_arg_group(parser, title='ZMQRuntime')
-    gp.add_argument('--port-ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', random_port()),
+    gp.add_argument('--port-ctrl', type=int, default=os.environ.get('JINA_CONTROL_PORT', helper.random_port()),
                     help='The port for controlling the runtime, default a random port between [49152, 65535]')
     gp.add_argument('--ctrl-with-ipc', action='store_true', default=False,
                     help='If set, use ipc protocol for control socket')

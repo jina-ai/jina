@@ -4,7 +4,7 @@ import argparse
 from ...helper import add_arg_group, _SHOW_ALL_ARGS
 from .... import __default_host__
 from ....enums import OnErrorStrategy, SocketType
-from ....helper import random_port
+from .... import helper
 
 
 def mixin_zed_runtime_parser(parser):
@@ -16,11 +16,11 @@ def mixin_zed_runtime_parser(parser):
 
     gp.add_argument('--uses', type=str, default='_pass',
                     help='''
-The config of the executor, it could be one of the followings: 
-- an Executor-level YAML file path (.yml, .yaml, .jaml) 
+The config of the executor, it could be one of the followings:
+- an Executor-level YAML file path (.yml, .yaml, .jaml)
 - a name of a class inherited from `jina.Executor`
 - a docker image (must start with `docker://`)
-- builtin executors, e.g. `_pass`, `_logforward`, `_merge` 
+- builtin executors, e.g. `_pass`, `_logforward`, `_merge`
 - the string literal of a YAML config (must start with `!`)
 - the string literal of a JSON config
 - the string literal of a YAML driver config (must start with `- !!`)
@@ -33,16 +33,16 @@ When use it under Python, one can use the following values additionally:
                     help='''
 The customized python modules need to be imported before loading the executor
 
-Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in 
-reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write: 
+Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
+reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
 
 --py-modules __init__.py --py-modules B.py --py-modules A.py
 
 ''')
 
-    gp.add_argument('--port-in', type=int, default=random_port(),
+    gp.add_argument('--port-in', type=int, default=helper.random_port(),
                     help='The port for input data, default a random port between [49152, 65535]')
-    gp.add_argument('--port-out', type=int, default=random_port(),
+    gp.add_argument('--port-out', type=int, default=helper.random_port(),
                     help='The port for output data, default a random port between [49152, 65535]')
     gp.add_argument('--host-in', type=str, default=__default_host__,
                     help=f'The host address for input, by default it is {__default_host__}')
@@ -74,9 +74,9 @@ The skip strategy on exceptions.
 - IGNORE: Ignore it, keep running all Drivers & Executors logics in the sequel flow
 - SKIP_EXECUTOR: Skip all Executors in the sequel, but drivers are still called
 - SKIP_HANDLE: Skip all Drivers & Executors in the sequel, only `pre_hook` and `post_hook` are called
-- THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all 
-                    
-Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something 
+- THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
+
+Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
 is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
 ''')
 

@@ -2,7 +2,7 @@
 from ...helper import add_arg_group
 from .... import __default_host__
 from ....enums import CompressAlgo
-from ....helper import random_port
+from .... import helper
 
 
 def mixin_remote_parser(parser):
@@ -16,7 +16,7 @@ def mixin_remote_parser(parser):
 
     gp.add_argument('--port-expose',
                     type=int,
-                    default=random_port(),
+                    default=helper.random_port(),
                     help='The port of the host exposed to the public')
 
 
@@ -40,7 +40,7 @@ def mixin_grpc_parser(parser=None):
                     help='If set, use RESTful interface instead of gRPC as the main interface')
     gp.add_argument('--compress', type=CompressAlgo.from_string, choices=list(CompressAlgo), default=CompressAlgo.LZ4,
                     help='''
-The compress algorithm used over the entire Flow. 
+The compress algorithm used over the entire Flow.
 
 Note that this is not necessarily effective, it depends on the settings of `--compress-lwm` and `compress-hwm`''')
     gp.add_argument('--compress-min-bytes', type=int, default=1024,
