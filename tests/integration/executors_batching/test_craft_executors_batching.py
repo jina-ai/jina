@@ -70,8 +70,8 @@ def test_batching_text_multi(crafter):
     required_keys = ['text', 'id']
     text_ids, _ = docs._extract_docs(*required_keys)
 
-    args = [text_ids[:, i] for i in range(len(required_keys))]
-    crafted_docs = crafter.craft(*args)
+    # args = [text_ids[:, i] for i in range(len(required_keys))]
+    crafted_docs = crafter.craft(*text_ids)
 
     for i, crafted_doc in enumerate(crafted_docs):
         assert crafted_doc['text'] == f'text-{i}-crafted'
@@ -118,11 +118,10 @@ class DummyCrafterBlobEmbeddingBatching(BaseCrafter):
 
     @batching_multi_input(batch_size=3, num_data=2)
     def craft(self, blob, embedding, *args, **kwargs):
-        print(f' blob {blob}')
         assert len(blob) == 3
         assert len(embedding) == 3
         assert blob.shape == (3, 2, 5)
-        assert embedding.shape == (3, 1, 5)
+        assert embedding.shape == (3, 5)
         return [{'blob': b, 'embedding': e} for b, e in zip(blob, embedding)]
 
 
@@ -140,13 +139,55 @@ class DummyCrafterBlobEmbeddingSingle(BaseCrafter):
 
 @pytest.mark.parametrize('crafter', [DummyCrafterBlobEmbeddingSingle(), DummyCrafterBlobEmbeddingBatching()])
 def test_batching_blob_multi(crafter):
-    docs = DocumentSet([Document(blob=np.array([[i, i, i, i, i], [i, i, i, i, i]]), embedding=np.array([i, i, i, i, i])) for i in range(15)])
+    docs = DocumentSet(
+        [Document(blob=np.array([[i, i, i, i, i], [i, i, i, i, i]]), embedding=np.array([i, i, i, i, i])) for i in
+         range(15)])
     required_keys = ['blob', 'embedding']
     text_ids, _ = docs._extract_docs(*required_keys)
 
-    args = [text_ids[:, i] for i in range(len(required_keys))]
-    crafted_docs = crafter.craft(*args)
+    crafted_docs = crafter.craft(*text_ids)
 
     for i, crafted_doc in enumerate(crafted_docs):
         np.testing.assert_equal(crafted_doc['blob'], np.array([[i, i, i, i, i], [i, i, i, i, i]]))
+        np.testing.assert_equal(crafted_doc['embedding'], np.array([i, i, i, i, i]))
+
+
+class DummyCrafterTextEmbeddingBatching(BaseCrafter):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @batching_multi_input(batch_size=3, num_data=2)
+    def craft(self, text, embedding, *args, **kwargs):
+        assert len(text) == 3
+        assert len(embedding) == 3
+        assert text.shape == (3,)
+        assert embedding.shape == (3, 5)
+        return [{'text': t, 'embedding': e} for t, e in zip(text, embedding)]
+
+
+class DummyCrafterTextEmbeddingSingle(BaseCrafter):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @single_multi_input(num_data=2)
+    def craft(self, text, embedding, *args, **kwargs):
+        assert isinstance(text, str)
+        assert isinstance(embedding, np.ndarray)
+        return {'text': text, 'embedding': embedding}
+
+
+@pytest.mark.parametrize('crafter', [DummyCrafterTextEmbeddingSingle(), DummyCrafterTextEmbeddingBatching()])
+def test_batching_mix_multi(crafter):
+    docs = DocumentSet(
+        [Document(text=f'text-{i}', embedding=np.array([i, i, i, i, i])) for i in
+         range(15)])
+    required_keys = ['text', 'embedding']
+    text_ids, _ = docs._extract_docs(*required_keys)
+
+    crafted_docs = crafter.craft(*text_ids)
+
+    for i, crafted_doc in enumerate(crafted_docs):
+        assert crafted_doc['text'] == f'text-{i}'
         np.testing.assert_equal(crafted_doc['embedding'], np.array([i, i, i, i, i]))

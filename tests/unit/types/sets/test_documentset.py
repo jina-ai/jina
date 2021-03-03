@@ -290,11 +290,11 @@ def test_get_content_multiple_fields_text(fields):
 
     contents, pts = docs._extract_docs(*fields)
 
-    print(f' contents.shape {contents.shape}')
-    assert contents.shape == (batch_size, len(fields))
-    assert len(contents) == batch_size
+    assert len(contents) == len(fields)
+
     for content in contents:
-        assert len(content) == len(fields)
+        assert len(content) == batch_size
+        assert content.shape == (batch_size,)
 
 
 @pytest.mark.parametrize('num_rows', [1, 2, 3])
@@ -311,7 +311,31 @@ def test_get_content_multiple_fields_arrays(num_rows):
 
     contents, pts = docs._extract_docs(*fields)
 
-    assert contents.shape == (batch_size, len(fields), num_rows, embed_size)
-    assert len(contents) == batch_size
+    assert len(contents) == len(fields)
+
     for content in contents:
-        assert len(content) == len(fields)
+        assert len(content) == batch_size
+        assert content.shape == (batch_size, num_rows, embed_size)
+
+
+@pytest.mark.parametrize('num_rows', [1, 2, 3])
+def test_get_content_multiple_fields_merge(num_rows):
+    fields = ['embedding', 'text']
+
+    batch_size = 10
+    embed_size = 20
+
+    kwargs = {
+        field: np.random.random((num_rows, embed_size)) if field == 'embedding' else 'text' for field in fields
+    }
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(*fields)
+
+    assert len(contents) == len(fields)
+
+    for content in contents:
+        assert len(content) == batch_size
+
+    assert contents[0].shape == (batch_size, num_rows, embed_size)
+    assert contents[1].shape == (batch_size,)

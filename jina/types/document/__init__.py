@@ -565,7 +565,6 @@ class Document(ProtoTypeMixin):
 
         ret = []
         for k in args:
-
             try:
                 value = getattr(self, k)
 

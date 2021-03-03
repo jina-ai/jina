@@ -195,7 +195,8 @@ def _merge_results_after_batching(final_result, merge_over_axis: int = 0):
 
     if len(final_result) and merge_over_axis is not None:
         if isinstance(final_result[0], np.ndarray):
-            final_result = np.concatenate(final_result, merge_over_axis)
+            if len(final_result[0].shape) > 1:
+                final_result = np.concatenate(final_result, merge_over_axis)
         elif isinstance(final_result[0], tuple):
             reduced_result = []
             num_cols = len(final_result[0])
@@ -481,7 +482,7 @@ def single_multi_input(func: Callable[[Any], np.ndarray] = None,
             # by default data is in args[1:] (self needs to be taken into account)
             args = list(args)
             default_logger.debug(
-                 f'batching disabled for {func.__qualname__}')
+                f'batching disabled for {func.__qualname__}')
             data_iterators = [args[slice_on + i] for i in range(0, num_data)]
 
             final_result = []

@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from jina.executors.decorators import as_update_method, as_train_method, as_ndarray, batching, \
-    require_train, store_init_kwargs, batching_multi_input, single
+    require_train, store_init_kwargs, batching_multi_input, single, single_multi_input
 
 
 def test_as_update_method():
@@ -106,6 +106,25 @@ def test_single():
     assert instance.call_nbr == 4
 
 
+def test_single_np_ndarray():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single
+        def f(self, data):
+            assert isinstance(data, np.ndarray)
+            assert data.shape == (5,)
+            self.call_nbr += 1
+            return data
+
+    instance = A()
+    input_np = np.random.random((4, 5))
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
+    assert instance.call_nbr == 4
+
+
 def test_batching():
     class A:
         def __init__(self, batch_size):
@@ -134,6 +153,39 @@ def test_batching():
     instance = A(5)
     result = instance.f([1, 1, 1, 1])
     assert result == [1, 1, 1, 1]
+    assert len(instance.batch_sizes) == 1
+    assert instance.batch_sizes[0] == 4
+
+
+def test_batching_np_array():
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+            self.batch_sizes = []
+
+        @batching
+        def f(self, data):
+            self.batch_sizes.append(len(data))
+            return data
+
+    instance = A(1)
+    input_np = np.random.random((4, 5))
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
+    assert len(instance.batch_sizes) == 4
+    for batch_size in instance.batch_sizes:
+        assert batch_size == 1
+
+    instance = A(3)
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
+    assert len(instance.batch_sizes) == 2
+    assert instance.batch_sizes[0] == 3
+    assert instance.batch_sizes[1] == 1
+
+    instance = A(5)
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
     assert len(instance.batch_sizes) == 1
     assert instance.batch_sizes[0] == 4
 
@@ -252,6 +304,29 @@ def test_batching_multi():
         assert batch.shape == (batch_size, result_dim)
 
 
+def test_single_multi():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single_multi_input(num_data=3)
+        def f(self, data0, data1, data2):
+            assert isinstance(data0, int)
+            assert isinstance(data1, int)
+            assert isinstance(data2, int)
+            self.call_nbr += 1
+            return data1
+
+    instance = A()
+    data0 = [0, 0, 0, 0]
+    data1 = [1, 1, 1, 1]
+    data2 = [2, 2, 2, 2]
+    data = [data0, data1, data2]
+    result = instance.f(*data)
+    assert result == [1, 1, 1, 1]
+    assert instance.call_nbr == 4
+
+
 def test_batching_multi_input_dictionary():
     batch_size = 2
 
@@ -290,27 +365,50 @@ def test_batching_as_ndarray():
         @batching
         def f(self, data):
             self.batch_sizes.append(len(data))
-            return np.array(data)
+            return data
 
     instance = A(1)
-    result = instance.f([1, 1, 1, 1])
+    input_data = [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
+    result = instance.f(input_data)
     assert isinstance(result, np.ndarray)
-    np.testing.assert_equal(result, np.array([1., 1., 1., 1.]))
+    np.testing.assert_equal(result, np.array(input_data))
     assert len(instance.batch_sizes) == 4
     for batch_size in instance.batch_sizes:
-         assert batch_size == 1
+        assert batch_size == 1
 
     instance = A(3)
-    result = instance.f([1, 1, 1, 1])
+    result = instance.f(input_data)
     assert isinstance(result, np.ndarray)
-    np.testing.assert_equal(result, np.array([1., 1., 1., 1.]))
+    np.testing.assert_equal(result, np.array(input_data))
     assert len(instance.batch_sizes) == 2
     assert instance.batch_sizes[0] == 3
     assert instance.batch_sizes[1] == 1
 
     instance = A(5)
-    result = instance.f([1, 1, 1, 1])
+    result = instance.f(input_data)
     assert isinstance(result, np.ndarray)
-    np.testing.assert_equal(result, np.array([1., 1., 1., 1.]))
+    np.testing.assert_equal(result, np.array(input_data))
     assert len(instance.batch_sizes) == 1
     assert instance.batch_sizes[0] == 4
+
+
+
+
+
+# @pytest.mark.parametrize('input_data', [])
+# def test_batching_single_equal():
+#     class A:
+#         def __init__(self, batch_size):
+#             self.batch_size = batch_size
+#
+#         @batching
+#         def f(self, data):
+#             return data
+#
+#     class B:
+#         def __init__(self, batch_size):
+#             self.batch_size = batch_size
+#
+#         @single
+#         def f(self, data):
+#             return data
