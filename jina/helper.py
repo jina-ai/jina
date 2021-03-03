@@ -282,25 +282,13 @@ def random_name() -> str:
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
-_used_ports = set()
-
-
 def random_port() -> Optional[int]:
     """
     Get a random available port number from '49153' to '65535'.
 
     :return: A random port.
     """
-    for i in range(100):
-        _port = _sample_random_port()
 
-        if _port is not None and _port not in _used_ports:
-            _used_ports.add(_port)
-            return _port
-    raise NoAvailablePortError('Could not find an available port in 100 tries.')
-
-
-def _sample_random_port() -> Optional[int]:
     import threading
     import multiprocessing
     from contextlib import closing

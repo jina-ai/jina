@@ -1,11 +1,13 @@
+import functools
 import os
+import numpy as np
 import random
 import string
 import time
 
 import pytest
 from fastapi.testclient import TestClient
-
+from jina.excepts import NoAvailablePortError
 from jina.executors.metas import get_default_metas
 
 
@@ -44,3 +46,54 @@ def docker_compose(request):
     os.system(
         f"docker-compose -f {request.param} --project-directory . down --remove-orphans"
     )
+
+
+def _random_port(used_ports):
+
+    def _sample_random_port():
+        import threading
+        import multiprocessing
+        from contextlib import closing
+        import socket
+
+        def _get_port(port=0):
+            with multiprocessing.Lock():
+                with threading.Lock():
+                    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+                        try:
+                            s.bind(('', port))
+                            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                            return s.getsockname()[1]
+                        except OSError:
+                            pass
+
+        _port = None
+        if 'JINA_RANDOM_PORTS' in os.environ:
+            min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '49153'))
+            max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', '65535'))
+            for _port in np.random.permutation(range(min_port, max_port + 1)):
+                if _get_port(_port) is not None:
+                    break
+            else:
+                raise OSError(f'Couldn\'t find an available port in [{min_port}, {max_port}].')
+        else:
+            _port = _get_port()
+
+        return int(_port)
+
+    for i in range(10):
+        _port = _sample_random_port()
+
+        if _port is not None and _port not in used_ports:
+            used_ports.add(_port)
+            return _port
+    raise NoAvailablePortError
+
+
+@pytest.fixture(scope='function', autouse=True)
+def patched_random_port(mocker):
+    used_ports = set()
+    _new_random_port = functools.partial(_random_port, used_ports)
+
+    mocker.patch('jina.helper.random_port', new_callable=lambda: _new_random_port)
+
