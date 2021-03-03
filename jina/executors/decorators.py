@@ -424,7 +424,6 @@ def single(func: Callable[[Any], np.ndarray] = None,
     def _single(func):
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
-            # priority: decorator > class_attribute
             # by default data is in args[1] (self needs to be taken into account)
             data = args[slice_on]
             args = list(args)
@@ -443,4 +442,64 @@ def single(func: Callable[[Any], np.ndarray] = None,
 
         return arg_wrapper
 
-    return _single(func)
+    if func:
+        return _single(func)
+    else:
+        return _single
+
+
+def single_multi_input(func: Callable[[Any], np.ndarray] = None,
+                       merge_over_axis: int = 0,
+                       slice_on: int = 1,
+                       num_data: int = 1) -> Any:
+    """Guarantee that the inputs of a function with more than one argument is provided as single instances and not in batches
+
+    :param func: function to decorate
+    :param merge_over_axis: merge over which axis into a single result
+    :param slice_on: the location of the data. When using inside a class,
+            ``slice_on`` should take ``self`` into consideration.
+    :param num_data: the number of data inside the arguments
+    :return: the merged result as if run :func:`func` once on the input.
+
+    ..warning:
+        data arguments will be taken starting from ``slice_on` to ``slice_on + num_data``
+
+    Example:
+        .. highlight:: python
+        .. code-block:: python
+
+            class OneByOneCrafter:
+
+                @single_multi_input
+                def craft(self, text: str, id: str) -> Dict:
+            ...
+    """
+
+    def _single_multi_input(func):
+        @wraps(func)
+        def arg_wrapper(*args, **kwargs):
+            # by default data is in args[1:] (self needs to be taken into account)
+            args = list(args)
+            default_logger.debug(
+                 f'batching disabled for {func.__qualname__}')
+            data_iterators = [args[slice_on + i] for i in range(0, num_data)]
+
+            final_result = []
+            for i, instance in enumerate(data_iterators[0]):
+                args[slice_on] = instance
+                for idx in range(1, num_data):
+                    args[slice_on + idx] = data_iterators[idx][i]
+
+                r = func(*args, **kwargs)
+
+                if r is not None:
+                    final_result.append(r)
+
+            return _merge_results_after_batching(final_result, merge_over_axis)
+
+        return arg_wrapper
+
+    if func:
+        return _single_multi_input(func)
+    else:
+        return _single_multi_input

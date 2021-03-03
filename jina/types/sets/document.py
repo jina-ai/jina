@@ -32,7 +32,6 @@ class DocumentSet(MutableSequence):
     """
 
     def __init__(self, docs_proto: Union['RepeatedContainer', Iterable['Document']]):
-        """Set constructor method."""
         super().__init__()
         self._docs_proto = docs_proto
         self._docs_map = {}
@@ -99,11 +98,18 @@ class DocumentSet(MutableSequence):
         return self._docs_proto.append(doc.proto)
 
     def add(self, doc: 'Document') -> 'Document':
-        """Shortcut to :meth:`append`, do not override this method."""
+        """Shortcut to :meth:`append`, do not override this method.
+
+        :param doc: the document to add to the set
+        :return: Appended list.
+        """
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
-        """Extend an iterable to :class:`DocumentSet`."""
+        """Extend an iterable to :class:`DocumentSet`.
+
+        :param iterable: the iterable of Documents to extend this set with
+        """
         for doc in iterable:
             self.append(doc)
 
@@ -130,7 +136,11 @@ class DocumentSet(MutableSequence):
         self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
-        """Sort the list of :class:`DocumentSet`."""
+        """Sort the list of :class:`DocumentSet`.
+
+        :param args: variable set of arguments to pass to the sorting underlying function
+        :param kwargs: keyword arguments to pass to the sorting underlying function
+        """
         self._docs_proto.sort(*args, **kwargs)
 
     def traverse(self, traversal_paths: Iterable[str]) -> 'DocumentSet':
@@ -139,7 +149,7 @@ class DocumentSet(MutableSequence):
         ``traversal_paths``.
 
         :param traversal_paths: a list of string that represents the traversal path
-
+        :return: the `:class:`DocumentSet` resulting from traversing this set
 
         Example on ``traversal_paths``:
 
@@ -217,11 +227,17 @@ class DocumentSet(MutableSequence):
         return contents, DocumentSet(docs_pts)
 
     def __bool__(self):
-        """To simulate ```l = []; if l: ...``` """
+        """To simulate ```l = []; if l: ...```
+
+        :return: returns true if the length of the set is larger than 0
+        """
         return len(self) > 0
 
     def new(self) -> 'Document':
-        """Create a new empty document appended to the end of the set."""
+        """Create a new empty document appended to the end of the set.
+
+        :return: a new Document appended to the set
+        """
         from ..document import Document
         return self.append(Document())
 

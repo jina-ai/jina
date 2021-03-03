@@ -993,9 +993,9 @@ classDiagram
             default_logger.info(f'Document visualization: {url}')
 
     @property
-    def non_empty_fields(self) -> set:
+    def non_empty_fields(self) -> Tuple[str]:
         """Return the set fields of the current document that are not empty
 
         :return: the set of non-empty fields
         """
-        return set(field[0].name for field in self.ListFields())
+        return tuple(field[0].name for field in self.ListFields())
