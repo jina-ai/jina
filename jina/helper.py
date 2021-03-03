@@ -300,7 +300,7 @@ def random_port() -> Optional[int]:
     raise NoAvailablePortError('Could not find an available port in 100 tries.')
 
 
-def _sample_random_port():
+def _sample_random_port() -> Optional[int]:
     import threading
     import multiprocessing
     from contextlib import closing
@@ -329,7 +329,7 @@ def _sample_random_port():
     else:
         _port = _get_port()
 
-    return _port
+    return int(_port)
 
 
 def random_identity(use_uuid1: bool = False) -> str:
