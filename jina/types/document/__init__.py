@@ -7,7 +7,7 @@ import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
-from typing import Union, Dict, Optional, TypeVar, Any, Tuple
+from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List
 
 import numpy as np
 from google.protobuf import json_format
@@ -426,6 +426,13 @@ class Document(ProtoTypeMixin):
         """Get all chunks of the current document."""
         return ChunkSet(self._pb_body.chunks, reference_doc=self)
 
+    def __getattr__(self, item):
+        if hasattr(self._pb_body, item):
+            value = getattr(self._pb_body, item)
+        else:
+            value = dunder_get(self._pb_body, item)
+        return value
+
     def set_attrs(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs
 
@@ -483,12 +490,8 @@ class Document(ProtoTypeMixin):
 
         ret = {}
         for k in args:
-
             try:
-                if hasattr(self, k):
-                    value = getattr(self, k)
-                else:
-                    value = dunder_get(self._pb_body, k)
+                value = getattr(self, k)
 
                 if value is None:
                     raise ValueError
@@ -497,6 +500,48 @@ class Document(ProtoTypeMixin):
             except (AttributeError, ValueError):
                 default_logger.warning(f'Could not get attribute `{typename(self)}.{k}`, returning `None`')
                 ret[k] = None
+        return ret
+
+    def get_attrs_values(self, *args) -> List[Any]:
+        """Bulk fetch Document fields and return a list of the values of these fields
+
+
+        .. note::
+            Arguments will be extracted using `dunder_get`
+            .. highlight:: python
+            .. code-block:: python
+
+                d = Document({'id': '123', 'hello': 'world', 'tags': {'id': 'external_id', 'good': 'bye'}})
+
+                assert d.id == '123'  # true
+                assert d.tags['hello'] == 'world' # true
+                assert d.tags['good'] == 'bye' # true
+                assert d.tags['id'] == 'external_id' # true
+
+                res = d.get_attrs_values(*['id', 'tags__hello', 'tags__good', 'tags__id'])
+
+                assert res == ['123', 'world', 'bye', 'external_id']
+
+                assert res['id'] == '123' # true
+                assert res['tags__hello'] == 'world' # true
+                assert res['tags__good'] == 'bye' # true
+                assert res['tags__id'] == 'external_id' # true
+        """
+
+        ret = []
+        for k in args:
+
+            try:
+                value = getattr(self, k)
+
+                if value is None:
+                    raise ValueError
+
+                ret.append(value)
+            except (AttributeError, ValueError):
+                default_logger.warning(f'Could not get attribute `{typename(self)}.{k}`, returning `None`')
+                ret.append(None)
+
         return ret
 
     @property

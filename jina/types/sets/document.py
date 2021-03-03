@@ -193,13 +193,14 @@ class DocumentSet(MutableSequence):
         """
         return self._extract_docs('content')
 
-    def _extract_docs(self, attr: str) -> Tuple['np.ndarray', 'DocumentSet']:
+    def _extract_docs(self, *attr: str) -> Tuple['np.ndarray', 'DocumentSet']:
         contents = []
         docs_pts = []
         bad_docs = []
 
         for doc in self:
-            content = getattr(doc, attr)
+            content = doc.get_attrs_values(*attr)
+            content = content[0] if len(content) == 1 else content
 
             if content is not None:
                 contents.append(content)

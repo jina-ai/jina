@@ -276,3 +276,42 @@ def test_get_content_bytes_fields(field):
     assert len(contents) == batch_size
     for content in contents:
         assert content == b'bytes'
+
+
+@pytest.mark.parametrize('fields', [['id', 'text'], ['content_hash', 'modality']])
+def test_get_content_multiple_fields_text(fields):
+    batch_size = 10
+
+    kwargs = {
+        field: f'text-{field}' for field in fields
+    }
+
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(*fields)
+
+    print(f' contents.shape {contents.shape}')
+    assert contents.shape == (batch_size, len(fields))
+    assert len(contents) == batch_size
+    for content in contents:
+        assert len(content) == len(fields)
+
+
+@pytest.mark.parametrize('num_rows', [1, 2, 3])
+def test_get_content_multiple_fields_arrays(num_rows):
+    fields = ['blob', 'embedding']
+
+    batch_size = 10
+    embed_size = 20
+
+    kwargs = {
+        field: np.random.random((num_rows, embed_size)) for field in fields
+    }
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(*fields)
+
+    assert contents.shape == (batch_size, len(fields), num_rows, embed_size)
+    assert len(contents) == batch_size
+    for content in contents:
+        assert len(content) == len(fields)
