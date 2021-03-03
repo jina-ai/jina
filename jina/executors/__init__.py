@@ -388,6 +388,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             All class members created here will NOT be serialized when calling :func:`save`. Therefore if you
             want to store them, please implement the :func:`__getstate__`.
 
+        .. warning::
+            Saved executors will serialize information from its associated `.yaml` file.
+            In particular, the drivers are part of what is serialized.  Therefore, if you
+            want to store/load Executors it is encouraged not to change the `.yaml` file after
+            loading, to avoid unexpected behaviours.
+
         It uses ``pickle`` for dumping. For members/attributes that are not valid or not efficient for ``pickle``, you
         need to implement their own persistence strategy in the :func:`__getstate__`.
 
