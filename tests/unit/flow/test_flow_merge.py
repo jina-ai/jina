@@ -38,7 +38,7 @@ def test_this_will_fail(mocker, restful):
     response_mock = mocker.Mock()
 
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=response_mock)
+        f.index(inputs=random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
     validate_callback(response_mock, validate)
 
@@ -61,7 +61,7 @@ def test_this_should_work(mocker, restful):
     response_mock = mocker.Mock()
 
     with f:
-        f.index(input_fn=random_docs(10, chunks_per_doc=0), on_done=response_mock)
+        f.index(inputs=random_docs(10, chunks_per_doc=0), on_done=response_mock)
 
     validate_callback(response_mock, validate)
 

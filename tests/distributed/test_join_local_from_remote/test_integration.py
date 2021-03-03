@@ -39,7 +39,7 @@ def test_flow(docker_compose, doc_to_index, client, mocker):
     mock = mocker.Mock()
     flow_id = create_flow_2(flow_yaml=flow_yaml)
 
-    client.search(input_fn=[doc_to_index], on_done=mock)
+    client.search(inputs=[doc_to_index], on_done=mock)
 
     assert_request(method='get',
                    url=f'http://localhost:8000/flows/{flow_id}')

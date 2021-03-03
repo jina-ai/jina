@@ -81,7 +81,7 @@ def test_doc_iters():
 def test_simple_route():
     f = Flow().add()
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 def test_update_method(test_metas):
@@ -107,7 +107,7 @@ def test_update_method(test_metas):
 def test_index(test_workspace_index):
     f = Flow().add(uses=os.path.join(cur_dir, 'yaml/test-index.yml'), parallel=3)
     with f:
-        f.index(input_fn=random_docs(50))
+        f.index(inputs=random_docs(50))
     for j in range(3):
         assert os.path.exists(os.path.join(test_workspace_index, f'test2-{j + 1}/tmp2'))
 

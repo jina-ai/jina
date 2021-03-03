@@ -71,8 +71,8 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
             is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
             if is_req_empty and not prefetch_task:
                 self.logger.error('receive an empty stream from the client! '
-                                  'please check your client\'s input_fn, '
-                                  'you can use "Client.check_input(input_fn)"')
+                                  'please check your client\'s inputs, '
+                                  'you can use "Client.check_input(inputs)"')
                 return
 
         # the total num requests < self.args.prefetch

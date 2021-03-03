@@ -36,15 +36,15 @@ def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
 
 
-@pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
-def test_check_input_success(input_fn):
-    Client.check_input(input_fn)
+@pytest.mark.parametrize('inputs', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
+def test_check_input_success(inputs):
+    Client.check_input(inputs)
 
 
-@pytest.mark.parametrize('input_fn', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])])
-def test_check_input_fail(input_fn):
+@pytest.mark.parametrize('inputs', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])])
+def test_check_input_fail(inputs):
     with pytest.raises(BadClientInput):
-        Client.check_input(input_fn)
+        Client.check_input(inputs)
 
 
 @pytest.mark.parametrize(

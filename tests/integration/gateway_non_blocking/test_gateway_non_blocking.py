@@ -23,7 +23,7 @@ def test_non_blocking_gateway(parallel, expected_response, restful, monkeypatch)
     ]
 
     with Flow().load_config(os.path.join(cur_dir, 'flow.yml')) as f:
-        f.search(input_fn=data,
+        f.search(inputs=data,
                  on_done=fill_responses,
                  request_size=1
                  )
