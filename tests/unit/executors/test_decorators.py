@@ -96,6 +96,7 @@ def test_single():
 
         @single
         def f(self, data):
+            assert isinstance(data, int)
             self.call_nbr += 1
             return data
 
@@ -118,14 +119,14 @@ def test_batching():
 
     instance = A(1)
     result = instance.f([1, 1, 1, 1])
-    assert result == [[1], [1], [1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 4
     for batch_size in instance.batch_sizes:
         assert batch_size == 1
 
     instance = A(3)
     result = instance.f([1, 1, 1, 1])
-    assert result == [[1, 1, 1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 2
     assert instance.batch_sizes[0] == 3
     assert instance.batch_sizes[1] == 1
@@ -150,14 +151,14 @@ def test_batching_slice_on():
 
     instance = A(1)
     result = instance.f(None, [1, 1, 1, 1])
-    assert result == [[1], [1], [1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 4
     for batch_size in instance.batch_sizes:
         assert batch_size == 1
 
     instance = A(3)
     result = instance.f(None, [1, 1, 1, 1])
-    assert result == [[1, 1, 1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 2
     assert instance.batch_sizes[0] == 3
     assert instance.batch_sizes[1] == 1
@@ -199,7 +200,7 @@ def test_batching_ordinal_idx_arg(tmpdir):
     assert instance.ord_idx[4].start == 8
     assert instance.ord_idx[4].stop == 10
 
-    assert result == [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
+    assert result == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 @pytest.mark.skip(
@@ -277,3 +278,40 @@ def test_batching_multi_input_dictionary():
         assert batch[0] == query_meta
         assert len(batch[1]) == batch_size
         assert len(batch[2]) == batch_size
+
+
+def test_batching_as_ndarray():
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+            self.batch_sizes = []
+
+        @as_ndarray
+        @batching
+        def f(self, data):
+            self.batch_sizes.append(len(data))
+            print(f' data JOAN {data}')
+            return np.array(data)
+
+    instance = A(1)
+    result = instance.f([1, 1, 1, 1])
+    assert isinstance(result, np.ndarray)
+    np.testing.assert_equal(result, np.array([1., 1., 1., 1.]))
+    assert len(instance.batch_sizes) == 4
+    for batch_size in instance.batch_sizes:
+         assert batch_size == 1
+
+    instance = A(3)
+    result = instance.f([1, 1, 1, 1])
+    assert isinstance(result, np.ndarray)
+    np.testing.assert_equal(result, np.array([1., 1., 1., 1.]))
+    assert len(instance.batch_sizes) == 2
+    assert instance.batch_sizes[0] == 3
+    assert instance.batch_sizes[1] == 1
+
+    instance = A(5)
+    result = instance.f([1, 1, 1, 1])
+    assert isinstance(result, np.ndarray)
+    np.testing.assert_equal(result, np.array([1., 1., 1., 1.]))
+    assert len(instance.batch_sizes) == 1
+    assert instance.batch_sizes[0] == 4

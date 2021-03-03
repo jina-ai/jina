@@ -12,7 +12,7 @@ import numpy as np
 from .metas import get_default_metas
 from ..helper import batch_iterator, typename, convert_tuple_to_list
 from ..logging import default_logger
-from itertools import islice
+from itertools import islice, chain
 
 
 def as_aggregate_method(func: Callable) -> Callable:
@@ -202,6 +202,8 @@ def _merge_results_after_batching(final_result, merge_over_axis: int = 0):
             for col in range(num_cols):
                 reduced_result.append(np.concatenate([row[col] for row in final_result], merge_over_axis))
             final_result = tuple(reduced_result)
+        elif isinstance(final_result[0], list):
+            final_result = list(chain.from_iterable(final_result))
 
     if len(final_result):
         return final_result
