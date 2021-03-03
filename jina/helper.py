@@ -31,7 +31,7 @@ __all__ = ['batch_iterator',
            'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
            'run_async', 'deprecated_alias']
 
-from jina.excepts import NotSupportedError
+from jina.excepts import NotSupportedError, NoAvailablePortError
 
 
 def deprecated_alias(**aliases):
@@ -282,12 +282,25 @@ def random_name() -> str:
     return '_'.join(random.choice(_random_names[j]) for j in range(2))
 
 
+_used_ports = set()
+
+
 def random_port() -> Optional[int]:
     """
     Get a random available port number from '49153' to '65535'.
 
     :return: A random port.
     """
+    for i in range(100):
+        _port = _sample_random_port()
+
+        if _port is not None and _port not in _used_ports:
+            _used_ports.add(_port)
+            return _port
+    raise NoAvailablePortError('Could not find an available port in 100 tries.')
+
+
+def _sample_random_port():
     import threading
     import multiprocessing
     from contextlib import closing
@@ -297,9 +310,12 @@ def random_port() -> Optional[int]:
         with multiprocessing.Lock():
             with threading.Lock():
                 with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                    s.bind(('', port))
-                    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                    return s.getsockname()[1]
+                    try:
+                        s.bind(('', port))
+                        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                        return s.getsockname()[1]
+                    except OSError:
+                        pass
 
     _port = None
     if 'JINA_RANDOM_PORTS' in os.environ:
@@ -312,6 +328,7 @@ def random_port() -> Optional[int]:
             raise OSError(f'Couldn\'t find an available port in [{min_port}, {max_port}].')
     else:
         _port = _get_port()
+
     return _port
 
 

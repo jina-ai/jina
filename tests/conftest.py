@@ -44,3 +44,10 @@ def docker_compose(request):
     os.system(
         f"docker-compose -f {request.param} --project-directory . down --remove-orphans"
     )
+
+
+@pytest.fixture(scope='function', autouse=True)
+def config():
+    os.environ['JINA_RANDOM_PORTS'] = "True"
+    yield
+    del os.environ['JINA_RANDOM_PORTS']
