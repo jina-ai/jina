@@ -255,11 +255,13 @@ def test_random_port(config):
 
 @pytest.fixture
 def config_few_ports():
+    os.environ['JINA_RANDOM_PORTS'] = "True"
     os.environ['JINA_RANDOM_PORT_MIN'] = "49300"
     os.environ['JINA_RANDOM_PORT_MAX'] = "49301"
     yield
     del os.environ['JINA_RANDOM_PORT_MIN']
     del os.environ['JINA_RANDOM_PORT_MAX']
+    del os.environ['JINA_RANDOM_PORTS']
 
 
 def test_random_port_max_failures(config_few_ports):
