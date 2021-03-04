@@ -30,11 +30,13 @@ def send_rest_request(flow_file, method, data):
         'data': data
     }
     with Flow.load_config(flow_file) as flow:
-        url = f'http://0.0.0.0:{flow.port_expose}/api/{method}'
+        url = f'http://0.0.0.0:{flow.port_expose}/{method}'
         r = requests.post(url, json=json)
+
         if r.status_code != 200:
             # TODO status_code should be 201 for index
             raise Exception(f'api request failed, url: {url}, status: {r.status_code}, content: {r.content} data: {data}')
+
     return r
 
 
