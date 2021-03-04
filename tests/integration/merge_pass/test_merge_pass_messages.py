@@ -19,11 +19,10 @@ def test_flow_pass(mocker):
         # only the second part of the message is passed by _pass
         assert resp.index.docs[0].tags['id'] == 'slow'
 
-    f = Flow().add(name='pod0', uses='_pass').add(name='pod1', uses='!SlowCrafter', needs=['gateway']).add(name='pod2',
-                                                                                                           uses='_pass',
-                                                                                                           needs=[
-                                                                                                               'pod0',
-                                                                                                               'pod1'])
+    f = (Flow()
+         .add(name='pod0', uses='_pass')
+         .add(name='pod1', uses='!SlowCrafter', needs=['gateway'])
+         .add(name='pod2', uses='_pass', needs=['pod0', 'pod1']))
     doc = Document()
     doc.text = 'text'
     mock = mocker.Mock()
@@ -60,6 +59,24 @@ def test_flow_merge_root(mocker):
 
     f = Flow().add(name='pod0', uses='_pass').add(name='pod1', uses='_pass', needs=['gateway']).add(name='pod2',
                                                                                                     uses='_merge_root',
+                                                                                                    needs=['pod0',
+                                                                                                           'pod1'])
+    doc = Document()
+    doc.text = 'text'
+    mock = mocker.Mock()
+    with f:
+        f.index([doc], on_done=mock)
+
+    mock.assert_called_once()
+    validate_callback(mock, validate)
+
+
+def test_flow_merge_chunks(mocker):
+    def validate(resp):
+        assert len(resp.index.docs) == 1
+
+    f = Flow().add(name='pod0', uses='_pass').add(name='pod1', uses='_pass', needs=['gateway']).add(name='pod2',
+                                                                                                    uses='_merge_chunks',
                                                                                                     needs=['pod0',
                                                                                                            'pod1'])
     doc = Document()
