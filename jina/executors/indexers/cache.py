@@ -61,7 +61,8 @@ class DocCache(BaseCache):
                 self.cache_val_to_id = pickle.load(open(path + '.cache', 'rb'))
             except FileNotFoundError as e:
                 logger.warning(
-                    f'File path did not exist : {path}.ids or {path}.cache: {e!r}. Creating new CacheHandler...')
+                    f'File path did not exist : {path}.ids or {path}.cache: {e!r}. Creating new CacheHandler...'
+                )
                 self.id_to_cache_val = dict()
                 self.cache_val_to_id = dict()
 
@@ -73,10 +74,15 @@ class DocCache(BaseCache):
     default_fields = (ID_KEY,)
 
     @deprecated_alias(field=('fields', 0))
-    def __init__(self,
-                 index_filename: Optional[str] = None,
-                 fields: Optional[Union[str, Tuple[str]]] = None, # str for backwards compatibility
-                 *args, **kwargs):
+    def __init__(
+        self,
+        index_filename: Optional[str] = None,
+        fields: Optional[
+            Union[str, Tuple[str]]
+        ] = None,  # str for backwards compatibility
+        *args,
+        **kwargs,
+    ):
         if not index_filename:
             # create a new temp file if not exist
             index_filename = tempfile.NamedTemporaryFile(delete=False).name
@@ -86,7 +92,9 @@ class DocCache(BaseCache):
         # order shouldn't matter
         self.fields = sorted(fields or self.default_fields)
 
-    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+    def add(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
         """Add a document to the cache depending.
 
         :param keys: document ids to be added
@@ -109,7 +117,9 @@ class DocCache(BaseCache):
         """
         return key in self.query_handler.cache_val_to_id
 
-    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+    def update(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
         """Update cached documents.
 
         :param keys: list of Document.id

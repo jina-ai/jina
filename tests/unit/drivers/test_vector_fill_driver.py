@@ -29,7 +29,6 @@ class MockIndexer(BaseIndexer):
 
 
 class SimpleFillDriver(VectorFillDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn

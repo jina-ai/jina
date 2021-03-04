@@ -5,7 +5,6 @@ DOCUMENTS_PER_LEVEL = 1
 
 
 class AppendOneChunkTwoMatchesCrafter(FlatRecursiveMixin, BaseExecutableDriver):
-
     def __init__(self, docs, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._docs = docs

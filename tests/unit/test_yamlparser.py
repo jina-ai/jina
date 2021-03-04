@@ -64,9 +64,11 @@ def test_yaml_expand3():
 def test_yaml_expand4():
     os.environ['ENV1'] = 'a'
     with open(os.path.join(cur_dir, 'yaml/test-expand4.yml')) as fp:
-        b = JAML.load(fp, substitute=True,
-                      context={'context_var': 3.14,
-                               'context_var2': 'hello-world'})
+        b = JAML.load(
+            fp,
+            substitute=True,
+            context={'context_var': 3.14, 'context_var2': 'hello-world'},
+        )
 
     assert b['components'][0]['metas']['bad_var'] == 'real-compound'
     assert b['components'][1]['metas']['bad_var'] == 2
@@ -106,8 +108,11 @@ def test_class_yaml():
 
 
 def test_class_yaml2():
-    with open(resource_filename('jina',
-                                '/'.join(('resources', 'executors.requests.BaseExecutor.yml')))) as fp:
+    with open(
+        resource_filename(
+            'jina', '/'.join(('resources', 'executors.requests.BaseExecutor.yml'))
+        )
+    ) as fp:
         JAML.load(fp)
 
 
@@ -118,6 +123,7 @@ def test_class_yaml3():
         pass
 
     from jina.executors.requests import _defaults
+
     assert _defaults is not None
 
 
@@ -130,10 +136,7 @@ def test_joint_indexer(test_workspace):
 
 @pytest.mark.parametrize(
     'yaml_dir, executor',
-    [
-        ('yaml/dummy_exec1.yml', BaseExecutor),
-        ('yaml/dummy_exec2.yml', NumpyIndexer)
-    ]
+    [('yaml/dummy_exec1.yml', BaseExecutor), ('yaml/dummy_exec2.yml', NumpyIndexer)],
 )
 def test_load_yaml(yaml_dir, executor, tmpdir):
     with executor.load_config(yaml_dir) as e:
@@ -190,10 +193,12 @@ def test_load_from_dict():
 
     d1 = {
         'jtype': 'BaseEncoder',
-        'metas': {'name': '${{BE_TEST_NAME}}',
-                  'batch_size': '${{BATCH_SIZE}}',
-                  'pea_id': '${{pea_id}}',
-                  'workspace': '${{this.name}} -${{this.batch_size}}'}
+        'metas': {
+            'name': '${{BE_TEST_NAME}}',
+            'batch_size': '${{BATCH_SIZE}}',
+            'pea_id': '${{pea_id}}',
+            'workspace': '${{this.name}} -${{this.batch_size}}',
+        },
     }
 
     # !CompoundExecutor
@@ -213,19 +218,18 @@ def test_load_from_dict():
 
     d2 = {
         'jtype': 'CompoundExecutor',
-        'components':
-            [
-                {
-                    'jtype': 'BinaryPbIndexer',
-                    'with': {'index_filename': 'tmp1'},
-                    'metas': {'name': 'test1'}
-                },
-                {
-                    'jtype': 'BinaryPbIndexer',
-                    'with': {'index_filename': 'tmp2'},
-                    'metas': {'name': 'test2'}
-                },
-            ]
+        'components': [
+            {
+                'jtype': 'BinaryPbIndexer',
+                'with': {'index_filename': 'tmp1'},
+                'metas': {'name': 'test1'},
+            },
+            {
+                'jtype': 'BinaryPbIndexer',
+                'with': {'index_filename': 'tmp2'},
+                'metas': {'name': 'test2'},
+            },
+        ],
     }
     d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
     b1 = BaseExecutor.load_config(d1, context=d)

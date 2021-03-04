@@ -17,20 +17,44 @@ from .hubapi.local import _list_local
 from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
 from .. import __version__ as jina_version
 from ..enums import BuildTestLevel
-from ..excepts import DockerLoginFailed, HubBuilderError, HubBuilderBuildError, HubBuilderTestError, ImageAlreadyExists
+from ..excepts import (
+    DockerLoginFailed,
+    HubBuilderError,
+    HubBuilderBuildError,
+    HubBuilderTestError,
+    ImageAlreadyExists,
+)
 from ..executors import BaseExecutor
 from ..flow import Flow
-from ..helper import colored, get_readable_size, get_now_timestamp, get_full_version, random_name, expand_dict, \
-    countdown
+from ..helper import (
+    colored,
+    get_readable_size,
+    get_now_timestamp,
+    get_full_version,
+    random_name,
+    expand_dict,
+    countdown,
+)
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..parsers import set_pod_parser
 from ..peapods import Pod
 
-_allowed = {'name', 'description', 'author', 'url',
-            'documentation', 'version', 'vendor', 'license', 'avatar',
-            'platform', 'update', 'keywords'}
+_allowed = {
+    'name',
+    'description',
+    'author',
+    'url',
+    'documentation',
+    'version',
+    'vendor',
+    'license',
+    'avatar',
+    'platform',
+    'update',
+    'keywords',
+}
 
 _label_prefix = 'ai.jina.hub.'
 
@@ -56,9 +80,11 @@ class HubIO:
         self._load_docker_client()
 
     def _load_docker_client(self):
-        with ImportExtensions(required=False,
-                              help_text='missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
-                                        'to enable full CLI, please do pip install "jina[docker]"'):
+        with ImportExtensions(
+            required=False,
+            help_text='missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
+            'to enable full CLI, please do pip install "jina[docker]"',
+        ):
             import docker
             from docker import APIClient, DockerClient
 
@@ -70,7 +96,7 @@ class HubIO:
     def new(self, no_input: bool = False) -> None:
         """
         Create a new executor using cookiecutter template.
-        
+
         :param no_input: Argument to avoid prompting dialogue (just to be used for testing)
         """
         with ImportExtensions(required=True):
@@ -81,11 +107,17 @@ class HubIO:
         if self.args.type == 'app':
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina.git'
         elif self.args.type == 'pod':
-            cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
+            cookiecutter_template = (
+                'https://github.com/jina-ai/cookiecutter-jina-hub.git'
+            )
 
         try:
-            cookiecutter(template=cookiecutter_template, overwrite_if_exists=self.args.overwrite,
-                         output_dir=self.args.output_dir, no_input=no_input)
+            cookiecutter(
+                template=cookiecutter_template,
+                overwrite_if_exists=self.args.overwrite,
+                output_dir=self.args.output_dir,
+                no_input=no_input,
+            )
         except click.exceptions.Abort:
             self.logger.info('nothing is created, bye!')
 
@@ -104,17 +136,18 @@ class HubIO:
         login_max_retry = hubapi_yml['github']['login_max_retry']
 
         headers = {'Accept': 'application/json'}
-        code_request_body = {
-            'client_id': client_id,
-            'scope': scope
-        }
+        code_request_body = {'client_id': client_id, 'scope': scope}
         try:
-            self.logger.info('Jina Hub login will use Github Device to generate one time token')
-            response = requests.post(url=device_code_url,
-                                     headers=headers,
-                                     data=code_request_body)
+            self.logger.info(
+                'Jina Hub login will use Github Device to generate one time token'
+            )
+            response = requests.post(
+                url=device_code_url, headers=headers, data=code_request_body
+            )
             if response.status_code != requests.codes.ok:
-                self.logger.error('cannot reach github server. please make sure you\'re connected to internet')
+                self.logger.error(
+                    'cannot reach github server. please make sure you\'re connected to internet'
+                )
 
             code_response = response.json()
             device_code = code_response['device_code']
@@ -122,12 +155,16 @@ class HubIO:
             verification_uri = code_response['verification_uri']
 
             try:
-                self.logger.info(f'You should see a "Device Activation" page open in your browser. '
-                                 f'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}')
-                self.logger.info('Please follow the steps:\n\n'
-                                 f'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}\n'
-                                 '2. Click "Continue"\n'
-                                 '3. Come back to this terminal\n')
+                self.logger.info(
+                    f'You should see a "Device Activation" page open in your browser. '
+                    f'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}'
+                )
+                self.logger.info(
+                    'Please follow the steps:\n\n'
+                    f'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}\n'
+                    '2. Click "Continue"\n'
+                    '3. Come back to this terminal\n'
+                )
                 # allowing sometime for the user to view the message
                 time.sleep(0.5)
                 webbrowser.open(verification_uri, new=2)
@@ -137,16 +174,21 @@ class HubIO:
             access_request_body = {
                 'client_id': client_id,
                 'device_code': device_code,
-                'grant_type': grant_type
+                'grant_type': grant_type,
             }
 
             for _ in range(login_max_retry):
-                access_token_response = requests.post(url=access_token_url,
-                                                      headers=headers,
-                                                      data=access_request_body).json()
+                access_token_response = requests.post(
+                    url=access_token_url, headers=headers, data=access_request_body
+                ).json()
                 if access_token_response.get('error', None) == 'authorization_pending':
                     self.logger.warning('still waiting for authorization')
-                    countdown(10, reason=colored('re-fetch access token', 'cyan', attrs=['bold', 'reverse']))
+                    countdown(
+                        10,
+                        reason=colored(
+                            're-fetch access token', 'cyan', attrs=['bold', 'reverse']
+                        ),
+                    )
                 elif 'access_token' in access_token_response:
                     token = {'access_token': access_token_response['access_token']}
                     with open(credentials_file(), 'w') as cf:
@@ -163,18 +205,24 @@ class HubIO:
         """List all hub images given a filter specified by CLI.
 
         :return: list of dictionaries of images
-         """
+        """
         if self.args.local_only:
             return _list_local(self.logger)
         else:
-            return _list(logger=self.logger,
-                         image_name=self.args.name,
-                         image_kind=self.args.kind,
-                         image_type=self.args.type,
-                         image_keywords=self.args.keywords)
+            return _list(
+                logger=self.logger,
+                image_name=self.args.name,
+                image_kind=self.args.kind,
+                image_type=self.args.type,
+                image_keywords=self.args.keywords,
+            )
 
-    def push(self, name: Optional[str] = None, readme_path: Optional[str] = None,
-             build_result: Optional[Dict] = None) -> None:
+    def push(
+        self,
+        name: Optional[str] = None,
+        readme_path: Optional[str] = None,
+        build_result: Optional[Dict] = None,
+    ) -> None:
         """Push image to Jina Hub.
 
         :param name: name of image
@@ -186,14 +234,22 @@ class HubIO:
         try:
             # check if image exists
             # fail if it does
-            if self.args.no_overwrite and build_result and self._image_version_exists(
+            if (
+                self.args.no_overwrite
+                and build_result
+                and self._image_version_exists(
                     build_result['manifest_info']['name'],
                     build_result['manifest_info']['version'],
-                    jina_version
+                    jina_version,
+                )
             ):
-                raise ImageAlreadyExists(f'Image with name {name} already exists. Will NOT overwrite.')
+                raise ImageAlreadyExists(
+                    f'Image with name {name} already exists. Will NOT overwrite.'
+                )
             else:
-                self.logger.debug(f'Image with name {name} does not exist. Pushing now...')
+                self.logger.debug(
+                    f'Image with name {name} does not exist. Pushing now...'
+                )
 
             self._push_docker_hub(name, readme_path)
 
@@ -203,17 +259,25 @@ class HubIO:
                     with open(file_path) as f:
                         build_result = json.load(f)
                 else:
-                    self.logger.error(f'can not find the build summary file.'
-                                      f'please use "jina hub build" to build the image first '
-                                      f'before pushing.')
+                    self.logger.error(
+                        f'can not find the build summary file.'
+                        f'please use "jina hub build" to build the image first '
+                        f'before pushing.'
+                    )
                     return
 
             if build_result:
                 if build_result.get('is_build_success', False):
                     _register_to_mongodb(logger=self.logger, summary=build_result)
 
-                if build_result.get('details', None) and build_result.get('build_history', None):
-                    self._write_slack_message(build_result, build_result['details'], build_result['build_history'])
+                if build_result.get('details', None) and build_result.get(
+                    'build_history', None
+                ):
+                    self._write_slack_message(
+                        build_result,
+                        build_result['details'],
+                        build_result['build_history'],
+                    )
 
         except Exception as e:
             self.logger.error(f'Error when trying to push image {name}: {e!r}')
@@ -244,7 +308,8 @@ class HubIO:
             pass
         finally:
             self.logger.info(
-                f'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!')
+                f'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!'
+            )
 
     def pull(self) -> None:
         """Pull docker image."""
@@ -257,24 +322,34 @@ class HubIO:
                 image = image[0]
             image_tag = image.tags[0] if image.tags else ''
             self.logger.success(
-                f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}')
+                f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
+            )
         except Exception as ex:
-            self.logger.error(f'can not pull image {self.args.name} from {self.args.registry} due to {ex!r}')
+            self.logger.error(
+                f'can not pull image {self.args.name} from {self.args.registry} due to {ex!r}'
+            )
 
     def _check_docker_image(self, name: str) -> None:
         # check local image
         image = self._client.images.get(name)
         for r in _allowed:
             if f'{_label_prefix}{r}' not in image.labels.keys():
-                self.logger.warning(f'{r} is missing in your docker image labels, you may want to check it')
+                self.logger.warning(
+                    f'{r} is missing in your docker image labels, you may want to check it'
+                )
         try:
             image.labels['ai.jina.hub.jina_version'] = jina_version
-            label_info = f'{self.args.repository}/' + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
-                **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()})
+            label_info = (
+                f'{self.args.repository}/'
+                + '{type}.{kind}.{name}:{version}-{jina_version}'.format(
+                    **{k.replace(_label_prefix, ''): v for k, v in image.labels.items()}
+                )
+            )
             safe_name = safe_url_name(label_info)
             if name != safe_name:
                 raise ValueError(
-                    f'image {name} does not match with label info in the image. name should be {safe_name}')
+                    f'image {name} does not match with label info in the image. name should be {safe_name}'
+                )
         except KeyError as e:
             self.logger.error(f'missing key in the label of the image {repr(e)}')
             raise
@@ -284,11 +359,17 @@ class HubIO:
     def _docker_login(self) -> None:
         """Log-in to Docker."""
         from docker.errors import APIError
+
         if not (self.args.username and self.args.password):
-            self.args.username, self.args.password = _fetch_docker_auth(logger=self.logger)
+            self.args.username, self.args.password = _fetch_docker_auth(
+                logger=self.logger
+            )
         try:
-            self._client.login(username=self.args.username, password=self.args.password,
-                               registry=self.args.registry)
+            self._client.login(
+                username=self.args.username,
+                password=self.args.password,
+                registry=self.args.registry,
+            )
             self.logger.debug(f'successfully logged in to docker hub')
         except APIError:
             raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
@@ -307,13 +388,17 @@ class HubIO:
             _except_strs = []
             _excepts = []
 
-            with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
+            with TimeContext(
+                f'building {colored(self.args.path, "green")}', self.logger
+            ) as tc:
                 try:
                     _check_result = self._check_completeness()
                     self._freeze_jina_version()
 
                     _dockerfile = os.path.basename(_check_result['Dockerfile'])
-                    _labels = {_label_prefix + k: str(v) for k, v in self.manifest.items()}
+                    _labels = {
+                        _label_prefix + k: str(v) for k, v in self.manifest.items()
+                    }
                     streamer = self._raw_client.build(
                         decode=True,
                         path=self.args.path,
@@ -321,7 +406,7 @@ class HubIO:
                         pull=self.args.pull,
                         dockerfile=_dockerfile,
                         labels=_labels,
-                        rm=True
+                        rm=True,
                     )
 
                     for chunk in streamer:
@@ -344,12 +429,14 @@ class HubIO:
 
             if is_build_success:
                 # compile it again, but this time don't show the log
-                image, log = self._client.images.build(path=self.args.path,
-                                                       tag=self.tag,
-                                                       pull=self.args.pull,
-                                                       dockerfile=_dockerfile,
-                                                       labels=_labels,
-                                                       rm=True)
+                image, log = self._client.images.build(
+                    path=self.args.path,
+                    tag=self.tag,
+                    pull=self.args.pull,
+                    dockerfile=_dockerfile,
+                    labels=_labels,
+                    rm=True,
+                )
 
                 # success
 
@@ -361,10 +448,15 @@ class HubIO:
                 }
 
                 self.logger.success(
-                    '🎉 built {tag} ({hash}) uncompressed size: {size}'.format_map(_details))
+                    '🎉 built {tag} ({hash}) uncompressed size: {size}'.format_map(
+                        _details
+                    )
+                )
 
             else:
-                self.logger.error(f'can not build the image, please double check the log')
+                self.logger.error(
+                    f'can not build the image, please double check the log'
+                )
                 _details = {}
 
             if is_build_success:
@@ -372,23 +464,35 @@ class HubIO:
                     p_names = []
                     try:
                         is_build_success = False
-                        p_names, failed_test_levels = HubIO._test_build(image,
-                                                                        self.args.test_level,
-                                                                        self.config_yaml_path,
-                                                                        self.args.timeout_ready,
-                                                                        self.args.daemon,
-                                                                        self.logger)
-                        if any(test_level in failed_test_levels for test_level in
-                               [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]):
+                        p_names, failed_test_levels = HubIO._test_build(
+                            image,
+                            self.args.test_level,
+                            self.config_yaml_path,
+                            self.args.timeout_ready,
+                            self.args.daemon,
+                            self.logger,
+                        )
+                        if any(
+                            test_level in failed_test_levels
+                            for test_level in [
+                                BuildTestLevel.POD_DOCKER,
+                                BuildTestLevel.FLOW,
+                            ]
+                        ):
                             is_build_success = False
-                            self.logger.error(f'build unsuccessful, failed at {str(failed_test_levels)} level')
+                            self.logger.error(
+                                f'build unsuccessful, failed at {str(failed_test_levels)} level'
+                            )
                         else:
                             is_build_success = True
                             self.logger.warning(
                                 f'Build successful. Tests failed at : {str(failed_test_levels)} levels. '
-                                f'This could be due to the fact that the executor has non-installed external dependencies')
+                                f'This could be due to the fact that the executor has non-installed external dependencies'
+                            )
                     except Exception as ex:
-                        self.logger.error(f'something wrong while testing the build: {ex!r}')
+                        self.logger.error(
+                            f'something wrong while testing the build: {ex!r}'
+                        )
                         ex = HubBuilderTestError(ex)
                         _except_strs.append(repr(ex))
                         _excepts.append(ex)
@@ -406,15 +510,17 @@ class HubIO:
                     'jina': info,
                     'jina_envs': env_info,
                     'docker': self._raw_client.info(),
-                    'build_args': vars(self.args)
+                    'build_args': vars(self.args),
                 }
 
             _build_history = {
                 'time': get_now_timestamp(),
-                'host_info': _host_info if is_build_success and self.args.host_info else '',
+                'host_info': _host_info
+                if is_build_success and self.args.host_info
+                else '',
                 'duration': tc.readable_duration,
                 'logs': _logs,
-                'exception': _except_strs
+                'exception': _except_strs,
             }
 
             if self.args.prune_images:
@@ -437,7 +543,7 @@ class HubIO:
                 'manifest_info': self.manifest if is_build_success else '',
                 'details': _details,
                 'is_build_success': is_build_success,
-                'build_history': _build_history
+                'build_history': _build_history,
             }
 
             # only successful build (NOT dry run) writes the summary to disk
@@ -455,18 +561,22 @@ class HubIO:
         return result
 
     @staticmethod
-    def _test_build(image,  # type docker image object
-                    test_level: 'BuildTestLevel',
-                    config_yaml_path: str,
-                    timeout_ready: int,
-                    daemon_arg: bool,
-                    logger: 'JinaLogger'):
+    def _test_build(
+        image,  # type docker image object
+        test_level: 'BuildTestLevel',
+        config_yaml_path: str,
+        timeout_ready: int,
+        daemon_arg: bool,
+        logger: 'JinaLogger',
+    ):
         p_names = []
         failed_levels = []
         logger.info(f'run tests using test level {test_level}')
         # test uses at executor level
         if test_level >= BuildTestLevel.EXECUTOR:
-            logger.info(f'test to initialize an executor from yaml configuration: {config_yaml_path}')
+            logger.info(
+                f'test to initialize an executor from yaml configuration: {config_yaml_path}'
+            )
             try:
                 with BaseExecutor.load_config(config_yaml_path):
                     pass
@@ -477,12 +587,24 @@ class HubIO:
 
         # test uses at Pod level (no docker)
         if test_level >= BuildTestLevel.POD_NONDOCKER:
-            logger.info(f'test to initialize a pod from yaml configuration: {config_yaml_path}')
+            logger.info(
+                f'test to initialize a pod from yaml configuration: {config_yaml_path}'
+            )
             try:
-                with Pod(set_pod_parser().parse_args(
-                        ['--uses', config_yaml_path, '--timeout-ready', str(timeout_ready)])):
+                with Pod(
+                    set_pod_parser().parse_args(
+                        [
+                            '--uses',
+                            config_yaml_path,
+                            '--timeout-ready',
+                            str(timeout_ready),
+                        ]
+                    )
+                ):
                     pass
-                logger.info(f'successfully tested to initialize a pod from yaml configuration')
+                logger.info(
+                    f'successfully tested to initialize a pod from yaml configuration'
+                )
             except:
                 logger.error(f'failed to initialize a pod')
                 failed_levels.append(BuildTestLevel.POD_NONDOCKER)
@@ -490,12 +612,25 @@ class HubIO:
         # test uses at Pod level (with docker)
         if test_level >= BuildTestLevel.POD_DOCKER:
             p_name = random_name()
-            logger.info(f'test to initialize a pod via docker image {image.tags[0]} named {p_name}')
+            logger.info(
+                f'test to initialize a pod via docker image {image.tags[0]} named {p_name}'
+            )
             try:
-                with Pod(set_pod_parser().parse_args(
-                        ['--uses', f'docker://{image.tags[0]}', '--name', p_name, '--timeout-ready',
-                         str(timeout_ready)] +
-                        ['--daemon'] if daemon_arg else [])):
+                with Pod(
+                    set_pod_parser().parse_args(
+                        [
+                            '--uses',
+                            f'docker://{image.tags[0]}',
+                            '--name',
+                            p_name,
+                            '--timeout-ready',
+                            str(timeout_ready),
+                        ]
+                        + ['--daemon']
+                        if daemon_arg
+                        else []
+                    )
+                ):
                     pass
                 p_names.append(p_name)
                 logger.info(f'successfully tested to initialize a pod via docker')
@@ -506,11 +641,17 @@ class HubIO:
         # test uses at Flow level
         if test_level >= BuildTestLevel.FLOW:
             p_name = random_name()
-            logger.info(f'test to build a flow from docker image {image.tags[0]} named {p_name} '
-                        f'with daemon={daemon_arg} and timeout_ready={timeout_ready}')
+            logger.info(
+                f'test to build a flow from docker image {image.tags[0]} named {p_name} '
+                f'with daemon={daemon_arg} and timeout_ready={timeout_ready}'
+            )
             try:
-                with Flow().add(name=p_name, uses=f'docker://{image.tags[0]}', daemon=daemon_arg,
-                                timeout_ready=timeout_ready):
+                with Flow().add(
+                    name=p_name,
+                    uses=f'docker://{image.tags[0]}',
+                    daemon=daemon_arg,
+                    timeout_ready=timeout_ready,
+                ):
                     pass
                 p_names.append(p_name)
                 logger.info('successfully tested to build a flow from docker image')
@@ -529,8 +670,7 @@ class HubIO:
             s = self._check_completeness()
             s['is_build_success'] = True
         except Exception as ex:
-            s = {'is_build_success': False,
-                 'exception': str(ex)}
+            s = {'is_build_success': False, 'exception': str(ex)}
         return s
 
     def _write_summary_to_file(self, summary: Dict) -> None:
@@ -541,6 +681,7 @@ class HubIO:
 
     def _freeze_jina_version(self) -> None:
         import pkg_resources
+
         requirements_path = get_exist_path(self.args.path, 'requirements.txt')
         if requirements_path and os.path.exists(requirements_path):
             new_requirements = []
@@ -584,28 +725,42 @@ class HubIO:
             'requirements.txt': requirements_path,
             '*.yml': yaml_glob,
             '*.py': py_glob,
-            'tests': test_glob
+            'tests': test_glob,
         }
 
         self.logger.info(
-            f'completeness check\n' +
-            '\n'.join(f'{colored("✓", "green") if v else colored("✗", "red"):>4} {k:<20} {v}' for k, v in
-                      completeness.items()) + '\n')
+            f'completeness check\n'
+            + '\n'.join(
+                f'{colored("✓", "green") if v else colored("✗", "red"):>4} {k:<20} {v}'
+                for k, v in completeness.items()
+            )
+            + '\n'
+        )
 
         if not (completeness['Dockerfile'] and completeness['manifest.yml']):
-            self.logger.critical('Dockerfile or manifest.yml is not given, can not build')
-            raise FileNotFoundError('Dockerfile or manifest.yml is not given, can not build')
+            self.logger.critical(
+                'Dockerfile or manifest.yml is not given, can not build'
+            )
+            raise FileNotFoundError(
+                'Dockerfile or manifest.yml is not given, can not build'
+            )
 
         self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
         self.executor_name = safe_url_name(
-            f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}')
+            f'{self.args.repository}/'
+            + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}'
+        )
         self.tag = self.executor_name + f':{self.manifest["version"]}-{jina_version}'
         return completeness
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:
-        with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))) as fp:
-            tmp = JAML.load(fp)  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
+        with resource_stream(
+            'jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))
+        ) as fp:
+            tmp = JAML.load(
+                fp
+            )  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
         with open(path) as fp:
             tmp.update(JAML.load(fp))
@@ -626,7 +781,9 @@ class HubIO:
         # check if all fields are there
         for r in _allowed:
             if r not in manifest:
-                self.logger.warning(f'{r} is missing in your manifest.yml, you may want to check it')
+                self.logger.warning(
+                    f'{r} is missing in your manifest.yml, you may want to check it'
+                )
 
         # check name
         check_name(manifest['name'])
@@ -661,7 +818,10 @@ class HubIO:
             return v
 
         if 'JINAHUB_SLACK_WEBHOOK' in os.environ:
-            with resource_stream('jina', '/'.join(('resources', 'hub-builder-success', 'slack-jinahub.json'))) as fp:
+            with resource_stream(
+                'jina',
+                '/'.join(('resources', 'hub-builder-success', 'slack-jinahub.json')),
+            ) as fp:
                 tmp = expand_dict(json.load(fp), _expand_fn, resolve_cycle_ref=False)
                 req = urllib.request.Request(os.environ['JINAHUB_SLACK_WEBHOOK'])
                 req.add_header('Content-Type', 'application/json; charset=utf-8')
@@ -680,10 +840,11 @@ class HubIO:
         # check if matching module version and jina version exists
         if manifests:
             matching = [
-                m for m in manifests
+                m
+                for m in manifests
                 if m['version'] == module_version
-                   and 'jina_version' in m.keys()
-                   and m['jina_version'] == req_jina_version
+                and 'jina_version' in m.keys()
+                and m['jina_version'] == req_jina_version
             ]
             return len(matching) > 0
         return False

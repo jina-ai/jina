@@ -29,7 +29,9 @@ class BaseSparseNdArray(BaseNdArray):
         """Get the new protobuf representation."""
         return jina_pb2.SparseNdArrayProto()
 
-    def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> AnySparseNdArray:
+    def sparse_constructor(
+        self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]
+    ) -> AnySparseNdArray:
         """
         Sparse NdArray constructor, must be implemented by subclass.
 
@@ -40,7 +42,9 @@ class BaseSparseNdArray(BaseNdArray):
         """
         raise NotImplementedError
 
-    def sparse_parser(self, value: AnySparseNdArray) -> Dict[str, Union['np.ndarray', List[int]]]:
+    def sparse_parser(
+        self, value: AnySparseNdArray
+    ) -> Dict[str, Union['np.ndarray', List[int]]]:
         """
         Parse a Sparse NdArray to indices, values and shape, must be implemented by subclass.
 

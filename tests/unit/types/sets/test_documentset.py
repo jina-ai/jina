@@ -25,7 +25,7 @@ def docs(document_factory):
     return [
         document_factory.create(1, 'test 1'),
         document_factory.create(2, 'test 1'),
-        document_factory.create(3, 'test 3')
+        document_factory.create(3, 'test 3'),
     ]
 
 
@@ -61,6 +61,7 @@ def test_union(docset, document_factory):
     for idx in range(0, 6):
         assert union[idx + 3].id == additional_docset[idx].id
 
+
 def test_union_inplace(docset, document_factory):
     additional_docset = DocumentSet([])
     for idx in range(4, 10):
@@ -75,10 +76,7 @@ def test_union_inplace(docset, document_factory):
 
 
 def test_extend(docset, document_factory):
-    docs = [
-        document_factory.create(4, 'test 4'),
-        document_factory.create(5, 'test 5')
-    ]
+    docs = [document_factory.create(4, 'test 4'), document_factory.create(5, 'test 5')]
     docset.extend(docs)
     assert len(docset) == 5
     assert docset[-1].tags['id'] == 5

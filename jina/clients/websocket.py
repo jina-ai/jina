@@ -13,11 +13,14 @@ from ..types.request import Request
 class WebSocketClientMixin(BaseClient, ABC):
     """A MixIn for Websocket Client."""
 
-    async def _get_results(self,
-                           inputs: InputType,
-                           on_done: Callable,
-                           on_error: Callable = None,
-                           on_always: Callable = None, **kwargs):
+    async def _get_results(
+        self,
+        inputs: InputType,
+        on_done: Callable,
+        on_error: Callable = None,
+        on_always: Callable = None,
+        **kwargs,
+    ):
         """
         :meth:`send_requests()`
             Traverses through the request iterator
@@ -51,7 +54,9 @@ class WebSocketClientMixin(BaseClient, ABC):
             # setting `max_size` as None to avoid connection closure due to size of message
             # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
 
-            async with websockets.connect(f'ws://{client_info}/stream', max_size=None) as websocket:
+            async with websockets.connect(
+                f'ws://{client_info}/stream', max_size=None
+            ) as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
                 self.logger.success(f'Connected to the gateway at {client_info}')
@@ -81,12 +86,14 @@ class WebSocketClientMixin(BaseClient, ABC):
                         resp = Request(response_bytes)
                         resp.as_typed_request(resp.request_type)
                         resp.as_response()
-                        callback_exec(response=resp,
-                                      on_error=on_error,
-                                      on_done=on_done,
-                                      on_always=on_always,
-                                      continue_on_error=self.args.continue_on_error,
-                                      logger=self.logger)
+                        callback_exec(
+                            response=resp,
+                            on_error=on_error,
+                            on_done=on_done,
+                            on_always=on_always,
+                            continue_on_error=self.args.continue_on_error,
+                            logger=self.logger,
+                        )
                         p_bar.update(self.args.request_size)
                         yield resp
                         self.num_responses += 1
@@ -96,4 +103,6 @@ class WebSocketClientMixin(BaseClient, ABC):
         except websockets.exceptions.ConnectionClosedOK:
             self.logger.warning(f'Client got disconnected from the websocket server')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(f'Got following error while streaming requests via websocket: {e!r}')
+            self.logger.error(
+                f'Got following error while streaming requests via websocket: {e!r}'
+            )

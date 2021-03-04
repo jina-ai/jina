@@ -30,7 +30,13 @@ class DenseNdArray(BaseDenseNdArray):
         the quantize type is stored and the blob is self-contained to recover the original numpy array
     """
 
-    def __init__(self, proto: 'jina_pb2.NdArrayProto' = None, quantize: str = None, *args, **kwargs):
+    def __init__(
+        self,
+        proto: 'jina_pb2.NdArrayProto' = None,
+        quantize: str = None,
+        *args,
+        **kwargs
+    ):
         """Set constructor method."""
         super().__init__(proto, *args, **kwargs)
         self.quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
@@ -59,7 +65,9 @@ class DenseNdArray(BaseDenseNdArray):
             blob.quantization = jina_pb2.DenseNdArrayProto.FP16
             blob.original_dtype = x.dtype.name
             x = x.astype(np.float16)
-        elif self.quantize == 'uint8' and (x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16):
+        elif self.quantize == 'uint8' and (
+            x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16
+        ):
             blob.quantization = jina_pb2.DenseNdArrayProto.UINT8
             blob.max_val, blob.min_val = x.max(), x.min()
             blob.original_dtype = x.dtype.name

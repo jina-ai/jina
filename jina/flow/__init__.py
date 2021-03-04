@@ -7,4 +7,5 @@ class Flow(CRUDFlowMixin, BaseFlow):
 
     For proper usage see `this guide` <https://docs.jina.ai/chapters/flow/index.html>
     """
+
     pass

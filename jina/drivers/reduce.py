@@ -27,7 +27,9 @@ class ReduceAllDriver(ContextAwareRecursiveMixin, BaseRecursiveDriver):
         request.body.ClearField('docs')
         request.docs.extend(docs)
 
-    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+    def _apply_all(
+        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+    ) -> None:
         doc_pointers = {}
         for docs in doc_sequences:
             if isinstance(docs, (ChunkSet, MatchSet)):
@@ -49,11 +51,7 @@ class CollectEvaluationDriver(FlatRecursiveMixin, BaseRecursiveDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            *args,
-            **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         doc_pointers = {}
         for doc in docs:
             if doc.id not in doc_pointers:

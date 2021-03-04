@@ -44,9 +44,9 @@ def test_convert_buffer_to_blob():
     np.testing.assert_almost_equal(doc.content.reshape([10, 10]), array)
 
 
-@pytest.mark.parametrize('arr_size,mode', [(32 * 28, 'L'),
-                                           ([32, 28], 'L'),
-                                           ([32, 28, 3], 'RGB')])
+@pytest.mark.parametrize(
+    'arr_size,mode', [(32 * 28, 'L'), ([32, 28], 'L'), ([32, 28, 3], 'RGB')]
+)
 def test_convert_blob_to_uri(arr_size, mode):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
@@ -55,9 +55,14 @@ def test_convert_blob_to_uri(arr_size, mode):
     assert doc.uri.startswith('data:image/png;base64,')
 
 
-@pytest.mark.parametrize('uri, mimetype', [(__file__, 'text/x-python'),
-                                           ('http://google.com/index.html', 'text/html'),
-                                           ('https://google.com/index.html', 'text/html')])
+@pytest.mark.parametrize(
+    'uri, mimetype',
+    [
+        (__file__, 'text/x-python'),
+        ('http://google.com/index.html', 'text/html'),
+        ('https://google.com/index.html', 'text/html'),
+    ],
+)
 def test_convert_uri_to_buffer(uri, mimetype):
     d = Document(uri=uri)
     assert not d.buffer
@@ -66,7 +71,9 @@ def test_convert_uri_to_buffer(uri, mimetype):
     assert d.mime_type == mimetype
 
 
-@pytest.mark.parametrize('converter', ['convert_buffer_to_uri', 'convert_content_to_uri'])
+@pytest.mark.parametrize(
+    'converter', ['convert_buffer_to_uri', 'convert_content_to_uri']
+)
 def test_convert_buffer_to_uri(converter):
     d = Document(content=open(__file__).read().encode(), mime_type='text/x-python')
     assert d.buffer
@@ -82,9 +89,14 @@ def test_convert_text_to_uri(converter):
     assert d.uri.startswith('data:text/x-python;')
 
 
-@pytest.mark.parametrize('uri, mimetype', [(__file__, 'text/x-python'),
-                                           ('http://google.com/index.html', 'text/html'),
-                                           ('https://google.com/index.html', 'text/html')])
+@pytest.mark.parametrize(
+    'uri, mimetype',
+    [
+        (__file__, 'text/x-python'),
+        ('http://google.com/index.html', 'text/html'),
+        ('https://google.com/index.html', 'text/html'),
+    ],
+)
 def test_convert_uri_to_text(uri, mimetype):
     doc = Document(uri=uri, mime_type=mimetype)
     doc.convert_uri_to_text()
@@ -110,9 +122,14 @@ def test_convert_content_to_uri():
         d.convert_content_to_uri()
 
 
-@pytest.mark.parametrize('uri, mimetype', [(__file__, 'text/x-python'),
-                                           ('http://google.com/index.html', 'text/html'),
-                                           ('https://google.com/index.html', 'text/html')])
+@pytest.mark.parametrize(
+    'uri, mimetype',
+    [
+        (__file__, 'text/x-python'),
+        ('http://google.com/index.html', 'text/html'),
+        ('https://google.com/index.html', 'text/html'),
+    ],
+)
 def test_convert_uri_to_data_uri(uri, mimetype):
     doc = Document(uri=uri, mime_type=mimetype)
     intialiazed_buffer = doc.buffer

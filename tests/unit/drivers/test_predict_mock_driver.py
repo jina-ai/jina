@@ -2,9 +2,12 @@ import numpy as np
 import pytest
 from google.protobuf.struct_pb2 import ListValue
 from jina import Document
-from jina.drivers.predict import (BinaryPredictDriver, MultiLabelPredictDriver,
-                                  OneHotPredictDriver,
-                                  Prediction2DocBlobDriver)
+from jina.drivers.predict import (
+    BinaryPredictDriver,
+    MultiLabelPredictDriver,
+    OneHotPredictDriver,
+    Prediction2DocBlobDriver,
+)
 from jina.executors.classifiers import BaseClassifier
 from jina.types.ndarray.generic import NdArray
 from jina.types.sets import DocumentSet

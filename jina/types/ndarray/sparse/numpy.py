@@ -16,7 +16,9 @@ class SparseNdArray(BaseSparseNdArray):
         It only store nonzero data in sparse format, it does not keep a sparse representation in memory.
     """
 
-    def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> 'np.ndarray':
+    def sparse_constructor(
+        self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]
+    ) -> 'np.ndarray':
         """
         Sparse NdArray constructor for np.ndarray.
 
@@ -39,6 +41,4 @@ class SparseNdArray(BaseSparseNdArray):
         nv = np.nonzero(value)
         val = value[nv]
         indices = np.transpose(nv)
-        return {'indices': indices,
-                'values': val,
-                'shape': list(value.shape)}
+        return {'indices': indices, 'values': val, 'shape': list(value.shape)}

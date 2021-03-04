@@ -13,7 +13,9 @@ class TraversableSequence:
     def __iter__(self) -> Iterable['Traversable']:
         raise NotImplementedError
 
-    def traverse(self, traversal_paths: Iterable[str]) -> Iterable['TraversableSequence']:
+    def traverse(
+        self, traversal_paths: Iterable[str]
+    ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
         Each :class:``TraversableSequence`` is either the root Documents, a ChunkSet or a MatchSet.
@@ -51,7 +53,9 @@ class TraversableSequence:
         else:
             yield docs
 
-    def traverse_flattened_per_path(self, traversal_paths: Iterable[str]) -> Iterable['TraversableSequence']:
+    def traverse_flattened_per_path(
+        self, traversal_paths: Iterable[str]
+    ) -> Iterable['TraversableSequence']:
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
         with all Documents, that are reached by the path.

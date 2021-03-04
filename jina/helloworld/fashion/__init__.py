@@ -6,8 +6,13 @@ from pathlib import Path
 
 from pkg_resources import resource_filename
 
-from ..helper import print_result, write_html, download_data, \
-    index_generator, query_generator
+from ..helper import (
+    print_result,
+    write_html,
+    download_data,
+    index_generator,
+    query_generator,
+)
 from ...flow import Flow
 from ...helper import countdown, colored
 
@@ -32,27 +37,29 @@ def hello_world(args):
     targets = {
         'index-labels': {
             'url': args.index_labels_url,
-            'filename': os.path.join(args.workdir, 'index-labels')
+            'filename': os.path.join(args.workdir, 'index-labels'),
         },
         'query-labels': {
             'url': args.query_labels_url,
-            'filename': os.path.join(args.workdir, 'query-labels')
+            'filename': os.path.join(args.workdir, 'query-labels'),
         },
         'index': {
             'url': args.index_data_url,
-            'filename': os.path.join(args.workdir, 'index-original')
+            'filename': os.path.join(args.workdir, 'index-original'),
         },
         'query': {
             'url': args.query_data_url,
-            'filename': os.path.join(args.workdir, 'query-original')
-        }
+            'filename': os.path.join(args.workdir, 'query-original'),
+        },
     }
 
     # download the data
     download_data(targets, args.download_proxy)
 
     # this envs are referred in index and query flow YAMLs
-    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources') + '/fashion/'
+    os.environ['PATH'] += (
+        os.pathsep + resource_filename('jina', 'resources') + '/fashion/'
+    )
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = args.workdir
@@ -66,22 +73,34 @@ def hello_world(args):
 
     # run it!
     with f:
-        f.index(index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
-                request_size=args.index_request_size)
+        f.index(
+            index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
+            request_size=args.index_request_size,
+        )
 
     # wait for couple of seconds
-    countdown(8, reason=colored('behold! im going to switch to query mode', 'cyan',
-                                attrs=['underline', 'bold', 'reverse']))
+    countdown(
+        8,
+        reason=colored(
+            'behold! im going to switch to query mode',
+            'cyan',
+            attrs=['underline', 'bold', 'reverse'],
+        ),
+    )
 
     # now load query flow from another YAML file
     f = Flow.load_config(args.uses_query)
     # run it!
     with f:
-        f.search(query_generator(num_docs=args.num_query, target=targets, with_groundtruth=True),
-                 shuffle=True,
-                 on_done=print_result,
-                 request_size=args.query_request_size,
-                 top_k=args.top_k)
+        f.search(
+            query_generator(
+                num_docs=args.num_query, target=targets, with_groundtruth=True
+            ),
+            shuffle=True,
+            on_done=print_result,
+            request_size=args.query_request_size,
+            top_k=args.top_k,
+        )
 
     # write result to html
     write_html(os.path.join(args.workdir, 'hello-world.html'))

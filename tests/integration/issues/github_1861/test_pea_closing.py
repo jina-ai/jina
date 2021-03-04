@@ -5,7 +5,6 @@ from jina.flow import Flow
 
 
 class ExceptionExecutor(BaseEncoder):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = 'exception-executor'

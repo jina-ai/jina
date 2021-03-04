@@ -40,7 +40,9 @@ class IntegerParameter(OptimizationParameter):
         self.low = low
         self.high = high
         if log and step_size != 1:
-            raise ValueError('''The step_size != 1 and log arguments cannot be used at the same time. When setting log argument to True, set the step argument to 1.''')
+            raise ValueError(
+                '''The step_size != 1 and log arguments cannot be used at the same time. When setting log argument to True, set the step argument to 1.'''
+            )
 
         self.step_size = step_size
         self.log = log

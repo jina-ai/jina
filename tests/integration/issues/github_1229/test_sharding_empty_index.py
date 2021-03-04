@@ -11,23 +11,18 @@ callback_was_called = False
 
 def get_index_flow():
     num_shards = 2
-    f = Flow() \
-        .add(
-        uses='vectorindexer.yml',
-        shards=num_shards
-    )
+    f = Flow().add(uses='vectorindexer.yml', shards=num_shards)
     return f
 
 
 def get_search_flow():
     num_shards = 2
-    f = Flow(read_only=True) \
-        .add(
+    f = Flow(read_only=True).add(
         uses='vectorindexer.yml',
         shards=num_shards,
         uses_after='_merge_matches',
         polling='all',
-        timeout_ready='-1'
+        timeout_ready='-1',
     )
     return f
 

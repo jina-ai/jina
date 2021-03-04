@@ -4,7 +4,6 @@ from jina.proto import jina_pb2
 
 
 class SimpleSliceQL(SliceQL):
-
     def __init__(self, docs, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._docs = docs
@@ -132,7 +131,9 @@ def test_slice_ql_on_matches_and_chunks():
     assert len(docs[-1].chunks[0].matches) == 10
     assert len(docs[-1].chunks[-1].chunks) == 10
     assert len(docs[-1].chunks[-1].matches) == 10
-    driver = SimpleSliceQL(docs=docs, start=0, end=2, traversal_paths=('cc', 'c', 'r', 'mm', 'm'))
+    driver = SimpleSliceQL(
+        docs=docs, start=0, end=2, traversal_paths=('cc', 'c', 'r', 'mm', 'm')
+    )
     driver()
 
     assert len(docs) == 2
@@ -157,7 +158,9 @@ def test_slice_ql_on_matches_and_chunks():
     assert len(docs[-1].matches) == 2  # slice on level 1 of chunks
 
     assert len(docs[-1].chunks[0].chunks) == 2  # slice on level 2 for matches of chunks
-    assert len(docs[-1].chunks[-1].chunks) == 2  # slice on level 2 for matches of chunks
+    assert (
+        len(docs[-1].chunks[-1].chunks) == 2
+    )  # slice on level 2 for matches of chunks
 
     assert len(docs[-1].chunks[0].matches) == 10  # traverses directly on matches
     assert len(docs[-1].chunks[0].matches[0].chunks) == 10

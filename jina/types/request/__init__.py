@@ -10,19 +10,26 @@ from ...helper import random_identity, typename
 from ...proto import jina_pb2
 
 _body_type = set(str(v).lower() for v in RequestType)
-_trigger_body_fields = set(kk
-                           for v in [jina_pb2.RequestProto.IndexRequestProto,
-                                     jina_pb2.RequestProto.SearchRequestProto,
-                                     jina_pb2.RequestProto.TrainRequestProto,
-                                     jina_pb2.RequestProto.ControlRequestProto]
-                           for kk in v.DESCRIPTOR.fields_by_name.keys())
-_trigger_req_fields = set(jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()).difference(_body_type)
+_trigger_body_fields = set(
+    kk
+    for v in [
+        jina_pb2.RequestProto.IndexRequestProto,
+        jina_pb2.RequestProto.SearchRequestProto,
+        jina_pb2.RequestProto.TrainRequestProto,
+        jina_pb2.RequestProto.ControlRequestProto,
+    ]
+    for kk in v.DESCRIPTOR.fields_by_name.keys()
+)
+_trigger_req_fields = set(
+    jina_pb2.RequestProto.DESCRIPTOR.fields_by_name.keys()
+).difference(_body_type)
 _trigger_fields = _trigger_req_fields.union(_trigger_body_fields)
 
 __all__ = ['Request', 'Response']
 
-RequestSourceType = TypeVar('RequestSourceType',
-                            jina_pb2.RequestProto, bytes, str, Dict)
+RequestSourceType = TypeVar(
+    'RequestSourceType', jina_pb2.RequestProto, bytes, str, Dict
+)
 
 
 class Request(ProtoTypeMixin):
@@ -43,9 +50,12 @@ class Request(ProtoTypeMixin):
     :param copy: Copy the request if ``copy`` is True.
     """
 
-    def __init__(self, request: Union[bytes, dict, str, 'jina_pb2.RequestProto', None] = None,
-                 envelope: Optional['jina_pb2.EnvelopeProto'] = None,
-                 copy: bool = False):
+    def __init__(
+        self,
+        request: Union[bytes, dict, str, 'jina_pb2.RequestProto', None] = None,
+        envelope: Optional['jina_pb2.EnvelopeProto'] = None,
+        copy: bool = False,
+    ):
         """Set constructor method."""
         self._buffer = None
         self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
@@ -143,18 +153,23 @@ class Request(ProtoTypeMixin):
         ctag = CompressAlgo.from_string(algorithm)
         if ctag == CompressAlgo.LZ4:
             import lz4.frame
+
             data = lz4.frame.decompress(data)
         elif ctag == CompressAlgo.BZ2:
             import bz2
+
             data = bz2.decompress(data)
         elif ctag == CompressAlgo.LZMA:
             import lzma
+
             data = lzma.decompress(data)
         elif ctag == CompressAlgo.ZLIB:
             import zlib
+
             data = zlib.decompress(data)
         elif ctag == CompressAlgo.GZIP:
             import gzip
+
             data = gzip.decompress(data)
         return data
 
@@ -172,7 +187,10 @@ class Request(ProtoTypeMixin):
         else:
             # if not then build one from buffer
             r = jina_pb2.RequestProto()
-            _buffer = self._decompress(self._buffer, self._envelope.compression.algorithm if self._envelope else None)
+            _buffer = self._decompress(
+                self._buffer,
+                self._envelope.compression.algorithm if self._envelope else None,
+            )
             r.ParseFromString(_buffer)
             self.is_used = True
             self._pb_body = r

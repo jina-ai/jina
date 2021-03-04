@@ -10,7 +10,6 @@ from .helper import get_workspace_path
 
 
 class WorkspaceStore(BaseStore):
-
     def add(self, files: List[UploadFile], workspace_id, **kwargs):
         try:
             if not workspace_id:
@@ -22,7 +21,8 @@ class WorkspaceStore(BaseStore):
                 dest = os.path.join(_workdir, f.filename)
                 if os.path.isfile(dest):
                     self._logger.warning(
-                        f'file {f.filename} already exists in workspace {workspace_id}, will be replaced')
+                        f'file {f.filename} already exists in workspace {workspace_id}, will be replaced'
+                    )
                 with open(dest, 'wb+') as fp:
                     content = f.file.read()
                     fp.write(content)
@@ -34,6 +34,6 @@ class WorkspaceStore(BaseStore):
             self[workspace_id] = {
                 'arguments': [f.filename for f in files],
                 'workdir': _workdir,
-                'workspace_id': workspace_id
+                'workspace_id': workspace_id,
             }
             return workspace_id

@@ -47,9 +47,7 @@ class LogInfoDriver(BaseControlDriver):
         """
         data = dunder_get(self.msg.proto, self.key)
         if self.json:
-            self.logger.info(
-                MessageToJson(data)
-            )
+            self.logger.info(MessageToJson(data))
         else:
             self.logger.info(data)
 
@@ -88,7 +86,7 @@ class ControlReqDriver(BaseControlDriver):
 class RouteDriver(ControlReqDriver):
     """Ensures that data requests are forwarded to the downstream `:class:`BasePea` ensuring
       that the load is balanced between parallel `:class:`BasePea` if the scheduling `:class:`SchedulerType` is LOAD_BALANCE.
-      
+
     .. note::
         - The dealer never receives a control request from the router,
         every time it finishes a job and sends via out_sock, it returns the envelope with control
@@ -128,10 +126,12 @@ class RouteDriver(ControlReqDriver):
                     self.runtime._zmqlet.pause_pollin()
                     self.is_polling_paused = True
             elif self.raise_no_dealer:
-                raise RuntimeError('if this router connects more than one dealer, '
-                                   'then this error should never be raised. often when it '
-                                   'is raised, some Pods must fail to start, so please go '
-                                   'up and check the first error message in the log')
+                raise RuntimeError(
+                    'if this router connects more than one dealer, '
+                    'then this error should never be raised. often when it '
+                    'is raised, some Pods must fail to start, so please go '
+                    'up and check the first error message in the log'
+                )
             # else:
             #    this FALLBACK to trivial message pass
             #
@@ -144,7 +144,9 @@ class RouteDriver(ControlReqDriver):
             # where some dealer is broken/fails to start, so `idle_dealer_ids` is empty
         elif self.req.command == 'IDLE':
             self.idle_dealer_ids.add(self.envelope.receiver_id)
-            self.logger.debug(f'{self.envelope.receiver_id} is idle, now I know these idle peas {self.idle_dealer_ids}')
+            self.logger.debug(
+                f'{self.envelope.receiver_id} is idle, now I know these idle peas {self.idle_dealer_ids}'
+            )
             if self.is_polling_paused:
                 self.runtime._zmqlet.resume_pollin()
                 self.is_polling_paused = False

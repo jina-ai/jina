@@ -127,6 +127,7 @@ Collection = QuerySet
 
 ## filter and _lookup functions
 
+
 def filter_items(items: Iterable, *args, **kwargs) -> Iterable:
     """Filters an iterable using _lookup parameters
 
@@ -179,13 +180,17 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
         return iff_not_none(dunder_get(item, init), lambda y: y.startswith(val))
     elif last == 'istartswith':
         val = guard_str(val)
-        return iff_not_none(dunder_get(item, init), lambda y: y.lower().startswith(val.lower()))
+        return iff_not_none(
+            dunder_get(item, init), lambda y: y.lower().startswith(val.lower())
+        )
     elif last == 'endswith':
         val = guard_str(val)
         return iff_not_none(dunder_get(item, init), lambda y: y.endswith(val))
     elif last == 'iendswith':
         val = guard_str(val)
-        return iff_not_none(dunder_get(item, init), lambda y: y.lower().endswith(val.lower()))
+        return iff_not_none(
+            dunder_get(item, init), lambda y: y.lower().endswith(val.lower())
+        )
     elif last == 'gt':
         return iff_not_none(dunder_get(item, init), lambda y: y > val)
     elif last == 'gte':
@@ -195,7 +200,9 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
     elif last == 'lte':
         return iff_not_none(dunder_get(item, init), lambda y: y <= val)
     elif last == 'regex':
-        return iff_not_none(dunder_get(item, init), lambda y: re.search(val, y) is not None)
+        return iff_not_none(
+            dunder_get(item, init), lambda y: re.search(val, y) is not None
+        )
     elif last == 'filter':
         val = guard_Q(val)
         result = guard_iter(dunder_get(item, init))
@@ -205,6 +212,7 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
 
 
 ## Classes to compose compound lookups (Q object)
+
 
 class LookupTreeElem:
     """Base class for a child in the _lookup expression tree"""
@@ -306,7 +314,10 @@ Q = LookupLeaf
 
 ## functions that work on the keys in a dict
 
-def include_keys(items: Iterable[Dict[str, Any]], fields: Iterable[str]) -> Iterable[Dict]:
+
+def include_keys(
+    items: Iterable[Dict[str, Any]], fields: Iterable[str]
+) -> Iterable[Dict]:
     """Function to keep only specified fields in data
 
     Returns a list of dict with only the keys mentioned in the

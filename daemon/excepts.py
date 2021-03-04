@@ -13,6 +13,8 @@ async def daemon_runtime_exception_handler(request: Request, ex: 'Runtime400Exce
         status_code=400,
         content={
             'detail': repr(ex),
-            'body': traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__)
+            'body': traceback.format_exception(
+                etype=type(ex), value=ex, tb=ex.__traceback__
+            ),
         },
     )

@@ -27,7 +27,9 @@ def random_docs(start, end, embed_dim=10):
         d = Document()
         d.id = f'{j:0>16}'
         d.tags['id'] = j
-        d.text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10)).encode('utf8')
+        d.text = ''.join(
+            random.choice(string.ascii_lowercase) for _ in range(10)
+        ).encode('utf8')
         d.embedding = np.random.random([embed_dim])
         yield d
 
@@ -39,23 +41,19 @@ def test_search_non_existent(config, mocker):
         assert len(resp.docs) == 3
 
     with Flow().add(
-            uses=os.path.join(cur_dir, 'yaml', yaml_file),
-            shards=2,
+        uses=os.path.join(cur_dir, 'yaml', yaml_file),
+        shards=2,
     ) as index_flow:
         index_flow.index(inputs=random_docs(0, 3), request_size=1)
 
     mock = mocker.Mock()
     with Flow(read_only=True).add(
-            uses=os.path.join(cur_dir, 'yaml', yaml_file),
-            shards=2,
-            uses_after='_merge_root',
-            polling='all'
+        uses=os.path.join(cur_dir, 'yaml', yaml_file),
+        shards=2,
+        uses_after='_merge_root',
+        polling='all',
     ) as search_flow:
-        search_flow.search(
-            inputs=random_docs(0, 5),
-            on_done=mock,
-            request_size=5
-        )
+        search_flow.search(inputs=random_docs(0, 5), on_done=mock, request_size=5)
 
     mock.assert_called_once()
     validate_callback(mock, validate_results)

@@ -21,7 +21,8 @@ from google.protobuf.internal import api_implementation as _api_implementation
 if _api_implementation._default_implementation_type != 'cpp':
     import warnings as _warnings
 
-    _warnings.warn('''
+    _warnings.warn(
+        '''
     You are using Python protobuf backend, not the C++ version, which is much faster.
     
     This is often due to C++ implementation failed to compile while installing Protobuf
@@ -30,7 +31,9 @@ if _api_implementation._default_implementation_type != 'cpp':
     - You installation is broken, try `pip install --force protobuf`
     - You have C++ backend but you shut it down, try `export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp`
     
-    ''', RuntimeWarning)
+    ''',
+        RuntimeWarning,
+    )
 
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
@@ -65,41 +68,54 @@ __uptime__ = _datetime.datetime.now().isoformat()
 # 1. clean this tuple,
 # 2. grep -rohEI --exclude-dir=jina/hub --exclude-dir=tests --include \*.py "\'JINA_.*?\'" jina  | sort -u | sed "s/$/,/g"
 # 3. copy all lines EXCEPT the first (which is the grep command in the last line)
-__jina_env__ = ('JINA_ARRAY_QUANT',
-                'JINA_BINARY_DELIMITER',
-                'JINA_CONTRIB_MODULE',
-                'JINA_CONTRIB_MODULE_IS_LOADING',
-                'JINA_CONTROL_PORT',
-                'JINA_DEFAULT_HOST',
-                'JINA_DISABLE_UVLOOP',
-                'JINA_EXECUTOR_WORKDIR',
-                'JINA_FULL_CLI',
-                'JINA_IPC_SOCK_TMP',
-                'JINA_LOG_CONFIG',
-                'JINA_LOG_ID',
-                'JINA_LOG_LEVEL',
-                'JINA_LOG_NO_COLOR',
-                'JINA_LOG_WORKSPACE',
-                'JINA_POD_NAME',
-                'JINA_RAISE_ERROR_EARLY',
-                'JINA_RANDOM_PORTS',
-                'JINA_RANDOM_PORT_MAX',
-                'JINA_RANDOM_PORT_MIN',
-                'JINA_SOCKET_HWM',
-                'JINA_VCS_VERSION',
-                'JINA_WARN_UNNAMED',
-                'JINA_WORKSPACE')
+__jina_env__ = (
+    'JINA_ARRAY_QUANT',
+    'JINA_BINARY_DELIMITER',
+    'JINA_CONTRIB_MODULE',
+    'JINA_CONTRIB_MODULE_IS_LOADING',
+    'JINA_CONTROL_PORT',
+    'JINA_DEFAULT_HOST',
+    'JINA_DISABLE_UVLOOP',
+    'JINA_EXECUTOR_WORKDIR',
+    'JINA_FULL_CLI',
+    'JINA_IPC_SOCK_TMP',
+    'JINA_LOG_CONFIG',
+    'JINA_LOG_ID',
+    'JINA_LOG_LEVEL',
+    'JINA_LOG_NO_COLOR',
+    'JINA_LOG_WORKSPACE',
+    'JINA_POD_NAME',
+    'JINA_RAISE_ERROR_EARLY',
+    'JINA_RANDOM_PORTS',
+    'JINA_RANDOM_PORT_MAX',
+    'JINA_RANDOM_PORT_MIN',
+    'JINA_SOCKET_HWM',
+    'JINA_VCS_VERSION',
+    'JINA_WARN_UNNAMED',
+    'JINA_WORKSPACE',
+)
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
-__binary_delimiter__ = _os.environ.get('JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57').encode()
+__binary_delimiter__ = _os.environ.get(
+    'JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57'
+).encode()
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 
-_names_with_underscore = ['__version__', '__copyright__', '__license__',
-                          '__proto_version__', '__default_host__', '__ready_msg__',
-                          '__stop_msg__', '__binary_delimiter__', '__jina_env__',
-                          '__uptime__', '__root_dir__']
+_names_with_underscore = [
+    '__version__',
+    '__copyright__',
+    '__license__',
+    '__proto_version__',
+    '__default_host__',
+    '__ready_msg__',
+    '__stop_msg__',
+    '__binary_delimiter__',
+    '__jina_env__',
+    '__uptime__',
+    '__root_dir__',
+]
 
 # Primitive data type,
 # note, they must be loaded BEFORE all executors/drivers/... to avoid cyclic imports
@@ -138,6 +154,7 @@ def _set_nofile(nofile_atleast=4096):
         res = None
 
     from .logging import default_logger
+
     if res is None:
         return (None,) * 2
 
@@ -155,7 +172,9 @@ def _set_nofile(nofile_atleast=4096):
         except (ValueError, res.error):
             try:
                 hard = soft
-                default_logger.warning(f'trouble with max limit, retrying with soft,hard {soft},{hard}')
+                default_logger.warning(
+                    f'trouble with max limit, retrying with soft,hard {soft},{hard}'
+                )
                 res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
             except Exception:
                 default_logger.warning('failed to set ulimit, giving up')

@@ -26,9 +26,12 @@ def test_collect_evals_driver(mocker):
 
     mock = mocker.Mock()
     # simulate two encoders
-    flow = (Flow().add(name='a')
-            .add(name='b', needs='gateway')
-            .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
+    flow = (
+        Flow()
+        .add(name='a')
+        .add(name='b', needs='gateway')
+        .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}')
+    )
     with flow:
         flow.index(inputs=input_function, on_done=mock)
 

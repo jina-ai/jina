@@ -7,13 +7,13 @@ from jina.executors.segmenters import BaseSegmenter
 
 
 class DummySentencizer(BaseSegmenter):
-
-    def __init__(self,
-                 *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         punct_chars = [',']
-        self._slit_pat = re.compile('\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(punct_chars))))
+        self._slit_pat = re.compile(
+            '\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(punct_chars)))
+        )
 
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
@@ -23,8 +23,9 @@ class DummySentencizer(BaseSegmenter):
         :return: a list of chunk dicts with the cropped images
         """
         results = []
-        ret = [(m.group(0), m.start(), m.end()) for m in
-               re.finditer(self._slit_pat, text)]
+        ret = [
+            (m.group(0), m.start(), m.end()) for m in re.finditer(self._slit_pat, text)
+        ]
         if not ret:
             ret = [(text, 0, len(text))]
         for ci, (r, s, e) in enumerate(ret):
@@ -32,12 +33,12 @@ class DummySentencizer(BaseSegmenter):
             f = re.sub('\n+', ' ', f).strip()
             f = f[:100]
             if len(f) > 3:
-                results.append(dict(
-                    text=f
-                ))
+                results.append(dict(text=f))
         return results
 
-class MockMinRanker(Chunk2DocRanker):
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())
+class MockMinRanker(Chunk2DocRanker):
+    def _get_score(
+        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
+    ):
+        return self.get_doc_id(match_idx), 1.0 / (1.0 + match_idx[self.COL_SCORE].min())

@@ -25,8 +25,10 @@ class BaseIndexDriver(FlatRecursiveMixin, BaseExecutableDriver):
         """
         m_val = max(len(v) for v in val)
         if m_val > self.exec.key_length:
-            raise ValueError(f'{self.exec} allows only keys of length {self.exec.key_length}, '
-                             f'but yours is {m_val}.')
+            raise ValueError(
+                f'{self.exec} allows only keys of length {self.exec.key_length}, '
+                f'but yours is {m_val}.'
+            )
 
 
 class VectorIndexDriver(BaseIndexDriver):

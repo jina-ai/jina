@@ -27,11 +27,13 @@ def reference_doc(document_factory):
 def matches(document_factory):
     req = Request()
     req.request_type = 'index'
-    req.docs.extend([
-        document_factory.create(1, 'test 1'),
-        document_factory.create(2, 'test 1'),
-        document_factory.create(3, 'test 3')
-    ])
+    req.docs.extend(
+        [
+            document_factory.create(1, 'test 1'),
+            document_factory.create(2, 'test 1'),
+            document_factory.create(3, 'test 3'),
+        ]
+    )
     return req.proto.index.docs
 
 
@@ -50,6 +52,7 @@ def test_append_from_documents(matchset, document_factory, reference_doc):
     assert rv.adjacency == reference_doc.adjacency + 1
     assert rv.mime_type == 'text/plain'
     assert rv.score.ref_id == reference_doc.id
+
 
 def test_mime_type_not_reassigned():
     d = Document()

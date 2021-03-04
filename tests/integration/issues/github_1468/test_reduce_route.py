@@ -6,7 +6,9 @@ from jina.types.document.multimodal import MultimodalDocument
 
 def multimodal_generator():
     for i in range(0, 5):
-        document = MultimodalDocument(modality_content_map={'1': f'aaa {i}', '2': f'bbb {i}'})
+        document = MultimodalDocument(
+            modality_content_map={'1': f'aaa {i}', '2': f'bbb {i}'}
+        )
         yield document
 
 

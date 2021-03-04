@@ -69,16 +69,24 @@ def test_import_classes_failed_find_package(ns, mocker):
 @pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub', 'jina.drivers'])
 def test_import_classes_failed_import_module(ns, mocker, recwarn):
     import importlib
-    mocker.patch.object(importlib, 'import_module', side_effect=Exception('mocked error'))
+
+    mocker.patch.object(
+        importlib, 'import_module', side_effect=Exception('mocked error')
+    )
     depend_tree = import_classes(namespace=ns)
     assert len(depend_tree) == 0
     assert len(recwarn) == 1
-    assert 'You can use `jina check` to list all executors and drivers' in recwarn[0].message.args[0]
+    assert (
+        'You can use `jina check` to list all executors and drivers'
+        in recwarn[0].message.args[0]
+    )
 
 
 @pytest.mark.parametrize('print_table', [True, False])
 @pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub'])
-def test_import_classes_failed_load_default_exc_config(ns, print_table, mocker, recwarn, capsys):
+def test_import_classes_failed_load_default_exc_config(
+    ns, print_table, mocker, recwarn, capsys
+):
     mocker.patch('pkg_resources.resource_stream', side_effect=Exception('mocked error'))
     _ = import_classes(namespace=ns, show_import_table=print_table)
     if print_table:
@@ -86,4 +94,7 @@ def test_import_classes_failed_load_default_exc_config(ns, print_table, mocker, 
         assert '✗' in captured.out
     else:
         assert len(recwarn) == 1
-        assert 'You can use `jina check` to list all executors and drivers' in recwarn[0].message.args[0]
+        assert (
+            'You can use `jina check` to list all executors and drivers'
+            in recwarn[0].message.args[0]
+        )

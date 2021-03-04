@@ -11,9 +11,7 @@ router = APIRouter(prefix='/workspaces', tags=['workspaces'])
 
 
 @router.get(
-    path='',
-    summary='Get all existing Workspaces\' status',
-    response_model=StoreStatus
+    path='', summary='Get all existing Workspaces\' status', response_model=StoreStatus
 )
 async def _get_items():
     return store.status
@@ -46,8 +44,7 @@ async def _delete(id: uuid.UUID):
     status_code=201,
 )
 async def _create(
-        files: List[UploadFile] = File(...),
-        workspace_id: Optional[uuid.UUID] = Body(None)
+    files: List[UploadFile] = File(...), workspace_id: Optional[uuid.UUID] = Body(None)
 ):
     try:
         return store.add(files, workspace_id)
@@ -58,7 +55,7 @@ async def _create(
 @router.get(
     path='/{id}',
     summary='Get the status of an existing Workspace',
-    response_model=StoreItemStatus
+    response_model=StoreItemStatus,
 )
 async def _list(id: uuid.UUID):
     try:

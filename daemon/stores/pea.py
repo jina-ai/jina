@@ -10,8 +10,7 @@ from .helper import jina_workspace
 class PeaStore(BaseStore):
     peapod_cls = Pea
 
-    def add(self, args: Namespace,
-            **kwargs):
+    def add(self, args: Namespace, **kwargs):
         try:
             workspace_id = args.workspace_id
             if not workspace_id:
@@ -29,8 +28,9 @@ class PeaStore(BaseStore):
                 'object': p,
                 'arguments': vars(args),
                 'workdir': _workdir,
-                'workspace_id': workspace_id
+                'workspace_id': workspace_id,
             }
             self._logger.success(
-                f'{colored(str(_id), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}')
+                f'{colored(str(_id), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}'
+            )
             return _id

@@ -5,12 +5,19 @@ from jina.types.request.common import (
     IndexDryRunRequest,
     TrainDryRunRequest,
     ControlDryRunRequest,
-    SearchDryRunRequest
+    SearchDryRunRequest,
 )
 
+
 @pytest.mark.parametrize(
-    'ReqCls', [DryRunRequest, IndexDryRunRequest, TrainDryRunRequest, ControlDryRunRequest, SearchDryRunRequest]
+    'ReqCls',
+    [
+        DryRunRequest,
+        IndexDryRunRequest,
+        TrainDryRunRequest,
+        ControlDryRunRequest,
+        SearchDryRunRequest,
+    ],
 )
 def test_init(ReqCls):
     assert ReqCls()
-

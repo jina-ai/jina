@@ -8,7 +8,9 @@ from jina.peapods.runtimes.ssh import SSHRuntime
 from jina.proto import jina_pb2
 
 
-@pytest.mark.skip('works locally, but until I findout how to mock ssh, this has to be skipped')
+@pytest.mark.skip(
+    'works locally, but until I findout how to mock ssh, this has to be skipped'
+)
 def test_ssh_pea():
     p = set_pea_parser().parse_args(['--host', 'pi@172.16.1.110', '--timeout', '5000'])
 
@@ -18,7 +20,9 @@ def test_ssh_pea():
     assert pp.status is None
 
 
-@pytest.mark.skip('works locally, but until I find out how to mock ssh, this has to be skipped')
+@pytest.mark.skip(
+    'works locally, but until I find out how to mock ssh, this has to be skipped'
+)
 def test_ssh_pod():
     p = set_pod_parser().parse_args(['--host', 'pi@172.16.1.110', '--timeout', '5000'])
     with SSHRuntime(p) as pp:
