@@ -321,7 +321,7 @@ class Document(ProtoTypeMixin, Traversable):
 
         if exclude_fields is None:
             if include_fields:
-                exclude_fields = set(f for f in self.non_empty_fields if f not in include_fields)
+                exclude_fields = tuple(f for f in self.non_empty_fields if f not in include_fields)
             else:
                 exclude_fields = self.non_empty_fields
 
@@ -1009,6 +1009,6 @@ classDiagram
     def non_empty_fields(self) -> Tuple[str]:
         """Return the set fields of the current document that are not empty
 
-        :return: the set of non-empty fields
+        :return: the tuple of non-empty fields
         """
         return tuple(field[0].name for field in self.ListFields())
