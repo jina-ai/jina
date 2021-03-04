@@ -5,7 +5,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
-from typing import Callable, Any, Union, Iterator, List, Optional, Dict
+from typing import Callable, Any, Union, Iterator, List, Optional, Dict, Iterable
 
 import numpy as np
 
@@ -431,6 +431,10 @@ def single(func: Callable[[Any], np.ndarray] = None,
         def arg_wrapper(*args, **kwargs):
             # by default data is in args[1] (self needs to be taken into account)
             data = args[slice_on]
+
+            if not isinstance(data, Iterable):
+                return func(*args, **kwargs)
+
             args = list(args)
 
             default_logger.debug(
@@ -488,6 +492,9 @@ def single_multi_input(func: Callable[[Any], np.ndarray] = None,
             default_logger.debug(
                 f'batching disabled for {func.__qualname__}')
             data_iterators = [args[slice_on + i] for i in range(0, num_data)]
+
+            if not isinstance(data_iterators[0], Iterable):
+                return func(*args, **kwargs)
 
             final_result = []
             for i, instance in enumerate(data_iterators[0]):

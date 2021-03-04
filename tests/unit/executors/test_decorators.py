@@ -105,6 +105,9 @@ def test_single():
     assert result == [1, 1, 1, 1]
     assert instance.call_nbr == 4
 
+    result = instance.f(1)
+    assert result == 1
+
 
 def test_single_np_ndarray():
     class A:
@@ -326,6 +329,10 @@ def test_single_multi():
     assert result == [1, 1, 1, 1]
     assert instance.call_nbr == 4
 
+    instance = A()
+    result = instance.f(0, 1, 2)
+    assert result == 1
+
 
 def test_batching_multi_input_dictionary():
     batch_size = 2
@@ -390,25 +397,3 @@ def test_batching_as_ndarray():
     np.testing.assert_equal(result, np.array(input_data))
     assert len(instance.batch_sizes) == 1
     assert instance.batch_sizes[0] == 4
-
-
-
-
-
-# @pytest.mark.parametrize('input_data', [])
-# def test_batching_single_equal():
-#     class A:
-#         def __init__(self, batch_size):
-#             self.batch_size = batch_size
-#
-#         @batching
-#         def f(self, data):
-#             return data
-#
-#     class B:
-#         def __init__(self, batch_size):
-#             self.batch_size = batch_size
-#
-#         @single
-#         def f(self, data):
-#             return data
