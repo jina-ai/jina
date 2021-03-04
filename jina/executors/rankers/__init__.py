@@ -8,40 +8,42 @@ import numpy as np
 from .. import BaseExecutor
 
 
-
 class BaseRanker(BaseExecutor):
-    """The base class for a `Ranker`"""
+    """
+    The base class for a `Ranker`
+    :param query_required_keys: Set of keys or features to be extracted from query `Document` by the `Driver` so that
+        they are passed as query features or metainfo.
+    :param match_required_keys: Set of keys or features to be extracted from match `Document` by the `Driver` so that
+        they are passed as match features or metainfo.
+    :param args: Extra positional arguments
+    :param kwargs: Extra keyword arguments
+
+    .. note::
+        See how the attributes are accessed in :class:`Document` in :meth:`get_attrs`.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            query = Document({'tags': {'color': 'blue'})
+            match = Document({'tags': {'color': 'blue', 'price': 1000}})
+
+            ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
+    """
 
     def __init__(self,
                  query_required_keys: Optional[Sequence[str]] = None,
                  match_required_keys: Optional[Sequence[str]] = None,
                  *args,
                  **kwargs):
-        """
-
-        :param query_required_keys: Set of keys or features to be extracted from query `Document` by the `Driver` so that
-            they are passed as query features or metainfo.
-        :param match_required_keys: Set of keys or features to be extracted from match `Document` by the `Driver` so that
-            they are passed as match features or metainfo.
-
-        .. note::
-            See how the attributes are accessed in :class:`Document` in :meth:`get_attrs`.
-
-            .. highlight:: python
-            .. code-block:: python
-
-                query = Document({'tags': {'color': 'blue'})
-                match = Document({'tags': {'color': 'blue', 'price': 1000}})
-
-                ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
-        """
-
         super().__init__(*args, **kwargs)
         self.query_required_keys = query_required_keys
         self.match_required_keys = match_required_keys
 
     def score(self, *args, **kwargs):
-        """Calculate the score. Base class method needs to be implemented in subclass."""
+        """Calculate the score. Base class method needs to be implemented in subclass.
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
+        """
         raise NotImplementedError
 
 
@@ -67,8 +69,9 @@ class Chunk2DocRanker(BaseRanker):
 
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs) -> float:
         """
-        Given a set of queries (that may correspond to the chunks of a root level query) and a set of matches corresping
-        to the same parent id, compute the matching score of the common parent of the set of matches.
+        Given a set of queries (that may correspond to the chunks of a root level query) and a set of matches
+        corresping to the same parent id, compute the matching score of the common parent of the set of matches.
+        Returns a score corresponding to the score of the parent document of the matches in `match_idx`
 
         :param match_idx: A [N x 4] numpy ``ndarray``, column-wise:
                 - ``match_idx[:, 0]``: ``parent_id`` of the matched docs, integer
@@ -78,12 +81,10 @@ class Chunk2DocRanker(BaseRanker):
                 All the matches belong to the same `parent`
         :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
             the value is extracted by the ``query_required_keys``.
-        :type query_chunk_meta: Dict.
         :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
             ``chunk_id``, the value is extracted by the ``match_required_keys``.
-        :type match_chunk_meta: Dict.
-        :return: A score corresponding to the score of the parent document of the matches in `match_idx`
-        :rtype: float
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
         """
         raise NotImplementedError
 
@@ -104,19 +105,11 @@ class Match2DocRanker(BaseRanker):
 
     def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':
         """
-        Calculates the new scores for matches and returns them.
+        Calculates the new scores for matches and returns them. Returns a `np.ndarray` in the shape of [N x 2] where
+        `N` is the length of the `old_match_scores`. Semantic: [[match_id, new_score]]
 
-        :param query_meta: Dictionary containing all the query meta information
-            requested by the `required_keys` class_variable.
-        :type query_meta: Dict
-        :param old_match_scores: Contains old scores in the format {match_id: score}
-        :type old_match_scores: Dict
-        :param match_meta: Dictionary containing all the matches meta information
-            requested by the `required_keys` class_variable.
-            Format: {match_id: {attribute: attribute_value}}e.g.{5: {"length": 3}}
-        :type match_meta: Dict
-        :return: A `np.ndarray` in the shape of [N x 2] where `N` is the length of
-            the `old_match_scores`. Semantic: [[match_id, new_score]]
-        :rtype: np.ndarray
+        :param query_meta: Dictionary containing all the query meta information requested by the `required_keys` class_variable.
+        :param old_match_scores: Contains old scores in the format {match_id: score}.
+        :param match_meta: Dictionary containing all the matches meta information requested by the `required_keys` class_variable. Format: {match_id: {attribute: attribute_value}}e.g.{5: {"length": 3}}
         """
         raise NotImplementedError

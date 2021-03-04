@@ -68,14 +68,6 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
                     m.chunks.append(chunk_matches_by_id[match_chunk_id])
             query.matches.append(m)
 
-    def group_by_doc_id(self, match_idx):
-        """
-        Group the ``match_idx`` by ``doc_id``.
-        :return: an iterator over the groups.
-        :rtype: :class:`Chunk2DocRanker`.
-        """
-        return self._group_by(match_idx, Chunk2DocRanker.COL_PARENT_ID)
-
     @staticmethod
     def _group_by(match_idx, col_name):
         # sort by ``col
@@ -113,15 +105,13 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         :type match_idx: np.ndarray.
         :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
             the value is extracted by the ``query_required_keys``.
-        :type query_chunk_meta: Dict.
         :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
             ``chunk_id``, the value is extracted by the ``match_required_keys``.
-        :type match_chunk_meta: Dict.
         :return: A [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
                 the second column is the score/distance/metric between the matched doc and the query doc (float).
         :rtype: np.ndarray.
         """
-        _groups = self.group_by_doc_id(match_idx)
+        _groups = self._group_by(match_idx, Chunk2DocRanker.COL_PARENT_ID)
         r = []
         for _g in _groups:
             score = self.exec_fn(_g, query_chunk_meta, match_chunk_meta)
