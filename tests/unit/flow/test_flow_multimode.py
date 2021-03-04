@@ -89,7 +89,8 @@ def test_flow_with_modalities(tmpdir, restful):
 
     chunkIndexer1 = BinaryPbIndexer.load(os.path.join(tmpdir, 'compound', 'kvidx1.bin'))
     assert chunkIndexer1.size == 3
-    d_id = list(chunkIndexer1.query_handler.header.keys())[0]
+    with chunkIndexer1.query_handler as reader:
+        d_id = list(reader.header.keys())[0]
 
     query_doc = jina_pb2.DocumentProto()
     query_doc.ParseFromString(chunkIndexer1.query(d_id))
@@ -98,7 +99,8 @@ def test_flow_with_modalities(tmpdir, restful):
 
     chunkIndexer2 = BinaryPbIndexer.load(os.path.join(tmpdir, 'compound', 'kvidx2.bin'))
     assert chunkIndexer2.size == 3
-    d_id = list(chunkIndexer2.query_handler.header.keys())[0]
+    with chunkIndexer2.query_handler as reader:
+        d_id = list(reader.header.keys())[0]
 
     query_doc = jina_pb2.DocumentProto()
     query_doc.ParseFromString(chunkIndexer2.query(d_id))

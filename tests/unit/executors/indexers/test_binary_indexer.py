@@ -169,7 +169,7 @@ def test_binarypb_update_twice(test_metas, delete_on_dump):
 def test_binarypb_benchmark(test_metas, delete_on_dump):
     entries = 100000
     nr_to_update = 10000
-    keys = np.arange(entries)
+    keys = np.arange(entries).astype(str)
     values = np.random.randint(0, 10, size=entries).astype(bytes)
 
     with BinaryPbIndexer(metas=test_metas, delete_on_dump=delete_on_dump) as idxer:

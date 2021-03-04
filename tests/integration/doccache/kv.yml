@@ -2,7 +2,7 @@
 components:
   - !BinaryPbIndexer
     with:
-      index_filename: doc.gz
+      index_filename: binarypb
     metas:
       name: $JINA_KV_IDX_NAME
 metas:
