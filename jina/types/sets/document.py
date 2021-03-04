@@ -1,5 +1,6 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple
+from typing import Union, Iterable, Tuple, Sequence
+
 
 import numpy as np
 
@@ -14,6 +15,7 @@ except:
     from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
 
 from ...proto.jina_pb2 import DocumentProto
+from .traversable import TraversableSequence
 
 if False:
     from ..document import Document
@@ -21,7 +23,7 @@ if False:
 __all__ = ['DocumentSet']
 
 
-class DocumentSet(MutableSequence):
+class DocumentSet(TraversableSequence, MutableSequence):
     """
     :class:`DocumentSet` is a mutable sequence of :class:`Document`.
     It gives an efficient view of a list of Document. One can iterate over it like
@@ -31,7 +33,7 @@ class DocumentSet(MutableSequence):
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
-    def __init__(self, docs_proto: Union['RepeatedContainer', Iterable['Document']]):
+    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
         super().__init__()
         self._docs_proto = docs_proto
         self._docs_map = {}

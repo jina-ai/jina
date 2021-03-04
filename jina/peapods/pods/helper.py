@@ -4,7 +4,8 @@ from typing import List
 
 from ... import __default_host__
 from ...enums import SchedulerType, SocketType, PeaRoleType
-from ...helper import random_port, get_public_ip, get_internal_ip, random_identity
+from ...helper import get_public_ip, get_internal_ip, random_identity
+from ... import helper
 
 
 def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Namespace = None) -> List[Namespace]:
@@ -16,7 +17,7 @@ def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Name
             _args.port_in = head_args.port_out
         if tail_args:
             _args.port_out = tail_args.port_in
-        _args.port_ctrl = random_port()
+        _args.port_ctrl = helper.random_port()
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:
@@ -61,8 +62,8 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
     """
 
     _head_args = copy.deepcopy(args)
-    _head_args.port_ctrl = random_port()
-    _head_args.port_out = random_port()
+    _head_args.port_ctrl = helper.random_port()
+    _head_args.port_out = helper.random_port()
     _head_args.uses = None
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
@@ -96,8 +97,8 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     """Set the incoming args of the tail router
     """
     _tail_args = copy.deepcopy(args)
-    _tail_args.port_in = random_port()
-    _tail_args.port_ctrl = random_port()
+    _tail_args.port_in = helper.random_port()
+    _tail_args.port_ctrl = helper.random_port()
     _tail_args.socket_in = SocketType.PULL_BIND
     _tail_args.uses = None
 

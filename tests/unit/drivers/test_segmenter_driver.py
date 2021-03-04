@@ -82,4 +82,4 @@ def test_broken_document():
     assert invalid_doc.length == 2
 
     with pytest.raises(AttributeError):
-        driver._apply_all([invalid_doc])
+        driver._apply_all([DocumentSet([invalid_doc])])

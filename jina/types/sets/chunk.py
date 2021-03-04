@@ -48,7 +48,7 @@ class ChunkSet(DocumentSet):
         return chunk
 
     @property
-    def parent_doc(self) -> 'Document':
+    def reference_doc(self) -> 'Document':
         """Get the document that :class:`ChunkSet` belongs to."""
         return self._ref_doc
 

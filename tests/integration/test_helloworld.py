@@ -6,7 +6,7 @@ import pytest
 from jina.clients.sugary_io import _input_ndarray
 from jina.flow import Flow
 from jina.helloworld.helper import download_data
-from jina.helper import random_port
+from jina import helper
 from jina.parsers.helloworld import set_hw_parser, set_hw_chatbot_parser, set_hw_multimodal_parser
 from pkg_resources import resource_filename
 
@@ -66,7 +66,7 @@ def test_helloworld_py_chatbot(tmpdir):
     from jina.helloworld.chatbot import hello_world
     hello_world(set_hw_chatbot_parser().parse_args(['--workdir', str(tmpdir),
                                                     '--unblock-query-flow',
-                                                    '--port-expose', str(random_port())]))
+                                                    '--port-expose', str(helper.random_port())]))
 
 
 @pytest.mark.timeout(600)
@@ -74,7 +74,7 @@ def test_helloworld_py_multimodal(tmpdir):
     from jina.helloworld.multimodal import hello_world
     hello_world(set_hw_multimodal_parser().parse_args(['--workdir', str(tmpdir),
                                                        '--unblock-query-flow',
-                                                       '--port-expose', str(random_port())]))
+                                                       '--port-expose', str(helper.random_port())]))
 
 
 @pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
