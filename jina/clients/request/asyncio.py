@@ -30,7 +30,8 @@ async def request_generator(data: GeneratorSourceType,
     :param queryset: querylang set of queries
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
-    :return:
+    :param kwargs: additional key word arguments
+    :yield: request
     """
     _kwargs = dict(mime_type=mime_type, length=request_size, weight=1.0)
 
@@ -42,4 +43,4 @@ async def request_generator(data: GeneratorSourceType,
             yield _new_request_from_batch(_kwargs, batch, data_type, mode, queryset)
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception
-        default_logger.critical(f'input_fn is not valid! {ex!r}', exc_info=True)
+        default_logger.critical(f'inputs is not valid! {ex!r}', exc_info=True)

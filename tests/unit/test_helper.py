@@ -8,7 +8,7 @@ import pytest
 from cli import _is_latest_version
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
-from jina.excepts import BadClientCallback, NotSupportedError
+from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
 from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath, touch_dir, random_port
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
@@ -251,3 +251,23 @@ def test_random_port(config):
     assert os.environ['JINA_RANDOM_PORTS']
     port = random_port()
     assert 49153 <= port <= 65535
+
+
+@pytest.fixture
+def config_few_ports():
+    os.environ['JINA_RANDOM_PORTS'] = "True"
+    os.environ['JINA_RANDOM_PORT_MIN'] = "49300"
+    os.environ['JINA_RANDOM_PORT_MAX'] = "49301"
+    yield
+    del os.environ['JINA_RANDOM_PORT_MIN']
+    del os.environ['JINA_RANDOM_PORT_MAX']
+    del os.environ['JINA_RANDOM_PORTS']
+
+
+def test_random_port_max_failures_for_tests_only(config_few_ports):
+    from jina.helper import random_port as random_port_with_max_failures
+    with pytest.raises(NoAvailablePortError):
+        random_port_with_max_failures()
+        random_port_with_max_failures()
+        random_port_with_max_failures()
+        random_port_with_max_failures()

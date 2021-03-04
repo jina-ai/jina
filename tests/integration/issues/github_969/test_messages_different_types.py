@@ -52,7 +52,7 @@ def test_message_docs_different_chunk_types(input_doc_with_chunks, mocker):
     mock = mocker.Mock()
 
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_with_chunks], on_done=mock)
+        f.search(inputs=[input_doc_with_chunks], on_done=mock)
 
     mock.assert_called_once()
     validate_callback(mock, validate_chunks_fn)
@@ -97,7 +97,7 @@ def test_message_docs_different_matches_types(input_doc_with_matches, mocker):
 
     mock = mocker.Mock()
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_with_matches], on_done=mock)
+        f.search(inputs=[input_doc_with_matches], on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_matches_fn)
 
@@ -167,7 +167,7 @@ def test_message_docs_different_chunks_and_matches_types(input_doc_chunks_and_ma
     mock = mocker.Mock()
 
     with Flow().add() as f:
-        f.search(input_fn=[input_doc_chunks_and_matches], on_done=mock)
+        f.search(inputs=[input_doc_chunks_and_matches], on_done=mock)
 
     validate_callback(mock, validate_chunks_and_matches_fn)
 

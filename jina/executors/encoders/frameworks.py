@@ -20,7 +20,6 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
         The ``model_path`` is the local path of the ``.onnx`` file, e.g. ``/tmp/onnx/mobilenetv2-1.0.onnx``.
     """
     def __init__(self, output_feature: str = None, model_path: str = None, *args, **kwargs):
-        """Constructor."""
         super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
         self.raw_model_path = model_path
@@ -53,9 +52,9 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
             raise ModelCheckpointNotExist(f'model at {tmp_model_path} does not exist')
 
     @staticmethod
-    def _append_outputs(input_fn, outputs_name_to_append, output_fn):
+    def _append_outputs(inputs, outputs_name_to_append, output_fn):
         import onnx
-        model = onnx.load(input_fn)
+        model = onnx.load(inputs)
         feature_map = onnx.helper.ValueInfoProto()
         feature_map.name = outputs_name_to_append
         model.graph.output.append(feature_map)
@@ -102,13 +101,12 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
             def get_cell(self):
                 return YourAwesomeModel()
 
+        :param model_path: the path of the model's checkpoint.
+        :param args: additional arguments
+        :param kwargs: additional key value arguments
     """
 
     def __init__(self, model_path: str = None, *args, **kwargs):
-        """
-
-        :param model_path: the path of the model's checkpoint.
-        """
         super().__init__(*args, **kwargs)
         self.model_path = model_path
 
@@ -127,7 +125,10 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
 
     @cached_property
     def model(self):
-        """Get the Mindspore Neural Networks Cells."""
+        """
+        Get the Mindspore Neural Networks Cells.
+        :return: model property
+        """
         return self.get_cell()
 
     def get_cell(self):
@@ -137,7 +138,5 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
         Pre-defined building blocks or computing units to construct Neural Networks.
         A ``Cell`` could be a single neural network cell, such as conv2d, relu, batch_norm, etc.
         or a composition of cells to constructing a network.
-
-        :return: :class:`mindspore.nn.Cell`
         """
         raise NotImplementedError

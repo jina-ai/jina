@@ -3,7 +3,7 @@ import asyncio
 from abc import ABC
 from typing import Callable
 
-from .base import BaseClient
+from .base import BaseClient, InputType
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
@@ -14,7 +14,7 @@ class WebSocketClientMixin(BaseClient, ABC):
     """A MixIn for Websocket Client."""
 
     async def _get_results(self,
-                           input_fn: Callable,
+                           inputs: InputType,
                            on_done: Callable,
                            on_error: Callable = None,
                            on_always: Callable = None, **kwargs):
@@ -32,7 +32,7 @@ class WebSocketClientMixin(BaseClient, ABC):
             Async recv loop keeps track of num_responses received
             Client exits out of await when num_requests == num_responses
 
-        :param input_fn: the callable
+        :param inputs: the callable
         :param on_done: the callback for on_done
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
@@ -42,7 +42,7 @@ class WebSocketClientMixin(BaseClient, ABC):
         with ImportExtensions(required=True):
             import websockets
 
-        self.input_fn = input_fn
+        self.inputs = inputs
 
         tname = self._get_task_name(kwargs)
         req_iter = self._get_requests(**kwargs)

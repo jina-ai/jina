@@ -86,7 +86,7 @@ ac_table = {
         'client': ['--help', '--request-size', '--mode', '--top-k', '--mime-type', '--continue-on-error',
                    '--return-results', '--max-message-size', '--proxy', '--prefetch', '--prefetch-on-recv', '--restful',
                    '--rest-api', '--compress', '--compress-min-bytes', '--compress-min-ratio', '--host',
-                   '--port-expose'], 'export-api': ['--help', '--yaml-path', '--json-path'],
+                   '--port-expose'], 'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
         'hello-world': ['--help', '--workdir', '--download-proxy', '--shards', '--parallel', '--uses-index',
                         '--index-data-url', '--index-labels-url', '--index-request-size', '--uses-query',
                         '--query-data-url', '--query-labels-url', '--query-request-size', '--num-query', '--top-k']}}

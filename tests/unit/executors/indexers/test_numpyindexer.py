@@ -145,7 +145,8 @@ def test_numpy_indexer_known_big(batch_size, compress_level, test_metas):
             assert isinstance(indexer.query_handler, np.memmap)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
-            [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'], ['19000']]))
+            [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'],
+             ['19000']]))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
         np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
@@ -181,7 +182,8 @@ def test_scipy_indexer_known_big(compress_level, test_metas):
             assert isinstance(indexer.query_handler, np.memmap)
         idx, dist = indexer.query(queries, top_k=1)
         np.testing.assert_equal(idx, np.array(
-            [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'], ['19000']]))
+            [['10000'], ['11000'], ['12000'], ['13000'], ['14000'], ['15000'], ['16000'], ['17000'], ['18000'],
+             ['19000']]))
         assert idx.shape == dist.shape
         assert idx.shape == (10, 1)
         np.testing.assert_equal(indexer.query_by_key(['10000', '15000']), vectors[[0, 5000]])
@@ -269,15 +271,16 @@ def test_indexer_zeros(metric, dimension, test_metas):
             assert not any(math.isnan(x) for x in dist[0])
 
 
+@pytest.mark.parametrize('real_delete', [True, False])
 @pytest.mark.parametrize('compress_level', [0, 1, 2, 3, 4, 5])
-def test_numpy_update_delete(compress_level, test_metas):
+def test_numpy_update_delete_delete_on_dump(compress_level, real_delete, test_metas):
     np.random.seed(500)
     num_dim = 3
     vec_idx = np.array(['12', '112', '903'], dtype=(np.str_, 16))
     vec = np.random.random([len(vec_idx), num_dim])
 
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
-                      metas=test_metas) as indexer:
+                      metas=test_metas, delete_on_dump=real_delete) as indexer:
         indexer.add(vec_idx, vec)
         indexer.save()
         assert indexer.num_dim == num_dim
@@ -305,6 +308,11 @@ def test_numpy_update_delete(compress_level, test_metas):
         indexer.save()
 
     with BaseIndexer.load(save_abspath) as indexer:
+        # this tests the real delete
+        if real_delete:
+            assert len(indexer.valid_indices) == indexer.size
+        else:
+            assert len(indexer.valid_indices) != indexer.size
         assert isinstance(indexer, NumpyIndexer)
         query_results = indexer.query_by_key([key_to_update])
         assert np.array_equal(data_to_update, query_results)
@@ -322,6 +330,11 @@ def test_numpy_update_delete(compress_level, test_metas):
     assert indexer.size == len(vec_idx) - keys_to_delete
 
     with BaseIndexer.load(save_abspath) as indexer:
+        # this tests the real delete
+        if real_delete:
+            assert len(indexer.valid_indices) == indexer.size
+        else:
+            assert len(indexer.valid_indices) != indexer.size
         assert isinstance(indexer, NumpyIndexer)
         assert indexer.size == len(vec_idx) - keys_to_delete
         # random non-existent key
@@ -332,13 +345,13 @@ def test_numpy_update_delete(compress_level, test_metas):
 
 
 @pytest.mark.parametrize('batch_size, compress_level', [(None, 0), (None, 1), (16, 0), (16, 1)])
-def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
+def test_numpy_indexer_known_and_delete_delete_dump(batch_size, compress_level, test_metas):
     vectors = np.array([[1, 1, 1],
                         [10, 10, 10],
                         [100, 100, 100]])
     keys = np.array(['4', '5', '6'], dtype=(np.str_, 16))
     with NumpyIndexer(metric='euclidean', index_filename='np.test.gz', compress_level=compress_level,
-                      metas=test_metas) as indexer:
+                      metas=test_metas, delete_on_dump=True) as indexer:
         indexer.batch_size = batch_size
         indexer.add(keys, vectors)
         indexer.save()
@@ -366,6 +379,8 @@ def test_numpy_indexer_known_and_delete(batch_size, compress_level, test_metas):
         indexer.save()
 
     with BaseIndexer.load(save_abspath) as indexer:
+        # this tests the real delete
+        assert len(indexer.valid_indices) == indexer.size
         assert isinstance(indexer, NumpyIndexer)
         idx, dist = indexer.query(queries, top_k=top_k)
         np.testing.assert_equal(idx, np.array([['5', '6', '4'], ['5', '6', '4']]))

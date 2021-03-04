@@ -1,15 +1,15 @@
-!ImageNormalizer
+jtype: ImageNormalizer
 requests:
   on:
     IndexRequest:
       with:
         traversal_paths: ['c']
       drivers:
-        - !URI2Blob {}
-        - !CraftDriver {}
+        - jtype: URI2Blob {}
+        - jtype: CraftDriver {}
     SearchRequest:
       with:
         traversal_paths: [ 'c' ]
       drivers:
-        - !DataURI2Blob { }
-        - !CraftDriver { }
+        - jtype: DataURI2Blob { }
+        - jtype: CraftDriver { }

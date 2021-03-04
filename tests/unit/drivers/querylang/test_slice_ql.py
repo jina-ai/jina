@@ -1,5 +1,17 @@
+from jina import DocumentSet
 from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
+
+
+class SimpleSliceQL(SliceQL):
+
+    def __init__(self, docs, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._docs = docs
+
+    @property
+    def docs(self):
+        return self._docs
 
 
 def random_docs_with_chunks(num_docs):
@@ -23,7 +35,7 @@ def random_docs_with_chunks(num_docs):
                 dcc.tags['id'] = cc
                 dcc.granularity = 2
         docs.append(d)
-    return docs
+    return DocumentSet(docs)
 
 
 def random_docs_with_chunks_and_matches(num_docs):
@@ -81,13 +93,13 @@ def random_docs_with_chunks_and_matches(num_docs):
                 dmc.granularity = dm.granularity + 1
 
         docs.append(d)
-    return docs
+    return DocumentSet(docs)
 
 
 def test_slice_ql_on_chunks():
     docs = random_docs_with_chunks(10)
-    driver = SliceQL(start=0, end=2, traversal_paths=('cc', 'c', 'r'))
-    driver._traverse_apply(docs)
+    driver = SimpleSliceQL(docs=docs, start=0, end=2, traversal_paths=('cc', 'c', 'r'))
+    driver()
     assert len(docs) == 2
     assert len(docs[0].chunks) == 2  # slice on level 1
     assert len(docs[0].chunks[0].chunks) == 2  # slice on level 2 for chunks
@@ -99,7 +111,6 @@ def test_slice_ql_on_chunks():
 
 def test_slice_ql_on_matches_and_chunks():
     docs = random_docs_with_chunks_and_matches(10)
-    driver = SliceQL(start=0, end=2, traversal_paths=('cc', 'c', 'r', 'mm', 'm'))
     assert len(docs) == 10
     assert len(docs[0].chunks) == 10
     assert len(docs[-1].chunks) == 10
@@ -121,7 +132,9 @@ def test_slice_ql_on_matches_and_chunks():
     assert len(docs[-1].chunks[0].matches) == 10
     assert len(docs[-1].chunks[-1].chunks) == 10
     assert len(docs[-1].chunks[-1].matches) == 10
-    driver._traverse_apply(docs)
+    driver = SimpleSliceQL(docs=docs, start=0, end=2, traversal_paths=('cc', 'c', 'r', 'mm', 'm'))
+    driver()
+
     assert len(docs) == 2
 
     assert len(docs[0].chunks) == 2  # slice on level 1

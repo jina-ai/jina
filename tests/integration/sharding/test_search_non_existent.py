@@ -42,7 +42,7 @@ def test_search_non_existent(config, mocker):
             uses=os.path.join(cur_dir, 'yaml', yaml_file),
             shards=2,
     ) as index_flow:
-        index_flow.index(input_fn=random_docs(0, 3), request_size=1)
+        index_flow.index(inputs=random_docs(0, 3), request_size=1)
 
     mock = mocker.Mock()
     with Flow(read_only=True).add(
@@ -52,7 +52,7 @@ def test_search_non_existent(config, mocker):
             polling='all'
     ) as search_flow:
         search_flow.search(
-            input_fn=random_docs(0, 5),
+            inputs=random_docs(0, 5),
             on_done=mock,
             request_size=5
         )

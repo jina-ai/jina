@@ -4,7 +4,7 @@ with:
   metric: euclidean
 metas:
   name: test2
-  workspace: test-index-file
+  workspace: $JINA_TEST_HIGH_ORDER_MATCHES
 requests:
   on:
     ControlRequest:

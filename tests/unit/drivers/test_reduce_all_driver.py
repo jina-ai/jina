@@ -47,7 +47,7 @@ class MockEncoderReduce(BaseEncoder):
 
 
 def test_merge_chunks_with_different_modality(mocker, docs):
-    def input_fn():
+    def input_function():
         return docs
 
     def validate(req):
@@ -56,6 +56,7 @@ def test_merge_chunks_with_different_modality(mocker, docs):
             assert len(doc.chunks) == 2
             assert doc.chunks[0].modality in ['mode1', 'mode2']
             assert doc.chunks[1].modality in ['mode1', 'mode2']
+            assert doc.chunks[0].modality != doc.chunks[1].modality
 
     response_mock = mocker.Mock()
 
@@ -66,6 +67,30 @@ def test_merge_chunks_with_different_modality(mocker, docs):
             needs=['encoder1', 'encoder2'])
 
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock)
+        flow.index(inputs=input_function, on_done=response_mock)
 
     validate_callback(response_mock, validate)
+
+
+def test_reduce_all_root_chunks(mocker, docs):
+    def input_fn():
+        return docs
+
+    def validate(req):
+        assert len(req.index.docs) == 6
+        for doc in req.index.docs:
+            assert len(doc.chunks) == 1
+            assert doc.chunks[0].modality in ['mode1', 'mode2']
+
+    response_mock = mocker.Mock()
+
+    flow = Flow().add(name='segmenter', uses='MockSegmenterReduce'). \
+        add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
+        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter']). \
+        add(name='reducer', uses='- !ReduceAllDriver | {traversal_paths: [r]}',
+            needs=['encoder1', 'encoder2'])
+
+    with flow:
+        flow.index(input_fn=input_fn, on_done=response_mock)
+    validate_callback(response_mock, validate)
+

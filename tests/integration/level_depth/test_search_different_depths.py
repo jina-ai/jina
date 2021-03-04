@@ -55,7 +55,7 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
     mock = mocker.Mock()
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
-            input_fn=search_data,
+            inputs=search_data,
             on_done=mock,
             on_error=lambda r: print(r)
 

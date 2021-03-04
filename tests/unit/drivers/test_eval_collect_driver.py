@@ -4,7 +4,7 @@ from jina.proto.jina_pb2 import DocumentProto
 from tests import validate_callback
 
 
-def input_fn():
+def input_function():
     doc1 = DocumentProto()
     doc2 = DocumentProto()
     # doc1 and doc2 should have the same id
@@ -30,7 +30,7 @@ def test_collect_evals_driver(mocker):
             .add(name='b', needs='gateway')
             .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
     with flow:
-        flow.index(input_fn=input_fn, on_done=mock)
+        flow.index(inputs=input_function, on_done=mock)
 
     mock.assert_called_once()
     validate_callback(mock, validate)

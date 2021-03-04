@@ -1,10 +1,18 @@
-from jina.drivers import RecursiveMixin, BaseExecutableDriver
-from jina.proto import jina_pb2
+from jina.drivers import FlatRecursiveMixin, BaseExecutableDriver
+from jina import DocumentSet, Document
 
 DOCUMENTS_PER_LEVEL = 1
 
 
-class AppendOneChunkTwoMatchesCrafter(RecursiveMixin, BaseExecutableDriver):
+class AppendOneChunkTwoMatchesCrafter(FlatRecursiveMixin, BaseExecutableDriver):
+
+    def __init__(self, docs, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._docs = docs
+
+    @property
+    def docs(self):
+        return self._docs
 
     def _apply_all(self, docs, *args, **kwargs) -> None:
         for doc in docs:
@@ -14,17 +22,17 @@ class AppendOneChunkTwoMatchesCrafter(RecursiveMixin, BaseExecutableDriver):
 
 
 def add_chunk(doc):
-    chunk = doc.chunks.add()
+    chunk = Document()
     chunk.granularity = doc.granularity + 1
     chunk.adjacency = doc.adjacency
-    return chunk
+    return doc.chunks.add(chunk)
 
 
 def add_match(doc):
-    match = doc.matches.add()
+    match = Document()
     match.granularity = doc.granularity
     match.adjacency = doc.adjacency + 1
-    return match
+    return doc.matches.add(match)
 
 
 def build_docs():
@@ -44,18 +52,18 @@ def build_docs():
 
     docs = []
     for base_id in range(DOCUMENTS_PER_LEVEL):
-        document = jina_pb2.DocumentProto()
+        document = Document()
         document.granularity = 0
         document.adjacency = 0
         docs.append(document)
         iterate_build(document, 0, 0)
-    return docs
+    return DocumentSet(docs)
 
 
 def apply_traversal_path(traversal_paths):
     docs = build_docs()
-    driver = AppendOneChunkTwoMatchesCrafter(traversal_paths=traversal_paths)
-    driver._traverse_apply(docs)
+    driver = AppendOneChunkTwoMatchesCrafter(docs=docs, traversal_paths=traversal_paths)
+    driver()
     return docs
 
 
@@ -219,15 +227,15 @@ def test_chunk_root():
     assert len(docs[0].chunks[1].chunks) == 0
 
 
-def test_traverse_apply():
+def test_call():
     docs = build_docs()
     doc = docs[0]
     doc.ClearField('chunks')
-    docs = [doc, ]
-    driver = AppendOneChunkTwoMatchesCrafter(traversal_paths=('mcm',))
+    docs = DocumentSet([doc])
+    driver = AppendOneChunkTwoMatchesCrafter(docs=docs, traversal_paths=('mcm',))
     assert docs[0].matches[0].chunks[0].matches[0].granularity == 1
     assert docs[0].matches[0].chunks[0].matches[0].adjacency == 2
-    driver._traverse_apply(docs)
+    driver()
     assert len(docs[0].matches[0].chunks[0].matches) == 1
     assert len(docs[0].matches[0].chunks[0].matches[0].chunks) == 2
     assert len(docs[0].matches[0].chunks[0].matches[0].matches) == 2

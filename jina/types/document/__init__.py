@@ -13,6 +13,7 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
+from .traversable import Traversable
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray
@@ -39,7 +40,7 @@ _document_fields = set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelc
 _all_mime_types = set(mimetypes.types_map.values())
 
 
-class Document(ProtoTypeMixin):
+class Document(ProtoTypeMixin, Traversable):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -105,7 +106,6 @@ class Document(ProtoTypeMixin):
                  field_resolver: Dict[str, str] = None,
                  copy: bool = False, **kwargs):
         """
-
         :param document: the document to construct from. If ``bytes`` is given
                 then deserialize a :class:`DocumentProto`; ``dict`` is given then
                 parse a :class:`DocumentProto` from it; ``str`` is given, then consider
@@ -191,27 +191,33 @@ class Document(ProtoTypeMixin):
 
     @property
     def length(self) -> int:
-        """Get the length of of the document."""
+        """
+        The number of siblings of the :class:``Document``
+
+        .. # noqa: DAR201
+        :getter: number of siblings
+        :setter: number of siblings
+        :type: int
+        """
         # TODO(Han): rename this to siblings as this shadows the built-in `length`
+
         return self._pb_body.length
 
     @length.setter
     def length(self, value: int):
-        """
-        Set the length of of the document.
-
-        :param value: The int length of the document
-        """
         self._pb_body.length = value
 
     @property
     def weight(self) -> float:
-        """Return the weight of the document."""
+        """
+        :return: the weight of the document
+        """
         return self._pb_body.weight
 
     @weight.setter
     def weight(self, value: float):
-        """Set the weight of the document.
+        """
+        Set the weight of the document.
 
         :param value: the float weight of the document.
         """
@@ -219,7 +225,8 @@ class Document(ProtoTypeMixin):
 
     @property
     def modality(self) -> str:
-        """Get the modality of the document."""
+        """
+        :return: the modality of the document."""
         return self._pb_body.modality
 
     @modality.setter
@@ -641,6 +648,16 @@ class Document(ProtoTypeMixin):
         self._pb_body.granularity = granularity_value
 
     @property
+    def adjacency(self):
+        """Return the adjacency of the document."""
+        return self._pb_body.adjacency
+
+    @adjacency.setter
+    def adjacency(self, adjacency_value: int):
+        """Set the adjacency of the document."""
+        self._pb_body.adjacency = adjacency_value
+
+    @property
     def score(self):
         """Return the score of the document."""
         return NamedScore(self._pb_body.score)
@@ -823,7 +840,7 @@ class Document(ProtoTypeMixin):
         mermaid_str = """
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
 classDiagram
-        
+
         """ + self.__mermaid_str__()
 
         encoded_str = base64.b64encode(bytes(mermaid_str.strip(), 'utf-8')).decode('utf-8')
