@@ -56,7 +56,7 @@ def random_workspace(tmpdir):
 def test_indexer_with_ref_indexer(random_workspace, parallel, index_docs, mocker, uses_no_docker):
     top_k = 10
     with Flow.load_config(os.path.join('index.yml')) as index_flow:
-        index_flow.index(input_fn=index_docs, request_size=10)
+        index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
@@ -67,7 +67,7 @@ def test_indexer_with_ref_indexer(random_workspace, parallel, index_docs, mocker
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join('query.yml')) as query_flow:
-        query_flow.search(input_fn=[query_document], on_done=mock, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
     validate_callback(mock, validate_response)
@@ -77,7 +77,7 @@ def test_indexer_with_ref_indexer(random_workspace, parallel, index_docs, mocker
 def test_indexer_with_ref_indexer_compound(random_workspace, parallel, index_docs, mocker, uses_no_docker):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'compound-index.yml')) as index_flow:
-        index_flow.index(input_fn=index_docs, request_size=10)
+        index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
@@ -88,7 +88,7 @@ def test_indexer_with_ref_indexer_compound(random_workspace, parallel, index_doc
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'compound-query.yml')) as query_flow:
-        query_flow.search(input_fn=[query_document], on_done=mock, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
     validate_callback(mock, validate_response)
@@ -107,7 +107,7 @@ def random_workspace_move(tmpdir):
 def test_indexer_with_ref_indexer_move(random_workspace_move, parallel, index_docs, mocker, uses_no_docker):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'index.yml')) as index_flow:
-        index_flow.index(input_fn=index_docs, request_size=10)
+        index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
@@ -123,7 +123,7 @@ def test_indexer_with_ref_indexer_move(random_workspace_move, parallel, index_do
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'query.yml')) as query_flow:
-        query_flow.search(input_fn=[query_document], on_done=mock, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
     validate_callback(mock, validate_response)
@@ -133,7 +133,7 @@ def test_indexer_with_ref_indexer_move(random_workspace_move, parallel, index_do
 def test_indexer_with_ref_indexer_compound_move(random_workspace_move, parallel, index_docs, mocker, uses_no_docker):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'compound-index.yml')) as index_flow:
-        index_flow.index(input_fn=index_docs, request_size=10)
+        index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
@@ -149,7 +149,7 @@ def test_indexer_with_ref_indexer_compound_move(random_workspace_move, parallel,
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'compound-query.yml')) as query_flow:
-        query_flow.search(input_fn=[query_document], on_done=mock, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
     validate_callback(mock, validate_response)
@@ -191,7 +191,7 @@ def random_workspace_in_docker(tmpdir):
 def test_indexer_with_ref_indexer_in_docker(random_workspace_in_docker, parallel, index_docs, mocker, uses_docker):
     top_k = 10
     with Flow.load_config(os.path.join('index.yml')) as index_flow:
-        index_flow.index(input_fn=index_docs, request_size=10)
+        index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
@@ -202,7 +202,7 @@ def test_indexer_with_ref_indexer_in_docker(random_workspace_in_docker, parallel
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join('query.yml')) as query_flow:
-        query_flow.search(input_fn=[query_document], on_done=mock, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
     validate_callback(mock, validate_response)
@@ -212,7 +212,7 @@ def test_indexer_with_ref_indexer_in_docker(random_workspace_in_docker, parallel
 def test_indexer_with_ref_indexer_compound_in_docker(random_workspace_in_docker, parallel, index_docs, mocker, uses_docker):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'compound-index.yml')) as index_flow:
-        index_flow.index(input_fn=index_docs, request_size=10)
+        index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
@@ -223,7 +223,7 @@ def test_indexer_with_ref_indexer_compound_in_docker(random_workspace_in_docker,
     query_document = Document()
     query_document.embedding = np.array([1, 1])
     with Flow.load_config(os.path.join(cur_dir, 'compound-query.yml')) as query_flow:
-        query_flow.search(input_fn=[query_document], on_done=mock, top_k=top_k)
+        query_flow.search(inputs=[query_document], on_done=mock, top_k=top_k)
 
     mock.assert_called_once()
     validate_callback(mock, validate_response)

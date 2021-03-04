@@ -118,7 +118,7 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir, mocker)
     on_error_mock = mocker.Mock()
 
     with Flow().add(uses=executor_yml_file) as f:
-        f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
+        f.search(inputs=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  request_size=request_size,
                  on_done=on_done_mock,
                  on_error=on_error_mock)
@@ -165,7 +165,7 @@ def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num
     on_error_mock = mocker.Mock()
 
     with Flow().add(uses=executor_yml_file) as f:
-        f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
+        f.search(inputs=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  request_size=request_size,
                  on_done=on_done_mock,
                  on_error=on_error_mock)

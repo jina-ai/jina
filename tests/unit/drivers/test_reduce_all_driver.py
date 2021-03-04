@@ -47,7 +47,7 @@ class MockEncoderReduce(BaseEncoder):
 
 
 def test_merge_chunks_with_different_modality(mocker, docs):
-    def input_fn():
+    def input_function():
         return docs
 
     def validate(req):
@@ -66,6 +66,6 @@ def test_merge_chunks_with_different_modality(mocker, docs):
             needs=['encoder1', 'encoder2'])
 
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock)
+        flow.index(inputs=input_function, on_done=response_mock)
 
     validate_callback(response_mock, validate)

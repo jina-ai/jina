@@ -3,21 +3,23 @@ from typing import Union, Iterable, TextIO, Dict
 
 import numpy as np
 
-from ...clients.base import InputFnType, CallbackFnType
+from ...clients.base import InputType, CallbackFnType
 from ...enums import DataInputType
 from ...helper import deprecated_alias
 
 
 class CRUDFlowMixin:
     """The synchronous version of the Mixin for CRUD in Flow"""
-    def train(self, input_fn: InputFnType,
+
+    @deprecated_alias(input_fn=('inputs', 0))
+    def train(self, inputs: InputType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
               **kwargs):
         """Do training on the current Flow
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param inputs: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -25,9 +27,9 @@ class CRUDFlowMixin:
         :return: results
         """
         warnings.warn(f'{self.train} is under heavy refactoring', FutureWarning)
-        return self._get_client(**kwargs).train(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).train(inputs, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_ndarray(self, array: 'np.ndarray',
                       axis: int = 0,
                       size: int = None,
@@ -52,7 +54,7 @@ class CRUDFlowMixin:
         return self._get_client(**kwargs).index(_input_ndarray(array, axis, size, shuffle),
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_ndarray(self, array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False,
                        on_done: CallbackFnType = None,
                        on_error: CallbackFnType = None,
@@ -73,7 +75,7 @@ class CRUDFlowMixin:
         self._get_client(**kwargs).search(_input_ndarray(array, axis, size, shuffle),
                                           on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_lines(self,
                     lines: Union[Iterable[str], TextIO] = None,
                     filepath: str = None,
@@ -203,7 +205,7 @@ class CRUDFlowMixin:
                        field_resolver=field_resolver),
             on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def index_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                     size: int = None, sampling_rate: float = None, read_mode: str = None,
                     on_done: CallbackFnType = None,
@@ -228,7 +230,7 @@ class CRUDFlowMixin:
         return self._get_client(**kwargs).index(_input_files(patterns, recursive, size, sampling_rate, read_mode),
                                                 on_done, on_error, on_always, data_type=DataInputType.CONTENT, **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_files(self, patterns: Union[str, Iterable[str]], recursive: bool = True,
                      size: int = None, sampling_rate: float = None, read_mode: str = None,
                      on_done: CallbackFnType = None,
@@ -254,7 +256,7 @@ class CRUDFlowMixin:
                                                  on_done, on_error, on_always, data_type=DataInputType.CONTENT,
                                                  **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
     def search_lines(self,
                      lines: Union[Iterable[str], TextIO] = None,
                      filepath: str = None,
@@ -324,36 +326,37 @@ class CRUDFlowMixin:
                           field_resolver=field_resolver),
             on_done, on_error, on_always, data_type=DataInputType.AUTO, **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def index(self, input_fn: InputFnType,
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    def index(self, inputs: InputType,
               on_done: CallbackFnType = None,
               on_error: CallbackFnType = None,
               on_always: CallbackFnType = None,
               **kwargs):
         """Do indexing on the current Flow
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param inputs: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :return: results
         """
-        return self._get_client(**kwargs).index(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).index(inputs, on_done, on_error, on_always, **kwargs)
 
-    def update(self, input_fn: InputFnType,
+    @deprecated_alias(input_fn=('inputs', 0))
+    def update(self, inputs: InputType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
                **kwargs):
         """Updates Documents on the current Flow
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param inputs: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).update(input_fn, on_done, on_error, on_always, **kwargs)
+        self._get_client(**kwargs).update(inputs, on_done, on_error, on_always, **kwargs)
 
     def delete(self, ids: Iterable[str],
                on_done: CallbackFnType = None,
@@ -370,8 +373,8 @@ class CRUDFlowMixin:
         """
         self._get_client(**kwargs).delete(ids, on_done, on_error, on_always, **kwargs)
 
-    @deprecated_alias(buffer=('input_fn', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def search(self, input_fn: InputFnType,
+    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
+    def search(self, inputs: InputType,
                on_done: CallbackFnType = None,
                on_error: CallbackFnType = None,
                on_always: CallbackFnType = None,
@@ -379,11 +382,11 @@ class CRUDFlowMixin:
         """Do searching on the current Flow
         It will start a :py:class:`CLIClient` and call :py:func:`search`.
 
-        :param input_fn: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param inputs: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :return: results
         """
-        return self._get_client(**kwargs).search(input_fn, on_done, on_error, on_always, **kwargs)
+        return self._get_client(**kwargs).search(inputs, on_done, on_error, on_always, **kwargs)

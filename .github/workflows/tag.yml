@@ -18,7 +18,7 @@ jobs:
           repository: jina-ai/api
           path: schema
           token: ${{ secrets.JINA_DEV_BOT }}
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
         with:
           python-version: 3.7
       - run: |
@@ -75,13 +75,24 @@ jobs:
           ref: refs/heads/master
           inputs: '{ "version": "${{ env.JINA_VERSION }}" }'
 
+  deploy-jinad-cloud-jina-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Destroy previous & Deploy new JinaD
+          repo: jina-ai/jina-terraform
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: refs/heads/main
+          inputs: '{ "TFID": "cloud.jina.ai", "instance_type": "t2.micro", "region": "us-east-1", "cloudflare_record_name": "cloud" }'
+
   update-doc:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
         with:
           python-version: 3.7
       - id: get_version
@@ -163,7 +174,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'master'
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
         with:
           python-version: 3.7
       - run: |
