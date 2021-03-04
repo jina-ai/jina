@@ -188,12 +188,12 @@ def _get_total_size(full_data_size, batch_size, num_batch):
     return total_size
 
 
-def _merge_results_after_batching(final_result, merge_over_axis: int = 0):
+def _merge_results_after_batching(final_result, merge_over_axis: int = 0, flatten: bool = True):
     if len(final_result) == 1:
         # the only result of one batch
         return final_result[0]
 
-    if len(final_result) and merge_over_axis is not None:
+    if len(final_result):
         if isinstance(final_result[0], np.ndarray):
             if len(final_result[0].shape) > 1:
                 final_result = np.concatenate(final_result, merge_over_axis)
@@ -203,7 +203,7 @@ def _merge_results_after_batching(final_result, merge_over_axis: int = 0):
             for col in range(num_cols):
                 reduced_result.append(np.concatenate([row[col] for row in final_result], merge_over_axis))
             final_result = tuple(reduced_result)
-        elif isinstance(final_result[0], list):
+        elif isinstance(final_result[0], list) and flatten:
             final_result = list(chain.from_iterable(final_result))
 
     if len(final_result):
@@ -217,7 +217,8 @@ def batching(func: Callable[[Any], np.ndarray] = None,
              merge_over_axis: int = 0,
              slice_on: int = 1,
              label_on: Optional[int] = None,
-             ordinal_idx_arg: Optional[int] = None) -> Any:
+             ordinal_idx_arg: Optional[int] = None,
+             flatten_output: bool = True) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
 
@@ -232,6 +233,7 @@ def batching(func: Callable[[Any], np.ndarray] = None,
     :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
             where function decorated needs to know the ordinal indexes of the data in the batch
             (Not used when label_on is used)
+    :param flatten_output: Flag to determine if a result of list of lists needs to be flattened in output
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
@@ -302,7 +304,7 @@ def batching(func: Callable[[Any], np.ndarray] = None,
                 if r is not None:
                     final_result.append(r)
 
-            return _merge_results_after_batching(final_result, merge_over_axis)
+            return _merge_results_after_batching(final_result, merge_over_axis, flatten_output)
 
         return arg_wrapper
 
@@ -403,7 +405,8 @@ def batching_multi_input(func: Callable[[Any], np.ndarray] = None,
 
 def single(func: Callable[[Any], np.ndarray] = None,
            merge_over_axis: int = 0,
-           slice_on: int = 1) -> Any:
+           slice_on: int = 1,
+           flatten_output: bool = True) -> Any:
     """
     Guarantee that the input of a function is provided as a single instance and not in batches
 
@@ -411,6 +414,7 @@ def single(func: Callable[[Any], np.ndarray] = None,
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
+    :param flatten_output: Flag to determine if a result of list of lists needs to be flattened in output
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
@@ -439,7 +443,7 @@ def single(func: Callable[[Any], np.ndarray] = None,
                 if r is not None:
                     final_result.append(r)
 
-            return _merge_results_after_batching(final_result, merge_over_axis)
+            return _merge_results_after_batching(final_result, merge_over_axis, flatten_output)
 
         return arg_wrapper
 
