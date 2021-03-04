@@ -8,12 +8,17 @@ from jina.types.sets import DocumentSet
 
 class MockMatches2DocRankDriver(Matches2DocRankDriver):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, docs, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._docs = docs
 
     @property
     def exec_fn(self):
         return self._exec_fn
+
+    @property
+    def docs(self):
+        return self._docs
 
 
 class MockAbsoluteLengthRanker(Match2DocRanker):
@@ -51,10 +56,10 @@ def create_document_to_score():
 
 def test_chunk2doc_ranker_driver_mock_exec():
     doc = create_document_to_score()
-    driver = MockMatches2DocRankDriver()
+    driver = MockMatches2DocRankDriver(DocumentSet([doc]))
     executor = MockAbsoluteLengthRanker()
     driver.attach(executor=executor, runtime=None)
-    driver._traverse_apply(DocumentSet([doc, ]))
+    driver()
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '3' * 24
     assert doc.matches[0].score.value == -1

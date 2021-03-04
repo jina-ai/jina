@@ -5,15 +5,16 @@ from typing import Any, Iterator, Optional, Tuple, Union
 
 import numpy as np
 
-from . import BaseExecutableDriver, RecursiveMixin
+from . import BaseExecutableDriver
 from ..types.querylang.queryset.dunderkey import dunder_get
 from .search import KVSearchDriver
 from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair
 from ..helper import deprecated_alias
+from ..types.sets.doc_groundtruth import DocumentGroundtruthSequence
 
 
-class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
+class BaseEvaluateDriver(BaseExecutableDriver):
     """The Base Driver for evaluation operations.
 
     .. warning::
@@ -29,7 +30,8 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
     :param **kwargs:
     """
 
-    def __init__(self, executor: Optional[str] = None,
+    def __init__(self,
+                 executor: Optional[str] = None,
                  method: str = 'evaluate',
                  running_avg: bool = False,
                  *args,
@@ -43,9 +45,13 @@ class BaseEvaluateDriver(RecursiveMixin, BaseExecutableDriver):
         :param *args: *args for _traverse_apply
         :param **kwargs: **kwargs for _traverse_apply
         """
-        docs_groundtruths = [DocGroundtruthPair(doc, groundtruth) for doc, groundtruth in
-                             zip(self.docs, self.req.groundtruths)]
-        self._traverse_apply(docs_groundtruths, *args, **kwargs)
+        docs_groundtruths = DocumentGroundtruthSequence([
+            DocGroundtruthPair(doc, groundtruth)
+            for doc, groundtruth
+            in zip(self.req.docs, self.req.groundtruths)
+        ])
+        traversal_result = docs_groundtruths.traverse_flatten(self._traversal_paths)
+        self._apply_all(traversal_result, *args, **kwargs)
 
     def _apply_all(
             self,

@@ -1,16 +1,16 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple
+from typing import Iterable, Tuple
 
 from ...types.querylang.queryset.dunderkey import dunder_get
-from .. import QuerySetReader, RecursiveMixin, BaseRecursiveDriver
+from .. import QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver
 
 if False:
     from ...types.sets import DocumentSet
 
 
-class SortQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
+class SortQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     """Sorts the incoming of the documents by the value of a given field.
      It can also work in reverse mode
 
@@ -45,5 +45,6 @@ class SortQL(QuerySetReader, RecursiveMixin, BaseRecursiveDriver):
         self._reverse = reverse
         self._field = field
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        docs.sort(key=lambda x: dunder_get(x, self.field), reverse=self.reverse)
+    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        for docs in doc_sequences:
+            docs.sort(key=lambda x: dunder_get(x, self.field), reverse=self.reverse)

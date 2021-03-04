@@ -288,6 +288,7 @@ def random_port() -> Optional[int]:
 
     :return: A random port.
     """
+
     import threading
     import multiprocessing
     from contextlib import closing
@@ -297,9 +298,12 @@ def random_port() -> Optional[int]:
         with multiprocessing.Lock():
             with threading.Lock():
                 with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                    s.bind(('', port))
-                    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                    return s.getsockname()[1]
+                    try:
+                        s.bind(('', port))
+                        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                        return s.getsockname()[1]
+                    except OSError:
+                        pass
 
     _port = None
     if 'JINA_RANDOM_PORTS' in os.environ:
@@ -312,7 +316,8 @@ def random_port() -> Optional[int]:
             raise OSError(f'Couldn\'t find an available port in [{min_port}, {max_port}].')
     else:
         _port = _get_port()
-    return _port
+
+    return int(_port)
 
 
 def random_identity(use_uuid1: bool = False) -> str:

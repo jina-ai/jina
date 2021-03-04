@@ -3,13 +3,13 @@ __license__ = "Apache-2.0"
 
 from typing import Optional
 
-from . import FastRecursiveMixin, BaseExecutableDriver
+from . import FlatRecursiveMixin, BaseExecutableDriver
 
 if False:
     from .. import DocumentSet
 
 
-class CraftDriver(FastRecursiveMixin, BaseExecutableDriver):
+class CraftDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(self, executor: Optional[str] = None, method: str = 'craft', *args, **kwargs):

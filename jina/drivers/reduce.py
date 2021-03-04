@@ -1,18 +1,17 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Dict, Any
+from typing import Tuple, Iterable
+
+from collections import defaultdict
 
 import numpy as np
 
-from . import RecursiveMixin, BaseRecursiveDriver
-
-if False:
-    from ..types.document import Document
-    from ..types.sets import DocumentSet
+from . import ContextAwareRecursiveMixin, BaseRecursiveDriver, FlatRecursiveMixin
+from ..types.sets import ChunkSet, MatchSet, DocumentSet
 
 
-class ReduceAllDriver(RecursiveMixin, BaseRecursiveDriver):
+class ReduceAllDriver(ContextAwareRecursiveMixin, BaseRecursiveDriver):
     """:class:`ReduceAllDriver` merges chunks/matches from all requests, recursively.
 
     .. note::
@@ -23,73 +22,70 @@ class ReduceAllDriver(RecursiveMixin, BaseRecursiveDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('c',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def __call__(self, *args, **kwargs):
-        # all pointers of the docs, provide the weak ref to all docs in partial reqs
-        self.doc_pointers = {}  # type: Dict[str, Any]
-        self._traverse_apply(self.docs, *args, **kwargs)
-        self.doc_pointers.clear()
-
-    def _apply_root(self, docs: 'DocumentSet', field: str, *args, **kwargs):
-        docs = []
-        for doc in self.docs:
-            docs.append(doc)
+    def _apply_root(self, docs):
         request = self.msg.request
-        request.body.ClearField(field)
+        request.body.ClearField('docs')
         request.docs.extend(docs)
 
-    def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
-            *args,
-            **kwargs) -> None:
+    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+        doc_pointers = {}
+        for docs in doc_sequences:
+            if isinstance(docs, (ChunkSet, MatchSet)):
+                context_id = docs.reference_doc.id
+                if context_id not in doc_pointers:
+                    doc_pointers[context_id] = docs.reference_doc
+                else:
+                    if isinstance(docs, ChunkSet):
+                        doc_pointers[context_id].chunks.extend(docs)
+                    else:
+                        doc_pointers[context_id].matches.extend(docs)
+            else:
+                self._apply_root(docs)
 
-        if context_doc.id not in self.doc_pointers:
-            self.doc_pointers[context_doc.id] = context_doc
-        else:
-            getattr(self.doc_pointers[context_doc.id], field).extend(docs)
 
-
-class CollectEvaluationDriver(ReduceAllDriver):
+class CollectEvaluationDriver(FlatRecursiveMixin, BaseRecursiveDriver):
     """Merge all evaluations into one, grouped by ``doc.id`` """
 
+    def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
+
     def _apply_all(
             self,
             docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
             *args,
             **kwargs) -> None:
-        if context_doc.id not in self.doc_pointers:
-            self.doc_pointers[context_doc.id] = context_doc.evaluations
-        else:
-            self.doc_pointers[context_doc.id].extend(context_doc.evaluations)
+        doc_pointers = {}
+        for doc in docs:
+            if doc.id not in doc_pointers:
+                doc_pointers[doc.id] = doc.evaluations
+            else:
+                doc_pointers[doc.id].extend(doc.evaluations)
 
 
-class ConcatEmbedDriver(ReduceAllDriver):
-    """Concat all embeddings into one, grouped by ```doc.id``` """
+class ConcatEmbedDriver(BaseRecursiveDriver):
+    """Concat all embeddings into one, grouped by ``doc.id`` """
+
+    def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
+        super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        # all pointers of the docs, provide the weak ref to all docs in partial reqs
-        self.doc_pointers = {}  # type: Dict[str, Any]
-        self._traverse_apply(self.docs, *args, **kwargs)
-        self._traverse_apply(self.req.docs, concatenate=True, *args, **kwargs)
-        self.doc_pointers.clear()
+        """Performs the concatenation of all embeddings in `self.docs`.
 
-    def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            context_doc: 'Document',
-            field: str,
-            concatenate: bool = False,
-            *args,
-            **kwargs):
-        doc = context_doc
-        if concatenate:
-            doc.embedding = np.concatenate(self.doc_pointers[doc.id], axis=0)
-        else:
-            if doc.id not in self.doc_pointers:
-                self.doc_pointers[doc.id] = [doc.embedding]
-            else:
-                self.doc_pointers[doc.id].append(doc.embedding)
+        :param *args: *args not used. Only for complying with parent class interface.
+        :param **kwargs: **kwargs not used. Only for complying with parent class interface.
+        """
+        all_documents = self.docs.traverse_flatten(self._traversal_paths)
+        doc_pointers = self._collect_embeddings(all_documents)
+
+        last_request_documents = self.req.docs.traverse_flatten(self._traversal_paths)
+        self._concat_apply(last_request_documents, doc_pointers)
+
+    def _collect_embeddings(self, docs: 'DocumentSet'):
+        doc_pointers = defaultdict(list)
+        for doc in docs:
+            doc_pointers[doc.id].append(doc.embedding)
+        return doc_pointers
+
+    def _concat_apply(self, docs, doc_pointers):
+        for doc in docs:
+            doc.embedding = np.concatenate(doc_pointers[doc.id], axis=0)
