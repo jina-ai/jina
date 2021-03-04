@@ -8,6 +8,7 @@ from jina.executors.rankers import Chunk2DocRanker
 from jina.executors.segmenters import BaseSegmenter
 import numpy as np
 
+
 class DummySentencizer(BaseSegmenter):
 
     def __init__(self,
@@ -38,6 +39,7 @@ class DummySentencizer(BaseSegmenter):
             ))
         return results
 
+
 class DummyMinRanker(Chunk2DocRanker):
     """
     :class:`MinRanker` calculates the score of the matched doc from the matched chunks. For each matched doc, the score
@@ -48,12 +50,10 @@ class DummyMinRanker(Chunk2DocRanker):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        import warnings
-        warnings.warn("MinRanker is deprecated. Please use SimpleAggregateRanker instead", DeprecationWarning,
-                      stacklevel=2)
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return 1. / (1. + match_idx[self.COL_SCORE].min())
+
 
 class DummyOneHotTextEncoder(BaseTextEncoder):
     """
@@ -78,7 +78,6 @@ class DummyOneHotTextEncoder(BaseTextEncoder):
     def post_init(self):
         self.embeddings = np.eye(self.dim) * self.on_value + \
                           (np.ones((self.dim, self.dim)) - np.eye(self.dim)) * self.off_value
-
 
     @batching
     @as_ndarray
