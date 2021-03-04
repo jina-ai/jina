@@ -9,6 +9,8 @@ from jina.drivers.encode import LegacyEncodeDriver
 from jina.flow import Flow
 from jina import Document, NdArray
 
+from tests import validate_callback
+
 
 class MockEncoder(BaseEncoder):
     def __init__(self,
@@ -84,7 +86,7 @@ def document_generator(num_docs, num_chunks, num_chunks_chunks):
 
 @pytest.mark.parametrize('request_size', [8, 16, 32])
 @pytest.mark.parametrize('driver_batch_size', [3, 4, 13])
-def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
+def test_encode_driver_batching(request_size, driver_batch_size, tmpdir, mocker):
     num_docs = 137
     num_chunks = 0
     num_chunks_chunks = 0
@@ -99,9 +101,6 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
         for doc in resp.search.docs:
             assert NdArray(doc.embedding).value is not None
 
-    def fail_if_error(resp):
-        assert False
-
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
                           num_docs_in_same_request=request_size,
                           total_num_docs=num_docs)
@@ -115,11 +114,17 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
     executor_yml_file = os.path.join(tmpdir, 'executor.yml')
     encoder.save_config(executor_yml_file)
 
+    on_done_mock = mocker.Mock()
+    on_error_mock = mocker.Mock()
+
     with Flow().add(uses=executor_yml_file) as f:
-        f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
+        f.search(inputs=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  request_size=request_size,
-                 on_done=validate_response,
-                 on_error=fail_if_error)
+                 on_done=on_done_mock,
+                 on_error=on_error_mock)
+
+    validate_callback(on_done_mock, validate_response)
+    on_error_mock.assert_not_called()
 
 
 @pytest.mark.parametrize('request_size', [8, 16, 32])
@@ -127,7 +132,7 @@ def test_encode_driver_batching(request_size, driver_batch_size, tmpdir):
 @pytest.mark.parametrize('num_chunks', [2, 8])
 @pytest.mark.parametrize('num_chunks_chunks', [2, 8])
 def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num_chunks, num_chunks_chunks,
-                                            tmpdir):
+                                            tmpdir, mocker):
     num_docs = 137
     num_requests = int(num_docs / request_size)
     num_docs_last_req_batch = num_docs % (num_requests * request_size)
@@ -143,9 +148,6 @@ def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num
                 for chunk_chunk in chunk.chunks:
                     assert NdArray(chunk_chunk.embedding).value is not None
 
-    def fail_if_error(resp):
-        assert False
-
     encoder = MockEncoder(driver_batch_size=driver_batch_size,
                           num_docs_in_same_request=request_size + request_size * num_chunks + request_size * num_chunks * num_chunks_chunks,
                           total_num_docs=num_docs + num_docs * num_chunks + num_docs * num_chunks * num_chunks_chunks)
@@ -159,8 +161,14 @@ def test_encode_driver_batching_with_chunks(request_size, driver_batch_size, num
     executor_yml_file = os.path.join(tmpdir, 'executor.yml')
     encoder.save_config(executor_yml_file)
 
+    on_done_mock = mocker.Mock()
+    on_error_mock = mocker.Mock()
+
     with Flow().add(uses=executor_yml_file) as f:
-        f.search(input_fn=document_generator(num_docs, num_chunks, num_chunks_chunks),
+        f.search(inputs=document_generator(num_docs, num_chunks, num_chunks_chunks),
                  request_size=request_size,
-                 on_done=validate_response,
-                 on_error=fail_if_error)
+                 on_done=on_done_mock,
+                 on_error=on_error_mock)
+
+    validate_callback(on_done_mock, validate_response)
+    on_error_mock.assert_not_called()

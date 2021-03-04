@@ -105,7 +105,7 @@ class BaseRuntime:
 
             This method will only be called if the :meth:`setup` succeeds.
         """
-        pass
+        self.logger.close()
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()

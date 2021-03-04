@@ -9,6 +9,8 @@ from jina import Document
 from jina.executors.indexers import BaseIndexer
 from jina.flow import Flow
 
+from tests import validate_callback
+
 TOP_K = 10
 
 
@@ -63,7 +65,6 @@ def test_delete_vector(config, mocker, flow_file):
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
-            mock()
             assert len(resp.docs) == num_searches
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
@@ -72,15 +73,16 @@ def test_delete_vector(config, mocker, flow_file):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(
-            input_fn=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks))
+            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks))
     validate_index_size(num_chunks * num_docs)  # 5 chunks for each of the 10 docs
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
-            input_fn=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
-            on_done=validate_result_factory(TOP_K))
+            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
+            on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(TOP_K))
 
     delete_ids = []
     for d in document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks):
@@ -95,9 +97,10 @@ def test_delete_vector(config, mocker, flow_file):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
-            input_fn=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
-            on_done=validate_result_factory(0))
+            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
+            on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))
 
 
 @pytest.mark.parametrize('flow_file', ['flow_vector.yml'])
@@ -113,7 +116,6 @@ def test_update_vector(config, mocker, flow_file):
 
     def validate_result_factory(has_changed, num_matches):
         def validate_results(resp):
-            mock()
             assert len(resp.docs) == num_searches
             for d in docs_before:
                 ids_before.append(d.id)
@@ -131,23 +133,25 @@ def test_update_vector(config, mocker, flow_file):
         return validate_results
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.index(input_fn=docs_before)
+        index_flow.index(inputs=docs_before)
     validate_index_size(num_chunks * num_docs)  # num_docs per all its chunks, 50 in this case
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
-            input_fn=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
-            on_done=validate_result_factory(has_changed=False, num_matches=TOP_K))
+            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
+            on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(has_changed=False, num_matches=TOP_K))
 
     with Flow.load_config(flow_file) as index_flow:
-        index_flow.update(input_fn=docs_updated)
+        index_flow.update(inputs=docs_updated)
     validate_index_size(num_chunks * num_docs)  # num_docs per all its chunks, 50 in this case
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
-            input_fn=document_generator(start=10, num_docs=20, num_chunks=num_chunks),
-            on_done=validate_result_factory(has_changed=True, num_matches=num_docs))
+            inputs=document_generator(start=10, num_docs=20, num_chunks=num_chunks),
+            on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(has_changed=True, num_matches=num_docs))

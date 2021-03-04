@@ -4,6 +4,7 @@ components:
     with:
       index_filename: vec.gz
       metric: euclidean
+      delete_on_dump: true
     metas:
       name: vecidx  # a customized name
   - !BinaryPbIndexer

@@ -1,4 +1,4 @@
-!MyEncoder
+jtype: MyEncoder
 metas:
   name: myenc  # a customized name
   workspace: $HW_WORKDIR
@@ -7,12 +7,12 @@ metas:
 requests:
   on:
     [IndexRequest, SearchRequest]:
-      - !Blob2PngURI
+      - jtype: Blob2PngURI
         with:
           height: 28
           width: 28
-      - !EncodeDriver {}
-      - !ExcludeQL
+      - jtype: EncodeDriver {}
+      - jtype: ExcludeQL
         with:
           fields:
             - buffer

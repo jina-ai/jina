@@ -9,7 +9,7 @@ import time
 import urllib.parse
 import urllib.request
 import webbrowser
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 
 from .checker import *
 from .helper import credentials_file
@@ -67,8 +67,12 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
-    def new(self) -> None:
-        """Create a new executor using cookiecutter template."""
+    def new(self, no_input: bool = False) -> None:
+        """
+        Create a new executor using cookiecutter template.
+        
+        :param no_input: Argument to avoid prompting dialogue (just to be used for testing)
+        """
         with ImportExtensions(required=True):
             from cookiecutter.main import cookiecutter
             import click  # part of cookiecutter
@@ -80,8 +84,8 @@ class HubIO:
             cookiecutter_template = 'https://github.com/jina-ai/cookiecutter-jina-hub.git'
 
         try:
-            cookiecutter(cookiecutter_template, overwrite_if_exists=self.args.overwrite,
-                         output_dir=self.args.output_dir)
+            cookiecutter(template=cookiecutter_template, overwrite_if_exists=self.args.overwrite,
+                         output_dir=self.args.output_dir, no_input=no_input)
         except click.exceptions.Abort:
             self.logger.info('nothing is created, bye!')
 
@@ -228,25 +232,8 @@ class HubIO:
         with ProgressBar(task_name=f'pushing {name}', batch_unit='') as t:
             for line in self._client.images.push(name, stream=True, decode=True):
                 t.update(1)
-                if 'error' in line and 'authentication required' in line['error']:
-                    raise DockerLoginFailed('user not logged in to docker.')
                 self.logger.debug(line)
         self.logger.success(f'🎉 {name} is now published!')
-
-        if False and readme_path:
-            # unfortunately Docker Hub Personal Access Tokens cannot be used as they are not supported by the API
-            _volumes = {os.path.dirname(os.path.abspath(readme_path)): {'bind': '/workspace'}}
-            _env = {
-                'DOCKERHUB_USERNAME': self.args.username,
-                'DOCKERHUB_PASSWORD': self.args.password,
-                'DOCKERHUB_REPOSITORY': self.args.repository,
-                'README_FILEPATH': '/workspace/README.md',
-            }
-
-            self._client.containers.run('peterevans/dockerhub-description:2.1',
-                                        auto_remove=True,
-                                        volumes=_volumes,
-                                        environment=_env)
 
         share_link = f'https://api.jina.ai/hub/?jh={urllib.parse.quote_plus(name)}'
 
@@ -322,15 +309,18 @@ class HubIO:
 
             with TimeContext(f'building {colored(self.args.path, "green")}', self.logger) as tc:
                 try:
-                    self._check_completeness()
+                    _check_result = self._check_completeness()
                     self._freeze_jina_version()
 
+                    _dockerfile = os.path.basename(_check_result['Dockerfile'])
+                    _labels = {_label_prefix + k: str(v) for k, v in self.manifest.items()}
                     streamer = self._raw_client.build(
                         decode=True,
                         path=self.args.path,
                         tag=self.tag,
                         pull=self.args.pull,
-                        dockerfile=self.dockerfile_path_revised,
+                        dockerfile=_dockerfile,
+                        labels=_labels,
                         rm=True
                     )
 
@@ -357,7 +347,8 @@ class HubIO:
                 image, log = self._client.images.build(path=self.args.path,
                                                        tag=self.tag,
                                                        pull=self.args.pull,
-                                                       dockerfile=self.dockerfile_path_revised,
+                                                       dockerfile=_dockerfile,
+                                                       labels=_labels,
                                                        rm=True)
 
                 # success
@@ -569,7 +560,7 @@ class HubIO:
                     fp.write('\n'.join(new_requirements))
 
     def _check_completeness(self) -> Dict:
-        dockerfile_path = get_exist_path(self.args.path, 'Dockerfile')
+        dockerfile_path = get_exist_path(self.args.path, self.args.file)
         manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
         self.readme_path = get_exist_path(self.args.path, 'README.md')
@@ -607,7 +598,6 @@ class HubIO:
 
         self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
-        self.dockerfile_path_revised = self._get_revised_dockerfile(dockerfile_path, self.manifest)
         self.executor_name = safe_url_name(
             f'{self.args.repository}/' + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}')
         self.tag = self.executor_name + f':{self.manifest["version"]}-{jina_version}'
@@ -659,25 +649,6 @@ class HubIO:
         # show manifest key-values
         for k, v in manifest.items():
             self.logger.debug(f'{k}: {v}')
-
-    def _get_revised_dockerfile(self, dockerfile_path: str, manifest: Dict) -> str:
-        # modify dockerfile
-        revised_dockerfile = []
-        with open(dockerfile_path) as fp:
-            for l in fp:
-                revised_dockerfile.append(l)
-                if l.startswith('FROM'):
-                    revised_dockerfile.append('LABEL ')
-                    revised_dockerfile.append(
-                        ' \\      \n'.join(f'{_label_prefix}{k}="{v}"' for k, v in manifest.items()))
-
-        f = tempfile.NamedTemporaryFile('w', delete=False).name
-        with open(f, 'w', encoding='utf8') as fp:
-            fp.writelines(revised_dockerfile)
-
-        for k in revised_dockerfile:
-            self.logger.debug(k)
-        return f
 
     def _write_slack_message(self, *args):
         def _expand_fn(v):

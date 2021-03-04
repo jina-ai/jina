@@ -10,6 +10,8 @@ from jina import Document
 from jina.types.querylang import QueryLang
 from jina.types.sets import QueryLangSet
 
+from tests import validate_callback
+
 
 def random_docs(num_docs):
     for j in range(num_docs):
@@ -51,9 +53,9 @@ def test_read_from_req(mocker):
     def validate2(req):
         assert len(req.docs) == 3
 
-    response_mock = mocker.Mock(wrap=validate1)
-    response_mock_2 = mocker.Mock(wrap=validate2)
-    response_mock_3 = mocker.Mock(wrap=validate1)
+    response_mock = mocker.Mock()
+    response_mock_2 = mocker.Mock()
+    response_mock_3 = mocker.Mock()
 
     qs = QueryLang({'name': 'SliceQL', 'priority': 1, 'parameters': {'start': 1, 'end': 4}})
 
@@ -63,19 +65,19 @@ def test_read_from_req(mocker):
     with f:
         f.index(random_docs(10), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate1)
     # with queryset
     with f:
         f.index(random_docs(10), queryset=qs, on_done=response_mock_2)
 
-    response_mock_2.assert_called()
+    validate_callback(response_mock_2, validate2)
 
     qs.priority = -1
     # with queryset, but priority is no larger than driver's default
     with f:
         f.index(random_docs(10), queryset=qs, on_done=response_mock_3)
 
-    response_mock_3.assert_called()
+    validate_callback(response_mock_3, validate1)
 
 
 def test_querlang_driver():

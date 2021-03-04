@@ -6,7 +6,7 @@ import pytest
 from jina.flow import Flow
 from jina.logging.profile import used_memory
 from jina.proto import jina_pb2
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,7 +27,6 @@ def test_shelf_in_flow(uses, mocker):
     d = jina_pb2.DocumentProto()
 
     def validate(req):
-        mock()
         m4 = used_memory()
         print(f'before: {m1}, after index: {m2}, after loading: {m3} after searching {m4}')
 
@@ -35,7 +34,8 @@ def test_shelf_in_flow(uses, mocker):
 
     with f:
         m3 = used_memory()
-        f.search([d], on_done=validate)
+        f.search([d], on_done=mock)
 
     shutil.rmtree('test-workspace', ignore_errors=False, onerror=None)
     mock.assert_called_once()
+    validate_callback(mock, validate)

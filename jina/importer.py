@@ -10,6 +10,8 @@ IMPORTED.executors = False
 IMPORTED.executors = False
 IMPORTED.drivers = False
 IMPORTED.hub = False
+IMPORTED.schema_executors = {}
+IMPORTED.schema_drivers = {}
 
 
 def import_classes(namespace: str,
@@ -77,7 +79,6 @@ class ImportExtensions:
 
     def __init__(self, required: bool, logger=None,
                  help_text: str = None, pkg_name: str = None, verbose: bool = True):
-        """Set constructor method."""
         self._required = required
         self._tags = []
         self._help_text = help_text
@@ -138,37 +139,8 @@ class ImportExtensions:
                 return True  # suppress the error
 
 
-def _load_contrib_module(logger=None) -> Optional[List[Any]]:
-    if 'JINA_CONTRIB_MODULE_IS_LOADING' not in os.environ:
-
-        contrib = os.getenv('JINA_CONTRIB_MODULE')
-        os.environ['JINA_CONTRIB_MODULE_IS_LOADING'] = 'true'
-
-        modules = []
-
-        if contrib:
-            pr = logger.info if logger else print
-            pr(f'find a value in $JINA_CONTRIB_MODULE={contrib}, will load them as external modules')
-            for p in contrib.split(','):
-                m = PathImporter.add_modules(p)
-                modules.append(m)
-                pr(f'successfully registered {m} class, you can now use it via yaml.')
-    else:
-        modules = None
-
-    return modules
-
-
 class PathImporter:
     """The class to import modules from paths."""
-
-    @staticmethod
-    def _get_module_name(path: str, use_abspath: bool = False, use_basename: bool = True) -> str:
-        module_name = os.path.dirname(os.path.abspath(path) if use_abspath else path)
-        if use_basename:
-            module_name = os.path.basename(module_name)
-        module_name = module_name.replace('/', '.').strip('.')
-        return module_name
 
     @staticmethod
     def add_modules(*paths) -> Optional[ModuleType]:
@@ -188,9 +160,6 @@ class PathImporter:
     def _path_import(absolute_path: str) -> Optional[ModuleType]:
         import importlib.util
         try:
-            # module_name = (PathImporter._get_module_name(absolute_path) or
-            #                PathImporter._get_module_name(absolute_path, use_abspath=True) or 'jinahub')
-
             # I dont want to trust user path based on directory structure, "jinahub", period
             spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
             module = importlib.util.module_from_spec(spec)
@@ -223,19 +192,6 @@ def _print_load_table(load_stat: Dict[str, List[Any]], logger=None):
         load_table.sort()
         load_table = ['', '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
                       '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10)] + load_table
-        pr = logger.info if logger else print
-        pr('\n'.join(load_table))
-
-
-def _print_load_csv_table(load_stat: Dict[str, List[Any]], logger=None):
-    from .helper import colored
-
-    load_table = []
-    for k, v in load_stat.items():
-        for cls_name, import_stat, err_reason in v:
-            load_table.append(
-                f'{colored("✓", "green") if import_stat else colored("✗", "red")} {cls_name if cls_name else colored("Module_load_error", "red")} {k} {str(err_reason)}')
-    if load_table:
         pr = logger.info if logger else print
         pr('\n'.join(load_table))
 
@@ -338,6 +294,8 @@ def _update_depend_tree(cls_obj, module_name, cur_tree):
 def _import_module(module_name, import_type, depend_tree, load_stat):
     from importlib import import_module
     from .helper import colored
+    from .schemas.helper import _jina_class_to_schema
+
     bad_imports = []
     _mod_obj = import_module(module_name)
     for _attr in dir(_mod_obj):
@@ -349,6 +307,9 @@ def _import_module(module_name, import_type, depend_tree, load_stat):
             _update_depend_tree(_cls_obj, module_name, depend_tree)
             if _cls_obj.__class__.__name__ == 'ExecutorType':
                 _load_default_exc_config(_cls_obj)
+                IMPORTED.schema_executors[f'Jina::Executors::{_cls_obj.__name__}'] = _jina_class_to_schema(_cls_obj)
+            else:
+                IMPORTED.schema_drivers[f'Jina::Drivers::{_cls_obj.__name__}'] = _jina_class_to_schema(_cls_obj)
             # TODO: _success_msg is never used
             _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1])
             load_stat[module_name].append((_attr, True, _success_msg))

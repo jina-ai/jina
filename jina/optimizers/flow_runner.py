@@ -40,7 +40,7 @@ class SingleFlowRunner(FlowRunner):
         documents: Union[Iterable, str],
         request_size: int,
         execution_method: str,
-        documents_parameter_name: Optional[str] = 'input_fn',
+        documents_parameter_name: Optional[str] = 'inputs',
         overwrite_workspace: bool = False,
     ):
         """
@@ -107,7 +107,14 @@ class SingleFlowRunner(FlowRunner):
         callback=None,
         **kwargs,
     ):
+        """
+        Running method of :class:`SingleFlowRunner`.
 
+        :param trial_parameters: parameters need to be tried
+        :param workspace: path of workspace
+        :param callback: callback function
+        :param kwargs: keyword argument
+        """
         self._setup_workspace(workspace)
         additional_arguments = {self._documents_parameter_name: self._documents}
         additional_arguments.update(kwargs)
@@ -139,5 +146,13 @@ class MultiFlowRunner(FlowRunner):
         callback=None,
         **kwargs,
     ):
+        """
+        Running method of :class:`MultiFlowRunner`.
+
+        :param trial_parameters: parameters need to be tried
+        :param workspace: path of workspace
+        :param callback: callback function
+        :param kwargs: keyword argument
+        """
         for flow in self.flows:
             flow.run(trial_parameters, workspace, callback, **kwargs)

@@ -9,6 +9,8 @@ from jina.executors.segmenters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 
+from tests import validate_callback
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -45,7 +47,7 @@ class MockEncoderReduce(BaseEncoder):
 
 
 def test_merge_chunks_with_different_modality(mocker, docs):
-    def input_fn():
+    def input_function():
         return docs
 
     def validate(req):
@@ -55,7 +57,7 @@ def test_merge_chunks_with_different_modality(mocker, docs):
             assert doc.chunks[0].modality in ['mode1', 'mode2']
             assert doc.chunks[1].modality in ['mode1', 'mode2']
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     flow = Flow().add(name='segmenter', uses='MockSegmenterReduce'). \
         add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
@@ -64,6 +66,6 @@ def test_merge_chunks_with_different_modality(mocker, docs):
             needs=['encoder1', 'encoder2'])
 
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock)
+        flow.index(inputs=input_function, on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)

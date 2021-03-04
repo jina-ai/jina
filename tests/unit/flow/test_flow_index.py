@@ -3,20 +3,21 @@ import time
 
 import pytest
 
+from jina import Document
 from jina.flow import Flow
-from jina.proto import jina_pb2
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def random_queries(num_docs, chunks_per_doc=5):
     for j in range(num_docs):
-        d = jina_pb2.DocumentProto()
+        d = Document()
         d.id = j
         for k in range(chunks_per_doc):
-            dd = d.chunks.add()
+            dd = Document()
             dd.id = num_docs + j * chunks_per_doc + k
+            d.chunks.add(dd)
         yield d
 
 
@@ -40,7 +41,6 @@ def test_shards_insufficient_data(mocker, restful, docpb_workspace):
     mock = mocker.Mock()
 
     def validate(req):
-        mock()
         assert len(req.docs) == 1
         assert len(req.docs[0].matches) == index_docs
 
@@ -53,7 +53,7 @@ def test_shards_insufficient_data(mocker, restful, docpb_workspace):
               uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'),
               parallel=parallel))
     with f:
-        f.index(input_fn=random_docs(index_docs))
+        f.index(inputs=random_docs(index_docs))
 
     time.sleep(2)
     with f:
@@ -66,8 +66,9 @@ def test_shards_insufficient_data(mocker, restful, docpb_workspace):
               polling='all',
               uses_after='_merge_chunks'))
     with f:
-        f.search(input_fn=random_queries(1, index_docs),
+        f.search(inputs=random_queries(1, index_docs),
 
-                 on_done=validate)
+                 on_done=mock)
     time.sleep(2)
     mock.assert_called_once()
+    validate_callback(mock, validate)

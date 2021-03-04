@@ -8,6 +8,8 @@ from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from jina.types.request import Response
 
+from tests import validate_callback
+
 num_docs = 5
 
 
@@ -35,20 +37,20 @@ def documents(start_index, end_index):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('restful', [False])
 async def test_run_async_flow(restful, mocker):
-    r_val = mocker.Mock(wrap=validate)
+    r_val = mocker.Mock()
     with AsyncFlow(restful=restful).add() as f:
         async for r in f.index_ndarray(np.random.random([num_docs, 4]), on_done=r_val):
             assert isinstance(r, Response)
-    r_val.assert_called()
+    validate_callback(r_val, validate)
 
 
-async def ainput_fn():
+async def async_input_function():
     for _ in range(num_docs):
         yield np.random.random([4])
         await asyncio.sleep(0.1)
 
 
-async def ainput_fn2():
+async def async_input_function2():
     for _ in range(num_docs):
         yield Document(content=np.random.random([4]))
         await asyncio.sleep(0.1)
@@ -56,13 +58,13 @@ async def ainput_fn2():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('restful', [False])
-@pytest.mark.parametrize('input_fn', [ainput_fn, ainput_fn(), ainput_fn2(), ainput_fn2])
-async def test_run_async_flow_async_input(restful, input_fn, mocker):
-    r_val = mocker.Mock(wrap=validate)
+@pytest.mark.parametrize('inputs', [async_input_function, async_input_function(), async_input_function2(), async_input_function2])
+async def test_run_async_flow_async_input(restful, inputs, mocker):
+    r_val = mocker.Mock()
     with AsyncFlow(restful=restful).add() as f:
-        async for r in f.index(input_fn, on_done=r_val):
+        async for r in f.index(inputs, on_done=r_val):
             assert isinstance(r, Response)
-    r_val.assert_called()
+    validate_callback(r_val, validate)
 
 
 async def run_async_flow_5s(restful):

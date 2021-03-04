@@ -43,14 +43,18 @@ def deprecated_alias(**aliases):
     For example:
         .. highlight:: python
         .. code-block:: python
-            @deprecated_alias(buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+            @deprecated_alias(input_fn=('inputs', 0), buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+
+    :param aliases: maps aliases to new arguments
+    :return: wrapper
     """
 
-    def rename_kwargs(func_name: str, kwargs, aliases):
+    def _rename_kwargs(func_name: str, kwargs, aliases):
         """
         Raise warnings or exceptions for deprecated arguments.
 
         :param func_name: Name of the function.
+        :param kwargs: key word arguments from the function which is decorated.
         :param aliases: kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).
         """
         for alias, new_arg in aliases.items():
@@ -72,12 +76,23 @@ def deprecated_alias(**aliases):
                     raise NotSupportedError(f'{alias} has been renamed to `{new_name}`')
 
     def deco(f):
-        """Set Decorator function."""
+        """
+        Set Decorator function.
+
+        :param f: function the decorator is used for
+        :return: wrapper
+        """
 
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
-            """Set wrapper function."""
-            rename_kwargs(f.__name__, kwargs, aliases)
+            """
+            Set wrapper function.
+            :param args: wrapper arguments
+            :param kwargs: wrapper key word arguments
+
+            :return: result of renamed function.
+            """
+            _rename_kwargs(f.__name__, kwargs, aliases)
             return f(*args, **kwargs)
 
         return wrapper
@@ -140,6 +155,7 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
     :param axis: Determine which axis to iterate for np.ndarray data.
     :param yield_slice: Return tuple type of data if True else return np.ndarray type.
     :param yield_dict: Return dict type of data if True else return tuple type.
+    :yield: data
     :return: An Iterator of batch data.
     """
     import numpy as np
@@ -191,6 +207,10 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
     :param v: The string of arguments
     :return: The parsed arguments list.
     """
+    m = re.match(r'^[\'"](.*)[\'"]$', v)
+    if m:
+        return m.group(1)
+
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
         tmp = v.replace('[', '').replace(']', '').strip().split(',')
@@ -342,7 +362,7 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
 
     :param d: Target Dict.
     :param expand_fn: Parsed environment variables.
-    :param resolve_cycle_ref:
+    :param resolve_cycle_ref: Defines if cyclic references should be resolved.
     :return: Expanded variables.
     """
     expand_map = SimpleNamespace()
@@ -488,36 +508,36 @@ def colored(text: str, color: Optional[str] = None,
 
     :param text: The target text.
     :param color: The color of text. Chosen from the following.
-    {
-        'grey': 30,
-        'red': 31,
-        'green': 32,
-        'yellow': 33,
-        'blue': 34,
-        'magenta': 35,
-        'cyan': 36,
-        'white': 37
-    }
+        {
+            'grey': 30,
+            'red': 31,
+            'green': 32,
+            'yellow': 33,
+            'blue': 34,
+            'magenta': 35,
+            'cyan': 36,
+            'white': 37
+        }
     :param on_color: The on_color of text. Chosen from the following.
-    {
-        'on_grey': 40,
-        'on_red': 41,
-        'on_green': 42,
-        'on_yellow': 43,
-        'on_blue': 44,
-        'on_magenta': 45,
-        'on_cyan': 46,
-        'on_white': 47
-    }
+        {
+            'on_grey': 40,
+            'on_red': 41,
+            'on_green': 42,
+            'on_yellow': 43,
+            'on_blue': 44,
+            'on_magenta': 45,
+            'on_cyan': 46,
+            'on_white': 47
+        }
     :param attrs: Attributes of color. Chosen from the following.
-    {
-       'bold': 1,
-       'dark': 2,
-       'underline': 4,
-       'blink': 5,
-       'reverse': 7,
-       'concealed': 8
-    }
+        {
+           'bold': 1,
+           'dark': 2,
+           'underline': 4,
+           'blink': 5,
+           'reverse': 7,
+           'concealed': 8
+        }
     :return: Colored text.
     """
     if 'JINA_LOG_NO_COLOR' not in os.environ:
@@ -547,6 +567,7 @@ class ArgNamespace:
         Convert dict to an argparse-friendly list.
 
         :param kwargs: dictionary of key-values to be converted
+        :return: argument list
         """
         args = []
         for k, v in kwargs.items():
@@ -571,6 +592,7 @@ class ArgNamespace:
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
         try:
@@ -588,6 +610,7 @@ class ArgNamespace:
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :return: argument namespace, positional arguments and unknown arguments
         """
         args = ArgNamespace.kwargs2list(kwargs)
         try:
@@ -612,6 +635,7 @@ class ArgNamespace:
         :param args: the namespace to parse
         :param parser: the parser for referring the default values
         :param taboo: exclude keys in the final result
+        :return: non defaults
         """
         if taboo is None:
             taboo = set()
@@ -627,6 +651,7 @@ class ArgNamespace:
         """Convert argparse.Namespace to dict to be uploaded via REST.
 
         :param args: namespace or dict or namespace to dict.
+        :return: pea args
         """
         if isinstance(args, Namespace):
             return vars(args)
@@ -795,6 +820,8 @@ def get_readable_time(*args, **kwargs):
         .. code-block:: python
             get_readable_time(seconds=1000)
 
+    :param args: arguments for datetime.timedelta
+    :param kwargs: key word arguments for datetime.timedelta
     :return: Datetime in human readable format.
     """
     import datetime
@@ -858,7 +885,6 @@ def convert_tuple_to_list(d: Dict):
     Convert all the tuple type values from a dict to list.
 
     :param d: Dict type of data.
-    :return: Converted dict with list type values.
     """
     for k, v in d.items():
         if isinstance(v, tuple):
@@ -880,6 +906,8 @@ def is_jupyter() -> bool:  # pragma: no cover
     shell = get_ipython().__class__.__name__  # noqa: F821
     if shell == 'ZMQInteractiveShell':
         return True  # Jupyter notebook or qtconsole
+    elif shell == 'Shell':
+        return True  # Google colab
     elif shell == 'TerminalInteractiveShell':
         return False  # Terminal running IPython
     else:
@@ -951,8 +979,10 @@ def slugify(value):
 def change_cwd(path):
     """
     Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.
+    Yields nothing
 
     :param path: Target path.
+    :yields: nothing
     """
     curdir = os.getcwd()
     os.chdir(path)
@@ -969,6 +999,7 @@ def change_env(key, val):
 
     :param key: Old environment variable.
     :param val: New environment variable.
+    :yields: nothing
     """
     old_var = os.environ.get(key, None)
     os.environ[key] = val

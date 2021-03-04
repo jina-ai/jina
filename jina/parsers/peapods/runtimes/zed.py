@@ -17,7 +17,7 @@ def mixin_zed_runtime_parser(parser):
     gp.add_argument('--uses', type=str, default='_pass',
                     help='''
 The config of the executor, it could be one of the followings: 
-- an Executor-level YAML file path (*.yml/yaml) 
+- an Executor-level YAML file path (.yml, .yaml, .jaml) 
 - a name of a class inherited from `jina.Executor`
 - a docker image (must start with `docker://`)
 - builtin executors, e.g. `_pass`, `_logforward`, `_merge` 

@@ -1,9 +1,9 @@
-!BaseExecutor
+jtype: BaseExecutor
 requests:
-  uses_default: true
+  use_default: true
   on:
     [IndexRequest, SearchRequest]:
-      - !FilterQL
+      - jtype: FilterQL
         with:
           lookups:
             mime_type: '${{ENV.filter_mime}}'

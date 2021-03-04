@@ -10,6 +10,8 @@ from jina import Document
 from jina.executors.indexers import BaseIndexer
 from jina.flow import Flow
 
+from tests import validate_callback
+
 random.seed(0)
 np.random.seed(0)
 
@@ -102,7 +104,6 @@ def validate_index_size(expected_count, index_name):
 def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
     def _validate_result_factory(num_matches):
         def _validate_results(resp):
-            mock()
             assert len(resp.docs) == 7
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
@@ -111,7 +112,7 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=random_docs(0, 201),
+            inputs=random_docs(0, 201),
             request_size=100
         )
 
@@ -136,11 +137,12 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
-            input_fn=random_docs(28, 35),
-            on_done=_validate_result_factory(10),
+            inputs=random_docs(28, 35),
+            on_done=mock,
             request_size=100
         )
     mock.assert_called_once()
+    validate_callback(mock, _validate_result_factory(10))
 
 
 @pytest.mark.parametrize(
@@ -152,14 +154,13 @@ def test_delete_kv(config, mocker, num_shards):
 
     def _validate_result_factory(num_matches):
         def _validate_results(resp):
-            mock()
             assert len(resp.docs) == num_matches
 
         return _validate_results
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=random_docs(0, 201),
+            inputs=random_docs(0, 201),
             request_size=100)
 
     validate_index_size(201, index_name)
@@ -179,10 +180,11 @@ def test_delete_kv(config, mocker, num_shards):
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards, '_merge_root') as search_flow:
         search_flow.search(
-            input_fn=random_docs(28, 35),
-            on_done=_validate_result_factory(5),
+            inputs=random_docs(28, 35),
+            on_done=mock,
             request_size=100)
     mock.assert_called_once()
+    validate_callback(mock, _validate_result_factory(5))
 
 
 @pytest.mark.parametrize(
@@ -200,7 +202,6 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
 
     def _validate_result_factory():
         def _validate_results(resp):
-            mock()
             assert len(resp.docs) == 1
             for doc in resp.docs:
                 assert len(doc.matches) == 10
@@ -213,7 +214,7 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=docs_before,
+            inputs=docs_before,
             request_size=100)
 
     for index_name in index_names:
@@ -221,7 +222,7 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_update_flow(index_conf, num_shards) as update_flow:
         update_flow.update(
-            input_fn=docs_updated,
+            inputs=docs_updated,
             request_size=100)
 
     for index_name in index_names:
@@ -231,10 +232,11 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
 
     with get_search_flow(index_conf, num_shards) as search_flow:
         search_flow.search(
-            input_fn=random_docs(0, 1),
-            on_done=_validate_result_factory(),
+            inputs=random_docs(0, 1),
+            on_done=mock,
             request_size=100)
-    assert mock.call_count == 1
+    mock.assert_called_once()
+    validate_callback(mock, _validate_result_factory())
 
 
 @pytest.mark.parametrize(
@@ -250,7 +252,6 @@ def test_update_kv(config, mocker, num_shards):
     hash_set_updated = [hash(d.embedding.tobytes()) for d in docs_updated]
 
     def _validate_results_1(resp):
-        mock()
         assert len(resp.docs) == 100
         for i, doc in enumerate(resp.docs):
             h = hash(doc.embedding.tobytes())
@@ -259,7 +260,6 @@ def test_update_kv(config, mocker, num_shards):
             assert h not in hash_set_updated
 
     def _validate_results_2(resp):
-        mock()
         assert len(resp.docs) == 100
         for i, doc in enumerate(resp.docs):
             h = hash(doc.embedding.tobytes())
@@ -271,7 +271,6 @@ def test_update_kv(config, mocker, num_shards):
                 assert h in hash_set_updated
 
     def _validate_results_3(resp):
-        mock()
         assert len(resp.docs) == 1
         h = hash(resp.docs[0].embedding.tobytes())
         assert h not in hash_set_before
@@ -279,27 +278,28 @@ def test_update_kv(config, mocker, num_shards):
 
     with get_index_flow(index_conf, num_shards) as index_flow:
         index_flow.index(
-            input_fn=docs_before,
+            inputs=docs_before,
             request_size=100)
 
     validate_index_size(201, index_name)
 
     with get_update_flow(index_conf, num_shards) as update_flow:
         update_flow.update(
-            input_fn=docs_updated,
+            inputs=docs_updated,
             request_size=100)
 
     validate_index_size(201, index_name)
 
-    mock = mocker.Mock()
     for start, end, validate_results in (
             (0, 100, _validate_results_1),
             (100, 200, _validate_results_2),
             (200, 201, _validate_results_3)
     ):
+        mock = mocker.Mock()
         with get_search_flow(index_conf, num_shards, '_merge_root') as search_flow:
             search_flow.search(
-                input_fn=random_docs(start, end),
-                on_done=validate_results,
+                inputs=random_docs(start, end),
+                on_done=mock,
                 request_size=100)
-    assert mock.call_count == 3
+        validate_callback(mock, validate_results)
+        mock.assert_called_once()

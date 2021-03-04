@@ -6,13 +6,15 @@ from jina import Document
 from jina.flow import Flow
 from jina.types.ndarray.generic import NdArray
 
+from tests import validate_callback
+
 e1 = np.random.random([7])
 e2 = np.random.random([5])
 e3 = np.random.random([3])
 e4 = np.random.random([9])
 
 
-def input_fn():
+def input_function():
     with Document() as doc1:
         doc1.embedding = e1
         with Document() as chunk1:
@@ -46,7 +48,6 @@ def test_concat_embed_driver(mocker):
         del os.environ['JINA_ARRAY_QUANT']
 
     def validate(req):
-        mock()
         assert len(req.docs) == 2
         assert NdArray(req.docs[0].embedding).value.shape == (e1.shape[0] * 2,)
         assert NdArray(req.docs[1].embedding).value.shape == (e3.shape[0] * 2,)
@@ -60,6 +61,7 @@ def test_concat_embed_driver(mocker):
             .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
 
     with flow:
-        flow.index(input_fn=input_fn, on_done=validate)
+        flow.index(inputs=input_function, on_done=mock)
 
     mock.assert_called_once()
+    validate_callback(mock, validate)

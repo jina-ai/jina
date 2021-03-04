@@ -4,6 +4,8 @@ from jina.executors.segmenters import BaseSegmenter
 from jina.flow import Flow
 from jina import Document
 
+from tests import validate_callback
+
 
 def random_docs(num_docs):
     for j in range(num_docs):
@@ -68,7 +70,7 @@ def test_select_ql(mocker):
         .add(
         uses='- !SelectQL | {fields: [uri, matches, chunks], traversal_paths: [r, c, m]}'))
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     with f:
         f.index(random_docs(10), on_done=response_mock)
@@ -76,23 +78,24 @@ def test_select_ql(mocker):
     f = (Flow().add(uses='DummySegmenter')
          .add(uses='- !ExcludeQL | {fields: [text], traversal_paths: [r, c, m]}'))
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
-    response_mock_2 = mocker.Mock(wrap=validate)
+    response_mock_2 = mocker.Mock()
 
     with f:
         f.index(random_docs(10), on_done=response_mock_2)
 
-    response_mock_2.assert_called()
+    validate_callback(response_mock_2, validate)
 
 
 def test_sort_ql(mocker):
     def validate(req):
+        # print('---------------------------')
         assert req.docs[-1].tags['id'] < req.docs[0].tags['id']
         assert req.docs[0].matches[-1].tags['id'] < req.docs[0].matches[0].tags['id']
         assert req.docs[0].chunks[-1].tags['id'] < req.docs[0].chunks[0].tags['id']
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
@@ -101,18 +104,19 @@ def test_sort_ql(mocker):
     with f:
         f.index(random_docs(10), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
-    response_mock_2 = mocker.Mock(wrap=validate)
+    response_mock_2 = mocker.Mock()
 
     f = (Flow().add(uses='DummySegmenter')
          .add(uses='- !SortQL | {field: tags__id, reverse: false, traversal_paths: [r, c, m]}')
-         .add(uses='- !ReverseQL | {traversal_paths: [r, c, m]}'))
+         .add(uses='- !ReverseQL | {traversal_paths: [r, c, m]}')
+         )
 
     with f:
         f.index(random_docs(10), on_done=response_mock_2)
 
-    response_mock_2.assert_called()
+    validate_callback(response_mock_2, validate)
 
 
 def test_filter_ql(mocker):
@@ -122,7 +126,7 @@ def test_filter_ql(mocker):
         assert len(req.docs[0].matches) == 1
         assert int(req.docs[0].matches[0].tags['id']) == 2
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
@@ -131,7 +135,7 @@ def test_filter_ql(mocker):
     with f:
         f.index(random_docs(10), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 def test_filter_ql_in_tags(mocker):
@@ -140,7 +144,7 @@ def test_filter_ql_in_tags(mocker):
         assert int(req.docs[0].tags['id']) == 2
         assert json_format.MessageToDict(req.docs[0].tags)['id'] == 2
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow().add(
         uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
@@ -148,7 +152,7 @@ def test_filter_ql_in_tags(mocker):
     with f:
         f.index(random_docs_with_tags(), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 def test_filter_ql_modality_wrong_depth(mocker):
@@ -156,7 +160,7 @@ def test_filter_ql_modality_wrong_depth(mocker):
         # since no doc has modality mode2 they are all erased from the list of docs
         assert len(req.docs) == 0
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow().add(uses='DummyModeIdSegmenter')
         .add(
@@ -165,7 +169,7 @@ def test_filter_ql_modality_wrong_depth(mocker):
     with f:
         f.index(random_docs_to_chunk(), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 def test_filter_ql_modality(mocker):
@@ -175,7 +179,7 @@ def test_filter_ql_modality(mocker):
         assert len(req.docs[0].chunks) == 1
         assert len(req.docs[1].chunks) == 0
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow().add(uses='DummyModeIdSegmenter')
         .add(
@@ -184,7 +188,7 @@ def test_filter_ql_modality(mocker):
     with f:
         f.index(random_docs_to_chunk(), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 def test_filter_compose_ql(mocker):
@@ -193,7 +197,7 @@ def test_filter_compose_ql(mocker):
         assert int(req.docs[0].tags['id']) == 2
         assert len(req.docs[0].matches) == 0  # matches do not contain "hello"
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow().add(uses='DummySegmenter')
         .add(
@@ -202,4 +206,4 @@ def test_filter_compose_ql(mocker):
     with f:
         f.index(random_docs(10), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)

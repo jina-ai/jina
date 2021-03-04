@@ -5,6 +5,7 @@ import pytest
 from ..helpers import create_flow_2, assert_request
 from jina import Client, Document
 from jina.parsers import set_client_cli_parser
+from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -30,16 +31,15 @@ def client():
 @pytest.mark.timeout(360)
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose, doc_to_index, client, mocker):
-    m = mocker.Mock()
 
     def validate_resp(resp):
-        m()
         assert len(resp.search.docs) == 1
         assert resp.search.docs[0].text == 'test'
 
+    mock = mocker.Mock()
     flow_id = create_flow_2(flow_yaml=flow_yaml)
 
-    client.search(input_fn=[doc_to_index], on_done=validate_resp)
+    client.search(inputs=[doc_to_index], on_done=mock)
 
     assert_request(method='get',
                    url=f'http://localhost:8000/flows/{flow_id}')
@@ -47,4 +47,6 @@ def test_flow(docker_compose, doc_to_index, client, mocker):
     assert_request(method='delete',
                    url=f'http://localhost:8000/flows/{flow_id}',
                    payload={'workspace': False})
-    m.assert_called_once()
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_resp)

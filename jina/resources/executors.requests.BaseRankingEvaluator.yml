@@ -12,7 +12,5 @@ on:
             - buffer
             - blob
             - text
-      - !RankEvaluateDriver
-        with:
-          fields: ['id']
+      - !RankEvaluateDriver {}
 

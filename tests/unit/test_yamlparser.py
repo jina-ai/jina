@@ -156,7 +156,7 @@ def test_expand_env():
 
 
 def test_enum_yaml():
-    assert JAML.load(JAML.dump(SocketType.PAIR_BIND)) == SocketType.PAIR_BIND
+    assert JAML.load(JAML.dump(SocketType.PAIR_BIND)) == 'PAIR_BIND'
 
 
 def test_encoder_name_env_replace():
@@ -189,7 +189,7 @@ def test_load_from_dict():
     #   workspace: ${{this.name}}-${{this.batch_size}}
 
     d1 = {
-        '__cls': 'BaseEncoder',
+        'jtype': 'BaseEncoder',
         'metas': {'name': '${{BE_TEST_NAME}}',
                   'batch_size': '${{BATCH_SIZE}}',
                   'pea_id': '${{pea_id}}',
@@ -212,16 +212,16 @@ def test_load_from_dict():
     #   name: compound1
 
     d2 = {
-        '__cls': 'CompoundExecutor',
+        'jtype': 'CompoundExecutor',
         'components':
             [
                 {
-                    '__cls': 'BinaryPbIndexer',
+                    'jtype': 'BinaryPbIndexer',
                     'with': {'index_filename': 'tmp1'},
                     'metas': {'name': 'test1'}
                 },
                 {
-                    '__cls': 'BinaryPbIndexer',
+                    'jtype': 'BinaryPbIndexer',
                     'with': {'index_filename': 'tmp2'},
                     'metas': {'name': 'test2'}
                 },

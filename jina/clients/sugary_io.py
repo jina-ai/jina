@@ -34,15 +34,15 @@ def _input_lines(
         line_format: str = 'json',
         **kwargs
 ) -> Iterator[Union[str, bytes]]:
-    """Input function that iterates over list of strings, it can be used in the Flow API.
+    """Create a generator from either an Iterable of lines, or a file.
 
-    :param filepath: a text file that each line contains a document
     :param lines: a list of strings, each is considered as a document
-    :param size: the maximum number of the documents
-    :param sampling_rate: the sampling rate between [0, 1]
+    :param filepath: a text file that each line contains a document
     :param read_mode: specifies the mode in which the file
             is opened. 'r' for reading in text mode, 'rb' for reading in binary
     :param line_format: the format of each line ``json`` or ``csv``
+    :param kwargs: additional key word arguments
+    :yield: data from input lines
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_lines`, :meth:`Flow.search_lines` instead
@@ -102,17 +102,18 @@ def _input_files(
         sampling_rate: float = None,
         read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
-    r"""Input function that iterates over files, it can be used in the Flow API.
+    """Creates an iterator over a list of file path or the content of the files.
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
-    :param recursive: If recursive is true, the pattern '**' will match any files and
-                zero or more directories and subdirectories
+    :param recursive: If recursive is true, the pattern '**' will match any files
+        and zero or more directories and subdirectories
     :param size: the maximum number of the files
     :param sampling_rate: the sampling rate between [0, 1]
-    :param read_mode: specifies the mode in which the file
-            is opened. 'r' for reading in text mode, 'rb' for reading in binary mode.
-            If `read_mode` is None, will iterate over filenames
-
+    :param read_mode: specifies the mode in which the file is opened.
+        'r' for reading in text mode, 'rb' for reading in binary mode.
+        If `read_mode` is None, will iterate over filenames.
+    :yield: file paths or content
+    
     .. note::
         This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
     """
@@ -140,12 +141,13 @@ def _input_files(
 def _input_ndarray(
         array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
 ) -> Iterator[Any]:
-    """Input function that iterates over a numpy array, it can be used in the Flow API.
+    """Create a generator for a given dimension of a numpy array.
 
     :param array: the numpy ndarray data source
     :param axis: iterate over that axis
     :param size: the maximum number of the sub arrays
     :param shuffle: shuffle the numpy data source beforehand
+    :yield: ndarray
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead

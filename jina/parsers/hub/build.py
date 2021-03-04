@@ -14,6 +14,8 @@ def mixin_hub_build_parser(parser):
                                            'zero or more yaml config, '
                                            'zero or more Python file. '
                                            'All files in this directory will be shipped into a Docker image')
+    gp.add_argument('-f', '--file', type=str, default='Dockerfile',
+                    help='Name of the Dockerfile (Default is `path/Dockerfile`')
     gp.add_argument('--pull', action='store_true', default=False,
                     help='If set, downloads any updates to the FROM image in Dockerfiles')
     gp.add_argument('--push', action='store_true', default=False,

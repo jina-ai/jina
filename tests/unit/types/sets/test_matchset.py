@@ -50,3 +50,11 @@ def test_append_from_documents(matchset, document_factory, reference_doc):
     assert rv.adjacency == reference_doc.adjacency + 1
     assert rv.mime_type == 'text/plain'
     assert rv.score.ref_id == reference_doc.id
+
+def test_mime_type_not_reassigned():
+    d = Document()
+    m = Document()
+    assert m.mime_type == ''
+    d.mime_type = 'text/plain'
+    r = d.matches.append(m)
+    assert r.mime_type == ''

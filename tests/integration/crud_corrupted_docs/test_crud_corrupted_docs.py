@@ -8,6 +8,8 @@ from jina import Document
 from jina.executors.indexers import BaseIndexer
 from jina.flow import Flow
 
+from tests import validate_callback
+
 
 def random_docs_only_tags(nr_docs, start=0):
     for j in range(start, nr_docs + start):
@@ -50,7 +52,6 @@ def test_only_tags(tmp_path, mocker):
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
-            mock()
             assert len(resp.docs) == NUMBER_OF_SEARCHES
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
@@ -58,31 +59,34 @@ def test_only_tags(tmp_path, mocker):
         return validate_results
 
     with f:
-        f.index(input_fn=docs)
+        f.index(inputs=docs)
     validate_index_size(NR_DOCS_INDEX, expected_indices=1)
 
     mock = mocker.Mock()
     with f:
-        f.search(input_fn=docs_search,
-                 on_done=validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
+        f.search(inputs=docs_search,
+                 on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
 
     # this won't increase the index size as the ids are new
     with f:
-        f.update(input_fn=docs_update)
+        f.update(inputs=docs_update)
     validate_index_size(NR_DOCS_INDEX, expected_indices=1)
 
     mock = mocker.Mock()
     with f:
-        f.search(input_fn=docs_search,
-                 on_done=validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
+        f.search(inputs=docs_search,
+                 on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(EXPECTED_ONLY_TAGS_RESULTS))
 
     mock = mocker.Mock()
     with f:
-        f.search(input_fn=docs_search,
-                 on_done=validate_result_factory(0))
+        f.search(inputs=docs_search,
+                 on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))
 
 
 np.random.seed(0)
@@ -130,7 +134,6 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
-            mock()
             assert len(resp.docs) == NUMBER_OF_SEARCHES
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
@@ -149,25 +152,27 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
         return validate_results
 
     with f:
-        f.index(input_fn=docs)
+        f.index(inputs=docs)
     validate_index_size(NR_DOCS_INDEX, expected_indices=2)
 
     mock = mocker.Mock()
     with f:
-        f.search(input_fn=docs_search,
-                 on_done=validate_result_factory(TOPK))
+        f.search(inputs=docs_search,
+                 on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(TOPK))
 
     # this won't increase the index size as the ids are new
     with f:
-        f.update(input_fn=docs_update)
+        f.update(inputs=docs_update)
     validate_index_size(NR_DOCS_INDEX, expected_indices=2)
 
     mock = mocker.Mock()
     with f:
-        f.search(input_fn=docs_search,
-                 on_done=validate_result_factory(TOPK))
+        f.search(inputs=docs_search,
+                 on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(TOPK))
 
     with f:
         f.delete(ids=[d.id for d in all_docs_indexed])
@@ -175,9 +180,10 @@ def test_only_embedding_and_mime_type(tmp_path, mocker, field):
 
     mock = mocker.Mock()
     with f:
-        f.search(input_fn=docs_search,
-                 on_done=validate_result_factory(0))
+        f.search(inputs=docs_search,
+                 on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))
 
 
 def random_docs_image_mime_text_content(nr_docs, start=0):
@@ -206,7 +212,6 @@ def test_wrong_mime_type(tmp_path, mocker):
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
-            mock()
             assert len(resp.docs) == NUMBER_OF_SEARCHES
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
@@ -216,25 +221,27 @@ def test_wrong_mime_type(tmp_path, mocker):
         return validate_results
 
     with f_index:
-        f_index.index(input_fn=docs)
+        f_index.index(inputs=docs)
     validate_index_size(NR_DOCS_INDEX, expected_indices=2)
 
     mock = mocker.Mock()
     with f_query:
-        f_query.search(input_fn=docs_search,
-                       on_done=validate_result_factory(TOPK))
+        f_query.search(inputs=docs_search,
+                       on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(TOPK))
 
     # this won't increase the index size as the ids are new
     with f_index:
-        f_index.update(input_fn=docs_update)
+        f_index.update(inputs=docs_update)
     validate_index_size(NR_DOCS_INDEX, expected_indices=2)
 
     mock = mocker.Mock()
     with f_query:
-        f_query.search(input_fn=docs_search,
-                       on_done=validate_result_factory(TOPK))
+        f_query.search(inputs=docs_search,
+                       on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(TOPK))
 
     with f_index:
         f_index.delete(ids=[d.id for d in all_docs_indexed])
@@ -242,9 +249,10 @@ def test_wrong_mime_type(tmp_path, mocker):
 
     mock = mocker.Mock()
     with f_query:
-        f_query.search(input_fn=docs_search,
-                       on_done=validate_result_factory(0))
+        f_query.search(inputs=docs_search,
+                       on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))
 
 
 START_SHAPE = (7)
@@ -280,7 +288,6 @@ def test_dimensionality_search_wrong(tmp_path, mocker):
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
-            mock()
             assert len(resp.docs) == NUMBER_OF_SEARCHES
             for doc in resp.docs:
                 assert len(doc.matches) == num_matches
@@ -288,27 +295,29 @@ def test_dimensionality_search_wrong(tmp_path, mocker):
         return validate_results
 
     with f_index:
-        f_index.index(input_fn=docs)
+        f_index.index(inputs=docs)
     validate_index_size(NR_DOCS_INDEX, expected_indices=2)
 
     mock = mocker.Mock()
     with f_query:
-        f_query.search(input_fn=docs_search,
+        f_query.search(inputs=docs_search,
                        # 0 because search docs have wrong shape
-                       on_done=validate_result_factory(0))
+                       on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))
 
     # this won't increase the index size as the ids are new
     with f_index:
-        f_index.update(input_fn=docs_update)
+        f_index.update(inputs=docs_update)
     validate_index_size(NR_DOCS_INDEX, expected_indices=2)
 
     mock = mocker.Mock()
     with f_query:
-        f_query.search(input_fn=docs_search,
+        f_query.search(inputs=docs_search,
                        # 0 because search docs have wrong shape
-                       on_done=validate_result_factory(0))
+                       on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))
 
     with f_index:
         f_index.delete(ids=[d.id for d in all_docs_indexed])
@@ -316,6 +325,7 @@ def test_dimensionality_search_wrong(tmp_path, mocker):
 
     mock = mocker.Mock()
     with f_query:
-        f_query.search(input_fn=docs_search,
-                       on_done=validate_result_factory(0))
+        f_query.search(inputs=docs_search,
+                       on_done=mock)
     mock.assert_called_once()
+    validate_callback(mock, validate_result_factory(0))

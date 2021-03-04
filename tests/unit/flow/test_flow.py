@@ -11,7 +11,7 @@ from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
 from jina.peapods.pods import BasePod
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -83,14 +83,14 @@ def test_simple_flow(restful):
     f = Flow(restful=restful).add()
 
     with f:
-        f.index(input_fn=bytes_gen)
+        f.index(inputs=bytes_gen)
 
     with f:
-        f.index(input_fn=bytes_fn)
+        f.index(inputs=bytes_fn)
 
     with f:
-        f.index(input_fn=bytes_fn)
-        f.index(input_fn=bytes_fn)
+        f.index(inputs=bytes_fn)
+        f.index(inputs=bytes_fn)
 
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.PULL_CONNECT
@@ -163,7 +163,7 @@ def test_flow_no_container(restful):
          .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
 @pytest.fixture
@@ -176,7 +176,7 @@ def docpb_workspace(tmpdir):
 def test_shards(docpb_workspace):
     f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3)
     with f:
-        f.index(input_fn=random_docs(1000), random_doc_id=False)
+        f.index(inputs=random_docs(1000), random_doc_id=False)
     with f:
         pass
 
@@ -385,7 +385,7 @@ def test_index_text_files(mocker, restful, datauri_workspace):
         for d in req.docs:
             assert d.text
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow(restful=restful, read_only=True)
          .add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
@@ -393,7 +393,7 @@ def test_index_text_files(mocker, restful, datauri_workspace):
     with f:
         f.index_files('*.py', on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
@@ -403,7 +403,7 @@ def test_flow_with_publish_driver(mocker, restful):
         for d in req.docs:
             assert d.embedding is not None
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     f = (Flow(restful=restful)
          .add(name='r2', uses='!OneHotTextEncoder')
@@ -413,7 +413,7 @@ def test_flow_with_publish_driver(mocker, restful):
     with f:
         f.index(['text_1', 'text_2'], on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -422,7 +422,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
         for d in req.index.docs:
             assert d.modality in ['mode1', 'mode2']
 
-    def input_fn():
+    def input_function():
         doc1 = DocumentProto()
         doc1.modality = 'mode1'
         doc2 = DocumentProto()
@@ -431,16 +431,16 @@ def test_flow_with_modalitys_simple(mocker, restful):
         doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
     flow = (Flow(restful=restful)
             .add(name='chunk_seg', parallel=3)
             .add(name='encoder12', parallel=2,
                  uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}'))
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock)
+        flow.index(inputs=input_function, on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 def test_flow_arguments_priorities():
