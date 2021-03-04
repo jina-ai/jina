@@ -8,7 +8,7 @@ from jina.clients import Client
 from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
-from jina.helper import random_port
+from jina import helper
 from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
@@ -50,8 +50,8 @@ def test_check_input_fail(inputs):
 @pytest.mark.parametrize(
     'port_expose, route, status_code',
     [
-        (random_port(), '/status', 200),
-        (random_port(), '/api/ass', 405)
+        (helper.random_port(), '/status', 200),
+        (helper.random_port(), '/api/ass', 405)
     ]
 )
 def test_gateway_ready(port_expose, route, status_code):

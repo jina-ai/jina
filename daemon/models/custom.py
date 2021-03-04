@@ -4,7 +4,8 @@ from typing import Iterable, Callable
 from pydantic import create_model, validator, Field, BaseConfig
 
 from cli.export import _export_parser_args
-from jina.helper import typename, random_identity, random_port
+from jina.helper import typename, random_identity
+from jina import helper
 
 
 def _get_validator(field: str, choices: Iterable):
@@ -38,9 +39,9 @@ def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser']):
                     default_factory=random_identity,
                     example=a['default'],
                     description=a['help'])
-            elif a['default_factory'] == random_port.__name__:
+            elif a['default_factory'] == helper.random_port.__name__:
                 f = Field(
-                    default_factory=random_port,
+                    default_factory=helper.random_port,
                     example=a['default'],
                     description=a['help'])
             else:
