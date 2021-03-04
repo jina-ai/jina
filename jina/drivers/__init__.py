@@ -322,11 +322,11 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
 class ContextAwareRecursiveMixin:
     """
-     The full datastructure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
-     It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
+    The full datastructure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
+    It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
 
-     .. seealso::
-        https://github.com/jina-ai/jina/issues/1932
+    .. seealso::
+       https://github.com/jina-ai/jina/issues/1932
 
     """
 
