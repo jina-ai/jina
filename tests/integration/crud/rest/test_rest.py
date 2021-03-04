@@ -25,13 +25,13 @@ def config(tmpdir):
     del os.environ['JINA_REST_DIR']
 
 
-def send_rest_request(flow_file, method, data):
+def send_rest_request(flow_file, endpoint, method, data):
     json = {
         'data': data
     }
     with Flow.load_config(flow_file) as flow:
-        url = f'http://0.0.0.0:{flow.port_expose}/{method}'
-        r = requests.post(url, json=json)
+        url = f'http://0.0.0.0:{flow.port_expose}/{endpoint}'
+        r = getattr(requests, method)(url, json=json)
 
         if r.status_code != 200:
             # TODO status_code should be 201 for index
@@ -42,21 +42,21 @@ def send_rest_request(flow_file, method, data):
 
 def send_rest_index_request(flow_file, documents):
     data = [document.dict() for document in documents]
-    return send_rest_request(flow_file, 'index', data)
+    return send_rest_request(flow_file, 'index', 'post', data)
 
 
 def send_rest_update_request(flow_file, documents):
     data = [document.dict() for document in documents]
-    return send_rest_request(flow_file, 'update', data)
+    return send_rest_request(flow_file, 'update', 'patch', data)
 
 
 def send_rest_delete_request(flow_file, ids):
-    return send_rest_request(flow_file, 'delete', ids)
+    return send_rest_request(flow_file, 'delete', 'delete', ids)
 
 
 def send_rest_search_request(flow_file, documents):
     data = [document.dict() for document in documents]
-    return send_rest_request(flow_file, 'search', data)
+    return send_rest_request(flow_file, 'search', 'post', data)
 
 
 def random_docs(start, end):

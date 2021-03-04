@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import json
 import warnings
 from typing import Any
 
@@ -28,12 +29,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     """
     with ImportExtensions(required=True):
         from fastapi import FastAPI, WebSocket, Body
-        from fastapi.responses import JSONResponse
+        from fastapi.responses import JSONResponse, StreamingResponse
         from fastapi.middleware.cors import CORSMiddleware
         from starlette.endpoints import WebSocketEndpoint
         from starlette import status
         from starlette.types import Receive, Scope, Send
-        from starlette.responses import StreamingResponse
+
         from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, \
             JinaSearchRequestModel
 
@@ -199,13 +200,13 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     async def result_in_stream(req_iter):
         """
-        Collect the protobuf message converts protobuf message to a dictionary.
+        Collect the protobuf message converts protobuf messages to strings.
 
         :param req_iter: request iterator
         :yield: result
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
-            yield MessageToDict(k)
+            yield json.dumps(MessageToDict(k))
 
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):
