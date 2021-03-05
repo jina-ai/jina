@@ -11,7 +11,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 @pytest.mark.timeout(360)
 def test_hub_build_pull():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu'), '--push', '--test-uses', '--raise-error'])
+        [os.path.join(cur_dir, 'hub-mwu'), '--push', '--test-uses', '--raise-error']
+    )
     HubIO(args).build()
 
     args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder'])
@@ -24,32 +25,42 @@ def test_hub_build_pull():
 @pytest.mark.timeout(360)
 def test_hub_build_uses():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error'])
+        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error']
+    )
     HubIO(args).build()
     # build again it shall not fail
     HubIO(args).build()
 
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--daemon', '--raise-error'])
+        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--daemon', '--raise-error']
+    )
     HubIO(args).build()
     # build again it shall not fail
     HubIO(args).build()
 
 
 def test_hub_build_failures():
-    for j in ['bad-dockerfile', 'bad-pythonfile', 'missing-dockerfile', 'missing-manifest']:
+    for j in [
+        'bad-dockerfile',
+        'bad-pythonfile',
+        'missing-dockerfile',
+        'missing-manifest',
+    ]:
         args = set_hub_build_parser().parse_args(
-            [os.path.join(cur_dir, 'hub-mwu-bad', j)])
+            [os.path.join(cur_dir, 'hub-mwu-bad', j)]
+        )
         assert not HubIO(args).build()['is_build_success']
 
 
 def test_hub_build_no_pymodules():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start')])
+        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start')]
+    )
     assert HubIO(args).build()['is_build_success']
 
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--test-uses'])
+        [os.path.join(cur_dir, 'hub-mwu-bad', 'fail-to-start'), '--test-uses']
+    )
     assert not HubIO(args).build()['is_build_success']
 
 
@@ -60,10 +71,13 @@ def requirements(request, tmpdir):
         fp.write(request.param)
 
 
-@pytest.mark.parametrize('requirements', ['jina\ntorch>=2', 'jina>=0.2\ntoch==3'], indirect=True)
+@pytest.mark.parametrize(
+    'requirements', ['jina\ntorch>=2', 'jina>=0.2\ntoch==3'], indirect=True
+)
 def test_jina_version_freeze(requirements, tmpdir):
     import pkg_resources
     from jina import __version__
+
     args = set_hub_build_parser().parse_args([str(tmpdir)])
     hubio = HubIO(args)
     hubio._freeze_jina_version()
@@ -79,6 +93,7 @@ def test_jina_version_freeze(requirements, tmpdir):
 @pytest.mark.parametrize('requirements', ['torch'], indirect=True)
 def test_jina_version_freeze_no_jina_dependency(requirements, tmpdir):
     import pkg_resources
+
     args = set_hub_build_parser().parse_args([str(tmpdir)])
     hubio = HubIO(args)
     hubio._freeze_jina_version()
@@ -102,7 +117,8 @@ def test_labels():
             raise BaseException('labels all good')
 
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error'])
+        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error']
+    )
     hubio = HubIO(args)
     hubio._raw_client = MockContainers()
 

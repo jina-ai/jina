@@ -30,20 +30,20 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
 
         assert resp.docs[0].text == ' I am chunk 1 of doc 1,'
         assert (
-                resp.docs[0].matches[0].text
-                == 'I am chunk 0 of doc 1, I am chunk 1 of doc 1, I am chunk 2 of doc 1'
+            resp.docs[0].matches[0].text
+            == 'I am chunk 0 of doc 1, I am chunk 1 of doc 1, I am chunk 2 of doc 1'
         )
 
         assert resp.docs[1].text == 'I am chunk 0 of doc 2,'
         assert (
-                resp.docs[1].matches[0].text
-                == 'I am chunk 0 of doc 2, I am chunk 1 of doc 2'
+            resp.docs[1].matches[0].text
+            == 'I am chunk 0 of doc 2, I am chunk 1 of doc 2'
         )
 
         assert resp.docs[2].text == ' I am chunk 3 of doc 3'
         assert (
-                resp.docs[2].matches[0].text
-                == 'I am chunk 0 of doc 3, I am chunk 1 of doc 3, I am chunk 2 of doc 3, I am chunk 3 of doc 3'
+            resp.docs[2].matches[0].text
+            == 'I am chunk 0 of doc 3, I am chunk 1 of doc 3, I am chunk 2 of doc 3, I am chunk 3 of doc 3'
         )
 
     search_data = [
@@ -55,10 +55,7 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
     mock = mocker.Mock()
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
-            inputs=search_data,
-            on_done=mock,
-            on_error=lambda r: print(r)
-
+            inputs=search_data, on_done=mock, on_error=lambda r: print(r)
         )
 
     mock.assert_called_once()

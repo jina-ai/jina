@@ -11,7 +11,9 @@ from jina.peapods.pods import BasePod
 @pytest.mark.parametrize('parallel', [1, 2, 4])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_pod_context_parallel(runtime, parallel):
-    args = set_pod_parser().parse_args(['--runtime-backend', runtime, '--parallel', str(parallel)])
+    args = set_pod_parser().parse_args(
+        ['--runtime-backend', runtime, '--parallel', str(parallel)]
+    )
     with Pod(args) as bp:
         if parallel == 1:
             assert bp.num_peas == 1
@@ -22,15 +24,19 @@ def test_pod_context_parallel(runtime, parallel):
     Pod(args).start().close()
 
 
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ,
-                    reason='for unknown reason, this test is flaky on Github action, '
-                           'but locally it SHOULD work fine')
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' in os.environ,
+    reason='for unknown reason, this test is flaky on Github action, '
+    'but locally it SHOULD work fine',
+)
 @pytest.mark.parametrize('restful', [True, False])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 @pytest.mark.parametrize('runtime_cls', ['RESTRuntime', 'GRPCRuntime'])
 def test_gateway_pod(runtime, restful, runtime_cls):
     args = set_gateway_parser().parse_args(
-        ['--runtime-backend', runtime, '--runtime-cls', runtime_cls] + (['--restful'] if restful else []))
+        ['--runtime-backend', runtime, '--runtime-cls', runtime_cls]
+        + (['--restful'] if restful else [])
+    )
     with Pod(args) as p:
         assert len(p.all_args) == 1
         if restful:
@@ -43,9 +49,9 @@ def test_gateway_pod(runtime, restful, runtime_cls):
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_pod_naming_with_parallel(runtime):
-    args = set_pod_parser().parse_args(['--name', 'pod',
-                                        '--parallel', '2',
-                                        '--runtime-backend', runtime])
+    args = set_pod_parser().parse_args(
+        ['--name', 'pod', '--parallel', '2', '--runtime-backend', runtime]
+    )
     with BasePod(args) as bp:
         assert bp.peas[0].name == 'pod/head'
         assert bp.peas[1].name == 'pod/tail'
@@ -62,10 +68,14 @@ def test_pod_args_remove_uses_ba():
     with Pod(args) as p:
         assert p.num_peas == 1
 
-    args = set_pod_parser().parse_args(['--uses-before', '_pass', '--uses-after', '_pass'])
+    args = set_pod_parser().parse_args(
+        ['--uses-before', '_pass', '--uses-after', '_pass']
+    )
     with Pod(args) as p:
         assert p.num_peas == 1
 
-    args = set_pod_parser().parse_args(['--uses-before', '_pass', '--uses-after', '_pass', '--parallel', '2'])
+    args = set_pod_parser().parse_args(
+        ['--uses-before', '_pass', '--uses-after', '_pass', '--parallel', '2']
+    )
     with Pod(args) as p:
         assert p.num_peas == 4

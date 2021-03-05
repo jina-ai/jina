@@ -15,7 +15,9 @@ __all__ = ['JAML', 'JAMLCompatible']
 from ..excepts import BadConfigSource
 from ..helper import expand_env_var
 
-subvar_regex = re.compile(r'\${{\s*([\w\[\].]+)\s*}}')  #: regex for substituting variables
+subvar_regex = re.compile(
+    r'\${{\s*([\w\[\].]+)\s*}}'
+)  #: regex for substituting variables
 internal_var_regex = re.compile(r'{.+}|\$[a-zA-Z0-9_]*\b')
 
 
@@ -69,9 +71,7 @@ class JAML:
     """
 
     @staticmethod
-    def load(stream,
-             substitute: bool = False,
-             context: Dict[str, Any] = None):
+    def load(stream, substitute: bool = False, context: Dict[str, Any] = None):
         """Parse the first YAML document in a stream and produce the corresponding Python object.
 
         .. note::
@@ -127,7 +127,11 @@ class JAML:
         Return a list of :class:`JAMLCompatible` classes that have been registered.
 
         """
-        return list(v[1:] for v in set(JinaLoader.yaml_constructors.keys()) if v and v.startswith('!'))
+        return list(
+            v[1:]
+            for v in set(JinaLoader.yaml_constructors.keys())
+            if v and v.startswith('!')
+        )
 
     @staticmethod
     def load_no_tags(stream, **kwargs):
@@ -142,9 +146,12 @@ class JAML:
         return JAML.load(safe_yml, **kwargs)
 
     @staticmethod
-    def expand_dict(d: Dict, context: Union[Dict, SimpleNamespace, None] = None,
-                    resolve_cycle_ref=True,
-                    resolve_passes: int = 3) -> Dict[str, Any]:
+    def expand_dict(
+        d: Dict,
+        context: Union[Dict, SimpleNamespace, None] = None,
+        resolve_cycle_ref=True,
+        resolve_passes: int = 3,
+    ) -> Dict[str, Any]:
         """
         Expand variables from YAML file.
 
@@ -155,6 +162,7 @@ class JAML:
         :return: expanded dict.
         """
         from ..helper import parse_arg
+
         expand_map = SimpleNamespace()
         env_map = SimpleNamespace()
 
@@ -291,7 +299,9 @@ class JAML:
         :param **kwargs: other kwargs
         :return: the yaml output
         """
-        return yaml.dump(data, stream=stream, default_flow_style=False, sort_keys=False, **kwargs)
+        return yaml.dump(
+            data, stream=stream, default_flow_style=False, sort_keys=False, **kwargs
+        )
 
     @staticmethod
     def register(cls):
@@ -310,6 +320,7 @@ class JAML:
         try:
             yaml.add_representer(cls, cls._to_yaml)
         except AttributeError:
+
             def t_y(representer, data):
                 """Inner function, get the representer."""
                 return representer.represent_yaml_object(
@@ -367,6 +378,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :return: the node's representation
         """
         from .parsers import get_parser
+
         tmp = get_parser(cls, version=data._version).dump(data)
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
@@ -383,6 +395,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         """
         data = constructor.construct_mapping(node, deep=True)
         from .parsers import get_parser
+
         return get_parser(cls, version=data.get('version', None)).parse(cls, data)
 
     def save_config(self, filename: Optional[str] = None):
@@ -393,18 +406,25 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         """
         f = filename or getattr(self, 'config_abspath', None)
         if not f:
-            f = tempfile.NamedTemporaryFile('w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)).name
-            warnings.warn(f'no "filename" is given, {self!r}\'s config will be saved to: {f}')
+            f = tempfile.NamedTemporaryFile(
+                'w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)
+            ).name
+            warnings.warn(
+                f'no "filename" is given, {self!r}\'s config will be saved to: {f}'
+            )
         with open(f, 'w', encoding='utf8') as fp:
             JAML.dump(self, fp)
 
     @classmethod
-    def load_config(cls,
-                    source: Union[str, TextIO, Dict], *,
-                    allow_py_modules: bool = True,
-                    substitute: bool = True,
-                    context: Dict[str, Any] = None,
-                    **kwargs) -> 'JAMLCompatible':
+    def load_config(
+        cls,
+        source: Union[str, TextIO, Dict],
+        *,
+        allow_py_modules: bool = True,
+        substitute: bool = True,
+        context: Dict[str, Any] = None,
+        **kwargs,
+    ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
         of loading extra py_modules, substitute env & context variables. Any class that
         implements :class:`JAMLCompatible` mixin can enjoy this feature, e.g. :class:`BaseFlow`,
@@ -460,13 +480,18 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # extra arguments are parsed to inject_config
                 no_tag_yml = cls.inject_config(no_tag_yml, **kwargs)
             else:
-                raise BadConfigSource(f'can not construct {cls} from an empty {source}. nothing to read from there')
+                raise BadConfigSource(
+                    f'can not construct {cls} from an empty {source}. nothing to read from there'
+                )
             if substitute:
                 # expand variables
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
             if allow_py_modules:
                 # also add YAML parent path to the search paths
-                load_py_modules(no_tag_yml, extra_search_paths=(os.path.dirname(s_path),) if s_path else None)
+                load_py_modules(
+                    no_tag_yml,
+                    extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
+                )
             # revert yaml's tag and load again, this time with substitution
             tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
 

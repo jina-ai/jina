@@ -13,8 +13,10 @@ def _get_validator(field: str, choices: Iterable):
 
     def validate_arg_choices(v, values):
         if v not in choices:
-            raise ValueError(f'Invalid value {v}({typename(v)} for field {field}. '
-                             f'Valid choices are {choices}')
+            raise ValueError(
+                f'Invalid value {v}({typename(v)} for field {field}. '
+                f'Valid choices are {choices}'
+            )
         return v
 
     validate_arg_choices.__qualname__ = 'validate_' + field
@@ -27,28 +29,30 @@ def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser']):
 
     for a in _export_parser_args(parser):
         if a.get('choices', None):
-            choices_validators[f'validator_for_{a["name"]}'] = _get_validator(field=a['name'],
-                                                                              choices=set(a['choices']))
+            choices_validators[f'validator_for_{a["name"]}'] = _get_validator(
+                field=a['name'], choices=set(a['choices'])
+            )
         if a['required']:
-            f = Field(default=...,
-                      example=a['default'],
-                      description=a['help'])
+            f = Field(default=..., example=a['default'], description=a['help'])
         elif a.get('default_factory', None):
             if a['default_factory'] == random_identity.__name__:
                 f = Field(
                     default_factory=random_identity,
                     example=a['default'],
-                    description=a['help'])
+                    description=a['help'],
+                )
             elif a['default_factory'] == helper.random_port.__name__:
                 f = Field(
                     default_factory=helper.random_port,
                     example=a['default'],
-                    description=a['help'])
+                    description=a['help'],
+                )
             else:
-                raise ValueError(f'default_factory: {a["default_factory"]} is not recognizable for {a}')
+                raise ValueError(
+                    f'default_factory: {a["default_factory"]} is not recognizable for {a}'
+                )
         else:
-            f = Field(default=a['default'],
-                      description=a['help'])
+            f = Field(default=a['default'], description=a['help'])
 
         all_options[a['name']] = (a['type'], f)
 
@@ -60,9 +64,11 @@ def build_pydantic_model(model_name: str, module: str):
         arbitrary_types_allowed = True
 
     from jina.parsers import helper
+
     helper._SHOW_ALL_ARGS, old_val = True, helper._SHOW_ALL_ARGS
     from jina.parsers import set_pea_parser, set_pod_parser
     from jina.parsers.flow import set_flow_parser
+
     if module == 'pod':
         parser = set_pod_parser
     elif module == 'pea':
@@ -75,7 +81,9 @@ def build_pydantic_model(model_name: str, module: str):
     all_fields, field_validators = _get_pydantic_fields(parser)
 
     helper._SHOW_ALL_ARGS = old_val
-    return create_model(model_name,
-                        **all_fields,
-                        __config__=_PydanticConfig,
-                        __validators__=field_validators)
+    return create_model(
+        model_name,
+        **all_fields,
+        __config__=_PydanticConfig,
+        __validators__=field_validators,
+    )

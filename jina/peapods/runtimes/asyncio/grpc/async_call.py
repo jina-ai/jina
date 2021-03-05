@@ -7,6 +7,7 @@ from .....logging.profile import TimeContext
 from .....proto import jina_pb2_grpc
 from .....types.message import Message
 from .....types.request import Request
+
 __all__ = ['AsyncPrefetchCall']
 
 
@@ -56,23 +57,34 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                         # This code block will be executed for REST based invocations
                         next_request = next(request_iterator)
                     else:
-                        raise TypeError(f'{typename(request_iterator)} does not have `__anext__` or `__next__`')
+                        raise TypeError(
+                            f'{typename(request_iterator)} does not have `__anext__` or `__next__`'
+                        )
                     asyncio.create_task(
-                        self.zmqlet.send_message(Message(None, next_request, 'gateway', **vars(self.args))))
-                    fetch_to.append(asyncio.create_task(self.zmqlet.recv_message(callback=handle)))
+                        self.zmqlet.send_message(
+                            Message(None, next_request, 'gateway', **vars(self.args))
+                        )
+                    )
+                    fetch_to.append(
+                        asyncio.create_task(self.zmqlet.recv_message(callback=handle))
+                    )
                 except (StopIteration, StopAsyncIteration):
                     return True
             return False
 
         with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
-            self.logger.warning('if this takes too long, you may want to take smaller "--prefetch" or '
-                                'ask client to reduce "--request-size"')
+            self.logger.warning(
+                'if this takes too long, you may want to take smaller "--prefetch" or '
+                'ask client to reduce "--request-size"'
+            )
             prefetch_task = []
             is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
             if is_req_empty and not prefetch_task:
-                self.logger.error('receive an empty stream from the client! '
-                                  'please check your client\'s inputs, '
-                                  'you can use "Client.check_input(inputs)"')
+                self.logger.error(
+                    'receive an empty stream from the client! '
+                    'please check your client\'s inputs, '
+                    'you can use "Client.check_input(inputs)"'
+                )
                 return
 
         # the total num requests < self.args.prefetch
@@ -84,14 +96,18 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
             while prefetch_task:
-                self.logger.info(f'send: {self.zmqlet.msg_sent} '
-                                 f'recv: {self.zmqlet.msg_recv} '
-                                 f'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}')
+                self.logger.info(
+                    f'send: {self.zmqlet.msg_sent} '
+                    f'recv: {self.zmqlet.msg_recv} '
+                    f'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}'
+                )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
                     yield await r
                     if not is_req_empty:
-                        is_req_empty = await prefetch_req(self.args.prefetch_on_recv, onrecv_task)
+                        is_req_empty = await prefetch_req(
+                            self.args.prefetch_on_recv, onrecv_task
+                        )
 
                 # this list dries, clear it and feed it with on_recv_task
                 prefetch_task.clear()

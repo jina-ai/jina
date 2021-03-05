@@ -3,7 +3,11 @@ import os
 import pytest
 
 from jina.docker.hubio import HubIO
-from jina.parsers.hub import set_hub_new_parser, set_hub_pushpull_parser, set_hub_build_parser
+from jina.parsers.hub import (
+    set_hub_new_parser,
+    set_hub_pushpull_parser,
+    set_hub_build_parser,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -11,7 +15,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 @pytest.mark.parametrize('new_type', ['pod', 'app', 'template'])
 def test_create_new(tmpdir, new_type):
     args = set_hub_new_parser().parse_args(
-        ['--output-dir', str(tmpdir), '--type', new_type])
+        ['--output-dir', str(tmpdir), '--type', new_type]
+    )
     HubIO(args).new(no_input=True)
     list_dir = os.listdir(str(tmpdir))
     assert len(list_dir) == 1
@@ -36,11 +41,12 @@ def test_login(tmpdir, monkeypatch, mocker):
 
     def _mock_post(url, headers, data):
         mock(url=url, headers=headers, data=data)
-        resp = {'device_code': 'device',
-                'user_code': 'user',
-                'verification_uri': 'verification',
-                'access_token': 'access'
-                }
+        resp = {
+            'device_code': 'device',
+            'user_code': 'user',
+            'verification_uri': 'verification',
+            'access_token': 'access',
+        }
         return MockResponse(resp)
 
     def _mock_home():
@@ -81,7 +87,9 @@ def test_dry_run(dockerfile, argument):
         _args_list += [argument, dockerfile]
     args = set_hub_build_parser().parse_args(_args_list)
     result = HubIO(args).build()
-    assert result['Dockerfile'] == os.path.join(hub_mwu_path, dockerfile if dockerfile else 'Dockerfile')
+    assert result['Dockerfile'] == os.path.join(
+        hub_mwu_path, dockerfile if dockerfile else 'Dockerfile'
+    )
     assert result['manifest.yml'] == os.path.join(hub_mwu_path, 'manifest.yml')
     assert result['config.yml'] == os.path.join(hub_mwu_path, 'mwu_encoder.yml')
     assert result['README.md'] == os.path.join(hub_mwu_path, 'README.md')

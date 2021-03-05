@@ -8,10 +8,7 @@ from .helper import jina_workspace
 
 
 class FlowStore(BaseStore):
-
-    def add(self, config: BinaryIO,
-            workspace_id: Optional[uuid.UUID] = None,
-            **kwargs):
+    def add(self, config: BinaryIO, workspace_id: Optional[uuid.UUID] = None, **kwargs):
         try:
             if not workspace_id:
                 workspace_id = random_uuid()
@@ -33,8 +30,9 @@ class FlowStore(BaseStore):
                 'arguments': vars(f.args),
                 'yaml_source': y_spec,
                 'workdir': _workdir,
-                'workspace_id': workspace_id
+                'workspace_id': workspace_id,
             }
             self._logger.success(
-                f'{colored(str(flow_identity), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}')
+                f'{colored(str(flow_identity), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}'
+            )
             return flow_identity

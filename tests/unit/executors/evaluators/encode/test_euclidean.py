@@ -25,7 +25,7 @@ from jina.executors.evaluators.embedding.euclidean import EuclideanEvaluator
         ([1, 1], [0, 1], 1.0),
         ([1, 1], [1, 0], 1.0),
         ([1, 1], [1, 1], 0.0),
-    ]
+    ],
 )
 def test_euclidean_evaluator(doc_embedding, gt_embedding, expected):
     evaluator = EuclideanEvaluator()

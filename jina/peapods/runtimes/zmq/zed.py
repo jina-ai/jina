@@ -9,8 +9,14 @@ from ...zmq import ZmqStreamlet
 from .... import Message
 from .... import Request
 from ....enums import OnErrorStrategy
-from ....excepts import NoExplicitMessage, ExecutorFailToLoad, MemoryOverHighWatermark, ChainedPodException, \
-    BadConfigSource, RuntimeTerminated
+from ....excepts import (
+    NoExplicitMessage,
+    ExecutorFailToLoad,
+    MemoryOverHighWatermark,
+    ChainedPodException,
+    BadConfigSource,
+    RuntimeTerminated,
+)
 from ....executors import BaseExecutor
 from ....helper import random_identity
 from ....logging.profile import used_memory, TimeDict
@@ -56,18 +62,22 @@ class ZEDRuntime(ZMQRuntime):
         """Load ZMQStreamlet to this runtime."""
         # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
         # process/thread
-        self._zmqlet = ZmqStreamlet(self.args, logger=self.logger, ctrl_addr=self.ctrl_addr)
+        self._zmqlet = ZmqStreamlet(
+            self.args, logger=self.logger, ctrl_addr=self.ctrl_addr
+        )
 
     def _load_executor(self):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""
         try:
-            self._executor = BaseExecutor.load_config(self.args.uses,
-                                                      pea_id=self.args.pea_id,
-                                                      read_only=self.args.read_only)
+            self._executor = BaseExecutor.load_config(
+                self.args.uses, pea_id=self.args.pea_id, read_only=self.args.read_only
+            )
             self._executor.attach(runtime=self)
         except BadConfigSource as ex:
-            self.logger.error(f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
-                              f'please use "docker://YOUR_IMAGE_NAME"')
+            self.logger.error(
+                f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
+                f'please use "docker://YOUR_IMAGE_NAME"'
+            )
             raise ExecutorFailToLoad from ex
         except FileNotFoundError as ex:
             self.logger.error(f'fail to load file dependency')
@@ -80,6 +90,7 @@ class ZEDRuntime(ZMQRuntime):
         """Load the plugins if needed necessary to load executors."""
         if self.args.py_modules:
             from ....importer import PathImporter
+
             PathImporter.add_modules(*self.args.py_modules)
 
     #: Private methods required by :meth:`teardown`
@@ -115,7 +126,9 @@ class ZEDRuntime(ZMQRuntime):
             self._partial_requests = [v.request for v in self._partial_messages]
             part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)'
 
-        self.logger.info(f'recv {msg.envelope.request_type} {part_str} from {msg.colored_route}')
+        self.logger.info(
+            f'recv {msg.envelope.request_type} {part_str} from {msg.colored_route}'
+        )
         return self
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
@@ -150,7 +163,10 @@ class ZEDRuntime(ZMQRuntime):
             # otherwise a reducer will lose its function when eailier pods raise exception
             raise NoExplicitMessage
 
-        if msg.envelope.status.code != jina_pb2.StatusProto.ERROR or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE:
+        if (
+            msg.envelope.status.code != jina_pb2.StatusProto.ERROR
+            or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
+        ):
             self._executor(self.request_type)
         else:
             raise ChainedPodException
@@ -184,7 +200,8 @@ class ZEDRuntime(ZMQRuntime):
             self._zmqlet.close()
         except MemoryOverHighWatermark:
             self.logger.critical(
-                f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB')
+                f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB'
+            )
         except NoExplicitMessage:
             # silent and do not propagate message anymore
             # 1. wait partial message to be finished
@@ -199,16 +216,22 @@ class ZEDRuntime(ZMQRuntime):
                 raise
             if isinstance(ex, ChainedPodException):
                 msg.add_exception()
-                self.logger.error(f'{ex!r}' +
-                                  f'\n add "--quiet-error" to suppress the exception details'
-                                  if not self.args.quiet_error else '',
-                                  exc_info=not self.args.quiet_error)
+                self.logger.error(
+                    f'{ex!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
-                self.logger.error(f'{ex!r}' +
-                                  f'\n add "--quiet-error" to suppress the exception details'
-                                  if not self.args.quiet_error else '',
-                                  exc_info=not self.args.quiet_error)
+                self.logger.error(
+                    f'{ex!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
 
             self._zmqlet.send_message(msg)
 

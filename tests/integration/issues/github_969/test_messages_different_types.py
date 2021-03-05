@@ -129,7 +129,9 @@ def input_doc_chunks_and_matches():
     return doc
 
 
-def test_message_docs_different_chunks_and_matches_types(input_doc_chunks_and_matches, mocker):
+def test_message_docs_different_chunks_and_matches_types(
+    input_doc_chunks_and_matches, mocker
+):
     def validate_chunks_and_matches_fn(resp):
         assert len(resp.search.docs) == 1
         doc = resp.search.docs[0]
@@ -170,4 +172,3 @@ def test_message_docs_different_chunks_and_matches_types(input_doc_chunks_and_ma
         f.search(inputs=[input_doc_chunks_and_matches], on_done=mock)
 
     validate_callback(mock, validate_chunks_and_matches_fn)
-

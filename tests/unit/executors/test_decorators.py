@@ -3,8 +3,16 @@ import os
 import numpy as np
 import pytest
 
-from jina.executors.decorators import as_update_method, as_train_method, as_ndarray, batching, \
-    require_train, store_init_kwargs, batching_multi_input, single
+from jina.executors.decorators import (
+    as_update_method,
+    as_train_method,
+    as_ndarray,
+    batching,
+    require_train,
+    store_init_kwargs,
+    batching_multi_input,
+    single,
+)
 
 
 def test_as_update_method():
@@ -186,7 +194,9 @@ def test_batching_ordinal_idx_arg(tmpdir):
             return list(range(ord_idx.start, ord_idx.stop))
 
     instance = A(2)
-    result = instance.f(np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0])
+    result = instance.f(
+        np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0]
+    )
     assert len(instance.ord_idx) == 5
     assert instance.ord_idx[0].start == 0
     assert instance.ord_idx[0].stop == 2
@@ -203,7 +213,8 @@ def test_batching_ordinal_idx_arg(tmpdir):
 
 
 @pytest.mark.skip(
-    reason='Currently wrong implementation of batching with labels, not well considered in batching helper')
+    reason='Currently wrong implementation of batching with labels, not well considered in batching helper'
+)
 def test_batching_with_label():
     class A:
         def __init__(self, batch_size):
@@ -244,6 +255,7 @@ def test_batching_multi():
     data = [data0, data1, data2]
     result = instance.f(*data)
     from math import ceil
+
     result_dim = sum([d.shape[1] for d in data])
     assert result.shape == (num_docs, result_dim)
     assert len(instance.batching) == ceil(num_docs / batch_size)
@@ -260,19 +272,23 @@ def test_batching_multi_input_dictionary():
             self.batches = []
 
         @batching_multi_input(slice_on=2, num_data=2)
-        def score(
-                self, query_meta, old_match_scores, match_meta
-        ):
+        def score(self, query_meta, old_match_scores, match_meta):
             self.batches.append([query_meta, old_match_scores, match_meta])
             return np.array([(x, y) for x, y in old_match_scores.items()])
 
     query_meta = {'text': 'cool stuff'}
     old_match_scores = {1: 5, 2: 4, 3: 4, 4: 0}
-    match_meta = {1: {'text': 'cool stuff'}, 2: {'text': 'kewl stuff'}, 3: {'text': 'kewl stuff'},
-                  4: {'text': 'kewl stuff'}}
+    match_meta = {
+        1: {'text': 'cool stuff'},
+        2: {'text': 'kewl stuff'},
+        3: {'text': 'kewl stuff'},
+        4: {'text': 'kewl stuff'},
+    }
     instance = MockRanker(batch_size)
     result = instance.score(query_meta, old_match_scores, match_meta)
-    np.testing.assert_almost_equal(result, np.array([(x, y) for x, y in old_match_scores.items()]))
+    np.testing.assert_almost_equal(
+        result, np.array([(x, y) for x, y in old_match_scores.items()])
+    )
     for batch in instance.batches:
         assert batch[0] == query_meta
         assert len(batch[1]) == batch_size

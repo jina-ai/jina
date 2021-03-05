@@ -5,7 +5,12 @@ import pytest
 
 from jina import Document
 from jina.clients import Client
-from jina.clients.sugary_io import _input_files, _input_lines, _input_ndarray, _input_csv
+from jina.clients.sugary_io import (
+    _input_files,
+    _input_lines,
+    _input_ndarray,
+    _input_csv,
+)
 from jina.enums import DataInputType
 from jina.excepts import BadClientInput
 
@@ -44,7 +49,11 @@ def test_input_csv_from_lines():
 
 def test_input_csv_from_lines_field_resolver():
     with open(os.path.join(cur_dir, 'docs.csv')) as fp:
-        result = list(_input_lines(fp, line_format='csv', field_resolver={'url': 'uri', 'question': 'text'}))
+        result = list(
+            _input_lines(
+                fp, line_format='csv', field_resolver={'url': 'uri', 'question': 'text'}
+            )
+        )
     assert len(result) == 2
     assert isinstance(result[0], Document)
     assert result[0].tags['source'] == 'testsrc'
@@ -76,7 +85,9 @@ def test_input_lines_with_jsonlines_docs():
 
 
 def test_input_lines_with_jsonlines_docs_groundtruth():
-    result = list(_input_lines(filepath='tests/unit/clients/python/docs_groundtruth.jsonlines'))
+    result = list(
+        _input_lines(filepath='tests/unit/clients/python/docs_groundtruth.jsonlines')
+    )
     assert len(result) == 2
     assert result[0][0].text == "a"
     assert result[0][1].text == "b"
@@ -92,7 +103,7 @@ def test_input_lines_with_jsonlines_docs_groundtruth():
         ('*.*', True, 2, None, None),
         ('*.*', True, 2, None, 'rb'),
         ('*.*', True, None, 0.5, None),
-    ]
+    ],
 )
 def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
     Client.check_input(
@@ -101,8 +112,9 @@ def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
             recursive=recursive,
             size=size,
             sampling_rate=sampling_rate,
-            read_mode=read_mode
-        ), data_type=DataInputType.CONTENT
+            read_mode=read_mode,
+        ),
+        data_type=DataInputType.CONTENT,
     )
 
 
@@ -111,6 +123,8 @@ def test_input_files_with_invalid_read_mode():
         Client.check_input(_input_files(patterns='*.*', read_mode='invalid'))
 
 
-@pytest.mark.parametrize('array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']])
+@pytest.mark.parametrize(
+    'array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']]
+)
 def test_input_numpy(array):
     Client.check_input(_input_ndarray(array))

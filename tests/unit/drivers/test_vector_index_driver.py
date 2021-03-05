@@ -12,7 +12,6 @@ from jina.types.document import Document
 
 
 class MockGroundTruthVectorIndexer(BaseVectorIndexer):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.docs = {}
@@ -31,14 +30,12 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
 
 
 class SimpleVectorIndexDriver(VectorIndexDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
 
 
 class SimpleDeleteDriver(DeleteDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -106,17 +103,28 @@ def empty_documents():
     return DocumentSet(docs)
 
 
-def test_vector_index_driver_add(mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
+def test_vector_index_driver_add(
+    mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents
+):
+    simple_vector_indexer_driver_add.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     simple_vector_indexer_driver_add._apply_all(documents)
     assert len(mock_groundtruth_indexer.docs) == 5
     for idx, doc in enumerate(documents):
         np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
 
 
-def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents,
-                                          empty_documents):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
+def test_vector_index_driver_add_bad_docs(
+    mocker,
+    mock_groundtruth_indexer,
+    simple_vector_indexer_driver_add,
+    documents,
+    empty_documents,
+):
+    simple_vector_indexer_driver_add.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     logger_mock = mocker.Mock()
     pea_mock = mocker.Mock()
     pea_mock.logger = logger_mock
@@ -135,13 +143,21 @@ def test_vector_index_driver_add_bad_docs(mocker, mock_groundtruth_indexer, simp
         assert doc.id not in mock_groundtruth_indexer.docs
 
 
-def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_indexer_driver_add,
-                                    simple_vector_indexer_driver_update,
-                                    documents, updated_documents):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
+def test_vector_index_driver_update(
+    mock_groundtruth_indexer,
+    simple_vector_indexer_driver_add,
+    simple_vector_indexer_driver_update,
+    documents,
+    updated_documents,
+):
+    simple_vector_indexer_driver_add.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     simple_vector_indexer_driver_add._apply_all(documents)
 
-    simple_vector_indexer_driver_update.attach(executor=mock_groundtruth_indexer, runtime=None)
+    simple_vector_indexer_driver_update.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     simple_vector_indexer_driver_update._apply_all(updated_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
@@ -152,14 +168,25 @@ def test_vector_index_driver_update(mock_groundtruth_indexer, simple_vector_inde
         np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
 
 
-def test_vector_index_driver_delete(mock_groundtruth_indexer, simple_vector_indexer_driver_add,
-                                    simple_vector_indexer_driver_delete,
-                                    documents, deleted_documents, mocker):
-    simple_vector_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
+def test_vector_index_driver_delete(
+    mock_groundtruth_indexer,
+    simple_vector_indexer_driver_add,
+    simple_vector_indexer_driver_delete,
+    documents,
+    deleted_documents,
+    mocker,
+):
+    simple_vector_indexer_driver_add.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     simple_vector_indexer_driver_add._apply_all(documents)
 
-    simple_vector_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, runtime=None)
-    mock_load = mocker.patch.object(simple_vector_indexer_driver_delete, 'runtime', autospec=True)
+    simple_vector_indexer_driver_delete.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
+    mock_load = mocker.patch.object(
+        simple_vector_indexer_driver_delete, 'runtime', autospec=True
+    )
     mock_load.request.ids = [d.id for d in deleted_documents]
     simple_vector_indexer_driver_delete()
 
