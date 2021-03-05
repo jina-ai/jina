@@ -11,7 +11,6 @@ EMBED_SIZE = 10
 
 
 class DummyEncoderTextBatching(BaseEncoder):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -25,7 +24,6 @@ class DummyEncoderTextBatching(BaseEncoder):
 
 
 class DummyEncoderTextSingle(BaseEncoder):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -36,7 +34,9 @@ class DummyEncoderTextSingle(BaseEncoder):
         return np.random.random(EMBED_SIZE)
 
 
-@pytest.mark.parametrize('encoder', [DummyEncoderTextSingle(), DummyEncoderTextBatching()])
+@pytest.mark.parametrize(
+    'encoder', [DummyEncoderTextSingle(), DummyEncoderTextBatching()]
+)
 def test_batching_encode_text(encoder):
     docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
     texts, _ = docs._extract_docs('text')
@@ -47,7 +47,6 @@ def test_batching_encode_text(encoder):
 
 
 class DummyEncoderBlobBatching(BaseEncoder):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -61,7 +60,6 @@ class DummyEncoderBlobBatching(BaseEncoder):
 
 
 class DummyEncoderBlobSingle(BaseEncoder):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -72,7 +70,9 @@ class DummyEncoderBlobSingle(BaseEncoder):
         return np.random.random(EMBED_SIZE)
 
 
-@pytest.mark.parametrize('encoder', [DummyEncoderBlobSingle(), DummyEncoderBlobBatching()])
+@pytest.mark.parametrize(
+    'encoder', [DummyEncoderBlobSingle(), DummyEncoderBlobBatching()]
+)
 def test_batching_encode_blob(encoder):
     docs = DocumentSet([Document(blob=np.random.random((10, 20))) for _ in range(15)])
     blob, _ = docs._extract_docs('blob')
