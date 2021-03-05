@@ -24,12 +24,16 @@ def build_model_from_pb(name: str, pb_model: Callable):
     :return: Model.
     """
     from google.protobuf.json_format import MessageToDict
-
     dp = MessageToDict(pb_model(), including_default_value_fields=True)
-
     all_fields = {k: (name if k in ('chunks', 'matches') else type(v), Field(default=v)) for k, v in dp.items()}
     if pb_model == QueryLangProto:
         all_fields['parameters'] = (Dict, Field(default={}))
+    if pb_model == DocumentProto:
+        # these fields are defined as oneof in the jina.proto
+        # therefore, they are not instantiated when using pb_model()
+        all_fields['buffer'] = (str, Field()) #base64 encoded
+        all_fields['blob'] = (List, Field()) #ndarray as list
+        all_fields['text'] = (str, Field())
 
     return create_model(name, **all_fields)
 
@@ -51,6 +55,7 @@ class JinaRequestModel(BaseModel):
         Field(..., example=[Document().dict()])
     request_size: Optional[int] = default_request_size
     mime_type: Optional[str] = ''
+    # TODO mime type is contained in documents already
     queryset: Optional[List[JinaQueryLangModel]] = None
     data_type: DataInputType = DataInputType.AUTO
 

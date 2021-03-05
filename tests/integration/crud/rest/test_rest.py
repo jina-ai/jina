@@ -13,7 +13,6 @@ from jina.executors.indexers import BaseIndexer
 from jina import Document
 from jina.flow import Flow
 
-from tests import validate_callback
 
 random.seed(0)
 np.random.seed(0)
@@ -47,7 +46,7 @@ def send_rest_index_request(flow_file, documents):
 
 def send_rest_update_request(flow_file, documents):
     data = [document.dict() for document in documents]
-    return send_rest_request(flow_file, 'update', 'patch', data)
+    return send_rest_request(flow_file, 'update', 'put', data)
 
 
 def send_rest_delete_request(flow_file, ids):
