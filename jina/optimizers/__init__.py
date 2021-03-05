@@ -27,6 +27,7 @@ class OptimizerCallback(JAMLCompatible):
         """
         Return an empty copy of the :class:`OptimizerCallback`.
 
+        .. # noqa: DAR202
         :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
         """
         raise NotImplementedError
@@ -35,6 +36,7 @@ class OptimizerCallback(JAMLCompatible):
         """
         Return the aggregation of all evaluation collected via :method:`__call__`
 
+        .. # noqa: DAR202
         :raises NotImplementedError: :class:`OptimizerCallback` is just an interface. Please use any implemented subclass.
         """
         raise NotImplementedError
@@ -186,6 +188,8 @@ class FlowOptimizer(JAMLCompatible):
 
         trial.workspace = self._workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join(
             [str(v) for v in trial_parameters.values()])
+
+        trial_parameters['JINA_OPTIMIZER_TRIAL_WORKSPACE'] = trial.workspace
 
         return trial_parameters
 

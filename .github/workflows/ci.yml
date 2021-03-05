@@ -111,7 +111,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   core-test:
-    needs: [prep-testbed, commit-lint, lint-flake-8]
+    needs: [prep-testbed, commit-lint, lint-flake-8, check-docstring]
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
