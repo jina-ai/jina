@@ -19,22 +19,24 @@ def docs():
     documents = []
     for i in range(1, 4):
         with Document() as doc:
-            doc.text = f'title: this is mode1 from doc{i}, body: this is mode2 from doc{i}'
+            doc.text = (
+                f'title: this is mode1 from doc{i}, body: this is mode2 from doc{i}'
+            )
         documents.append(doc)
     return documents
 
 
 class MockSegmenterReduce(BaseSegmenter):
-
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
-        chunks = [dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
-                  dict(text=split[1], offset=1, weight=1.0, modality='mode2')]
+        chunks = [
+            dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
+            dict(text=split[1], offset=1, weight=1.0, modality='mode2'),
+        ]
         return chunks
 
 
 class MockEncoderReduce(BaseEncoder):
-
     def encode(self, data: str, *args, **kwargs) -> 'np.ndarray':
         output = []
         for r in data:
@@ -60,11 +62,21 @@ def test_merge_chunks_with_different_modality(mocker, docs):
 
     response_mock = mocker.Mock()
 
-    flow = Flow().add(name='segmenter', uses='MockSegmenterReduce'). \
-        add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
-        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter']). \
-        add(name='reducer', uses='- !ReduceAllDriver | {traversal_paths: [c]}',
-            needs=['encoder1', 'encoder2'])
+    flow = (
+        Flow()
+        .add(name='segmenter', uses='MockSegmenterReduce')
+        .add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml'))
+        .add(
+            name='encoder2',
+            uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'),
+            needs=['segmenter'],
+        )
+        .add(
+            name='reducer',
+            uses='- !ReduceAllDriver | {traversal_paths: [c]}',
+            needs=['encoder1', 'encoder2'],
+        )
+    )
 
     with flow:
         flow.index(inputs=input_function, on_done=response_mock)
@@ -84,13 +96,22 @@ def test_reduce_all_root_chunks(mocker, docs):
 
     response_mock = mocker.Mock()
 
-    flow = Flow().add(name='segmenter', uses='MockSegmenterReduce'). \
-        add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml')). \
-        add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter']). \
-        add(name='reducer', uses='- !ReduceAllDriver | {traversal_paths: [r]}',
-            needs=['encoder1', 'encoder2'])
+    flow = (
+        Flow()
+        .add(name='segmenter', uses='MockSegmenterReduce')
+        .add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml'))
+        .add(
+            name='encoder2',
+            uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'),
+            needs=['segmenter'],
+        )
+        .add(
+            name='reducer',
+            uses='- !ReduceAllDriver | {traversal_paths: [r]}',
+            needs=['encoder1', 'encoder2'],
+        )
+    )
 
     with flow:
         flow.index(input_fn=input_fn, on_done=response_mock)
     validate_callback(response_mock, validate)
-

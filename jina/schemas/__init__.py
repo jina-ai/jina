@@ -20,7 +20,7 @@ def get_full_schema() -> dict:
         schema_requests,
         schema_pod,
         IMPORTED.schema_executors,
-        IMPORTED.schema_drivers
+        IMPORTED.schema_drivers,
     ]:
         definitions.update(s)
 
@@ -34,8 +34,7 @@ def get_full_schema() -> dict:
         '$schema': 'http://json-schema.org/draft-07/schema#',
         'description': 'The YAML schema of Jina objects (Flow, Executor, Drivers).',
         'type': 'object',
-        'oneOf':
-            [{'$ref': '#/definitions/Jina::Flow'}] +
-            [{"$ref": f"#/definitions/{k}"} for k in IMPORTED.schema_executors.keys()],
-        'definitions': definitions
+        'oneOf': [{'$ref': '#/definitions/Jina::Flow'}]
+        + [{"$ref": f"#/definitions/{k}"} for k in IMPORTED.schema_executors.keys()],
+        'definitions': definitions,
     }

@@ -24,8 +24,9 @@ with open('tests/daemon/unit/api/endpoints/logging.log', 'w') as f:
 @pytest.mark.parametrize('workspace', [True, False])
 def test_upload_then_add_success(api, workspace, fastapi_client):
     # Upload files to workspace
-    response = fastapi_client.post('/workspaces',
-                                   files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
+    response = fastapi_client.post(
+        '/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps]
+    )
     assert response.status_code == 201
     workspace_id = response.json()
     assert os.path.exists(get_workspace_path(workspace_id))
@@ -33,8 +34,9 @@ def test_upload_then_add_success(api, workspace, fastapi_client):
         assert os.path.exists(get_workspace_path(workspace_id, d))
 
     # Create a Pea/Pod
-    response = fastapi_client.post(api, json={'uses': 'mwu_encoder.yml',
-                                              'workspace_id': workspace_id})
+    response = fastapi_client.post(
+        api, json={'uses': 'mwu_encoder.yml', 'workspace_id': workspace_id}
+    )
     assert response.status_code == 201
     _id = response.json()
 
@@ -76,15 +78,20 @@ def test_upload_then_add_success(api, workspace, fastapi_client):
 @pytest.mark.parametrize('workspace', [True, False])
 def test_upload_then_add_flow_success(workspace, fastapi_client):
     # Upload files to workspace
-    response = fastapi_client.post('/workspaces',
-                                   files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
+    response = fastapi_client.post(
+        '/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps]
+    )
     assert response.status_code == 201
     workspace_id = response.json()
 
     # Create a Flow
-    response = fastapi_client.post('/flows',
-                                   files={'flow': ('good_flow.yml', open(str(cur_dir / 'good_flow_dep.yml'), 'rb')),
-                                          'workspace_id': (None, workspace_id)})
+    response = fastapi_client.post(
+        '/flows',
+        files={
+            'flow': ('good_flow.yml', open(str(cur_dir / 'good_flow_dep.yml'), 'rb')),
+            'workspace_id': (None, workspace_id),
+        },
+    )
     assert response.status_code == 201
     _id = response.json()
 
@@ -123,8 +130,9 @@ def test_upload_then_add_flow_success(workspace, fastapi_client):
 
 
 def test_post_and_delete_workspace(fastapi_client):
-    response = fastapi_client.post('/workspaces',
-                                   files=[('files', open(str(cur_dir / d), 'rb')) for d in deps])
+    response = fastapi_client.post(
+        '/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps]
+    )
     assert response.status_code == 201
     workspace_id = response.json()
     assert os.path.exists(get_workspace_path(workspace_id))

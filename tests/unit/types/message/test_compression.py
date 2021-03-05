@@ -14,9 +14,12 @@ def test_compression(compress_algo, low_bytes, high_ratio):
     no_comp_sizes = []
     sizes = []
     docs = list(random_docs(100, embed_dim=100))
-    kwargs = dict(identity='gateway', pod_name='123',
-                  compress_min_bytes=2 * sum(no_comp_sizes) if low_bytes else 0,
-                  compress_min_ratio=10 if high_ratio else 1)
+    kwargs = dict(
+        identity='gateway',
+        pod_name='123',
+        compress_min_bytes=2 * sum(no_comp_sizes) if low_bytes else 0,
+        compress_min_ratio=10 if high_ratio else 1,
+    )
 
     with TimeContext(f'no compress'):
         for r in request_generator(docs):
@@ -24,9 +27,12 @@ def test_compression(compress_algo, low_bytes, high_ratio):
             m.dump()
             no_comp_sizes.append(m.size)
 
-    kwargs = dict(identity='gateway', pod_name='123',
-                  compress_min_bytes=2 * sum(no_comp_sizes) if low_bytes else 0,
-                  compress_min_ratio=10 if high_ratio else 1)
+    kwargs = dict(
+        identity='gateway',
+        pod_name='123',
+        compress_min_bytes=2 * sum(no_comp_sizes) if low_bytes else 0,
+        compress_min_ratio=10 if high_ratio else 1,
+    )
     with TimeContext(f'compressing with {str(compress_algo)}') as tc:
         for r in request_generator(docs):
             m = Message(None, r, compress=compress_algo, **kwargs)
@@ -38,4 +44,5 @@ def test_compression(compress_algo, low_bytes, high_ratio):
     else:
         assert sum(sizes) < sum(no_comp_sizes)
     print(
-        f'{str(compress_algo)}: size {sum(sizes) / len(sizes)} (ratio: {sum(no_comp_sizes) / sum(sizes):.2f}) with {tc.duration:.2f}s')
+        f'{str(compress_algo)}: size {sum(sizes) / len(sizes)} (ratio: {sum(no_comp_sizes) / sum(sizes):.2f}) with {tc.duration:.2f}s'
+    )

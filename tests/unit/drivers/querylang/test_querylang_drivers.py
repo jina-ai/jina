@@ -45,16 +45,16 @@ def random_docs_with_tags():
 
 
 class DummySegmenter(BaseSegmenter):
-
     def segment(self, text, *args, **kwargs):
         return [{'text': 'adasd' * (j + 1), 'tags': {'id': j}} for j in range(10)]
 
 
 class DummyModeIdSegmenter(BaseSegmenter):
-
     def segment(self, text, *args, **kwargs):
         if 'chunk3' not in text:
-            return [{'text': f'chunk{j + 1}', 'modality': f'mode{j + 1}'} for j in range(2)]
+            return [
+                {'text': f'chunk{j + 1}', 'modality': f'mode{j + 1}'} for j in range(2)
+            ]
         elif 'chunk3' in text:
             return [{'text': f'chunk3', 'modality': 'mode3'}]
 
@@ -66,17 +66,24 @@ def test_select_ql(mocker):
         assert req.docs[0].matches[0].text == ''
         assert req.docs[0].chunks[0].text == ''
 
-    f = (Flow().add(uses='DummySegmenter')
+    f = (
+        Flow()
+        .add(uses='DummySegmenter')
         .add(
-        uses='- !SelectQL | {fields: [uri, matches, chunks], traversal_paths: [r, c, m]}'))
+            uses='- !SelectQL | {fields: [uri, matches, chunks], traversal_paths: [r, c, m]}'
+        )
+    )
 
     response_mock = mocker.Mock()
 
     with f:
         f.index(random_docs(10), on_done=response_mock)
 
-    f = (Flow().add(uses='DummySegmenter')
-         .add(uses='- !ExcludeQL | {fields: [text], traversal_paths: [r, c, m]}'))
+    f = (
+        Flow()
+        .add(uses='DummySegmenter')
+        .add(uses='- !ExcludeQL | {fields: [text], traversal_paths: [r, c, m]}')
+    )
 
     validate_callback(response_mock, validate)
 
@@ -97,9 +104,13 @@ def test_sort_ql(mocker):
 
     response_mock = mocker.Mock()
 
-    f = (Flow().add(uses='DummySegmenter')
+    f = (
+        Flow()
+        .add(uses='DummySegmenter')
         .add(
-        uses='- !SortQL | {field: tags__id, reverse: true, traversal_paths: [r, c, m]}'))
+            uses='- !SortQL | {field: tags__id, reverse: true, traversal_paths: [r, c, m]}'
+        )
+    )
 
     with f:
         f.index(random_docs(10), on_done=response_mock)
@@ -108,10 +119,14 @@ def test_sort_ql(mocker):
 
     response_mock_2 = mocker.Mock()
 
-    f = (Flow().add(uses='DummySegmenter')
-         .add(uses='- !SortQL | {field: tags__id, reverse: false, traversal_paths: [r, c, m]}')
-         .add(uses='- !ReverseQL | {traversal_paths: [r, c, m]}')
-         )
+    f = (
+        Flow()
+        .add(uses='DummySegmenter')
+        .add(
+            uses='- !SortQL | {field: tags__id, reverse: false, traversal_paths: [r, c, m]}'
+        )
+        .add(uses='- !ReverseQL | {traversal_paths: [r, c, m]}')
+    )
 
     with f:
         f.index(random_docs(10), on_done=response_mock_2)
@@ -128,9 +143,11 @@ def test_filter_ql(mocker):
 
     response_mock = mocker.Mock()
 
-    f = (Flow().add(uses='DummySegmenter')
-        .add(
-        uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
+    f = (
+        Flow()
+        .add(uses='DummySegmenter')
+        .add(uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}')
+    )
 
     with f:
         f.index(random_docs(10), on_done=response_mock)
@@ -146,8 +163,9 @@ def test_filter_ql_in_tags(mocker):
 
     response_mock = mocker.Mock()
 
-    f = (Flow().add(
-        uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'))
+    f = Flow().add(
+        uses='- !FilterQL | {lookups: {tags__id: 2}, traversal_paths: [r, c, m]}'
+    )
 
     with f:
         f.index(random_docs_with_tags(), on_done=response_mock)
@@ -162,9 +180,13 @@ def test_filter_ql_modality_wrong_depth(mocker):
 
     response_mock = mocker.Mock()
 
-    f = (Flow().add(uses='DummyModeIdSegmenter')
+    f = (
+        Flow()
+        .add(uses='DummyModeIdSegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [r, c, m]}'))
+            uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [r, c, m]}'
+        )
+    )
 
     with f:
         f.index(random_docs_to_chunk(), on_done=response_mock)
@@ -181,9 +203,11 @@ def test_filter_ql_modality(mocker):
 
     response_mock = mocker.Mock()
 
-    f = (Flow().add(uses='DummyModeIdSegmenter')
-        .add(
-        uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [c]}'))
+    f = (
+        Flow()
+        .add(uses='DummyModeIdSegmenter')
+        .add(uses='- !FilterQL | {lookups: {modality: mode2}, traversal_paths: [c]}')
+    )
 
     with f:
         f.index(random_docs_to_chunk(), on_done=response_mock)
@@ -199,9 +223,13 @@ def test_filter_compose_ql(mocker):
 
     response_mock = mocker.Mock()
 
-    f = (Flow().add(uses='DummySegmenter')
+    f = (
+        Flow()
+        .add(uses='DummySegmenter')
         .add(
-        uses='- !FilterQL | {lookups: {tags__id: 2, text__contains: hello}, traversal_paths: [r, c, m]}'))
+            uses='- !FilterQL | {lookups: {tags__id: 2, text__contains: hello}, traversal_paths: [r, c, m]}'
+        )
+    )
 
     with f:
         f.index(random_docs(10), on_done=response_mock)

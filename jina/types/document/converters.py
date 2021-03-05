@@ -17,26 +17,33 @@ def _png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
     # reverse the vertical line order and add null bytes at the start
     width_byte_4 = width * 4
     raw_data = b''.join(
-        b'\x00' + buf[span:span + width_byte_4]
-        for span in range((height - 1) * width_byte_4, -1, - width_byte_4))
+        b'\x00' + buf[span : span + width_byte_4]
+        for span in range((height - 1) * width_byte_4, -1, -width_byte_4)
+    )
 
     def png_pack(png_tag, data):
         chunk_head = png_tag + data
-        return (struct.pack('!I', len(data))
-                + chunk_head
-                + struct.pack('!I', 0xFFFFFFFF & zlib.crc32(chunk_head)))
+        return (
+            struct.pack('!I', len(data))
+            + chunk_head
+            + struct.pack('!I', 0xFFFFFFFF & zlib.crc32(chunk_head))
+        )
 
-    png_bytes = b''.join([
-        b'\x89PNG\r\n\x1a\n',
-        png_pack(b'IHDR', struct.pack('!2I5B', width, height, 8, 6, 0, 0, 0)),
-        png_pack(b'IDAT', zlib.compress(raw_data, 9)),
-        png_pack(b'IEND', b'')])
+    png_bytes = b''.join(
+        [
+            b'\x89PNG\r\n\x1a\n',
+            png_pack(b'IHDR', struct.pack('!2I5B', width, height, 8, 6, 0, 0, 0)),
+            png_pack(b'IDAT', zlib.compress(raw_data, 9)),
+            png_pack(b'IEND', b''),
+        ]
+    )
 
     return png_bytes
 
 
 def _pillow_image_to_buffer(image, image_format: str) -> bytes:
     import io
+
     img_byte_arr = io.BytesIO()
     image.save(img_byte_arr, format=image_format)
     img_byte_arr = img_byte_arr.getvalue()
@@ -59,11 +66,13 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
         png_bytes = _png_to_buffer_1d(arr, width, height)
     elif arr.ndim == 2:
         from PIL import Image
+
         im = Image.fromarray(arr).convert('L')
         im = im.resize((width, height), getattr(Image, resize_method))
         png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
     elif arr.ndim == 3:
         from PIL import Image
+
         im = Image.fromarray(arr).convert('RGB')
         im = im.resize((width, height), getattr(Image, resize_method))
         png_bytes = _pillow_image_to_buffer(im, image_format='PNG')
@@ -82,6 +91,7 @@ def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
     :return: image blob
     """
     from PIL import Image
+
     raw_img = Image.open(source).convert('RGB')
     img = np.array(raw_img).astype('float32')
     if color_axis != -1:
@@ -89,7 +99,9 @@ def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
     return img
 
 
-def to_datauri(mimetype, data, charset: str = 'utf-8', base64: bool = False, binary: bool = True):
+def to_datauri(
+    mimetype, data, charset: str = 'utf-8', base64: bool = False, binary: bool = True
+):
     """
     Convert data to data URI.
 
@@ -106,12 +118,14 @@ def to_datauri(mimetype, data, charset: str = 'utf-8', base64: bool = False, bin
     if base64:
         parts.append(';base64')
         from base64 import encodebytes as encode64
+
         if binary:
             encoded_data = encode64(data).decode(charset).replace('\n', '').strip()
         else:
             encoded_data = encode64(data).strip()
     else:
         from urllib.parse import quote_from_bytes, quote
+
         if binary:
             encoded_data = quote_from_bytes(data)
         else:

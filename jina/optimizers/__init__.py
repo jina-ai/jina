@@ -4,7 +4,13 @@ from typing import Optional
 
 import yaml
 
-from .parameters import IntegerParameter, UniformParameter, LogUniformParameter, CategoricalParameter, DiscreteUniformParameter
+from .parameters import (
+    IntegerParameter,
+    UniformParameter,
+    LogUniformParameter,
+    CategoricalParameter,
+    DiscreteUniformParameter,
+)
 from .parameters import load_optimization_parameters
 from ..helper import colored
 from ..importer import ImportExtensions
@@ -85,7 +91,8 @@ class MeanEvaluationCallback(OptimizerCallback):
             evaluation_name = list(self._evaluation_values)[0]
             if len(self._evaluation_values) > 1:
                 logger.warning(
-                    f'More than one evaluation metric found. Please define the right eval_name. Currently {evaluation_name} is used')
+                    f'More than one evaluation metric found. Please define the right eval_name. Currently {evaluation_name} is used'
+                )
 
         return self._evaluation_values[evaluation_name] / self._n_docs
 
@@ -149,15 +156,15 @@ class FlowOptimizer(JAMLCompatible):
     """
 
     def __init__(
-            self,
-            flow_runner: 'FlowRunner',
-            parameter_yaml: str,
-            evaluation_callback: 'OptimizerCallback',
-            n_trials: int,
-            workspace_base_dir: str = '.',
-            sampler: str = 'TPESampler',
-            direction: str = 'maximize',
-            seed: int = 42,
+        self,
+        flow_runner: 'FlowRunner',
+        parameter_yaml: str,
+        evaluation_callback: 'OptimizerCallback',
+        n_trials: int,
+        workspace_base_dir: str = '.',
+        sampler: str = 'TPESampler',
+        direction: str = 'maximize',
+        seed: int = 42,
     ):
         """
         :param flow_runner: `FlowRunner` object which contains the flows to be run.
@@ -186,8 +193,11 @@ class FlowOptimizer(JAMLCompatible):
         for param in parameters:
             trial_parameters[param.jaml_variable] = FlowOptimizer._suggest(param, trial)
 
-        trial.workspace = self._workspace_base_dir + '/JINA_WORKSPACE_' + '_'.join(
-            [str(v) for v in trial_parameters.values()])
+        trial.workspace = (
+            self._workspace_base_dir
+            + '/JINA_WORKSPACE_'
+            + '_'.join([str(v) for v in trial_parameters.values()])
+        )
 
         trial_parameters['JINA_OPTIMIZER_TRIAL_WORKSPACE'] = trial.workspace
 
@@ -202,7 +212,7 @@ class FlowOptimizer(JAMLCompatible):
                 low=param.low,
                 high=param.high,
                 step=param.step_size,
-                log=param.log
+                log=param.log,
             )
         elif isinstance(param, UniformParameter):
             return trial.suggest_uniform(
@@ -233,7 +243,9 @@ class FlowOptimizer(JAMLCompatible):
     def _objective(self, trial):
         trial_parameters = self._trial_parameter_sampler(trial)
         evaluation_callback = self._evaluation_callback.get_empty_copy()
-        self._flow_runner.run(trial_parameters, workspace=trial.workspace, callback=evaluation_callback)
+        self._flow_runner.run(
+            trial_parameters, workspace=trial.workspace, callback=evaluation_callback
+        )
         eval_score = evaluation_callback.get_final_evaluation()
         logger.info(colored(f'Evaluation Score: {eval_score}', 'green'))
         return eval_score
@@ -265,8 +277,11 @@ def run_optimizer_cli(args: 'Namespace'):
     """
     # The following import is needed to initialize the JAML parser
     from .flow_runner import SingleFlowRunner, MultiFlowRunner
+
     with open(args.uses) as f:
         optimizer = JAML.load(f)
     result_processor = optimizer.optimize_flow()
     if args.output_dir:
-        result_processor.save_parameters(os.path.join(args.output_dir, 'best_parameters.yml'))
+        result_processor.save_parameters(
+            os.path.join(args.output_dir, 'best_parameters.yml')
+        )

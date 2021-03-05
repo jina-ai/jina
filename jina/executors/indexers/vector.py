@@ -38,11 +38,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     :param delete_on_dump: whether to delete the rows marked as delete (see ``valid_indices``)
     """
 
-    def __init__(self,
-                 compress_level: int = 1,
-                 ref_indexer: Optional['BaseNumpyIndexer'] = None,
-                 delete_on_dump: bool = False,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        compress_level: int = 1,
+        ref_indexer: Optional['BaseNumpyIndexer'] = None,
+        delete_on_dump: bool = False,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.num_dim = None
         self.dtype = None
@@ -64,12 +67,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             # so that later in `post_init()` it will load from the referred index_filename
             self.valid_indices = ref_indexer.valid_indices
             self.index_filename = ref_indexer.index_filename
-            self.logger.warning(f'\n'
-                                f'num_dim extracted from `ref_indexer` to {ref_indexer.num_dim} \n'
-                                f'_size extracted from `ref_indexer` to {ref_indexer._size} \n'
-                                f'dtype extracted from `ref_indexer` to {ref_indexer.dtype} \n'
-                                f'compress_level overriden from `ref_indexer` to {ref_indexer.compress_level} \n'
-                                f'index_filename overriden from `ref_indexer` to {ref_indexer.index_filename}')
+            self.logger.warning(
+                f'\n'
+                f'num_dim extracted from `ref_indexer` to {ref_indexer.num_dim} \n'
+                f'_size extracted from `ref_indexer` to {ref_indexer._size} \n'
+                f'dtype extracted from `ref_indexer` to {ref_indexer.dtype} \n'
+                f'compress_level overriden from `ref_indexer` to {ref_indexer.compress_level} \n'
+                f'index_filename overriden from `ref_indexer` to {ref_indexer.index_filename}'
+            )
             self.ref_indexer_workspace_name = ref_indexer.workspace_name
             self.delete_on_dump = getattr(ref_indexer, 'delete_on_dump', delete_on_dump)
 
@@ -82,8 +87,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     def _post_clean_memmap(self, valid):
         # here we need to make sure the fields
         # that depend on the valid_indices are cleaned up too
-        valid_key_bytes = np.frombuffer(self.key_bytes, dtype=(np.str_, self.key_length))[
-            self.valid_indices].tobytes()
+        valid_key_bytes = np.frombuffer(
+            self.key_bytes, dtype=(np.str_, self.key_length)
+        )[self.valid_indices].tobytes()
         self.key_bytes = valid_key_bytes
         self._size = len(valid)
         self.valid_indices = valid
@@ -106,7 +112,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         # write the bytes in the respective files
         if self.compress_level > 0:
-            with gzip.open(tmp_path, 'wb', compresslevel=self.compress_level) as new_gzip_fh:
+            with gzip.open(
+                tmp_path, 'wb', compresslevel=self.compress_level
+            ) as new_gzip_fh:
                 new_gzip_fh.write(filtered.tobytes())
         else:
             with open(tmp_path, 'wb') as filtered_data_fh:
@@ -131,7 +139,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
 
         .. # noqa: DAR201
         """
-        return self.name if self.ref_indexer_workspace_name is None else self.ref_indexer_workspace_name
+        return (
+            self.name
+            if self.ref_indexer_workspace_name is None
+            else self.ref_indexer_workspace_name
+        )
 
     @property
     def index_abspath(self) -> str:
@@ -150,7 +162,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :return: a gzip file stream
         """
         if self.compress_level > 0:
-            return gzip.open(self.index_abspath, 'ab', compresslevel=self.compress_level)
+            return gzip.open(
+                self.index_abspath, 'ab', compresslevel=self.compress_level
+            )
         else:
             return open(self.index_abspath, 'ab')
 
@@ -160,26 +174,34 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         :return: a gzip file stream
         """
         if self.compress_level > 0:
-            return gzip.open(self.index_abspath, 'wb', compresslevel=self.compress_level)
+            return gzip.open(
+                self.index_abspath, 'wb', compresslevel=self.compress_level
+            )
         else:
             return open(self.index_abspath, 'wb')
 
     def _validate_key_vector_shapes(self, keys, vectors):
         if len(vectors.shape) != 2:
-            raise ValueError(f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2')
+            raise ValueError(
+                f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2'
+            )
 
         if not getattr(self, 'num_dim', None):
             self.num_dim = vectors.shape[1]
             self.dtype = vectors.dtype.name
         elif self.num_dim != vectors.shape[1]:
             raise ValueError(
-                f'vectors shape {vectors.shape} does not match with indexers\'s dim: {self.num_dim}')
+                f'vectors shape {vectors.shape} does not match with indexers\'s dim: {self.num_dim}'
+            )
         elif self.dtype != vectors.dtype.name:
             raise TypeError(
-                f'vectors\' dtype {vectors.dtype.name} does not match with indexers\'s dtype: {self.dtype}')
+                f'vectors\' dtype {vectors.dtype.name} does not match with indexers\'s dtype: {self.dtype}'
+            )
 
         if keys.shape[0] != vectors.shape[0]:
-            raise ValueError(f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}')
+            raise ValueError(
+                f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}'
+            )
 
     def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Add the embeddings and document ids to the index.
@@ -196,11 +218,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         if keys.size and vectors.size:
             self._validate_key_vector_shapes(keys, vectors)
             self.write_handler.write(vectors.tobytes())
-            self.valid_indices = np.concatenate((self.valid_indices, np.full(len(keys), True)))
+            self.valid_indices = np.concatenate(
+                (self.valid_indices, np.full(len(keys), True))
+            )
             self.key_bytes += keys.tobytes()
             self._size += keys.shape[0]
 
-    def update(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
+    def update(
+        self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs
+    ) -> None:
         """Update the embeddings on the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -210,7 +236,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         """
         # noinspection PyTypeChecker
         if self.size:
-            keys, values = self._filter_nonexistent_keys_values(keys, vectors, self._ext2int_id.keys())
+            keys, values = self._filter_nonexistent_keys_values(
+                keys, vectors, self._ext2int_id.keys()
+            )
             if keys:
                 np_keys = np.array(keys, (np.str_, self.key_length))
                 self._delete(np_keys)
@@ -268,10 +296,13 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         try:
             self.logger.info(f'loading index from {abspath}...')
             with gzip.open(abspath, mode) as fp:
-                return np.frombuffer(fp.read(), dtype=self.dtype).reshape([-1, self.num_dim])
+                return np.frombuffer(fp.read(), dtype=self.dtype).reshape(
+                    [-1, self.num_dim]
+                )
         except EOFError:
             self.logger.error(
-                f'{abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?')
+                f'{abspath} is broken/incomplete, perhaps forgot to ".close()" in the last usage?'
+            )
 
     @cached_property
     def _raw_ndarray(self) -> Optional['np.ndarray']:
@@ -284,10 +315,16 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self.logger.success(f'memmap is enabled for {self.index_abspath}')
             # `==` is required. `is False` does not work in np
             deleted_keys = len(self.valid_indices[self.valid_indices == False])  # noqa
-            return np.memmap(self.index_abspath, dtype=self.dtype, mode='r',
-                             shape=(self.size + deleted_keys, self.num_dim))
+            return np.memmap(
+                self.index_abspath,
+                dtype=self.dtype,
+                mode='r',
+                shape=(self.size + deleted_keys, self.num_dim),
+            )
 
-    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> Optional['np.ndarray']:
+    def query_by_key(
+        self, keys: Iterable[str], *args, **kwargs
+    ) -> Optional['np.ndarray']:
         """
         Search the index by the external key (passed during `.add(`).
 
@@ -317,13 +354,16 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             if r.shape[0] == (self.size + deleted_keys) == self._raw_ndarray.shape[0]:
                 return r
             else:
-                print(f'the size of the keys and vectors are inconsistent '
-                      f'({r.shape[0]}, {self._size}, {self._raw_ndarray.shape[0]}), '
-                      f'did you write to this index twice? or did you forget to save indexer?')
+                print(
+                    f'the size of the keys and vectors are inconsistent '
+                    f'({r.shape[0]}, {self._size}, {self._raw_ndarray.shape[0]}), '
+                    f'did you write to this index twice? or did you forget to save indexer?'
+                )
                 self.logger.error(
                     f'the size of the keys and vectors are inconsistent '
                     f'({r.shape[0]}, {self._size}, {self._raw_ndarray.shape[0]}), '
-                    f'did you write to this index twice? or did you forget to save indexer?')
+                    f'did you write to this index twice? or did you forget to save indexer?'
+                )
 
     @cached_property
     def _ext2int_id(self) -> Optional[Dict]:
@@ -344,8 +384,8 @@ def _get_ones(x, y):
 def _ext_A(A):
     nA, dim = A.shape
     A_ext = _get_ones(nA, dim * 3)
-    A_ext[:, dim:2 * dim] = A
-    A_ext[:, 2 * dim:] = A ** 2
+    A_ext[:, dim : 2 * dim] = A
+    A_ext[:, 2 * dim :] = A ** 2
     return A_ext
 
 
@@ -353,7 +393,7 @@ def _ext_B(B):
     nB, dim = B.shape
     B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
-    B_ext[dim:2 * dim] = -2.0 * B.T
+    B_ext[dim : 2 * dim] = -2.0 * B.T
     del B
     return B_ext
 
@@ -385,18 +425,25 @@ class NumpyIndexer(BaseNumpyIndexer):
     :param backend: `numpy` or `scipy`, `numpy` only supports `euclidean` and `cosine` distance
     :param compress_level: compression level to use
     """
+
     batch_size = 512
 
-    def __init__(self, metric: str = 'cosine',
-                 backend: str = 'numpy',
-                 compress_level: int = 0,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        metric: str = 'cosine',
+        backend: str = 'numpy',
+        compress_level: int = 0,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, compress_level=compress_level, **kwargs)
         self.metric = metric
         self.backend = backend
 
     @staticmethod
-    def _get_sorted_top_k(dist: 'np.array', top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
+    def _get_sorted_top_k(
+        dist: 'np.array', top_k: int
+    ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find top-k smallest distances in ascending order.
 
         Idea is to use partial sort to retrieve top-k smallest distances unsorted and then sort these
@@ -418,7 +465,9 @@ class NumpyIndexer(BaseNumpyIndexer):
 
         return idx, dist
 
-    def query(self, vectors: 'np.ndarray', top_k: int, *args, **kwargs) -> Tuple['np.ndarray', 'np.ndarray']:
+    def query(
+        self, vectors: 'np.ndarray', top_k: int, *args, **kwargs
+    ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
         :return: a tuple of two ndarray.
@@ -475,6 +524,9 @@ class NumpyIndexer(BaseNumpyIndexer):
     def _cdist(self, *args, **kwargs):
         try:
             from scipy.spatial.distance import cdist
+
             return cdist(*args, **kwargs, metric=self.metric)
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'your metric {self.metric} requires scipy, but scipy is not found')
+            raise ModuleNotFoundError(
+                f'your metric {self.metric} requires scipy, but scipy is not found'
+            )

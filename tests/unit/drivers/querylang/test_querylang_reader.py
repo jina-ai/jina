@@ -34,7 +34,6 @@ def random_docs(num_docs):
 
 
 class DummyDriver(QuerySetReader, BaseDriver):
-
     def __init__(self, arg1='hello', arg2=456, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._arg1 = arg1
@@ -42,7 +41,9 @@ class DummyDriver(QuerySetReader, BaseDriver):
 
 
 def test_querylang_request():
-    qs = QueryLang({'name': 'SliceQL', 'parameters': {'start': 1, 'end': 4}, 'priority': 1})
+    qs = QueryLang(
+        {'name': 'SliceQL', 'parameters': {'start': 1, 'end': 4}, 'priority': 1}
+    )
     Client.check_input(random_docs(10), queryset=qs)
 
 
@@ -57,7 +58,9 @@ def test_read_from_req(mocker):
     response_mock_2 = mocker.Mock()
     response_mock_3 = mocker.Mock()
 
-    qs = QueryLang({'name': 'SliceQL', 'priority': 1, 'parameters': {'start': 1, 'end': 4}})
+    qs = QueryLang(
+        {'name': 'SliceQL', 'priority': 1, 'parameters': {'start': 1, 'end': 4}}
+    )
 
     f = Flow().add(uses='- !SliceQL | {start: 0, end: 5}')
 
@@ -114,10 +117,15 @@ def test_as_querylang():
 
 
 class MockExcludeQL(ExcludeQL):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        ql = QueryLang({'name': 'MockExcludeQL', 'parameters': {'fields': ['updated_field1', 'updated_field2']}, 'priority': 3})
+        ql = QueryLang(
+            {
+                'name': 'MockExcludeQL',
+                'parameters': {'fields': ['updated_field1', 'updated_field2']},
+                'priority': 3,
+            }
+        )
         self.qset = QueryLangSet([ql.proto])
 
     @property
@@ -127,7 +135,9 @@ class MockExcludeQL(ExcludeQL):
 
 @pytest.mark.parametrize('driver_priority', [0, 4])
 def test_queryset_reader_excludeql(driver_priority):
-    querysetreader = MockExcludeQL(fields=('local_field1', 'local_field2'), priority=driver_priority)
+    querysetreader = MockExcludeQL(
+        fields=('local_field1', 'local_field2'), priority=driver_priority
+    )
     fields = querysetreader._get_parameter('fields', default=None)
 
     if driver_priority == 0:

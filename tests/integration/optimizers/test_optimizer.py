@@ -78,7 +78,7 @@ def test_optimizer_multi_flow(tmpdir, config):
                 documents=document_generator(10),
                 request_size=1,
                 execution_method='search',
-            )
+            ),
         ]
     )
     opt = FlowOptimizer(
@@ -127,7 +127,9 @@ with:
             json.dump(
                 {
                     'document': json.loads(MessageToJson(document).replace('\n', '')),
-                    'groundtruth': json.loads(MessageToJson(groundtruth_doc).replace('\n', '')),
+                    'groundtruth': json.loads(
+                        MessageToJson(groundtruth_doc).replace('\n', '')
+                    ),
                 },
                 f,
             )
@@ -163,7 +165,9 @@ with:
             json.dump(
                 {
                     'document': json.loads(MessageToJson(document).replace('\n', '')),
-                    'groundtruth': json.loads(MessageToJson(groundtruth_doc).replace('\n', '')),
+                    'groundtruth': json.loads(
+                        MessageToJson(groundtruth_doc).replace('\n', '')
+                    ),
                 },
                 f,
             )
@@ -177,18 +181,13 @@ with:
 @pytest.mark.parametrize('uses_output_dir', (True, False))
 def test_cli(tmpdir, config, uses_output_dir):
     print(os.environ['JINA_OPTIMIZER_PARAMETER_FILE'])
-    args = [
-        '--uses',
-        os.path.join(cur_dir, 'optimizer_conf.yml')
-    ]
+    args = ['--uses', os.path.join(cur_dir, 'optimizer_conf.yml')]
     output_dir = os.path.join(tmpdir, 'out')
     if uses_output_dir:
-        args.extend([
-            '--output-dir',
-            output_dir
-        ])
-    run_optimizer_cli(
-        set_optimizer_parser().parse_args(args)
-    )
+        args.extend(['--output-dir', output_dir])
+    run_optimizer_cli(set_optimizer_parser().parse_args(args))
     if uses_output_dir:
-        assert yaml.load(open(os.path.join(output_dir, 'best_parameters.yml'))) == BEST_PARAMETERS
+        assert (
+            yaml.load(open(os.path.join(output_dir, 'best_parameters.yml')))
+            == BEST_PARAMETERS
+        )

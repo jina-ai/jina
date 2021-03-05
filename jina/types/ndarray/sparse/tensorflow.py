@@ -17,7 +17,9 @@ class SparseNdArray(BaseSparseNdArray):
         https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor
     """
 
-    def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> 'SparseTensor':
+    def sparse_constructor(
+        self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]
+    ) -> 'SparseTensor':
         """
         Sparse NdArray constructor for Tensorflow.
 
@@ -35,6 +37,8 @@ class SparseNdArray(BaseSparseNdArray):
         :param value: the SparseTensor.
         :return: a Dict with three entries {'indices': ..., 'values':..., 'shape':...}
         """
-        return {'indices': value.indices.numpy(),
-                'values': value.values.numpy(),
-                'shape': value.shape.as_list()}
+        return {
+            'indices': value.indices.numpy(),
+            'values': value.values.numpy(),
+            'shape': value.shape.as_list(),
+        }

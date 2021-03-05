@@ -14,14 +14,16 @@ class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`segment` by default """
 
     def __init__(
-            self,
-            executor: Optional[str] = None,
-            method: str = 'segment',
-            traversal_paths: Tuple[str] = ('r',),
-            *args,
-            **kwargs
+        self,
+        executor: Optional[str] = None,
+        method: str = 'segment',
+        traversal_paths: Tuple[str] = ('r',),
+        *args,
+        **kwargs
     ):
-        super().__init__(executor, method, traversal_paths=traversal_paths, *args, **kwargs)
+        super().__init__(
+            executor, method, traversal_paths=traversal_paths, *args, **kwargs
+        )
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
 

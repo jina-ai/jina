@@ -9,10 +9,14 @@ from ...logging import default_logger
 
 try:
     # when protobuf using Cpp backend
-    from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
+    from google.protobuf.pyext._message import (
+        RepeatedCompositeContainer as RepeatedContainer,
+    )
 except:
     # when protobuf using Python backend
-    from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
+    from google.protobuf.internal.containers import (
+        RepeatedCompositeFieldContainer as RepeatedContainer,
+    )
 
 from ...proto.jina_pb2 import DocumentProto
 from .traversable import TraversableSequence
@@ -63,11 +67,13 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
     def __iter__(self):
         from ..document import Document
+
         for d in self._docs_proto:
             yield Document(d)
 
     def __getitem__(self, item):
         from ..document import Document
+
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
@@ -165,7 +171,9 @@ class DocumentSet(TraversableSequence, MutableSequence):
         """
         return self._extract_docs('content')
 
-    def _extract_docs(self, *fields: str) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
+    def _extract_docs(
+        self, *fields: str
+    ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
         list_of_contents_output = len(fields) > 1
         contents = [[] for _ in fields if len(fields) > 1]
         docs_pts = []
@@ -194,7 +202,8 @@ class DocumentSet(TraversableSequence, MutableSequence):
         if bad_docs and docs_pts:
             default_logger.warning(
                 f'found {len(bad_docs)} docs at granularity {docs_pts[0].granularity} are missing one of the '
-                f'following fields: {fields} ')
+                f'following fields: {fields} '
+            )
 
         return contents, DocumentSet(docs_pts)
 
@@ -211,17 +220,21 @@ class DocumentSet(TraversableSequence, MutableSequence):
         :return: a new Document appended to the set
         """
         from ..document import Document
+
         return self.append(Document())
 
     def __str__(self):
         from ..document import Document
+
         content = ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
         if len(self._docs_proto) > 3:
             content += f'in total {len(self._docs_proto)} items'
         return content
 
     def __repr__(self):
-        content = ' '.join(f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items())
+        content = ' '.join(
+            f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items()
+        )
         content += f' at {id(self)}'
         content = content.strip()
         return f'<{typename(self)} {content}>'

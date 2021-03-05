@@ -12,23 +12,28 @@ from ...logging import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType, Document
 from ...types.sets.querylang import AcceptQueryLangType
 
-SingletonDataType = Union[DocumentContentType,
-                          DocumentSourceType,
-                          Document,
-                          Tuple[DocumentContentType, DocumentContentType],
-                          Tuple[DocumentSourceType, DocumentSourceType]]
+SingletonDataType = Union[
+    DocumentContentType,
+    DocumentSourceType,
+    Document,
+    Tuple[DocumentContentType, DocumentContentType],
+    Tuple[DocumentSourceType, DocumentSourceType],
+]
 
-GeneratorSourceType = Union[Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]]
+GeneratorSourceType = Union[
+    Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]
+]
 
 
-def request_generator(data: GeneratorSourceType,
-                      request_size: int = 0,
-                      mode: RequestType = RequestType.INDEX,
-                      mime_type: str = None,
-                      queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
-                      data_type: DataInputType = DataInputType.AUTO,
-                      **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
-                      ) -> Iterator['Request']:
+def request_generator(
+    data: GeneratorSourceType,
+    request_size: int = 0,
+    mode: RequestType = RequestType.INDEX,
+    mime_type: str = None,
+    queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
+    data_type: DataInputType = DataInputType.AUTO,
+    **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
+) -> Iterator['Request']:
     """Generate a request iterator.
 
     :param data: the data to use in the request

@@ -11,28 +11,36 @@ from ....helper import cached_property, colored, is_yaml_filepath
 
 class JinadRuntime(AsyncZMQRuntime):
     """Runtime procedure for Jinad."""
+
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
-        self.api = PeaDaemonClient(host=self.host, port=self.port_expose, logger=self.logger,
-                                   timeout=self.args.timeout_ready)
+        self.api = PeaDaemonClient(
+            host=self.host,
+            port=self.port_expose,
+            logger=self.logger,
+            timeout=self.args.timeout_ready,
+        )
 
     def setup(self):
         """
         Uploads Pod/Pea context to remote & Creates remote Pod/Pea using :class:`JinadAPI`
         """
         if self._remote_id:
-            self.logger.success(f'created a remote {self.api.kind}: {colored(self._remote_id, "cyan")}')
+            self.logger.success(
+                f'created a remote {self.api.kind}: {colored(self._remote_id, "cyan")}'
+            )
         else:
             self.logger.error(
                 f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
                 f'- is there a typo in {self.host}?\n'
                 f'- on {self.host}, are you running `docker run --network host jinaai/jina:latest-daemon`?\n'
                 f'- on {self.host}, have you set the security policy to public for all required ports?\n'
-                f'- on local, are you behind VPN or proxy?')
+                f'- on local, are you behind VPN or proxy?'
+            )
             raise DaemonConnectivityError
 
     async def async_run_forever(self):
@@ -40,8 +48,9 @@ class JinadRuntime(AsyncZMQRuntime):
         Streams log messages using websocket from remote server
         """
         self._logging_task = asyncio.create_task(
-            self._sleep_forever() if self.args.silent_remote_logs else
-            self.api.logstream(self._workspace_id, self._remote_id)
+            self._sleep_forever()
+            if self.args.silent_remote_logs
+            else self.api.logstream(self._workspace_id, self._remote_id)
         )
 
     async def async_cancel(self):
@@ -70,14 +79,20 @@ class JinadRuntime(AsyncZMQRuntime):
             if self.args.upload_files:
                 upload_files.extend(self.args.upload_files)
             else:
-                self.logger.warning(f'will upload {upload_files} to remote, to include more local file '
-                                    f'dependencies, please use `--upload-files`')
+                self.logger.warning(
+                    f'will upload {upload_files} to remote, to include more local file '
+                    f'dependencies, please use `--upload-files`'
+                )
 
             if upload_files:
-                workspace_id = self.api.upload(dependencies=list(set(upload_files)),
-                                               workspace_id=self.args.workspace_id)
+                workspace_id = self.api.upload(
+                    dependencies=list(set(upload_files)),
+                    workspace_id=self.args.workspace_id,
+                )
                 if workspace_id:
-                    self.logger.success(f'uploaded to workspace: {colored(workspace_id, "cyan")}')
+                    self.logger.success(
+                        f'uploaded to workspace: {colored(workspace_id, "cyan")}'
+                    )
                 else:
                     raise RuntimeError('can not upload required files to remote')
 
@@ -88,6 +103,5 @@ class JinadRuntime(AsyncZMQRuntime):
             return _id
 
     async def _sleep_forever(self):
-        """Sleep forever, no prince will come.
-        """
+        """Sleep forever, no prince will come."""
         await asyncio.sleep(1e10)

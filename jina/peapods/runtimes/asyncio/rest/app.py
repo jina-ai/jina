@@ -34,8 +34,13 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from starlette import status
         from starlette.types import Receive, Scope, Send
         from starlette.responses import StreamingResponse
-        from .models import JinaStatusModel, JinaIndexRequestModel, JinaDeleteRequestModel, JinaUpdateRequestModel, \
-            JinaSearchRequestModel
+        from .models import (
+            JinaStatusModel,
+            JinaIndexRequestModel,
+            JinaDeleteRequestModel,
+            JinaUpdateRequestModel,
+            JinaSearchRequestModel,
+        )
 
     app = FastAPI(
         title='Jina',
@@ -69,31 +74,32 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     @app.on_event('startup')
     async def startup():
         """Log the host information when start the server."""
-        default_logger.info(f'''
+        default_logger.info(
+            f'''
     Jina REST interface
     💬 Swagger UI:\thttp://localhost:{args.port_expose}/docs
     📚 Redoc     :\thttp://localhost:{args.port_expose}/redoc
-        ''')
+        '''
+        )
         from jina import __ready_msg__
+
         default_logger.success(__ready_msg__)
 
-    @app.get(path='/status',
-             summary='Get the status of Jina',
-             response_model=JinaStatusModel,
-             tags=['jina']
-             )
+    @app.get(
+        path='/status',
+        summary='Get the status of Jina',
+        response_model=JinaStatusModel,
+        tags=['jina'],
+    )
     async def _status():
         _info = get_full_version()
         return {
             'jina': _info[0],
             'envs': _info[1],
-            'used_memory': used_memory_readable()
+            'used_memory': used_memory_readable(),
         }
 
-    @app.post(
-        path='/api/{mode}',
-        deprecated=True
-    )
+    @app.post(path='/api/{mode}', deprecated=True)
     async def api(mode: str, body: Any = Body(...)):
         """
         Request mode service and return results in JSON, a deprecated interface.
@@ -111,6 +117,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         body['mode'] = RequestType.from_string(mode)
         from .....clients import BaseClient
+
         BaseClient.add_default_kwargs(body)
         req_iter = request_generator(**body)
         results = await get_result_in_json(req_iter=req_iter)
@@ -123,13 +130,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param req_iter: Request iterator
         :return: Results in JSON format
         """
-        return [MessageToDict(k) async for k in servicer.Call(request_iterator=req_iter, context=None)]
+        return [
+            MessageToDict(k)
+            async for k in servicer.Call(request_iterator=req_iter, context=None)
+        ]
 
-    @app.post(
-        path='/index',
-        summary='Index documents into Jina',
-        tags=['CRUD']
-    )
+    @app.post(path='/index', summary='Index documents into Jina', tags=['CRUD'])
     async def index_api(body: JinaIndexRequestModel):
         """
         Index API to index documents.
@@ -138,16 +144,13 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
         from .....clients import BaseClient
+
         bd = body.dict()
         bd['mode'] = RequestType.INDEX
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.post(
-        path='/search',
-        summary='Search documents from Jina',
-        tags=['CRUD']
-    )
+    @app.post(path='/search', summary='Search documents from Jina', tags=['CRUD'])
     async def search_api(body: JinaSearchRequestModel):
         """
         Search API to search documents.
@@ -156,16 +159,13 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
         from .....clients import BaseClient
+
         bd = body.dict()
         bd['mode'] = RequestType.SEARCH
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.put(
-        path='/update',
-        summary='Update documents in Jina',
-        tags=['CRUD']
-    )
+    @app.put(path='/update', summary='Update documents in Jina', tags=['CRUD'])
     async def update_api(body: JinaUpdateRequestModel):
         """
         Update API to update documents.
@@ -174,16 +174,13 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
         from .....clients import BaseClient
+
         bd = body.dict()
         bd['mode'] = RequestType.UPDATE
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(result_in_stream(request_generator(**bd)))
 
-    @app.delete(
-        path='/delete',
-        summary='Delete documents in Jina',
-        tags=['CRUD']
-    )
+    @app.delete(path='/delete', summary='Delete documents in Jina', tags=['CRUD'])
     async def delete_api(body: JinaDeleteRequestModel):
         """
         Delete API to delete documents.
@@ -192,6 +189,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
         from .....clients import BaseClient
+
         bd = body.dict()
         bd['mode'] = RequestType.DELETE
         BaseClient.add_default_kwargs(bd)
@@ -256,7 +254,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             # And move class variables to instance variable
             await websocket.accept()
             self.client_info = f'{websocket.client.host}:{websocket.client.port}'
-            logger.success(f'Client {self.client_info} connected to stream requests via websockets')
+            logger.success(
+                f'Client {self.client_info} connected to stream requests via websockets'
+            )
 
         async def handle_receive(self, websocket: WebSocket, close_code: int) -> None:
             """
@@ -266,6 +266,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             :param websocket: WebSocket connection between clinet sand server.
             :param close_code: close code
             """
+
             def handle_route(msg: 'Message') -> 'Request':
                 """
                 Add route information to `message`.
@@ -282,16 +283,20 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                     if message['type'] == 'websocket.receive':
                         data = await self.decode(websocket, message)
                         if data == bytes(True):
-                            await asyncio.sleep(.1)
+                            await asyncio.sleep(0.1)
                             continue
-                        await zmqlet.send_message(Message(None, Request(data), 'gateway', **vars(self.args)))
+                        await zmqlet.send_message(
+                            Message(None, Request(data), 'gateway', **vars(self.args))
+                        )
                         response = await zmqlet.recv_message(callback=handle_route)
                         if self.client_encoding == 'bytes':
                             await websocket.send_bytes(response.SerializeToString())
                         else:
                             await websocket.send_json(response.json())
                     elif message['type'] == 'websocket.disconnect':
-                        close_code = int(message.get('code', status.WS_1000_NORMAL_CLOSURE))
+                        close_code = int(
+                            message.get('code', status.WS_1000_NORMAL_CLOSURE)
+                        )
                         break
             except Exception as exc:
                 close_code = status.WS_1011_INTERNAL_ERROR

@@ -26,7 +26,7 @@ def docs(document_factory):
     return [
         document_factory.create(1, 'test 1'),
         document_factory.create(2, 'test 1'),
-        document_factory.create(3, 'test 3')
+        document_factory.create(3, 'test 3'),
     ]
 
 
@@ -77,10 +77,7 @@ def test_union_inplace(docset, document_factory):
 
 
 def test_extend(docset, document_factory):
-    docs = [
-        document_factory.create(4, 'test 4'),
-        document_factory.create(5, 'test 5')
-    ]
+    docs = [document_factory.create(4, 'test 4'), document_factory.create(5, 'test 5')]
     docset.extend(docs)
     assert len(docset) == 5
     assert docset[-1].tags['id'] == 5
@@ -230,9 +227,7 @@ def test_get_content(num_rows, field):
     batch_size = 10
     embed_size = 20
 
-    kwargs = {
-        field: np.random.random((num_rows, embed_size))
-    }
+    kwargs = {field: np.random.random((num_rows, embed_size))}
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
     docs.append(Document())
@@ -247,9 +242,7 @@ def test_get_content(num_rows, field):
 def test_get_content_text_fields(field):
     batch_size = 10
 
-    kwargs = {
-        field: 'text'
-    }
+    kwargs = {field: 'text'}
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
@@ -266,9 +259,7 @@ def test_get_content_text_fields(field):
 def test_get_content_bytes_fields(field):
     batch_size = 10
 
-    kwargs = {
-        field: b'bytes'
-    }
+    kwargs = {field: b'bytes'}
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
@@ -285,9 +276,7 @@ def test_get_content_bytes_fields(field):
 def test_get_content_multiple_fields_text(fields):
     batch_size = 10
 
-    kwargs = {
-        field: f'text-{field}' for field in fields
-    }
+    kwargs = {field: f'text-{field}' for field in fields}
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
@@ -310,9 +299,7 @@ def test_get_content_multiple_fields_arrays(num_rows):
     batch_size = 10
     embed_size = 20
 
-    kwargs = {
-        field: np.random.random((num_rows, embed_size)) for field in fields
-    }
+    kwargs = {field: np.random.random((num_rows, embed_size)) for field in fields}
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs._extract_docs(*fields)
@@ -335,7 +322,10 @@ def test_get_content_multiple_fields_merge(num_rows):
     embed_size = 20
 
     kwargs = {
-        field: np.random.random((num_rows, embed_size)) if field == 'embedding' else 'text' for field in fields
+        field: np.random.random((num_rows, embed_size))
+        if field == 'embedding'
+        else 'text'
+        for field in fields
     }
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 

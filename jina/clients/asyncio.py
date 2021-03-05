@@ -51,12 +51,20 @@ class AsyncClient(BaseClient):
     One can think of :class:`Client` as Jina-managed eventloop, whereas :class:`AsyncClient` is self-managed eventloop.
     """
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def train(self, inputs: InputType,
-                    on_done: CallbackFnType = None,
-                    on_error: CallbackFnType = None,
-                    on_always: CallbackFnType = None,
-                    **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    async def train(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'train' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -67,15 +75,25 @@ class AsyncClient(BaseClient):
         :yield: result
         """
         self.mode = RequestType.TRAIN
-        async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
+        async for r in self._get_results(
+            inputs, on_done, on_error, on_always, **kwargs
+        ):
             yield r
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def search(self, inputs: InputType,
-                     on_done: CallbackFnType = None,
-                     on_error: CallbackFnType = None,
-                     on_always: CallbackFnType = None,
-                     **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    async def search(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'search' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -87,15 +105,25 @@ class AsyncClient(BaseClient):
         """
         self.mode = RequestType.SEARCH
         self.add_default_kwargs(kwargs)
-        async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
+        async for r in self._get_results(
+            inputs, on_done, on_error, on_always, **kwargs
+        ):
             yield r
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def index(self, inputs: InputType,
-                    on_done: CallbackFnType = None,
-                    on_error: CallbackFnType = None,
-                    on_always: CallbackFnType = None,
-                    **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    async def index(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'index' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -106,15 +134,25 @@ class AsyncClient(BaseClient):
         :yield: result
         """
         self.mode = RequestType.INDEX
-        async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
+        async for r in self._get_results(
+            inputs, on_done, on_error, on_always, **kwargs
+        ):
             yield r
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def delete(self, inputs: Iterable[str],
-                     on_done: CallbackFnType = None,
-                     on_error: CallbackFnType = None,
-                     on_always: CallbackFnType = None,
-                     **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    async def delete(
+        self,
+        inputs: Iterable[str],
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'delete' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -125,15 +163,25 @@ class AsyncClient(BaseClient):
         :yield: result
         """
         self.mode = RequestType.DELETE
-        async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
+        async for r in self._get_results(
+            inputs, on_done, on_error, on_always, **kwargs
+        ):
             yield r
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    async def update(self, inputs: InputType,
-                     on_done: CallbackFnType = None,
-                     on_error: CallbackFnType = None,
-                     on_always: CallbackFnType = None,
-                     **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    async def update(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -144,7 +192,9 @@ class AsyncClient(BaseClient):
         :yield: result
         """
         self.mode = RequestType.UPDATE
-        async for r in self._get_results(inputs, on_done, on_error, on_always, **kwargs):
+        async for r in self._get_results(
+            inputs, on_done, on_error, on_always, **kwargs
+        ):
             yield r
 
 

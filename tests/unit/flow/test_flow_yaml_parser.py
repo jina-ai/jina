@@ -41,7 +41,13 @@ def test_load_legacy_and_v1():
 
 
 def test_add_needs_inspect(tmpdir):
-    f1 = (Flow().add(name='pod0', needs='gateway').add(name='pod1', needs='gateway').inspect().needs(['pod0', 'pod1']))
+    f1 = (
+        Flow()
+        .add(name='pod0', needs='gateway')
+        .add(name='pod1', needs='gateway')
+        .inspect()
+        .needs(['pod0', 'pod1'])
+    )
     with f1:
         f1.index_ndarray(np.random.random([5, 5]), on_done=print)
 
@@ -94,7 +100,9 @@ def test_flow_yaml_from_string():
         f2 = Flow.load_config(str_yaml)
         assert f1 == f2
 
-    f3 = Flow.load_config('!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]')
+    f3 = Flow.load_config(
+        '!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]'
+    )
     assert 'ppp0' in f3._pod_nodes.keys()
     assert 'aaa1' in f3._pod_nodes.keys()
     assert f3.num_pods == 2
@@ -104,7 +112,6 @@ def test_flow_uses_from_dict():
     class DummyEncoder(BaseEncoder):
         pass
 
-    d1 = {'jtype': 'DummyEncoder',
-          'metas': {'name': 'dummy1'}}
+    d1 = {'jtype': 'DummyEncoder', 'metas': {'name': 'dummy1'}}
     with Flow().add(uses=d1):
         pass

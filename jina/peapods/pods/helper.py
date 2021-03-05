@@ -8,7 +8,9 @@ from ...helper import get_public_ip, get_internal_ip, random_identity
 from ... import helper
 
 
-def _set_peas_args(args: Namespace, head_args: Namespace = None, tail_args: Namespace = None) -> List[Namespace]:
+def _set_peas_args(
+    args: Namespace, head_args: Namespace = None, tail_args: Namespace = None
+) -> List[Namespace]:
     result = []
 
     for idx in range(args.parallel):
@@ -57,9 +59,10 @@ def _set_after_to_pass(args):
         args.uses_after = '_pass'
 
 
-def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -> Namespace:
-    """Set the outgoing args of the head router
-    """
+def _copy_to_head_args(
+    args: Namespace, is_push: bool, as_router: bool = True
+) -> Namespace:
+    """Set the outgoing args of the head router"""
 
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = helper.random_port()
@@ -94,8 +97,7 @@ def _copy_to_head_args(args: Namespace, is_push: bool, as_router: bool = True) -
 
 
 def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
-    """Set the incoming args of the tail router
-    """
+    """Set the incoming args of the tail router"""
     _tail_args = copy.deepcopy(args)
     _tail_args.port_in = helper.random_port()
     _tail_args.port_ctrl = helper.random_port()
@@ -121,18 +123,20 @@ def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
     # by default __default_host__ is 0.0.0.0
 
     # is BIND at local
-    bind_local = (bind_args.host == __default_host__)
+    bind_local = bind_args.host == __default_host__
 
     # is CONNECT at local
-    conn_local = (connect_args.host == __default_host__)
+    conn_local = connect_args.host == __default_host__
 
     # is CONNECT inside docker?
-    conn_docker = (getattr(connect_args, 'uses', None) is not None and
-                   connect_args.uses.startswith('docker://'))
+    conn_docker = getattr(
+        connect_args, 'uses', None
+    ) is not None and connect_args.uses.startswith('docker://')
 
     # is BIND & CONNECT all on the same remote?
-    bind_conn_same_remote = not bind_local and not conn_local and \
-                            (bind_args.host == connect_args.host)
+    bind_conn_same_remote = (
+        not bind_local and not conn_local and (bind_args.host == connect_args.host)
+    )
 
     if platform in ('linux', 'linux2'):
         local_host = __default_host__

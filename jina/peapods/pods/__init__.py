@@ -6,7 +6,13 @@ from argparse import Namespace
 from contextlib import ExitStack
 from typing import Optional, Dict, List, Union, Set
 
-from .helper import _set_peas_args, _set_after_to_pass, _copy_to_head_args, _copy_to_tail_args, _fill_in_host
+from .helper import (
+    _set_peas_args,
+    _set_after_to_pass,
+    _copy_to_head_args,
+    _copy_to_tail_args,
+    _fill_in_host,
+)
 from ..peas import BasePea
 from ...enums import *
 
@@ -24,7 +30,9 @@ class BasePod(ExitStack):
         super().__init__()
         self.args = args
         self._set_conditional_args(self.args)
-        self.needs = needs if needs else set()  #: used in the :class:`jina.flow.Flow` to build the graph
+        self.needs = (
+            needs if needs else set()
+        )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.peas = []  # type: List['BasePea']
         self.is_head_router = False
@@ -89,12 +97,10 @@ class BasePod(ExitStack):
         # note this will be never out of boundary
         return self.peas_args['peas'][0]
 
-    def _parse_args(self, args: Namespace) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        peas_args = {
-            'head': None,
-            'tail': None,
-            'peas': []
-        }
+    def _parse_args(
+        self, args: Namespace
+    ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
+        peas_args = {'head': None, 'tail': None, 'peas': []}
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
@@ -103,9 +109,12 @@ class BasePod(ExitStack):
             self.is_tail_router = True
             peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             peas_args['tail'] = _copy_to_tail_args(args)
-            peas_args['peas'] = _set_peas_args(args, peas_args['head'], peas_args['tail'])
+            peas_args['peas'] = _set_peas_args(
+                args, peas_args['head'], peas_args['tail']
+            )
         elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-                getattr(args, 'uses_after', None) and args.uses_after != '_pass'):
+            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+        ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
                 self.is_head_router = True
@@ -113,7 +122,9 @@ class BasePod(ExitStack):
             if getattr(args, 'uses_after', None):
                 self.is_tail_router = True
                 peas_args['tail'] = _copy_to_tail_args(args)
-            peas_args['peas'] = _set_peas_args(args, peas_args.get('head', None), peas_args.get('tail', None))
+            peas_args['peas'] = _set_peas_args(
+                args, peas_args.get('head', None), peas_args.get('tail', None)
+            )
         else:
             self.is_head_router = False
             self.is_tail_router = False
@@ -173,9 +184,11 @@ class BasePod(ExitStack):
     @property
     def all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod. """
-        return ([self.peas_args['head']] if self.peas_args['head'] else []) + \
-               ([self.peas_args['tail']] if self.peas_args['tail'] else []) + \
-               self.peas_args['peas']
+        return (
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            + self.peas_args['peas']
+        )
 
     @property
     def num_peas(self) -> int:
@@ -215,7 +228,8 @@ class BasePod(ExitStack):
 
         if not self.args.noblock_on_start:
             raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True')
+                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
+            )
 
         try:
             for p in self.peas:

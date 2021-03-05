@@ -19,8 +19,9 @@ class BaseNdArray(ProtoTypeMixin):
     :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
     """
 
-    def __init__(self, proto: Union['PbMessageType', AnyNdArray] = None,
-                 *args, **kwargs):
+    def __init__(
+        self, proto: Union['PbMessageType', AnyNdArray] = None, *args, **kwargs
+    ):
         """Set the constructor method."""
         if proto is not None and isinstance(type(proto), PbMessageType):
             self._pb_body = proto  # a weak ref/copy

@@ -9,14 +9,12 @@ from jina.executors.indexers import BaseVectorIndexer
 
 
 class MockVectorSearchDriver(VectorSearchDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
 
 
 class MockVectorSearchDriverWithQS(VectorSearchDriver):
-
     @property
     def queryset(self):
         q = QueryLang()
@@ -82,11 +80,13 @@ def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search
             assert match.granularity == chunk.granularity
             assert match.score.ref_id == str(chunk.id)
             assert match.embedding is None
-        assert chunk.matches[0].score.value == 0.
-        assert chunk.matches[1].score.value == 1.
+        assert chunk.matches[0].score.value == 0.0
+        assert chunk.matches[1].score.value == 1.0
 
 
-def test_vectorsearch_driver_mock_indexer_with_fill(monkeypatch, create_document_to_search):
+def test_vectorsearch_driver_mock_indexer_with_fill(
+    monkeypatch, create_document_to_search
+):
     driver = MockVectorSearchDriver(top_k=2, fill_embedding=True)
     index = BaseVectorIndexer()
     monkeypatch.setattr(index, 'query_by_key', mock_query_by_key)

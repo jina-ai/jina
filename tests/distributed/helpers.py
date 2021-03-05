@@ -5,10 +5,9 @@ from typing import List, Optional, Dict
 import requests
 
 
-def assert_request(method: str,
-                   url: str,
-                   payload: Optional[Dict] = None,
-                   expect_rcode: int = 200):
+def assert_request(
+    method: str, url: str, payload: Optional[Dict] = None, expect_rcode: int = 200
+):
     try:
         if payload:
             response = getattr(requests, method)(url, json=payload)
@@ -20,17 +19,20 @@ def assert_request(method: str,
         print(f'got an exception while invoking request {e!r}')
 
 
-def get_results(query: str,
-                url: str = 'http://0.0.0.0:45678/api/search',
-                method: str = 'post',
-                top_k: int = 10):
-    return assert_request(method=method,
-                          url=url,
-                          payload={'top_k': top_k, 'data': [query]})
+def get_results(
+    query: str,
+    url: str = 'http://0.0.0.0:45678/api/search',
+    method: str = 'post',
+    top_k: int = 10,
+):
+    return assert_request(
+        method=method, url=url, payload={'top_k': top_k, 'data': [query]}
+    )
 
 
-def create_workspace(filepaths: List[str],
-                     url: str = 'http://localhost:8000/workspaces') -> str:
+def create_workspace(
+    filepaths: List[str], url: str = 'http://localhost:8000/workspaces'
+) -> str:
     with ExitStack() as file_stack:
         files = [
             ('files', file_stack.enter_context(open(filepath, 'rb')))
@@ -45,22 +47,22 @@ def create_workspace(filepaths: List[str],
         return workspace_id
 
 
-def create_flow_2(flow_yaml: str,
-                  workspace_id: str = None,
-                  url: str = 'http://localhost:8000/flows') -> str:
+def create_flow_2(
+    flow_yaml: str, workspace_id: str = None, url: str = 'http://localhost:8000/flows'
+) -> str:
     with open(flow_yaml, 'rb') as f:
-        r = requests.post(url,
-                          data={'workspace_id': workspace_id},
-                          files={'flow': f})
+        r = requests.post(url, data={'workspace_id': workspace_id}, files={'flow': f})
         print(f'Checking if the flow creation is succeeded: {r.json()}')
         assert r.status_code == 201
         return r.json()
 
 
-def create_flow(flow_yaml: str,
-                pod_dir: Optional[str] = None,
-                url: str = 'http://localhost:8000',
-                workspace_id: str = None) -> str:
+def create_flow(
+    flow_yaml: str,
+    pod_dir: Optional[str] = None,
+    url: str = 'http://localhost:8000',
+    workspace_id: str = None,
+) -> str:
     with ExitStack() as file_stack:
         pymodules_files = []
         uses_files = []
@@ -92,12 +94,26 @@ def create_flow(flow_yaml: str,
             print('nothing to upload')
 
         if workspace_id:
-            r = requests.post(f'{url}/flows',
-                              files={'flow': ('good_flow.yml', file_stack.enter_context(open(flow_yaml, 'rb'))),
-                                     'workspace_id': (None, workspace_id)})
+            r = requests.post(
+                f'{url}/flows',
+                files={
+                    'flow': (
+                        'good_flow.yml',
+                        file_stack.enter_context(open(flow_yaml, 'rb')),
+                    ),
+                    'workspace_id': (None, workspace_id),
+                },
+            )
         else:
-            r = requests.post(f'{url}/flows',
-                              files={'flow': ('good_flow.yml', file_stack.enter_context(open(flow_yaml, 'rb')))})
+            r = requests.post(
+                f'{url}/flows',
+                files={
+                    'flow': (
+                        'good_flow.yml',
+                        file_stack.enter_context(open(flow_yaml, 'rb')),
+                    )
+                },
+            )
 
         print(f'Checking if the flow creation is succeeded: {r.json()}')
         assert r.status_code == 201

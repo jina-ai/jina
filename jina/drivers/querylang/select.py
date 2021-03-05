@@ -12,22 +12,28 @@ if False:
 
 class ExcludeQL(QuerySetReader, FlatRecursiveMixin, BaseRecursiveDriver):
     """Clean some fields from the document-level protobuf to reduce the total size of the request
-        Example::
-        - !ExcludeQL
-        with:
-            fields:
-                - chunks
-                - buffer
+    Example::
+    - !ExcludeQL
+    with:
+        fields:
+            - chunks
+            - buffer
 
-        ExcludeQL will avoid `buffer` and `chunks` fields to be sent to the next `Pod`
+    ExcludeQL will avoid `buffer` and `chunks` fields to be sent to the next `Pod`
 
-        :param fields: the pruned field names in tuple
-        :param traversal_paths: the traversal paths
-        :param *args: *args
-        :param **kwargs: **kwargs
+    :param fields: the pruned field names in tuple
+    :param traversal_paths: the traversal paths
+    :param *args: *args
+    :param **kwargs: **kwargs
     """
 
-    def __init__(self, fields: Union[Tuple, str], traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
+    def __init__(
+        self,
+        fields: Union[Tuple, str],
+        traversal_paths: Tuple[str] = ('r',),
+        *args,
+        **kwargs
+    ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         if isinstance(fields, str):
             self._fields = [fields]
@@ -63,7 +69,7 @@ class SelectQL(ExcludeQL):
 class ExcludeReqQL(ExcludeQL):
     """Clean up request from the request-level protobuf message to reduce the total size of the message
 
-        This is often useful when the proceeding Pods require only a signal, not the full message.
+    This is often useful when the proceeding Pods require only a signal, not the full message.
     """
 
     def __call__(self, *args, **kwargs):

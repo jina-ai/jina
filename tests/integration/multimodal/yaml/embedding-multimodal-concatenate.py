@@ -10,9 +10,7 @@ from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
     batch_size = 10
 
-    def __init__(self,
-                 *args,
-                 **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @batching_multi_input(num_data=2)

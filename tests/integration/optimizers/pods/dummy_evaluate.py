@@ -2,7 +2,6 @@ from jina.executors.evaluators.text import BaseTextEvaluator
 
 
 class DummyTextEvaluator(BaseTextEvaluator):
-
     @property
     def metric(self) -> str:
         return 'DummyTextEvaluator'
