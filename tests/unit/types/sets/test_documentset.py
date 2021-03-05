@@ -238,6 +238,7 @@ def test_get_content(num_rows, field):
     docs.append(Document())
 
     contents, pts = docs._extract_docs(field)
+    assert isinstance(contents, np.ndarray)
 
     assert contents.shape == (batch_size, num_rows, embed_size)
 
@@ -253,6 +254,7 @@ def test_get_content_text_fields(field):
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs._extract_docs(field)
+    assert isinstance(contents, np.ndarray)
 
     assert contents.shape == (batch_size,)
     assert len(contents) == batch_size
@@ -274,6 +276,7 @@ def test_get_content_bytes_fields(field):
 
     assert contents.shape == (batch_size,)
     assert len(contents) == batch_size
+    assert isinstance(contents, np.ndarray)
     for content in contents:
         assert content == b'bytes'
 
@@ -291,6 +294,9 @@ def test_get_content_multiple_fields_text(fields):
     contents, pts = docs._extract_docs(*fields)
 
     assert len(contents) == len(fields)
+    assert isinstance(contents, list)
+    assert isinstance(contents[0], np.ndarray)
+    assert isinstance(contents[1], np.ndarray)
 
     for content in contents:
         assert len(content) == batch_size
@@ -312,6 +318,9 @@ def test_get_content_multiple_fields_arrays(num_rows):
     contents, pts = docs._extract_docs(*fields)
 
     assert len(contents) == len(fields)
+    assert isinstance(contents, list)
+    assert isinstance(contents[0], np.ndarray)
+    assert isinstance(contents[1], np.ndarray)
 
     for content in contents:
         assert len(content) == batch_size
@@ -333,6 +342,9 @@ def test_get_content_multiple_fields_merge(num_rows):
     contents, pts = docs._extract_docs(*fields)
 
     assert len(contents) == len(fields)
+    assert isinstance(contents, list)
+    assert isinstance(contents[0], np.ndarray)
+    assert isinstance(contents[1], np.ndarray)
 
     for content in contents:
         assert len(content) == batch_size

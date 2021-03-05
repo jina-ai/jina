@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple, Sequence
+from typing import Union, Iterable, Tuple, Sequence, List
 
 
 import numpy as np
@@ -165,17 +165,14 @@ class DocumentSet(TraversableSequence, MutableSequence):
         """
         return self._extract_docs('content')
 
-    def _extract_docs(self, *attr: str) -> Tuple['np.ndarray', 'DocumentSet']:
-        list_of_contents_output = len(attr) > 1
-        if list_of_contents_output:
-            contents = [list() for _ in range(len(attr))]
-        else:
-            contents = []
+    def _extract_docs(self, *fields: str) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
+        list_of_contents_output = len(fields) > 1
+        contents = [[] for _ in fields if len(fields) > 1]
         docs_pts = []
         bad_docs = []
 
         for doc in self:
-            content = doc.get_attrs_values(*attr)
+            content = doc.get_attrs_values(*fields)
             content = content if list_of_contents_output else content[0]
 
             if content is not None:
@@ -196,7 +193,8 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
         if bad_docs and docs_pts:
             default_logger.warning(
-                f'found {len(bad_docs)} no-{attr} docs at granularity {docs_pts[0].granularity}')
+                f'found {len(bad_docs)} docs at granularity {docs_pts[0].granularity} are missing one of the '
+                f'following fields: {fields} ')
 
         return contents, DocumentSet(docs_pts)
 
