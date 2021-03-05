@@ -13,9 +13,9 @@ from jina.executors.indexers import BaseIndexer
 from jina import Document
 from jina.flow import Flow
 
-
 random.seed(0)
 np.random.seed(0)
+
 
 @pytest.fixture
 def config(tmpdir):
@@ -34,7 +34,8 @@ def send_rest_request(flow_file, endpoint, method, data):
 
         if r.status_code != 200:
             # TODO status_code should be 201 for index
-            raise Exception(f'api request failed, url: {url}, status: {r.status_code}, content: {r.content} data: {data}')
+            raise Exception(
+                f'api request failed, url: {url}, status: {r.status_code}, content: {r.content} data: {data}')
 
     return r
 
@@ -74,27 +75,20 @@ def get_ids_to_delete(start, end):
     return [str(idx) for idx in range(start, end)]
 
 
-
-def validate_index_size(num_indexed_docs, compound=False):
+def validate_index_size(num_indexed_docs):
     from jina.executors.compound import CompoundExecutor
-
-    if compound:
-        path = Path(CompoundExecutor.get_component_workspace_from_compound_workspace(os.environ['JINA_REST_DIR'],
-                                                                                     'chunk_indexer', 0))
-    else:
-        path = Path(os.environ['JINA_REST_DIR'])
-    bin_files = list(path.glob('*.bin'))
+    path_compound = Path(CompoundExecutor.get_component_workspace_from_compound_workspace(os.environ['JINA_REST_DIR'],
+                                                                                          'chunk_indexer', 0))
+    path = Path(os.environ['JINA_REST_DIR'])
+    bin_files = list(path_compound.glob('*.bin')) + list(path.glob('*.bin'))
     assert len(bin_files) > 0
     for index_file in bin_files:
         index = BaseIndexer.load(str(index_file))
         assert index.size == num_indexed_docs
 
 
-@pytest.mark.parametrize('flow_file, compound', [
-    ['flow.yml', True],
-    ['flow_vector.yml', False],
-])
-def test_delete_vector(config, flow_file, compound):
+@pytest.mark.parametrize('flow_file', ['flow.yml', 'flow_vector.yml'])
+def test_delete_vector(config, flow_file):
     NUMBER_OF_SEARCHES = 5
 
     def validate_results(resp, num_matches):
@@ -105,7 +99,7 @@ def test_delete_vector(config, flow_file, compound):
             assert len(Document(doc).matches) == num_matches
 
     send_rest_index_request(flow_file, random_docs(0, 10))
-    validate_index_size(10, compound)
+    validate_index_size(10)
 
     search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
     validate_results(search_result, 10)
@@ -118,7 +112,7 @@ def test_delete_vector(config, flow_file, compound):
 
     send_rest_delete_request(flow_file, delete_ids)
 
-    validate_index_size(0, compound)
+    validate_index_size(0)
 
     search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
     validate_results(search_result, 0)
@@ -143,15 +137,11 @@ def test_delete_kv(config):
     validate_results(search_result, 1)
 
 
-@pytest.mark.parametrize('flow_file, compound', [
-    ('flow.yml', True),
-    ('flow_vector.yml', False)
-])
-def test_update_vector(config, flow_file, compound):
+@pytest.mark.parametrize('flow_file', ['flow.yml', 'flow_vector.yml'])
+def test_update_vector(config, flow_file):
     NUMBER_OF_SEARCHES = 1
     docs_before = list(random_docs(0, 10))
     docs_updated = list(random_docs(0, 10))
-
 
     def validate_results(resp, has_changed):
         docs = resp.json()['search']['docs']
@@ -171,13 +161,13 @@ def test_update_vector(config, flow_file, compound):
                     assert h not in hash_set_updated
 
     send_rest_index_request(flow_file, docs_before)
-    validate_index_size(10, compound)
+    validate_index_size(10)
 
     search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
     validate_results(search_result, has_changed=False)
 
     send_rest_update_request(flow_file, docs_updated)
-    validate_index_size(10, compound)
+    validate_index_size(10)
 
     search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
     validate_results(search_result, has_changed=True)
