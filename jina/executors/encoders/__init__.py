@@ -44,16 +44,19 @@ class BaseNumericEncoder(BaseEncoder):
 
 class BaseImageEncoder(BaseNumericEncoder):
     """BaseImageEncoder encodes data from a ndarray, potentially B x (Height x Width) into a ndarray of B x D"""
+
     pass
 
 
 class BaseVideoEncoder(BaseNumericEncoder):
     """BaseVideoEncoder encodes data from a ndarray, potentially B x (Time x Height x Width) into a ndarray of B x D"""
+
     pass
 
 
 class BaseAudioEncoder(BaseNumericEncoder):
     """BaseAudioEncoder encodes data from a ndarray, potentially B x (Time x D) into a ndarray of B x D"""
+
     pass
 
 

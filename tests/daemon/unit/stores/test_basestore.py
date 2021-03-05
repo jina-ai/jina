@@ -8,12 +8,7 @@ from jina.helper import random_identity, random_uuid
 keys = [uuid.UUID(random_identity()) for _ in range(3)]
 
 
-
-store_items = {
-    keys[0]: {'object': 'abc'},
-    keys[1]: {'object': 'hij'},
-    keys[2]: {}
-}
+store_items = {keys[0]: {'object': 'abc'}, keys[1]: {'object': 'hij'}, keys[2]: {}}
 
 
 def test_base_store_clear():

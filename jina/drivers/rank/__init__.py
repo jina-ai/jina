@@ -11,31 +11,37 @@ if False:
 class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`rank` by default """
 
-    def __init__(self, executor: Optional[str] = None, method: str = 'score', *args, **kwargs):
+    def __init__(
+        self, executor: Optional[str] = None, method: str = 'score', *args, **kwargs
+    ):
         super().__init__(executor, method, *args, **kwargs)
 
     @property
     def _exec_match_keys(self):
-        """ Property to provide backward compatibility to executors relying in `required_keys`
+        """Property to provide backward compatibility to executors relying in `required_keys`
         :return: keys for attribute lookup in matches
         """
-        return self.exec.match_required_keys if hasattr(self.exec, 'match_required_keys') else getattr(self.exec,
-                                                                                                       'required_keys',
-                                                                                                       None)
+        return (
+            self.exec.match_required_keys
+            if hasattr(self.exec, 'match_required_keys')
+            else getattr(self.exec, 'required_keys', None)
+        )
 
     @property
     def _exec_query_keys(self):
-        """ Property to provide backward compatibility to executors relying in `required_keys`
+        """Property to provide backward compatibility to executors relying in `required_keys`
 
         :return: keys for attribute lookup in matches
         """
-        return self.exec.query_required_keys if hasattr(self.exec, 'query_required_keys') else getattr(self.exec,
-                                                                                                       'required_keys',
-                                                                                                       None)
+        return (
+            self.exec.query_required_keys
+            if hasattr(self.exec, 'query_required_keys')
+            else getattr(self.exec, 'required_keys', None)
+        )
 
 
 class Matches2DocRankDriver(BaseRankDriver):
-    """ This driver is intended to only resort the given matches on the 0 level granularity for a document.
+    """This driver is intended to only resort the given matches on the 0 level granularity for a document.
     It gets the scores from a Ranking Executor, which does only change the scores of matches.
     Afterwards, the Matches2DocRankDriver resorts all matches for a document.
     Input-Output ::
@@ -47,7 +53,13 @@ class Matches2DocRankDriver(BaseRankDriver):
             |- matches: {granularity: 0, adjacency: k+1} (Sorted according to scores from Ranker Executor)
     """
 
-    def __init__(self, reverse: bool = False, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
+    def __init__(
+        self,
+        reverse: bool = False,
+        traversal_paths: Tuple[str] = ('r',),
+        *args,
+        **kwargs,
+    ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
@@ -63,14 +75,18 @@ class Matches2DocRankDriver(BaseRankDriver):
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
         for doc in docs:
-            query_meta = doc.get_attrs(*self._exec_query_keys) if self._exec_query_keys else None
+            query_meta = (
+                doc.get_attrs(*self._exec_query_keys) if self._exec_query_keys else None
+            )
 
             matches = doc.matches
             num_matches = len(matches)
             old_match_scores = [match.score.value for match in matches]
-            match_meta = [
-                match.get_attrs(*self._exec_match_keys) for match in matches
-            ] if self._exec_match_keys else None
+            match_meta = (
+                [match.get_attrs(*self._exec_match_keys) for match in matches]
+                if self._exec_match_keys
+                else None
+            )
 
             # if there are no matches, no need to sort them
             if not old_match_scores:
@@ -78,13 +94,17 @@ class Matches2DocRankDriver(BaseRankDriver):
 
             new_scores = self.exec_fn(old_match_scores, query_meta, match_meta)
             if num_matches != len(new_scores):
-                msg = f'The number of matches to be scored {num_matches} do not match the number of scores returned ' \
-                      f'by the ranker {self.exec.__name__} '
+                msg = (
+                    f'The number of matches to be scored {num_matches} do not match the number of scores returned '
+                    f'by the ranker {self.exec.__name__} '
+                )
                 self.logger.error(msg)
                 raise ValueError(msg)
             self._sort_matches_in_place(matches, new_scores)
 
-    def _sort_matches_in_place(self, matches: 'MatchSet', match_scores: Iterable[float]) -> None:
+    def _sort_matches_in_place(
+        self, matches: 'MatchSet', match_scores: Iterable[float]
+    ) -> None:
         op_name = self.exec.__class__.__name__
         ref_doc_id = matches._ref_doc.id
 

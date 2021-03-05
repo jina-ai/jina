@@ -101,16 +101,20 @@ What happens after the merge? [Understand the development stage and release cycl
 
 ### Install pre-commit hooks
 
-In Jina we use git's pre-commit hooks in order to make sure the code matches our standards of quality and documentation. At the moment we employ them for checking the docstrings of the code. Documentation of code is crucial to maintaining productive developers and clear communication with new users.
+In Jina we use git's pre-commit hooks in order to make sure the code matches our standards of quality and documentation. At the moment we employ them for checking the style and the docstrings of the code. Documentation of code is crucial to maintaining productive developers and clear communication with new users. We also want to reduce all arguments about code styling.
 
 It's easy to configure it:
 
 1. `pip install pre-commit`
 1. `pre-commit install`
 
-Now you will be automatically reminded to add docstrings to your code.
+Now you will be automatically reminded to add docstrings to your code. `black` will take care that your code will match our style.
 
 For more about our docstring style, refer to [this guide](https://docs.jina.ai/chapters/docstring/docstring.html).
+
+#### Restoring correct git blame
+
+Run `git config blame.ignoreRevsFile .github/.git-blame-ignore-revs`
 
 ### Check out `jina/hub` submodule
 

@@ -1,17 +1,25 @@
-exclude: tests/
 repos:
--   repo: https://github.com/terrencepreilly/darglint
-    rev: v1.5.8
-    hooks:
-    - id: darglint
+- repo: https://github.com/terrencepreilly/darglint
+  rev: v1.5.8
+  hooks:
+  - id: darglint
+    files: jina/
+    args:
+    - --message-template={path}:{line} {msg_id} {msg}
+    - -s=sphinx
+    - -z=full
+    - -v=2
+- repo: https://github.com/pycqa/pydocstyle
+  rev: 5.1.1  # pick a git hash / tag to point to
+  hooks:
+  -   id: pydocstyle
+      files: jina/
       args:
-      - --message-template={path}:{line} {msg_id} {msg}
-      - -s=sphinx
-      - -z=full
-      - -v=2
--   repo: https://github.com/pycqa/pydocstyle
-    rev: 5.1.1  # pick a git hash / tag to point to
-    hooks:
-    -   id: pydocstyle
-        args:
-        - --select=D101,D102,D103
+      - --select=D101,D102,D103
+- repo: https://github.com/ambv/black
+  rev: 20.8b1
+  hooks:
+  - id: black
+    types: [python]
+    args:
+      - -S

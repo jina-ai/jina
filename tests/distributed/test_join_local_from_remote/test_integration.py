@@ -23,7 +23,8 @@ def doc_to_index():
 @pytest.fixture
 def client():
     args = set_client_cli_parser().parse_args(
-        ['--host', 'localhost', '--port-expose', '45678'])
+        ['--host', 'localhost', '--port-expose', '45678']
+    )
 
     return Client(args)
 
@@ -31,7 +32,6 @@ def client():
 @pytest.mark.timeout(360)
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose, doc_to_index, client, mocker):
-
     def validate_resp(resp):
         assert len(resp.search.docs) == 1
         assert resp.search.docs[0].text == 'test'
@@ -41,12 +41,13 @@ def test_flow(docker_compose, doc_to_index, client, mocker):
 
     client.search(inputs=[doc_to_index], on_done=mock)
 
-    assert_request(method='get',
-                   url=f'http://localhost:8000/flows/{flow_id}')
+    assert_request(method='get', url=f'http://localhost:8000/flows/{flow_id}')
 
-    assert_request(method='delete',
-                   url=f'http://localhost:8000/flows/{flow_id}',
-                   payload={'workspace': False})
+    assert_request(
+        method='delete',
+        url=f'http://localhost:8000/flows/{flow_id}',
+        payload={'workspace': False},
+    )
 
     mock.assert_called_once()
     validate_callback(mock, validate_resp)

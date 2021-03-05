@@ -51,14 +51,20 @@ def test_concat_embed_driver(mocker):
         assert len(req.docs) == 2
         assert NdArray(req.docs[0].embedding).value.shape == (e1.shape[0] * 2,)
         assert NdArray(req.docs[1].embedding).value.shape == (e3.shape[0] * 2,)
-        np.testing.assert_almost_equal(NdArray(req.docs[0].embedding).value, np.concatenate([e1, e1], axis=0),
-                                       decimal=4)
+        np.testing.assert_almost_equal(
+            NdArray(req.docs[0].embedding).value,
+            np.concatenate([e1, e1], axis=0),
+            decimal=4,
+        )
 
     mock = mocker.Mock()
     # simulate two encoders
-    flow = (Flow().add(name='a')
-            .add(name='b', needs='gateway')
-            .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}'))
+    flow = (
+        Flow()
+        .add(name='a')
+        .add(name='b', needs='gateway')
+        .join(needs=['a', 'b'], uses='- !ConcatEmbedDriver | {}')
+    )
 
     with flow:
         flow.index(inputs=input_function, on_done=mock)

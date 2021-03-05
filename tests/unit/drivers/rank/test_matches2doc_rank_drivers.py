@@ -7,7 +7,6 @@ from jina.types.sets import DocumentSet
 
 
 class MockMatches2DocRankDriver(Matches2DocRankDriver):
-
     def __init__(self, docs, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._docs = docs
@@ -23,13 +22,15 @@ class MockMatches2DocRankDriver(Matches2DocRankDriver):
 
 class MockAbsoluteLengthRanker(Match2DocRanker):
     def __init__(self, *args, **kwargs):
-        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
+        super().__init__(
+            query_required_keys=('length',),
+            match_required_keys=('length',),
+            *args,
+            **kwargs
+        )
 
     def score(self, old_match_scores, query_meta, match_meta):
-        new_scores = [
-            - abs(m['length'] - query_meta['length'])
-            for m in match_meta
-        ]
+        new_scores = [-abs(m['length'] - query_meta['length']) for m in match_meta]
         return new_scores
 
 
@@ -42,7 +43,12 @@ def create_document_to_score():
     doc = Document()
     doc.id = '1' * 20
     doc.length = 5
-    for match_id, match_score, match_length in [(2, 3, 16), (3, 6, 24), (4, 1, 8), (5, 8, 16)]:
+    for match_id, match_score, match_length in [
+        (2, 3, 16),
+        (3, 6, 24),
+        (4, 1, 8),
+        (5, 8, 16),
+    ]:
         with Document() as match:
             match.id = str(match_id) * match_length
             match.length = match_score

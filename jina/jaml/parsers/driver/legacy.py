@@ -6,6 +6,7 @@ from ....drivers import BaseDriver
 
 class LegacyParser(VersionedYAMLParser):
     """Legacy parser for driver."""
+
     version = 'legacy'  # the version number this parser designed for
 
     def parse(self, cls: Type['BaseDriver'], data: Dict) -> 'BaseDriver':

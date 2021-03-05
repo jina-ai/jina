@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Optional, Sequence, Iterable, Tuple
+from typing import Dict, Optional, Sequence, Iterable
 
 import numpy as np
 
@@ -30,11 +30,33 @@ class BaseRanker(BaseExecutor):
             ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
     """
 
-    def __init__(self,
-                 query_required_keys: Optional[Sequence[str]] = None,
-                 match_required_keys: Optional[Sequence[str]] = None,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        query_required_keys: Optional[Sequence[str]] = None,
+        match_required_keys: Optional[Sequence[str]] = None,
+        *args,
+        **kwargs
+    ):
+        """
+
+        :param query_required_keys: Set of keys or features to be extracted from query `Document` by the `Driver` so that
+            they are passed as query features or metainfo.
+        :param match_required_keys: Set of keys or features to be extracted from match `Document` by the `Driver` so that
+            they are passed as match features or metainfo.
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
+
+        .. note::
+            See how the attributes are accessed in :class:`Document` in :meth:`get_attrs`.
+
+            .. highlight:: python
+            .. code-block:: python
+
+                query = Document({'tags': {'color': 'blue'})
+                match = Document({'tags': {'color': 'blue', 'price': 1000}})
+
+                ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
+        """
         super().__init__(*args, **kwargs)
         self.query_required_keys = query_required_keys
         self.match_required_keys = match_required_keys
@@ -48,7 +70,7 @@ class BaseRanker(BaseExecutor):
 
 
 class Chunk2DocRanker(BaseRanker):
-    """ A :class:`Chunk2DocRanker` translates the chunk-wise score (distance) to the doc-wise score.
+    """A :class:`Chunk2DocRanker` translates the chunk-wise score (distance) to the doc-wise score.
 
     In the query-time, :class:`Chunk2DocRanker` is an almost-always required component.
     Because in the end we want to retrieve top-k documents of given query-document not top-k chunks of
@@ -67,7 +89,9 @@ class Chunk2DocRanker(BaseRanker):
     COL_QUERY_CHUNK_ID = 'match_query_chunk_id'
     COL_SCORE = 'score'
 
-    def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs) -> float:
+    def score(
+        self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
+    ) -> float:
         """
         Given a set of queries (that may correspond to the chunks of a root level query) and a set of matches
         corresponding to the same parent id, compute the matching score of the common parent of the set of matches.
@@ -83,8 +107,6 @@ class Chunk2DocRanker(BaseRanker):
             the value is extracted by the ``query_required_keys``.
         :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
             ``chunk_id``, the value is extracted by the ``match_required_keys``.
-        :param args: Extra positional arguments
-        :param kwargs: Extra keyword arguments
         """
         raise NotImplementedError
 
@@ -103,7 +125,12 @@ class Match2DocRanker(BaseRanker):
     COL_MATCH_ID = 'match_doc_chunk_id'
     COL_SCORE = 'score'
 
-    def score(self, old_match_scores: Iterable[float], query_meta: Dict, match_meta: Iterable[Dict]) -> Iterable[float]:
+    def score(
+        self,
+        old_match_scores: Iterable[float],
+        query_meta: Dict,
+        match_meta: Iterable[Dict],
+    ) -> Iterable[float]:
         """
         Calculates the new scores for matches and returns them. Returns an iterable of the scores to be assined to the matches.
         The returned scores need to be returned in the same order as the input `:param old_match_scores`.

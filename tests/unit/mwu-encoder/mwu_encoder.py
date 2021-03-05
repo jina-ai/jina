@@ -6,7 +6,6 @@ from jina.executors.encoders import BaseEncoder
 
 
 class MWUEncoder(BaseEncoder):
-
     def __init__(self, greetings: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._greetings = greetings
@@ -17,7 +16,6 @@ class MWUEncoder(BaseEncoder):
 
 
 class MWUUpdater(BaseEncoder):
-
     def __init__(self, greetings: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._greetings = greetings

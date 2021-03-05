@@ -9,7 +9,7 @@ echo 'removing files under /tests...'
 arrVar=()
 # we ignore tests files
 for changed_file in $CHANGED_FILES; do
-  if [[ ${changed_file}} != tests/* ]]; then
+  if [[ ${changed_file} != tests/* ]]; then
     echo keeping ${changed_file}
     arrVar+=(${changed_file})
   fi

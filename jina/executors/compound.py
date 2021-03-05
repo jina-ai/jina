@@ -119,8 +119,10 @@ class CompoundExecutor(BaseExecutor):
         def __call__(self, *args, **kwargs):
             return any(super().__call__(*args, **kwargs))
 
-    def __init__(self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs):
-        """ Create a new :class:`CompoundExecutor` object
+    def __init__(
+        self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs
+    ):
+        """Create a new :class:`CompoundExecutor` object
 
         :param routes: a map of function routes. The key is the function name, the value is a tuple of two pieces,
             where the first element is the name of the referred component (``metas.name``) and the second element
@@ -211,7 +213,9 @@ class CompoundExecutor(BaseExecutor):
     @property
     def is_updated(self) -> bool:
         """Return ``True``  if any components is updated"""
-        return (self.components and any(c.is_updated for c in self.components)) or self._is_updated
+        return (
+            self.components and any(c.is_updated for c in self.components)
+        ) or self._is_updated
 
     @is_updated.setter
     def is_updated(self, val: bool) -> None:
@@ -235,12 +239,14 @@ class CompoundExecutor(BaseExecutor):
         """
         for c in self.components:
             c.save()
-        super().save(filename=filename)  # do i really need to save the compound executor itself
+        super().save(
+            filename=filename
+        )  # do i really need to save the compound executor itself
 
     @property
     def components(self) -> List[AnyExecutor]:
         """Return all component executors as a list. The list follows the order as defined in the YAML config or the
-        pre-given order when calling the setter. """
+        pre-given order when calling the setter."""
         return self._components
 
     @components.setter
@@ -250,23 +256,30 @@ class CompoundExecutor(BaseExecutor):
         :param comps: a function returns a list of executors
         """
         if not callable(comps):
-            raise TypeError('components must be a callable function that returns '
-                            'a List[BaseExecutor]')
+            raise TypeError(
+                'components must be a callable function that returns '
+                'a List[BaseExecutor]'
+            )
 
         # Important to handle when loading a CompoundExecutor when `inner` executors have not been loaded from yaml
         if not getattr(self, '_init_from_yaml', False):
             self._components = comps()
             if not isinstance(self._components, list):
-                raise TypeError(f'components expect a list of executors, receiving {type(self._components)!r}')
+                raise TypeError(
+                    f'components expect a list of executors, receiving {type(self._components)!r}'
+                )
             self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
         else:
-            self.logger.debug('components is omitted from construction, as it is initialized from yaml config')
+            self.logger.debug(
+                'components is omitted from construction, as it is initialized from yaml config'
+            )
 
     @staticmethod
-    def get_component_workspace_from_compound_workspace(compound_workspace: str, compound_name: str,
-                                                        pea_id: int) -> str:
+    def get_component_workspace_from_compound_workspace(
+        compound_workspace: str, compound_name: str, pea_id: int
+    ) -> str:
         """
         Get the name of workspace.
 
@@ -276,16 +289,22 @@ class CompoundExecutor(BaseExecutor):
         :return: The name of workspace.
         """
         import os
-        return BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id) if (
-                    isinstance(pea_id, int) and pea_id > 0) else \
-            os.path.join(compound_workspace, compound_name)
+
+        return (
+            BaseExecutor.get_shard_workspace(compound_workspace, compound_name, pea_id)
+            if (isinstance(pea_id, int) and pea_id > 0)
+            else os.path.join(compound_workspace, compound_name)
+        )
 
     def _set_comp_workspace(self) -> None:
         # overrides the workspace setting for all components
         for c in self.components:
             if not c.workspace and self.workspace:
-                c_workspace = CompoundExecutor.get_component_workspace_from_compound_workspace(self.workspace,
-                                                                                               self.name, self.pea_id)
+                c_workspace = (
+                    CompoundExecutor.get_component_workspace_from_compound_workspace(
+                        self.workspace, self.name, self.pea_id
+                    )
+                )
                 self.logger.warning(f'Setting workspace of {c.name} to {c_workspace}')
                 c.workspace = c_workspace
 
@@ -295,7 +314,9 @@ class CompoundExecutor(BaseExecutor):
                 for kk, vv in v.items():
                     self.add_route(f, kk, vv)
 
-    def add_route(self, fn_name: str, comp_name: str, comp_fn_name: str, is_stored: bool = False) -> None:
+    def add_route(
+        self, fn_name: str, comp_name: str, comp_fn_name: str, is_stored: bool = False
+    ) -> None:
         """Create a new function for this executor which refers to the component's function
 
         This will create a new function :func:`fn_name` which actually refers to ``components[comp_name].comp_fn_name``.
@@ -309,7 +330,11 @@ class CompoundExecutor(BaseExecutor):
 
         """
         for c in self.components:
-            if c.name == comp_name and hasattr(c, comp_fn_name) and callable(getattr(c, comp_fn_name)):
+            if (
+                c.name == comp_name
+                and hasattr(c, comp_fn_name)
+                and callable(getattr(c, comp_fn_name))
+            ):
                 setattr(self, fn_name, getattr(c, comp_fn_name))
                 if is_stored:
                     if not self._routes:
@@ -340,11 +365,14 @@ class CompoundExecutor(BaseExecutor):
                     fns = self._FnWrapper([vv[1] for vv in v])
                     setattr(self, new_r, fns)
                     self.logger.debug(f'function "{k}" appears multiple times in {v}')
-                    self.logger.debug(f'a new function "{new_r}" is added to {self!r} by iterating over all')
+                    self.logger.debug(
+                        f'a new function "{new_r}" is added to {self!r} by iterating over all'
+                    )
                     new_routes.append(new_r)
                 else:
                     self.logger.warning(
-                        f'function "{k}" appears multiple times in {v}, it needs to be resolved manually before using.')
+                        f'function "{k}" appears multiple times in {v}, it needs to be resolved manually before using.'
+                    )
                     bad_routes.append(k)
         if new_routes:
             self.logger.debug(f'new functions added: {new_routes!r}')

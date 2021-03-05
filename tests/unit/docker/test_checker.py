@@ -1,8 +1,19 @@
 import pytest
 from pkg_resources import resource_stream
 
-from jina.docker.checker import check_name, check_version, check_image_name, check_platform, check_license, \
-    check_image_type, remove_control_characters, safe_url_name, get_exist_path, get_summary_path, is_error_message
+from jina.docker.checker import (
+    check_name,
+    check_version,
+    check_image_name,
+    check_platform,
+    check_license,
+    check_image_type,
+    remove_control_characters,
+    safe_url_name,
+    get_exist_path,
+    get_summary_path,
+    is_error_message,
+)
 from jina.jaml import JAML
 
 
@@ -25,7 +36,9 @@ def test_check_image_name():
 
 
 def test_check_platform():
-    with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'platforms.yml'))) as fp:
+    with resource_stream(
+        'jina', '/'.join(('resources', 'hub-builder', 'platforms.yml'))
+    ) as fp:
         platforms = JAML.load(fp)
     check_platform(platforms)
     with pytest.raises(ValueError):
@@ -33,7 +46,9 @@ def test_check_platform():
 
 
 def test_check_licenses():
-    with resource_stream('jina', '/'.join(('resources', 'hub-builder', 'osi-approved.yml'))) as fp:
+    with resource_stream(
+        'jina', '/'.join(('resources', 'hub-builder', 'osi-approved.yml'))
+    ) as fp:
         licenses = JAML.load(fp)
 
     for lic in licenses:
@@ -69,6 +84,7 @@ def test_safe_url_name():
 
 def test_exist_path(tmpdir):
     import os
+
     existing = os.path.join(str(tmpdir), 'exists')
     os.mkdir(existing)
     assert get_exist_path(str(tmpdir), 'not_exists') is None

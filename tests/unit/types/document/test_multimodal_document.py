@@ -73,10 +73,7 @@ def chunk_6(textual_embedding):
 
 @pytest.fixture(scope='function')
 def modality_content_mapping():
-    return {
-        'visual': 'content visual',
-        'textual': 'content textual'
-    }
+    return {'visual': 'content visual', 'textual': 'content textual'}
 
 
 @pytest.yield_fixture(scope='function')
@@ -97,14 +94,18 @@ def test_modalities_property(multimodal_document):
     assert 'textual' in doc_modalities
 
 
-def test_modality_content_mapping_property(multimodal_document, visual_embedding, textual_embedding):
+def test_modality_content_mapping_property(
+    multimodal_document, visual_embedding, textual_embedding
+):
     mapping = multimodal_document.modality_content_map
     assert isinstance(mapping, dict)
     np.testing.assert_array_equal(mapping['textual'], textual_embedding)
     np.testing.assert_array_equal(mapping['visual'], visual_embedding)
 
 
-def test_extract_content_from_modality(multimodal_document, visual_embedding, textual_embedding):
+def test_extract_content_from_modality(
+    multimodal_document, visual_embedding, textual_embedding
+):
     textual = multimodal_document['textual']
     np.testing.assert_array_equal(textual, textual_embedding)
     visual = multimodal_document['visual']

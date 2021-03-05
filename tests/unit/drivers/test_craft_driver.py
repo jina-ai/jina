@@ -22,7 +22,6 @@ class MockCrafter(BaseCrafter):
 
 
 class SimpleCraftDriver(CraftDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -43,7 +42,9 @@ def test_valid_document(craft_driver):
     valid_document = Document(content='valid')
     docs = DocumentSet([valid_document])
     craft_driver._apply_all(docs)
-    np.testing.assert_equal(NdArray(valid_document.blob).value, np.array([0.0, 0.0, 0.0]))
+    np.testing.assert_equal(
+        NdArray(valid_document.blob).value, np.array([0.0, 0.0, 0.0])
+    )
     assert valid_document.weight == 10
 
 

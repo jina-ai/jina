@@ -3,7 +3,12 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable, Tuple
 
-from . import BaseExecutableDriver, QuerySetReader, FlatRecursiveMixin, ContextAwareRecursiveMixin
+from . import (
+    BaseExecutableDriver,
+    QuerySetReader,
+    FlatRecursiveMixin,
+    ContextAwareRecursiveMixin,
+)
 from ..types.document import Document
 from ..types.score import NamedScore
 
@@ -15,18 +20,15 @@ class BaseSearchDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`craft` by default """
 
     def __init__(
-            self,
-            executor: str = None,
-            method: str = 'query',
-            traversal_paths: Tuple[str] = ('r', 'c'),
-            *args,
-            **kwargs):
+        self,
+        executor: str = None,
+        method: str = 'query',
+        traversal_paths: Tuple[str] = ('r', 'c'),
+        *args,
+        **kwargs,
+    ):
         super().__init__(
-            executor,
-            method,
-            traversal_paths=traversal_paths,
-            *args,
-            **kwargs
+            executor, method, traversal_paths=traversal_paths, *args, **kwargs
         )
 
 
@@ -49,7 +51,13 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
             - K is the top-k
     """
 
-    def __init__(self, is_update: bool = True, traversal_paths: Tuple[str] = ('m'), *args, **kwargs):
+    def __init__(
+        self,
+        is_update: bool = True,
+        traversal_paths: Tuple[str] = ('m'),
+        *args,
+        **kwargs,
+    ):
         """Construct the driver.
 
         :param is_update: when set to true the retrieved docs are merged into current message;
@@ -61,9 +69,13 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_update = is_update
 
-    def _apply_all(self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs) -> None:
+    def _apply_all(
+        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+    ) -> None:
         for docs in doc_sequences:
-            miss_idx = []  #: missed hit results, some search may not end with results. especially in shards
+            miss_idx = (
+                []
+            )  #: missed hit results, some search may not end with results. especially in shards
             for idx, retrieved_doc in enumerate(docs):
                 serialized_doc = self.exec_fn(retrieved_doc.id)
                 if serialized_doc:
@@ -80,10 +92,11 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
 
 
 class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
-    """Fill in the embedding by their document id.
-    """
+    """Fill in the embedding by their document id."""
 
-    def __init__(self, executor: str = None, method: str = 'query_by_key', *args, **kwargs):
+    def __init__(
+        self, executor: str = None, method: str = 'query_by_key', *args, **kwargs
+    ):
         super().__init__(executor, method, *args, **kwargs)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
@@ -93,8 +106,7 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
 
 
 class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
-    """Extract embeddings from the request for the executor to query.
-    """
+    """Extract embeddings from the request for the executor to query."""
 
     def __init__(self, top_k: int = 50, fill_embedding: bool = False, *args, **kwargs):
         """Construct the driver.
@@ -117,18 +129,23 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
 
         fill_fn = getattr(self.exec, 'query_by_key', None)
         if self._fill_embedding and not fill_fn:
-            self.logger.warning(f'"fill_embedding=True" but {self.exec} does not have "query_by_key" method')
+            self.logger.warning(
+                f'"fill_embedding=True" but {self.exec} does not have "query_by_key" method'
+            )
 
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
 
         op_name = self.exec.__class__.__name__
         for doc, topks, scores in zip(doc_pts, idx, dist):
 
-            topk_embed = fill_fn(topks) if (self._fill_embedding and fill_fn) else [None] * len(topks)
+            topk_embed = (
+                fill_fn(topks)
+                if (self._fill_embedding and fill_fn)
+                else [None] * len(topks)
+            )
             for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
                 m = Document(id=numpy_match_id)
-                m.score = NamedScore(op_name=op_name,
-                                     value=score)
+                m.score = NamedScore(op_name=op_name, value=score)
                 r = doc.matches.append(m)
                 if vec is not None:
                     r.embedding = vec

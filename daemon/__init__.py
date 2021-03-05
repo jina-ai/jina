@@ -18,6 +18,7 @@ daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
 def _get_app():
     from .api.endpoints import router, flow, pod, pea, logs, workspace
+
     app = FastAPI(
         title='JinaD (Daemon)',
         description='REST interface for managing distributed Jina',
@@ -46,7 +47,7 @@ def _get_app():
             {
                 'name': 'workspaces',
                 'description': 'API to manage Workspaces',
-            }
+            },
         ],
     )
     app.add_middleware(
@@ -78,14 +79,17 @@ def _write_openapi_schema(filename='daemon.json'):
 
 
 def _start_uvicorn(app: 'FastAPI'):
-    config = Config(app=app,
-                    host=jinad_args.host,
-                    port=jinad_args.port_expose,
-                    loop='uvloop',
-                    log_level='error')
+    config = Config(
+        app=app,
+        host=jinad_args.host,
+        port=jinad_args.port_expose,
+        loop='uvloop',
+        log_level='error',
+    )
     server = Server(config=config)
     server.run()
     from jina import __stop_msg__
+
     daemon_logger.success(__stop_msg__)
 
 
@@ -93,8 +97,13 @@ def _start_fluentd():
     daemon_logger.info('starting fluentd...')
     cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
     try:
-        fluentd_proc = subprocess.Popen(['fluentd', '-c', cfg], stdout=subprocess.PIPE, stdin=subprocess.PIPE,
-                                        bufsize=0, universal_newlines=True)
+        fluentd_proc = subprocess.Popen(
+            ['fluentd', '-c', cfg],
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            bufsize=0,
+            universal_newlines=True,
+        )
         for line in fluentd_proc.stdout:
             daemon_logger.debug(f'fluentd: {line.strip()}')
     except FileNotFoundError:

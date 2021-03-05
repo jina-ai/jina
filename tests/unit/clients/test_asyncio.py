@@ -18,7 +18,9 @@ async def test_asyncio_req_generator():
         for doc in data:
             yield doc
 
-    generator = request_generator(input_function(), request_size=REQUEST_SIZE, mode=RequestType.INDEX)
+    generator = request_generator(
+        input_function(), request_size=REQUEST_SIZE, mode=RequestType.INDEX
+    )
     i = 0
     async for req in generator:
         i += 1

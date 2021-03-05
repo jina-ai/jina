@@ -12,9 +12,13 @@ flow_yml = os.path.join(cur_dir, 'flow.yml')
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-@pytest.mark.parametrize('encoder_needs, indexer_needs, indexer_method',
-                         [('crafter', 'encoder', 'add'), ('gateway', '[encoder, crafter]', 'needs')])
-def test_flow(docker_compose, tmpdir, mocker, encoder_needs, indexer_needs, indexer_method):
+@pytest.mark.parametrize(
+    'encoder_needs, indexer_needs, indexer_method',
+    [('crafter', 'encoder', 'add'), ('gateway', '[encoder, crafter]', 'needs')],
+)
+def test_flow(
+    docker_compose, tmpdir, mocker, encoder_needs, indexer_needs, indexer_method
+):
     text = 'cats rules'
 
     def validate_output(resp):

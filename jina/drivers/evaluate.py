@@ -30,12 +30,14 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     :param **kwargs:
     """
 
-    def __init__(self,
-                 executor: Optional[str] = None,
-                 method: str = 'evaluate',
-                 running_avg: bool = False,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        executor: Optional[str] = None,
+        method: str = 'evaluate',
+        running_avg: bool = False,
+        *args,
+        **kwargs,
+    ):
         super().__init__(executor, method, *args, **kwargs)
         self._running_avg = running_avg
 
@@ -45,30 +47,30 @@ class BaseEvaluateDriver(BaseExecutableDriver):
         :param *args: *args for _traverse_apply
         :param **kwargs: **kwargs for _traverse_apply
         """
-        docs_groundtruths = DocumentGroundtruthSequence([
-            DocGroundtruthPair(doc, groundtruth)
-            for doc, groundtruth
-            in zip(self.req.docs, self.req.groundtruths)
-        ])
+        docs_groundtruths = DocumentGroundtruthSequence(
+            [
+                DocGroundtruthPair(doc, groundtruth)
+                for doc, groundtruth in zip(self.req.docs, self.req.groundtruths)
+            ]
+        )
         traversal_result = docs_groundtruths.traverse_flatten(self._traversal_paths)
         self._apply_all(traversal_result, *args, **kwargs)
 
-    def _apply_all(
-            self,
-            docs: Iterator['DocGroundtruthPair'],
-            *args,
-            **kwargs
-    ) -> None:
+    def _apply_all(self, docs: Iterator['DocGroundtruthPair'], *args, **kwargs) -> None:
         for doc_groundtruth in docs:
             doc = doc_groundtruth.doc
             groundtruth = doc_groundtruth.groundtruth
             evaluation = doc.evaluations.add()
-            evaluation.value = self.exec_fn(self.extract(doc), self.extract(groundtruth))
+            evaluation.value = self.exec_fn(
+                self.extract(doc), self.extract(groundtruth)
+            )
             if self._running_avg:
                 evaluation.value = self.exec.mean
 
             if getattr(self.exec, 'eval_at', None):
-                evaluation.op_name = f'{self.exec.__class__.__name__}@{self.exec.eval_at}'
+                evaluation.op_name = (
+                    f'{self.exec.__class__.__name__}@{self.exec.eval_at}'
+                )
             else:
                 evaluation.op_name = self.exec.__class__.__name__
             evaluation.ref_id = groundtruth.id
@@ -95,10 +97,7 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
     :param **kwargs: **kwargs for super
     """
 
-    def __init__(self,
-                 field: str,
-                 *args,
-                 **kwargs):
+    def __init__(self, field: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.field = field
 
@@ -126,10 +125,14 @@ class RankEvaluateDriver(BaseEvaluateDriver):
     """
 
     @deprecated_alias(field=('fields', 0))
-    def __init__(self,
-                 fields: Union[str, Tuple[str]] = ('id',),  # str maintained for backwards compatibility
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        fields: Union[str, Tuple[str]] = (
+            'id',
+        ),  # str maintained for backwards compatibility
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.fields = fields
 
@@ -161,7 +164,10 @@ class RankEvaluateDriver(BaseEvaluateDriver):
             #  match. See `pseudo_match` in helloworld/helper.py _get_groundtruths
             ret = list(np.array(r).flat)
         else:
-            ret = [tuple(dunder_get(x, field) for field in self.fields) for x in doc.matches]
+            ret = [
+                tuple(dunder_get(x, field) for field in self.fields)
+                for x in doc.matches
+            ]
 
         return ret
 
@@ -208,7 +214,9 @@ class LoadGroundTruthDriver(KVSearchDriver):
         :param args: unused
         :param kwargs: unused
         """
-        miss_idx = []  #: missed hit results, some documents may not have groundtruth and thus will be removed
+        miss_idx = (
+            []
+        )  #: missed hit results, some documents may not have groundtruth and thus will be removed
         for idx, doc in enumerate(self.docs):
             serialized_groundtruth = self.exec_fn(doc.id)
             if serialized_groundtruth:

@@ -8,9 +8,7 @@ from jina.executors.decorators import batching
 
 
 class DummyEncoder(BaseEncoder):
-    def __init__(self,
-                 *args,
-                 **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @batching(batch_size=1)

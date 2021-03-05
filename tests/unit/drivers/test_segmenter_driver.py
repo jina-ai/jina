@@ -17,15 +17,21 @@ class MockSegmenter(BaseSegmenter):
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         if text == 'valid':
             # length, parent_id and id are protected keys that won't affect the segments
-            return [{'blob': np.array([0.0, 0.0, 0.0]), 'weight': 0.0, 'mime_type': 'text/plain', 'tags': {'id': 3}},
-                    {'blob': np.array([1.0, 1.0, 1.0]), 'weight': 1.0, 'tags': {'id': 4}},
-                    {'blob': np.array([2.0, 2.0, 2.0]), 'weight': 2.0, 'tags': {'id': 5}}]
+            return [
+                {
+                    'blob': np.array([0.0, 0.0, 0.0]),
+                    'weight': 0.0,
+                    'mime_type': 'text/plain',
+                    'tags': {'id': 3},
+                },
+                {'blob': np.array([1.0, 1.0, 1.0]), 'weight': 1.0, 'tags': {'id': 4}},
+                {'blob': np.array([2.0, 2.0, 2.0]), 'weight': 2.0, 'tags': {'id': 5}},
+            ]
         else:
             return [{'non_existing_key': 1}]
 
 
 class SimpleSegmentDriver(SegmentDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -50,21 +56,21 @@ def test_segment_driver():
     assert valid_doc.chunks[0].tags['id'] == 3
     assert valid_doc.chunks[0].parent_id == valid_doc.id
     np.testing.assert_equal(valid_doc.chunks[0].blob, np.array([0.0, 0.0, 0.0]))
-    assert valid_doc.chunks[0].weight == 0.
+    assert valid_doc.chunks[0].weight == 0.0
     assert valid_doc.chunks[0].length == 3
     assert valid_doc.chunks[0].mime_type == 'text/plain'
 
     assert valid_doc.chunks[1].tags['id'] == 4
     assert valid_doc.chunks[1].parent_id == valid_doc.id
     np.testing.assert_equal(valid_doc.chunks[1].blob, np.array([1.0, 1.0, 1.0]))
-    assert valid_doc.chunks[1].weight == 1.
+    assert valid_doc.chunks[1].weight == 1.0
     assert valid_doc.chunks[1].length == 3
     assert valid_doc.chunks[1].mime_type == 'image/png'
 
     assert valid_doc.chunks[2].tags['id'] == 5
     assert valid_doc.chunks[2].parent_id == valid_doc.id
     np.testing.assert_equal(valid_doc.chunks[2].blob, np.array([2.0, 2.0, 2.0]))
-    assert valid_doc.chunks[2].weight == 2.
+    assert valid_doc.chunks[2].weight == 2.0
     assert valid_doc.chunks[2].length == 3
     assert valid_doc.chunks[2].mime_type == 'image/png'
 
