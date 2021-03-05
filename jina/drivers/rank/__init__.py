@@ -1,9 +1,7 @@
-from typing import Tuple, Optional
-
-import numpy as np
+from typing import Tuple, Optional, Iterable
 
 from .. import BaseExecutableDriver, FlatRecursiveMixin
-from ...types.document import Document
+from ...types.sets import MatchSet
 from ...types.score import NamedScore
 
 if False:
@@ -68,23 +66,29 @@ class Matches2DocRankDriver(BaseRankDriver):
             query_meta = doc.get_attrs(*self._exec_query_keys) if self._exec_query_keys else None
 
             matches = doc.matches
-            old_match_scores = {match.id: match.score.value for match in matches}
-            match_meta = {
-                match.id: match.get_attrs(*self._exec_match_keys) for match in matches
-            } if self._exec_match_keys else None
+            num_matches = len(matches)
+            old_match_scores = [match.score.value for match in matches]
+            match_meta = [
+                match.get_attrs(*self._exec_match_keys) for match in matches
+            ] if self._exec_match_keys else None
 
             # if there are no matches, no need to sort them
             if not old_match_scores:
                 continue
 
-            new_match_scores = self.exec_fn(query_meta, old_match_scores, match_meta)
-            self._sort_matches_in_place(doc, new_match_scores)
+            new_scores = self.exec_fn(old_match_scores, query_meta, match_meta)
+            if num_matches != len(new_scores):
+                msg = f'The number of matches to be scored {num_matches} do not match the number of scores returned ' \
+                      f'by the ranker {self.exec.__name__} '
+                self.logger.error(msg)
+                raise ValueError(msg)
+            self._sort_matches_in_place(matches, new_scores)
 
-    def _sort_matches_in_place(self, context_doc: 'Document', match_scores: 'np.ndarray') -> None:
+    def _sort_matches_in_place(self, matches: 'MatchSet', match_scores: Iterable[float]) -> None:
         op_name = self.exec.__class__.__name__
-        cm = context_doc.matches
-        cm.build()
-        for match_id, score in match_scores:
-            cm[match_id].score = NamedScore(value=score, op_name=op_name, ref_id=context_doc.id)
+        ref_doc_id = matches._ref_doc.id
 
-        cm.sort(key=lambda x: x.score.value, reverse=True)
+        for match, score in zip(matches, match_scores):
+            match.score = NamedScore(value=score, op_name=op_name, ref_id=ref_doc_id)
+
+        matches.sort(key=lambda x: x.score.value, reverse=True)

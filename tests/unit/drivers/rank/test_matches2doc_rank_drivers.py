@@ -25,15 +25,12 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
     def __init__(self, *args, **kwargs):
         super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
 
-    def score(self, query_meta, old_match_scores, match_meta):
+    def score(self, old_match_scores, query_meta, match_meta):
         new_scores = [
-            (match_id, - abs(match_meta[match_id]['length'] - query_meta['length']))
-            for match_id, old_score in old_match_scores.items()
+            - abs(m['length'] - query_meta['length'])
+            for m in match_meta
         ]
-        return np.array(
-            new_scores,
-            dtype=[(self.COL_MATCH_ID, np.object), (self.COL_SCORE, np.float64)],
-        )
+        return new_scores
 
 
 def create_document_to_score():

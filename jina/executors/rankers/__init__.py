@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Optional, Sequence, Tuple
+from typing import Dict, Optional, Sequence, Iterable, Tuple
 
 import numpy as np
 
@@ -70,7 +70,7 @@ class Chunk2DocRanker(BaseRanker):
     def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict, *args, **kwargs) -> float:
         """
         Given a set of queries (that may correspond to the chunks of a root level query) and a set of matches
-        corresping to the same parent id, compute the matching score of the common parent of the set of matches.
+        corresponding to the same parent id, compute the matching score of the common parent of the set of matches.
         Returns a score corresponding to the score of the parent document of the matches in `match_idx`
 
         :param match_idx: A [N x 4] numpy ``ndarray``, column-wise:
@@ -103,13 +103,13 @@ class Match2DocRanker(BaseRanker):
     COL_MATCH_ID = 'match_doc_chunk_id'
     COL_SCORE = 'score'
 
-    def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':
+    def score(self, old_match_scores: Iterable[float], query_meta: Dict, match_meta: Iterable[Dict]) -> Iterable[float]:
         """
-        Calculates the new scores for matches and returns them. Returns a `np.ndarray` in the shape of [N x 2] where
-        `N` is the length of the `old_match_scores`. Semantic: [[match_id, new_score]]
+        Calculates the new scores for matches and returns them. Returns an iterable of the scores to be assined to the matches.
+        The returned scores need to be returned in the same order as the input `:param old_match_scores`.
 
+        :param old_match_scores: Contains old scores in a list
         :param query_meta: Dictionary containing all the query meta information requested by the `required_keys` class_variable.
-        :param old_match_scores: Contains old scores in the format {match_id: score}.
-        :param match_meta: Dictionary containing all the matches meta information requested by the `required_keys` class_variable. Format: {match_id: {attribute: attribute_value}}e.g.{5: {"length": 3}}
+        :param match_meta: List containing all the matches meta information requested by the `required_keys` class_variable. Sorted in the same way as `old_match_scores`
         """
         raise NotImplementedError
