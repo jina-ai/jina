@@ -1,11 +1,12 @@
 from typing import Iterable
 
 from . import Document
+from .traversable import Traversable
 
 __all__ = ['DocGroundtruthPair']
 
 
-class DocGroundtruthPair:
+class DocGroundtruthPair(Traversable):
     """
     Helper class to expose common interface to the traversal logic of the BaseExecutable Driver.
     It is important to note that it checks the matching structure of `docs` and `groundtruths`. It is important while

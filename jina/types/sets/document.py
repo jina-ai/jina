@@ -1,5 +1,6 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple
+from typing import Union, Iterable, Tuple, Sequence
+
 
 import numpy as np
 
@@ -8,12 +9,17 @@ from ...logging import default_logger
 
 try:
     # when protobuf using Cpp backend
-    from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
+    from google.protobuf.pyext._message import (
+        RepeatedCompositeContainer as RepeatedContainer,
+    )
 except:
     # when protobuf using Python backend
-    from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
+    from google.protobuf.internal.containers import (
+        RepeatedCompositeFieldContainer as RepeatedContainer,
+    )
 
 from ...proto.jina_pb2 import DocumentProto
+from .traversable import TraversableSequence
 
 if False:
     from ..document import Document
@@ -21,7 +27,7 @@ if False:
 __all__ = ['DocumentSet']
 
 
-class DocumentSet(MutableSequence):
+class DocumentSet(TraversableSequence, MutableSequence):
     """
     :class:`DocumentSet` is a mutable sequence of :class:`Document`.
     It gives an efficient view of a list of Document. One can iterate over it like
@@ -31,7 +37,7 @@ class DocumentSet(MutableSequence):
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
-    def __init__(self, docs_proto: Union['RepeatedContainer', Iterable['Document']]):
+    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
         """Set constructor method."""
         super().__init__()
         self._docs_proto = docs_proto
@@ -62,11 +68,13 @@ class DocumentSet(MutableSequence):
 
     def __iter__(self):
         from ..document import Document
+
         for d in self._docs_proto:
             yield Document(d)
 
     def __getitem__(self, item):
         from ..document import Document
+
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
@@ -133,46 +141,6 @@ class DocumentSet(MutableSequence):
         """Sort the list of :class:`DocumentSet`."""
         self._docs_proto.sort(*args, **kwargs)
 
-    def traverse(self, traversal_paths: Iterable[str]) -> 'DocumentSet':
-        """
-        Return a DocumentSet that traverses this :class:`DocumentSet` object according to the
-        ``traversal_paths``.
-
-        :param traversal_paths: a list of string that represents the traversal path
-
-
-        Example on ``traversal_paths``:
-
-            - [`r`]: docs in this DocumentSet
-            - [`m`]: all match-documents at adjacency 1
-            - [`c`]: all child-documents at granularity 1
-            - [`cc`]: all child-documents at granularity 2
-            - [`mm`]: all match-documents at adjacency 2
-            - [`cm`]: all match-document at adjacency 1 and granularity 1
-            - [`r`, `c`]: docs in this DocumentSet and all child-documents at granularity 1
-
-        """
-
-        def _traverse(docs: 'DocumentSet', path: str):
-            if path:
-                loc = path[0]
-                if loc == 'r':
-                    yield from _traverse(docs, path[1:])
-                elif loc == 'm':
-                    for d in docs:
-                        yield from _traverse(d.matches, path[1:])
-                elif loc == 'c':
-                    for d in docs:
-                        yield from _traverse(d.chunks, path[1:])
-            else:
-                yield from docs
-
-        def _traverse_all():
-            for p in traversal_paths:
-                yield from _traverse(self, p)
-
-        return DocumentSet(_traverse_all())
-
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
         """Return all embeddings from every document in this set as a ndarray
@@ -211,7 +179,8 @@ class DocumentSet(MutableSequence):
 
         if bad_docs and docs_pts:
             default_logger.warning(
-                f'found {len(bad_docs)} no-{attr} docs at granularity {docs_pts[0].granularity}')
+                f'found {len(bad_docs)} no-{attr} docs at granularity {docs_pts[0].granularity}'
+            )
 
         return contents, DocumentSet(docs_pts)
 
@@ -222,17 +191,21 @@ class DocumentSet(MutableSequence):
     def new(self) -> 'Document':
         """Create a new empty document appended to the end of the set."""
         from ..document import Document
+
         return self.append(Document())
 
     def __str__(self):
         from ..document import Document
+
         content = ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
         if len(self._docs_proto) > 3:
             content += f'in total {len(self._docs_proto)} items'
         return content
 
     def __repr__(self):
-        content = ' '.join(f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items())
+        content = ' '.join(
+            f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items()
+        )
         content += f' at {id(self)}'
         content = content.strip()
         return f'<{typename(self)} {content}>'

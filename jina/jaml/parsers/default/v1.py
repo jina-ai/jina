@@ -6,6 +6,7 @@ from ... import JAMLCompatible, JAML
 
 class V1Parser(VersionedYAMLParser):
     """V1 default parser, used as the default parser for objects."""
+
     version = '1'  # the version number this parser designed for
 
     def parse(self, cls: Type['JAMLCompatible'], data: Dict) -> 'JAMLCompatible':

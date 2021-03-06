@@ -4,10 +4,14 @@ from typing import Iterable, Union, Dict
 
 try:
     # when protobuf using Cpp backend
-    from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
+    from google.protobuf.pyext._message import (
+        RepeatedCompositeContainer as RepeatedContainer,
+    )
 except:
     # when protobuf using Python backend
-    from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
+    from google.protobuf.internal.containers import (
+        RepeatedCompositeFieldContainer as RepeatedContainer,
+    )
 
 
 from ..querylang import QueryLang

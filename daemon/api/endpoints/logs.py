@@ -15,22 +15,19 @@ from ...stores.helper import get_workspace_path
 router = APIRouter(tags=['logs'])
 
 
-@router.get(
-    path='/logs/{workspace_id}/{log_id}'
-)
-async def _export_logs(
-        workspace_id: uuid.UUID,
-        log_id: uuid.UUID
-):
+@router.get(path='/logs/{workspace_id}/{log_id}')
+async def _export_logs(workspace_id: uuid.UUID, log_id: uuid.UUID):
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
     if not Path(filepath).is_file():
-        raise HTTPException(status_code=404, detail=f'log file {log_id} not found in workspace {workspace_id}')
+        raise HTTPException(
+            status_code=404,
+            detail=f'log file {log_id} not found in workspace {workspace_id}',
+        )
     else:
         return FileResponse(filepath)
 
 
 class LogStreamingEndpoint(WebSocketEndpoint):
-
     def __init__(self, scope: Scope, receive: Receive, send: Send) -> None:
         super().__init__(scope, receive, send)
         # Accessing path / query params from scope in ASGI
@@ -49,7 +46,9 @@ class LogStreamingEndpoint(WebSocketEndpoint):
         daemon_logger.info(f'{self.client_details} is connected to stream logs!')
 
         if jinad_args.no_fluentd:
-            daemon_logger.warning(f'{self.client_details} asks for logstreaming but fluentd is not available')
+            daemon_logger.warning(
+                f'{self.client_details} asks for logstreaming but fluentd is not available'
+            )
             return
 
         # on connection the fluentd file may not flushed (aka exist) yet
@@ -71,6 +70,7 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
                     if payload:
                         from websockets import ConnectionClosedOK
+
                         try:
                             await websocket.send_json(payload)
                         except ConnectionClosedOK:
@@ -85,5 +85,6 @@ class LogStreamingEndpoint(WebSocketEndpoint):
 
 # TODO: adding websocket in this way do not generate any docs
 #  see: https://github.com/tiangolo/fastapi/issues/1983
-router.add_websocket_route(path='/logstream/{workspace_id}/{log_id}',
-                           endpoint=LogStreamingEndpoint)
+router.add_websocket_route(
+    path='/logstream/{workspace_id}/{log_id}', endpoint=LogStreamingEndpoint
+)

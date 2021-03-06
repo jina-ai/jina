@@ -96,6 +96,7 @@ class NTLogger:
 
 class PrintLogger(NTLogger):
     """Print the message."""
+
     @staticmethod
     def _planify(msg):
         return msg
@@ -117,7 +118,7 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
         'WARNING': 'warning',
         'ERROR': 'error',
         'CRITICAL': 'critical',
-        'SUCCESS': 'notice'
+        'SUCCESS': 'notice',
     }
 
 
@@ -132,25 +133,33 @@ class JinaLogger:
     :param workspace_path: The workspace path where the log will be stored at (only apply to fluentd)
     :returns: an executor object.
     """
+
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
 
-    def __init__(self,
-                 context: str,
-                 name: Optional[str] = None,
-                 log_config: Optional[str] = None,
-                 identity: Optional[str] = None,
-                 workspace_path: Optional[str] = None,
-                 quiet: bool = False,
-                 **kwargs):
+    def __init__(
+        self,
+        context: str,
+        name: Optional[str] = None,
+        log_config: Optional[str] = None,
+        identity: Optional[str] = None,
+        workspace_path: Optional[str] = None,
+        quiet: bool = False,
+        **kwargs,
+    ):
         from .. import __uptime__
+
         if not log_config:
-            log_config = os.getenv('JINA_LOG_CONFIG',
-                                   resource_filename('jina', '/'.join(
-                                       ('resources', 'logging.default.yml'))))
+            log_config = os.getenv(
+                'JINA_LOG_CONFIG',
+                resource_filename(
+                    'jina', '/'.join(('resources', 'logging.default.yml'))
+                ),
+            )
 
         if quiet or os.getenv('JINA_LOG_CONFIG', None) == 'QUIET':
-            log_config = resource_filename('jina', '/'.join(
-                ('resources', 'logging.quiet.yml')))
+            log_config = resource_filename(
+                'jina', '/'.join(('resources', 'logging.quiet.yml'))
+            )
 
         if not identity:
             identity = os.getenv('JINA_LOG_ID', None)
@@ -168,10 +177,12 @@ class JinaLogger:
         if workspace_path is None:
             workspace_path = os.getenv('JINA_LOG_WORKSPACE', '/tmp/jina/')
 
-        context_vars = {'name': name,
-                        'uptime': __uptime__,
-                        'context': context,
-                        'workspace_path': workspace_path}
+        context_vars = {
+            'name': name,
+            'uptime': __uptime__,
+            'context': context,
+            'workspace_path': workspace_path,
+        }
         if identity:
             context_vars['log_id'] = identity
 
@@ -180,7 +191,11 @@ class JinaLogger:
         # note logger.success isn't default there
         success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
         logging.addLevelName(success_level, 'SUCCESS')
-        setattr(self.logger, 'success', lambda message: self.logger.log(success_level, message))
+        setattr(
+            self.logger,
+            'success',
+            lambda message: self.logger.log(success_level, message),
+        )
 
         self.info = self.logger.info
         self.critical = self.logger.critical
@@ -226,7 +241,9 @@ class JinaLogger:
             fmt = getattr(formatter, cfg.get('formatter', 'PlainFormatter'))
 
             if h not in self.supported or not cfg:
-                raise ValueError(f'can not find configs for {h}, maybe it is not supported')
+                raise ValueError(
+                    f'can not find configs for {h}, maybe it is not supported'
+                )
 
             handler = None
             if h == 'StreamHandler':
@@ -251,17 +268,23 @@ class JinaLogger:
                     handler = None
                     pass
             elif h == 'FileHandler':
-                handler = logging.FileHandler(cfg['output'].format_map(kwargs), delay=True)
+                handler = logging.FileHandler(
+                    cfg['output'].format_map(kwargs), delay=True
+                )
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
             elif h == 'FluentHandler':
                 from ..importer import ImportExtensions
+
                 with ImportExtensions(required=False, verbose=False):
                     from fluent import asynchandler as fluentasynchandler
                     from fluent.handler import FluentRecordFormatter
 
-                    handler = fluentasynchandler.FluentHandler(cfg['tag'],
-                                                               host=cfg['host'],
-                                                               port=cfg['port'], queue_circular=True)
+                    handler = fluentasynchandler.FluentHandler(
+                        cfg['tag'],
+                        host=cfg['host'],
+                        port=cfg['port'],
+                        queue_circular=True,
+                    )
 
                     cfg['format'].update(kwargs)
                     fmt = FluentRecordFormatter(cfg['format'])

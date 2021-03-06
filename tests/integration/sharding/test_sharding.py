@@ -50,7 +50,7 @@ def get_search_flow(yaml_file, num_shards, uses_after='_merge_matches_topk'):
         shards=num_shards,
         uses_after=uses_after,
         polling='all',
-        timeout_ready='-1'
+        timeout_ready='-1',
     )
     return f
 
@@ -72,17 +72,23 @@ def random_docs(start, end, embed_dim=10):
         for i in range(5):
             c = Document()
             c.id = f'{j:0>16}'
-            d.text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10)).encode('utf8')
+            d.text = ''.join(
+                random.choice(string.ascii_lowercase) for _ in range(10)
+            ).encode('utf8')
             d.embedding = np.random.random([embed_dim])
             d.chunks.append(c)
-        d.text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10)).encode('utf8')
+        d.text = ''.join(
+            random.choice(string.ascii_lowercase) for _ in range(10)
+        ).encode('utf8')
         d.embedding = np.random.random([embed_dim])
         yield d
 
 
 def validate_index_size(expected_count, index_name):
     path = Path(os.environ['JINA_SHARDING_DIR'])
-    index_files = list(path.glob(f'{index_name}.bin')) + list(path.glob(f'*/{index_name}.bin'))
+    index_files = list(path.glob(f'{index_name}.bin')) + list(
+        path.glob(f'*/{index_name}.bin')
+    )
     assert len(index_files) > 0
     actual_count_list = []
     assert len(index_files) > 0
@@ -94,13 +100,11 @@ def validate_index_size(expected_count, index_name):
     assert count_sum == expected_count
 
 
+@pytest.mark.parametrize('num_shards', (1, 2, 3, 10))
 @pytest.mark.parametrize(
-    'num_shards', (1, 2, 3, 10)
+    'index_conf, index_names',
+    [['index.yml', ['kvidx', 'vecidx']], ['index_vector.yml', ['vecidx']]],
 )
-@pytest.mark.parametrize('index_conf, index_names', [
-    ['index.yml', ['kvidx', 'vecidx']],
-    ['index_vector.yml', ['vecidx']]
-])
 def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
     def _validate_result_factory(num_matches):
         def _validate_results(resp):
@@ -111,43 +115,28 @@ def test_delete_vector(config, mocker, index_conf, index_names, num_shards):
         return _validate_results
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(
-            inputs=random_docs(0, 201),
-            request_size=100
-        )
+        index_flow.index(inputs=random_docs(0, 201), request_size=100)
 
     for index_name in index_names:
         validate_index_size(201, index_name)
 
     with get_delete_flow(index_conf, num_shards) as index_flow:
-        index_flow.delete(
-            ids=[d.id for d in random_docs(0, 30)],
-            request_size=100
-        )
+        index_flow.delete(ids=[d.id for d in random_docs(0, 30)], request_size=100)
 
     with get_delete_flow(index_conf, num_shards) as index_flow:
-        index_flow.delete(
-            ids=[d.id for d in random_docs(100, 150)],
-            request_size=100
-        )
+        index_flow.delete(ids=[d.id for d in random_docs(100, 150)], request_size=100)
 
     for index_name in index_names:
         validate_index_size(121, index_name)
 
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards) as search_flow:
-        search_flow.search(
-            inputs=random_docs(28, 35),
-            on_done=mock,
-            request_size=100
-        )
+        search_flow.search(inputs=random_docs(28, 35), on_done=mock, request_size=100)
     mock.assert_called_once()
     validate_callback(mock, _validate_result_factory(10))
 
 
-@pytest.mark.parametrize(
-    'num_shards', (1, 2, 3, 10)
-)
+@pytest.mark.parametrize('num_shards', (1, 2, 3, 10))
 def test_delete_kv(config, mocker, num_shards):
     index_conf = 'index_kv.yml'
     index_name = 'kvidx'
@@ -159,41 +148,33 @@ def test_delete_kv(config, mocker, num_shards):
         return _validate_results
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(
-            inputs=random_docs(0, 201),
-            request_size=100)
+        index_flow.index(inputs=random_docs(0, 201), request_size=100)
 
     validate_index_size(201, index_name)
 
     with get_delete_flow(index_conf, num_shards) as delete_flow:
-        delete_flow.delete(
-            ids=[d.id for d in random_docs(0, 30)],
-            request_size=100)
+        delete_flow.delete(ids=[d.id for d in random_docs(0, 30)], request_size=100)
 
     with get_delete_flow(index_conf, num_shards) as delete_flow:
-        delete_flow.delete(
-            ids=[d.id for d in random_docs(100, 150)],
-            request_size=100)
+        delete_flow.delete(ids=[d.id for d in random_docs(100, 150)], request_size=100)
 
     validate_index_size(121, index_name)
 
     mock = mocker.Mock()
     with get_search_flow(index_conf, num_shards, '_merge_root') as search_flow:
-        search_flow.search(
-            inputs=random_docs(28, 35),
-            on_done=mock,
-            request_size=100)
+        search_flow.search(inputs=random_docs(28, 35), on_done=mock, request_size=100)
     mock.assert_called_once()
     validate_callback(mock, _validate_result_factory(5))
 
 
 @pytest.mark.parametrize(
-    'num_shards', (1, 2, 3, 10),
+    'num_shards',
+    (1, 2, 3, 10),
 )
-@pytest.mark.parametrize('index_conf, index_names', [
-    ['index.yml', ['kvidx', 'vecidx']],
-    ['index_vector.yml', ['vecidx']]
-])
+@pytest.mark.parametrize(
+    'index_conf, index_names',
+    [['index.yml', ['kvidx', 'vecidx']], ['index_vector.yml', ['vecidx']]],
+)
 def test_update_vector(config, mocker, index_conf, index_names, num_shards):
     docs_before = list(random_docs(0, 201))
     docs_updated = list(random_docs(0, 210))
@@ -213,17 +194,13 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
         return _validate_results
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(
-            inputs=docs_before,
-            request_size=100)
+        index_flow.index(inputs=docs_before, request_size=100)
 
     for index_name in index_names:
         validate_index_size(201, index_name)
 
     with get_update_flow(index_conf, num_shards) as update_flow:
-        update_flow.update(
-            inputs=docs_updated,
-            request_size=100)
+        update_flow.update(inputs=docs_updated, request_size=100)
 
     for index_name in index_names:
         validate_index_size(201, index_name)
@@ -231,17 +208,12 @@ def test_update_vector(config, mocker, index_conf, index_names, num_shards):
     mock = mocker.Mock()
 
     with get_search_flow(index_conf, num_shards) as search_flow:
-        search_flow.search(
-            inputs=random_docs(0, 1),
-            on_done=mock,
-            request_size=100)
+        search_flow.search(inputs=random_docs(0, 1), on_done=mock, request_size=100)
     mock.assert_called_once()
     validate_callback(mock, _validate_result_factory())
 
 
-@pytest.mark.parametrize(
-    'num_shards', (1, 2, 3, 10)
-)
+@pytest.mark.parametrize('num_shards', (1, 2, 3, 10))
 def test_update_kv(config, mocker, num_shards):
     index_conf = 'index_kv.yml'
     index_name = 'kvidx'
@@ -277,29 +249,24 @@ def test_update_kv(config, mocker, num_shards):
         assert h in hash_set_updated
 
     with get_index_flow(index_conf, num_shards) as index_flow:
-        index_flow.index(
-            inputs=docs_before,
-            request_size=100)
+        index_flow.index(inputs=docs_before, request_size=100)
 
     validate_index_size(201, index_name)
 
     with get_update_flow(index_conf, num_shards) as update_flow:
-        update_flow.update(
-            inputs=docs_updated,
-            request_size=100)
+        update_flow.update(inputs=docs_updated, request_size=100)
 
     validate_index_size(201, index_name)
 
     for start, end, validate_results in (
-            (0, 100, _validate_results_1),
-            (100, 200, _validate_results_2),
-            (200, 201, _validate_results_3)
+        (0, 100, _validate_results_1),
+        (100, 200, _validate_results_2),
+        (200, 201, _validate_results_3),
     ):
         mock = mocker.Mock()
         with get_search_flow(index_conf, num_shards, '_merge_root') as search_flow:
             search_flow.search(
-                inputs=random_docs(start, end),
-                on_done=mock,
-                request_size=100)
+                inputs=random_docs(start, end), on_done=mock, request_size=100
+            )
         validate_callback(mock, validate_results)
         mock.assert_called_once()

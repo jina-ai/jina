@@ -10,8 +10,9 @@ from jina.types.ndarray.generic import NdArray
 
 
 class MockIndexer(BaseKVIndexer):
-
-    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+    def add(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
         pass
 
     def query(self, key: str) -> Optional[bytes]:
@@ -42,9 +43,13 @@ class MockIndexer(BaseKVIndexer):
 
 
 class SimpleKVSearchDriver(KVSearchDriver):
-
-    def __init__(self, traversal_paths=['r'], *args, **kwargs):
+    def __init__(self, docs=None, traversal_paths=['r'], *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
+        self._docs = docs
+
+    @property
+    def docs(self):
+        return self._docs
 
     @property
     def exec_fn(self):
@@ -86,7 +91,7 @@ def document_with_matches_on_chunks():
             for m in range(5):
                 with Document() as match:
                     match.id = str(m + 2) * 16
-                    match.score.value = 1.
+                    match.score.value = 1.0
                 chunk.matches.append(match)
         doc.chunks.append(chunk)
     return doc
@@ -103,7 +108,7 @@ def test_vectorsearch_driver_mock_indexer_apply_all(document):
     for chunk in dcs:
         assert chunk.embedding is None
 
-    driver._apply_all(document.chunks)
+    driver._apply_all([DocumentSet(document.chunks)])
 
     dcs = list(document.chunks)
 
@@ -115,18 +120,18 @@ def test_vectorsearch_driver_mock_indexer_apply_all(document):
         np.testing.assert_equal(embedding_array, np.array([chunk.id]))
 
 
-def test_vectorsearch_driver_mock_indexer_traverse_apply(document):
-    driver = SimpleKVSearchDriver()
-
-    executor = MockIndexer()
-    driver.attach(executor=executor, runtime=None)
-
+def test_vectorsearch_driver_mock_indexer(document):
     dcs = list(document.chunks)
     assert len(dcs) == 5
     for chunk in dcs:
         assert chunk.embedding is None
 
-    driver._traverse_apply(document.chunks)
+    driver = SimpleKVSearchDriver(docs=DocumentSet([document]), traversal_paths=('c',))
+
+    executor = MockIndexer()
+    driver.attach(executor=executor, runtime=None)
+
+    driver()
 
     # chunk idx: 5 had no matched and is removed as missing idx
     dcs = list(document.chunks)
@@ -137,12 +142,16 @@ def test_vectorsearch_driver_mock_indexer_traverse_apply(document):
         np.testing.assert_equal(embedding_array, np.array([chunk.id]))
 
 
-def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(document_with_matches_on_chunks):
-    driver = SimpleKVSearchDriver(traversal_paths=('cm',))
+def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(
+    document_with_matches_on_chunks,
+):
+    driver = SimpleKVSearchDriver(
+        docs=DocumentSet([document_with_matches_on_chunks]), traversal_paths=('cm',)
+    )
     executor = MockIndexer()
     driver.attach(executor=executor, runtime=None)
 
-    driver._traverse_apply(DocumentSet([document_with_matches_on_chunks]))
+    driver()
 
     dcs = list(document_with_matches_on_chunks.chunks)
     assert len(dcs) == 1

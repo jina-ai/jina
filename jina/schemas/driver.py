@@ -8,6 +8,6 @@ schema_all_drivers = {
                 {'$ref': f'#/definitions/{k}'} for k in IMPORTED.schema_drivers.keys()
             ]
         },
-        'minItems': 1
+        'minItems': 1,
     }
 }

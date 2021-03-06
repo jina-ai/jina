@@ -76,13 +76,30 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v1
         with:
           python-version: 3.7
       - id: file_changes
         uses: jitterbit/get-changed-files@v1
       - name: docstring check with darglint and pydocstyle
         run: ./scripts/docstrings_lint.sh
+        env:
+          CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
+
+  check-black:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - id: file_changes
+        uses: jitterbit/get-changed-files@v1
+      - name: check black
+        run: ./scripts/black.sh
         env:
           CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
 
@@ -111,7 +128,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   core-test:
-    needs: [prep-testbed, commit-lint, lint-flake-8]
+    needs: [prep-testbed, commit-lint, lint-flake-8, check-docstring, check-black]
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -142,14 +159,14 @@ jobs:
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=180 -v -s ${{ matrix.test-path }}
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
             docker rm -f jinad
           else
             SUB='daemon'
             if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
-              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=180 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             else
-              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=180 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             fi
           fi
           SUB='daemon'

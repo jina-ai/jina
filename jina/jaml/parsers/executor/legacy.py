@@ -10,6 +10,7 @@ from ....executors.compound import CompoundExecutor
 
 class LegacyParser(VersionedYAMLParser):
     """Legacy parser for executor."""
+
     version = 'legacy'  # the version number this parser designed for
 
     @staticmethod
@@ -19,6 +20,7 @@ class LegacyParser(VersionedYAMLParser):
         :param class_: target class from which we want to retrieve arguments
         :return: all the arguments of all the classes from which `class_` inherits
         """
+
         def get_class_arguments(class_):
             """
             :param class_: the class to check
@@ -33,6 +35,7 @@ class LegacyParser(VersionedYAMLParser):
             :param cls: the class to check
             :return: all classes from which cls inherits from
             """
+
             def _accumulate_classes(c, cs):
                 cs.append(c)
                 if cls == object:
@@ -40,14 +43,14 @@ class LegacyParser(VersionedYAMLParser):
                 for base in c.__bases__:
                     _accumulate_classes(base, cs)
                 return cs
-            
+
             classes = []
             _accumulate_classes(cls, classes)
             return set(classes)
 
         all_classes = accumulate_classes(class_)
         args = list(map(lambda x: get_class_arguments(x), all_classes))
-        return set(reduce(lambda x,y: x+y,args))
+        return set(reduce(lambda x, y: x + y, args))
 
     @staticmethod
     def _get_dump_path_from_config(meta_config: Dict):
@@ -67,10 +70,14 @@ class LegacyParser(VersionedYAMLParser):
             if root_name != name:
                 # try to load from the corresponding file as if it was a CompoundExecutor, if the `.bin` does not exist,
                 # we should try to see if from its workspace can be loaded as it may be a `ref_indexer`
-                compound_work_dir = CompoundExecutor.get_component_workspace_from_compound_workspace(root_work_dir,
-                                                                                                     root_name,
-                                                                                                     pea_id)
-                dump_path = BaseExecutor.get_shard_workspace(compound_work_dir, name, pea_id)
+                compound_work_dir = (
+                    CompoundExecutor.get_component_workspace_from_compound_workspace(
+                        root_work_dir, root_name, pea_id
+                    )
+                )
+                dump_path = BaseExecutor.get_shard_workspace(
+                    compound_work_dir, name, pea_id
+                )
                 bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
                 if os.path.exists(bin_dump_path):
                     return bin_dump_path
@@ -110,19 +117,30 @@ class LegacyParser(VersionedYAMLParser):
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
                 tmp_a = a
                 tmp_p = {kk: vv for kk, vv in {**k, **p}.items()}
-                obj = cls(*tmp_a, **tmp_p, metas=data.get('metas', {}), requests=data.get('requests', {}))
+                obj = cls(
+                    *tmp_a,
+                    **tmp_p,
+                    metas=data.get('metas', {}),
+                    requests=data.get('requests', {}),
+                )
             else:
                 # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
-                obj = cls(**data.get('with', {}), metas=data.get('metas', {}), requests=data.get('requests', {}))
+                obj = cls(
+                    **data.get('with', {}),
+                    metas=data.get('metas', {}),
+                    requests=data.get('requests', {}),
+                )
             cls._init_from_yaml = False
 
             # check if the yaml file used to instanciate 'cls' has arguments that are not in 'cls'
             arguments_from_cls = LegacyParser._get_all_arguments(cls)
             arguments_from_yaml = set(data.get('with', {}))
-            difference_set = arguments_from_yaml  - arguments_from_cls
+            difference_set = arguments_from_yaml - arguments_from_cls
             if any(difference_set):
-                obj.logger.warning(f'The arguments {difference_set} defined in the YAML are not expected in the '
-                                   f'class {cls.__name__}')
+                obj.logger.warning(
+                    f'The arguments {difference_set} defined in the YAML are not expected in the '
+                    f'class {cls.__name__}'
+                )
 
             obj.logger.success(f'successfully built {cls.__name__} from a yaml config')
 
@@ -133,7 +151,8 @@ class LegacyParser(VersionedYAMLParser):
             obj.logger.warning(
                 '"metas" config is not found in this yaml file, '
                 'this map is important as it provides an unique identifier when '
-                'persisting the executor on disk.')
+                'persisting the executor on disk.'
+            )
 
         # for compound executor
         if not load_from_dump and 'components' in data:

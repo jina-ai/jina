@@ -10,7 +10,7 @@ schema_requests = {
             'use_default': {
                 'description': 'If set, then inherit from the default `Driver` settings for this type of Executor.',
                 'type': 'boolean',
-                'default': False
+                'default': False,
             },
             'on': {
                 'description': 'Defines how the `Executor` behaves under different types of request',
@@ -21,18 +21,24 @@ schema_requests = {
                         'properties': {
                             'with': {
                                 'type': 'object',
-                                'description': 'The common kwargs that all drivers defined under this Request.'
+                                'description': 'The common kwargs that all drivers defined under this Request.',
                             },
-                            'drivers': {
-                                '$ref': f'#/definitions/Jina::Drivers::All'
-                            }
+                            'drivers': {'$ref': f'#/definitions/Jina::Drivers::All'},
                         },
                         'additionalProperties': False,
-                        'description': f'Defines how the `Executor` behaves under {r_type} request.'
-                    } for r_type in ['Index', 'Train', 'Search', 'Update', 'Delete', 'Control']
+                        'description': f'Defines how the `Executor` behaves under {r_type} request.',
+                    }
+                    for r_type in [
+                        'Index',
+                        'Train',
+                        'Search',
+                        'Update',
+                        'Delete',
+                        'Control',
+                    ]
                 },
-                'additionalProperties': False
+                'additionalProperties': False,
             },
-        }
+        },
     }
 }

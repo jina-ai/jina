@@ -11,10 +11,25 @@ def set_export_api_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    parser.add_argument('--yaml-path', type=str, nargs='*', metavar='PATH',
-                        help='The YAML file path for storing the exported API')
-    parser.add_argument('--json-path', type=str, nargs='*', metavar='PATH',
-                        help='The JSON file path for storing the exported API')
-    parser.add_argument('--schema-path', type=str, nargs='*', metavar='PATH',
-                        help='The JSONSchema file path for storing the exported API')
+    parser.add_argument(
+        '--yaml-path',
+        type=str,
+        nargs='*',
+        metavar='PATH',
+        help='The YAML file path for storing the exported API',
+    )
+    parser.add_argument(
+        '--json-path',
+        type=str,
+        nargs='*',
+        metavar='PATH',
+        help='The JSON file path for storing the exported API',
+    )
+    parser.add_argument(
+        '--schema-path',
+        type=str,
+        nargs='*',
+        metavar='PATH',
+        help='The JSONSchema file path for storing the exported API',
+    )
     return parser

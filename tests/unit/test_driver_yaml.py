@@ -33,19 +33,27 @@ def test_load_yaml1(tmpdir):
 
 
 def test_load_cust_with_driver():
-    a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
+    a = BaseExecutor.load_config(
+        os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')
+    )
     assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
-    p = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
+    p = set_pod_parser().parse_args(
+        ['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')]
+    )
     with Pod(p):
         # will print a cust task_name from the driver when terminate
         pass
 
 
 def test_pod_new_api_from_kwargs():
-    a = BaseExecutor.load_config(os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml'))
+    a = BaseExecutor.load_config(
+        os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')
+    )
     assert a._drivers['ControlRequest'][0].__class__.__name__ == 'MyAwesomeDriver'
 
-    args = set_pod_parser().parse_args(['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')])
+    args = set_pod_parser().parse_args(
+        ['--uses', os.path.join(cur_dir, 'mwu-encoder/mwu_encoder_driver.yml')]
+    )
     with Pod(args):
         # will print a cust task_name from the driver when terminate
         pass
@@ -53,7 +61,9 @@ def test_pod_new_api_from_kwargs():
 
 @pytest.mark.parametrize('random_workspace_name', ['JINA_TEST_EXEC_WITH_DRIVER'])
 def test_load_yaml2(test_metas):
-    a = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-exec-with-driver.yml'))
+    a = BaseExecutor.load_config(
+        os.path.join(cur_dir, 'yaml/test-exec-with-driver.yml')
+    )
     assert len(a._drivers) == 2
     # should be able to auto fill in ControlRequest
     assert 'ControlRequest' in a._drivers
@@ -79,10 +89,12 @@ def test_load_yaml2(test_metas):
         ('executors._merge_eval.yml', 'merge_eval', 6),
         ('executors._merge_matches.yml', 'merge_matches', 6),
         ('executors._pass.yml', 'forward', 6),
-    ]
+    ],
 )
 def test_resource_executor(yaml_path, name, expected):
-    a = BaseExecutor.load_config(resource_filename('jina', '/'.join(('resources', yaml_path))))
+    a = BaseExecutor.load_config(
+        resource_filename('jina', '/'.join(('resources', yaml_path)))
+    )
     assert a.name == name
     assert len(a._drivers) == expected
 

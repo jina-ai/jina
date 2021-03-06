@@ -12,7 +12,9 @@ file_dir = os.path.dirname(__file__)
 sys.path.append(os.path.dirname(file_dir))
 
 
-def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1, start_id=0, embedding=True) -> Iterator['Document']:
+def random_docs(
+    num_docs, chunks_per_doc=5, embed_dim=10, jitter=1, start_id=0, embedding=True
+) -> Iterator['Document']:
     next_chunk_doc_id = start_id + num_docs
     for j in range(num_docs):
         doc_id = start_id + j
@@ -30,7 +32,9 @@ def random_docs(num_docs, chunks_per_doc=5, embed_dim=10, jitter=1, start_id=0, 
             c = Document(id=chunk_doc_id)
             c.text = 'i\'m chunk %d from doc %d' % (chunk_doc_id, doc_id)
             if embedding:
-                c.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
+                c.embedding = np.random.random(
+                    [embed_dim + np.random.randint(0, jitter)]
+                )
             c.tags['parent_id'] = doc_id
             c.tags['id'] = chunk_doc_id
             c.update_content_hash()
@@ -139,7 +143,11 @@ def test_docs_generator(chunks, same_content, nr):
         index_start = 1 + len(list(ids_used))
     else:
         index_start = 1
-    new_docs = list(get_documents(chunks=chunks, same_content=same_content, nr=nr, index_start=index_start))
+    new_docs = list(
+        get_documents(
+            chunks=chunks, same_content=same_content, nr=nr, index_start=index_start
+        )
+    )
     new_ids = set([d.id for d in new_docs])
     assert len(new_ids.intersection(ids_used)) == 0
     check_docs(chunk_content, chunks, same_content, new_docs, ids_used, index_start)

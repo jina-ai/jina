@@ -21,16 +21,17 @@ class DummyEncoder(BaseEncoder):
 @pytest.mark.parametrize('compress_algo', list(CompressAlgo))
 def test_compression(compress_algo, mocker):
     class CompressCheckDriver(BaseControlDriver):
-
         def __call__(self, *args, **kwargs):
             assert self.req._envelope.compression.algorithm == str(compress_algo)
 
     response_mock = mocker.Mock()
 
-    f = (Flow(compress=str(compress_algo))
-         .add(uses='- !CompressCheckDriver {}')
-         .add(name='DummyEncoder', parallel=2)
-         .add(uses='- !CompressCheckDriver {}'))
+    f = (
+        Flow(compress=str(compress_algo))
+        .add(uses='- !CompressCheckDriver {}')
+        .add(name='DummyEncoder', parallel=2)
+        .add(uses='- !CompressCheckDriver {}')
+    )
 
     with f:
         f.index(random_docs(10), on_done=response_mock)
@@ -42,7 +43,7 @@ def test_compression(compress_algo, mocker):
 def test_grpc_gateway_concurrency(rest_api):
     def _validate(req, start, status_codes, durations, index):
         end = time.time()
-        durations[index] = (end - start)
+        durations[index] = end - start
         status_codes[index] = req.status.code
 
     def _request(f, status_codes, durations, index):
@@ -54,9 +55,9 @@ def test_grpc_gateway_concurrency(rest_api):
                 start=start,
                 status_codes=status_codes,
                 durations=durations,
-                index=index
+                index=index,
             ),
-            batch_size=16
+            batch_size=16,
         )
 
     f = Flow(restful=rest_api).add(parallel=2)
@@ -66,9 +67,7 @@ def test_grpc_gateway_concurrency(rest_api):
         status_codes = [None] * concurrency
         durations = [None] * concurrency
         for i in range(concurrency):
-            t = Thread(
-                target=_request, args=(
-                    f, status_codes, durations, i))
+            t = Thread(target=_request, args=(f, status_codes, durations, i))
             threads.append(t)
             t.start()
 

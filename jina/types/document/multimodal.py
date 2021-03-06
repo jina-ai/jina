@@ -17,10 +17,14 @@ class MultimodalDocument(Document):
         - It assumes that every :class:`MultimodalDocument` have at least two chunks.
     """
 
-    def __init__(self, document: Optional[DocumentSourceType] = None,
-                 chunks: Sequence[Document] = None,
-                 modality_content_map: Dict[str, DocumentContentType] = None,
-                 copy: bool = False, **kwargs):
+    def __init__(
+        self,
+        document: Optional[DocumentSourceType] = None,
+        chunks: Sequence[Document] = None,
+        modality_content_map: Dict[str, DocumentContentType] = None,
+        copy: bool = False,
+        **kwargs,
+    ):
         """
 
         :param document: the document to construct from. If ``bytes`` is given
@@ -63,8 +67,8 @@ class MultimodalDocument(Document):
     def is_valid(self) -> bool:
         """A valid :class:`MultimodalDocument` should meet the following requirements:
 
-            - Document should consist at least 2 chunks.
-            - Length of modality is not identical to length of chunks.
+        - Document should consist at least 2 chunks.
+        - Length of modality is not identical to length of chunks.
         """
         modalities = set([chunk.modality for chunk in self.chunks])
         return 2 <= len(self.chunks) == len(modalities)
@@ -101,7 +105,9 @@ class MultimodalDocument(Document):
         result = {}
         for chunk in self.chunks:
             modality = chunk.modality
-            result[modality] = chunk.embedding if chunk.embedding is not None else chunk.content
+            result[modality] = (
+                chunk.embedding if chunk.embedding is not None else chunk.content
+            )
         return result
 
     @modality_content_map.setter
@@ -132,7 +138,8 @@ class MultimodalDocument(Document):
         """
         return list(self.modality_content_map.keys())
 
-    def update_content_hash(self, exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash')) -> None:
-        """ Update content hash of the document by including ``chunks`` when computing the hash
-        """
+    def update_content_hash(
+        self, exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash')
+    ) -> None:
+        """Update content hash of the document by including ``chunks`` when computing the hash"""
         super().update_content_hash(exclude_fields)

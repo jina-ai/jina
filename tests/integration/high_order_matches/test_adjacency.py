@@ -18,7 +18,14 @@ def validate(req):
     assert len(req.docs[0].matches[0].matches[0].matches) == 0
 
 
-def test_high_order_matches(mocker):
+@pytest.fixture
+def config(tmpdir):
+    os.environ['JINA_TEST_HIGH_ORDER_MATCHES'] = str(tmpdir)
+    yield
+    del os.environ['JINA_TEST_HIGH_ORDER_MATCHES']
+
+
+def test_high_order_matches(mocker, config):
     response_mock = mocker.Mock()
 
     f = Flow().add(uses=os.path.join(cur_dir, 'test-adjacency.yml'))
@@ -32,11 +39,13 @@ def test_high_order_matches(mocker):
 
 
 @pytest.mark.parametrize('restful', [False, True])
-def test_high_order_matches_integrated(mocker, restful):
+def test_high_order_matches_integrated(mocker, restful, config):
 
     response_mock = mocker.Mock()
     # this is equivalent to the last test but with simplified YAML spec.
-    f = Flow(restful=restful).add(uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml'))
+    f = Flow(restful=restful).add(
+        uses=os.path.join(cur_dir, 'test-adjacency-integrated.yml')
+    )
 
     with f:
         f.index(random_docs(100, chunks_per_doc=0, embed_dim=2))
@@ -44,5 +53,4 @@ def test_high_order_matches_integrated(mocker, restful):
     with f:
         f.search(random_docs(1, chunks_per_doc=0, embed_dim=2), on_done=response_mock)
 
-    shutil.rmtree('test-index-file', ignore_errors=False, onerror=None)
     validate_callback(response_mock, validate)

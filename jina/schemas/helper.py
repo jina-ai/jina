@@ -22,12 +22,15 @@ def _python_type_to_schema_type(p):
     return dtype
 
 
-def _cli_to_schema(api_dict, target,
-                   extras=None,
-                   required=None,
-                   allow_addition=False,
-                   namespace='Jina',
-                   description=''):
+def _cli_to_schema(
+    api_dict,
+    target,
+    extras=None,
+    required=None,
+    allow_addition=False,
+    namespace='Jina',
+    description='',
+):
     pod_api = None
 
     for d in api_dict['methods']:
@@ -40,26 +43,18 @@ def _cli_to_schema(api_dict, target,
         'type': 'object',
         'required': [],
         'additionalProperties': allow_addition,
-        'description': description
+        'description': description,
     }
 
     for p in pod_api:
         dtype = _python_type_to_schema_type(p['type'])
-        pv = {
-            'description': p['help'].strip(),
-            'type': dtype,
-            'default': p['default']
-        }
+        pv = {'description': p['help'].strip(), 'type': dtype, 'default': p['default']}
         if p['choices']:
             pv['enum'] = p['choices']
         if p['required']:
             _schema['required'].append(p['name'])
         if dtype == 'array':
-            _schema['items'] = {
-                'type': 'string',
-                'minItems': 1,
-                'uniqueItems': True
-            }
+            _schema['items'] = {'type': 'string', 'minItems': 1, 'uniqueItems': True}
 
         _schema['properties'][p['name']] = pv
 
@@ -68,9 +63,7 @@ def _cli_to_schema(api_dict, target,
     if required:
         _schema['required'].extend(required)
 
-    return {
-        f'{namespace}::{target.capitalize()}': _schema
-    }
+    return {f'{namespace}::{target.capitalize()}': _schema}
 
 
 def _get_all_arguments(class_):
@@ -96,10 +89,15 @@ def _get_all_arguments(class_):
             if p.annotation != inspect._empty:
                 dtype = None
                 try:
-                    if hasattr(p.annotation, '__origin__') and p.annotation.__origin__ is typing.Union:
+                    if (
+                        hasattr(p.annotation, '__origin__')
+                        and p.annotation.__origin__ is typing.Union
+                    ):
                         dtype = p.annotation.__args__[0].__name__
                     else:
-                        dtype = getattr(p.annotation, '__origin__', p.annotation).__name__
+                        dtype = getattr(
+                            p.annotation, '__origin__', p.annotation
+                        ).__name__
                 except:
                     pass
                 dtype = _python_type_to_schema_type(dtype)
@@ -146,20 +144,18 @@ def _jina_class_to_schema(cls):
             'jtype': {
                 'type': 'string',
                 'const': cls.__name__,
-                'description': cls.__doc__.strip().split('\n')[0] if cls.__doc__ else ''
+                'description': cls.__doc__.strip().split('\n')[0]
+                if cls.__doc__
+                else '',
             },
             'with': {
                 'type': 'object',
                 'description': 'The arguments of this Jina Executor/Driver',
                 'properties': kwargs,
-                'additionalProperties': False
+                'additionalProperties': False,
             },
-            'metas': {
-                '$ref': '#/definitions/Jina::Metas'
-            },
-            'requests': {
-                '$ref': '#/definitions/Jina::Requests'
-            }
+            'metas': {'$ref': '#/definitions/Jina::Metas'},
+            'requests': {'$ref': '#/definitions/Jina::Requests'},
         },
         'additionalProperties': False,
     }

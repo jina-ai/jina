@@ -14,6 +14,7 @@ def metas(tmpdir):
 
 def test_executor_logger(metas):
     from fluent import asynchandler as fluentasynchandler
+
     args = set_pea_parser().parse_args([])
     with BaseExecutor(args, metas=metas) as executor:
         assert len(executor.logger.logger.handlers) == 3

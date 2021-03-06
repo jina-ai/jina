@@ -15,15 +15,13 @@ class DummyRanker(Match2DocRanker):
     required_keys = {'tags'}
 
     def score(
-            self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
+        self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
     ) -> "np.ndarray":
         new_scores = [
-            (
-                match_id,
-                match_meta[match_id]['tags']['dummy_score']
-            )
+            (match_id, match_meta[match_id]['tags']['dummy_score'])
             for match_id, old_score in old_match_scores.items()
         ]
-        return np.array(new_scores, dtype=[
-            (self.COL_MATCH_ID, np.object),
-            (self.COL_SCORE, np.float64)])
+        return np.array(
+            new_scores,
+            dtype=[(self.COL_MATCH_ID, np.object), (self.COL_SCORE, np.float64)],
+        )
