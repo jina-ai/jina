@@ -108,7 +108,7 @@ It's easy to configure it:
 1. `pip install pre-commit`
 1. `pre-commit install`
 
-Now you will be automatically reminded to add docstrings to your code. `black` will take care that your code will match our style.
+Now you will be automatically reminded to add docstrings to your code. `black` will take care that your code will match our style. Note that `black` will fail your commit but reformat your code, so you just need to add the files again and commit **again**.
 
 For more about our docstring style, refer to [this guide](https://docs.jina.ai/chapters/docstring/docstring.html).
 
