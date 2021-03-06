@@ -137,6 +137,6 @@ class Match2DocRanker(BaseRanker):
 
         :param old_match_scores: Contains old scores in a list
         :param query_meta: Dictionary containing all the query meta information requested by the `query_required_keys` class_variable.
-        :param match_meta: List containing all the matches meta information requested by the `required_keys` class_variable. Sorted in the same way as `old_match_scores`
+        :param match_meta: List containing all the matches meta information requested by the `match_required_keys` class_variable. Sorted in the same way as `old_match_scores`
         """
         raise NotImplementedError
