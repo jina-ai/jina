@@ -121,8 +121,9 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         _groups = self._group_by(match_idx, Chunk2DocRanker.COL_PARENT_ID)
         r = []
         for _g in _groups:
+            match_id = _g[0][Chunk2DocRanker.COL_PARENT_ID]
             score = self.exec_fn(_g, query_chunk_meta, match_chunk_meta)
-            r.append((_g[0][Chunk2DocRanker.COL_PARENT_ID], score))
+            r.append((match_id, score))
         return self._sort_doc_by_score(r)
 
 

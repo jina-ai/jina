@@ -8,7 +8,8 @@ class WeightedRanker(Chunk2DocRanker):
     Will give the scores to chunk data according to weight.
     """
 
-    required_keys = {'weight'}
+    match_required_keys = None
+    query_required_keys = {'weight'}
 
     def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         """

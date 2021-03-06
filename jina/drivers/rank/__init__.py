@@ -21,10 +21,8 @@ class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
         """Property to provide backward compatibility to executors relying in `required_keys`
         :return: keys for attribute lookup in matches
         """
-        return (
-            self.exec.match_required_keys
-            if hasattr(self.exec, 'match_required_keys')
-            else getattr(self.exec, 'required_keys', None)
+        return getattr(
+            self.exec, 'match_required_keys', getattr(self.exec, 'required_keys', None)
         )
 
     @property
@@ -33,10 +31,8 @@ class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
 
         :return: keys for attribute lookup in matches
         """
-        return (
-            self.exec.query_required_keys
-            if hasattr(self.exec, 'query_required_keys')
-            else getattr(self.exec, 'required_keys', None)
+        return getattr(
+            self.exec, 'query_required_keys', getattr(self.exec, 'required_keys', None)
         )
 
 
@@ -81,12 +77,13 @@ class Matches2DocRankDriver(BaseRankDriver):
 
             matches = doc.matches
             num_matches = len(matches)
-            old_match_scores = [match.score.value for match in matches]
-            match_meta = (
-                [match.get_attrs(*self._exec_match_keys) for match in matches]
-                if self._exec_match_keys
-                else None
-            )
+            old_match_scores = []
+            extract_match_meta = self._exec_match_keys is not None
+            match_meta = [] if extract_match_meta else None
+            for match in matches:
+                old_match_scores.append(match.score.value)
+                if extract_match_meta:
+                    match_meta.append(match.get_attrs(*self._exec_match_keys))
 
             # if there are no matches, no need to sort them
             if not old_match_scores:
