@@ -162,7 +162,9 @@ def test_binarypb_update_twice(test_metas, delete_on_dump):
 
 
 # benchmark only
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow'
+)
 @pytest.mark.parametrize('delete_on_dump', [True, False])
 def test_binarypb_benchmark(test_metas, delete_on_dump):
     entries = 100000
@@ -184,4 +186,6 @@ def test_binarypb_benchmark(test_metas, delete_on_dump):
         idxer.save()
 
     time_end = time.time()
-    print(f'delete_on_dump = {delete_on_dump}, entries={entries}. took {time_end - time_now} seconds')
+    print(
+        f'delete_on_dump = {delete_on_dump}, entries={entries}. took {time_end - time_now} seconds'
+    )
