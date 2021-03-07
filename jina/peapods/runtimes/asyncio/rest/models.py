@@ -11,8 +11,19 @@ from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from jina.enums import DataInputType
 from jina.types.document import Document
 from jina.parsers import set_client_cli_parser
-from jina.proto.jina_pb2 import DenseNdArrayProto, NdArrayProto, SparseNdArrayProto, NamedScoreProto, \
-    DocumentProto, RouteProto, EnvelopeProto, StatusProto, MessageProto, RequestProto, QueryLangProto
+from jina.proto.jina_pb2 import (
+    DenseNdArrayProto,
+    NdArrayProto,
+    SparseNdArrayProto,
+    NamedScoreProto,
+    DocumentProto,
+    RouteProto,
+    EnvelopeProto,
+    StatusProto,
+    MessageProto,
+    RequestProto,
+    QueryLangProto,
+)
 
 
 DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
@@ -34,11 +45,13 @@ PROTOBUF_TO_PYTHON_TYPE = {
     FieldDescriptor.TYPE_BYTES: bytes,
     FieldDescriptor.TYPE_STRING: str,
     FieldDescriptor.TYPE_ENUM: Enum,
-    FieldDescriptor.TYPE_MESSAGE: None
+    FieldDescriptor.TYPE_MESSAGE: None,
 }
 
 
-def protobuf_to_pydantic_model(protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]) -> BaseModel:
+def protobuf_to_pydantic_model(
+    protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]
+) -> BaseModel:
     """
     Converts Protobuf messages to Pydantic model for jsonschema creation/validattion
 
@@ -47,7 +60,7 @@ def protobuf_to_pydantic_model(protobuf_model: Union[Descriptor, GeneratedProtoc
     :param protobuf_model: *Proto message from proto file
     :type protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]
     :return: Pydantic model
-    :rtype: :class:BaseModel
+    :rtype: BaseModel
     """
 
     all_fields = {}
@@ -121,8 +134,19 @@ def protobuf_to_pydantic_model(protobuf_model: Union[Descriptor, GeneratedProtoc
     return model
 
 
-for proto in DenseNdArrayProto, NdArrayProto, SparseNdArrayProto, NamedScoreProto, DocumentProto, RouteProto, \
-        EnvelopeProto, StatusProto, MessageProto, RequestProto, QueryLangProto:
+for proto in (
+    DenseNdArrayProto,
+    NdArrayProto,
+    SparseNdArrayProto,
+    NamedScoreProto,
+    DocumentProto,
+    RouteProto,
+    EnvelopeProto,
+    StatusProto,
+    MessageProto,
+    RequestProto,
+    QueryLangProto,
+):
     protobuf_to_pydantic_model(proto)
 
 
@@ -146,7 +170,7 @@ class JinaRequestModel(BaseModel):
         List[PROTO_TO_PYDANTIC_MODELS['DocumentProto']],
         List[Dict[str, Any]],
         List[str],
-        List[bytes]
+        List[bytes],
     ] = Field(..., example=[Document().dict()])
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
     mime_type: Optional[str] = ''
