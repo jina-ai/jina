@@ -8,7 +8,7 @@ import itertools as it
 import json
 import os
 import random
-from typing import List, Union, Iterator, Iterable, Dict, Generator
+from typing import List, Union, Iterator, Iterable, Dict, Generator, Optional
 
 import numpy as np
 
