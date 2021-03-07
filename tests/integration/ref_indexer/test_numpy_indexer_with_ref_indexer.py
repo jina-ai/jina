@@ -53,7 +53,9 @@ def random_workspace(tmpdir):
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
-def test_indexer_with_ref_indexer(random_workspace, parallel, index_docs, mocker, uses_no_docker):
+def test_indexer_with_ref_indexer(
+    random_workspace, parallel, index_docs, mocker, uses_no_docker
+):
     top_k = 10
     with Flow.load_config(os.path.join('index.yml')) as index_flow:
         index_flow.index(inputs=index_docs, request_size=10)
@@ -74,7 +76,9 @@ def test_indexer_with_ref_indexer(random_workspace, parallel, index_docs, mocker
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
-def test_indexer_with_ref_indexer_compound(random_workspace, parallel, index_docs, mocker, uses_no_docker):
+def test_indexer_with_ref_indexer_compound(
+    random_workspace, parallel, index_docs, mocker, uses_no_docker
+):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'compound-index.yml')) as index_flow:
         index_flow.index(inputs=index_docs, request_size=10)
@@ -104,15 +108,19 @@ def random_workspace_move(tmpdir):
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
-def test_indexer_with_ref_indexer_move(random_workspace_move, parallel, index_docs, mocker, uses_no_docker):
+def test_indexer_with_ref_indexer_move(
+    random_workspace_move, parallel, index_docs, mocker, uses_no_docker
+):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'index.yml')) as index_flow:
         index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
-    shutil.copytree(os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'],
-                    os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY'])
+    shutil.copytree(
+        os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'],
+        os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY'],
+    )
 
     shutil.rmtree(os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'])
 
@@ -130,15 +138,19 @@ def test_indexer_with_ref_indexer_move(random_workspace_move, parallel, index_do
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
-def test_indexer_with_ref_indexer_compound_move(random_workspace_move, parallel, index_docs, mocker, uses_no_docker):
+def test_indexer_with_ref_indexer_compound_move(
+    random_workspace_move, parallel, index_docs, mocker, uses_no_docker
+):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'compound-index.yml')) as index_flow:
         index_flow.index(inputs=index_docs, request_size=10)
 
     mock = mocker.Mock()
 
-    shutil.copytree(os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'],
-                    os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY'])
+    shutil.copytree(
+        os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'],
+        os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER_QUERY'],
+    )
 
     shutil.rmtree(os.environ['JINA_TEST_INDEXER_WITH_REF_INDEXER'])
 
@@ -159,16 +171,21 @@ def test_indexer_with_ref_indexer_compound_move(random_workspace_move, parallel,
 def docker_image():
     from jina.parsers.hub import set_hub_build_parser
     from jina.docker.hubio import HubIO
-    args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'numpyhub')])
+
+    args = set_hub_build_parser().parse_args([os.path.join(cur_dir, 'numpyhub')])
     HubIO(args).build()
 
 
 @pytest.fixture
 def uses_docker(docker_image):
     from jina import __version__ as jina_version
-    os.environ['JINA_QUERY_USES'] = f'docker://jinahub/pod.indexer.dummynumpyindexer:0.0.0-{jina_version}'
-    os.environ['JINA_QUERY_USES_COMPOUND'] = f'docker://jinahub/pod.indexer.dummynumpyindexer:0.0.0-{jina_version}'
+
+    os.environ[
+        'JINA_QUERY_USES'
+    ] = f'docker://jinahub/pod.indexer.dummynumpyindexer:0.0.0-{jina_version}'
+    os.environ[
+        'JINA_QUERY_USES_COMPOUND'
+    ] = f'docker://jinahub/pod.indexer.dummynumpyindexer:0.0.0-{jina_version}'
     os.environ['JINA_QUERY_USES_INTERNAL'] = 'indexer_with_ref.yml'
     os.environ['JINA_QUERY_USES_COMPOUND_INTERNAL'] = 'compound-indexer-with-ref.yml'
     yield
@@ -188,7 +205,9 @@ def random_workspace_in_docker(tmpdir):
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
-def test_indexer_with_ref_indexer_in_docker(random_workspace_in_docker, parallel, index_docs, mocker, uses_docker):
+def test_indexer_with_ref_indexer_in_docker(
+    random_workspace_in_docker, parallel, index_docs, mocker, uses_docker
+):
     top_k = 10
     with Flow.load_config(os.path.join('index.yml')) as index_flow:
         index_flow.index(inputs=index_docs, request_size=10)
@@ -209,7 +228,9 @@ def test_indexer_with_ref_indexer_in_docker(random_workspace_in_docker, parallel
 
 
 @pytest.mark.parametrize('parallel', [1, 2], indirect=True)
-def test_indexer_with_ref_indexer_compound_in_docker(random_workspace_in_docker, parallel, index_docs, mocker, uses_docker):
+def test_indexer_with_ref_indexer_compound_in_docker(
+    random_workspace_in_docker, parallel, index_docs, mocker, uses_docker
+):
     top_k = 10
     with Flow.load_config(os.path.join(cur_dir, 'compound-index.yml')) as index_flow:
         index_flow.index(inputs=index_docs, request_size=10)

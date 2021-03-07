@@ -41,18 +41,23 @@ def multimodal_documents():
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.parametrize('restful', [False])
-def test_multimodal_embedding_parallel(multimodal_documents, mocker, monkeypatch, restful):
+def test_multimodal_embedding_parallel(
+    multimodal_documents, mocker, monkeypatch, restful
+):
     monkeypatch.setenv("RESTFUL", restful)
 
     def validate_response(resp):
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
-            np.testing.assert_almost_equal(NdArray(doc.embedding).value, np.array([idx, idx, idx, idx, idx]))
+            np.testing.assert_almost_equal(
+                NdArray(doc.embedding).value, np.array([idx, idx, idx, idx, idx])
+            )
 
     mock = mocker.Mock()
-    with Flow.load_config(os.path.join(cur_dir, 'flow-embedding-multimodal-parallel.yml')) as index_gt_flow:
-        index_gt_flow.index(inputs=multimodal_documents,
-                            on_done=mock)
+    with Flow.load_config(
+        os.path.join(cur_dir, 'flow-embedding-multimodal-parallel.yml')
+    ) as index_gt_flow:
+        index_gt_flow.index(inputs=multimodal_documents, on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_response)
 
@@ -91,18 +96,23 @@ def multimodal_all_types_documents():
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.parametrize('restful', [False])
-def test_multimodal_all_types_parallel(multimodal_all_types_documents, mocker, monkeypatch, restful):
+def test_multimodal_all_types_parallel(
+    multimodal_all_types_documents, mocker, monkeypatch, restful
+):
     monkeypatch.setenv("RESTFUL", restful)
 
     def validate_response(resp):
         assert len(resp.index.docs) == NUM_DOCS
         for idx, doc in enumerate(resp.index.docs):
-            np.testing.assert_almost_equal(NdArray(doc.embedding).value,
-                                           np.array([idx, idx, idx, idx, idx, 3, 3, 4, 4]))
+            np.testing.assert_almost_equal(
+                NdArray(doc.embedding).value,
+                np.array([idx, idx, idx, idx, idx, 3, 3, 4, 4]),
+            )
 
     mock = mocker.Mock()
-    with Flow.load_config(os.path.join(cur_dir, 'flow-multimodal-all-types-parallel.yml')) as index_gt_flow:
-        index_gt_flow.index(inputs=multimodal_all_types_documents,
-                            on_done=mock)
+    with Flow.load_config(
+        os.path.join(cur_dir, 'flow-multimodal-all-types-parallel.yml')
+    ) as index_gt_flow:
+        index_gt_flow.index(inputs=multimodal_all_types_documents, on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_response)

@@ -11,8 +11,7 @@ from jina.executors.evaluators.embedding.euclidean import EuclideanEvaluator
         ([1, 1, 1], [1, 1, 1], 0),
         ([0, 1], [1, 0], 1),
         ([1, 2, 4, 7, 3], [5, 4, 3, 8, 9], 0.12985245),
-    ]
-
+    ],
 )
 def test_euclidean(embedding1, embedding2, distance):
     evaluator = CosineEvaluator()
@@ -26,8 +25,7 @@ def test_euclidean(embedding1, embedding2, distance):
         ([1, 1, 1], [1, 1, 1], 0),
         ([2, 4], [2, 5], 1),
         ([1, 2, 4, 7, 3], [5, 4, 3, 8, 9], 7.61577311),
-    ]
-
+    ],
 )
 def test_cosine(embedding1, embedding2, distance):
     evaluator = EuclideanEvaluator()

@@ -14,9 +14,9 @@ IMPORTED.schema_executors = {}
 IMPORTED.schema_drivers = {}
 
 
-def import_classes(namespace: str,
-                   show_import_table: bool = False,
-                   import_once: bool = False):
+def import_classes(
+    namespace: str, show_import_table: bool = False, import_once: bool = False
+):
     """
     Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML constructor beforehand. It can be also used to import third-part or external executors.
 
@@ -28,7 +28,7 @@ def import_classes(namespace: str,
     _namespace2type = {
         'jina.executors': 'ExecutorType',
         'jina.drivers': 'DriverType',
-        'jina.hub': 'ExecutorType'
+        'jina.hub': 'ExecutorType',
     }
     _import_type = _namespace2type.get(namespace)
     if _import_type is None:
@@ -37,8 +37,10 @@ def import_classes(namespace: str,
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:
-        warnings.warn(f'{namespace} has already imported. If you want to re-imported, please set `import_once=True`',
-                      ImportWarning)
+        warnings.warn(
+            f'{namespace} has already imported. If you want to re-imported, please set `import_once=True`',
+            ImportWarning,
+        )
         return {}
 
     try:
@@ -52,7 +54,9 @@ def import_classes(namespace: str,
     depend_tree = {}
     for _mod_name in _modules:
         try:
-            bad_imports += _import_module(_mod_name, _import_type, depend_tree, load_stat)
+            bad_imports += _import_module(
+                _mod_name, _import_type, depend_tree, load_stat
+            )
         except Exception as ex:
             load_stat[_mod_name].append(('', False, ex))
             bad_imports.append(_mod_name)
@@ -77,8 +81,14 @@ class ImportExtensions:
     :param pkg_name: the package name to find in extra_requirements.txt, when not given the ModuleNotFound exec_val will be used as the best guess
     """
 
-    def __init__(self, required: bool, logger=None,
-                 help_text: str = None, pkg_name: str = None, verbose: bool = True):
+    def __init__(
+        self,
+        required: bool,
+        logger=None,
+        help_text: str = None,
+        pkg_name: str = None,
+        verbose: bool = True,
+    ):
         self._required = required
         self._tags = []
         self._help_text = help_text
@@ -93,12 +103,19 @@ class ImportExtensions:
         if exc_type == ModuleNotFoundError:
             missing_module = self._pkg_name or exc_val.name
             from pkg_resources import resource_filename
-            with open(resource_filename('jina', '/'.join(('resources', 'extra-requirements.txt')))) as fp:
+
+            with open(
+                resource_filename(
+                    'jina', '/'.join(('resources', 'extra-requirements.txt'))
+                )
+            ) as fp:
                 for v in fp:
-                    if (v.strip()
-                            and not v.startswith('#')
-                            and v.startswith(missing_module)
-                            and ':' in v):
+                    if (
+                        v.strip()
+                        and not v.startswith('#')
+                        and v.startswith(missing_module)
+                        and ':' in v
+                    ):
                         missing_module, install_tags = v.split(':')
                         self._tags.append(missing_module)
                         self._tags.extend(vv.strip() for vv in install_tags.split(','))
@@ -108,12 +125,17 @@ class ImportExtensions:
                 req_msg = 'fallback to default behavior'
                 if self._required:
                     req_msg = 'and it is required'
-                err_msg = f'Module "{missing_module}" is not installed, {req_msg}. ' \
-                          f'You are trying to use an extension feature not enabled by the ' \
-                          'current installation.\n' \
-                          'This feature is available in: '
+                err_msg = (
+                    f'Module "{missing_module}" is not installed, {req_msg}. '
+                    f'You are trying to use an extension feature not enabled by the '
+                    'current installation.\n'
+                    'This feature is available in: '
+                )
                 from .helper import colored
-                err_msg += ' '.join(colored(f'[{tag}]', attrs='bold') for tag in self._tags)
+
+                err_msg += ' '.join(
+                    colored(f'[{tag}]', attrs='bold') for tag in self._tags
+                )
                 err_msg += f'\nUse {colored("pip install jina[TAG]", attrs="bold")} to enable it'
 
             else:
@@ -152,13 +174,16 @@ class PathImporter:
         """
         for p in paths:
             if not os.path.exists(p):
-                raise FileNotFoundError(f'cannot import module from {p}, file not exist')
+                raise FileNotFoundError(
+                    f'cannot import module from {p}, file not exist'
+                )
             module = PathImporter._path_import(p)
         return module
 
     @staticmethod
     def _path_import(absolute_path: str) -> Optional[ModuleType]:
         import importlib.util
+
         try:
             # I dont want to trust user path based on directory structure, "jinahub", period
             spec = importlib.util.spec_from_file_location('jinahub', absolute_path)
@@ -186,12 +211,16 @@ def _print_load_table(load_stat: Dict[str, List[Any]], logger=None):
         for cls_name, import_stat, err_reason in v:
             if cls_name not in cached:
                 load_table.append(
-                    f'{colored("✓", "green") if import_stat else colored("✗", "red"):<5} {cls_name if cls_name else colored("Module load error", "red"):<25} {k:<40} {str(err_reason)}')
+                    f'{colored("✓", "green") if import_stat else colored("✗", "red"):<5} {cls_name if cls_name else colored("Module load error", "red"):<25} {k:<40} {str(err_reason)}'
+                )
                 cached.add(cls_name)
     if load_table:
         load_table.sort()
-        load_table = ['', '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
-                      '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10)] + load_table
+        load_table = [
+            '',
+            '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
+            '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10),
+        ] + load_table
         pr = logger.info if logger else print
         pr('\n'.join(load_table))
 
@@ -204,14 +233,20 @@ def _print_dep_tree_rst(fp, dep_tree, title='Executor'):
         for k, v in d.items():
             if k != 'module':
                 treeview.append('   ' * depth + f'- `{k}`')
-                tableview.add(f'| `{k}` | ' + (f'`{d["module"]}`' if 'module' in d else ' ') + ' |')
+                tableview.add(
+                    f'| `{k}` | '
+                    + (f'`{d["module"]}`' if 'module' in d else ' ')
+                    + ' |'
+                )
                 _iter(v, depth + 1)
 
     _iter(dep_tree, 0)
 
-    fp.write(f'# List of {len(tableview)} {title}s in Jina\n\n'
-             f'This version of Jina includes {len(tableview)} {title}s.\n\n'
-             f'## Inheritances in a Tree View\n')
+    fp.write(
+        f'# List of {len(tableview)} {title}s in Jina\n\n'
+        f'This version of Jina includes {len(tableview)} {title}s.\n\n'
+        f'## Inheritances in a Tree View\n'
+    )
     fp.write('\n'.join(treeview))
 
     fp.write(f'\n\n## Modules in a Table View \n\n| Class | Module |\n')
@@ -225,13 +260,15 @@ def _raise_bad_imports_warnings(bad_imports, namespace):
     if namespace != 'jina.hub':
         warnings.warn(
             f'theses modules or classes can not be imported {bad_imports}. '
-            f'You can use `jina check` to list all executors and drivers')
+            f'You can use `jina check` to list all executors and drivers'
+        )
     else:
         warnings.warn(
             f'due to the missing dependencies or bad implementations, '
             f'{bad_imports} can not be imported '
             f'if you are using these executors/drivers, they wont work. '
-            f'You can use `jina check` to list all executors and drivers')
+            f'You can use `jina check` to list all executors and drivers'
+        )
 
 
 def _get_modules(namespace):
@@ -242,7 +279,10 @@ def _get_modules(namespace):
         _path = os.path.dirname(get_loader(namespace).path)
     except AttributeError as ex:
         if namespace == 'jina.hub':
-            warnings.warn(f'hub submodule is not initialized. Please try "git submodule update --init"', ImportWarning)
+            warnings.warn(
+                f'hub submodule is not initialized. Please try "git submodule update --init"',
+                ImportWarning,
+            )
         raise ImportError(f'{namespace} can not be imported. {ex}')
 
     _modules = _get_submodules(_path, namespace)
@@ -257,6 +297,7 @@ def _get_modules(namespace):
 
 def _get_submodules(path, namespace, prefix=None):
     from pkgutil import iter_modules
+
     _prefix = '.'.join([namespace, prefix]) if prefix else namespace
     modules = set()
     for _info in iter_modules([path]):
@@ -270,16 +311,20 @@ def _get_submodules(path, namespace, prefix=None):
 
 def _filter_modules(modules):
     import re
+
     _ignored_module_pattern = re.compile(r'\.tests|\.api|\.bump_version')
     return {m for m in modules if not _ignored_module_pattern.findall(m)}
 
 
 def _load_default_exc_config(cls_obj):
     from .executors.requests import get_default_reqs
+
     try:
         _request = get_default_reqs(type.mro(cls_obj))
     except ValueError as ex:
-        warnings.warn(f'Please ensure a config yml is given for {cls_obj.__name__}. {ex}')
+        warnings.warn(
+            f'Please ensure a config yml is given for {cls_obj.__name__}. {ex}'
+        )
 
 
 def _update_depend_tree(cls_obj, module_name, cur_tree):
@@ -307,11 +352,17 @@ def _import_module(module_name, import_type, depend_tree, load_stat):
             _update_depend_tree(_cls_obj, module_name, depend_tree)
             if _cls_obj.__class__.__name__ == 'ExecutorType':
                 _load_default_exc_config(_cls_obj)
-                IMPORTED.schema_executors[f'Jina::Executors::{_cls_obj.__name__}'] = _jina_class_to_schema(_cls_obj)
+                IMPORTED.schema_executors[
+                    f'Jina::Executors::{_cls_obj.__name__}'
+                ] = _jina_class_to_schema(_cls_obj)
             else:
-                IMPORTED.schema_drivers[f'Jina::Drivers::{_cls_obj.__name__}'] = _jina_class_to_schema(_cls_obj)
+                IMPORTED.schema_drivers[
+                    f'Jina::Drivers::{_cls_obj.__name__}'
+                ] = _jina_class_to_schema(_cls_obj)
             # TODO: _success_msg is never used
-            _success_msg = colored('▸', 'green').join(f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1])
+            _success_msg = colored('▸', 'green').join(
+                f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1]
+            )
             load_stat[module_name].append((_attr, True, _success_msg))
         except Exception as ex:
             load_stat[module_name].append((_attr, False, ex))

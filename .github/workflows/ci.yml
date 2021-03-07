@@ -76,13 +76,30 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v1
         with:
           python-version: 3.7
       - id: file_changes
         uses: jitterbit/get-changed-files@v1
       - name: docstring check with darglint and pydocstyle
         run: ./scripts/docstrings_lint.sh
+        env:
+          CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
+
+  check-black:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - id: file_changes
+        uses: jitterbit/get-changed-files@v1
+      - name: check black
+        run: ./scripts/black.sh
         env:
           CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
 
@@ -111,7 +128,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   core-test:
-    needs: [prep-testbed, commit-lint, lint-flake-8]
+    needs: [prep-testbed, commit-lint, lint-flake-8, check-docstring, check-black]
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false

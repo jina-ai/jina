@@ -41,17 +41,21 @@ def validate_index(tmpdir, validation_data):
 
 
 def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
-    '''
+    """
     This test indexes documents into an example flow and updates one document.
     The update is implemented as delete & index.
-    '''
+    """
 
     # generate documents to index
-    index_data = list(get_docs_to_index([
-        '0,1,2,3,4,5,6,7,8,9',
-        'a ijk,b ijk,c jk',
-        'w mno,x no,y op,z i',
-    ]))
+    index_data = list(
+        get_docs_to_index(
+            [
+                '0,1,2,3,4,5,6,7,8,9',
+                'a ijk,b ijk,c jk',
+                'w mno,x no,y op,z i',
+            ]
+        )
+    )
 
     response_docs = []
 
@@ -63,24 +67,19 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
     # at the moment the deletion of chunks via document_id is not possible
     # therefore, the chunks are needed later on when when deleting the documents
     with Flow.load_config('flow-index.yml') as index_flow:
-        index_flow.index(
-            index_data,
-            on_done=on_index_done
-        )
+        index_flow.index(index_data, on_done=on_index_done)
 
     validate_index(
         tmpdir,
         validation_data=[
             ('docIndexer.bin', 3),
             ('chunkidx.bin', 17),
-            ('vecidx.bin', 17)
-        ]
+            ('vecidx.bin', 17),
+        ],
     )
 
     # pick document 0 to be deleted
-    delete_data = list(get_docs_to_delete({
-        0: response_docs[0].chunks
-    }))
+    delete_data = list(get_docs_to_delete({0: response_docs[0].chunks}))
 
     # delete the docs and all its chunks
     # 'a ijk,b ijk,c jk' is deleted?
@@ -100,17 +99,15 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
 
     validate_index(
         tmpdir,
-        validation_data=[
-            ('docIndexer.bin', 2),
-            ('chunkidx.bin', 7),
-            ('vecidx.bin', 7)
-        ]
+        validation_data=[('docIndexer.bin', 2), ('chunkidx.bin', 7), ('vecidx.bin', 7)],
     )
 
     # generate a new document 0 as a replacement for the deleted one
-    updated_data = get_docs_to_index([
-        '1 ijk,2 jk,3 k',
-    ])
+    updated_data = get_docs_to_index(
+        [
+            '1 ijk,2 jk,3 k',
+        ]
+    )
 
     # insert the updated document
     with Flow.load_config('flow-index.yml') as index_flow:
@@ -121,8 +118,8 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
         validation_data=[
             ('docIndexer.bin', 3),
             ('chunkidx.bin', 10),
-            ('vecidx.bin', 10)
-        ]
+            ('vecidx.bin', 10),
+        ],
     )
 
     def validate_granularity_1(resp):
@@ -133,22 +130,13 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
             assert doc.matches[0].granularity == 0
 
         assert resp.docs[0].text == '2 jk'
-        assert (
-                resp.docs[0].matches[0].text
-                == '1 ijk,2 jk,3 k'
-        )
+        assert resp.docs[0].matches[0].text == '1 ijk,2 jk,3 k'
 
         assert resp.docs[1].text == 'i'
-        assert (
-                resp.docs[1].matches[0].text
-                == 'w mno,x no,y op,z i'
-        )
+        assert resp.docs[1].matches[0].text == 'w mno,x no,y op,z i'
 
         assert resp.docs[2].text == 'm'
-        assert (
-                resp.docs[2].matches[0].text
-                == 'w mno,x no,y op,z i'
-        )
+        assert resp.docs[2].matches[0].text == 'w mno,x no,y op,z i'
 
     search_data = [
         '2 jk',

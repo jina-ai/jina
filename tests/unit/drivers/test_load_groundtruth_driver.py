@@ -11,8 +11,9 @@ from jina.types.document import Document
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):
-
-    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+    def add(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
         pass
 
     def query(self, key: str) -> Optional[bytes]:
@@ -44,7 +45,7 @@ class MockGroundTruthIndexer(BaseKVIndexer):
         self.db = {
             doc1.id: doc1.SerializeToString(),
             doc2.id: doc2.SerializeToString(),
-            doc4.id: doc4.SerializeToString()
+            doc4.id: doc4.SerializeToString(),
         }
 
 
@@ -93,8 +94,12 @@ def eval_request():
     return req
 
 
-def test_load_groundtruth_driver(mock_groundtruth_indexer, simple_load_groundtruth_driver, eval_request):
-    simple_load_groundtruth_driver.attach(executor=mock_groundtruth_indexer, runtime=None)
+def test_load_groundtruth_driver(
+    mock_groundtruth_indexer, simple_load_groundtruth_driver, eval_request
+):
+    simple_load_groundtruth_driver.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     simple_load_groundtruth_driver.eval_request = eval_request
     simple_load_groundtruth_driver()
 

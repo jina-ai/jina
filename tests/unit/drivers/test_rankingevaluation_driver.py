@@ -11,7 +11,6 @@ from tests import validate_callback
 
 
 class SimpleRankEvaluateDriver(RankEvaluateDriver):
-
     def __init__(self, fields: Tuple[str], *args, **kwargs):
         super().__init__(fields, *args, **kwargs)
 
@@ -25,7 +24,6 @@ class SimpleRankEvaluateDriver(RankEvaluateDriver):
 
 
 class RunningAvgRankEvaluateDriver(RankEvaluateDriver):
-
     def __init__(self, fields: Tuple[str], *args, **kwargs):
         super().__init__(fields, runining_avg=True, *args, **kwargs)
 
@@ -68,10 +66,15 @@ def ground_truth_pairs():
     return pairs
 
 
-@pytest.mark.parametrize('fields', [('tags__id',), ('score__value',), 'tags__id', 'score__value'])
-def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
-                                        ground_truth_pairs):
-    simple_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
+@pytest.mark.parametrize(
+    'fields', [('tags__id',), ('score__value',), 'tags__id', 'score__value']
+)
+def test_ranking_evaluate_simple_driver(
+    simple_rank_evaluate_driver, ground_truth_pairs
+):
+    simple_rank_evaluate_driver.attach(
+        executor=PrecisionEvaluator(eval_at=2), runtime=None
+    )
     simple_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
@@ -81,9 +84,9 @@ def test_ranking_evaluate_simple_driver(simple_rank_evaluate_driver,
 
 
 @pytest.mark.parametrize('fields', [('tags__id', 'score__value')])
-def test_ranking_evaluate_extract_multiple_fields(simple_rank_evaluate_driver,
-                                                  ground_truth_pairs,
-                                                  mocker):
+def test_ranking_evaluate_extract_multiple_fields(
+    simple_rank_evaluate_driver, ground_truth_pairs, mocker
+):
 
     mock = mocker.Mock()
     mock.return_value = 1.0
@@ -99,9 +102,12 @@ def test_ranking_evaluate_extract_multiple_fields(simple_rank_evaluate_driver,
 
 
 @pytest.mark.parametrize('fields', [('tags__id',), ('score__value',)])
-def test_ranking_evaluate_runningavg_driver(runningavg_rank_evaluate_driver,
-                                            ground_truth_pairs):
-    runningavg_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
+def test_ranking_evaluate_runningavg_driver(
+    runningavg_rank_evaluate_driver, ground_truth_pairs
+):
+    runningavg_rank_evaluate_driver.attach(
+        executor=PrecisionEvaluator(eval_at=2), runtime=None
+    )
     runningavg_rank_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
         doc = pair.doc
@@ -111,7 +117,6 @@ def test_ranking_evaluate_runningavg_driver(runningavg_rank_evaluate_driver,
 
 
 class SimpleChunkRankEvaluateDriver(RankEvaluateDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.eval_request = None
@@ -160,12 +165,14 @@ def eval_request():
 
 
 @pytest.mark.parametrize('eval_at', [None, 2])
-def test_ranking_evaluate_driver_matches_in_chunks(simple_chunk_rank_evaluate_driver,
-                                                   eval_request,
-                                                   eval_at):
+def test_ranking_evaluate_driver_matches_in_chunks(
+    simple_chunk_rank_evaluate_driver, eval_request, eval_at
+):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
-    simple_chunk_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=eval_at), runtime=None)
+    simple_chunk_rank_evaluate_driver.attach(
+        executor=PrecisionEvaluator(eval_at=eval_at), runtime=None
+    )
     simple_chunk_rank_evaluate_driver.eval_request = eval_request
     simple_chunk_rank_evaluate_driver()
 
@@ -207,9 +214,12 @@ def eval_request_with_unmatching_struct():
     return req
 
 
-def test_evaluate_assert_doc_groundtruth_structure(simple_chunk_rank_evaluate_driver,
-                                                   eval_request_with_unmatching_struct):
-    simple_chunk_rank_evaluate_driver.attach(executor=PrecisionEvaluator(eval_at=2), runtime=None)
+def test_evaluate_assert_doc_groundtruth_structure(
+    simple_chunk_rank_evaluate_driver, eval_request_with_unmatching_struct
+):
+    simple_chunk_rank_evaluate_driver.attach(
+        executor=PrecisionEvaluator(eval_at=2), runtime=None
+    )
     simple_chunk_rank_evaluate_driver.eval_request = eval_request_with_unmatching_struct
     with pytest.raises(AssertionError):
         simple_chunk_rank_evaluate_driver()

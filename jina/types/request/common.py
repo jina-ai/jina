@@ -1,7 +1,13 @@
 from . import Request
 from ...proto import jina_pb2
 
-__all__ = ['TrainDryRunRequest', 'IndexDryRunRequest', 'SearchDryRunRequest', 'ControlDryRunRequest', 'DryRunRequest']
+__all__ = [
+    'TrainDryRunRequest',
+    'IndexDryRunRequest',
+    'SearchDryRunRequest',
+    'ControlDryRunRequest',
+    'DryRunRequest',
+]
 
 
 class DryRunRequest(Request):

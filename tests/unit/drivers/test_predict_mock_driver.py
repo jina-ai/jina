@@ -2,9 +2,12 @@ import numpy as np
 import pytest
 from google.protobuf.struct_pb2 import ListValue
 from jina import Document
-from jina.drivers.predict import (BinaryPredictDriver, MultiLabelPredictDriver,
-                                  OneHotPredictDriver,
-                                  Prediction2DocBlobDriver)
+from jina.drivers.predict import (
+    BinaryPredictDriver,
+    MultiLabelPredictDriver,
+    OneHotPredictDriver,
+    Prediction2DocBlobDriver,
+)
 from jina.executors.classifiers import BaseClassifier
 from jina.types.ndarray.generic import NdArray
 from jina.types.sets import DocumentSet
@@ -50,6 +53,7 @@ class MockPrediction2DocBlobDriver(Prediction2DocBlobDriver):
     def exec_fn(self, embed):
         return np.eye(3)[np.random.choice(3, embed.shape[0])]
 
+
 class MockClassifierDriver(BinaryPredictDriver):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -58,13 +62,15 @@ class MockClassifierDriver(BinaryPredictDriver):
     def exec_fn(self):
         return self._exec_fn
 
+
 class MockClassifier(BaseClassifier):
-    def __init__(self,*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
     def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         # predict 0 or 1 based on divisiblity by 2
-        return (data%2==0).astype(int)
+        return (data % 2 == 0).astype(int)
+
 
 def test_binary_predict_driver():
     docs = DocumentSet(random_docs(2))
@@ -118,7 +124,7 @@ def test_as_blob_driver():
 
 def test_predict_driver_without_embeddings(docs_to_encode, num_docs):
     executor = MockClassifier(total_num_docs=num_docs)
-    driver = MockClassifierDriver(fields='content') #use doc.content to predict tags
+    driver = MockClassifierDriver(fields='content')  # use doc.content to predict tags
     driver.attach(executor=executor, runtime=None)
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
@@ -126,4 +132,4 @@ def test_predict_driver_without_embeddings(docs_to_encode, num_docs):
     driver._apply_all(docs_to_encode)
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
-        assert doc.tags['prediction'] in ['yes','no']
+        assert doc.tags['prediction'] in ['yes', 'no']

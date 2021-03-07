@@ -45,7 +45,7 @@ class TorchDevice(BaseDevice):
                 # use your awesome model to encode/craft/score
                 import torch
                 torch.set_grad_enabled(False)
-                
+
                 _input = torch.as_tensor(data, device=self.device)
                 _output = self.model(_input).cpu()
 
@@ -63,6 +63,7 @@ class TorchDevice(BaseDevice):
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
         import torch
+
         return torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
 
     def to_device(self, model, *args, **kwargs):
@@ -110,11 +111,13 @@ class PaddleDevice(BaseDevice):
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
         import paddle.fluid as fluid
+
         return fluid.CUDAPlace(0) if self.on_gpu else fluid.CPUPlace()
 
     def to_device(self):
         """Load the model to device."""
         import paddle.fluid as fluid
+
         return fluid.Executor(self.device)
 
 
@@ -155,6 +158,7 @@ class TFDevice(BaseDevice):
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
         import tensorflow as tf
+
         cpus = tf.config.experimental.list_physical_devices(device_type='CPU')
         gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
         if self.on_gpu and len(gpus) > 0:
@@ -164,6 +168,7 @@ class TFDevice(BaseDevice):
     def to_device(self):
         """Load the model to device."""
         import tensorflow as tf
+
         tf.config.experimental.set_visible_devices(devices=self.device)
 
 
@@ -228,14 +233,20 @@ class FaissDevice(BaseDevice):
             please use the environment variable `CUDA_VISIBLE_DEVICES`.
         """
         import faiss
+
         # For now, consider only one GPU, do not distribute the index
         return faiss.StandardGpuResources() if self.on_gpu else None
 
     def to_device(self, index, *args, **kwargs):
         """Load the model to device."""
         import faiss
+
         device = self.device
-        return faiss.index_cpu_to_gpu(device, 0, index, None) if device is not None else index
+        return (
+            faiss.index_cpu_to_gpu(device, 0, index, None)
+            if device is not None
+            else index
+        )
 
 
 class MindsporeDevice(BaseDevice):
@@ -255,4 +266,5 @@ class MindsporeDevice(BaseDevice):
     def to_device(self):
         """Load the model to device."""
         import mindspore.context as context
+
         context.set_context(mode=context.GRAPH_MODE, device_target=self.device)

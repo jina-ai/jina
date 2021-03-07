@@ -13,18 +13,13 @@ router = APIRouter(prefix='/flows', tags=['flows'])
 
 
 @router.get(
-    path='',
-    summary='Get all alive Flows\' status',
-    response_model=FlowStoreStatus
+    path='', summary='Get all alive Flows\' status', response_model=FlowStoreStatus
 )
 async def _get_items():
     return store.status
 
 
-@router.get(
-    path='/arguments',
-    summary='Get all accept arguments of a Flow'
-)
+@router.get(path='/arguments', summary='Get all accept arguments of a Flow')
 async def _fetch_flow_params():
     return FlowModel.schema()['properties']
 
@@ -33,11 +28,10 @@ async def _fetch_flow_params():
     path='',
     summary='Create a Flow from a YAML config',
     status_code=201,
-    response_model=uuid.UUID
+    response_model=uuid.UUID,
 )
 async def _create(
-        flow: UploadFile = File(...),
-        workspace_id: Optional[uuid.UUID] = Body(None)
+    flow: UploadFile = File(...), workspace_id: Optional[uuid.UUID] = Body(None)
 ):
     try:
         return store.add(flow.file, workspace_id)
@@ -58,12 +52,9 @@ async def _clear_all():
 @router.delete(
     path='/{id}',
     summary='Terminate a running Flow',
-    description='Terminate a running Flow and release its resources'
+    description='Terminate a running Flow and release its resources',
 )
-async def _delete(
-        id: uuid.UUID,
-        workspace: bool = False
-):
+async def _delete(id: uuid.UUID, workspace: bool = False):
     try:
         store.delete(id=id, workspace=workspace)
     except KeyError:
@@ -73,10 +64,10 @@ async def _delete(
 @router.get(
     path='/{id}',
     summary='Get the status of a running Flow',
-    response_model=FlowItemStatus
+    response_model=FlowItemStatus,
 )
 async def _status(
-        id: 'uuid.UUID',
+    id: 'uuid.UUID',
 ):
     try:
         return store[id]

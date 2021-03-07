@@ -6,7 +6,11 @@ import pytest
 
 from jina.logging import JinaLogger
 from jina.parsers import set_pea_parser
-from jina.peapods.runtimes.jinad.client import DaemonClient, PodDaemonClient, PeaDaemonClient
+from jina.peapods.runtimes.jinad.client import (
+    DaemonClient,
+    PodDaemonClient,
+    PeaDaemonClient,
+)
 
 logger = JinaLogger(context='test-remote')
 yaml_path = os.path.dirname(os.path.abspath(__file__))

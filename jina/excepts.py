@@ -28,6 +28,10 @@ class MemoryOverHighWatermark(Exception):
     """When the memory usage is over the defined high water mark."""
 
 
+class NoAvailablePortError(Exception):
+    """When no available random port could be found"""
+
+
 class DriverError(Exception):
     """Driver related exceptions."""
 

@@ -34,13 +34,14 @@ class ChunkSet(DocumentSet):
         """
 
         from ..document import Document
+
         c = self._docs_proto.add()
         c.CopyFrom(document.proto)
         chunk = Document(c)
 
-        chunk.set_attrs(parent_id=self._ref_doc.id,
-                        granularity=self.granularity,
-                        **kwargs)
+        chunk.set_attrs(
+            parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
+        )
 
         if not chunk.mime_type:
             chunk.mime_type = self._ref_doc.mime_type
@@ -48,7 +49,7 @@ class ChunkSet(DocumentSet):
         return chunk
 
     @property
-    def parent_doc(self) -> 'Document':
+    def reference_doc(self) -> 'Document':
         """Get the document that :class:`ChunkSet` belongs to."""
         return self._ref_doc
 

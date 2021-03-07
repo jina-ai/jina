@@ -73,14 +73,18 @@ def test_delete_vector(config, mocker, flow_file):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(
-            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks))
+            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks)
+        )
     validate_index_size(num_chunks * num_docs)  # 5 chunks for each of the 10 docs
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
-            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
-            on_done=mock)
+            inputs=document_generator(
+                start=0, num_docs=num_docs, num_chunks=num_chunks
+            ),
+            on_done=mock,
+        )
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(TOP_K))
 
@@ -97,8 +101,11 @@ def test_delete_vector(config, mocker, flow_file):
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
-            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
-            on_done=mock)
+            inputs=document_generator(
+                start=0, num_docs=num_docs, num_chunks=num_chunks
+            ),
+            on_done=mock,
+        )
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(0))
 
@@ -109,8 +116,12 @@ def test_update_vector(config, mocker, flow_file):
     num_docs = 10
     num_chunks = 5
 
-    docs_before = list(document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks))
-    docs_updated = list(document_generator(start=10, num_docs=20, num_chunks=num_chunks))
+    docs_before = list(
+        document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks)
+    )
+    docs_updated = list(
+        document_generator(start=10, num_docs=20, num_chunks=num_chunks)
+    )
     ids_before = list()
     ids_updated = list()
 
@@ -134,24 +145,36 @@ def test_update_vector(config, mocker, flow_file):
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.index(inputs=docs_before)
-    validate_index_size(num_chunks * num_docs)  # num_docs per all its chunks, 50 in this case
+    validate_index_size(
+        num_chunks * num_docs
+    )  # num_docs per all its chunks, 50 in this case
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
-            inputs=document_generator(start=0, num_docs=num_docs, num_chunks=num_chunks),
-            on_done=mock)
+            inputs=document_generator(
+                start=0, num_docs=num_docs, num_chunks=num_chunks
+            ),
+            on_done=mock,
+        )
     mock.assert_called_once()
-    validate_callback(mock, validate_result_factory(has_changed=False, num_matches=TOP_K))
+    validate_callback(
+        mock, validate_result_factory(has_changed=False, num_matches=TOP_K)
+    )
 
     with Flow.load_config(flow_file) as index_flow:
         index_flow.update(inputs=docs_updated)
-    validate_index_size(num_chunks * num_docs)  # num_docs per all its chunks, 50 in this case
+    validate_index_size(
+        num_chunks * num_docs
+    )  # num_docs per all its chunks, 50 in this case
 
     mock = mocker.Mock()
     with Flow.load_config(flow_file) as search_flow:
         search_flow.search(
             inputs=document_generator(start=10, num_docs=20, num_chunks=num_chunks),
-            on_done=mock)
+            on_done=mock,
+        )
     mock.assert_called_once()
-    validate_callback(mock, validate_result_factory(has_changed=True, num_matches=num_docs))
+    validate_callback(
+        mock, validate_result_factory(has_changed=True, num_matches=num_docs)
+    )

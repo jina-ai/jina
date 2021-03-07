@@ -53,10 +53,10 @@ class BaseRuntime:
 
         :class:`BasePea` for managing a :class:`Runtime` object's lifecycle.
 
-     """
+    """
 
     def run_forever(self):
-        """ Running the blocking procedure inside ``S``. Note, once this method is called,
+        """Running the blocking procedure inside ``S``. Note, once this method is called,
         ``S`` is blocked.
 
         .. note::
@@ -70,7 +70,7 @@ class BaseRuntime:
         raise NotImplementedError
 
     def cancel(self):
-        """ Cancelling :meth:`run_forever` from ``M``. :meth:`cancel` usually requires some special communication
+        """Cancelling :meth:`run_forever` from ``M``. :meth:`cancel` usually requires some special communication
         between ``M`` and ``S``, e.g.
 
         - Use :class:`threading.Event` or `multiprocessing.Event`, while :meth:`run_forever` polls for this event
@@ -84,7 +84,7 @@ class BaseRuntime:
         raise NotImplementedError
 
     def setup(self):
-        """ Method called to prepare the runtime inside ``S``. Optional in subclasses.
+        """Method called to prepare the runtime inside ``S``. Optional in subclasses.
         The default implementation does nothing.
 
         .. note::
@@ -98,7 +98,7 @@ class BaseRuntime:
         pass
 
     def teardown(self):
-        """ Method called immediately after :meth:`run_forever` is unblocked.
+        """Method called immediately after :meth:`run_forever` is unblocked.
         You can tidy up things here.  Optional in subclasses. The default implementation does nothing.
 
         .. note::

@@ -9,8 +9,7 @@ NUM_DOCS = 100
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.mark.parametrize('flow_log_id',
-                         [None, 'identity_flow'])
+@pytest.mark.parametrize('flow_log_id', [None, 'identity_flow'])
 def test_logging(monkeypatch, flow_log_id):
     from fluent import asynchandler as fluentasynchandler
 
@@ -25,8 +24,7 @@ def test_logging(monkeypatch, flow_log_id):
 
     monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
 
-    with Flow(identity='identity_flow').add(name='pod1'). \
-            add(name='pod2'):
+    with Flow(identity='identity_flow').add(name='pod1').add(name='pod2'):
         pass
 
 

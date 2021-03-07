@@ -12,22 +12,27 @@ def api_to_dict():
 
     parsers = get_main_parser()._actions[-1].choices
 
-    all_d = {'name': 'Jina',
-             'description': 'Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep '
-                            'learning technology',
-             'license': 'Apache 2.0',
-             'vendor': 'Jina AI Limited',
-             'source': 'https://github.com/jina-ai/jina/tree/' + os.environ.get('JINA_VCS_VERSION', 'master'),
-             'url': 'https://jina.ai',
-             'docs': 'https://docs.jina.ai',
-             'authors': 'dev-team@jina.ai',
-             'version': __version__,
-             'methods': [],
-             'revision': os.environ.get('JINA_VCS_VERSION')}
+    all_d = {
+        'name': 'Jina',
+        'description': 'Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep '
+        'learning technology',
+        'license': 'Apache 2.0',
+        'vendor': 'Jina AI Limited',
+        'source': 'https://github.com/jina-ai/jina/tree/'
+        + os.environ.get('JINA_VCS_VERSION', 'master'),
+        'url': 'https://jina.ai',
+        'docs': 'https://docs.jina.ai',
+        'authors': 'dev-team@jina.ai',
+        'version': __version__,
+        'methods': [],
+        'revision': os.environ.get('JINA_VCS_VERSION'),
+    }
 
     for p_name in parsers.keys():
         d = {'name': p_name, 'options': []}
-        for ddd in _export_parser_args(lambda *x: get_main_parser()._actions[-1].choices[p_name], type_as_str=True):
+        for ddd in _export_parser_args(
+            lambda *x: get_main_parser()._actions[-1].choices[p_name], type_as_str=True
+        ):
             d['options'].append(ddd)
         all_d['methods'].append(d)
 
@@ -47,7 +52,10 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
         if a.default != b.default:
             random_dest.add(a.dest)
     for a in parser._actions:
-        if isinstance(a, (_StoreAction, _StoreTrueAction, KVAppendAction)) and a.help != argparse.SUPPRESS:
+        if (
+            isinstance(a, (_StoreAction, _StoreTrueAction, KVAppendAction))
+            and a.help != argparse.SUPPRESS
+        ):
             ddd = {p: getattr(a, p) for p in port_attr}
             if isinstance(a, _StoreTrueAction):
                 ddd['type'] = bool
@@ -56,7 +64,9 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
             else:
                 ddd['type'] = a.type
             if ddd['choices']:
-                ddd['choices'] = [str(k) if isinstance(k, BetterEnum) else k for k in ddd['choices']]
+                ddd['choices'] = [
+                    str(k) if isinstance(k, BetterEnum) else k for k in ddd['choices']
+                ]
                 ddd['type'] = str
             if isinstance(ddd['default'], BetterEnum):
                 ddd['default'] = str(ddd['default'])
@@ -69,6 +79,7 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
         if a.dest in random_dest:
             ddd['default_random'] = True
             from jina.helper import random_identity, random_port
+
             if isinstance(a.default, str):
                 ddd['default_factory'] = random_identity.__name__
             elif isinstance(a.default, int):

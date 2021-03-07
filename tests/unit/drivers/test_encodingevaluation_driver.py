@@ -12,8 +12,10 @@ class MockDiffEvaluator(BaseEmbeddingEvaluator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
-        """"
+    def evaluate(
+        self, actual: 'np.array', desired: 'np.array', *args, **kwargs
+    ) -> float:
+        """ "
         :param actual: the embedding of the document (resulting from an Encoder)
         :param desired: the expected embedding of the document
         :return the evaluation metric value for the request document
@@ -48,9 +50,9 @@ def ground_truth_pairs():
     return pairs
 
 
-def test_encoding_evaluate_driver(mock_diff_evaluator,
-                                  simple_evaluate_driver,
-                                  ground_truth_pairs):
+def test_encoding_evaluate_driver(
+    mock_diff_evaluator, simple_evaluate_driver, ground_truth_pairs
+):
     simple_evaluate_driver.attach(executor=mock_diff_evaluator, runtime=None)
     simple_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
@@ -61,7 +63,6 @@ def test_encoding_evaluate_driver(mock_diff_evaluator,
 
 
 class SimpleChunkEvaluateDriver(NDArrayEvaluateDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.eval_request = None
@@ -100,9 +101,9 @@ def eval_request():
     return Request(req).as_typed_request('index')
 
 
-def test_encoding_evaluate_driver_embedding_in_chunks(simple_chunk_evaluate_driver,
-                                                      mock_diff_evaluator,
-                                                      eval_request):
+def test_encoding_evaluate_driver_embedding_in_chunks(
+    simple_chunk_evaluate_driver, mock_diff_evaluator, eval_request
+):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
     simple_chunk_evaluate_driver.attach(executor=mock_diff_evaluator, runtime=None)
