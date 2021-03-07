@@ -26,7 +26,7 @@ def _sample(iterable, sampling_rate: float = None):
             yield i
 
 
-def _subsample(iterable, sampling_rate: float = None, size: int = None):
+def _subsample(iterable, size: int = None, sampling_rate: float = None):
     yield from it.islice(_sample(iterable, sampling_rate), size)
 
 
@@ -34,16 +34,24 @@ def _input_lines(
     lines: Iterable[str] = None,
     filepath: str = None,
     line_format: str = 'json',
+    field_resolver: Dict[str, str] = None,
+    size: int = None,
+    sampling_rate: float = None,
 ) -> Generator[Union[str, 'Document'], None, None]:
     """Generator function for lines, json and sc. Yields documents or strings.
 
-    :param filepath: a text file that each line contains a document
     :param lines: a list of strings, each is considered as a document
+    :param filepath: a text file that each line contains a document
     :param line_format: the format of each line ``json`` or ``csv``
+    :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
+            names defined in Protobuf. This is only used when the given ``document`` is
+            a JSON string or a Python dict.
+    :param size: the maximum number of the documents
+    :param sampling_rate: the sampling rate between [0, 1]
     :yields: documents
 
     .. note::
-        This function should not be directly used, use :meth:`Flow.index_lines`, :meth:`Flow.search_lines` instead
+    This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
@@ -51,24 +59,29 @@ def _input_lines(
             if file_type in _jsonl_ext:
                 yield from _input_ndjson(f)
             elif file_type in _csv_ext:
-                yield from _input_csv(f)
+                yield from _input_csv(f, field_resolver, size, sampling_rate)
             else:
-                yield from _subsample(f)
+                yield from _subsample(f, size, sampling_rate)
     elif lines:
         if line_format == 'json':
             yield from _input_ndjson(lines)
         elif line_format == 'csv':
-            yield from _input_csv(lines)
+            yield from _input_csv(lines, field_resolver, size, sampling_rate)
         else:
-            yield from _subsample(lines)
+            yield from _subsample(lines, size, sampling_rate)
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
 
 
-def _input_ndjson(fp: Iterable[str], field_resolver: Dict[str, str] = None):
+def _input_ndjson(
+    fp: Iterable[str],
+    field_resolver: Dict[str, str] = None,
+    size: int = None,
+    sampling_rate: float = None,
+):
     from jina import Document
 
-    for line in _subsample(fp):
+    for line in _subsample(fp, size, sampling_rate):
         value = json.loads(line)
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(
@@ -78,11 +91,16 @@ def _input_ndjson(fp: Iterable[str], field_resolver: Dict[str, str] = None):
             yield Document(value, field_resolver)
 
 
-def _input_csv(fp: Iterable[str], field_resolver: Dict[str, str] = None):
+def _input_csv(
+    fp: Iterable[str],
+    field_resolver: Dict[str, str] = None,
+    size: int = None,
+    sampling_rate: float = None,
+):
     from jina import Document
 
     lines = csv.DictReader(fp)
-    for value in _subsample(lines):
+    for value in _subsample(lines, size, sampling_rate):
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(
                 value['groundtruth'], field_resolver
