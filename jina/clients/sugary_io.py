@@ -34,7 +34,7 @@ def _input_lines(
     lines: Iterable[str] = None,
     filepath: str = None,
     line_format: str = 'json',
-) -> Generator[Union[str, 'Document']]:
+) -> Generator[Union[str, 'Document'], None, None]:
     """Generator function for lines, json and sc. Yields documents or strings.
 
     :param filepath: a text file that each line contains a document
@@ -136,7 +136,7 @@ def _input_files(
 
 def _input_ndarray(
     array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
-) -> Generator['np.ndarray']:
+) -> Generator['np.ndarray', None, None]:
     """Create a generator for a given dimension of a numpy array.
 
     :param array: the numpy ndarray data source
