@@ -33,6 +33,7 @@ def _subsample(iterable, size: int = None, sampling_rate: float = None):
 def _input_lines(
     lines: Iterable[str] = None,
     filepath: str = None,
+    read_mode: str = 'r',
     line_format: str = 'json',
     field_resolver: Dict[str, str] = None,
     size: int = None,
@@ -42,6 +43,8 @@ def _input_lines(
 
     :param lines: a list of strings, each is considered as a document
     :param filepath: a text file that each line contains a document
+    :param read_mode: specifies the mode in which the file
+                is opened. 'r' for reading in text mode, 'rb' for reading in binary
     :param line_format: the format of each line ``json`` or ``csv``
     :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
             names defined in Protobuf. This is only used when the given ``document`` is
@@ -55,7 +58,7 @@ def _input_lines(
     """
     if filepath:
         file_type = os.path.splitext(filepath)[1]
-        with open(filepath, 'r') as f:
+        with open(filepath, read_mode) as f:
             if file_type in _jsonl_ext:
                 yield from _input_ndjson(f)
             elif file_type in _csv_ext:
