@@ -8,7 +8,7 @@ import itertools as it
 import json
 import os
 import random
-from typing import List, Union, Iterator, Iterable, Dict, TextIO, Generator
+from typing import List, Union, Iterator, Iterable, Dict, Generator
 
 import numpy as np
 
@@ -20,24 +20,26 @@ _jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
 _csv_ext = {'.csv', '.tcsv'}
 
 
-def _sample(iterable, sampling_rate: float = None):
+def _sample(iterable, sampling_rate: Optional[float] = None):
     for i in iterable:
         if sampling_rate is None or random.random() < sampling_rate:
             yield i
 
 
-def _subsample(iterable, size: int = None, sampling_rate: float = None):
+def _subsample(
+    iterable, size: Optional[int] = None, sampling_rate: Optional[float] = None
+):
     yield from it.islice(_sample(iterable, sampling_rate), size)
 
 
 def _input_lines(
-    lines: Iterable[str] = None,
-    filepath: str = None,
+    lines: Optional[Iterable[str]] = None,
+    filepath: Optional[str] = None,
     read_mode: str = 'r',
     line_format: str = 'json',
-    field_resolver: Dict[str, str] = None,
-    size: int = None,
-    sampling_rate: float = None,
+    field_resolver: Optional[Dict[str, str]] = None,
+    size: Optional[int] = None,
+    sampling_rate: Optional[float] = None,
 ) -> Generator[Union[str, 'Document'], None, None]:
     """Generator function for lines, json and sc. Yields documents or strings.
 
@@ -78,9 +80,9 @@ def _input_lines(
 
 def _input_ndjson(
     fp: Iterable[str],
-    field_resolver: Dict[str, str] = None,
-    size: int = None,
-    sampling_rate: float = None,
+    field_resolver: Optional[Dict[str, str]] = None,
+    size: Optional[int] = None,
+    sampling_rate: Optional[float] = None,
 ):
     from jina import Document
 
@@ -96,9 +98,9 @@ def _input_ndjson(
 
 def _input_csv(
     fp: Iterable[str],
-    field_resolver: Dict[str, str] = None,
-    size: int = None,
-    sampling_rate: float = None,
+    field_resolver: Optional[Dict[str, str]] = None,
+    size: Optional[int] = None,
+    sampling_rate: Optional[float] = None,
 ):
     from jina import Document
 
@@ -115,9 +117,9 @@ def _input_csv(
 def _input_files(
     patterns: Union[str, List[str]],
     recursive: bool = True,
-    size: int = None,
-    sampling_rate: float = None,
-    read_mode: str = None,
+    size: Optional[int] = None,
+    sampling_rate: Optional[float] = None,
+    read_mode: Optional[str] = None,
 ) -> Iterator[Union[str, bytes]]:
     """Creates an iterator over a list of file path or the content of the files.
 
@@ -156,7 +158,10 @@ def _input_files(
 
 
 def _input_ndarray(
-    array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
+    array: 'np.ndarray',
+    axis: int = 0,
+    size: Optional[int] = None,
+    shuffle: bool = False,
 ) -> Generator['np.ndarray', None, None]:
     """Create a generator for a given dimension of a numpy array.
 
