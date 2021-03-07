@@ -4,7 +4,7 @@ from enum import Enum
 from datetime import datetime
 from collections import defaultdict
 
-from pydantic import Field, BaseModel, create_model
+from pydantic import Field, BaseModel, BaseConfig, create_model
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 
@@ -49,6 +49,12 @@ PROTOBUF_TO_PYTHON_TYPE = {
 }
 
 
+class CamelCaseConfig(BaseConfig):
+    """Pydantic config for Camel case handling"""
+
+    allow_population_by_field_name = True
+
+
 def protobuf_to_pydantic_model(
     protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]
 ) -> BaseModel:
@@ -64,6 +70,7 @@ def protobuf_to_pydantic_model(
     """
 
     all_fields = {}
+    camel_case_fields = {}  # {"random_string": {"alias": "randomString"}}
     oneof_fields = defaultdict(list)
 
     if isinstance(protobuf_model, Descriptor):
@@ -77,13 +84,16 @@ def protobuf_to_pydantic_model(
         return PROTO_TO_PYDANTIC_MODELS[model_name]
 
     for f in protobuf_fields:
+        field_name = f.name
+        camel_case_fields[field_name] = {'alias': f.camelcase_name}
+
         field_type = PROTOBUF_TO_PYTHON_TYPE[f.type]
         default_value = f.default_value
 
         if f.containing_oneof:
             # Proto Field type: oneof
             # NOTE: oneof fields are handled as a post-processing step
-            oneof_fields[f.containing_oneof.name].append(f.name)
+            oneof_fields[f.containing_oneof.name].append(field_name)
 
         if field_type is Enum:
             # Proto Field Type: enum
@@ -118,7 +128,7 @@ def protobuf_to_pydantic_model(
         if f.label == FieldDescriptor.LABEL_REPEATED:
             field_type = List[field_type]
 
-        all_fields[f.name] = (field_type, Field(default=default_value))
+        all_fields[field_name] = (field_type, Field(default=default_value))
 
     # Post-processing (Handle oneof fields)
     for oneof_k, oneof_v_list in oneof_fields.items():
@@ -128,7 +138,8 @@ def protobuf_to_pydantic_model(
             union_types.append(ff[0])
         all_fields[oneof_k] = (Union[tuple(union_types)], Field(None))
 
-    model = create_model(model_name, **all_fields)
+    CamelCaseConfig.fields = camel_case_fields
+    model = create_model(model_name, **all_fields, __config__=CamelCaseConfig)
     model.update_forward_refs()
     PROTO_TO_PYDANTIC_MODELS[model_name] = model
     return model

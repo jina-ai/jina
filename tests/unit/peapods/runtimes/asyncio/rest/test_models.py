@@ -45,9 +45,9 @@ def test_enum_definitions():
 
 def test_all_fields_in_document_proto():
     """ This tests: all fields are picked from the proto definition """
-    document_proto_properties = PROTO_TO_PYDANTIC_MODELS['DocumentProto']().schema()[
-        'definitions'
-    ]['DocumentProto']['properties']
+    document_proto_properties = PROTO_TO_PYDANTIC_MODELS['DocumentProto']().schema(
+        by_alias=False
+    )['definitions']['DocumentProto']['properties']
     for i in [
         'id',
         'content_hash',
@@ -71,6 +71,12 @@ def test_all_fields_in_document_proto():
         'evaluations',
     ]:
         assert i in document_proto_properties
+
+    document_proto_properties_alias = PROTO_TO_PYDANTIC_MODELS[
+        'DocumentProto'
+    ]().schema()['definitions']['DocumentProto']['properties']
+    for i in ['contentHash', 'levelName', 'parentId', 'mimeType']:
+        assert i in document_proto_properties_alias
 
 
 def test_oneof():
@@ -131,14 +137,14 @@ def test_struct():
 def test_timestamp():
     """ This tests: google.protobuf.Timestamp are represented as date-time """
     assert (
-        PROTO_TO_PYDANTIC_MODELS['RouteProto']().schema()['properties']['start_time'][
-            'type'
-        ]
+        PROTO_TO_PYDANTIC_MODELS['RouteProto']().schema(by_alias=False)['properties'][
+            'start_time'
+        ]['type']
         == 'string'
     )
     assert (
-        PROTO_TO_PYDANTIC_MODELS['RouteProto']().schema()['properties']['start_time'][
-            'format'
-        ]
+        PROTO_TO_PYDANTIC_MODELS['RouteProto']().schema(by_alias=False)['properties'][
+            'start_time'
+        ]['format']
         == 'date-time'
     )
