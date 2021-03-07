@@ -12,23 +12,28 @@ from ...logging import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType, Document
 from ...types.sets.querylang import AcceptQueryLangType
 
-SingletonDataType = Union[DocumentContentType,
-                          DocumentSourceType,
-                          Document,
-                          Tuple[DocumentContentType, DocumentContentType],
-                          Tuple[DocumentSourceType, DocumentSourceType]]
+SingletonDataType = Union[
+    DocumentContentType,
+    DocumentSourceType,
+    Document,
+    Tuple[DocumentContentType, DocumentContentType],
+    Tuple[DocumentSourceType, DocumentSourceType],
+]
 
-GeneratorSourceType = Union[Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]]
+GeneratorSourceType = Union[
+    Document, Iterable[SingletonDataType], AsyncIterable[SingletonDataType]
+]
 
 
-def request_generator(data: GeneratorSourceType,
-                      request_size: int = 0,
-                      mode: RequestType = RequestType.INDEX,
-                      mime_type: str = None,
-                      queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
-                      data_type: DataInputType = DataInputType.AUTO,
-                      **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
-                      ) -> Iterator['Request']:
+def request_generator(
+    data: GeneratorSourceType,
+    request_size: int = 0,
+    mode: RequestType = RequestType.INDEX,
+    mime_type: str = None,
+    queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
+    data_type: DataInputType = DataInputType.AUTO,
+    **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
+) -> Iterator['Request']:
     """Generate a request iterator.
 
     :param data: the data to use in the request
@@ -38,7 +43,8 @@ def request_generator(data: GeneratorSourceType,
     :param queryset: querylang set of queries
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
-    :return:
+    :param kwargs: additional arguments
+    :yield: request
     """
     _kwargs = dict(mime_type=mime_type, length=request_size, weight=1.0)
 
@@ -50,4 +56,4 @@ def request_generator(data: GeneratorSourceType,
 
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception
-        default_logger.critical(f'input_fn is not valid! {ex!r}', exc_info=True)
+        default_logger.critical(f'inputs is not valid! {ex!r}', exc_info=True)

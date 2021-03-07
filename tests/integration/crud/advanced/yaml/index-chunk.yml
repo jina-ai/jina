@@ -4,6 +4,7 @@ components:
     with:
       index_filename: vec.gz
       metric: cosine
+      delete_on_dump: true
     metas:
       name: vecidx
       workspace: $JINA_CRUD_ADVANCED_WORKSPACE

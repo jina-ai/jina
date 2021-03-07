@@ -5,8 +5,9 @@ from jina import Crafter
 from jina.parsers import set_pea_parser, set_pod_parser
 
 
-@pytest.mark.parametrize('parser, store', [(set_pea_parser, PeaStore),
-                                           (set_pod_parser, PodStore)])
+@pytest.mark.parametrize(
+    'parser, store', [(set_pea_parser, PeaStore), (set_pod_parser, PodStore)]
+)
 def test_peastore_add(parser, store):
     p_args = parser().parse_args([])
     s = store()
@@ -17,8 +18,9 @@ def test_peastore_add(parser, store):
     assert not s
 
 
-@pytest.mark.parametrize('parser, store', [(set_pea_parser, PeaStore),
-                                           (set_pod_parser, PodStore)])
+@pytest.mark.parametrize(
+    'parser, store', [(set_pea_parser, PeaStore), (set_pod_parser, PodStore)]
+)
 def test_peastore_multi_add(parser, store):
     s = store()
     for j in range(5):
@@ -30,8 +32,9 @@ def test_peastore_multi_add(parser, store):
     assert not s
 
 
-@pytest.mark.parametrize('parser, store', [(set_pea_parser, PeaStore),
-                                           (set_pod_parser, PodStore)])
+@pytest.mark.parametrize(
+    'parser, store', [(set_pea_parser, PeaStore), (set_pod_parser, PodStore)]
+)
 def test_peapod_store_add_bad(parser, store):
     class BadCrafter(Crafter):
         def __init__(self, *args, **kwargs):

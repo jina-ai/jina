@@ -7,11 +7,10 @@ from .. import BaseEvaluator
 
 
 class BaseTextEvaluator(BaseEvaluator):
-    """A :class:`BaseTextEvaluator` evaluates the difference between actual and desired text
-    """
+    """A :class:`BaseTextEvaluator` evaluates the difference between actual and desired text"""
 
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
-        """"
+        """ "
         :param actual: the content of the document
         :param desired: the expected content of the document
         :return the evaluation metric value for the request document

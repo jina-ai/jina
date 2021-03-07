@@ -12,11 +12,7 @@ from ...stores import pea_store as store
 router = APIRouter(prefix='/peas', tags=['peas'])
 
 
-@router.get(
-    path='',
-    summary='Get all alive Pea\' status',
-    response_model=StoreStatus
-)
+@router.get(path='', summary='Get all alive Pea\' status', response_model=StoreStatus)
 async def _get_items():
     return store.status
 
@@ -34,7 +30,7 @@ async def _fetch_pea_params():
     summary='Create a Pea',
     description='Create a Pea and add it to the store',
     status_code=201,
-    response_model=uuid.UUID
+    response_model=uuid.UUID,
 )
 async def _create(pea: 'PeaModel'):
     try:
@@ -57,12 +53,9 @@ async def _clear_all():
 @router.delete(
     path='/{id}',
     summary='Terminate a running Pea',
-    description='Terminate a running Pea and release its resources'
+    description='Terminate a running Pea and release its resources',
 )
-async def _delete(
-        id: uuid.UUID,
-        workspace: bool = False
-):
+async def _delete(id: uuid.UUID, workspace: bool = False):
     try:
         store.delete(id=id, workspace=workspace)
     except KeyError:
@@ -70,9 +63,7 @@ async def _delete(
 
 
 @router.get(
-    path='/{id}',
-    summary='Get status of a running Pea',
-    response_model=StoreItemStatus
+    path='/{id}', summary='Get status of a running Pea', response_model=StoreItemStatus
 )
 async def _status(id: uuid.UUID):
     try:

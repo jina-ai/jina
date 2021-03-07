@@ -21,8 +21,10 @@ def _load_local_hub_manifest():
     try:
         path = os.path.dirname(pkgutil.get_loader(namespace).path)
     except AttributeError:
-        default_logger.warning('local Hub is not initialized, '
-                               'try "git submodule update --init" if you are in dev mode')
+        default_logger.warning(
+            'local Hub is not initialized, '
+            'try "git submodule update --init" if you are in dev mode'
+        )
         return {}
 
     def _add_hub():
@@ -68,7 +70,9 @@ def _fetch_access_token(logger):
     logger.info('fetching github access token...')
 
     if not credentials_file().is_file():
-        logger.critical(f'User not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}')
+        logger.critical(
+            f'User not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}'
+        )
         raise HubLoginRequired
 
     try:
@@ -77,19 +81,25 @@ def _fetch_access_token(logger):
             access_token = cred_yml['access_token']
             return access_token
     except KeyError:
-        logger.error(f'Invalid access file. '
-                     f'please re-login using command: {colored("jina hub login", attrs=["bold"])}')
+        logger.error(
+            f'Invalid access file. '
+            f'please re-login using command: {colored("jina hub login", attrs=["bold"])}'
+        )
         raise HubLoginRequired
 
 
 def _make_hub_table_with_local(images, local_images):
-    info_table = [f'found {len(images)} matched hub images',
-                  '{:<50s}{:<25s}{:<30s}{:<25s}{:<30s}{:<50s}'.format(colored('Name', attrs=_header_attrs),
-                                                                      colored('Kind', attrs=_header_attrs),
-                                                                      colored('Version', attrs=_header_attrs),
-                                                                      colored('Local', attrs=_header_attrs),
-                                                                      colored('Jina Version', attrs=_header_attrs),
-                                                                      colored('Description', attrs=_header_attrs))]
+    info_table = [
+        f'found {len(images)} matched hub images',
+        '{:<50s}{:<25s}{:<30s}{:<25s}{:<30s}{:<50s}'.format(
+            colored('Name', attrs=_header_attrs),
+            colored('Kind', attrs=_header_attrs),
+            colored('Version', attrs=_header_attrs),
+            colored('Local', attrs=_header_attrs),
+            colored('Jina Version', attrs=_header_attrs),
+            colored('Description', attrs=_header_attrs),
+        ),
+    ]
     images = sorted(images, key=lambda k: k['name'].lower())
     for image in images:
         image_name = image.get('name', '')
@@ -109,21 +119,27 @@ def _make_hub_table_with_local(images, local_images):
                     color = 'green'
                 else:
                     color = 'yellow'
-            info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
-                              f'{colored(kind, color="yellow"):<25s}'
-                              f'{colored(ver, color="green"):<25s}'
-                              f'{colored(local_ver, color=color):<25s}'
-                              f'{colored(jina_ver, color="green"):<25s}'
-                              f'{desc:<30s}')
+            info_table.append(
+                f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
+                f'{colored(kind, color="yellow"):<25s}'
+                f'{colored(ver, color="green"):<25s}'
+                f'{colored(local_ver, color=color):<25s}'
+                f'{colored(jina_ver, color="green"):<25s}'
+                f'{desc:<30s}'
+            )
     return info_table
 
 
 def _make_hub_table(images):
-    info_table = [f'found {len(images)} matched hub images',
-                  '{:<50s}{:<25s}{:<25s}{:<30s}'.format(colored('Name', attrs=_header_attrs),
-                                                        colored('Kind', attrs=_header_attrs),
-                                                        colored('Version', attrs=_header_attrs),
-                                                        colored('Description', attrs=_header_attrs))]
+    info_table = [
+        f'found {len(images)} matched hub images',
+        '{:<50s}{:<25s}{:<25s}{:<30s}'.format(
+            colored('Name', attrs=_header_attrs),
+            colored('Kind', attrs=_header_attrs),
+            colored('Version', attrs=_header_attrs),
+            colored('Description', attrs=_header_attrs),
+        ),
+    ]
     images = sorted(images, key=lambda k: k['name'].lower())
     for image in images:
         image_name = image.get('name', '')
@@ -131,8 +147,10 @@ def _make_hub_table(images):
         ver = image.get('version', '')
         desc = image.get('description', '')[:60].strip() + '...'
         if image_name and ver and desc:
-            info_table.append(f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
-                              f'{colored(kind, color="yellow"):<25s}'
-                              f'{colored(ver, color="green"):<25s}'
-                              f'{desc:<30s}')
+            info_table.append(
+                f'{colored(image_name, color="yellow", attrs="bold"):<50s}'
+                f'{colored(kind, color="yellow"):<25s}'
+                f'{colored(ver, color="green"):<25s}'
+                f'{desc:<30s}'
+            )
     return info_table

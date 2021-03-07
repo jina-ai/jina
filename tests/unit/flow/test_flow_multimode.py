@@ -14,16 +14,16 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockSegmenter(BaseSegmenter):
-
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
-        chunks = [dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
-                  dict(text=split[1], offset=1, weight=1.0, modality='mode2')]
+        chunks = [
+            dict(text=split[0], offset=0, weight=1.0, modality='mode1'),
+            dict(text=split[1], offset=1, weight=1.0, modality='mode2'),
+        ]
         return chunks
 
 
 class MockEncoder(BaseEncoder):
-
     def encode(self, data: str, *args, **kwargs) -> 'np.ndarray':
         output = []
         for r in data:
@@ -39,7 +39,7 @@ class MockEncoder(BaseEncoder):
 def test_flow_with_modalities(tmpdir, restful):
     os.environ['JINA_TEST_FLOW_MULTIMODE_WORKSPACE'] = str(tmpdir)
 
-    def input_fn():
+    def input_function():
         doc1 = jina_pb2.DocumentProto()
         doc1.text = 'title: this is mode1 from doc1, body: this is mode2 from doc1'
         doc1.id = '1'
@@ -54,28 +54,38 @@ def test_flow_with_modalities(tmpdir, restful):
 
         return [doc1, doc2, doc3]
 
-    flow = (Flow(restful=restful)
-            .add(name='segmenter', uses='!MockSegmenter')
-            .add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml'))
-            .add(name='indexer1', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'), needs=['encoder1'])
-            .add(name='encoder2', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'), needs=['segmenter'])
-            .add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml'))
-            .join(['indexer1', 'indexer2']))
+    flow = (
+        Flow(restful=restful)
+        .add(name='segmenter', uses='!MockSegmenter')
+        .add(name='encoder1', uses=os.path.join(cur_dir, 'yaml/mockencoder-mode1.yml'))
+        .add(
+            name='indexer1',
+            uses=os.path.join(cur_dir, 'yaml/numpy-indexer-1.yml'),
+            needs=['encoder1'],
+        )
+        .add(
+            name='encoder2',
+            uses=os.path.join(cur_dir, 'yaml/mockencoder-mode2.yml'),
+            needs=['segmenter'],
+        )
+        .add(name='indexer2', uses=os.path.join(cur_dir, 'yaml/numpy-indexer-2.yml'))
+        .join(['indexer1', 'indexer2'])
+    )
 
     with flow:
-        flow.index(input_fn=input_fn)
+        flow.index(inputs=input_function)
 
     with open(os.path.join(tmpdir, 'compound', 'vec1.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
-        np.testing.assert_equal(result, np.array([[0.0, 0.0, 0.0],
-                                                  [0.0, 0.0, 0.0],
-                                                  [0.0, 0.0, 0.0]]))
+        np.testing.assert_equal(
+            result, np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+        )
 
     with open(os.path.join(tmpdir, 'compound', 'vec2.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
-        np.testing.assert_equal(result, np.array([[1.0, 1.0, 1.0],
-                                                  [1.0, 1.0, 1.0],
-                                                  [1.0, 1.0, 1.0]]))
+        np.testing.assert_equal(
+            result, np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
+        )
 
     chunkIndexer1 = BinaryPbIndexer.load(os.path.join(tmpdir, 'compound', 'kvidx1.bin'))
     assert chunkIndexer1.size == 3

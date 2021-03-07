@@ -8,7 +8,7 @@ import itertools as it
 import json
 import os
 import random
-from typing import List, Union, Iterator, Iterable, Dict, TextIO
+from typing import List, Union, Iterator, Iterable, Dict, TextIO, Generator
 
 import numpy as np
 
@@ -31,10 +31,10 @@ def _subsample(iterable, sampling_rate: float = None, size: int = None):
 
 
 def _input_lines(
-        lines: Iterable[str] = None,
-        filepath: str = None,
-        line_format: str = 'json',
-) -> Iterator[Union[str, 'Document']]:
+    lines: Iterable[str] = None,
+    filepath: str = None,
+    line_format: str = 'json',
+) -> Generator[Union[str, 'Document']]:
     """Generator function for lines, json and sc. Yields documents or strings.
 
     :param filepath: a text file that each line contains a document
@@ -64,51 +64,51 @@ def _input_lines(
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
 
-def _input_ndjson(
-        fp: Union[Iterable[str], TextIO],
-        field_resolver: Dict[str, str] = None,
-):
+
+def _input_ndjson(fp: Iterable[str], field_resolver: Dict[str, str] = None):
     from jina import Document
 
     for line in _subsample(fp):
         value = json.loads(line)
         if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
+            yield Document(value['document'], field_resolver), Document(
+                value['groundtruth'], field_resolver
+            )
         else:
             yield Document(value, field_resolver)
 
 
-def _input_csv(
-        fp: Union[Iterable[str], TextIO],
-        field_resolver: Dict[str, str] = None,
-):
+def _input_csv(fp: Iterable[str], field_resolver: Dict[str, str] = None):
     from jina import Document
+
     lines = csv.DictReader(fp)
     for value in _subsample(lines):
         if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
+            yield Document(value['document'], field_resolver), Document(
+                value['groundtruth'], field_resolver
+            )
         else:
             yield Document(value, field_resolver)
 
 
 def _input_files(
-        patterns: Union[str, List[str]],
-        recursive: bool = True,
-        size: int = None,
-        sampling_rate: float = None,
-        read_mode: str = None,
+    patterns: Union[str, List[str]],
+    recursive: bool = True,
+    size: int = None,
+    sampling_rate: float = None,
+    read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
-    r"""Input function that iterates over files, it can be used in the Flow API. Yields file paths or binary content.
+    """Creates an iterator over a list of file path or the content of the files.
 
     :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
-    :param recursive: If recursive is true, the pattern '**' will match any files and
-                zero or more directories and subdirectories
+    :param recursive: If recursive is true, the pattern '**' will match any files
+        and zero or more directories and subdirectories
     :param size: the maximum number of the files
     :param sampling_rate: the sampling rate between [0, 1]
-    :param read_mode: specifies the mode in which the file
-            is opened. 'r' for reading in text mode, 'rb' for reading in binary mode.
-            If `read_mode` is None, will iterate over filenames
-    :yields: file paths or binary content
+    :param read_mode: specifies the mode in which the file is opened.
+        'r' for reading in text mode, 'rb' for reading in binary mode.
+        If `read_mode` is None, will iterate over filenames.
+    :yield: file paths or binary content
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
@@ -135,15 +135,15 @@ def _input_files(
 
 
 def _input_ndarray(
-        array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
-) -> Iterator['np.ndarray']:
-    """Input function that iterates over a numpy array, it can be used in the Flow API. Yields ndarrays.
+    array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
+) -> Generator['np.ndarray']:
+    """Create a generator for a given dimension of a numpy array.
 
     :param array: the numpy ndarray data source
     :param axis: iterate over that axis
     :param size: the maximum number of the sub arrays
     :param shuffle: shuffle the numpy data source beforehand
-    :yields: ndarrays
+    :yield: ndarray
 
     .. note::
         This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead

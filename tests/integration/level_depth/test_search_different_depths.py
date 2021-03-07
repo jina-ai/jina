@@ -2,6 +2,8 @@ import pytest
 
 from jina.flow import Flow
 
+from tests import validate_callback
+
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.parametrize('restful', [False])
@@ -19,9 +21,7 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
     with index_flow:
         index_flow.index(index_data)
 
-    mock = mocker.Mock()
     def validate_granularity_1(resp):
-        mock()
         assert len(resp.docs) == 3
         for doc in resp.docs:
             assert doc.granularity == 0
@@ -30,20 +30,20 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
 
         assert resp.docs[0].text == ' I am chunk 1 of doc 1,'
         assert (
-                resp.docs[0].matches[0].text
-                == 'I am chunk 0 of doc 1, I am chunk 1 of doc 1, I am chunk 2 of doc 1'
+            resp.docs[0].matches[0].text
+            == 'I am chunk 0 of doc 1, I am chunk 1 of doc 1, I am chunk 2 of doc 1'
         )
 
         assert resp.docs[1].text == 'I am chunk 0 of doc 2,'
         assert (
-                resp.docs[1].matches[0].text
-                == 'I am chunk 0 of doc 2, I am chunk 1 of doc 2'
+            resp.docs[1].matches[0].text
+            == 'I am chunk 0 of doc 2, I am chunk 1 of doc 2'
         )
 
         assert resp.docs[2].text == ' I am chunk 3 of doc 3'
         assert (
-                resp.docs[2].matches[0].text
-                == 'I am chunk 0 of doc 3, I am chunk 1 of doc 3, I am chunk 2 of doc 3, I am chunk 3 of doc 3'
+            resp.docs[2].matches[0].text
+            == 'I am chunk 0 of doc 3, I am chunk 1 of doc 3, I am chunk 2 of doc 3, I am chunk 3 of doc 3'
         )
 
     search_data = [
@@ -52,12 +52,11 @@ def test_index_depth_0_search_depth_1(tmpdir, mocker, monkeypatch, restful):
         ' I am chunk 3 of doc 3',
     ]
 
+    mock = mocker.Mock()
     with Flow.load_config('flow-query.yml') as search_flow:
         search_flow.search(
-            input_fn=search_data,
-            on_done=validate_granularity_1,
-            on_error=lambda r: print(r)
-
+            inputs=search_data, on_done=mock, on_error=lambda r: print(r)
         )
 
     mock.assert_called_once()
+    validate_callback(mock, validate_granularity_1)

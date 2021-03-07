@@ -27,7 +27,9 @@ class ContainerRuntime(ZMQRuntime):
         if not self._is_container_alive:
             # replay it to see the log
             self._docker_run(replay=True)
-            raise Exception('the container fails to start, check the arguments or entrypoint')
+            raise Exception(
+                'the container fails to start, check the arguments or entrypoint'
+            )
 
     def teardown(self):
         """Stop the container."""
@@ -44,6 +46,7 @@ class ContainerRuntime(ZMQRuntime):
 
     def _set_network_for_dind_linux(self):
         import docker
+
         # recompute the control_addr, do not assign client, since this would be an expensive object to
         # copy in the new process generated
         client = docker.from_env()
@@ -59,39 +62,56 @@ class ContainerRuntime(ZMQRuntime):
                     self.ctrl_addr, _ = Zmqlet.get_ctrl_address(
                         bridge_network.attrs['IPAM']['Config'][0]['Gateway'],
                         self.args.port_ctrl,
-                        self.args.ctrl_with_ipc)
+                        self.args.ctrl_with_ipc,
+                    )
             except Exception as ex:
-                self.logger.warning(f'Unable to set control address from "bridge" network: {ex!r}'
-                                    f' Control address set to {self.ctrl_addr}')
+                self.logger.warning(
+                    f'Unable to set control address from "bridge" network: {ex!r}'
+                    f' Control address set to {self.ctrl_addr}'
+                )
         client.close()
 
     def _docker_run(self, replay: bool = False):
         # important to notice, that client is not assigned as instance member to avoid potential
         # heavy copy into new process memory space
         import docker
+
         client = docker.from_env()
 
         if self.args.uses.startswith('docker://'):
             uses_img = self.args.uses.replace('docker://', '')
             self.logger.info(f'using image: {uses_img}')
         else:
-            warnings.warn(f'you are using legacy image format {self.args.uses}, this may create some ambiguity. '
-                          f'please use the new format: "--uses docker://{self.args.uses}"')
+            warnings.warn(
+                f'you are using legacy image format {self.args.uses}, this may create some ambiguity. '
+                f'please use the new format: "--uses docker://{self.args.uses}"'
+            )
             uses_img = self.args.uses
 
         # the image arg should be ignored otherwise it keeps using ContainerPea in the container
         # basically all args in BasePea-docker arg group should be ignored.
         # this prevent setting containerPea twice
         from ....parsers import set_pea_parser
-        non_defaults = ArgNamespace.get_non_defaults_args(self.args, set_pea_parser(),
-                                                          taboo={'uses', 'entrypoint', 'volumes',
-                                                                 'pull_latest', 'runtime_cls',
-                                                                 'docker_kwargs'})
+
+        non_defaults = ArgNamespace.get_non_defaults_args(
+            self.args,
+            set_pea_parser(),
+            taboo={
+                'uses',
+                'entrypoint',
+                'volumes',
+                'pull_latest',
+                'runtime_cls',
+                'docker_kwargs',
+            },
+        )
 
         if self.args.pull_latest:
-            self.logger.warning(f'pulling {uses_img}, this could take a while. if you encounter '
-                                f'timeout error due to pulling takes to long, then please set '
-                                f'"timeout-ready" to a larger value.')
+            self.logger.warning(
+                f'pulling {uses_img}, this could take a while. if you encounter '
+                f'timeout error due to pulling takes to long, then please set '
+                f'"timeout-ready" to a larger value.'
+            )
             client.images.pull(uses_img)
 
         _volumes = {}
@@ -108,7 +128,8 @@ class ContainerRuntime(ZMQRuntime):
                 _volumes[full_path] = {'bind': non_defaults['uses'], 'mode': 'ro'}
             elif not is_valid_local_config_source(self.args.uses_internal):
                 raise FileNotFoundError(
-                    f'"uses_internal" {self.args.uses_internal} is not like a path, please check it')
+                    f'"uses_internal" {self.args.uses_internal} is not like a path, please check it'
+                )
         if self.args.volumes:
             for p in self.args.volumes:
                 paths = p.split(':')
@@ -118,7 +139,10 @@ class ContainerRuntime(ZMQRuntime):
                     container_path = paths[1]
                 else:
                     container_path = '/' + os.path.basename(p)
-                _volumes[os.path.abspath(local_path)] = {'bind': container_path, 'mode': 'rw'}
+                _volumes[os.path.abspath(local_path)] = {
+                    'bind': container_path,
+                    'mode': 'rw',
+                }
 
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
@@ -130,16 +154,18 @@ class ContainerRuntime(ZMQRuntime):
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
 
         docker_kwargs = self.args.docker_kwargs or {}
-        self._container = client.containers.run(uses_img,
-                                                _args,
-                                                detach=True,
-                                                auto_remove=True,
-                                                ports=ports,
-                                                name=slugify(self.name),
-                                                volumes=_volumes,
-                                                network_mode=self._net_mode,
-                                                entrypoint=self.args.entrypoint,
-                                                **docker_kwargs)
+        self._container = client.containers.run(
+            uses_img,
+            _args,
+            detach=True,
+            auto_remove=True,
+            ports=ports,
+            name=slugify(self.name),
+            volumes=_volumes,
+            network_mode=self._net_mode,
+            entrypoint=self.args.entrypoint,
+            **docker_kwargs,
+        )
 
         if replay:
             # when replay is on, it means last time it fails to start
@@ -151,6 +177,7 @@ class ContainerRuntime(ZMQRuntime):
     @property
     def _is_container_alive(self) -> bool:
         import docker.errors
+
         try:
             self._container.reload()
         except docker.errors.NotFound:

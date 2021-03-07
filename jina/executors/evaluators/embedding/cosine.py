@@ -15,8 +15,10 @@ class CosineEvaluator(BaseEmbeddingEvaluator):
 
     metric = 'CosineDistance'
 
-    def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
-        """"
+    def evaluate(
+        self, actual: 'np.array', desired: 'np.array', *args, **kwargs
+    ) -> float:
+        """ "
         :param actual: the embedding of the document (resulting from an Encoder)
         :param desired: the expected embedding of the document
         :return the evaluation metric value for the request document
@@ -34,8 +36,8 @@ def _get_ones(x, y):
 def _ext_A(A):
     nA, dim = A.shape
     A_ext = _get_ones(nA, dim * 3)
-    A_ext[:, dim:2 * dim] = A
-    A_ext[:, 2 * dim:] = A ** 2
+    A_ext[:, dim : 2 * dim] = A
+    A_ext[:, 2 * dim :] = A ** 2
     return A_ext
 
 
@@ -43,7 +45,7 @@ def _ext_B(B):
     nB, dim = B.shape
     B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
-    B_ext[dim:2 * dim] = -2.0 * B.T
+    B_ext[dim : 2 * dim] = -2.0 * B.T
     del B
     return B_ext
 

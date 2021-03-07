@@ -30,8 +30,9 @@ class AsyncZMQRuntime(ZMQRuntime):
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        with zmq.asyncio.Context() as ctx, \
-                _init_socket(ctx, self.ctrl_addr, None, SocketType.PAIR_BIND, use_ipc=True)[0] as sock:
+        with zmq.asyncio.Context() as ctx, _init_socket(
+            ctx, self.ctrl_addr, None, SocketType.PAIR_BIND, use_ipc=True
+        )[0] as sock:
             msg = await recv_message_async(sock)
             if msg.request.command == 'TERMINATE':
                 msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS

@@ -40,7 +40,7 @@ class SingleFlowRunner(FlowRunner):
         documents: Union[Iterable, str],
         request_size: int,
         execution_method: str,
-        documents_parameter_name: Optional[str] = 'input_fn',
+        documents_parameter_name: Optional[str] = 'inputs',
         overwrite_workspace: bool = False,
     ):
         """

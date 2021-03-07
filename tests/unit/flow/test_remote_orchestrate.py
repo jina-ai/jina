@@ -5,8 +5,9 @@ from jina.enums import SocketType
 from jina.helper import get_internal_ip, get_public_ip
 
 
-@pytest.mark.parametrize('local_ip, on_public', [(get_internal_ip(), False),
-                                                 (get_public_ip(), True)])
+@pytest.mark.parametrize(
+    'local_ip, on_public', [(get_internal_ip(), False), (get_public_ip(), True)]
+)
 def test_remote_pod_local_gateway(local_ip, on_public):
     # BIND socket's host must always be 0.0.0.0
     remote_ip = '111.111.111.111'
@@ -20,9 +21,12 @@ def test_remote_pod_local_gateway(local_ip, on_public):
     assert f['gateway'].host_out == remote_ip
 
 
-@pytest.mark.parametrize('local_ip, on_public', [(get_internal_ip(), False),
-                                                 (get_public_ip(), True)])
-def test_remote_pod_local_pod_local_gateway_input_socket_pull_connect_from_remote(local_ip, on_public):
+@pytest.mark.parametrize(
+    'local_ip, on_public', [(get_internal_ip(), False), (get_public_ip(), True)]
+)
+def test_remote_pod_local_pod_local_gateway_input_socket_pull_connect_from_remote(
+    local_ip, on_public
+):
     remote_ip = '111.111.111.111'
     f = Flow(expose_public=on_public).add(host=remote_ip).add().build()
     for k, v in f:
@@ -35,8 +39,9 @@ def test_remote_pod_local_pod_local_gateway_input_socket_pull_connect_from_remot
     assert f['gateway'].host_out == remote_ip
 
 
-@pytest.mark.parametrize('local_ip, on_public', [(get_internal_ip(), False),
-                                                 (get_public_ip(), True)])
+@pytest.mark.parametrize(
+    'local_ip, on_public', [(get_internal_ip(), False), (get_public_ip(), True)]
+)
 def test_remote_pod_local_pod_local_gateway(local_ip, on_public):
     remote_ip = '111.111.111.111'
     f = Flow(expose_public=on_public).add(host=remote_ip).add().build()
@@ -50,14 +55,16 @@ def test_remote_pod_local_pod_local_gateway(local_ip, on_public):
     assert f['gateway'].host_out == remote_ip
 
 
-@pytest.mark.parametrize('local_ip, on_public', [(get_internal_ip(), False),
-                                                 (get_public_ip(), True)])
-def test_remote_pod_local_pod_remote_pod_local_gateway_input_socket_pull_connect_from_remote(local_ip, on_public):
+@pytest.mark.parametrize(
+    'local_ip, on_public', [(get_internal_ip(), False), (get_public_ip(), True)]
+)
+def test_remote_pod_local_pod_remote_pod_local_gateway_input_socket_pull_connect_from_remote(
+    local_ip, on_public
+):
     remote1 = '111.111.111.111'
     remote2 = '222.222.222.222'
 
-    f = Flow(expose_public=on_public).add(host=remote1).add().add(
-        host=remote2).build()
+    f = Flow(expose_public=on_public).add(host=remote1).add().add(host=remote2).build()
     for k, v in f:
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
 
@@ -71,14 +78,14 @@ def test_remote_pod_local_pod_remote_pod_local_gateway_input_socket_pull_connect
     assert f['gateway'].host_out == remote1
 
 
-@pytest.mark.parametrize('local_ip, on_public', [(get_internal_ip(), False),
-                                                 (get_public_ip(), True)])
+@pytest.mark.parametrize(
+    'local_ip, on_public', [(get_internal_ip(), False), (get_public_ip(), True)]
+)
 def test_remote_pod_local_pod_remote_pod_local_gateway(local_ip, on_public):
     remote1 = '111.111.111.111'
     remote2 = '222.222.222.222'
 
-    f = Flow(expose_public=on_public).add(host=remote1).add().add(
-        host=remote2).build()
+    f = Flow(expose_public=on_public).add(host=remote1).add().add(host=remote2).build()
     for k, v in f:
         print(f'{v.name}\tIN: {v.address_in}\t{v.address_out}')
 
@@ -92,8 +99,9 @@ def test_remote_pod_local_pod_remote_pod_local_gateway(local_ip, on_public):
     assert f['gateway'].host_out == remote1
 
 
-@pytest.mark.parametrize('local_ip, on_public', [(get_internal_ip(), False),
-                                                 (get_public_ip(), True)])
+@pytest.mark.parametrize(
+    'local_ip, on_public', [(get_internal_ip(), False), (get_public_ip(), True)]
+)
 def test_local_pod_remote_pod_remote_pod_local_gateway(local_ip, on_public):
     remote1 = '111.111.111.111'
     remote2 = '222.222.222.222'

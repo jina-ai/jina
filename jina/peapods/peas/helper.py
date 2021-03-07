@@ -47,6 +47,7 @@ def _make_or_event(obj, *events) -> Event:
 
 class PeaType(type):
     """Type of :class:`Pea`, metaclass of :class:`BasePea`."""
+
     _dct = {}
 
     def __new__(cls, name, bases, dct):
@@ -59,10 +60,9 @@ class PeaType(type):
         :return: registered class
         """
         _cls = super().__new__(cls, name, bases, dct)
-        PeaType._dct.update({name: {'cls': cls,
-                                    'name': name,
-                                    'bases': bases,
-                                    'dct': dct}})
+        PeaType._dct.update(
+            {name: {'cls': cls, 'name': name, 'bases': bases, 'dct': dct}}
+        )
         return _cls
 
     def __call__(cls, *args, **kwargs) -> 'PeaType':

@@ -15,8 +15,11 @@ from jina.proto.jina_pb2 import DocumentProto
 from jina.types.ndarray.generic import NdArray
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8, 0), reason='somehow this does not work on Github workflow with Py3.7, '
-                                                         'but Py 3.8 is fine, local Py3.7 is fine')
+@pytest.mark.skipif(
+    sys.version_info < (3, 8, 0),
+    reason='somehow this does not work on Github workflow with Py3.7, '
+    'but Py 3.8 is fine, local Py3.7 is fine',
+)
 def test_on_bad_iterator():
     # this should not stuck the server as request_generator's error is handled on the client side
     f = Flow().add()
@@ -24,10 +27,15 @@ def test_on_bad_iterator():
         f.index([1, 2, 3])
 
 
-@pytest.mark.parametrize('builder', [lambda x: x.SerializeToString(),
-                                     lambda x: MessageToJson(x),
-                                     lambda x: MessageToDict(x),
-                                     lambda x: Document(x)])
+@pytest.mark.parametrize(
+    'builder',
+    [
+        lambda x: x.SerializeToString(),
+        lambda x: MessageToJson(x),
+        lambda x: MessageToDict(x),
+        lambda x: Document(x),
+    ],
+)
 def test_data_type_builder_doc(builder):
     a = DocumentProto()
     a.id = 'a236cbb0eda62d58'
@@ -156,19 +164,11 @@ def test_request_generate_dict():
             doc = {
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
-                'tags': {
-                    'id': 1000
-                },
+                'tags': {'id': 1000},
                 'chunks': [
-                    {
-                        'text': f'i\'m chunk 1',
-                        'modality': 'text'
-                    },
-                    {
-                        'text': f'i\'m chunk 2',
-                        'modality': 'image'
-                    },
-                ]
+                    {'text': f'i\'m chunk 1', 'modality': 'text'},
+                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                ],
             }
             yield doc
 
@@ -195,19 +195,11 @@ def test_request_generate_dict_str():
             doc = {
                 'text': f'i\'m dummy doc {j}',
                 'offset': 1000,
-                'tags': {
-                    'id': 1000
-                },
+                'tags': {'id': 1000},
                 'chunks': [
-                    {
-                        'text': f'i\'m chunk 1',
-                        'modality': 'text'
-                    },
-                    {
-                        'text': f'i\'m chunk 2',
-                        'modality': 'image'
-                    },
-                ]
+                    {'text': f'i\'m chunk 1', 'modality': 'text'},
+                    {'text': f'i\'m chunk 2', 'modality': 'image'},
+                ],
             }
             yield json.dumps(doc)
 

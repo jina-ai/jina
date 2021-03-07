@@ -27,11 +27,13 @@ def reference_doc(document_factory):
 def chunks(document_factory):
     req = Request()
     req.request_type = 'index'
-    req.docs.extend([
-        document_factory.create(1, 'test 1'),
-        document_factory.create(2, 'test 1'),
-        document_factory.create(3, 'test 3')
-    ])
+    req.docs.extend(
+        [
+            document_factory.create(1, 'test 1'),
+            document_factory.create(2, 'test 1'),
+            document_factory.create(3, 'test 3'),
+        ]
+    )
     return req.proto.index.docs
 
 

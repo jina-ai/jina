@@ -14,10 +14,7 @@ class BaseMultiModalEncoder(BaseExecutor):
     into a single ``embedding``
     """
 
-    def __init__(self,
-                 positional_modality: Sequence[str],
-                 *args,
-                 **kwargs):
+    def __init__(self, positional_modality: Sequence[str], *args, **kwargs):
         """
         :param positional_modality: the list of arguments indicating in which order the modalities they need to come
         for the encoding method

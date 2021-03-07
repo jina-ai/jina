@@ -5,7 +5,7 @@ import time
 
 import pytest
 from fastapi.testclient import TestClient
-
+from jina.excepts import NoAvailablePortError
 from jina.executors.metas import get_default_metas
 
 
@@ -28,6 +28,7 @@ def test_metas(tmpdir, random_workspace_name):
 @pytest.fixture(scope='function', autouse=False)
 def fastapi_client():
     from daemon import _get_app
+
     app = _get_app()
     tc = TestClient(app)
     yield tc
@@ -44,3 +45,21 @@ def docker_compose(request):
     os.system(
         f"docker-compose -f {request.param} --project-directory . down --remove-orphans"
     )
+
+
+@pytest.fixture(scope='function', autouse=True)
+def patched_random_port(mocker):
+    used_ports = set()
+    from jina.helper import random_port
+
+    def _random_port():
+
+        for i in range(10):
+            _port = random_port()
+
+            if _port is not None and _port not in used_ports:
+                used_ports.add(_port)
+                return _port
+        raise NoAvailablePortError
+
+    mocker.patch('jina.helper.random_port', new_callable=lambda: _random_port)

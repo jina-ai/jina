@@ -9,6 +9,7 @@ from ..proto import jina_pb2
 
 class ProtoTypeMixin:
     """Mixin class of `ProtoType`."""
+
     def json(self) -> str:
         """Return the object in JSON string """
         return MessageToJson(self._pb_body)
@@ -37,6 +38,8 @@ class ProtoTypeMixin:
     def _build_content_dict(self):
         """Helper method for __str__ and __repr__ """
         content = self.dict()
-        if hasattr(self, '_attributes_in_str') and isinstance(self._attributes_in_str, list):
+        if hasattr(self, '_attributes_in_str') and isinstance(
+            self._attributes_in_str, list
+        ):
             content = {k: content[k] for k in self._attributes_in_str}
         return content

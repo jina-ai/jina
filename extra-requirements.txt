@@ -73,4 +73,4 @@ pytest-custom_exit_code:    cicd, test
 bs4:                        test
 aiostream:                  devel, cicd
 click:                      cicd
-
+jsonschema:                 cicd

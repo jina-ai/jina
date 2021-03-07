@@ -30,7 +30,9 @@ class SparseNdArray(BaseSparseNdArray):
         super().__init__(*args, **kwargs)
         self.transpose_indices = transpose_indices
 
-    def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]) -> 'FloatTensor':
+    def sparse_constructor(
+        self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]
+    ) -> 'FloatTensor':
         """
         Sparse NdArray constructor for FloatTensor.
 
@@ -39,9 +41,13 @@ class SparseNdArray(BaseSparseNdArray):
         :param shape: the shape of the sparse array
         :return: FloatTensor
         """
-        return FloatTensor(torch.LongTensor(indices).T if self.transpose_indices else torch.LongTensor(indices),
-                           torch.FloatTensor(values),
-                           torch.Size(shape))
+        return FloatTensor(
+            torch.LongTensor(indices).T
+            if self.transpose_indices
+            else torch.LongTensor(indices),
+            torch.FloatTensor(values),
+            torch.Size(shape),
+        )
 
     def sparse_parser(self, value: 'FloatTensor'):
         """
@@ -53,6 +59,8 @@ class SparseNdArray(BaseSparseNdArray):
         indices = value._indices().numpy()
         if self.transpose_indices:
             indices = indices.T
-        return {'indices': indices,
-                'values': value._values().numpy(),
-                'shape': list(value.shape)}
+        return {
+            'indices': indices,
+            'values': value._values().numpy(),
+            'shape': list(value.shape),
+        }

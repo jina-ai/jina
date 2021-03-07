@@ -11,8 +11,8 @@ from jina.executors.evaluators.embedding.cosine import CosineEvaluator
         ([0, 1], [1, 0], 1.0),
         ([1, 0], [0, 1], 1.0),
         ([1, 0], [1, 0], 0.0),
-        ([0, -1], [0, 1], 2.0)  # https://github.com/scipy/scipy/issues/9322
-    ]
+        ([0, -1], [0, 1], 2.0),  # https://github.com/scipy/scipy/issues/9322
+    ],
 )
 def test_cosine_evaluator(doc_embedding, gt_embedding, expected):
     evaluator = CosineEvaluator()

@@ -19,9 +19,17 @@ def dummy_access_token(tmpdir):
 
 
 @pytest.mark.parametrize('summary', [None, {'data': True}, {'data': {'subdata': 10.0}}])
-@pytest.mark.parametrize('response_code',
-                         [requests.codes.ok, requests.codes.unauthorized, requests.codes.internal_server_error])
-def test_register_to_mongodb(dummy_access_token, tmpdir, monkeypatch, mocker, summary, response_code):
+@pytest.mark.parametrize(
+    'response_code',
+    [
+        requests.codes.ok,
+        requests.codes.unauthorized,
+        requests.codes.internal_server_error,
+    ],
+)
+def test_register_to_mongodb(
+    dummy_access_token, tmpdir, monkeypatch, mocker, summary, response_code
+):
     import json
     from pathlib import Path
 
@@ -35,10 +43,10 @@ def test_register_to_mongodb(dummy_access_token, tmpdir, monkeypatch, mocker, su
         def status_code(self):
             return response_code
 
-    m = mocker.Mock()
+    mock = mocker.Mock()
 
     def _mock_post(url, headers, data):
-        m(url=url, headers=headers, data=data)
+        mock(url=url, headers=headers, data=data)
         resp = {'text': f'return status code {response_code}'}
         return MockResponse(resp)
 
@@ -49,7 +57,10 @@ def test_register_to_mongodb(dummy_access_token, tmpdir, monkeypatch, mocker, su
     monkeypatch.setattr(Path, 'home', _mock_home)
     _register_to_mongodb(JinaLogger('test_mongodb_register'), summary)
 
-    request_args = m.call_args_list[0][1]
+    request_args = mock.call_args_list[0][1]
     assert request_args['url'] == 'https://hubapi.jina.ai/push'
-    assert request_args['headers'] == {'Accept': 'application/json', 'authorizationToken': f'{DUMMY_ACCESS_TOKEN}'}
+    assert request_args['headers'] == {
+        'Accept': 'application/json',
+        'authorizationToken': f'{DUMMY_ACCESS_TOKEN}',
+    }
     assert request_args['data'] == json.dumps(summary)
