@@ -1,11 +1,129 @@
-from typing import Callable, Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, List, Union
+
+from enum import Enum
+from datetime import datetime
+from collections import defaultdict
 
 from pydantic import Field, BaseModel, create_model
+from google.protobuf.descriptor import Descriptor, FieldDescriptor
+from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 
 from jina.enums import DataInputType
 from jina.types.document import Document
 from jina.parsers import set_client_cli_parser
-from jina.proto.jina_pb2 import DocumentProto, QueryLangProto
+from jina.proto.jina_pb2 import DenseNdArrayProto, NdArrayProto, SparseNdArrayProto, NamedScoreProto, \
+    DocumentProto, RouteProto, EnvelopeProto, StatusProto, MessageProto, RequestProto, QueryLangProto
+
+
+DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
+PROTO_TO_PYDANTIC_MODELS = {}
+PROTOBUF_TO_PYTHON_TYPE = {
+    FieldDescriptor.TYPE_INT32: int,
+    FieldDescriptor.TYPE_INT64: int,
+    FieldDescriptor.TYPE_UINT32: int,
+    FieldDescriptor.TYPE_UINT64: int,
+    FieldDescriptor.TYPE_SINT32: int,
+    FieldDescriptor.TYPE_SINT64: int,
+    FieldDescriptor.TYPE_BOOL: bool,
+    FieldDescriptor.TYPE_FLOAT: float,
+    FieldDescriptor.TYPE_DOUBLE: float,
+    FieldDescriptor.TYPE_FIXED32: float,
+    FieldDescriptor.TYPE_FIXED64: float,
+    FieldDescriptor.TYPE_SFIXED32: float,
+    FieldDescriptor.TYPE_SFIXED64: float,
+    FieldDescriptor.TYPE_BYTES: bytes,
+    FieldDescriptor.TYPE_STRING: str,
+    FieldDescriptor.TYPE_ENUM: Enum,
+    FieldDescriptor.TYPE_MESSAGE: None
+}
+
+
+def protobuf_to_pydantic_model(protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]) -> BaseModel:
+    """
+    Converts Protobuf messages to Pydantic model for jsonschema creation/validattion
+
+    ..note:: Model gets assigned in the global dict :data:PROTO_TO_PYDANTIC_MODELS
+
+    :param protobuf_model: *Proto message from proto file
+    :type protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]
+    :return: Pydantic model
+    :rtype: :class:BaseModel
+    """
+
+    all_fields = {}
+    oneof_fields = defaultdict(list)
+
+    if isinstance(protobuf_model, Descriptor):
+        model_name = protobuf_model.name
+        protobuf_fields = protobuf_model.fields
+    elif isinstance(protobuf_model, GeneratedProtocolMessageType):
+        model_name = protobuf_model.DESCRIPTOR.name
+        protobuf_fields = protobuf_model.DESCRIPTOR.fields
+
+    if model_name.endswith('Proto') and model_name in PROTO_TO_PYDANTIC_MODELS:
+        return PROTO_TO_PYDANTIC_MODELS[model_name]
+
+    for f in protobuf_fields:
+        field_type = PROTOBUF_TO_PYTHON_TYPE[f.type]
+        default_value = f.default_value
+
+        if f.containing_oneof:
+            # Proto Field type: oneof
+            # NOTE: oneof fields are handled as a post-processing step
+            oneof_fields[f.containing_oneof.name].append(f.name)
+
+        if field_type is Enum:
+            # Proto Field Type: enum
+            enum_dict = {}
+            for enum_field in f.enum_type.values:
+                enum_dict[enum_field.name] = enum_field.number
+            field_type = Enum(f.enum_type.name, enum_dict)
+
+        if f.message_type:
+
+            if f.message_type.name == 'Struct':
+                # Proto Field Type: google.protobuf.Struct
+                field_type = Dict
+                default_value = {}
+
+            elif f.message_type.name == 'Timestamp':
+                # Proto Field Type: google.protobuf.Timestamp
+                field_type = datetime
+                default_value = datetime.now()
+
+            elif f.message_type.name.endswith('Proto'):
+                # Proto field type: Another Proto message in jina
+                # (every proto message in Jina ends with 'Proto')
+
+                if f.message_type.name == model_name:
+                    # Self-referencing models
+                    field_type = model_name
+                else:
+                    field_type = protobuf_to_pydantic_model(f.message_type)
+                    PROTO_TO_PYDANTIC_MODELS[model_name] = field_type
+
+        if f.label == FieldDescriptor.LABEL_REPEATED:
+            field_type = List[field_type]
+
+        all_fields[f.name] = (field_type, Field(default=default_value))
+
+    # Post-processing (Handle oneof fields)
+    for oneof_k, oneof_v_list in oneof_fields.items():
+        union_types = []
+        for oneof_v in oneof_v_list:
+            ff = all_fields.pop(oneof_v)
+            union_types.append(ff[0])
+        all_fields[oneof_k] = (Union[tuple(union_types)], Field(None))
+
+    model = create_model(model_name, **all_fields)
+    model.update_forward_refs()
+    PROTO_TO_PYDANTIC_MODELS[model_name] = model
+    return model
+
+
+for proto in DenseNdArrayProto, NdArrayProto, SparseNdArrayProto, NamedScoreProto, DocumentProto, RouteProto, \
+        EnvelopeProto, StatusProto, MessageProto, RequestProto, QueryLangProto:
+    protobuf_to_pydantic_model(proto)
 
 
 class JinaStatusModel(BaseModel):
@@ -14,34 +132,6 @@ class JinaStatusModel(BaseModel):
     jina: Dict
     envs: Dict
     used_memory: str
-
-
-def build_model_from_pb(name: str, pb_model: Callable):
-    """
-    Build model from protobuf message.
-
-    :param name: Name of the model.
-    :param pb_model: protobuf message.
-    :return: Model.
-    """
-    from google.protobuf.json_format import MessageToDict
-
-    dp = MessageToDict(pb_model(), including_default_value_fields=True)
-
-    all_fields = {
-        k: (name if k in ('chunks', 'matches') else type(v), Field(default=v))
-        for k, v in dp.items()
-    }
-    if pb_model == QueryLangProto:
-        all_fields['parameters'] = (Dict, Field(default={}))
-
-    return create_model(name, **all_fields)
-
-
-JinaDocumentModel = build_model_from_pb('Document', DocumentProto)
-JinaDocumentModel.update_forward_refs()
-JinaQueryLangModel = build_model_from_pb('QueryLang', QueryLangProto)
-default_request_size = set_client_cli_parser().parse_args([]).request_size
 
 
 class JinaRequestModel(BaseModel):
@@ -53,11 +143,14 @@ class JinaRequestModel(BaseModel):
 
     # To avoid an error while loading the request model schema on swagger, we've added an example.
     data: Union[
-        List[JinaDocumentModel], List[Dict[str, Any]], List[str], List[bytes]
+        List[PROTO_TO_PYDANTIC_MODELS['DocumentProto']],
+        List[Dict[str, Any]],
+        List[str],
+        List[bytes]
     ] = Field(..., example=[Document().dict()])
-    request_size: Optional[int] = default_request_size
+    request_size: Optional[int] = DEFAULT_REQUEST_SIZE
     mime_type: Optional[str] = ''
-    queryset: Optional[List[JinaQueryLangModel]] = None
+    queryset: Optional[List[PROTO_TO_PYDANTIC_MODELS['QueryLangProto']]] = None
     data_type: DataInputType = DataInputType.AUTO
 
 
