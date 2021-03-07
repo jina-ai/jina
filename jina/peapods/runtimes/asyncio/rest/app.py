@@ -148,8 +148,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.INDEX
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)),
-                                 media_type='application/json')
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     @app.post(path='/search', summary='Search documents from Jina', tags=['CRUD'])
     async def search_api(body: JinaSearchRequestModel):
@@ -164,8 +165,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.SEARCH
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)),
-                                 media_type='application/json')
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     @app.put(path='/update', summary='Update documents in Jina', tags=['CRUD'])
     async def update_api(body: JinaUpdateRequestModel):
@@ -180,8 +182,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.UPDATE
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)),
-                                 media_type='application/json')
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     @app.delete(path='/delete', summary='Delete documents in Jina', tags=['CRUD'])
     async def delete_api(body: JinaDeleteRequestModel):
@@ -196,12 +199,13 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.DELETE
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)),
-                                 media_type='application/json')
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     async def result_in_stream(req_iter):
         """
-        Streams results from AsyncPrefetchCall
+        Streams results from AsyncPrefetchCall as json
 
         :param req_iter: request iterator
         :yield: result
