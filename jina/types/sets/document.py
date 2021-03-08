@@ -113,7 +113,8 @@ class DocumentSet(TraversableSequence, MutableSequence):
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
-        """Extend an iterable to :class:`DocumentSet`.
+        """
+        Extend the :class:`DocumentSet` by appending all the items from the iterable.
 
         :param iterable: the iterable of Documents to extend this set with
         """
