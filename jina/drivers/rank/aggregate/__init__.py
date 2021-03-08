@@ -82,6 +82,7 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
     def _sort_doc_by_score(r):
         """
         Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
+
         :param r: List of Tuples with document id and score
         :type r: List[Tuple[Any, Any]]
         :return: A `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.

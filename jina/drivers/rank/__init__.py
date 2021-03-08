@@ -78,11 +78,11 @@ class Matches2DocRankDriver(BaseRankDriver):
             matches = doc.matches
             num_matches = len(matches)
             old_match_scores = []
-            extract_match_meta = self._exec_match_keys is not None
-            match_meta = [] if extract_match_meta else None
+            needs_match_meta = self._exec_match_keys is not None
+            match_meta = [] if needs_match_meta else None
             for match in matches:
                 old_match_scores.append(match.score.value)
-                if extract_match_meta:
+                if needs_match_meta:
                     match_meta.append(match.get_attrs(*self._exec_match_keys))
 
             # if there are no matches, no need to sort them
