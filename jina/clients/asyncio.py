@@ -1,7 +1,6 @@
 """Module wrapping AsyncIO ops for clients."""
-from typing import Iterable
 
-from .base import InputType, BaseClient, CallbackFnType
+from .base import InputType, InputDeleteType, BaseClient, CallbackFnType
 from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
@@ -147,7 +146,7 @@ class AsyncClient(BaseClient):
     )
     async def delete(
         self,
-        inputs: Iterable[str],
+        inputs: InputDeleteType,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -155,7 +154,7 @@ class AsyncClient(BaseClient):
     ) -> None:
         """Issue 'delete' request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
