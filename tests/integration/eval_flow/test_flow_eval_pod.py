@@ -3,6 +3,7 @@ import os
 import pytest
 
 from jina.executors.crafters import BaseCrafter
+from jina.executors.decorators import single
 from jina.flow import Flow
 from tests import random_docs, rm_files
 
@@ -10,6 +11,7 @@ from tests import random_docs, rm_files
 class DummyEvaluator1(BaseCrafter):
     tag = 1
 
+    @single
     def craft(self, id, *args, **kwargs):
         with open(f'tmp{self.tag}.txt', 'a') as fp:
             fp.write(f'{id}')

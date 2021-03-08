@@ -2,6 +2,7 @@ import pytest
 
 import numpy as np
 
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -10,6 +11,7 @@ from tests import validate_callback
 
 
 class DummyCrafter(BaseCrafter):
+    @single
     def craft(self, *args, **kwargs):
         return 1 / 0
 

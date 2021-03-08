@@ -2,12 +2,14 @@ import pytest
 
 from jina.enums import OnErrorStrategy
 from jina.executors.crafters import BaseCrafter
+from jina.execturos.decorators import single
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import validate_callback
 
 
 class DummyCrafter(BaseCrafter):
+    @single
     def craft(self, *args, **kwargs):
         return 1 / 0
 
