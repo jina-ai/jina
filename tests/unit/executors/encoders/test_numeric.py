@@ -42,7 +42,9 @@ def test_transform_encoder_test():
 
 
 def test_transform_encoder_model_path(tmpdir):
-    with open(str(tmpdir)+'.pkl', 'wb') as output:
+    with open(str(tmpdir) + '.pkl', 'wb') as output:
         pickle.dump(simple_model, output)
-    encoder_path = TransformEncoder(model_path=str(tmpdir)+'.pkl', output_dim=target_output_dim)
+    encoder_path = TransformEncoder(
+        model_path=str(tmpdir) + '.pkl', output_dim=target_output_dim
+    )
     assert encoder_path.model

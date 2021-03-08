@@ -13,4 +13,3 @@ def test_raised_exception():
 
     with pytest.raises(AttributeError):
         BaseMindsporeEncoder.model()
-
