@@ -1,7 +1,6 @@
 from collections.abc import MutableSequence
 from typing import Union, Iterable, Tuple, Sequence, List
 
-
 import numpy as np
 
 from ...helper import typename
@@ -175,34 +174,36 @@ class DocumentSet(TraversableSequence, MutableSequence):
     def _extract_docs(
         self, *fields: str
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
+
         list_of_contents_output = len(fields) > 1
         contents = [[] for _ in fields if len(fields) > 1]
         docs_pts = []
         bad_docs = []
 
-        for doc in self:
-            content = doc.get_attrs_values(*fields)
-            content = content if list_of_contents_output else content[0]
-
-            if content is not None:
-                if list_of_contents_output:
-                    for i, c in enumerate(content):
-                        contents[i].append(c)
-                else:
-                    contents.append(content)
-                docs_pts.append(doc)
-            else:
-                bad_docs.append(doc)
-
         if list_of_contents_output:
-            for i in range(len(contents)):
-                contents[i] = np.stack(contents[i])
+            for doc in self:
+                content = doc.get_attrs_values(*fields)
+                if content is None:
+                    bad_docs.append(doc)
+                    continue
+                for i, c in enumerate(content):
+                    contents[i].append(c)
+                docs_pts.append(doc)
+            for i, attr_list in enumerate(contents):
+                contents[i] = np.stack(attr_list)
         else:
+            for doc in self:
+                content = doc.get_attrs_values(*fields)
+                if not content:
+                    bad_docs.append(doc)
+                    continue
+                contents.append(content)
+                docs_pts.append(doc)
             contents = np.stack(contents) if contents else None
 
-        if bad_docs and docs_pts:
+        if bad_docs:
             default_logger.warning(
-                f'found {len(bad_docs)} docs at granularity {docs_pts[0].granularity} are missing one of the '
+                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
                 f'following fields: {fields} '
             )
 
