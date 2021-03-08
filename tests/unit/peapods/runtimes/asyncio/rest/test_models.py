@@ -1,3 +1,4 @@
+from tests import random_docs
 from jina.peapods.runtimes.asyncio.rest.models import PROTO_TO_PYDANTIC_MODELS
 
 
@@ -148,3 +149,34 @@ def test_timestamp():
         ]['format']
         == 'date-time'
     )
+
+
+def test_jina_document_to_pydantic_document():
+    document_proto_model = PROTO_TO_PYDANTIC_MODELS['DocumentProto']
+
+    for jina_doc in random_docs(num_docs=10):
+        jina_doc = jina_doc.dict()
+        pydantic_doc = document_proto_model(**jina_doc)
+
+        assert jina_doc['text'] == pydantic_doc.text
+        assert jina_doc['mimeType'] == pydantic_doc.mime_type
+        assert jina_doc['contentHash'] == pydantic_doc.content_hash
+        assert (
+            jina_doc['embedding']['dense']['shape']
+            == pydantic_doc.embedding.dense.shape
+        )
+        assert (
+            jina_doc['embedding']['dense']['dtype']
+            == pydantic_doc.embedding.dense.dtype
+        )
+
+        for jina_doc_chunk, pydantic_doc_chunk in zip(
+            jina_doc['chunks'], pydantic_doc.chunks
+        ):
+            assert jina_doc_chunk['id'] == pydantic_doc_chunk.id
+            assert jina_doc_chunk['tags'] == pydantic_doc_chunk.tags
+            assert jina_doc_chunk['text'] == pydantic_doc_chunk.text
+            assert jina_doc_chunk['mimeType'] == pydantic_doc_chunk.mime_type
+            assert jina_doc_chunk['parentId'] == pydantic_doc_chunk.parent_id
+            assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
+            assert jina_doc_chunk['contentHash'] == pydantic_doc_chunk.content_hash

@@ -134,7 +134,7 @@ def protobuf_to_pydantic_model(
     for oneof_k, oneof_v_list in oneof_fields.items():
         union_types = []
         for oneof_v in oneof_v_list:
-            ff = all_fields.pop(oneof_v)
+            ff = all_fields[oneof_v]
             union_types.append(ff[0])
         all_fields[oneof_k] = (Union[tuple(union_types)], Field(None))
 
