@@ -28,18 +28,31 @@ def test_status(api, fastapi_client):
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize('api, payload', [
-    ('/peas', {
-        'json': {'name': 'my_pea'},
-    }),
-    ('/pods', {
-        'json': {'name': 'my_pod'},
-    }),
-    ('/workspaces', {
-        'files': [
-            ('files', open(str(cur_dir / 'good_flow.yml'), 'rb')),
-        ]
-    })])
+@pytest.mark.parametrize(
+    'api, payload',
+    [
+        (
+            '/peas',
+            {
+                'json': {'name': 'my_pea'},
+            },
+        ),
+        (
+            '/pods',
+            {
+                'json': {'name': 'my_pod'},
+            },
+        ),
+        (
+            '/workspaces',
+            {
+                'files': [
+                    ('files', open(str(cur_dir / 'good_flow.yml'), 'rb')),
+                ]
+            },
+        ),
+    ],
+)
 def test_add_same_del_all(api, payload, fastapi_client):
     for _ in range(3):
         # this test the random default_factory
@@ -61,24 +74,43 @@ def test_add_same_del_all(api, payload, fastapi_client):
     assert response.json()['size'] == 0
 
 
-@pytest.mark.parametrize('api, payload', [
-    ('/peas', {
-        'json': {'name': 'my_pea'},
-    }),
-    ('/pods', {
-        'json': {'name': 'my_pod'},
-    }),
-    ('/flows', {
-        'files': {
-            'flow': ('good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb')),
-        }
-    }),
-    ('/workspaces', {
-        'files': [
-            ('files', open(str(cur_dir / 'good_flow.yml'), 'rb')),
-            ('files', open(str(cur_dir / 'good_flow_dep.yml'), 'rb')),
-        ]
-    })])
+@pytest.mark.parametrize(
+    'api, payload',
+    [
+        (
+            '/peas',
+            {
+                'json': {'name': 'my_pea'},
+            },
+        ),
+        (
+            '/pods',
+            {
+                'json': {'name': 'my_pod'},
+            },
+        ),
+        (
+            '/flows',
+            {
+                'files': {
+                    'flow': (
+                        'good_flow.yml',
+                        open(str(cur_dir / 'good_flow.yml'), 'rb'),
+                    ),
+                }
+            },
+        ),
+        (
+            '/workspaces',
+            {
+                'files': [
+                    ('files', open(str(cur_dir / 'good_flow.yml'), 'rb')),
+                    ('files', open(str(cur_dir / 'good_flow_dep.yml'), 'rb')),
+                ]
+            },
+        ),
+    ],
+)
 def test_add_success(api, payload, fastapi_client):
     response = fastapi_client.post(api, **payload)
     print(response.json())
@@ -100,17 +132,25 @@ def test_add_success(api, payload, fastapi_client):
     assert response.json()['size'] == 0
 
 
-@pytest.mark.parametrize('api, payload', [('/peas', {'json': {'name': 'my_pea', 'uses': 'BAD'}}),
-                                          ('/pods', {'json': {'name': 'my_pod', 'uses': 'BAD'}}),
-                                          ('/flows',
-                                           {'files': {'flow': (
-                                                   'bad_flow.yml',
-                                                   open(str(cur_dir / 'bad_flow.yml'), 'rb'))}}),
-                                          ('/workspaces',
-                                           {'files': [(
-                                                   'bad_flow.yml',
-                                                   open(str(cur_dir / 'bad_flow.yml'), 'rb'))]})
-                                          ])
+@pytest.mark.parametrize(
+    'api, payload',
+    [
+        ('/peas', {'json': {'name': 'my_pea', 'uses': 'BAD'}}),
+        ('/pods', {'json': {'name': 'my_pod', 'uses': 'BAD'}}),
+        (
+            '/flows',
+            {
+                'files': {
+                    'flow': ('bad_flow.yml', open(str(cur_dir / 'bad_flow.yml'), 'rb'))
+                }
+            },
+        ),
+        (
+            '/workspaces',
+            {'files': [('bad_flow.yml', open(str(cur_dir / 'bad_flow.yml'), 'rb'))]},
+        ),
+    ],
+)
 def test_add_fail(api, payload, fastapi_client):
     response = fastapi_client.get(api)
     assert response.status_code == 200

@@ -9,6 +9,7 @@ from ....parsers import set_gateway_parser, set_pod_parser
 
 class LegacyParser(VersionedYAMLParser):
     """The legacy parser."""
+
     version = 'legacy'  # the version number this parser designed for
 
     def parse(self, cls: Type['BaseFlow'], data: Dict) -> 'BaseFlow':

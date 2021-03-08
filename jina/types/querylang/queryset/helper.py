@@ -21,7 +21,9 @@ def iff(precond: Callable, val: Union[int, str], f: Callable) -> bool:
 iff_not_none = partial(iff, lambda x: x is not None)
 
 
-def guard_type(classinfo: Union[Type[str], Type[Iterable]], val: Union[str, List[int]]) -> Union[str, List[int]]:
+def guard_type(
+    classinfo: Union[Type[str], Type[Iterable]], val: Union[str, List[int]]
+) -> Union[str, List[int]]:
     """
     Make sure the type of :param:`val` is :param:`classinfo`.
 

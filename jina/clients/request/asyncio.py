@@ -13,14 +13,15 @@ from ...logging import default_logger
 from ...types.sets.querylang import AcceptQueryLangType
 
 
-async def request_generator(data: GeneratorSourceType,
-                            request_size: int = 0,
-                            mode: RequestType = RequestType.INDEX,
-                            mime_type: str = None,
-                            queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
-                            data_type: DataInputType = DataInputType.AUTO,
-                            **kwargs  # do not remove this, add on purpose to suppress unknown kwargs
-                            ) -> AsyncIterator['Request']:
+async def request_generator(
+    data: GeneratorSourceType,
+    request_size: int = 0,
+    mode: RequestType = RequestType.INDEX,
+    mime_type: str = None,
+    queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
+    data_type: DataInputType = DataInputType.AUTO,
+    **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
+) -> AsyncIterator['Request']:
     """An async :function:`request_generator`.
 
     :param data: the data to use in the request

@@ -6,7 +6,9 @@ from typing import Tuple, Union
 import numpy as np
 
 
-def _move_channel_axis(img: 'np.ndarray', channel_axis_to_move: int, target_channel_axis: int = -1) -> 'np.ndarray':
+def _move_channel_axis(
+    img: 'np.ndarray', channel_axis_to_move: int, target_channel_axis: int = -1
+) -> 'np.ndarray':
     """
     Ensure the color channel axis is the default axis.
     """
@@ -21,11 +23,18 @@ def _load_image(blob: 'np.ndarray', channel_axis: int):
     """
 
     from PIL import Image
+
     img = _move_channel_axis(blob, channel_axis)
     return Image.fromarray(img.astype('uint8'))
 
 
-def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, left: int = None, how: str = 'precise'):
+def _crop_image(
+    img,
+    target_size: Union[Tuple[int, int], int],
+    top: int = None,
+    left: int = None,
+    how: str = 'precise',
+):
     """
     Crop the input :py:mod:`PIL` image.
 
@@ -43,6 +52,7 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
 
     """
     import PIL.Image as Image
+
     assert isinstance(img, Image.Image), 'img must be a PIL.Image'
     img_w, img_h = img.size
     if isinstance(target_size, int):
@@ -50,7 +60,9 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
     elif isinstance(target_size, Tuple) and len(target_size) == 2:
         target_h, target_w = target_size
     else:
-        raise ValueError(f'target_size should be an integer or a tuple of two integers: {target_size}')
+        raise ValueError(
+            f'target_size should be an integer or a tuple of two integers: {target_size}'
+        )
     w_beg = left
     h_beg = top
     if how == 'center':
@@ -60,9 +72,13 @@ def _crop_image(img, target_size: Union[Tuple[int, int], int], top: int = None, 
         w_beg = np.random.randint(0, img_w - target_w + 1)
         h_beg = np.random.randint(0, img_h - target_h + 1)
     elif how == 'precise':
-        assert (w_beg is not None and h_beg is not None)
-        assert (0 <= w_beg <= (img_w - target_w)), f'left must be within [0, {img_w - target_w}]: {w_beg}'
-        assert (0 <= h_beg <= (img_h - target_h)), f'top must be within [0, {img_h - target_h}]: {h_beg}'
+        assert w_beg is not None and h_beg is not None
+        assert (
+            0 <= w_beg <= (img_w - target_w)
+        ), f'left must be within [0, {img_w - target_w}]: {w_beg}'
+        assert (
+            0 <= h_beg <= (img_h - target_h)
+        ), f'top must be within [0, {img_h - target_h}]: {h_beg}'
     else:
         raise ValueError(f'unknown input how: {how}')
     if not isinstance(w_beg, int):
@@ -86,6 +102,7 @@ def _resize_short(img, target_size: Union[Tuple[int, int], int], how: str = 'LAN
         Default is `LANCZOS`. Please refer to `PIL.Image` for detaisl.
     """
     import PIL.Image as Image
+
     assert isinstance(img, Image.Image), 'img must be a PIL.Image'
     if isinstance(target_size, int):
         percent = float(target_size) / min(img.size[0], img.size[1])
@@ -94,6 +111,8 @@ def _resize_short(img, target_size: Union[Tuple[int, int], int], how: str = 'LAN
     elif isinstance(target_size, Tuple) and len(target_size) == 2:
         target_h, target_w = target_size
     else:
-        raise ValueError(f'target_size should be an integer or a tuple of two integers: {target_size}')
+        raise ValueError(
+            f'target_size should be an integer or a tuple of two integers: {target_size}'
+        )
     img = img.resize((target_w, target_h), getattr(Image, how))
     return img

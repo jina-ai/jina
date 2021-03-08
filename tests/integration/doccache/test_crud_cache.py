@@ -57,7 +57,9 @@ def get_delete_flow(field, tmp_path, shards, indexers):
     return f
 
 
-def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, post_op):
+def check_indexers_size(
+    chunks, nr_docs, field, tmp_path, same_content, shards, post_op
+):
     cache_indexer_path = os.path.join(tmp_path, 'cache.bin')
     with BaseIndexer.load(cache_indexer_path) as cache:
         assert isinstance(cache, DocCache)
@@ -68,14 +70,25 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
         indexers_full_size = 0
         for i in range(shards):
             from jina.executors.compound import CompoundExecutor
-            compound_name = 'inc_docindexer' if KV_IDX_FILENAME in indexer_fname else 'inc_vecindexer'
-            workspace_folder = CompoundExecutor.get_component_workspace_from_compound_workspace(tmp_path,
-                                                                                                compound_name,
-                                                                                                i + 1 if shards > 1 else 0)
-            indexer_path = os.path.join(BaseIndexer.get_shard_workspace(workspace_folder=workspace_folder,
-                                                                        workspace_name=indexer_fname.rstrip('.bin'),
-                                                                        pea_id=i + 1 if shards > 1 else 0),
-                                        f'{indexer_fname}')
+
+            compound_name = (
+                'inc_docindexer'
+                if KV_IDX_FILENAME in indexer_fname
+                else 'inc_vecindexer'
+            )
+            workspace_folder = (
+                CompoundExecutor.get_component_workspace_from_compound_workspace(
+                    tmp_path, compound_name, i + 1 if shards > 1 else 0
+                )
+            )
+            indexer_path = os.path.join(
+                BaseIndexer.get_shard_workspace(
+                    workspace_folder=workspace_folder,
+                    workspace_name=indexer_fname.rstrip('.bin'),
+                    pea_id=i + 1 if shards > 1 else 0,
+                ),
+                f'{indexer_fname}',
+            )
 
             # in the configuration of content-hash / same_content=True
             # there aren't enough docs to satisfy batch size, only 1 shard will have it
@@ -101,39 +114,40 @@ def check_indexers_size(chunks, nr_docs, field, tmp_path, same_content, shards, 
                     assert indexers_full_size == 1
                     assert cache_full_size == 1
             else:
-                nr_expected = (nr_docs + chunks * nr_docs) * 2 if post_op == 'index2' \
+                nr_expected = (
+                    (nr_docs + chunks * nr_docs) * 2
+                    if post_op == 'index2'
                     else nr_docs + chunks * nr_docs
+                )
                 assert indexers_full_size == nr_expected
                 assert cache_full_size == nr_expected
 
 
-@pytest.mark.parametrize('indexers, field, shards, chunks, same_content',
-                         [
-                             ('sequential', 'id', 1, 5, False),
-                             ('sequential', 'id', 3, 5, False),
-                             ('sequential', 'id', 3, 5, True),
-                             ('sequential', 'content_hash', 1, 0, False),
-                             ('sequential', 'content_hash', 1, 0, True),
-                             ('sequential', 'content_hash', 1, 5, False),
-                             ('sequential', 'content_hash', 1, 5, True),
-                             ('sequential', 'content_hash', 3, 5, True),
-                             ('parallel', 'id', 3, 5, False),
-                             ('parallel', 'id', 3, 5, True),
-                             ('parallel', 'content_hash', 3, 5, False),
-                             ('parallel', 'content_hash', 3, 5, True)
-                         ])
-def test_cache_crud(
-        tmp_path,
-        mocker,
-        indexers,
-        field,
-        shards,
-        chunks,
-        same_content
-):
-    flow_index = get_index_flow(field=field, tmp_path=tmp_path, shards=shards, indexers=indexers)
+@pytest.mark.parametrize(
+    'indexers, field, shards, chunks, same_content',
+    [
+        ('sequential', 'id', 1, 5, False),
+        ('sequential', 'id', 3, 5, False),
+        ('sequential', 'id', 3, 5, True),
+        ('sequential', 'content_hash', 1, 0, False),
+        ('sequential', 'content_hash', 1, 0, True),
+        ('sequential', 'content_hash', 1, 5, False),
+        ('sequential', 'content_hash', 1, 5, True),
+        ('sequential', 'content_hash', 3, 5, True),
+        ('parallel', 'id', 3, 5, False),
+        ('parallel', 'id', 3, 5, True),
+        ('parallel', 'content_hash', 3, 5, False),
+        ('parallel', 'content_hash', 3, 5, True),
+    ],
+)
+def test_cache_crud(tmp_path, mocker, indexers, field, shards, chunks, same_content):
+    flow_index = get_index_flow(
+        field=field, tmp_path=tmp_path, shards=shards, indexers=indexers
+    )
     flow_query = get_query_flow(field=field, tmp_path=tmp_path, shards=shards)
-    flow_delete = get_delete_flow(field=field, tmp_path=tmp_path, shards=shards, indexers=indexers)
+    flow_delete = get_delete_flow(
+        field=field, tmp_path=tmp_path, shards=shards, indexers=indexers
+    )
 
     def validate_result_factory(num_matches):
         def validate_results(resp):
@@ -153,33 +167,42 @@ def test_cache_crud(
 
         return validate_results
 
-    docs = list(get_documents(chunks=chunks, same_content=same_content, nr=DOCS_TO_INDEX))
+    docs = list(
+        get_documents(chunks=chunks, same_content=same_content, nr=DOCS_TO_INDEX)
+    )
     # ids in order to ensure no matches in KV
-    search_docs = list(get_documents(chunks=0, same_content=False, nr=DOCS_TO_SEARCH, index_start=9999))
+    search_docs = list(
+        get_documents(chunks=0, same_content=False, nr=DOCS_TO_SEARCH, index_start=9999)
+    )
 
     # INDEX
     with flow_index as f:
         f.index(docs, request_size=REQUEST_SIZE)
 
-    check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index')
+    check_indexers_size(
+        chunks, len(docs), field, tmp_path, same_content, shards, 'index'
+    )
 
     # INDEX (with new documents)
     chunks_ids = np.concatenate([d.chunks for d in docs])
     index_start_new_docs = 1 + len(docs) + len(chunks_ids)
 
-    new_docs = list(get_documents(chunks=chunks, same_content=same_content, index_start=index_start_new_docs))
+    new_docs = list(
+        get_documents(
+            chunks=chunks, same_content=same_content, index_start=index_start_new_docs
+        )
+    )
     with flow_index as f:
         f.index(new_docs, request_size=REQUEST_SIZE)
 
-    check_indexers_size(chunks, len(docs), field, tmp_path, same_content, shards, 'index2')
+    check_indexers_size(
+        chunks, len(docs), field, tmp_path, same_content, shards, 'index2'
+    )
 
     # QUERY
     mock = mocker.Mock()
     with flow_query as f:
-        f.search(
-            search_docs,
-            on_done=mock
-        )
+        f.search(search_docs, on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(TOP_K))
 
@@ -202,15 +225,14 @@ def test_cache_crud(
     with flow_index as f:
         f.update(docs)
 
-    check_indexers_size(chunks, len(docs) / 2, field, tmp_path, same_content, shards, 'index2')
+    check_indexers_size(
+        chunks, len(docs) / 2, field, tmp_path, same_content, shards, 'index2'
+    )
 
     # QUERY
     mock = mocker.Mock()
     with flow_query as f:
-        f.search(
-            search_docs,
-            on_done=mock
-        )
+        f.search(search_docs, on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(TOP_K))
 
@@ -228,9 +250,6 @@ def test_cache_crud(
     # QUERY
     mock = mocker.Mock()
     with flow_query as f:
-        f.search(
-            search_docs,
-            on_done=mock
-        )
+        f.search(search_docs, on_done=mock)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(0))

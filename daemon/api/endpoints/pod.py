@@ -12,19 +12,12 @@ from ...stores import pod_store as store
 router = APIRouter(prefix='/pods', tags=['pods'])
 
 
-@router.get(
-    path='',
-    summary='Get all alive Pods\' status',
-    response_model=StoreStatus
-)
+@router.get(path='', summary='Get all alive Pods\' status', response_model=StoreStatus)
 async def _get_items():
     return store.status
 
 
-@router.get(
-    path='/arguments',
-    summary='Get all accept arguments of a Pod'
-)
+@router.get(path='/arguments', summary='Get all accept arguments of a Pod')
 async def _fetch_pod_params():
     return PodModel.schema()['properties']
 
@@ -34,7 +27,7 @@ async def _fetch_pod_params():
     summary='Create a Pod',
     description='Create a Pod and add it to the store',
     status_code=201,
-    response_model=uuid.UUID
+    response_model=uuid.UUID,
 )
 async def _create(pod: 'PodModel'):
     try:
@@ -55,12 +48,9 @@ async def _clear_all():
 @router.delete(
     path='/{id}',
     summary='Terminate a running Pod',
-    description='Terminate a running Pod and release its resources'
+    description='Terminate a running Pod and release its resources',
 )
-async def _delete(
-        id: uuid.UUID,
-        workspace: bool = False
-):
+async def _delete(id: uuid.UUID, workspace: bool = False):
     try:
         store.delete(id=id, workspace=workspace)
     except KeyError:
@@ -68,9 +58,7 @@ async def _delete(
 
 
 @router.get(
-    path='/{id}',
-    summary='Get status of a running Pod',
-    response_model=StoreItemStatus
+    path='/{id}', summary='Get status of a running Pod', response_model=StoreItemStatus
 )
 async def _status(id: uuid.UUID):
     try:

@@ -4,7 +4,6 @@ from jina.executors.indexers import BaseIndexer
 
 
 class DummyIndexerTrain(BaseIndexer):
-
     def train(self, data: 'np.ndarray', *args, **kwargs):
         pass
 

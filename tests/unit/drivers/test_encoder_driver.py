@@ -40,7 +40,6 @@ def get_encoder(batch_size):
 
 
 class SimpleEncoderDriver(EncodeDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -49,7 +48,9 @@ class SimpleEncoderDriver(EncodeDriver):
         return self._exec_fn
 
 
-@pytest.mark.parametrize('batch_size', [None, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 20, 100, 10000])
+@pytest.mark.parametrize(
+    'batch_size', [None, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 20, 100, 10000]
+)
 def test_encode_driver(batch_size, docs_to_encode, num_docs):
     driver = SimpleEncoderDriver()
     executor = get_encoder(batch_size)

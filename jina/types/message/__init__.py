@@ -42,8 +42,13 @@ class Message:
     :param kwargs: Additional keyword arguments.
     """
 
-    def __init__(self, envelope: Union[bytes, 'jina_pb2.EnvelopeProto', None],
-                 request: Union[bytes, 'jina_pb2.RequestProto'], *args, **kwargs):
+    def __init__(
+        self,
+        envelope: Union[bytes, 'jina_pb2.EnvelopeProto', None],
+        request: Union[bytes, 'jina_pb2.RequestProto'],
+        *args,
+        **kwargs,
+    ):
         """Set constructor method."""
         self._size = 0
         if isinstance(envelope, bytes):
@@ -84,7 +89,9 @@ class Message:
         elif isinstance(val, (Request, jina_pb2.RequestProto)):
             self._request = val  # type: Union['Request', 'jina_pb2.RequestProto']
         else:
-            raise TypeError(f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}')
+            raise TypeError(
+                f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}'
+            )
 
     @property
     def proto(self) -> 'jina_pb2.MessageProto':
@@ -108,10 +115,19 @@ class Message:
         """
         return self.envelope.request_type != 'ControlRequest'
 
-    def _add_envelope(self, pod_name, identity, check_version=False,
-                      request_id: str = None, request_type: str = None,
-                      compress: str = 'NONE', compress_min_bytes: int = 0, compress_min_ratio: float = 1., *args,
-                      **kwargs) -> 'jina_pb2.EnvelopeProto':
+    def _add_envelope(
+        self,
+        pod_name,
+        identity,
+        check_version=False,
+        request_id: str = None,
+        request_type: str = None,
+        compress: str = 'NONE',
+        compress_min_bytes: int = 0,
+        compress_min_ratio: float = 1.0,
+        *args,
+        **kwargs,
+    ) -> 'jina_pb2.EnvelopeProto':
         """Add envelope to a request and make it as a complete message, which can be transmitted between pods.
 
         .. note::
@@ -125,13 +141,18 @@ class Message:
         """
         envelope = jina_pb2.EnvelopeProto()
         envelope.receiver_id = identity
-        if isinstance(self.request, jina_pb2.RequestProto) or (request_id and request_type):
+        if isinstance(self.request, jina_pb2.RequestProto) or (
+            request_id and request_type
+        ):
             # not lazy request, so we can directly access its request_id without worrying about
             # triggering the deserialization
             envelope.request_id = request_id or self.request.request_id
-            envelope.request_type = request_type or \
-                                    getattr(self.request,
-                                            self.request.WhichOneof('body')).__class__.__name__
+            envelope.request_type = (
+                request_type
+                or getattr(
+                    self.request, self.request.WhichOneof('body')
+                ).__class__.__name__
+            )
 
             # for compatibility
             if envelope.request_type.endswith('Proto'):
@@ -149,7 +170,9 @@ class Message:
             #                 'in general, this invoke should not exist, '
             #                 'as add_envelope() is only called at the gateway')
         else:
-            raise TypeError(f'expecting request in type: jina_pb2.RequestProto, but receiving {type(self.request)}')
+            raise TypeError(
+                f'expecting request in type: jina_pb2.RequestProto, but receiving {type(self.request)}'
+            )
 
         envelope.compression.algorithm = str(compress)
         envelope.compression.min_ratio = compress_min_ratio
@@ -191,25 +214,33 @@ class Message:
         _size_before = sys.getsizeof(data)
 
         # lower than hwm, pass compression
-        if _size_before < self.envelope.compression.min_bytes or self.envelope.compression.min_bytes < 0:
+        if (
+            _size_before < self.envelope.compression.min_bytes
+            or self.envelope.compression.min_bytes < 0
+        ):
             self.envelope.compression.algorithm = 'NONE'
             return data
 
         try:
             if ctag == CompressAlgo.LZ4:
                 import lz4.frame
+
                 c_data = lz4.frame.compress(data)
             elif ctag == CompressAlgo.BZ2:
                 import bz2
+
                 c_data = bz2.compress(data)
             elif ctag == CompressAlgo.LZMA:
                 import lzma
+
                 c_data = lzma.compress(data)
             elif ctag == CompressAlgo.ZLIB:
                 import zlib
+
                 c_data = zlib.compress(data)
             elif ctag == CompressAlgo.GZIP:
                 import gzip
+
                 c_data = gzip.compress(data)
 
             _size_after = sys.getsizeof(c_data)
@@ -220,20 +251,23 @@ class Message:
             else:
                 # compression rate is too bad, dont bother
                 # save time on decompression
-                default_logger.debug(f'compression rate {(_size_before / _size_after):.2f}% '
-                                     f'is lower than min_ratio '
-                                     f'{self.envelope.compression.min_ratio}')
+                default_logger.debug(
+                    f'compression rate {(_size_before / _size_after):.2f}% '
+                    f'is lower than min_ratio '
+                    f'{self.envelope.compression.min_ratio}'
+                )
                 self.envelope.compression.algorithm = 'NONE'
         except Exception as ex:
             default_logger.error(
-                f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {ex!r}')
+                f'compression={str(ctag)} failed, fallback to compression="NONE". reason: {ex!r}'
+            )
             self.envelope.compression.algorithm = 'NONE'
 
         return data
 
     @property
     def colored_route(self) -> str:
-        """ Get the string representation of the routes in a message.
+        """Get the string representation of the routes in a message.
 
         :return:
         """
@@ -260,7 +294,9 @@ class Message:
         """
         self._add_route(name, identity, self.envelope)
 
-    def _add_route(self, name: str, identity: str, envelope: 'jina_pb2.EnvelopeProto') -> None:
+    def _add_route(
+        self, name: str, identity: str, envelope: 'jina_pb2.EnvelopeProto'
+    ) -> None:
         """Add a route to the envelope.
 
         :param name: the name of the pod service
@@ -283,39 +319,53 @@ class Message:
         if hasattr(self.envelope, 'version'):
             if not self.envelope.version.jina:
                 # only happen in unittest
-                default_logger.warning('incoming message contains empty "version.jina", '
-                                       'you may ignore it in debug/unittest mode. '
-                                       'otherwise please check if gateway service set correct version')
+                default_logger.warning(
+                    'incoming message contains empty "version.jina", '
+                    'you may ignore it in debug/unittest mode. '
+                    'otherwise please check if gateway service set correct version'
+                )
             elif __version__ != self.envelope.version.jina:
-                raise MismatchedVersion('mismatched JINA version! '
-                                        f'incoming message has JINA version {self.envelope.version.jina}, '
-                                        f'whereas local JINA version {__version__}')
+                raise MismatchedVersion(
+                    'mismatched JINA version! '
+                    f'incoming message has JINA version {self.envelope.version.jina}, '
+                    f'whereas local JINA version {__version__}'
+                )
 
             if not self.envelope.version.proto:
                 # only happen in unittest
-                default_logger.warning('incoming message contains empty "version.proto", '
-                                       'you may ignore it in debug/unittest mode. '
-                                       'otherwise please check if gateway service set correct version')
+                default_logger.warning(
+                    'incoming message contains empty "version.proto", '
+                    'you may ignore it in debug/unittest mode. '
+                    'otherwise please check if gateway service set correct version'
+                )
             elif __proto_version__ != self.envelope.version.proto:
-                raise MismatchedVersion('mismatched protobuf version! '
-                                        f'incoming message has protobuf version {self.envelope.version.proto}, '
-                                        f'whereas local protobuf version {__proto_version__}')
+                raise MismatchedVersion(
+                    'mismatched protobuf version! '
+                    f'incoming message has protobuf version {self.envelope.version.proto}, '
+                    f'whereas local protobuf version {__proto_version__}'
+                )
 
             if not self.envelope.version.vcs or not os.environ.get('JINA_VCS_VERSION'):
-                default_logger.warning('incoming message contains empty "version.vcs", '
-                                       'you may ignore it in debug/unittest mode, '
-                                       'or if you run jina OUTSIDE docker container where JINA_VCS_VERSION is unset'
-                                       'otherwise please check if gateway service set correct version')
+                default_logger.warning(
+                    'incoming message contains empty "version.vcs", '
+                    'you may ignore it in debug/unittest mode, '
+                    'or if you run jina OUTSIDE docker container where JINA_VCS_VERSION is unset'
+                    'otherwise please check if gateway service set correct version'
+                )
             elif os.environ.get('JINA_VCS_VERSION') != self.envelope.version.vcs:
-                raise MismatchedVersion('mismatched vcs version! '
-                                        f'incoming message has vcs_version {self.envelope.version.vcs}, '
-                                        f'whereas local environment vcs_version is '
-                                        f'{os.environ.get("JINA_VCS_VERSION")}')
+                raise MismatchedVersion(
+                    'mismatched vcs version! '
+                    f'incoming message has vcs_version {self.envelope.version.vcs}, '
+                    f'whereas local environment vcs_version is '
+                    f'{os.environ.get("JINA_VCS_VERSION")}'
+                )
 
         else:
-            raise MismatchedVersion('version_check=True locally, '
-                                    'but incoming message contains no version info in its envelope. '
-                                    'the message is probably sent from a very outdated JINA version')
+            raise MismatchedVersion(
+                'version_check=True locally, '
+                'but incoming message contains no version info in its envelope. '
+                'the message is probably sent from a very outdated JINA version'
+            )
 
     def _add_version(self, envelope):
         envelope.version.jina = __version__
@@ -347,10 +397,16 @@ class Message:
         routes = {(r.pod + r.pod_id): r for m in msgs for r in m.envelope.routes}
         self.envelope.ClearField('routes')
         self.envelope.routes.extend(
-            sorted(routes.values(), key=lambda x: (x.start_time.seconds, x.start_time.nanos)))
+            sorted(
+                routes.values(),
+                key=lambda x: (x.start_time.seconds, x.start_time.nanos),
+            )
+        )
 
-    def add_exception(self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None) -> None:
-        """ Add exception to the last route in the envelope
+    def add_exception(
+        self, ex: Optional['Exception'] = None, executor: 'BaseExecutor' = None
+    ) -> None:
+        """Add exception to the last route in the envelope
 
         :param ex: Exception to be added
         :return:
@@ -365,7 +421,11 @@ class Message:
             d.exception.executor = executor.__class__.__name__
             d.exception.name = ex.__class__.__name__
             d.exception.args.extend([str(v) for v in ex.args])
-            d.exception.stacks.extend(traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__))
+            d.exception.stacks.extend(
+                traceback.format_exception(
+                    etype=type(ex), value=ex, tb=ex.__traceback__
+                )
+            )
         else:
             d.code = jina_pb2.StatusProto.ERROR_CHAINED
 

@@ -47,6 +47,7 @@ class V1Parser(VersionedYAMLParser):
 
 
     """
+
     version = '1'  # the version number this parser designed for
 
     def parse(self, cls: type, data: Dict) -> 'Flow':

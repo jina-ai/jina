@@ -10,9 +10,7 @@ from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 class AllTypesConcatenateMultiModalEncoder(BaseMultiModalEncoder):
     batch_size = 10
 
-    def __init__(self,
-                 *args,
-                 **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @batching_multi_input(num_data=4)
@@ -43,4 +41,6 @@ class AllTypesConcatenateMultiModalEncoder(BaseMultiModalEncoder):
             embed_modality4.append([4, 4])
         embed_modality4 = np.stack(embed_modality4)
 
-        return np.concatenate((modality1, modality2, embed_modality3, embed_modality4), axis=1)
+        return np.concatenate(
+            (modality1, modality2, embed_modality3, embed_modality4), axis=1
+        )

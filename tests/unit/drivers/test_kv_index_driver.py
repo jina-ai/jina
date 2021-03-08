@@ -8,16 +8,19 @@ from jina.types.document import Document
 
 
 class MockGroundTruthIndexer(BaseKVIndexer):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.docs = {}
 
-    def add(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+    def add(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
         for key, value in zip(keys, values):
             self.docs[key] = value
 
-    def update(self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs) -> None:
+    def update(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
         for key, value in zip(keys, values):
             self.docs[key] = value
 
@@ -85,7 +88,9 @@ def deleted_documents():
     return docs
 
 
-def test_kv_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_add, documents):
+def test_kv_index_driver_add(
+    mock_groundtruth_indexer, simple_kv_indexer_driver_add, documents
+):
     simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
@@ -94,12 +99,19 @@ def test_kv_index_driver_add(mock_groundtruth_indexer, simple_kv_indexer_driver_
         assert mock_groundtruth_indexer.docs[doc.id] == doc.SerializeToString()
 
 
-def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_update,
-                                documents, updated_documents):
+def test_kv_index_driver_update(
+    mock_groundtruth_indexer,
+    simple_kv_indexer_driver_add,
+    simple_kv_indexer_driver_update,
+    documents,
+    updated_documents,
+):
     simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
-    simple_kv_indexer_driver_update.attach(executor=mock_groundtruth_indexer, runtime=None)
+    simple_kv_indexer_driver_update.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     simple_kv_indexer_driver_update._apply_all(updated_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 5
@@ -107,12 +119,19 @@ def test_kv_index_driver_update(mock_groundtruth_indexer, simple_kv_indexer_driv
         assert mock_groundtruth_indexer.docs[doc.id] == doc.SerializeToString()
 
 
-def test_kv_index_driver_delete(mock_groundtruth_indexer, simple_kv_indexer_driver_add, simple_kv_indexer_driver_delete,
-                                documents, deleted_documents):
+def test_kv_index_driver_delete(
+    mock_groundtruth_indexer,
+    simple_kv_indexer_driver_add,
+    simple_kv_indexer_driver_delete,
+    documents,
+    deleted_documents,
+):
     simple_kv_indexer_driver_add.attach(executor=mock_groundtruth_indexer, runtime=None)
     simple_kv_indexer_driver_add._apply_all(documents)
 
-    simple_kv_indexer_driver_delete.attach(executor=mock_groundtruth_indexer, runtime=None)
+    simple_kv_indexer_driver_delete.attach(
+        executor=mock_groundtruth_indexer, runtime=None
+    )
     simple_kv_indexer_driver_delete._apply_all(deleted_documents)
 
     assert len(mock_groundtruth_indexer.docs) == 2

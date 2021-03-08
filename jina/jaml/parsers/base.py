@@ -7,7 +7,7 @@ if False:
 
 
 class VersionedYAMLParser:
-    """ Flow YAML parser for specific version
+    """Flow YAML parser for specific version
 
     Every :class:`VersionedYAMLParser` must implement two methods and one class attribute:
         - :meth:`parse`: to load data (in :class:`dict`) into a :class:`BaseFlow` or :class:`BaseExecutor` object
@@ -17,7 +17,9 @@ class VersionedYAMLParser:
 
     version = 'legacy'  #: the version number this parser designed for
 
-    def parse(self, cls: type, data: Dict) -> Union['BaseFlow', 'BaseExecutor', 'BaseDriver']:
+    def parse(
+        self, cls: type, data: Dict
+    ) -> Union['BaseFlow', 'BaseExecutor', 'BaseDriver']:
         """Return the Flow YAML parser given the syntax version number
 
 

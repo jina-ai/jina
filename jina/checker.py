@@ -48,8 +48,12 @@ class ImportChecker:
         # check available driver group
 
         default_logger.info('\nenvironment variables\n'.upper())
-        default_logger.info('\n'.join(f'{k:<20}\t{os.environ.get(k, colored("(unset)", "yellow"))}' for k in
-                                      __jina_env__))
+        default_logger.info(
+            '\n'.join(
+                f'{k:<20}\t{os.environ.get(k, colored("(unset)", "yellow"))}'
+                for k in __jina_env__
+            )
+        )
 
 
 class NetworkChecker:
@@ -65,15 +69,21 @@ class NetworkChecker:
         from .logging.profile import TimeContext
         from google.protobuf.json_format import MessageToJson
         import time
+
         ctrl_addr = f'tcp://{args.host}:{args.port}'
         try:
             total_time = 0
             total_success = 0
             for j in range(args.retries):
-                with TimeContext(f'ping {ctrl_addr} at {j} round', default_logger) as tc:
+                with TimeContext(
+                    f'ping {ctrl_addr} at {j} round', default_logger
+                ) as tc:
                     r = send_ctrl_message(ctrl_addr, 'STATUS', timeout=args.timeout)
                     if not r:
-                        default_logger.warning('not responding, retry (%d/%d) in 1s' % (j + 1, args.retries))
+                        default_logger.warning(
+                            'not responding, retry (%d/%d) in 1s'
+                            % (j + 1, args.retries)
+                        )
                     else:
                         total_success += 1
                         if args.print_response:
@@ -81,10 +91,18 @@ class NetworkChecker:
                 total_time += tc.duration
                 time.sleep(1)
             if total_success < args.retries:
-                default_logger.warning('message lost %.0f%% (%d/%d) ' % (
-                    (1 - total_success / args.retries) * 100, args.retries - total_success, args.retries))
+                default_logger.warning(
+                    'message lost %.0f%% (%d/%d) '
+                    % (
+                        (1 - total_success / args.retries) * 100,
+                        args.retries - total_success,
+                        args.retries,
+                    )
+                )
             if total_success > 0:
-                default_logger.success('avg. latency: %.0f ms' % (total_time / total_success * 1000))
+                default_logger.success(
+                    'avg. latency: %.0f ms' % (total_time / total_success * 1000)
+                )
                 exit(0)
         except KeyboardInterrupt:
             pass

@@ -24,13 +24,17 @@ class DaemonClient:
     :param logger: Jinalogger to log information.
     :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
     """
+
     kind = 'pea'  # select from pea/pod, TODO: enum
 
-    def __init__(self,
-                 host: str,
-                 port: int,
-                 logger: 'JinaLogger' = None,
-                 timeout: int = 5, **kwargs):
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        logger: 'JinaLogger' = None,
+        timeout: int = 5,
+        **kwargs,
+    ):
         self.logger = logger or JinaLogger(host)
         self.timeout = timeout
         # for now it is http. but it can be https or unix socket or fd
@@ -68,7 +72,7 @@ class DaemonClient:
             return False
 
     def get_status(self, identity: str) -> Dict:
-        """ Get status of the remote Pea / Pod
+        """Get status of the remote Pea / Pod
 
         :param identity: UUID string based identity for the Pea
         :raises: requests.exceptions.RequestException
@@ -89,7 +93,7 @@ class DaemonClient:
             self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')
 
     def upload(self, dependencies: Sequence[str], workspace_id: str = None) -> str:
-        """ Upload local file dependencies to remote server by extracting from the pea_args
+        """Upload local file dependencies to remote server by extracting from the pea_args
 
         :param dependencies: file dependencies
         :type dependencies: Sequence[str]
@@ -102,16 +106,23 @@ class DaemonClient:
         import requests
 
         with ExitStack() as file_stack:
-            files = [(self.upload_api_arg, file_stack.enter_context(open(complete_path(f), 'rb')))
-                     for f in dependencies]
+            files = [
+                (
+                    self.upload_api_arg,
+                    file_stack.enter_context(open(complete_path(f), 'rb')),
+                )
+                for f in dependencies
+            ]
 
             if files:
                 try:
                     self.logger.info(f'uploading {len(files)} file(s): {dependencies}')
-                    r = requests.post(url=self.upload_api,
-                                      files=files,
-                                      data={'workspace_id': workspace_id} if workspace_id else None,
-                                      timeout=self.timeout)
+                    r = requests.post(
+                        url=self.upload_api,
+                        files=files,
+                        data={'workspace_id': workspace_id} if workspace_id else None,
+                        timeout=self.timeout,
+                    )
                     rj = r.json()
                     if r.status_code == 201:
                         return rj
@@ -121,7 +132,7 @@ class DaemonClient:
                     self.logger.error(f'fail to upload as {ex!r}')
 
     def create(self, args: 'Namespace') -> Optional[str]:
-        """ Create a remote Pea / Pod
+        """Create a remote Pea / Pod
 
         :param args: the arguments for remote Pea
         :type args: Namespace
@@ -136,9 +147,11 @@ class DaemonClient:
         try:
             payload = replace_enum_to_str(vars(self._mask_args(args)))
             # set timeout to None if args.timeout_ready is -1 (wait forever)
-            r = requests.post(url=self.store_api,
-                              json=payload,
-                              timeout=args.timeout_ready if args.timeout_ready != -1 else None)
+            r = requests.post(
+                url=self.store_api,
+                json=payload,
+                timeout=args.timeout_ready if args.timeout_ready != -1 else None,
+            )
             rj = r.json()
             if r.status_code == 201:
                 return rj
@@ -147,7 +160,9 @@ class DaemonClient:
                 rj_body = '\n'.join(j for j in rj['body'])
                 self.logger.error(f'{rj["detail"]}\n{rj_body}')
             elif r.status_code == 422:
-                self.logger.error('your payload is not correct, please follow the error message and double check')
+                self.logger.error(
+                    'your payload is not correct, please follow the error message and double check'
+                )
             raise requests.exceptions.RequestException(rj)
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'fail to create as {ex!r}')
@@ -163,26 +178,34 @@ class DaemonClient:
         with ImportExtensions(required=True):
             import websockets
 
-        remote_log_config = resource_filename('jina', '/'.join(
-            ('resources', 'logging.remote.yml')))
+        remote_log_config = resource_filename(
+            'jina', '/'.join(('resources', 'logging.remote.yml'))
+        )
         all_remote_loggers = {}
         try:
-            async with websockets.connect(f'{self.logstream_api}/{workspace_id}/{log_id}') as websocket:
+            async with websockets.connect(
+                f'{self.logstream_api}/{workspace_id}/{log_id}'
+            ) as websocket:
                 async for log_line in websocket:
                     try:
                         ll = json.loads(log_line)
                         name = ll['name']
                         if name not in all_remote_loggers:
-                            all_remote_loggers[name] = JinaLogger(context=ll['host'],
-                                                                  log_config=remote_log_config)
+                            all_remote_loggers[name] = JinaLogger(
+                                context=ll['host'], log_config=remote_log_config
+                            )
 
-                        all_remote_loggers[name].info('{host} {name} {type} {message}'.format_map(ll))
+                        all_remote_loggers[name].info(
+                            '{host} {name} {type} {message}'.format_map(ll)
+                        )
                     except json.decoder.JSONDecodeError:
                         continue
         except websockets.exceptions.ConnectionClosedOK:
             self.logger.warning(f'log streaming is disconnected')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}')
+            self.logger.error(
+                f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}'
+            )
         except asyncio.CancelledError:
             self.logger.info(f'log streaming is cancelled')
         finally:
@@ -231,7 +254,9 @@ class DaemonClient:
             if v != getattr(args, k):
                 changes.append(f'{k:>30s}: {str(getattr(args, k)):30s} -> {str(v):30s}')
         if changes:
-            changes = ['note the following arguments have been masked or altered for remote purpose:'] + changes
+            changes = [
+                'note the following arguments have been masked or altered for remote purpose:'
+            ] + changes
             self.logger.warning('\n'.join(changes))
 
         return _args
@@ -239,9 +264,11 @@ class DaemonClient:
 
 class PeaDaemonClient(DaemonClient):
     """Pea API, we might have different endpoints for peas & pods later"""
+
     kind = 'pea'
 
 
 class PodDaemonClient(DaemonClient):
     """Pod API, we might have different endpoints for peas & pods later"""
+
     kind = 'pod'

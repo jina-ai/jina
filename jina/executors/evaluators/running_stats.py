@@ -14,7 +14,7 @@ class RunningStats:
 
     def clear(self):
         """Reset the stats."""
-        self._n = 0.
+        self._n = 0.0
 
     @property
     def mean(self):
@@ -35,7 +35,7 @@ class RunningStats:
         self._n += 1
         if self._n == 1:
             self._m = x
-            self._s = 0.
+            self._s = 0.0
         else:
             prev_m = self._m
             self._m += (x - self._m) / self._n

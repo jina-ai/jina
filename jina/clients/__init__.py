@@ -2,10 +2,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
-
 from . import request
-from .base import BaseClient, CallbackFnType, InputType
+from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
@@ -28,12 +26,20 @@ class Client(BaseClient):
         if self.args.return_results:
             return result
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def train(self, inputs: InputType,
-              on_done: CallbackFnType = None,
-              on_error: CallbackFnType = None,
-              on_always: CallbackFnType = None,
-              **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    def train(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'train' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -44,14 +50,24 @@ class Client(BaseClient):
         :return: None
         """
         self.mode = RequestType.TRAIN
-        return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
+        return run_async(
+            self._get_results, inputs, on_done, on_error, on_always, **kwargs
+        )
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def search(self, inputs: InputType,
-               on_done: CallbackFnType = None,
-               on_error: CallbackFnType = None,
-               on_always: CallbackFnType = None,
-               **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    def search(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'search' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -63,14 +79,24 @@ class Client(BaseClient):
         """
         self.mode = RequestType.SEARCH
         self.add_default_kwargs(kwargs)
-        return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
+        return run_async(
+            self._get_results, inputs, on_done, on_error, on_always, **kwargs
+        )
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def index(self, inputs: InputType,
-              on_done: CallbackFnType = None,
-              on_error: CallbackFnType = None,
-              on_always: CallbackFnType = None,
-              **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    def index(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'index' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -81,14 +107,24 @@ class Client(BaseClient):
         :return: None
         """
         self.mode = RequestType.INDEX
-        return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
+        return run_async(
+            self._get_results, inputs, on_done, on_error, on_always, **kwargs
+        )
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def update(self, inputs: InputType,
-               on_done: CallbackFnType = None,
-               on_error: CallbackFnType = None,
-               on_always: CallbackFnType = None,
-               **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    def update(
+        self,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -99,17 +135,27 @@ class Client(BaseClient):
         :return: None
         """
         self.mode = RequestType.UPDATE
-        return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
+        return run_async(
+            self._get_results, inputs, on_done, on_error, on_always, **kwargs
+        )
 
-    @deprecated_alias(input_fn=('inputs', 0), buffer=('inputs', 1), callback=('on_done', 1), output_fn=('on_done', 1))
-    def delete(self, inputs: Iterable[str],
-               on_done: CallbackFnType = None,
-               on_error: CallbackFnType = None,
-               on_always: CallbackFnType = None,
-               **kwargs) -> None:
+    @deprecated_alias(
+        input_fn=('inputs', 0),
+        buffer=('inputs', 1),
+        callback=('on_done', 1),
+        output_fn=('on_done', 1),
+    )
+    def delete(
+        self,
+        inputs: InputDeleteType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
         """Issue 'update' request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -117,7 +163,9 @@ class Client(BaseClient):
         :return: None
         """
         self.mode = RequestType.DELETE
-        return run_async(self._get_results, inputs, on_done, on_error, on_always, **kwargs)
+        return run_async(
+            self._get_results, inputs, on_done, on_error, on_always, **kwargs
+        )
 
 
 class WebSocketClient(Client, WebSocketClientMixin):

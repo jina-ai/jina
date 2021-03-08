@@ -13,11 +13,13 @@ COL_STR_TYPE = 'U64'  #: the ID column data type for score matrix
 class BaseRanker(BaseExecutor):
     """The base class for a `Ranker`"""
 
-    def __init__(self,
-                 query_required_keys: Optional[Sequence[str]] = None,
-                 match_required_keys: Optional[Sequence[str]] = None,
-                 *args,
-                 **kwargs):
+    def __init__(
+        self,
+        query_required_keys: Optional[Sequence[str]] = None,
+        match_required_keys: Optional[Sequence[str]] = None,
+        *args,
+        **kwargs
+    ):
         """
 
         :param query_required_keys: Set of keys or features to be extracted from query `Document` by the `Driver` so that
@@ -47,7 +49,7 @@ class BaseRanker(BaseExecutor):
 
 
 class Chunk2DocRanker(BaseRanker):
-    """ A :class:`Chunk2DocRanker` translates the chunk-wise score (distance) to the doc-wise score.
+    """A :class:`Chunk2DocRanker` translates the chunk-wise score (distance) to the doc-wise score.
 
     In the query-time, :class:`Chunk2DocRanker` is an almost-always required component.
     Because in the end we want to retrieve top-k documents of given query-document not top-k chunks of
@@ -66,7 +68,9 @@ class Chunk2DocRanker(BaseRanker):
     COL_QUERY_CHUNK_ID = 'match_query_chunk_id'
     COL_SCORE = 'score'
 
-    def score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict) -> 'np.ndarray':
+    def score(
+        self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
+    ) -> 'np.ndarray':
         """
         Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
         meta information of the query, hence the meta info of the query chunks and matched chunks are given
@@ -91,7 +95,9 @@ class Chunk2DocRanker(BaseRanker):
         _groups = self.group_by_doc_id(match_idx)
         r = []
         for _g in _groups:
-            _doc_id, _doc_score = self._get_score(_g, query_chunk_meta, match_chunk_meta)
+            _doc_id, _doc_score = self._get_score(
+                _g, query_chunk_meta, match_chunk_meta
+            )
             r.append((_doc_id, _doc_score))
         return self.sort_doc_by_score(r)
 
@@ -111,7 +117,9 @@ class Chunk2DocRanker(BaseRanker):
         # group by ``col``
         return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+    def _get_score(
+        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
+    ):
         raise NotImplementedError
 
     @staticmethod
@@ -123,10 +131,13 @@ class Chunk2DocRanker(BaseRanker):
         :return: A `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
         :rtype: np.ndarray
         """
-        r = np.array(r, dtype=[
-            (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
-            (Chunk2DocRanker.COL_SCORE, np.float64)]
-                     )
+        r = np.array(
+            r,
+            dtype=[
+                (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
+                (Chunk2DocRanker.COL_SCORE, np.float64),
+            ],
+        )
         return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
 
     def get_doc_id(self, match_with_same_doc_id):
@@ -148,7 +159,9 @@ class Match2DocRanker(BaseRanker):
     COL_MATCH_ID = 'match_doc_chunk_id'
     COL_SCORE = 'score'
 
-    def score(self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict) -> 'np.ndarray':
+    def score(
+        self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
+    ) -> 'np.ndarray':
         """
         Calculates the new scores for matches and returns them.
 

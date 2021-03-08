@@ -9,8 +9,7 @@ from ..compound import CompoundExecutor
 
 
 class BaseEvaluator(BaseExecutor):
-    """A :class:`BaseEvaluator` is used to evaluate different messages coming from any kind of executor
-    """
+    """A :class:`BaseEvaluator` is used to evaluate different messages coming from any kind of executor"""
 
     metric = ''  #: Get the name of the evaluation metric
 
@@ -83,4 +82,4 @@ class FileBasedEvaluator(CompoundExecutor):
                  executor: BaseEvaluator
            ControlRequest:
              - !ControlReqDriver {}
-     """
+    """

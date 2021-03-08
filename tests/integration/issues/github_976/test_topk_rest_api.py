@@ -21,8 +21,11 @@ def test_top_k_with_rest_api(query_dict):
         # temporarily adding sleep
         time.sleep(0.5)
         query = json.dumps(query_dict).encode('utf-8')
-        req = request.Request(f'http://0.0.0.0:{port}/api/search', data=query,
-                              headers={'content-type': 'application/json'})
+        req = request.Request(
+            f'http://0.0.0.0:{port}/api/search',
+            data=query,
+            headers={'content-type': 'application/json'},
+        )
         resp = request.urlopen(req).read().decode('utf8')
         assert json.loads(resp)['queryset'][0]['name'] == 'SliceQL'
         assert json.loads(resp)['queryset'][0]['parameters']['end'] == TOP_K

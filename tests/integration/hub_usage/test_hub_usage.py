@@ -21,6 +21,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 def test_simple_use_abs_import_shall_fail():
     with pytest.raises(ModuleNotFoundError):
         from .dummyhub_abs import DummyHubExecutorAbs
+
         DummyHubExecutorAbs()
 
     with pytest.raises(RuntimeFailToStart):
@@ -30,6 +31,7 @@ def test_simple_use_abs_import_shall_fail():
 
 def test_simple_use_relative_import():
     from .dummyhub import DummyHubExecutor
+
     DummyHubExecutor()
 
     with Flow().add(uses='DummyHubExecutor'):
@@ -54,15 +56,19 @@ def test_use_from_local_dir_flow_level():
 
 def test_use_from_local_dir_flow_container_level():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error'])
+        [os.path.join(cur_dir, 'dummyhub'), '--test-uses', '--raise-error']
+    )
     HubIO(args).build()
-    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutor:0.0.0-{jina_version}'):
+    with Flow().add(
+        uses=f'docker://jinahub/pod.crafter.dummyhubexecutor:0.0.0-{jina_version}'
+    ):
         pass
 
 
 def test_use_executor_pretrained_model_except():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'dummyhub_pretrained'), '--test-uses', '--raise-error'])
+        [os.path.join(cur_dir, 'dummyhub_pretrained'), '--test-uses', '--raise-error']
+    )
 
     with pytest.raises(HubBuilderError):
         HubIO(args).build()
@@ -70,22 +76,35 @@ def test_use_executor_pretrained_model_except():
 
 def test_build_timeout_ready():
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'dummyhub_slow'), '--timeout-ready', '20000', '--test-uses', '--raise-error'])
+        [
+            os.path.join(cur_dir, 'dummyhub_slow'),
+            '--timeout-ready',
+            '20000',
+            '--test-uses',
+            '--raise-error',
+        ]
+    )
     HubIO(args).build()
-    with Flow().add(uses=f'docker://jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}',
-                    timeout_ready=20000):
+    with Flow().add(
+        uses=f'docker://jinahub/pod.crafter.dummyhubexecutorslow:0.0.0-{jina_version}',
+        timeout_ready=20000,
+    ):
         pass
 
+
 @pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
-@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
+@pytest.mark.skipif(
+    condition='GITHUB_TOKEN' not in os.environ, reason='Token not found'
+)
 def test_hub_build_push(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
-    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token = mocker.patch.object(
+        hubapi, '_fetch_access_token', autospec=True
+    )
     mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
-    args = set_hub_build_parser().parse_args([
-        os.path.join(cur_dir, 'hub-mwu'),
-        '--push',
-        '--host-info'])
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--push', '--host-info']
+    )
     summary = HubIO(args).build()
 
     with open(cur_dir + '/hub-mwu' + '/manifest.yml') as fp:
@@ -101,11 +120,16 @@ def test_hub_build_push(monkeypatch, mocker):
     assert manifest['vendor'] == summary['manifest_info']['vendor']
     assert manifest['keywords'] == summary['manifest_info']['keywords']
 
-    args = set_hub_list_parser().parse_args([
-        '--name', summary['manifest_info']['name'],
-        '--keywords', summary['manifest_info']['keywords'][0],
-        '--type', summary['manifest_info']['type']
-    ])
+    args = set_hub_list_parser().parse_args(
+        [
+            '--name',
+            summary['manifest_info']['name'],
+            '--keywords',
+            summary['manifest_info']['keywords'][0],
+            '--type',
+            summary['manifest_info']['type'],
+        ]
+    )
     response = HubIO(args).list()
     manifests = response
 
@@ -114,13 +138,19 @@ def test_hub_build_push(monkeypatch, mocker):
 
 
 @pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
-@pytest.mark.skipif(condition='GITHUB_TOKEN' not in os.environ, reason='Token not found')
+@pytest.mark.skipif(
+    condition='GITHUB_TOKEN' not in os.environ, reason='Token not found'
+)
 def test_hub_build_push_push_again(monkeypatch, mocker):
     monkeypatch.setattr(Path, 'is_file', True)
-    mock_access_token = mocker.patch.object(hubapi, '_fetch_access_token', autospec=True)
+    mock_access_token = mocker.patch.object(
+        hubapi, '_fetch_access_token', autospec=True
+    )
     mock_access_token.return_value = os.environ.get('GITHUB_TOKEN', None)
 
-    args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info'])
+    args = set_hub_build_parser().parse_args(
+        [str(cur_dir) + '/hub-mwu', '--push', '--host-info']
+    )
     summary = HubIO(args).build()
 
     with open(str(cur_dir) + '/hub-mwu' + '/manifest.yml') as fp:
@@ -136,11 +166,16 @@ def test_hub_build_push_push_again(monkeypatch, mocker):
     assert manifest['vendor'] == summary['manifest_info']['vendor']
     assert manifest['keywords'] == summary['manifest_info']['keywords']
 
-    args = set_hub_list_parser().parse_args([
-        '--name', summary['manifest_info']['name'],
-        '--keywords', summary['manifest_info']['keywords'][0],
-        '--type', summary['manifest_info']['type']
-    ])
+    args = set_hub_list_parser().parse_args(
+        [
+            '--name',
+            summary['manifest_info']['name'],
+            '--keywords',
+            summary['manifest_info']['keywords'][0],
+            '--type',
+            summary['manifest_info']['type'],
+        ]
+    )
     response = HubIO(args).list()
     manifests = response
 
@@ -149,17 +184,23 @@ def test_hub_build_push_push_again(monkeypatch, mocker):
 
     with pytest.raises(ImageAlreadyExists):
         # try and push same version again should fail with `--no-overwrite`
-        args = set_hub_build_parser().parse_args([str(cur_dir) + '/hub-mwu', '--push', '--host-info', '--no-overwrite'])
+        args = set_hub_build_parser().parse_args(
+            [str(cur_dir) + '/hub-mwu', '--push', '--host-info', '--no-overwrite']
+        )
         HubIO(args).build()
 
 
 @pytest.mark.timeout(360)
-@pytest.mark.parametrize('dockerfile_path',
-                         [os.path.join(cur_dir, 'hub-mwu'),
-                          os.path.relpath(
-                              os.path.join(cur_dir, 'hub-mwu'),
-                              os.getcwd())])
+@pytest.mark.parametrize(
+    'dockerfile_path',
+    [
+        os.path.join(cur_dir, 'hub-mwu'),
+        os.path.relpath(os.path.join(cur_dir, 'hub-mwu'), os.getcwd()),
+    ],
+)
 def test_hub_build_multistage(dockerfile_path):
-    args = set_hub_build_parser().parse_args([dockerfile_path, '--raise-error', '-f', 'multistage.Dockerfile'])
+    args = set_hub_build_parser().parse_args(
+        [dockerfile_path, '--raise-error', '-f', 'multistage.Dockerfile']
+    )
     result = HubIO(args).build()
     assert result['is_build_success']

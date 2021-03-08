@@ -73,11 +73,15 @@ class NdArray(BaseNdArray):
 
     """
 
-    def __init__(self, proto: 'jina_pb2.NdArrayProto' = None,
-                 is_sparse: bool = False,
-                 dense_cls: Type['BaseDenseNdArray'] = DenseNdArray,
-                 sparse_cls: Type['BaseSparseNdArray'] = SparseNdArray,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        proto: 'jina_pb2.NdArrayProto' = None,
+        is_sparse: bool = False,
+        dense_cls: Type['BaseDenseNdArray'] = DenseNdArray,
+        sparse_cls: Type['BaseSparseNdArray'] = SparseNdArray,
+        *args,
+        **kwargs
+    ):
         """
 
         :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
@@ -116,5 +120,4 @@ class NdArray(BaseNdArray):
             self.dense_cls(self._pb_body.dense).value = value
 
     def _build_content_dict(self):
-        return {'value': self.value,
-                'is_sparse': self.is_sparse}
+        return {'value': self.value, 'is_sparse': self.is_sparse}

@@ -9,7 +9,14 @@ from cli import _is_latest_version
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
-from jina.helper import cached_property, convert_tuple_to_list, deprecated_alias, is_yaml_filepath, touch_dir, random_port
+from jina.helper import (
+    cached_property,
+    convert_tuple_to_list,
+    deprecated_alias,
+    is_yaml_filepath,
+    touch_dir,
+    random_port,
+)
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
@@ -70,6 +77,7 @@ def test_check_update():
     assert _is_latest_version()
     # now mock it as old version
     import jina
+
     jina.__version__ = '0.1.0'
     assert not _is_latest_version()
 
@@ -93,7 +101,9 @@ def test_wrap_func():
             pass
 
     def check_override(cls, method):
-        is_inherit = any(getattr(cls, method) == getattr(i, method, None) for i in cls.mro()[1:])
+        is_inherit = any(
+            getattr(cls, method) == getattr(i, method, None) for i in cls.mro()[1:]
+        )
         is_parent_method = any(hasattr(i, method) for i in cls.mro()[1:])
         is_override = not is_inherit and is_parent_method
         return is_override
@@ -206,31 +216,41 @@ def test_deprecated_decor():
         dummy(bar=1, foofoo=2)
 
 
-@pytest.mark.parametrize('val', ['merge_and_topk.yml',
-                                 'merge_and_topk.yaml',
-                                 'da.yaml',
-                                 'd.yml',
-                                 '/da/da.yml',
-                                 'das/das.yaml',
-                                 '1234.yml',
-                                 '1234.yml ',
-                                 ' 1234.yml '])
+@pytest.mark.parametrize(
+    'val',
+    [
+        'merge_and_topk.yml',
+        'merge_and_topk.yaml',
+        'da.yaml',
+        'd.yml',
+        '/da/da.yml',
+        'das/das.yaml',
+        '1234.yml',
+        '1234.yml ',
+        ' 1234.yml ',
+    ],
+)
 def test_yaml_filepath_validate_good(val):
     assert is_yaml_filepath(val)
 
 
-@pytest.mark.parametrize('val', [' .yml',
-                                 'a',
-                                 ' uses: yaml',
-                                 'ayaml',
-                                 '''
+@pytest.mark.parametrize(
+    'val',
+    [
+        ' .yml',
+        'a',
+        ' uses: yaml',
+        'ayaml',
+        '''
     shards: $JINA_SHARDS_INDEXERS
     host: $JINA_REDIS_INDEXER_HOST
     port_expose: 8000
     polling: all
     timeout_ready: 100000 # larger timeout as in query time will read all the data
     uses_after: merge_and_topk.yml
-                                 '''])
+                                 ''',
+    ],
+)
 def test_yaml_filepath_validate_bad(val):
     assert not is_yaml_filepath(val)
 
@@ -266,6 +286,7 @@ def config_few_ports():
 
 def test_random_port_max_failures_for_tests_only(config_few_ports):
     from jina.helper import random_port as random_port_with_max_failures
+
     with pytest.raises(NoAvailablePortError):
         random_port_with_max_failures()
         random_port_with_max_failures()

@@ -43,7 +43,9 @@ def test_flow_after(restful):
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_before_after(restful):
     docs = random_docs(10)
-    f = Flow(restful=restful).add(uses_before='_logforward', uses_after='_pass', name='p1')
+    f = Flow(restful=restful).add(
+        uses_before='_logforward', uses_after='_pass', name='p1'
+    )
 
     with f:
         f.index(docs)

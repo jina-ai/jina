@@ -6,7 +6,9 @@ from ...enums import DataInputType, RequestType
 from ...excepts import BadDocType, BadRequestType
 
 
-def _new_doc_from_data(data, data_type: DataInputType, **kwargs) -> Tuple['Document', 'DataInputType']:
+def _new_doc_from_data(
+    data, data_type: DataInputType, **kwargs
+) -> Tuple['Document', 'DataInputType']:
     def _build_doc_from_content():
         with Document(**kwargs) as d:
             d.content = data
@@ -35,14 +37,23 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
 
     try:
         # add type-specific fields
-        if mode == RequestType.INDEX or mode == RequestType.SEARCH or mode == RequestType.TRAIN or mode == RequestType.UPDATE:
+        if (
+            mode == RequestType.INDEX
+            or mode == RequestType.SEARCH
+            or mode == RequestType.TRAIN
+            or mode == RequestType.UPDATE
+        ):
             _add_docs_groundtruths(req, batch, data_type, _kwargs)
         elif mode == RequestType.DELETE:
             _add_ids(req, batch)
         else:
-            raise NotImplementedError(f'generating request from {mode} is not yet supported')
+            raise NotImplementedError(
+                f'generating request from {mode} is not yet supported'
+            )
     except Exception as ex:
-        raise BadRequestType(f'error when building {req.request_type} from {batch}') from ex
+        raise BadRequestType(
+            f'error when building {req.request_type} from {batch}'
+        ) from ex
 
     # add common fields
     if isinstance(queryset, Sequence):

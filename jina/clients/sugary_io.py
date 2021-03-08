@@ -28,11 +28,11 @@ def _subsample(iterable, sampling_rate: float = None, size: int = None, **kwargs
 
 
 def _input_lines(
-        lines: Iterable[str] = None,
-        filepath: str = None,
-        read_mode: str = 'r',
-        line_format: str = 'json',
-        **kwargs
+    lines: Iterable[str] = None,
+    filepath: str = None,
+    read_mode: str = 'r',
+    line_format: str = 'json',
+    **kwargs,
 ) -> Iterator[Union[str, bytes]]:
     """Create a generator from either an Iterable of lines, or a file.
 
@@ -66,41 +66,39 @@ def _input_lines(
     else:
         raise ValueError('"filepath" and "lines" can not be both empty')
 
-def _input_ndjson(
-        fp: Iterable[str],
-        field_resolver: Dict[str, str] = None,
-        **kwargs
-):
+
+def _input_ndjson(fp: Iterable[str], field_resolver: Dict[str, str] = None, **kwargs):
     from jina import Document
 
     for line in _subsample(fp, **kwargs):
         value = json.loads(line)
         if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
+            yield Document(value['document'], field_resolver), Document(
+                value['groundtruth'], field_resolver
+            )
         else:
             yield Document(value, field_resolver)
 
 
-def _input_csv(
-        fp: Iterable[str],
-        field_resolver: Dict[str, str] = None,
-        **kwargs
-):
+def _input_csv(fp: Iterable[str], field_resolver: Dict[str, str] = None, **kwargs):
     from jina import Document
+
     lines = csv.DictReader(fp)
     for value in _subsample(lines, **kwargs):
         if 'groundtruth' in value and 'document' in value:
-            yield Document(value['document'], field_resolver), Document(value['groundtruth'], field_resolver)
+            yield Document(value['document'], field_resolver), Document(
+                value['groundtruth'], field_resolver
+            )
         else:
             yield Document(value, field_resolver)
 
 
 def _input_files(
-        patterns: Union[str, List[str]],
-        recursive: bool = True,
-        size: int = None,
-        sampling_rate: float = None,
-        read_mode: str = None,
+    patterns: Union[str, List[str]],
+    recursive: bool = True,
+    size: int = None,
+    sampling_rate: float = None,
+    read_mode: str = None,
 ) -> Iterator[Union[str, bytes]]:
     """Creates an iterator over a list of file path or the content of the files.
 
@@ -113,7 +111,7 @@ def _input_files(
         'r' for reading in text mode, 'rb' for reading in binary mode.
         If `read_mode` is None, will iterate over filenames.
     :yield: file paths or content
-    
+
     .. note::
         This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
     """
@@ -139,7 +137,7 @@ def _input_files(
 
 
 def _input_ndarray(
-        array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
+    array: 'np.ndarray', axis: int = 0, size: int = None, shuffle: bool = False
 ) -> Iterator[Any]:
     """Create a generator for a given dimension of a numpy array.
 

@@ -28,6 +28,7 @@ def test_metas(tmpdir, random_workspace_name):
 @pytest.fixture(scope='function', autouse=False)
 def fastapi_client():
     from daemon import _get_app
+
     app = _get_app()
     tc = TestClient(app)
     yield tc

@@ -17,8 +17,14 @@ from .. import __default_host__
 from ..clients import Client, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
-from ..helper import colored, \
-    get_public_ip, get_internal_ip, typename, ArgNamespace, download_mermaid_url
+from ..helper import (
+    colored,
+    get_public_ip,
+    get_internal_ip,
+    typename,
+    ArgNamespace,
+    download_mermaid_url,
+)
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
@@ -30,6 +36,7 @@ from ..peapods import BasePod
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
     """Type of Flow, metaclass of :class:`BaseFlow`"""
+
     pass
 
 
@@ -60,13 +67,20 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
-    def __init__(self, args: Optional['argparse.Namespace'] = None, env: Optional[Dict] = None, **kwargs):
+    def __init__(
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        env: Optional[Dict] = None,
+        **kwargs,
+    ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, 'BasePod']
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
-        self._last_changed_pod = ['gateway']  #: default first pod is gateway, will add when build()
+        self._last_changed_pod = [
+            'gateway'
+        ]  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
         self._env = env
         if isinstance(self.args, argparse.Namespace):
@@ -83,7 +97,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser)
         self.args = args
         self._common_kwargs = kwargs
-        self._kwargs = ArgNamespace.get_non_defaults_args(args, _flow_parser)  #: for yaml dump
+        self._kwargs = ArgNamespace.get_non_defaults_args(
+            args, _flow_parser
+        )  #: for yaml dump
 
     @property
     def yaml_spec(self):
@@ -112,7 +128,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if isinstance(endpoint, (list, tuple)):
             for idx, s in enumerate(endpoint):
                 if s == pod_name:
-                    raise FlowTopologyError('the income/output of a pod can not be itself')
+                    raise FlowTopologyError(
+                        'the income/output of a pod can not be itself'
+                    )
         else:
             raise ValueError(f'endpoint={endpoint} is not parsable')
 
@@ -156,21 +174,25 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def _add_gateway(self, needs, **kwargs):
         pod_name = 'gateway'
 
-        kwargs.update(dict(name=pod_name,
-                           ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                           read_only=True,
-                           runtime_cls='GRPCRuntime',
-                           pod_role=PodRoleType.GATEWAY,
-                           identity=self.args.identity
-                           ))
+        kwargs.update(
+            dict(
+                name=pod_name,
+                ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
+                read_only=True,
+                runtime_cls='GRPCRuntime',
+                pod_role=PodRoleType.GATEWAY,
+                identity=self.args.identity,
+            )
+        )
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         self._pod_nodes[pod_name] = BasePod(args, needs)
 
-    def needs(self, needs: Union[Tuple[str], List[str]],
-              name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
+    def needs(
+        self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
+    ) -> 'BaseFlow':
         """
         Add a blocker to the Flow, wait until all peas defined in **needs** completed.
 
@@ -183,8 +205,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :return: the modified Flow
         """
         if len(needs) <= 1:
-            raise FlowTopologyError('no need to wait for a single service, need len(needs) > 1')
-        return self.add(name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs)
+            raise FlowTopologyError(
+                'no need to wait for a single service, need len(needs) > 1'
+            )
+        return self.add(
+            name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs
+        )
 
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
         """
@@ -201,11 +227,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return self.needs(name=name, needs=needs, *args, **kwargs)
 
-    def add(self,
-            needs: Union[str, Tuple[str], List[str]] = None,
-            copy_flow: bool = True,
-            pod_role: 'PodRoleType' = PodRoleType.POD,
-            **kwargs) -> 'BaseFlow':
+    def add(
+        self,
+        needs: Union[str, Tuple[str], List[str]] = None,
+        copy_flow: bool = True,
+        pod_role: 'PodRoleType' = PodRoleType.POD,
+        **kwargs,
+    ) -> 'BaseFlow':
         """
         Add a Pod to the current Flow object and return the new modified Flow object.
         The attribute of the Pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
@@ -231,7 +259,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if pod_name in op_flow._pod_nodes:
             new_name = f'{pod_name}{len(op_flow._pod_nodes)}'
-            self.logger.debug(f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"')
+            self.logger.debug(
+                f'"{pod_name}" is used in this Flow already! renamed it to "{new_name}"'
+            )
             pod_name = new_name
 
         if not pod_name:
@@ -239,10 +269,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if not pod_name.isidentifier():
             # hyphen - can not be used in the name
-            raise ValueError(f'name: {pod_name} is invalid, please follow the python variable name conventions')
+            raise ValueError(
+                f'name: {pod_name} is invalid, please follow the python variable name conventions'
+            )
 
         # needs logic
-        needs = op_flow._parse_endpoints(op_flow, pod_name, needs, connect_to_last_pod=True)
+        needs = op_flow._parse_endpoints(
+            op_flow, pod_name, needs, connect_to_last_pod=True
+        )
 
         # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
@@ -252,16 +286,16 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         # check if host is set to remote:port
         if 'host' in kwargs:
             m = re.match(_regex_port, kwargs['host'])
-            if kwargs.get('host', __default_host__) != __default_host__ and m and 'port_expose' not in kwargs:
+            if (
+                kwargs.get('host', __default_host__) != __default_host__
+                and m
+                and 'port_expose' not in kwargs
+            ):
                 kwargs['port_expose'] = m.group(2)
                 kwargs['host'] = m.group(1)
 
         # update kwargs of this Pod
-        kwargs.update(dict(
-            name=pod_name,
-            pod_role=pod_role,
-            num_part=len(needs)
-        ))
+        kwargs.update(dict(name=pod_name, pod_role=pod_role, num_part=len(needs)))
 
         parser = set_pod_parser()
         if pod_role == PodRoleType.GATEWAY:
@@ -303,22 +337,35 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :return: the new instance of the Flow
         """
         _last_pod = self.last_pod
-        op_flow = self.add(name=name, needs=_last_pod, pod_role=PodRoleType.INSPECT, *args, **kwargs)
+        op_flow = self.add(
+            name=name, needs=_last_pod, pod_role=PodRoleType.INSPECT, *args, **kwargs
+        )
 
         # now remove uses and add an auxiliary Pod
         if 'uses' in kwargs:
             kwargs.pop('uses')
-        op_flow = op_flow.add(name=f'_aux_{name}', needs=_last_pod,
-                              pod_role=PodRoleType.INSPECT_AUX_PASS, *args, **kwargs)
+        op_flow = op_flow.add(
+            name=f'_aux_{name}',
+            needs=_last_pod,
+            pod_role=PodRoleType.INSPECT_AUX_PASS,
+            *args,
+            **kwargs,
+        )
 
         # register any future connection to _last_pod by the auxiliary Pod
         op_flow._inspect_pods[_last_pod] = op_flow.last_pod
 
         return op_flow
 
-    def gather_inspect(self, name: str = 'gather_inspect', uses='_merge_eval', include_last_pod: bool = True, *args,
-                       **kwargs) -> 'BaseFlow':
-        """ Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
+    def gather_inspect(
+        self,
+        name: str = 'gather_inspect',
+        uses='_merge_eval',
+        include_last_pod: bool = True,
+        *args,
+        **kwargs,
+    ) -> 'BaseFlow':
+        """Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
         is returned.
 
         .. note::
@@ -343,7 +390,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if needs:
             if include_last_pod:
                 needs.append(self.last_pod)
-            return self.add(name=name, uses=uses, needs=needs, pod_role=PodRoleType.JOIN_INSPECT, *args, **kwargs)
+            return self.add(
+                name=name,
+                uses=uses,
+                needs=needs,
+                pod_role=PodRoleType.JOIN_INSPECT,
+                *args,
+                **kwargs,
+            )
         else:
             # no inspect node is in the graph, return the current graph
             return self
@@ -390,27 +444,36 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # if set no_inspect then all inspect related nodes are removed
         if op_flow.args.inspect == FlowInspectType.REMOVE:
-            op_flow._pod_nodes = {k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect}
+            op_flow._pod_nodes = {
+                k: v for k, v in op_flow._pod_nodes.items() if not v.role.is_inspect
+            }
             reverse_inspect_map = {v: k for k, v in op_flow._inspect_pods.items()}
 
         for end, pod in op_flow._pod_nodes.items():
             # if an endpoint is being inspected, then replace it with inspected Pod
             # but not those inspect related node
             if op_flow.args.inspect.is_keep:
-                pod.needs = set(ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep) for ep in pod.needs)
+                pod.needs = set(
+                    ep if pod.role.is_inspect else op_flow._inspect_pods.get(ep, ep)
+                    for ep in pod.needs
+                )
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
             for start in pod.needs:
                 if start not in op_flow._pod_nodes:
-                    raise FlowMissingPodError(f'{start} is not in this flow, misspelled name?')
+                    raise FlowMissingPodError(
+                        f'{start} is not in this flow, misspelled name?'
+                    )
                 _outgoing_map[start].append(end)
 
         op_flow = _build_flow(op_flow, _outgoing_map)
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
-            self.logger.warning(f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
-                                f'you may want to double check if it is intentional or some mistake')
+            self.logger.warning(
+                f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
+                f'you may want to double check if it is intentional or some mistake'
+            )
         op_flow._build_level = FlowBuildLevel.GRAPH
         self._update_client()
         return op_flow
@@ -424,7 +487,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return self.build(*args, **kwargs)
 
     def __enter__(self):
-        class CatchAllCleanupContextManager():
+        class CatchAllCleanupContextManager:
             """
             This context manager guarantees, that the :method:``__exit__`` of the
             sub context is called, even when there is an Exception in the
@@ -457,7 +520,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self._pod_nodes.pop('gateway')
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
-            f'flow is closed and all resources are released, current build level is {self._build_level}')
+            f'flow is closed and all resources are released, current build level is {self._build_level}'
+        )
         self.logger.close()
 
     def start(self):
@@ -490,11 +554,15 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             try:
                 v.wait_start_success()
             except Exception as ex:
-                self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
+                self.logger.error(
+                    f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted'
+                )
                 self.close()
                 raise
 
-        self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
+        self.logger.info(
+            f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
+        )
 
         self._show_success_message()
 
@@ -550,15 +618,20 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     def _mermaid_str(self):
-        mermaid_graph = ["%%{init: {'theme': 'base', "
-                         "'themeVariables': { 'primaryColor': '#32C8CD', "
-                         "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%", 'graph LR']
+        mermaid_graph = [
+            "%%{init: {'theme': 'base', "
+            "'themeVariables': { 'primaryColor': '#32C8CD', "
+            "'edgeLabelBackground':'#fff', 'clusterBkg': '#FFCC66'}}}%%",
+            'graph LR',
+        ]
 
         start_repl = {}
         end_repl = {}
         for node, v in self._pod_nodes.items():
             if not v.is_singleton and v.role != PodRoleType.GATEWAY:
-                mermaid_graph.append(f'subgraph sub_{node} ["{node} ({v.args.parallel})"]')
+                mermaid_graph.append(
+                    f'subgraph sub_{node} ["{node} ({v.args.parallel})"]'
+                )
                 if v.is_head_router:
                     head_router = node + '_HEAD'
                     end_repl[node] = (head_router, '((fa:fa-random))')
@@ -571,9 +644,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 for j in range(v.args.parallel):
                     r = node + (f'_{j}' if v.args.parallel > 1 else '')
                     if v.is_head_router:
-                        mermaid_graph.append(f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea')
+                        mermaid_graph.append(
+                            f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea'
+                        )
                     if v.is_tail_router:
-                        mermaid_graph.append(f'\t{r}{p_e % r}:::pea-->{tail_router}{p_r % "tail"}:::pea')
+                        mermaid_graph.append(
+                            f'\t{r}{p_e % r}:::pea-->{tail_router}{p_r % "tail"}:::pea'
+                        )
                 mermaid_graph.append('end')
 
         for node, v in self._pod_nodes.items():
@@ -581,7 +658,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             for need in sorted(v.needs):
                 edge_str = ''
                 if need in self._pod_nodes:
-                    st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[0]
+                    st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[
+                        0
+                    ]
                     edge_str = f'|{st_str}-{ed_str}|'
 
                 _s = start_repl.get(need, (need, f'({need})'))
@@ -602,20 +681,34 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                     line_st = '-.->'
 
                 mermaid_graph.append(
-                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}')
-        mermaid_graph.append(f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999')
-        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff')
-        mermaid_graph.append(f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5')
+                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}'
+                )
+        mermaid_graph.append(
+            f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999'
+        )
+        mermaid_graph.append(
+            f'classDef {str(PodRoleType.INSPECT)} fill:#ff6666,color:#fff'
+        )
+        mermaid_graph.append(
+            f'classDef {str(PodRoleType.JOIN_INSPECT)} fill:#ff6666,color:#fff'
+        )
+        mermaid_graph.append(
+            f'classDef {str(PodRoleType.GATEWAY)} fill:#6E7278,color:#fff'
+        )
+        mermaid_graph.append(
+            f'classDef {str(PodRoleType.INSPECT_AUX_PASS)} fill:#fff,color:#000,stroke-dasharray: 5 5'
+        )
         mermaid_graph.append('classDef pea fill:#009999,stroke:#1E6E73')
         return '\n'.join(mermaid_graph)
 
-    def plot(self, output: str = None,
-             vertical_layout: bool = False,
-             inline_display: bool = False,
-             build: bool = True,
-             copy_flow: bool = False) -> 'BaseFlow':
+    def plot(
+        self,
+        output: str = None,
+        vertical_layout: bool = False,
+        inline_display: bool = False,
+        build: bool = True,
+        copy_flow: bool = False,
+    ) -> 'BaseFlow':
         """
         Visualize the Flow up to the current point
         If a file name is provided it will create a jpg image with that name,
@@ -676,7 +769,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _ipython_display_(self):
         """Displays the object in IPython as a side effect"""
-        self.plot(inline_display=True, build=(self._build_level != FlowBuildLevel.GRAPH))
+        self.plot(
+            inline_display=True, build=(self._build_level != FlowBuildLevel.GRAPH)
+        )
 
     def _mermaid_to_url(self, mermaid_str: str, img_type: str) -> str:
         """
@@ -700,8 +795,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param path: the output yaml path
         """
-        swarm_yml = {'version': '3.4',
-                     'services': {}}
+        swarm_yml = {'version': '3.4', 'services': {}}
 
         for k, v in self._pod_nodes.items():
             if v.role == PodRoleType.GATEWAY:
@@ -710,7 +804,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 cmd = 'jina pod'
             swarm_yml['services'][k] = {
                 'command': f'{cmd} {" ".join(ArgNamespace.kwargs2list(vars(v.args)))}',
-                'deploy': {'parallel': 1}
+                'deploy': {'parallel': 1},
             }
 
         JAML.dump(swarm_yml, path)
@@ -762,15 +856,30 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             header = 'tcp://'
             protocol = 'gRPC'
 
-        address_table = [f'\t🖥️ Local access:\t' + colored(f'{header}{self.host}:{self.port_expose}',
-                                                            'cyan', attrs='underline'),
-                         f'\t🔒 Private network:\t' + colored(f'{header}{self.address_private}:{self.port_expose}',
-                                                              'cyan', attrs='underline')]
+        address_table = [
+            f'\t🖥️ Local access:\t'
+            + colored(
+                f'{header}{self.host}:{self.port_expose}', 'cyan', attrs='underline'
+            ),
+            f'\t🔒 Private network:\t'
+            + colored(
+                f'{header}{self.address_private}:{self.port_expose}',
+                'cyan',
+                attrs='underline',
+            ),
+        ]
         if self.address_public:
             address_table.append(
-                f'\t🌐 Public address:\t' + colored(f'{header}{self.address_public}:{self.port_expose}',
-                                                    'cyan', attrs='underline'))
-        self.logger.success(f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}')
+                f'\t🌐 Public address:\t'
+                + colored(
+                    f'{header}{self.address_public}:{self.port_expose}',
+                    'cyan',
+                    attrs='underline',
+                )
+            )
+        self.logger.success(
+            f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}'
+        )
         self.logger.info('\n' + '\n'.join(address_table))
 
     def block(self):
@@ -812,7 +921,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
 
         .. # noqa: DAR201"""
-        return {k: p.args.workspace_id for k, p in self if hasattr(p.args, 'workspace_id')}
+        return {
+            k: p.args.workspace_id for k, p in self if hasattr(p.args, 'workspace_id')
+        }
 
     @workspace_id.setter
     def workspace_id(self, value: str):

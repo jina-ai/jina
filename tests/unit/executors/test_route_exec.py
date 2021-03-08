@@ -22,10 +22,7 @@ def test_load_driver():
 @pytest.mark.skip('https://github.com/jina-ai/jina/pull/1070')
 def test_route():
     docs = random_docs(num_docs=2, chunks_per_doc=2)
-    f = (Flow()
-        .add(
-        uses_before=os.path.join(cur_dir, 'yaml', 'route.yml'),
-        shards=2))
+    f = Flow().add(uses_before=os.path.join(cur_dir, 'yaml', 'route.yml'), shards=2)
 
     with f:
         f.index(docs)
