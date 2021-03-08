@@ -190,12 +190,12 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 for i, c in enumerate(content):
                     contents[i].append(c)
                 docs_pts.append(doc)
-            for i, attr_list in enumerate(contents):
-                contents[i] = np.stack(attr_list)
+            for i in range(len(contents)):
+                contents[i] = np.stack(contents[i])
         else:
             for doc in self:
-                content = doc.get_attrs_values(*fields)
-                if not content:
+                content = doc.get_attrs_values(*fields)[0]
+                if content is None:
                     bad_docs.append(doc)
                     continue
                 contents.append(content)

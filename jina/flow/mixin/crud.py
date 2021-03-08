@@ -3,7 +3,7 @@ from typing import Union, Iterable, TextIO, Dict
 
 import numpy as np
 
-from ...clients.base import InputType, CallbackFnType
+from ...clients.base import InputType, InputDeleteType, CallbackFnType
 from ...enums import DataInputType
 from ...helper import deprecated_alias
 
@@ -520,7 +520,7 @@ class CRUDFlowMixin:
 
     def delete(
         self,
-        ids: Iterable[str],
+        ids: InputDeleteType,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
