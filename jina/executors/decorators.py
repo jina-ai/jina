@@ -250,7 +250,7 @@ def batching(
     :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
             where function decorated needs to know the ordinal indexes of the data in the batch
             (Not used when label_on is used)
-    :param flatten_output: Flag to determine if a result of list of lists needs to be flattened in output
+    :param flatten_output: If this is set to True, the results from different batches will be chained and the returning value is a list of the results. Otherwise, the returning value is a list of lists, in which each element is a list containing the result from one single batch. Note if there is only one batch returned, the returned result is always flatten.
     :return: the merged result as if run :func:`func` once on the input.
 
     Example:
