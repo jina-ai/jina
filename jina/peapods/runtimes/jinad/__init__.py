@@ -49,7 +49,7 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         self._logging_task = asyncio.create_task(
             self._sleep_forever()
-            if self.args.silent_remote_logs
+            if self.args.quiet_remote_logs
             else self.api.logstream(self._workspace_id, self._remote_id)
         )
 
