@@ -1,6 +1,7 @@
+from jina import Document
 from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker
-from jina.proto import jina_pb2
+from jina.types.score import NamedScore
 from jina.types.sets import DocumentSet
 
 
@@ -38,7 +39,7 @@ def create_document_to_score():
     # |- matches: (id: 3, parent_id: 1, score.value: 3),
     # |- matches: (id: 4, parent_id: 1, score.value: 4),
     # |- matches: (id: 5, parent_id: 1, score.value: 5),
-    doc = jina_pb2.DocumentProto()
+    doc = Document()
     doc.id = '1' * 20
     doc.length = 20
     for match_id, match_score, match_length in [
@@ -47,10 +48,11 @@ def create_document_to_score():
         (4, 1, 8),
         (5, 8, 16),
     ]:
-        match = doc.matches.add()
-        match.id = str(match_id) * match_length
-        match.length = match_length
-        match.score.value = match_score
+        with Document() as match:
+            match.id = str(match_id) * match_length
+            match.length = match_length
+            match.score = NamedScore(value=match_score, ref_id=doc.id)
+            doc.matches.append(match)
     return doc
 
 
