@@ -202,10 +202,6 @@ def _get_total_size(full_data_size, batch_size, num_batch):
 def _merge_results_after_batching(
     final_result, merge_over_axis: int = 0, flatten: bool = True
 ):
-    if len(final_result) == 1:
-        # the only result of one batch
-        return final_result[0]
-
     if final_result:
         if isinstance(final_result[0], np.ndarray):
             if len(final_result[0].shape) > 1:
@@ -470,10 +466,11 @@ def single(
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
             # by default data is in args[1] (self needs to be taken into account)
-            data = args[slice_on]
-
-            if not isinstance(data, Iterable):
+            if len(args) <= slice_on or not isinstance(args[slice_on], Iterable):
+                # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
+
+            data = args[slice_on]
 
             args = list(args)
 
@@ -533,6 +530,11 @@ def single_multi_input(
             # by default data is in args[1:] (self needs to be taken into account)
             args = list(args)
             default_logger.debug(f'batching disabled for {func.__qualname__}')
+
+            if len(args) <= slice_on:
+                # like this one can use the function with single kwargs
+                return func(*args, **kwargs)
+
             data_iterators = [args[slice_on + i] for i in range(0, num_data)]
 
             if not isinstance(data_iterators[0], Iterable):

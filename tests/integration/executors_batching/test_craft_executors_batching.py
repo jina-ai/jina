@@ -19,7 +19,6 @@ from tests import validate_callback
 class DummyCrafterTextBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['text']
 
     @batching(batch_size=3)
     def craft(self, text, *args, **kwargs):
@@ -30,7 +29,6 @@ class DummyCrafterTextBatching(BaseCrafter):
 class DummyCrafterTextSingle(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['text']
 
     @single
     def craft(self, text, *args, **kwargs):
@@ -74,7 +72,6 @@ def test_batching_text_one_argument_flow(crafter, mocker):
 class DummyCrafterTextIdBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['text', 'id']
 
     @batching_multi_input(batch_size=3, num_data=2)
     def craft(self, text, id, *args, **kwargs):
@@ -88,7 +85,6 @@ class DummyCrafterTextIdBatching(BaseCrafter):
 class DummyCrafterTextIdSingle(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['text', 'id']
 
     @single_multi_input(num_data=2)
     def craft(self, text, id, *args, **kwargs):
@@ -139,7 +135,6 @@ def test_batching_text_multi_flow(crafter, mocker):
 class DummyCrafterBlobBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['blob']
 
     @batching(batch_size=3)
     def craft(self, blob, *args, **kwargs):
@@ -151,7 +146,6 @@ class DummyCrafterBlobBatching(BaseCrafter):
 class DummyCrafterBlobSingle(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['blob']
 
     @single
     def craft(self, blob, *args, **kwargs):
@@ -201,7 +195,6 @@ def test_batching_blob_one_argument_flow(crafter, mocker):
 class DummyCrafterBlobEmbeddingBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['blob', 'embedding']
 
     @batching_multi_input(batch_size=3, num_data=2)
     def craft(self, blob, embedding, *args, **kwargs):
@@ -215,7 +208,6 @@ class DummyCrafterBlobEmbeddingBatching(BaseCrafter):
 class DummyCrafterBlobEmbeddingSingle(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['blob', 'embedding']
 
     @single_multi_input(num_data=2)
     def craft(self, blob, embedding, *args, **kwargs):
@@ -283,7 +275,6 @@ def test_batching_blob_multi_flow(crafter, mocker):
 class DummyCrafterTextEmbeddingBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = ['text', 'embedding']
 
     @batching_multi_input(batch_size=3, num_data=2)
     def craft(self, text, embedding, *args, **kwargs):

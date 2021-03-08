@@ -118,6 +118,18 @@ def test_single():
     assert result == 1
 
 
+def test_single_kwargs_call():
+    class A:
+        @single
+        def f(self, data):
+            assert isinstance(data, int)
+            return data
+
+    instance = A()
+    result = instance.f(data=1)
+    assert result == 1
+
+
 def test_single_np_ndarray():
     class A:
         def __init__(self):
@@ -135,6 +147,20 @@ def test_single_np_ndarray():
     result = instance.f(input_np)
     np.testing.assert_equal(result, input_np)
     assert instance.call_nbr == 4
+
+
+def test_single_np_ndarray_kwargs_call():
+    class A:
+        @single
+        def f(self, data):
+            assert isinstance(data, np.ndarray)
+            assert data.shape == (5,)
+            return data
+
+    instance = A()
+    input_np = np.random.random(5)
+    result = instance.f(data=input_np)
+    np.testing.assert_equal(result, input_np)
 
 
 def test_batching():

@@ -13,7 +13,6 @@ from jina.types.ndarray.generic import NdArray
 class MockCrafter(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = {'text'}
 
     @single
     def craft(self, text: str, *args, **kwargs) -> Dict:

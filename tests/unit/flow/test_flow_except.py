@@ -12,7 +12,7 @@ from tests import validate_callback
 
 class DummyCrafter(BaseCrafter):
     @single
-    def craft(self, *args, **kwargs):
+    def craft(self, text, *args, **kwargs):
         return 1 / 0
 
 
@@ -171,7 +171,8 @@ def test_flow_on_callback(restful):
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_on_error_callback(restful):
     class DummyCrafter(BaseCrafter):
-        def craft(self, *args, **kwargs):
+        @single
+        def craft(self, blob, *args, **kwargs):
             raise NotImplementedError
 
     f = Flow(restful=restful).add(uses='DummyCrafter')
