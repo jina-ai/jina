@@ -80,7 +80,7 @@ def protobuf_to_pydantic_model(
         model_name = protobuf_model.DESCRIPTOR.name
         protobuf_fields = protobuf_model.DESCRIPTOR.fields
 
-    if model_name.endswith('Proto') and model_name in PROTO_TO_PYDANTIC_MODELS:
+    if model_name in PROTO_TO_PYDANTIC_MODELS:
         return PROTO_TO_PYDANTIC_MODELS[model_name]
 
     for f in protobuf_fields:
@@ -114,7 +114,7 @@ def protobuf_to_pydantic_model(
                 field_type = datetime
                 default_value = datetime.now()
 
-            elif f.message_type.name.endswith('Proto'):
+            else:
                 # Proto field type: Another Proto message in jina
                 # (every proto message in Jina ends with 'Proto')
 
