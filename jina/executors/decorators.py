@@ -206,7 +206,7 @@ def _merge_results_after_batching(
         # the only result of one batch
         return final_result[0]
 
-    if len(final_result):
+    if final_result:
         if isinstance(final_result[0], np.ndarray):
             if len(final_result[0].shape) > 1:
                 final_result = np.concatenate(final_result, merge_over_axis)
