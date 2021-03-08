@@ -3,7 +3,7 @@ import asyncio
 import warnings
 from typing import Any
 
-from google.protobuf.json_format import MessageToDict
+from google.protobuf.json_format import MessageToDict, MessageToJson
 
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
@@ -148,7 +148,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.INDEX
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)))
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     @app.post(path='/search', summary='Search documents from Jina', tags=['CRUD'])
     async def search_api(body: JinaSearchRequestModel):
@@ -163,7 +165,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.SEARCH
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)))
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     @app.put(path='/update', summary='Update documents in Jina', tags=['CRUD'])
     async def update_api(body: JinaUpdateRequestModel):
@@ -178,7 +182,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.UPDATE
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)))
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     @app.delete(path='/delete', summary='Delete documents in Jina', tags=['CRUD'])
     async def delete_api(body: JinaDeleteRequestModel):
@@ -193,17 +199,19 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd = body.dict()
         bd['mode'] = RequestType.DELETE
         BaseClient.add_default_kwargs(bd)
-        return StreamingResponse(result_in_stream(request_generator(**bd)))
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     async def result_in_stream(req_iter):
         """
-        Collect the protobuf message converts protobuf message to a dictionary.
+        Streams results from AsyncPrefetchCall as json
 
         :param req_iter: request iterator
         :yield: result
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
-            yield MessageToDict(k)
+            yield MessageToJson(k)
 
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):
