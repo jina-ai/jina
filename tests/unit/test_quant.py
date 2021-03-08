@@ -36,6 +36,9 @@ def test_quant_f1(quant):
 
     f = Flow().add()
     with f as fl:
-        fl.index(random_docs(num_docs, chunks_per_doc=chunks_per_doc, embed_dim=embed_dim), on_done=get_output)
+        fl.index(
+            random_docs(num_docs, chunks_per_doc=chunks_per_doc, embed_dim=embed_dim),
+            on_done=get_output,
+        )
 
     os.unsetenv('JINA_ARRAY_QUANT')

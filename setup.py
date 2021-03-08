@@ -23,7 +23,9 @@ try:
     pkg_name = 'jina'
     libinfo_py = path.join(pkg_name, '__init__.py')
     libinfo_content = open(libinfo_py, 'r', encoding='utf8').readlines()
-    version_line = [l.strip() for l in libinfo_content if l.startswith('__version__')][0]
+    version_line = [l.strip() for l in libinfo_content if l.startswith('__version__')][
+        0
+    ]
     exec(version_line)  # gives __version__
 except FileNotFoundError:
     __version__ = '0.0.0'
@@ -38,6 +40,7 @@ except FileNotFoundError:
 def get_extra_requires(path, add_all=True):
     import re
     from collections import defaultdict
+
     try:
         with open(path) as fp:
             extra_deps = defaultdict(set)
@@ -69,12 +72,11 @@ def register_ac():
     from pathlib import Path
     import os
     import re
+
     home = str(Path.home())
     resource_path = 'jina/resources/completions/jina.%s'
     regex = r'#\sJINA_CLI_BEGIN(.*)#\sJINA_CLI_END'
-    _check = {'zsh': '.zshrc',
-              'bash': '.bashrc',
-              'fish': '.fish'}
+    _check = {'zsh': '.zshrc', 'bash': '.bashrc', 'fish': '.fish'}
 
     def add_ac(k, v):
         v_fp = os.path.join(home, v)
@@ -165,5 +167,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     keywords='jina cloud-native neural-search query search index elastic neural-network encoding '
-             'embedding serving docker container image video audio deep-learning',
+    'embedding serving docker container image video audio deep-learning',
 )

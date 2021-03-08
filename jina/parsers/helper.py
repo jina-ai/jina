@@ -7,7 +7,10 @@ from typing import Tuple
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
     from jina.logging import default_logger
-    default_logger.warning(f'Setting {_SHOW_ALL_ARGS} will make remote Peas with sharding not work when using JinaD')
+
+    default_logger.warning(
+        f'Setting {_SHOW_ALL_ARGS} will make remote Peas with sharding not work when using JinaD'
+    )
 
 
 def add_arg_group(parser, title):
@@ -49,6 +52,7 @@ class KVAppendAction(argparse.Action):
         """
         import json, re
         from ..helper import parse_arg
+
         d = getattr(args, self.dest) or {}
         for value in values:
             try:
@@ -57,7 +61,9 @@ class KVAppendAction(argparse.Action):
                 try:
                     k, v = re.split(r'[:=]\s*', value, maxsplit=1)
                 except ValueError:
-                    raise argparse.ArgumentTypeError(f'could not parse argument \"{values[0]}\" as k=v format')
+                    raise argparse.ArgumentTypeError(
+                        f'could not parse argument \"{values[0]}\" as k=v format'
+                    )
                 d[k] = parse_arg(v)
         setattr(args, self.dest, d)
 
@@ -80,6 +86,7 @@ class DockerKwargsAppendAction(argparse.Action):
         :param option_string: inherited, not used
         """
         import json
+
         d = getattr(args, self.dest) or {}
 
         for value in values:
@@ -89,7 +96,9 @@ class DockerKwargsAppendAction(argparse.Action):
                 try:
                     (k, v) = value.split(':', 1)
                 except ValueError:
-                    raise argparse.ArgumentTypeError(f'could not parse argument \"{values[0]}\" as k:v format')
+                    raise argparse.ArgumentTypeError(
+                        f'could not parse argument \"{values[0]}\" as k:v format'
+                    )
                 # transform from text to actual type (int, list, etc...)
                 d[k] = json.loads(v)
         setattr(args, self.dest, d)
@@ -97,7 +106,6 @@ class DockerKwargsAppendAction(argparse.Action):
 
 class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
     class _Section(object):
-
         def __init__(self, formatter, parent, heading=None):
             self.formatter = formatter
             self.parent = parent
@@ -120,10 +128,18 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             # add the heading if the section was non-empty
             if self.heading is not argparse.SUPPRESS and self.heading is not None:
                 from ..helper import colored
+
                 current_indent = self.formatter._current_indent
-                captial_heading = ' '.join(v[0].upper() + v[1:] for v in self.heading.split(' '))
+                captial_heading = ' '.join(
+                    v[0].upper() + v[1:] for v in self.heading.split(' ')
+                )
                 heading = '⚙️  %*s%s\n' % (
-                    current_indent, '', colored(captial_heading, 'cyan', attrs=['underline', 'bold', 'reverse']))
+                    current_indent,
+                    '',
+                    colored(
+                        captial_heading, 'cyan', attrs=['underline', 'bold', 'reverse']
+                    ),
+                )
             else:
                 heading = ''
 
@@ -141,17 +157,29 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         if '%(default)' not in action.help:
             if action.default is not argparse.SUPPRESS:
                 from ..helper import colored
+
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if isinstance(action, argparse._StoreTrueAction):
 
-                    help_string = colored('default: %s' % (
-                        'enabled' if action.default else f'disabled, use "--{action.dest}" to enable it'),
-                                          attrs=['dark'])
+                    help_string = colored(
+                        'default: %s'
+                        % (
+                            'enabled'
+                            if action.default
+                            else f'disabled, use "--{action.dest}" to enable it'
+                        ),
+                        attrs=['dark'],
+                    )
                 elif action.choices:
                     choices_str = f'{{{", ".join([str(c) for c in action.choices])}}}'
-                    help_string = colored('choose from: ' + choices_str + '; default: %(default)s', attrs=['dark'])
+                    help_string = colored(
+                        'choose from: ' + choices_str + '; default: %(default)s',
+                        attrs=['dark'],
+                    )
                 elif action.option_strings or action.nargs in defaulting_nargs:
-                    help_string = colored('type: %(type)s; default: %(default)s', attrs=['dark'])
+                    help_string = colored(
+                        'type: %(type)s; default: %(default)s', attrs=['dark']
+                    )
         return f'''
         
         {help_string}
@@ -161,9 +189,9 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         '''
 
     def _join_parts(self, part_strings):
-        return '\n' + ''.join([part
-                               for part in part_strings
-                               if part and part is not argparse.SUPPRESS])
+        return '\n' + ''.join(
+            [part for part in part_strings if part and part is not argparse.SUPPRESS]
+        )
 
     def _get_default_metavar_for_optional(self, action):
         return ''
@@ -217,6 +245,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         :return: indentation of line and indentation of sub-items
         """
         import re
+
         indent = len(re.match(r'( *)', line).group(1))
         list_match = re.match(r'( *)(([*\-+>]+|\w+\)|\w+\.) +)', line)
         if list_match:

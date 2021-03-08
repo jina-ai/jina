@@ -1,6 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple, Sequence
-
+from typing import Union, Iterable, Tuple, Sequence, List
 
 import numpy as np
 
@@ -9,10 +8,14 @@ from ...logging import default_logger
 
 try:
     # when protobuf using Cpp backend
-    from google.protobuf.pyext._message import RepeatedCompositeContainer as RepeatedContainer
+    from google.protobuf.pyext._message import (
+        RepeatedCompositeContainer as RepeatedContainer,
+    )
 except:
     # when protobuf using Python backend
-    from google.protobuf.internal.containers import RepeatedCompositeFieldContainer as RepeatedContainer
+    from google.protobuf.internal.containers import (
+        RepeatedCompositeFieldContainer as RepeatedContainer,
+    )
 
 from ...proto.jina_pb2 import DocumentProto
 from .traversable import TraversableSequence
@@ -34,7 +37,6 @@ class DocumentSet(TraversableSequence, MutableSequence):
     """
 
     def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
-        """Set constructor method."""
         super().__init__()
         self._docs_proto = docs_proto
         self._docs_map = {}
@@ -64,11 +66,13 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
     def __iter__(self):
         from ..document import Document
+
         for d in self._docs_proto:
             yield Document(d)
 
     def __getitem__(self, item):
         from ..document import Document
+
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
@@ -101,11 +105,19 @@ class DocumentSet(TraversableSequence, MutableSequence):
         return self._docs_proto.append(doc.proto)
 
     def add(self, doc: 'Document') -> 'Document':
-        """Shortcut to :meth:`append`, do not override this method."""
+        """Shortcut to :meth:`append`, do not override this method.
+
+        :param doc: the document to add to the set
+        :return: Appended list.
+        """
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
-        """Extend an iterable to :class:`DocumentSet`."""
+        """
+        Extend the :class:`DocumentSet` by appending all the items from the iterable.
+
+        :param iterable: the iterable of Documents to extend this set with
+        """
         for doc in iterable:
             self.append(doc)
 
@@ -132,7 +144,12 @@ class DocumentSet(TraversableSequence, MutableSequence):
         self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
-        """Sort the list of :class:`DocumentSet`."""
+        """
+        Sort the items of the :class:`DocumentSet` in place.
+
+        :param args: variable set of arguments to pass to the sorting underlying function
+        :param kwargs: keyword arguments to pass to the sorting underlying function
+        """
         self._docs_proto.sort(*args, **kwargs)
 
     @property
@@ -155,46 +172,72 @@ class DocumentSet(TraversableSequence, MutableSequence):
         """
         return self._extract_docs('content')
 
-    def _extract_docs(self, attr: str) -> Tuple['np.ndarray', 'DocumentSet']:
-        contents = []
+    def _extract_docs(
+        self, *fields: str
+    ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
+
+        list_of_contents_output = len(fields) > 1
+        contents = [[] for _ in fields if len(fields) > 1]
         docs_pts = []
         bad_docs = []
 
-        for doc in self:
-            content = getattr(doc, attr)
-
-            if content is not None:
+        if list_of_contents_output:
+            for doc in self:
+                content = doc.get_attrs_values(*fields)
+                if content is None:
+                    bad_docs.append(doc)
+                    continue
+                for i, c in enumerate(content):
+                    contents[i].append(c)
+                docs_pts.append(doc)
+            for i in range(len(contents)):
+                contents[i] = np.stack(contents[i])
+        else:
+            for doc in self:
+                content = doc.get_attrs_values(*fields)[0]
+                if content is None:
+                    bad_docs.append(doc)
+                    continue
                 contents.append(content)
                 docs_pts.append(doc)
-            else:
-                bad_docs.append(doc)
+            contents = np.stack(contents) if contents else None
 
-        contents = np.stack(contents) if contents else None
-
-        if bad_docs and docs_pts:
+        if bad_docs:
             default_logger.warning(
-                f'found {len(bad_docs)} no-{attr} docs at granularity {docs_pts[0].granularity}')
+                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
+                f'following fields: {fields} '
+            )
 
         return contents, DocumentSet(docs_pts)
 
     def __bool__(self):
-        """To simulate ```l = []; if l: ...``` """
+        """To simulate ```l = []; if l: ...```
+
+        :return: returns true if the length of the set is larger than 0
+        """
         return len(self) > 0
 
     def new(self) -> 'Document':
-        """Create a new empty document appended to the end of the set."""
+        """Create a new empty document appended to the end of the set.
+
+        :return: a new Document appended to the set
+        """
         from ..document import Document
+
         return self.append(Document())
 
     def __str__(self):
         from ..document import Document
+
         content = ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
         if len(self._docs_proto) > 3:
             content += f'in total {len(self._docs_proto)} items'
         return content
 
     def __repr__(self):
-        content = ' '.join(f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items())
+        content = ' '.join(
+            f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items()
+        )
         content += f' at {id(self)}'
         content = content.strip()
         return f'<{typename(self)} {content}>'

@@ -11,7 +11,6 @@ class FlowStartupException(Exception):
 
 
 class BrokenFlow(Flow):
-
     def start(self):
         """Start to run all Pods in this Flow.
 
@@ -42,20 +41,24 @@ class BrokenFlow(Flow):
             try:
                 v.wait_start_success()
             except Exception as ex:
-                self.logger.error(f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted')
+                self.logger.error(
+                    f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted'
+                )
                 self.close()
                 raise
 
         raise FlowStartupException
 
-        self.logger.info(f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow')
+        self.logger.info(
+            f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
+        )
 
         self._show_success_message()
 
         return self
 
 
-class WrapContextManager():
+class WrapContextManager:
     def __init__(self, flow):
         self._flow = flow
 

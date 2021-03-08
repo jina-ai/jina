@@ -9,7 +9,7 @@ from jina.executors.evaluators.text.length import TextLengthEvaluator
     [
         ('aaa', 'bbb', 0.0),
         ('AbcD', 'fghkl', 1.0),
-    ]
+    ],
 )
 def test_length_evaluator(doc, gt, expected):
     evaluator = TextLengthEvaluator()

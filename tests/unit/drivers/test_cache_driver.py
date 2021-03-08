@@ -15,7 +15,6 @@ from tests import random_docs, get_documents
 
 
 class MockCacheDriver(BaseCacheDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -75,10 +74,14 @@ def test_cache_driver_from_file(tmpdir, test_metas):
     folder = os.path.join(test_metas["workspace"])
     bin_full_path = os.path.join(folder, filename)
     docs = DocumentSet(list(random_docs(10, embedding=False)))
-    pickle.dump({doc.id: BaseCacheDriver.hash_doc(doc, ['content_hash']) for doc in docs},
-                open(f'{bin_full_path}.bin.ids', 'wb'))
-    pickle.dump({BaseCacheDriver.hash_doc(doc, ['content_hash']): doc.id for doc in docs},
-                open(f'{bin_full_path}.bin.cache', 'wb'))
+    pickle.dump(
+        {doc.id: BaseCacheDriver.hash_doc(doc, ['content_hash']) for doc in docs},
+        open(f'{bin_full_path}.bin.ids', 'wb'),
+    )
+    pickle.dump(
+        {BaseCacheDriver.hash_doc(doc, ['content_hash']): doc.id for doc in docs},
+        open(f'{bin_full_path}.bin.cache', 'wb'),
+    )
 
     driver = MockCacheDriver()
     with DocCache(metas=test_metas, fields=(CONTENT_HASH_KEY,)) as executor:
@@ -98,7 +101,6 @@ def test_cache_driver_from_file(tmpdir, test_metas):
 
 
 class MockBaseCacheDriver(BaseCacheDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -108,7 +110,6 @@ class MockBaseCacheDriver(BaseCacheDriver):
 
 
 class SimpleDeleteDriver(DeleteDriver):
-
     @property
     def exec_fn(self):
         return self._exec_fn
@@ -229,13 +230,19 @@ def test_cache_driver_delete(tmpdir, test_metas, field_type, mocker):
 
 
 def test_cache_driver_multiple_fields(test_metas):
-    docs1 = list(get_documents(0, same_content=True, same_tag_content=False, index_start=0))
-    docs2 = list(get_documents(0, same_content=True, same_tag_content=False, index_start=0))
+    docs1 = list(
+        get_documents(0, same_content=True, same_tag_content=False, index_start=0)
+    )
+    docs2 = list(
+        get_documents(0, same_content=True, same_tag_content=False, index_start=0)
+    )
     filename = 'cache'
     test_metas['name'] = filename
     driver = MockBaseCacheDriver()
 
-    with DocCache(filename, metas=test_metas, fields=(CONTENT_HASH_KEY, 'tags__tag_field')) as executor:
+    with DocCache(
+        filename, metas=test_metas, fields=(CONTENT_HASH_KEY, 'tags__tag_field')
+    ) as executor:
         driver.attach(executor=executor, runtime=None)
         driver._apply_all(docs1)
         with pytest.raises(NotImplementedError):
@@ -249,7 +256,13 @@ def test_cache_driver_multiple_fields(test_metas):
         assert executor.size == len(docs1)
 
     # switching order doesn't matter
-    with DocCache(metas=test_metas, fields=('tags__tag_field', CONTENT_HASH_KEY,)) as executor:
+    with DocCache(
+        metas=test_metas,
+        fields=(
+            'tags__tag_field',
+            CONTENT_HASH_KEY,
+        ),
+    ) as executor:
         driver.attach(executor=executor, runtime=None)
         with pytest.raises(NotImplementedError):
             driver._apply_all(docs1)
@@ -265,8 +278,12 @@ def test_hash():
     d2 = Document()
     d2.tags['a'] = '1'
     d2.tags['b'] = '23456'
-    assert BaseCacheDriver.hash_doc(d1, ['tags__a', 'tags__b']) == BaseCacheDriver.hash_doc(d1, ['tags__a', 'tags__b'])
-    assert BaseCacheDriver.hash_doc(d1, ['tags__a', 'tags__b']) != BaseCacheDriver.hash_doc(d2, ['tags__a', 'tags__b'])
+    assert BaseCacheDriver.hash_doc(
+        d1, ['tags__a', 'tags__b']
+    ) == BaseCacheDriver.hash_doc(d1, ['tags__a', 'tags__b'])
+    assert BaseCacheDriver.hash_doc(
+        d1, ['tags__a', 'tags__b']
+    ) != BaseCacheDriver.hash_doc(d2, ['tags__a', 'tags__b'])
 
 
 def test_cache_legacy_field_type(tmp_path, test_metas):

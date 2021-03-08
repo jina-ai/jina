@@ -9,23 +9,26 @@ from jina.types.message import Message
 from jina.types.ndarray.generic import NdArray
 
 
-@pytest.mark.parametrize(
-    'proto_type', ['float32', 'float64', 'uint8']
-)
+@pytest.mark.parametrize('proto_type', ['float32', 'float64', 'uint8'])
 @pytest.mark.repeat(10)
 def test_array_protobuf_conversions(proto_type):
-    random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(proto_type)
+    random_array = np.random.rand(
+        random.randrange(0, 50), random.randrange(0, 20)
+    ).astype(proto_type)
     d = NdArray()
     d.value = random_array
     np.testing.assert_almost_equal(d.value, random_array)
 
 
 @pytest.mark.parametrize(
-    'quantize, proto_type', [('fp16', 'float32'), ('fp16', 'float64'), ('uint8', 'uint8')],
+    'quantize, proto_type',
+    [('fp16', 'float32'), ('fp16', 'float64'), ('uint8', 'uint8')],
 )
 @pytest.mark.repeat(10)
 def test_array_protobuf_conversions_with_quantize(quantize, proto_type):
-    random_array = np.random.rand(random.randrange(0, 50), random.randrange(0, 20)).astype(proto_type)
+    random_array = np.random.rand(
+        random.randrange(0, 50), random.randrange(0, 20)
+    ).astype(proto_type)
     d = NdArray(quantize=quantize)
     d.value = random_array
     np.testing.assert_almost_equal(d.value, random_array, decimal=2)

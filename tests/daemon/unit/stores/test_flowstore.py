@@ -23,4 +23,3 @@ def test_flow_store():
     store.delete(flow_id)
     assert flow_id not in store
     assert not store
-

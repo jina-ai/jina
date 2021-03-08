@@ -8,7 +8,9 @@ from jina.types.message.common import ControlMessage
 def test_control_msg(command):
     msg = ControlMessage(command)
     assert msg.proto.envelope.request_type == 'ControlRequest'
-    assert msg.request.control.command == getattr(jina_pb2.RequestProto.ControlRequestProto, command)
+    assert msg.request.control.command == getattr(
+        jina_pb2.RequestProto.ControlRequestProto, command
+    )
     assert msg.request.command == command
 
 

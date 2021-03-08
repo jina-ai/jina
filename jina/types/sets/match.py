@@ -29,11 +29,14 @@ class MatchSet(DocumentSet):
         :rtype: :class:`Document` view
         """
         from ..document import Document
+
         m = self._docs_proto.add()
         m.CopyFrom(document.proto)
         match = Document(m)
 
-        match.set_attrs(granularity=self.granularity, adjacency=self.adjacency, **kwargs)
+        match.set_attrs(
+            granularity=self.granularity, adjacency=self.adjacency, **kwargs
+        )
         match.score.ref_id = self._ref_doc.id
 
         return match

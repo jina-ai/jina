@@ -19,34 +19,62 @@ class MockBasePeaRead(BasePea):
         assert msg.request.is_used
 
 
-args1 = set_pea_parser().parse_args([
-    '--host-in', '0.0.0.0',
-    '--host-out', '0.0.0.0',
-    '--socket-in', 'PULL_CONNECT',
-    '--socket-out', 'PUSH_CONNECT',
-    '--timeout-ctrl', '-1'])
+args1 = set_pea_parser().parse_args(
+    [
+        '--host-in',
+        '0.0.0.0',
+        '--host-out',
+        '0.0.0.0',
+        '--socket-in',
+        'PULL_CONNECT',
+        '--socket-out',
+        'PUSH_CONNECT',
+        '--timeout-ctrl',
+        '-1',
+    ]
+)
 
-args2 = set_pea_parser().parse_args([
-    '--host-in', '0.0.0.0',
-    '--host-out', '0.0.0.0',
-    '--port-in', str(args1.port_out),
-    '--port-out', str(args1.port_in),
-    '--socket-in', 'PULL_BIND',
-    '--socket-out', 'PUSH_BIND',
-    '--uses', '_clear',  # will trigger use
-    '--timeout-ctrl', '-1'
-])
+args2 = set_pea_parser().parse_args(
+    [
+        '--host-in',
+        '0.0.0.0',
+        '--host-out',
+        '0.0.0.0',
+        '--port-in',
+        str(args1.port_out),
+        '--port-out',
+        str(args1.port_in),
+        '--socket-in',
+        'PULL_BIND',
+        '--socket-out',
+        'PUSH_BIND',
+        '--uses',
+        '_clear',  # will trigger use
+        '--timeout-ctrl',
+        '-1',
+    ]
+)
 
-args3 = set_pea_parser().parse_args([
-    '--host-in', '0.0.0.0',
-    '--host-out', '0.0.0.0',
-    '--port-in', str(args1.port_out),
-    '--port-out', str(args1.port_in),
-    '--socket-in', 'PULL_BIND',
-    '--socket-out', 'PUSH_BIND',
-    '--uses', '_pass',  # will NOT trigger use
-    '--timeout-ctrl', '-1'
-])
+args3 = set_pea_parser().parse_args(
+    [
+        '--host-in',
+        '0.0.0.0',
+        '--host-out',
+        '0.0.0.0',
+        '--port-in',
+        str(args1.port_out),
+        '--port-out',
+        str(args1.port_in),
+        '--socket-in',
+        'PULL_BIND',
+        '--socket-out',
+        'PUSH_BIND',
+        '--uses',
+        '_pass',  # will NOT trigger use
+        '--timeout-ctrl',
+        '-1',
+    ]
+)
 
 
 def test_read_zmqlet():

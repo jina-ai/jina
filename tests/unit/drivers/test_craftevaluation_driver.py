@@ -11,7 +11,6 @@ from jina.types.document.helper import DocGroundtruthPair
 
 
 class MockDiffEvaluator(BaseEvaluator):
-
     def evaluate(self, actual: Any, desired: Any, *args, **kwargs) -> float:
         return abs(len(actual) - len(desired))
 
@@ -59,7 +58,7 @@ def doc_groundtruth_pair(doc_with_field_type, groundtruth_with_field_type):
         def create(self):
             return DocGroundtruthPair(
                 doc=doc_with_field_type.create(),
-                groundtruth=groundtruth_with_field_type.create()
+                groundtruth=groundtruth_with_field_type.create(),
             )
 
     return DocGroundtruthPairFactory()
@@ -69,9 +68,7 @@ def doc_groundtruth_pair(doc_with_field_type, groundtruth_with_field_type):
 def ground_truth_pairs(doc_groundtruth_pair):
     doc_groundtruth_pairs = []
     for _ in range(10):
-        doc_groundtruth_pairs.append(
-            doc_groundtruth_pair.create()
-        )
+        doc_groundtruth_pairs.append(doc_groundtruth_pair.create())
     return doc_groundtruth_pairs
 
 
@@ -91,7 +88,9 @@ def simple_evaluate_driver(field_type):
     return SimpleEvaluateDriver(field=field_type)
 
 
-def test_crafter_evaluate_driver(mock_diff_evaluator, simple_evaluate_driver, ground_truth_pairs):
+def test_crafter_evaluate_driver(
+    mock_diff_evaluator, simple_evaluate_driver, ground_truth_pairs
+):
     simple_evaluate_driver.attach(executor=mock_diff_evaluator, runtime=None)
     simple_evaluate_driver._apply_all(ground_truth_pairs)
     for pair in ground_truth_pairs:
@@ -102,7 +101,6 @@ def test_crafter_evaluate_driver(mock_diff_evaluator, simple_evaluate_driver, gr
 
 
 class SimpleChunkEvaluateDriver(FieldEvaluateDriver):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.eval_request = None
@@ -128,7 +126,7 @@ def doc_groundtruth_pair(doc_with_field_type, groundtruth_with_field_type):
         def create(self):
             return DocGroundtruthPair(
                 doc=doc_with_field_type.create(),
-                groundtruth=groundtruth_with_field_type.create()
+                groundtruth=groundtruth_with_field_type.create(),
             )
 
     return DocGroundtruthPairFactory()
@@ -138,9 +136,7 @@ def doc_groundtruth_pair(doc_with_field_type, groundtruth_with_field_type):
 def ground_truth_pairs(doc_groundtruth_pair):
     doc_groundtruth_pairs = []
     for _ in range(10):
-        doc_groundtruth_pairs.append(
-            doc_groundtruth_pair.create()
-        )
+        doc_groundtruth_pairs.append(doc_groundtruth_pair.create())
     return doc_groundtruth_pairs
 
 
@@ -178,14 +174,10 @@ def eval_request():
     return request
 
 
-@pytest.mark.parametrize(
-    'field_type',
-    ['text', 'buffer', 'blob']
-)
-def test_crafter_evaluate_driver_in_chunks(field_type,
-                                           simple_chunk_evaluate_driver,
-                                           mock_diff_evaluator,
-                                           eval_request):
+@pytest.mark.parametrize('field_type', ['text', 'buffer', 'blob'])
+def test_crafter_evaluate_driver_in_chunks(
+    field_type, simple_chunk_evaluate_driver, mock_diff_evaluator, eval_request
+):
     # this test proves that we can evaluate matches at chunk level,
     # proving that the driver can traverse in a parallel way docs and groundtruth
     req = eval_request(field_type)

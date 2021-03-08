@@ -7,21 +7,21 @@ schema_metas = {
         'properties': {
             'is_trained': {
                 'description': 'Indicates if the executor is trained or not. '
-                               'If not, then methods decorated by `@required_train` can not be executed.',
+                'If not, then methods decorated by `@required_train` can not be executed.',
                 'type': 'boolean',
-                'default': False
+                'default': False,
             },
             'is_updated': {
                 'description': 'Indicates if the executor is updated or changed since last save. '
-                               'If not, then save() will do nothing. A forced save is possible to use `touch()` before `save()`',
+                'If not, then save() will do nothing. A forced save is possible to use `touch()` before `save()`',
                 'type': 'boolean',
-                'default': False
+                'default': False,
             },
             'batch_size': {
                 'description': 'The size of each batch, methods decorated by `@batching` will respect this. '
-                               'Useful when incoming data is too large to fit into (GPU) memory.',
+                'Useful when incoming data is too large to fit into (GPU) memory.',
                 'type': 'number',
-                'default': None
+                'default': None,
             },
             'workspace': {
                 'description': '''
@@ -32,37 +32,33 @@ By default it is not set, if you expect your executor to be persisted or to pers
 When a BaseExecutor is a component of a `CompoundExecutor`, its workspace value will be overriden by the workspace coming from the `CompoundExecutor` unless a particular workspace value is set for the component BaseExecutor.                
                 ''',
                 'type': 'string',
-                'default': None
+                'default': None,
             },
             'name': {
                 'description': 'The name of the executor.',
                 'type': 'string',
-                'default': None
+                'default': None,
             },
             'description': {
                 'description': 'The description of this executor. It will be used in automatics docs UI',
                 'type': 'string',
-                'default': None
+                'default': None,
             },
             'read_only': {
                 'description': 'Do not allow the Pod to modify the Executor, save calls will be ignored. '
-                               'If set to true no serialization of the Executor',
+                'If set to true no serialization of the Executor',
                 'type': 'boolean',
-                'default': False
+                'default': False,
             },
             'on_gpu': {
                 'description': 'If the executor is set to run on GPU.',
                 'type': 'boolean',
-                'default': False
+                'default': False,
             },
             'py_modules': {
                 'type': 'array',
                 'default': None,
-                'items': {
-                    'type': 'string',
-                    'minItems': 1,
-                    'uniqueItems': True
-                },
+                'items': {'type': 'string', 'minItems': 1, 'uniqueItems': True},
                 'description': '''
 The external python module paths. it is useful when you want to load external python modules
 using :func:`BaseExecutor.load_config` from a YAML file. If a relative path is given then the root path is set to
@@ -105,8 +101,8 @@ This is also the structure given by ``jina hub new`` CLI.
                 |- py_modules
                        |- helper.py
                        |- my_cust.py                
-                '''
-            }
-        }
+                ''',
+            },
+        },
     }
 }

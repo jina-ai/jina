@@ -18,27 +18,34 @@ def hello_world(args):
     """
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
-    with ImportExtensions(required=True, help_text='this demo requires Pytorch and Transformers to be installed, '
-                                                   'if you haven\'t, please do `pip install jina[torch,transformers]`'):
+    with ImportExtensions(
+        required=True,
+        help_text='this demo requires Pytorch and Transformers to be installed, '
+        'if you haven\'t, please do `pip install jina[torch,transformers]`',
+    ):
         import transformers, torch
+
         assert [torch, transformers]  #: prevent pycharm auto remove the above line
 
     targets = {
         'people-img': {
             'url': args.index_data_url,
-            'filename': os.path.join(args.workdir, 'dataset.zip')
+            'filename': os.path.join(args.workdir, 'dataset.zip'),
         }
     }
 
     # download the data
     download_data(targets, args.download_proxy, task_name='download zip data')
     import zipfile
+
     with zipfile.ZipFile(targets['people-img']['filename'], 'r') as fp:
         fp.extractall(args.workdir)
 
     # this envs are referred in index and query flow YAMLs
     os.environ['HW_WORKDIR'] = args.workdir
-    os.environ['PATH'] += os.pathsep + os.path.join(resource_filename('jina', 'resources'), 'multimodal')
+    os.environ['PATH'] += os.pathsep + os.path.join(
+        resource_filename('jina', 'resources'), 'multimodal'
+    )
 
     # now comes the real work
     # load index flow from a YAML file
@@ -60,7 +67,9 @@ def hello_world(args):
         except:
             pass  # intentional pass, browser support isn't cross-platform
         finally:
-            default_logger.success(f'You should see a demo page opened in your browser, '
-                                   f'if not, you may open {args.demo_url} manually')
+            default_logger.success(
+                f'You should see a demo page opened in your browser, '
+                f'if not, you may open {args.demo_url} manually'
+            )
         if not args.unblock_query_flow:
             f.block()

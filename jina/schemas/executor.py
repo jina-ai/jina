@@ -8,6 +8,6 @@ schema_all_executors = {
                 {'$ref': f'#/definitions/{k}'} for k in IMPORTED.schema_executors.keys()
             ]
         },
-        'minItems': 1
+        'minItems': 1,
     }
 }

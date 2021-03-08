@@ -8,15 +8,25 @@ from urllib.request import Request, urlopen
 
 from pkg_resources import resource_stream
 
-from .local import _fetch_access_token, _make_hub_table, _make_hub_table_with_local, _load_local_hub_manifest
+from .local import (
+    _fetch_access_token,
+    _make_hub_table,
+    _make_hub_table_with_local,
+    _load_local_hub_manifest,
+)
 from ...helper import colored
 from ...importer import ImportExtensions
 from ...jaml import JAML
 from ...logging.profile import TimeContext
 
 
-def _list(logger, image_name: str = None, image_kind: str = None,
-          image_type: str = None, image_keywords: Sequence = ()) -> Optional[List[Dict[str, Any]]]:
+def _list(
+    logger,
+    image_name: str = None,
+    image_kind: str = None,
+    image_type: str = None,
+    image_keywords: Sequence = (),
+) -> Optional[List[Dict[str, Any]]]:
     """Use Hub api to get the list of filtered images.
 
     :param logger: logger to use
@@ -34,7 +44,7 @@ def _list(logger, image_name: str = None, image_kind: str = None,
         'name': image_name,
         'kind': image_kind,
         'type': image_type,
-        'keywords': image_keywords
+        'keywords': image_keywords,
     }
     params = {k: v for k, v in params.items() if v}
     if params:
@@ -46,7 +56,9 @@ def _list(logger, image_name: str = None, image_kind: str = None,
                     response = json.load(resp)
             except HTTPError as err:
                 if err.code == 400:
-                    logger.warning('no matched executors found. please use different filters and retry.')
+                    logger.warning(
+                        'no matched executors found. please use different filters and retry.'
+                    )
                 elif err.code == 500:
                     logger.error(f'server is down: {err.reason}')
                 else:
@@ -73,16 +85,20 @@ def _fetch_docker_auth(logger) -> Tuple[str, str]:
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
 
     try:
-        with ImportExtensions(required=True,
-                              help_text='missing "requests" dependency, please do pip install "jina[http]"'):
+        with ImportExtensions(
+            required=True,
+            help_text='missing "requests" dependency, please do pip install "jina[http]"',
+        ):
             import requests
         headers = {
             'Accept': 'application/json',
-            'authorizationToken': _fetch_access_token(logger)
+            'authorizationToken': _fetch_access_token(logger),
         }
         response = requests.get(url=f'{hubapi_url}', headers=headers)
         if response.status_code != requests.codes.ok:
-            logger.error(f'failed to fetch docker credentials. status code {response.status_code}')
+            logger.error(
+                f'failed to fetch docker credentials. status code {response.status_code}'
+            )
         json_response = json.loads(response.text)
         username = base64.b64decode(json_response['docker_username']).decode('ascii')
         password = base64.b64decode(json_response['docker_password']).decode('ascii')
@@ -105,24 +121,31 @@ def _register_to_mongodb(logger, summary: Optional[Dict] = None):
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
 
     try:
-        with ImportExtensions(required=True,
-                              help_text='missing "requests" dependency, please do pip install "jina[http]"'):
+        with ImportExtensions(
+            required=True,
+            help_text='missing "requests" dependency, please do pip install "jina[http]"',
+        ):
             import requests
+
             headers = {
                 'Accept': 'application/json',
-                'authorizationToken': _fetch_access_token(logger)
+                'authorizationToken': _fetch_access_token(logger),
             }
-            response = requests.post(url=f'{hubapi_url}',
-                                     headers=headers,
-                                     data=json.dumps(summary))
+            response = requests.post(
+                url=f'{hubapi_url}', headers=headers, data=json.dumps(summary)
+            )
             if response.status_code == requests.codes.ok:
                 logger.info(response.text)
             elif response.status_code == requests.codes.unauthorized:
-                logger.critical(f'user is unauthorized to perform push operation. '
-                                f'please login using command: {colored("jina hub login", attrs=["bold"])}')
+                logger.critical(
+                    f'user is unauthorized to perform push operation. '
+                    f'please login using command: {colored("jina hub login", attrs=["bold"])}'
+                )
             elif response.status_code == requests.codes.internal_server_error:
-                logger.critical(f'got an error from the API: {response.text}. If there are any authentication issues, '
-                                f'please remember to login using command: '
-                                f'{colored("jina hub login", attrs=["bold"])}')
+                logger.critical(
+                    f'got an error from the API: {response.text}. If there are any authentication issues, '
+                    f'please remember to login using command: '
+                    f'{colored("jina hub login", attrs=["bold"])}'
+                )
     except Exception as exp:
         logger.error(f'got an exception while invoking hubapi for push {exp!r}')

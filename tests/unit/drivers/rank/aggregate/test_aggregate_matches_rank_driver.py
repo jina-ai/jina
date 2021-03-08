@@ -9,18 +9,32 @@ from jina.types.sets import DocumentSet
 
 class MockMaxRanker(Chunk2DocRanker):
     def __init__(self, *args, **kwargs):
-        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
+        super().__init__(
+            query_required_keys=('length',),
+            match_required_keys=('length',),
+            *args,
+            **kwargs
+        )
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+    def _get_score(
+        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
+    ):
         return self.get_doc_id(match_idx), match_idx[self.COL_SCORE].max()
 
 
 class MockMinRanker(Chunk2DocRanker):
     def __init__(self, *args, **kwargs):
-        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
+        super().__init__(
+            query_required_keys=('length',),
+            match_required_keys=('length',),
+            *args,
+            **kwargs
+        )
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return self.get_doc_id(match_idx), 1. / (1. + match_idx[self.COL_SCORE].min())
+    def _get_score(
+        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
+    ):
+        return self.get_doc_id(match_idx), 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
 
 
 class SimpleCollectMatchesRankDriver(AggregateMatches2DocRankDriver):
@@ -39,10 +53,20 @@ class SimpleCollectMatchesRankDriver(AggregateMatches2DocRankDriver):
 
 class MockLengthRanker(Chunk2DocRanker):
     def __init__(self, *args, **kwargs):
-        super().__init__(query_required_keys=('length', ), match_required_keys=('length', ), *args, **kwargs)
+        super().__init__(
+            query_required_keys=('length',),
+            match_required_keys=('length',),
+            *args,
+            **kwargs
+        )
 
-    def _get_score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return match_idx[0][self.COL_PARENT_ID], match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length']
+    def _get_score(
+        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
+    ):
+        return (
+            match_idx[0][self.COL_PARENT_ID],
+            match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length'],
+        )
 
 
 def create_document_to_score_same_depth_level():
@@ -106,10 +130,14 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
 @pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
 def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver(docs=DocumentSet([doc]), keep_source_matches_as_chunks=keep_source_matches_as_chunks)
+    driver = SimpleCollectMatchesRankDriver(
+        docs=DocumentSet([doc]),
+        keep_source_matches_as_chunks=keep_source_matches_as_chunks,
+    )
     executor = MockMinRanker()
     driver.attach(executor=executor, runtime=None)
     import sys
+
     min_value_30 = sys.maxsize
     min_value_20 = sys.maxsize
     for match in doc.matches:
@@ -125,9 +153,9 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
     dm = list(doc.matches)
     assert len(dm) == 2
     assert dm[0].id == '30' * 8
-    assert dm[0].score.value == pytest.approx((1. / (1. + min_value_30)), 0.0000001)
+    assert dm[0].score.value == pytest.approx((1.0 / (1.0 + min_value_30)), 0.0000001)
     assert dm[1].id == '20' * 8
-    assert dm[1].score.value == pytest.approx((1. / (1. + min_value_20)), 0.0000001)
+    assert dm[1].score.value == pytest.approx((1.0 / (1.0 + min_value_20)), 0.0000001)
     for match in dm:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id
@@ -138,7 +166,10 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
 @pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
 def test_collect_matches2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver(docs=DocumentSet([doc]), keep_source_matches_as_chunks=keep_source_matches_as_chunks)
+    driver = SimpleCollectMatchesRankDriver(
+        docs=DocumentSet([doc]),
+        keep_source_matches_as_chunks=keep_source_matches_as_chunks,
+    )
     executor = MockMaxRanker()
     driver.attach(executor=executor, runtime=None)
     driver()

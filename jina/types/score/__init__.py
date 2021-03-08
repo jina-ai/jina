@@ -47,8 +47,12 @@ class NamedScore(ProtoTypeMixin):
 
     """
 
-    def __init__(self, score: Optional[jina_pb2.NamedScoreProto] = None,
-                 copy: bool = False, **kwargs):
+    def __init__(
+        self,
+        score: Optional[jina_pb2.NamedScoreProto] = None,
+        copy: bool = False,
+        **kwargs,
+    ):
         self._pb_body = jina_pb2.NamedScoreProto()
         try:
             if isinstance(score, jina_pb2.NamedScoreProto):
@@ -60,14 +64,16 @@ class NamedScore(ProtoTypeMixin):
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(score)} is not recognizable')
         except Exception as ex:
-            raise BadNamedScoreType(f'fail to construct a NamedScore from {score}') from ex
+            raise BadNamedScoreType(
+                f'fail to construct a NamedScore from {score}'
+            ) from ex
 
         self.set_attrs(**kwargs)
 
     @property
     def ref_id(self) -> str:
         """
-        Return the ``ref_id`` of this NamedScore, the `id` of which this NamedScore is a score. 
+        Return the ``ref_id`` of this NamedScore, the `id` of which this NamedScore is a score.
         :returns: the ref_id
         """
         return self._pb_body.ref_id
@@ -113,10 +119,15 @@ class NamedScore(ProtoTypeMixin):
                         s = self._pb_body.operands.add()
                         s.CopyFrom(score_to_add._pb_body)
                 else:
-                    raise AttributeError(f'{k} is not recognized, the only list argument is operands')
+                    raise AttributeError(
+                        f'{k} is not recognized, the only list argument is operands'
+                    )
             else:
-                if hasattr(NamedScore, k) and isinstance(getattr(NamedScore, k), property) and getattr(NamedScore,
-                                                                                                       k).fset:
+                if (
+                    hasattr(NamedScore, k)
+                    and isinstance(getattr(NamedScore, k), property)
+                    and getattr(NamedScore, k).fset
+                ):
                     # if class property has a setter
                     setattr(self, k, v)
                 elif hasattr(self._pb_body, k):

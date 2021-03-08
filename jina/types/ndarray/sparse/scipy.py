@@ -25,18 +25,28 @@ class SparseNdArray(BaseSparseNdArray):
     :param sp_format: the sparse format of the scipy matrix. one of 'coo', 'bsr', 'csc', 'csr'.
     """
 
-    def __init__(self, proto: 'jina_pb2.SparseNdArrayProto' = None, sp_format: str = 'coo', *args, **kwargs):
+    def __init__(
+        self,
+        proto: 'jina_pb2.SparseNdArrayProto' = None,
+        sp_format: str = 'coo',
+        *args,
+        **kwargs,
+    ):
         """Set constructor method."""
         import scipy.sparse
+
         super().__init__(proto, *args, **kwargs)
         support_fmt = {'coo', 'bsr', 'csc', 'csr'}
         if sp_format in support_fmt:
             self.spmat_fn = getattr(scipy.sparse, f'{sp_format}_matrix')
         else:
-            raise ValueError(f'{sp_format} sparse matrix is not supported, please choose one of those: {support_fmt}')
+            raise ValueError(
+                f'{sp_format} sparse matrix is not supported, please choose one of those: {support_fmt}'
+            )
 
-    def sparse_constructor(self, indices: 'np.ndarray', values: 'np.ndarray',
-                           shape: List[int]) -> 'scipy.sparse.spmatrix':
+    def sparse_constructor(
+        self, indices: 'np.ndarray', values: 'np.ndarray', shape: List[int]
+    ) -> 'scipy.sparse.spmatrix':
         """
         Sparse NdArray constructor for scipy.sparse.spmatrix.
 
@@ -46,7 +56,9 @@ class SparseNdArray(BaseSparseNdArray):
         :return: SparseTensor
         """
         if indices.shape[-1] != 2:
-            raise ValueError(f'scipy backend only supports ndim=2 sparse matrix, given {indices.shape}')
+            raise ValueError(
+                f'scipy backend only supports ndim=2 sparse matrix, given {indices.shape}'
+            )
         return self.spmat_fn((values, indices.T), shape=shape)
 
     def sparse_parser(self, value: 'scipy.sparse.spmatrix'):
@@ -57,6 +69,8 @@ class SparseNdArray(BaseSparseNdArray):
         :return: a Dict with three entries {'indices': ..., 'values':..., 'shape':...}
         """
         v = value.tocoo()
-        return {'indices': np.stack([v.row, v.col], axis=1),
-                'values': v.data,
-                'shape': v.shape}
+        return {
+            'indices': np.stack([v.row, v.col], axis=1),
+            'values': v.data,
+            'shape': v.shape,
+        }

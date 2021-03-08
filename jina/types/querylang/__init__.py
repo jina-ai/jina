@@ -8,8 +8,9 @@ from ...excepts import BadQueryLangType
 from ...helper import typename
 from ...proto import jina_pb2
 
-QueryLangSourceType = TypeVar('QueryLangSourceType',
-                              jina_pb2.QueryLangProto, bytes, str, Dict)
+QueryLangSourceType = TypeVar(
+    'QueryLangSourceType', jina_pb2.QueryLangProto, bytes, str, Dict
+)
 
 __all__ = ['QueryLang']
 
@@ -52,7 +53,9 @@ class QueryLang(ProtoTypeMixin):
     :type copy: bool
     """
 
-    def __init__(self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False):
+    def __init__(
+        self, querylang: Optional[QueryLangSourceType] = None, copy: bool = False
+    ):
         """Set constructor method."""
         self._pb_body = jina_pb2.QueryLangProto()
         try:
@@ -71,13 +74,15 @@ class QueryLang(ProtoTypeMixin):
                 # the context manager below converts this warning into exception and throw it
                 # properly
                 with warnings.catch_warnings():
-                    warnings.filterwarnings('error',
-                                            'Unexpected end-group tag',
-                                            category=RuntimeWarning)
+                    warnings.filterwarnings(
+                        'error', 'Unexpected end-group tag', category=RuntimeWarning
+                    )
                     try:
                         self._pb_body.ParseFromString(querylang)
                     except RuntimeWarning as ex:
-                        raise BadQueryLangType('fail to construct a query language') from ex
+                        raise BadQueryLangType(
+                            'fail to construct a query language'
+                        ) from ex
             elif querylang is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(querylang)} is not recognizable')

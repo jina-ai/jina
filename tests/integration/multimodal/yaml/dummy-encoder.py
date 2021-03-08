@@ -7,9 +7,7 @@ from jina.executors.encoders import BaseEncoder
 
 
 class DummyEncoder(BaseEncoder):
-    def __init__(self,
-                 *args,
-                 **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':

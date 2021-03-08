@@ -113,14 +113,22 @@ def write_html(html_path):
     global num_docs_evaluated
     global evaluation_value
 
-    with open(resource_filename('jina', '/'.join(('resources', 'fashion', 'helloworld.html'))), 'r') as fp, \
-            open(html_path, 'w') as fw:
+    with open(
+        resource_filename(
+            'jina', '/'.join(('resources', 'fashion', 'helloworld.html'))
+        ),
+        'r',
+    ) as fp, open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
-        t = t.replace('{% PRECISION_EVALUATION %}',
-                      '{:.2f}%'.format(evaluation_value['PrecisionEvaluator'] * 100.0))
-        t = t.replace('{% RECALL_EVALUATION %}',
-                      '{:.2f}%'.format(evaluation_value['RecallEvaluator'] * 100.0))
+        t = t.replace(
+            '{% PRECISION_EVALUATION %}',
+            '{:.2f}%'.format(evaluation_value['PrecisionEvaluator'] * 100.0),
+        )
+        t = t.replace(
+            '{% RECALL_EVALUATION %}',
+            '{:.2f}%'.format(evaluation_value['RecallEvaluator'] * 100.0),
+        )
         t = t.replace('{% TOP_K %}', str(top_k))
 
         fw.write(t)
@@ -132,12 +140,15 @@ def write_html(html_path):
     except:
         pass  # intentional pass, browser support isn't cross-platform
     finally:
-        default_logger.success(f'You should see a "hello-world.html" opened in your browser, '
-                               f'if not you may open {url_html_path} manually')
+        default_logger.success(
+            f'You should see a "hello-world.html" opened in your browser, '
+            f'if not you may open {url_html_path} manually'
+        )
 
     colored_url = colored('https://opensource.jina.ai', color='cyan', attrs='underline')
     default_logger.success(
-        f'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at {colored_url}')
+        f'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at {colored_url}'
+    )
 
 
 def download_data(targets, download_proxy=None, task_name='download fashion-mnist'):
@@ -151,13 +162,17 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     if download_proxy:
-        proxy = urllib.request.ProxyHandler({'http': download_proxy, 'https': download_proxy})
+        proxy = urllib.request.ProxyHandler(
+            {'http': download_proxy, 'https': download_proxy}
+        )
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
     with ProgressBar(task_name=task_name, batch_unit='') as t:
         for k, v in targets.items():
             if not os.path.exists(v['filename']):
-                urllib.request.urlretrieve(v['url'], v['filename'], reporthook=lambda *x: t.update_tick(.01))
+                urllib.request.urlretrieve(
+                    v['url'], v['filename'], reporthook=lambda *x: t.update_tick(0.01)
+                )
             if k == 'index-labels' or k == 'query-labels':
                 v['data'] = load_labels(v['filename'])
             if k == 'index' or k == 'query':

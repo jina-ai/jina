@@ -42,6 +42,7 @@ class EnumType(EnumMeta):
             reg_cls_set.add(cls.__name__)
             setattr(cls, '_registered_class', reg_cls_set)
         from .jaml import JAML
+
         JAML.register(cls)
         return cls
 
@@ -58,7 +59,9 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         try:
             return cls[s.upper()]
         except KeyError:
-            raise ValueError(f'{s.upper()} is not a valid enum for {cls!r}, must be one of {list(cls)}')
+            raise ValueError(
+                f'{s.upper()} is not a valid enum for {cls!r}, must be one of {list(cls)}'
+            )
 
     @classmethod
     def _to_yaml(cls, representer, data):
@@ -68,7 +71,9 @@ class BetterEnum(IntEnum, metaclass=EnumType):
             In principle, this should inherit from :class:`JAMLCompatible` directly,
             however, this method is too simple and thus replaced the parent method.
         """
-        return representer.represent_scalar('tag:yaml.org,2002:str', str(data), style='"')
+        return representer.represent_scalar(
+            'tag:yaml.org,2002:str', str(data), style='"'
+        )
 
     @classmethod
     def _from_yaml(cls, constructor, node):
@@ -185,7 +190,7 @@ class SocketType(BetterEnum):
             SocketType.PUSH_BIND: SocketType.PULL_CONNECT,
             SocketType.PUB_CONNECT: SocketType.SUB_BIND,
             SocketType.PUB_BIND: SocketType.SUB_CONNECT,
-            SocketType.PAIR_CONNECT: SocketType.PAIR_BIND
+            SocketType.PAIR_CONNECT: SocketType.PAIR_BIND,
         }[self]
 
 
@@ -280,7 +285,9 @@ class OnErrorStrategy(BetterEnum):
         side-effect.
     """
 
-    IGNORE = 0  #: Ignore it, keep running all Drivers & Executors logics in the sequel flow
+    IGNORE = (
+        0  #: Ignore it, keep running all Drivers & Executors logics in the sequel flow
+    )
     SKIP_EXECUTOR = 1  #: Skip all Executors in the sequel, but drivers are still called
     SKIP_HANDLE = 2  #: Skip all Drivers & Executors in the sequel, only `pre_hook` and `post_hook` are called
     THROW_EARLY = 3  #: Immediately throw the exception, the sequel flow will not be running at all

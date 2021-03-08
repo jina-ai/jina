@@ -17,7 +17,14 @@ class BasePredictDriver(FlatRecursiveMixin, BaseExecutableDriver):
     :param **kwargs: **kwargs for super
     """
 
-    def __init__(self, executor: str = None, method: str = 'predict', fields: Union[Tuple, str] = 'embedding', *args, **kwargs):
+    def __init__(
+        self,
+        executor: str = None,
+        method: str = 'predict',
+        fields: Union[Tuple, str] = 'embedding',
+        *args,
+        **kwargs,
+    ):
         self.fields = fields
         super().__init__(executor, method, *args, **kwargs)
 
@@ -35,26 +42,30 @@ class BaseLabelPredictDriver(BasePredictDriver):
         self.output_tag = output_tag
 
     def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            *args,
-            **kwargs,
+        self,
+        docs: 'DocumentSet',
+        *args,
+        **kwargs,
     ) -> None:
         if self.fields == 'embedding':
             predict_input, docs_pts = docs.all_embeddings
         elif self.fields == 'content':
             predict_input, docs_pts = docs.all_contents
         else:
-            raise ValueError(f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents')
+            raise ValueError(
+                f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents'
+            )
 
         if docs_pts:
             prediction = self.exec_fn(predict_input)
-            labels = self.prediction2label(prediction)  # type: List[Union[str, List[str]]]
+            labels = self.prediction2label(
+                prediction
+            )  # type: List[Union[str, List[str]]]
             for doc, label in zip(docs_pts, labels):
                 doc.tags[self.output_tag] = label
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[Any]:
-        """ Converting ndarray prediction into list of readable labels
+        """Converting ndarray prediction into list of readable labels
 
         .. note::
             ``len(output)`` should be the same as ``prediction.shape[0]``
@@ -73,7 +84,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
 
 class BinaryPredictDriver(BaseLabelPredictDriver):
-    """ Converts binary prediction into string label.
+    """Converts binary prediction into string label.
 
     This is often used with binary classifier.
     """
@@ -101,13 +112,15 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
         """
         p = np.squeeze(prediction)
         if p.ndim > 1:
-            raise ValueError(f'{typename(self)} expects prediction has ndim=1, but receiving ndim={p.ndim}')
+            raise ValueError(
+                f'{typename(self)} expects prediction has ndim=1, but receiving ndim={p.ndim}'
+            )
 
         return [self.one_label if v else self.zero_label for v in p.astype(bool)]
 
 
 class OneHotPredictDriver(BaseLabelPredictDriver):
-    """ Mapping prediction to one of the given labels
+    """Mapping prediction to one of the given labels
 
     Expect prediction to be 2dim array, zero-one valued. Each row corresponds to
     a sample, each column corresponds to a label. Each row can have only one 1.
@@ -128,10 +141,13 @@ class OneHotPredictDriver(BaseLabelPredictDriver):
         .. # noqa: DAR401
         """
         if prediction.ndim != 2:
-            raise ValueError(f'{typename(self)} expects prediction to have ndim=2, but received {prediction.ndim}')
+            raise ValueError(
+                f'{typename(self)} expects prediction to have ndim=2, but received {prediction.ndim}'
+            )
         if prediction.shape[1] != len(self.labels):
             raise ValueError(
-                f'{typename(self)} expects prediction.shape[1]==len(self.labels), but received {prediction.shape}')
+                f'{typename(self)} expects prediction.shape[1]==len(self.labels), but received {prediction.shape}'
+            )
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[str]:
         """
@@ -164,7 +180,7 @@ class MultiLabelPredictDriver(OneHotPredictDriver):
 
 
 class Prediction2DocBlobDriver(BasePredictDriver):
-    """ Write the prediction result directly into ``document.blob``.
+    """Write the prediction result directly into ``document.blob``.
 
     .. warning::
 
@@ -172,17 +188,19 @@ class Prediction2DocBlobDriver(BasePredictDriver):
     """
 
     def _apply_all(
-            self,
-            docs: 'DocumentSet',
-            *args,
-            **kwargs,
+        self,
+        docs: 'DocumentSet',
+        *args,
+        **kwargs,
     ) -> None:
         if self.fields == 'embedding':
             predict_input, docs_pts = docs.all_embeddings
         elif self.fields == 'content':
             predict_input, docs_pts = docs.all_contents
         else:
-            raise ValueError(f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents')
+            raise ValueError(
+                f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents'
+            )
 
         if docs_pts:
             prediction = self.exec_fn(predict_input)

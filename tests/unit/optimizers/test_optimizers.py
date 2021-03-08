@@ -5,7 +5,13 @@ from unittest.mock import Mock
 import yaml
 
 from jina.optimizers import MeanEvaluationCallback, ResultProcessor, FlowOptimizer
-from jina.optimizers.parameters import IntegerParameter, UniformParameter, LogUniformParameter, CategoricalParameter, DiscreteUniformParameter
+from jina.optimizers.parameters import (
+    IntegerParameter,
+    UniformParameter,
+    LogUniformParameter,
+    CategoricalParameter,
+    DiscreteUniformParameter,
+)
 
 
 @pytest.fixture
@@ -70,23 +76,33 @@ def test_result_processor(tmpdir):
 def test_suggest(tmpdir):
     def _objective(trial):
 
-        value = FlowOptimizer._suggest(IntegerParameter(0, 3, 1, jaml_variable='IntegerParameter'), trial)
+        value = FlowOptimizer._suggest(
+            IntegerParameter(0, 3, 1, jaml_variable='IntegerParameter'), trial
+        )
         assert 0 <= value
         assert value <= 3
-        value = FlowOptimizer._suggest(UniformParameter(0, 3, jaml_variable='UniformParameter'), trial)
+        value = FlowOptimizer._suggest(
+            UniformParameter(0, 3, jaml_variable='UniformParameter'), trial
+        )
         assert 0 <= value
         assert value <= 3
-        value = FlowOptimizer._suggest(LogUniformParameter(1, 3, jaml_variable='LogUniformParameter'), trial)
+        value = FlowOptimizer._suggest(
+            LogUniformParameter(1, 3, jaml_variable='LogUniformParameter'), trial
+        )
         assert 1 <= value
         assert value <= 3
-        value = FlowOptimizer._suggest(CategoricalParameter([0, 1.5, 2, 3], jaml_variable='CategoricalParameter'), trial)
+        value = FlowOptimizer._suggest(
+            CategoricalParameter([0, 1.5, 2, 3], jaml_variable='CategoricalParameter'),
+            trial,
+        )
         assert 0 <= value
         assert value <= 3
-        value = FlowOptimizer._suggest(DiscreteUniformParameter(0, 3, 1, jaml_variable='DiscreteUniformParameter'), trial)
+        value = FlowOptimizer._suggest(
+            DiscreteUniformParameter(0, 3, 1, jaml_variable='DiscreteUniformParameter'),
+            trial,
+        )
         assert 0 <= value
         assert value <= 3
 
     study = optuna.create_study()
     study.optimize(_objective, n_trials=1)
-
-
