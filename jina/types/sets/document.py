@@ -144,7 +144,8 @@ class DocumentSet(TraversableSequence, MutableSequence):
         self._docs_map = {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
-        """Sort the list of :class:`DocumentSet`.
+        """
+        Sort the items of the :class:`DocumentSet` in place.
 
         :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
