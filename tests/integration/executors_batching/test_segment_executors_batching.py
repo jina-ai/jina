@@ -37,7 +37,7 @@ class DummySegmenterTextSingle(BaseSegmenter):
 )
 def test_batching_text_one_argument(segmenter):
     docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
-    texts, _ = docs._extract_docs('text')
+    texts, _ = docs.extract_docs('text')
 
     chunks_sets = segmenter.segment(texts)
     for i, chunks in enumerate(chunks_sets):

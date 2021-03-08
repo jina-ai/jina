@@ -38,7 +38,7 @@ class DummyCrafterTextSingle(BaseCrafter):
 )
 def test_batching_text_one_argument(crafter):
     docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
-    texts, _ = docs._extract_docs('text')
+    texts, _ = docs.extract_docs('text')
 
     crafted_docs = crafter.craft(texts)
     for i, crafted_doc in enumerate(crafted_docs):
@@ -75,7 +75,7 @@ class DummyCrafterTextIdSingle(BaseCrafter):
 def test_batching_text_multi(crafter):
     docs = DocumentSet([Document(text=f'text-{i}', id=f'id-{i}') for i in range(15)])
     required_keys = ['text', 'id']
-    text_ids, _ = docs._extract_docs(*required_keys)
+    text_ids, _ = docs.extract_docs(*required_keys)
 
     # args = [text_ids[:, i] for i in range(len(required_keys))]
     crafted_docs = crafter.craft(*text_ids)
@@ -111,7 +111,7 @@ class DummyCrafterBlobSingle(BaseCrafter):
 )
 def test_batching_blob_one_argument(crafter):
     docs = DocumentSet([Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(15)])
-    texts, _ = docs._extract_docs('blob')
+    texts, _ = docs.extract_docs('blob')
 
     crafted_docs = crafter.craft(texts)
     for i, crafted_doc in enumerate(crafted_docs):
@@ -158,7 +158,7 @@ def test_batching_blob_multi(crafter):
         ]
     )
     required_keys = ['blob', 'embedding']
-    text_ids, _ = docs._extract_docs(*required_keys)
+    text_ids, _ = docs.extract_docs(*required_keys)
 
     crafted_docs = crafter.craft(*text_ids)
 
@@ -204,7 +204,7 @@ def test_batching_mix_multi(crafter):
         ]
     )
     required_keys = ['text', 'embedding']
-    text_ids, _ = docs._extract_docs(*required_keys)
+    text_ids, _ = docs.extract_docs(*required_keys)
 
     crafted_docs = crafter.craft(*text_ids)
 
