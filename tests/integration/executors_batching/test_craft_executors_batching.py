@@ -111,7 +111,7 @@ class DummyCrafterBlobSingle(BaseCrafter):
 )
 def test_batching_blob_one_argument(crafter):
     docs = DocumentSet(
-        [Document(blob=np.array([[i, i, i, i, i], [i, i, i, i, i]])) for i in range(15)]
+        [Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(15)]
     )
     texts, _ = docs._extract_docs('blob')
 
