@@ -27,14 +27,14 @@ if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..drivers import BaseDriver
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
+__all__ = ["BaseExecutor", "AnyExecutor", "ExecutorType"]
 
-AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
+AnyExecutor = TypeVar("AnyExecutor", bound="BaseExecutor")
 
 # some variables may be self-referred and they must be resolved at here
 _ref_desolve_map = SimpleNamespace()
-_ref_desolve_map.__dict__['metas'] = SimpleNamespace()
-_ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
+_ref_desolve_map.__dict__["metas"] = SimpleNamespace()
+_ref_desolve_map.__dict__["metas"].__dict__["pea_id"] = 0
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -45,7 +45,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
 
         # noqa: DAR201
-        
+
 
         # noqa: DAR101
 
@@ -60,7 +60,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
 
         # noqa: DAR201
-        
+
 
         # noqa: DAR101
 
@@ -68,10 +68,10 @@ class ExecutorType(type(JAMLCompatible), type):
         # noqa: DAR102
         """
         # do _preload_package
-        getattr(cls, 'pre_init', lambda *x: None)()
+        getattr(cls, "pre_init", lambda *x: None)()
 
-        m = kwargs.pop('metas') if 'metas' in kwargs else {}
-        r = kwargs.pop('requests') if 'requests' in kwargs else {}
+        m = kwargs.pop("metas") if "metas" in kwargs else {}
+        r = kwargs.pop("requests") if "requests" in kwargs else {}
 
         obj = type.__call__(cls, *args, **kwargs)
 
@@ -79,7 +79,7 @@ class ExecutorType(type(JAMLCompatible), type):
         # metas in YAML > class attribute > default_jina_config
         # jina_config = expand_dict(jina_config)
 
-        getattr(obj, '_post_init_wrapper', lambda *x: None)(m, r)
+        getattr(obj, "_post_init_wrapper", lambda *x: None)(m, r)
         return obj
 
     @staticmethod
@@ -90,21 +90,21 @@ class ExecutorType(type(JAMLCompatible), type):
         :param cls: The class.
         :return: The class, after being registered.
         """
-        update_funcs = ['train', 'add', 'delete', 'update']
-        train_funcs = ['train']
-        aggregate_funcs = ['evaluate']
+        update_funcs = ["train", "add", "delete", "update"]
+        train_funcs = ["train"]
+        aggregate_funcs = ["evaluate"]
 
-        reg_cls_set = getattr(cls, '_registered_class', set())
+        reg_cls_set = getattr(cls, "_registered_class", set())
 
-        cls_id = f'{cls.__module__}.{cls.__name__}'
-        if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
-            wrap_func(cls, ['__init__'], store_init_kwargs)
+        cls_id = f"{cls.__module__}.{cls.__name__}"
+        if cls_id not in reg_cls_set or getattr(cls, "force_register", False):
+            wrap_func(cls, ["__init__"], store_init_kwargs)
             wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
             wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
             reg_cls_set.add(cls_id)
-            setattr(cls, '_registered_class', reg_cls_set)
+            setattr(cls, "_registered_class", reg_cls_set)
         return cls
 
 
@@ -149,17 +149,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
     exec_methods = [
-        'encode',
-        'add',
-        'query',
-        'craft',
-        'segment',
-        'score',
-        'evaluate',
-        'predict',
-        'query_by_key',
-        'delete',
-        'update',
+        "encode",
+        "add",
+        "query",
+        "craft",
+        "segment",
+        "score",
+        "evaluate",
+        "predict",
+        "query_by_key",
+        "delete",
+        "update",
     ]
 
     def __init__(self, *args, **kwargs):
@@ -178,7 +178,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         _requests: Optional[Dict] = None,
         fill_in_metas: bool = True,
     ) -> None:
-        with TimeContext('post_init may take some time', self.logger):
+        with TimeContext("post_init may take some time", self.logger):
             if fill_in_metas:
                 if not _metas:
                     _metas = get_default_metas()
@@ -205,7 +205,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         else:
             parsed_drivers = self._get_drivers_from_requests(_requests)
 
-            if _requests.get('use_default', False):
+            if _requests.get("use_default", False):
                 default_drivers = self._get_drivers_from_requests(default_requests)
 
                 for k, v in default_drivers.items():
@@ -218,14 +218,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def _get_drivers_from_requests(_requests):
         _drivers = {}  # type: Dict[str, List['BaseDriver']]
 
-        if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
+        if _requests and "on" in _requests and isinstance(_requests["on"], dict):
             # if control request is forget in YAML, then fill it
-            if 'ControlRequest' not in _requests['on']:
+            if "ControlRequest" not in _requests["on"]:
                 from ..drivers.control import ControlReqDriver
 
-                _requests['on']['ControlRequest'] = [ControlReqDriver()]
+                _requests["on"]["ControlRequest"] = [ControlReqDriver()]
 
-            for req_type, drivers_spec in _requests['on'].items():
+            for req_type, drivers_spec in _requests["on"].items():
                 if isinstance(req_type, str):
                     req_type = [req_type]
                 if isinstance(drivers_spec, list):
@@ -233,10 +233,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     drivers = drivers_spec
                     common_kwargs = {}
                 elif isinstance(drivers_spec, dict):
-                    drivers = drivers_spec.get('drivers', [])
-                    common_kwargs = drivers_spec.get('with', {})
+                    drivers = drivers_spec.get("drivers", [])
+                    common_kwargs = drivers_spec.get("with", {})
                 else:
-                    raise TypeError(f'unsupported type of driver spec: {drivers_spec}')
+                    raise TypeError(f"unsupported type of driver spec: {drivers_spec}")
 
                 for r in req_type:
                     if r not in _drivers:
@@ -275,20 +275,20 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     setattr(self, k, v)
             elif type(getattr(self, k)) == type(v):
                 setattr(self, k, v)
-        if not getattr(self, 'name', None):
-            _id = random_identity().split('-')[0]
-            _name = f'{typename(self)}-{_id}'
-            if getattr(self, 'warn_unnamed', False):
+        if not getattr(self, "name", None):
+            _id = random_identity().split("-")[0]
+            _name = f"{typename(self)}-{_id}"
+            if getattr(self, "warn_unnamed", False):
                 self.logger.warning(
                     f'this executor is not named, i will call it "{_name}". '
-                    'naming is important as it provides an unique identifier when '
-                    'persisting this executor on disk.'
+                    "naming is important as it provides an unique identifier when "
+                    "persisting this executor on disk."
                 )
-            setattr(self, 'name', _name)
+            setattr(self, "name", _name)
         if unresolved_attr:
             _tmp = vars(self)
-            _tmp['metas'] = _metas
-            new_metas = JAML.expand_dict(_tmp, context=_ref_desolve_map)['metas']
+            _tmp["metas"] = _metas
+            new_metas = JAML.expand_dict(_tmp, context=_ref_desolve_map)["metas"]
 
             # set self values filtered by those non-exist, and non-expandable
             for k, v in new_metas.items():
@@ -300,7 +300,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                             setattr(self, k, v)
                         else:
                             raise ValueError(
-                                f'{k}={v} is not substitutable or badly referred'
+                                f"{k}={v} is not substitutable or badly referred"
                             )
                     else:
                         setattr(self, k, v)
@@ -337,7 +337,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: the name of the file with `.bin`
         """
-        return self.get_file_from_workspace(f'{self.name}.bin')
+        return self.get_file_from_workspace(f"{self.name}.bin")
 
     @property
     def config_abspath(self) -> str:
@@ -345,7 +345,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: The file name ends with `.yml`.
         """
-        return self.get_file_from_workspace(f'{self.name}.yml')
+        return self.get_file_from_workspace(f"{self.name}.yml")
 
     @staticmethod
     def get_shard_workspace(
@@ -362,7 +362,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """
         # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
         return (
-            os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
+            os.path.join(workspace_folder, f"{workspace_name}-{pea_id}")
             if (isinstance(pea_id, int) and pea_id > 0)
             else workspace_folder
         )
@@ -370,7 +370,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     @property
     def workspace_name(self):
         """Get the name of the workspace.
-        
+
         :return: returns the name of the executor
         """
         return self.name
@@ -388,7 +388,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace property of the executor or default to './'
         """
-        return self.workspace or './'
+        return self.workspace or "./"
 
     @property
     def shard_workspace(self) -> str:
@@ -413,22 +413,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     @property
     def physical_size(self) -> int:
         """Return the size of the current workspace in bytes
-        
+
         :return: byte size of the current workspace
         """
         root_directory = Path(self.shard_workspace)
-        return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
+        return sum(f.stat().st_size for f in root_directory.glob("**/*") if f.is_file())
 
     def __getstate__(self):
         d = dict(self.__dict__)
-        del d['logger']
+        del d["logger"]
         for k in self._post_init_vars:
             del d[k]
-        cached = [k for k in d.keys() if k.startswith('CACHED_')]
+        cached = [k for k in d.keys() if k.startswith("CACHED_")]
         for k in cached:
             del d[k]
 
-        d.pop('_drivers', None)
+        d.pop("_drivers", None)
         return d
 
     def __setstate__(self, d):
@@ -438,7 +438,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._post_init_wrapper(fill_in_metas=False)
         except ModuleNotFoundError as ex:
             self.logger.warning(
-                f'{typename(ex)} is often caused by a missing component, '
+                f"{typename(ex)} is often caused by a missing component, "
                 f'which often can be solved by "pip install" relevant package: {ex!r}',
                 exc_info=True,
             )
@@ -448,7 +448,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         Train this executor, need to be overrided
 
         :param args: Additional arguments.
-        :param kwargs: Additional key word arguments.        
+        :param kwargs: Additional key word arguments.
         """
         pass
 
@@ -480,7 +480,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             f = filename or self.save_abspath
             if not f:
                 f = tempfile.NamedTemporaryFile(
-                    'w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)
+                    "w", delete=False, dir=os.environ.get("JINA_EXECUTOR_WORKDIR", None)
                 ).name
 
             if self.max_snapshot > 0 and os.path.exists(f):
@@ -494,17 +494,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     d_f = self._snapshot_files.pop(0)
                     if os.path.exists(d_f):
                         os.remove(d_f)
-            with open(f, 'wb') as fp:
+            with open(f, "wb") as fp:
                 pickle.dump(self, fp)
                 self._last_snapshot_ts = datetime.now()
             self.is_updated = False
             self.logger.success(
-                f'artifacts of this executor ({self.name}) is persisted to {f}'
+                f"artifacts of this executor ({self.name}) is persisted to {f}"
             )
         else:
             if not self.is_updated:
                 self.logger.info(
-                    f'no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. '
+                    f"no update since {self._last_snapshot_ts:%Y-%m-%d %H:%M:%S%z}, will not save. "
                     'If you really want to save it, call "touch()" before "save()" to force saving'
                 )
 
@@ -518,20 +518,20 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         **kwargs,
     ) -> Dict:
         """Inject config into the raw_config before loading into an object.
-    
+
         :param raw_config: raw config to work on
         :param pea_id: the id of the storage of this parallel pea
-        :param read_only: if the executor should be readonly        
+        :param read_only: if the executor should be readonly
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
 
         :return: an executor object
         """
-        if 'metas' not in raw_config:
-            raw_config['metas'] = {}
+        if "metas" not in raw_config:
+            raw_config["metas"] = {}
         tmp = fill_metas_with_defaults(raw_config)
-        tmp['metas']['pea_id'] = pea_id
-        tmp['metas']['read_only'] = read_only
+        tmp["metas"]["pea_id"] = pea_id
+        tmp["metas"]["read_only"] = read_only
 
         return tmp
 
@@ -547,10 +547,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if not filename:
             raise FileNotFoundError
         try:
-            with open(filename, 'rb') as fp:
+            with open(filename, "rb") as fp:
                 return pickle.load(fp)
         except EOFError:
-            raise BadPersistantFile(f'broken file {filename} can not be loaded')
+            raise BadPersistantFile(f"broken file {filename} can not be loaded")
 
     def close(self) -> None:
         """
@@ -565,11 +565,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
+    def attach(self, runtime: "ZEDRuntime", *args, **kwargs):
         """Attach this executor to a Basepea
 
         This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
-        
+
         :param runtime: Runtime procedure leveraging ZMQ.
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
@@ -579,7 +579,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 d.attach(executor=self, runtime=runtime, *args, **kwargs)
 
         # replacing the logger to runtime's logger
-        if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
+        if runtime and isinstance(getattr(runtime, "logger", None), JinaLogger):
             self.logger = runtime.logger
 
     def __call__(self, req_type, *args, **kwargs):
@@ -587,7 +587,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
 
         # noqa: DAR201
-        
+
 
         # noqa: DAR101
 
@@ -601,7 +601,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 else:
                     raise UnattachedDriver(d)
         else:
-            raise NoDriverForRequest(f'{req_type} for {self}')
+            raise NoDriverForRequest(f"{req_type} for {self}")
 
     def __str__(self):
         return self.__class__.__name__
