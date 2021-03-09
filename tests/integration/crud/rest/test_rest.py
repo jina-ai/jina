@@ -25,9 +25,7 @@ def config(tmpdir):
 
 
 def send_rest_request(flow_file, endpoint, method, data):
-    json = {
-        'data': data
-    }
+    json = {'data': data}
     with Flow.load_config(flow_file) as flow:
         url = f'http://0.0.0.0:{flow.port_expose}/{endpoint}'
         r = getattr(requests, method)(url, json=json)
@@ -35,8 +33,8 @@ def send_rest_request(flow_file, endpoint, method, data):
         if r.status_code != 200:
             # TODO status_code should be 201 for index
             raise Exception(
-                f'api request failed, url: {url}, status: {r.status_code}, content: {r.content} data: {data}')
-
+                f'api request failed, url: {url}, status: {r.status_code}, content: {r.content} data: {data}'
+            )
     return r
 
 
@@ -65,7 +63,9 @@ def random_docs(start, end):
         d = Document()
         d.id = j
         d.tags['id'] = j
-        d.text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10)).encode('utf8')
+        d.text = ''.join(
+            random.choice(string.ascii_lowercase) for _ in range(10)
+        ).encode('utf8')
         d.embedding = np.random.random([10 + np.random.randint(0, 1)])
         documents.append(d)
     return documents
@@ -77,8 +77,12 @@ def get_ids_to_delete(start, end):
 
 def validate_index_size(num_indexed_docs):
     from jina.executors.compound import CompoundExecutor
-    path_compound = Path(CompoundExecutor.get_component_workspace_from_compound_workspace(os.environ['JINA_REST_DIR'],
-                                                                                          'chunk_indexer', 0))
+
+    path_compound = Path(
+        CompoundExecutor.get_component_workspace_from_compound_workspace(
+            os.environ['JINA_REST_DIR'], 'chunk_indexer', 0
+        )
+    )
     path = Path(os.environ['JINA_REST_DIR'])
     bin_files = list(path_compound.glob('*.bin')) + list(path.glob('*.bin'))
     assert len(bin_files) > 0
@@ -101,7 +105,9 @@ def test_delete_vector(config, flow_file):
     send_rest_index_request(flow_file, random_docs(0, 10))
     validate_index_size(10)
 
-    search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
+    search_result = send_rest_search_request(
+        flow_file, random_docs(0, NUMBER_OF_SEARCHES)
+    )
     validate_results(search_result, 10)
 
     delete_ids = []
@@ -114,7 +120,9 @@ def test_delete_vector(config, flow_file):
 
     validate_index_size(0)
 
-    search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
+    search_result = send_rest_search_request(
+        flow_file, random_docs(0, NUMBER_OF_SEARCHES)
+    )
     validate_results(search_result, 0)
 
 
@@ -127,7 +135,9 @@ def test_delete_kv(config):
     send_rest_index_request(flow_file, random_docs(0, 10))
     validate_index_size(10)
 
-    search_result = send_rest_search_request(flow_file, chain(random_docs(2, 5), random_docs(100, 120)))
+    search_result = send_rest_search_request(
+        flow_file, chain(random_docs(2, 5), random_docs(100, 120))
+    )
     validate_results(search_result, 3)
 
     send_rest_delete_request(flow_file, get_ids_to_delete(0, 3))
@@ -163,13 +173,17 @@ def test_update_vector(config, flow_file):
     send_rest_index_request(flow_file, docs_before)
     validate_index_size(10)
 
-    search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
+    search_result = send_rest_search_request(
+        flow_file, random_docs(0, NUMBER_OF_SEARCHES)
+    )
     validate_results(search_result, has_changed=False)
 
     send_rest_update_request(flow_file, docs_updated)
     validate_index_size(10)
 
-    search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
+    search_result = send_rest_search_request(
+        flow_file, random_docs(0, NUMBER_OF_SEARCHES)
+    )
     validate_results(search_result, has_changed=True)
 
 
@@ -185,11 +199,15 @@ def test_update_kv(config):
     send_rest_index_request(flow_file, docs_before)
     validate_index_size(10)
 
-    search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
+    search_result = send_rest_search_request(
+        flow_file, random_docs(0, NUMBER_OF_SEARCHES)
+    )
     validate_results(search_result)
 
     send_rest_update_request(flow_file, docs_updated)
     validate_index_size(10)
 
-    search_result = send_rest_search_request(flow_file, random_docs(0, NUMBER_OF_SEARCHES))
+    search_result = send_rest_search_request(
+        flow_file, random_docs(0, NUMBER_OF_SEARCHES)
+    )
     validate_results(search_result)
