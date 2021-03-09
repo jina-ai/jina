@@ -389,6 +389,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         cached = [k for k in d.keys() if k.startswith('CACHED_')]
         for k in cached:
             del d[k]
+
+        d.pop('_drivers', None)
         return d
 
     def __setstate__(self, d):
