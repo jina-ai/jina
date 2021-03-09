@@ -102,6 +102,7 @@ def _start_fluentd():
 
 
 def main():
+    """Entrypoint for JinaD"""
     global jinad_args
     jinad_args = _get_run_args()
     if not jinad_args.no_fluentd:
