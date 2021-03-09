@@ -319,7 +319,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def config_abspath(self) -> str:
         """Get the file path of the YAML config
 
-        The file name ends with `.yml`.
+        :return: The file name ends with `.yml`.
         """
         return self.get_file_from_workspace(f'{self.name}.yml')
 
@@ -345,7 +345,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def workspace_name(self):
-        """Get the name of the workspace."""
+        """Get the name of the workspace.
+        
+        :return: returns the name of the executor
+        """
         return self.name
 
     @property
@@ -385,7 +388,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def physical_size(self) -> int:
-        """Return the size of the current workspace in bytes"""
+        """Return the size of the current workspace in bytes
+        
+        :return: byte size of the current workspace
+        """
         root_directory = Path(self.shard_workspace)
         return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
