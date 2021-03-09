@@ -7,7 +7,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Type, List
+from typing import Dict, TypeVar, Type, List, Optional
 
 from .decorators import (
     as_train_method,
@@ -152,7 +152,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._last_snapshot_ts = datetime.now()
 
     def _post_init_wrapper(
-        self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True
+        self,
+        _metas: Optional[Dict] = None,
+        _requests: Optional[Dict] = None,
+        fill_in_metas: bool = True,
     ) -> None:
         with TimeContext('post_init may take some time', self.logger):
             if fill_in_metas:
@@ -160,30 +163,30 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     _metas = get_default_metas()
 
                 self._fill_metas(_metas)
-
-                from ..executors.requests import get_default_reqs
-
-                default_requests = get_default_reqs(type.mro(self.__class__))
-
-                if not _requests:
-                    self._drivers = self._get_drivers_from_requests(default_requests)
-                else:
-                    parsed_drivers = self._get_drivers_from_requests(_requests)
-
-                    if _requests.get('use_default', False):
-                        default_drivers = self._get_drivers_from_requests(
-                            default_requests
-                        )
-
-                        for k, v in default_drivers.items():
-                            if k not in parsed_drivers:
-                                parsed_drivers[k] = v
-
-                    self._drivers = parsed_drivers
+                self.fill_in_drivers(_requests)
 
             _before = set(list(vars(self).keys()))
             self.post_init()
             self._post_init_vars = {k for k in vars(self) if k not in _before}
+
+    def fill_in_drivers(self, _requests: Optional[Dict]):
+        from ..executors.requests import get_default_reqs
+
+        default_requests = get_default_reqs(type.mro(self.__class__))
+
+        if not requests:
+            self._drivers = self._get_drivers_from_requests(default_requests)
+        else:
+            parsed_drivers = self._get_drivers_from_requests(requests)
+
+            if requests.get('use_default', False):
+                default_drivers = self._get_drivers_from_requests(default_requests)
+
+                for k, v in default_drivers.items():
+                    if k not in parsed_drivers:
+                        parsed_drivers[k] = v
+
+            self._drivers = parsed_drivers
 
     @staticmethod
     def _get_drivers_from_requests(_requests):
