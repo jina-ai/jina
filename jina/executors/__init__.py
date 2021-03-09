@@ -49,6 +49,9 @@ class ExecutorType(type(JAMLCompatible), type):
 
 
         # noqa: DAR102
+        
+
+        # noqa: DAR101
         """
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
@@ -456,8 +459,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         need to implement their own persistence strategy in the :func:`__getstate__`.
 
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
-        
-        :return: successfully persisted or not
         """
         if not self.read_only and self.is_updated:
             f = filename or self.save_abspath
