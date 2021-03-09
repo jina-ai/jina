@@ -583,6 +583,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.logger = runtime.logger
 
     def __call__(self, req_type, *args, **kwargs):
+        """
+
+
+        # noqa: DAR201
+        
+
+        # noqa: DAR101
+
+
+        # noqa: DAR102
+        """
         if req_type in self._drivers:
             for d in self._drivers[req_type]:
                 if d.attached:
