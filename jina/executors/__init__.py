@@ -141,7 +141,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     ]
 
     def __init__(self, *args, **kwargs):
-        """Constructor."""
         if isinstance(args, tuple) and len(args) > 0:
             self.args = args[0]
         else:
@@ -379,7 +378,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :param name: the name of the file
 
-        :return file path
+        :return: file path
         """
         Path(self.shard_workspace).mkdir(parents=True, exist_ok=True)
         return os.path.join(self.shard_workspace, name)
@@ -491,6 +490,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param raw_config: raw config to work on
         :param pea_id: the id of the storage of this parallel pea
         :param read_only: if the executor should be readonly
+
         :return: an executor object
         """
         if 'metas' not in raw_config:
@@ -538,7 +538,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         
         :param runtime: Runtime procedure leveraging ZMQ.
         :param args: Additional arguments.
-        :param kwards: Additional key word arguments.
+        :param kwargs: Additional key word arguments.
         """
         for v in self._drivers.values():
             for d in v:
