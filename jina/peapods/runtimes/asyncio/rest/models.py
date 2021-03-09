@@ -25,7 +25,6 @@ from jina.proto.jina_pb2 import (
     QueryLangProto,
 )
 
-
 DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
 PROTO_TO_PYDANTIC_MODELS = {}
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -137,6 +136,8 @@ def protobuf_to_pydantic_model(
             ff = all_fields[oneof_v]
             union_types.append(ff[0])
         all_fields[oneof_k] = (Union[tuple(union_types)], Field(None))
+        # TODO: fix camel case for oneof_k
+        camel_case_fields[oneof_k] = {'alias': oneof_k}
 
     CamelCaseConfig.fields = camel_case_fields
     model = create_model(model_name, **all_fields, __config__=CamelCaseConfig)

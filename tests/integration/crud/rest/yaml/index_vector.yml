@@ -1,0 +1,31 @@
+!NumpyIndexer
+with:
+  index_filename: vec.gz
+  metric: cosine
+metas:
+  name: vecidx
+  workspace: $JINA_REST_DIR
+
+requests:
+  on:
+    UpdateRequest:
+      - !VectorIndexDriver
+        with:
+          method: update
+          executor: vecidx
+          traversal_paths: [ 'r' ]
+    DeleteRequest:
+      - !DeleteDriver
+        with:
+          executor: vecidx
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['r']
+    SearchRequest:
+      - !VectorSearchDriver
+        with:
+          executor: vecidx
+          fill_embedding: True
+          traversal_paths: ['r']
