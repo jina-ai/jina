@@ -229,7 +229,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def add(
         self,
-        needs: Union[str, Tuple[str], List[str]] = None,
+        needs: Union[str, Tuple[str], List[str], None] = None,
         copy_flow: bool = True,
         pod_role: 'PodRoleType' = PodRoleType.POD,
         **kwargs,
@@ -703,7 +703,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def plot(
         self,
-        output: str = None,
+        output: Optional[str] = None,
         vertical_layout: bool = False,
         inline_display: bool = False,
         build: bool = True,

@@ -2,7 +2,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple, AsyncIterable, Iterable
+from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional
 
 from .helper import _new_request_from_batch
 from ... import Request
@@ -29,8 +29,8 @@ def request_generator(
     data: GeneratorSourceType,
     request_size: int = 0,
     mode: RequestType = RequestType.INDEX,
-    mime_type: str = None,
-    queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
+    mime_type: Optional[str] = None,
+    queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType], None] = None,
     data_type: DataInputType = DataInputType.AUTO,
     **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> Iterator['Request']:

@@ -7,7 +7,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Type, List
+from typing import Dict, TypeVar, Type, List, Optional
 
 from .decorators import (
     as_train_method,
@@ -41,10 +41,24 @@ class ExecutorType(type(JAMLCompatible), type):
     """The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""
 
     def __new__(cls, *args, **kwargs):
+        """
+        Instantiate a registered class.
+
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        :return: registered class instantiation
+        """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
     def __call__(cls, *args, **kwargs):
+        """
+        Call ExecutorType
+
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        :return: called object
+        """
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
 
@@ -123,6 +137,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     .. seealso::
         Meta fields :mod:`jina.executors.metas.defaults`.
 
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
@@ -141,7 +157,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     ]
 
     def __init__(self, *args, **kwargs):
-        """Constructor."""
         if isinstance(args, tuple) and len(args) > 0:
             self.args = args[0]
         else:
@@ -152,7 +167,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._last_snapshot_ts = datetime.now()
 
     def _post_init_wrapper(
-        self, _metas: Dict = None, _requests: Dict = None, fill_in_metas: bool = True
+        self,
+        _metas: Optional[Dict] = None,
+        _requests: Optional[Dict] = None,
+        fill_in_metas: bool = True,
     ) -> None:
         with TimeContext('post_init may take some time', self.logger):
             if fill_in_metas:
@@ -302,17 +320,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def save_abspath(self) -> str:
-        """Get the file path of the binary serialized object
+        """Get the file path of the binary serialized object. The file name ends with `.bin`.
 
-        The file name ends with `.bin`.
+        :return: absolute file name
         """
         return self.get_file_from_workspace(f'{self.name}.bin')
 
     @property
     def config_abspath(self) -> str:
-        """Get the file path of the YAML config
+        """Get the file path of the YAML config The file name ends with `.yml`.
 
-        The file name ends with `.yml`.
+        :return: absolute path
         """
         return self.get_file_from_workspace(f'{self.name}.yml')
 
@@ -337,7 +355,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def workspace_name(self):
-        """Get the name of the workspace."""
+        """
+        Get the name of the workspace.
+
+        :return: name
+        """
         return self.name
 
     @property
@@ -370,14 +392,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :param name: the name of the file
 
-        :return file path
+        :return: file path
         """
         Path(self.shard_workspace).mkdir(parents=True, exist_ok=True)
         return os.path.join(self.shard_workspace, name)
 
     @property
     def physical_size(self) -> int:
-        """Return the size of the current workspace in bytes"""
+        """
+        Return the size of the current workspace in bytes
+
+        :return: physical size of files
+        """
         root_directory = Path(self.shard_workspace)
         return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
@@ -406,6 +432,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def train(self, *args, **kwargs) -> None:
         """
         Train this executor, need to be overrided
+
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         pass
 
@@ -432,7 +461,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         need to implement their own persistence strategy in the :func:`__getstate__`.
 
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
-        :return: successfully persisted or not
         """
         if not self.read_only and self.is_updated:
             f = filename or self.save_abspath
@@ -480,6 +508,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param raw_config: raw config to work on
         :param pea_id: the id of the storage of this parallel pea
         :param read_only: if the executor should be readonly
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         :return: an executor object
         """
         if 'metas' not in raw_config:
@@ -524,6 +554,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """Attach this executor to a :class:`jina.peapods.runtime.BasePea`.
 
         This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
+
+        :param runtime: Used runtime
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         for v in self._drivers.values():
             for d in v:
@@ -534,6 +568,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.logger = runtime.logger
 
     def __call__(self, req_type, *args, **kwargs):
+        """
+        Call the drivers of the executor which are defined for the req_type.
+
+        :param req_type: Type of the request which is used to find the related drivers
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
         if req_type in self._drivers:
             for d in self._drivers[req_type]:
                 if d.attached:
