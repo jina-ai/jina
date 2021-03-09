@@ -45,6 +45,11 @@ class ExecutorType(type(JAMLCompatible), type):
         return cls.register_class(_cls)
 
     def __call__(cls, *args, **kwargs):
+        """
+
+
+        # noqa: DAR102
+        """
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
 
@@ -422,6 +427,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def train(self, *args, **kwargs) -> None:
         """
         Train this executor, need to be overrided
+
+        :param args: Additional arguments.
+        :param kwargs: Additional key word arguments.        
         """
         pass
 
@@ -448,6 +456,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         need to implement their own persistence strategy in the :func:`__getstate__`.
 
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
+        
         :return: successfully persisted or not
         """
         if not self.read_only and self.is_updated:
@@ -492,10 +501,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         **kwargs,
     ) -> Dict:
         """Inject config into the raw_config before loading into an object.
-
+    
+        :param cls: executor type
         :param raw_config: raw config to work on
         :param pea_id: the id of the storage of this parallel pea
-        :param read_only: if the executor should be readonly
+        :param read_only: if the executor should be readonly        
+        :param args: Additional arguments.
+        :param kwargs: Additional key word arguments.
 
         :return: an executor object
         """
