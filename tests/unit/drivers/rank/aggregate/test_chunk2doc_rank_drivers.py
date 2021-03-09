@@ -10,17 +10,13 @@ DISCOUNT_VAL = 0.5
 
 
 class MockMaxRanker(Chunk2DocRanker):
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
-        return self.get_doc_id(match_idx), match_idx[self.COL_SCORE].max()
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return match_idx[self.COL_SCORE].max()
 
 
 class MockMinRanker(Chunk2DocRanker):
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
-        return self.get_doc_id(match_idx), 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
 
 
 class MockLengthRanker(Chunk2DocRanker):
@@ -32,13 +28,8 @@ class MockLengthRanker(Chunk2DocRanker):
             **kwargs
         )
 
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
-        return (
-            match_idx[0][self.COL_PARENT_ID],
-            match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length'],
-        )
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length']
 
 
 class MockPriceDiscountRanker(Chunk2DocRanker):
@@ -50,14 +41,12 @@ class MockPriceDiscountRanker(Chunk2DocRanker):
             **kwargs
         )
 
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
         price = match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['tags__price']
         discount = match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]][
             'tags__discount'
         ]
-        return match_idx[0][self.COL_PARENT_ID], price - price * discount
+        return price - price * discount
 
 
 class SimpleChunk2DocRankDriver(Chunk2DocRankDriver):

@@ -38,7 +38,5 @@ class DummySentencizer(BaseSegmenter):
 
 
 class MockMinRanker(Chunk2DocRanker):
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
-        return self.get_doc_id(match_idx), 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
