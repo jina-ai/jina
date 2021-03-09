@@ -23,7 +23,7 @@ def test_dump_driver(tmpdir):
     # other stateful values should be reset to init()'s time
     assert not p.idle_dealer_ids
 
-def test_dump_excutor_without_drivers(tmpdir):
+def test_dump_executor_without_drivers(tmpdir):
 
     # Create an executor from a yaml file and store it to disc 
     executor_a = BaseExecutor.load_config(f'{cur_dir}/yaml/route.yml')
