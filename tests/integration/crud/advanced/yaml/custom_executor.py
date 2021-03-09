@@ -49,18 +49,9 @@ class DummyMinRanker(Chunk2DocRanker):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        import warnings
 
-        warnings.warn(
-            "MinRanker is deprecated. Please use SimpleAggregateRanker instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
-        return self.get_doc_id(match_idx), 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
 
 
 class DummyOneHotTextEncoder(BaseTextEncoder):
