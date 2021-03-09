@@ -585,6 +585,59 @@ def test_get_attr():
     np.testing.assert_equal(res4['blob'], np.array([1, 2, 3]))
 
 
+def test_get_attr_values():
+    d = Document(
+        {
+            'id': '123',
+            'text': 'document',
+            'feature1': 121,
+            'name': 'name',
+            'tags': {'id': 'identity', 'a': 'b', 'c': 'd'},
+        }
+    )
+    d.score = NamedScore(value=42)
+
+    required_keys = [
+        'id',
+        'text',
+        'tags__name',
+        'tags__feature1',
+        'score__value',
+        'tags__c',
+        'tags__id',
+        'tags__inexistant',
+        'inexistant',
+    ]
+    res = d.get_attrs_values(*required_keys)
+
+    assert len(res) == len(required_keys)
+    assert res[required_keys.index('id')] == '123'
+    assert res[required_keys.index('tags__feature1')] == 121
+    assert res[required_keys.index('tags__name')] == 'name'
+    assert res[required_keys.index('text')] == 'document'
+    assert res[required_keys.index('tags__c')] == 'd'
+    assert res[required_keys.index('tags__id')] == 'identity'
+    assert res[required_keys.index('score__value')] == 42
+    assert res[required_keys.index('tags__inexistant')] is None
+    assert res[required_keys.index('inexistant')] is None
+
+    required_keys_2 = ['tags', 'text']
+    res2 = d.get_attrs_values(*required_keys_2)
+    assert len(res2) == 2
+    assert res2[required_keys_2.index('text')] == 'document'
+    assert res2[required_keys_2.index('tags')] == d.tags
+
+    d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
+    required_keys_3 = ['tags__outterkey__innerkey']
+    res3 = d.get_attrs_values(*required_keys_3)
+    assert len(res3) == 1
+    assert res3[required_keys_3.index('tags__outterkey__innerkey')] == 'real_value'
+
+    d = Document(content=np.array([1, 2, 3]))
+    res4 = d.get_attrs(*['blob'])
+    np.testing.assert_equal(res4['blob'], np.array([1, 2, 3]))
+
+
 def test_pb_obj2dict():
     document = Document()
     with document:

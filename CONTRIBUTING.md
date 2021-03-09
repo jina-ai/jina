@@ -33,8 +33,8 @@ Make sure you've read through our [README](https://github.com/jina-ai/jina), [Ji
 
 We're happy for any contributions, code or not. If you'd like to write a blog post, record a podcast, organize a meetup, or anything else to contribute to Jina, we'd love to hear from you!
 
-* [Contribute docs](#contributing-documentation)
-* For other contributions, please [get in touch](#getting-support) to discuss on Slack
+* [Contribute docs](#-contributing-documentation)
+* For other contributions, please [get in touch](#-getting-support) to discuss on Slack
 
 <a name="-bugs-and-issues"></a>
 ## 🐞 Bugs and Issues
@@ -65,7 +65,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 ## 🥇 Making Your First Submission
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
-1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jina-hub-submodule) for details.
+1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jinahub-submodule) for details.
 1. Configure git pre-commit hooks. Please follow [the steps](#install-pre-commit-hooks)
 1. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 1. Work on this branch to do the fix/improvement.
@@ -108,7 +108,7 @@ It's easy to configure it:
 1. `pip install pre-commit`
 1. `pre-commit install`
 
-Now you will be automatically reminded to add docstrings to your code. `black` will take care that your code will match our style.
+Now you will be automatically reminded to add docstrings to your code. `black` will take care that your code will match our style. Note that `black` will fail your commit but reformat your code, so you just need to add the files again and commit **again**.
 
 For more about our docstring style, refer to [this guide](https://docs.jina.ai/chapters/docstring/docstring.html).
 
@@ -289,7 +289,7 @@ This covers files like [Jina 101](https://101.jina.ai), [Input and Output Functi
 
 These are typically written in Markdown, though some may be in RestructuredText.
 
-If you're just correcting a typo, feel free to make a pull request. For bigger ones, check out our [getting support section](#getting-support) to get in touch and discuss more.
+If you're just correcting a typo, feel free to make a pull request. For bigger ones, check out our [getting support section](#-getting-support) to get in touch and discuss more.
 
 #### Tutorials and Examples
 
@@ -297,7 +297,7 @@ This is anything under the [Jina Examples](https://github.com/jina-ai/examples) 
 
 If you're submitting a new example, be sure to get a good grounding in Jina, go through our previous examples, and test your code.
 
-If you're making small tweaks to an existing example, make a pull request. For bigger ones, check out our [getting support section](#getting-support) to get in touch and discuss more.
+If you're making small tweaks to an existing example, make a pull request. For bigger ones, check out our [getting support section](#-getting-support) to get in touch and discuss more.
 
 #### Docstrings
 
