@@ -84,7 +84,7 @@ jobs:
       - name: docstring check with darglint and pydocstyle
         run: ./scripts/docstrings_lint.sh
         env:
-          CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
+          CHANGED_FILES: ${{ steps.file_changes.outputs.added_modified }}
 
   check-black:
     runs-on: ubuntu-20.04
@@ -101,7 +101,7 @@ jobs:
       - name: check black
         run: ./scripts/black.sh
         env:
-          CHANGED_FILES: ${{ steps.file_changes.outputs.all }}
+          CHANGED_FILES: ${{ steps.file_changes.outputs.added_modified }}
 
   prep-testbed:
     runs-on: ubuntu-20.04
