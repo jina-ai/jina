@@ -174,12 +174,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         default_requests = get_default_reqs(type.mro(self.__class__))
 
-        if not requests:
+        if not _requests:
             self._drivers = self._get_drivers_from_requests(default_requests)
         else:
-            parsed_drivers = self._get_drivers_from_requests(requests)
+            parsed_drivers = self._get_drivers_from_requests(_requests)
 
-            if requests.get('use_default', False):
+            if _requests.get('use_default', False):
                 default_drivers = self._get_drivers_from_requests(default_requests)
 
                 for k, v in default_drivers.items():
