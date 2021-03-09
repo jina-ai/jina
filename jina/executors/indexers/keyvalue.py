@@ -211,8 +211,14 @@ class BinaryPbIndexer(BaseKVIndexer):
             keys, values, self.query_handler.header.keys()
         )
         if keys:
-            self._delete(keys)
-            self.add(keys, values)
+            old_values = [self.query_handler.header[key] for key in keys]
+            try:
+                self._delete(keys)
+                self.add(keys, values)
+            except Exception:
+                self._rollback_delete(keys, old_values)
+                self.logger.error('Transaction failed, rolling back...')
+                raise
 
     def _delete(self, keys: Iterable[str]) -> None:
         self.query_handler.close()
@@ -233,6 +239,26 @@ class BinaryPbIndexer(BaseKVIndexer):
             if self.query_handler:
                 del self.query_handler.header[key]
             self._size -= 1
+
+    def _rollback_delete(self, keys, values):
+        self.query_handler.close()
+        self.handler_mutex = False
+        for key, value in zip(keys, values):
+            if self.query_handler and key not in self.query_handler.header:
+                self.query_handler.header[key] = value
+
+            self.write_handler.header.write(
+                np.array(
+                    (key, *value),
+                    dtype=[
+                        ('', (np.str_, self.key_length)),
+                        ('', np.int64),
+                        ('', np.int64),
+                        ('', np.int64),
+                    ],
+                ).tobytes()
+            )
+            self._size += 1
 
     def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete the serialized documents from the index via document ids.

@@ -245,7 +245,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                     self._delete(np_keys)
                     self._add(np_keys, np.array(values))
                 except Exception:
-                    self.logger.warning(f'Transaction failed, rolling back...')
+                    self.logger.warning('Transaction failed, rolling back...')
                     self._rollback_delete(np_keys)
                     raise
         else:
