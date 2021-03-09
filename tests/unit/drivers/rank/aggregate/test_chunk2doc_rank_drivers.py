@@ -3,7 +3,7 @@ import pytest
 from jina import Document
 from jina.drivers.rank.aggregate import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
-from jina.proto import jina_pb2
+from jina.types.score import NamedScore
 from jina.types.sets import DocumentSet
 
 DISCOUNT_VAL = 0.5
@@ -72,25 +72,26 @@ def create_document_to_score():
     # |- chunk: 3
     #    |- matches: (id: 6, parent_id: 60, score.value: 6),
     #    |- matches: (id: 7, parent_id: 70, score.value: 7)
-    doc = jina_pb2.DocumentProto()
+    doc = Document()
     doc.id = '1'
     for c in range(2):
-        chunk = doc.chunks.add()
+        chunk = Document()
         chunk_id = str(c + 2)
         chunk.id = chunk_id
         for m in range(2):
-            match = chunk.matches.add()
+            match = Document()
             match_id = 2 * int(chunk_id) + m
             match.id = str(match_id)
             parent_id = 10 * int(match_id)
             match.parent_id = str(parent_id)
             match.length = int(match_id)
             # to be used by MaxRanker and MinRanker
-            match.score.ref_id = chunk.id
-            match.score.value = int(match_id)
+            match.score = NamedScore(value=int(match_id), ref_id=chunk.id)
             match.tags['price'] = match.score.value
             match.tags['discount'] = DISCOUNT_VAL
-    return Document(doc)
+            chunk.matches.append(match)
+        doc.chunks.append(chunk)
+    return doc
 
 
 def create_chunk_matches_to_score():
@@ -101,25 +102,25 @@ def create_chunk_matches_to_score():
     # |- chunks: (id: 20)
     #    |- matches: (id: 21, parent_id: 2, score.value: 4),
     #    |- matches: (id: 22, parent_id: 2, score.value: 5)
-    doc = jina_pb2.DocumentProto()
+    doc = Document()
     doc.id = '1'
     doc.granularity = 0
     num_matches = 2
     for parent_id in range(1, 3):
-        chunk = doc.chunks.add()
+        chunk = Document()
         chunk_id = parent_id * 10
         chunk.id = str(chunk_id)
         chunk.granularity = doc.granularity + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
-            match = chunk.matches.add()
+            match = Document()
             match.granularity = chunk.granularity
             match.parent_id = str(parent_id)
-            match.score.value = score_value
-            match.score.ref_id = chunk.id
+            match.score = NamedScore(value=score_value, ref_id=chunk.id)
             match.id = str(10 * int(parent_id) + score_value)
             match.length = 4
-
-    return Document(doc)
+            chunk.matches.append(match)
+        doc.chunks.append(chunk)
+    return doc
 
 
 def create_chunk_chunk_matches_to_score():
@@ -131,26 +132,28 @@ def create_chunk_chunk_matches_to_score():
     #       |- chunks: (id: 20)
     #           |- matches: (id: 21, parent_id: 2, score.value: 4),
     #           |- matches: (id: 22, parent_id: 2, score.value: 5)
-    doc = jina_pb2.DocumentProto()
+    doc = Document()
     doc.id = '100'
     doc.granularity = 0
-    chunk = doc.chunks.add()
+    chunk = Document()
     chunk.id = '101'
     chunk.parent_id = doc.id
     chunk.granularity = doc.granularity + 1
     num_matches = 2
     for parent_id in range(1, 3):
-        chunk_chunk = chunk.chunks.add()
+        chunk_chunk = Document()
         chunk_chunk.id = str(parent_id * 10)
         chunk_chunk.parent_id = str(parent_id)
         chunk_chunk.granularity = chunk.granularity + 1
         for score_value in range(parent_id * 2, parent_id * 2 + num_matches):
-            match = chunk_chunk.matches.add()
+            match = Document()
             match.parent_id = str(parent_id)
-            match.score.value = score_value
-            match.score.ref_id = chunk_chunk.id
+            match.score = NamedScore(value=score_value, ref_id=chunk_chunk.id)
             match.id = str(10 * parent_id + score_value)
             match.length = 4
+            chunk_chunk.matches.append(match)
+        chunk.chunks.append(chunk_chunk)
+    doc.chunks.append(chunk)
     return Document(doc)
 
 
@@ -196,7 +199,6 @@ def test_chunk2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     scale = 1 if not isinstance(executor, MockPriceDiscountRanker) else DISCOUNT_VAL
     assert len(doc.matches) == 4
     assert doc.matches[0].id == '70'
-
     assert doc.matches[0].score.value == 7 * scale
     assert doc.matches[1].id == '60'
     assert doc.matches[1].score.value == 6 * scale
