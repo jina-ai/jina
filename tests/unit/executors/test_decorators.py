@@ -163,6 +163,46 @@ def test_single_np_ndarray_kwargs_call():
     np.testing.assert_equal(result, input_np)
 
 
+def test_single_string():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single
+        def f(self, data):
+            assert isinstance(data, str)
+            return data
+
+    instance = A()
+    result = instance.f(['test0', 'test1'])
+    assert len(result) == 2
+    for i, res in enumerate(result):
+        assert res == f'test{i}'
+
+    result = instance.f('test0')
+    assert result == 'test0'
+
+
+def test_single_bytes():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single
+        def f(self, data):
+            assert isinstance(data, bytes)
+            return data
+
+    instance = A()
+    result = instance.f([str.encode('test0'), str.encode('test1')])
+    assert len(result) == 2
+    for i, res in enumerate(result):
+        assert res == str.encode(f'test{i}')
+
+    result = instance.f(b'test0')
+    assert result == b'test0'
+
+
 def test_batching():
     class A:
         def __init__(self, batch_size):

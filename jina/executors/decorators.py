@@ -466,7 +466,12 @@ def single(
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
             # by default data is in args[1] (self needs to be taken into account)
-            if len(args) <= slice_on or not isinstance(args[slice_on], Iterable):
+            if (
+                len(args) <= slice_on
+                or isinstance(args[slice_on], str)
+                or isinstance(args[slice_on], bytes)
+                or not isinstance(args[slice_on], Iterable)
+            ):
                 # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
 
@@ -537,7 +542,13 @@ def single_multi_input(
 
             data_iterators = [args[slice_on + i] for i in range(0, num_data)]
 
-            if not isinstance(data_iterators[0], Iterable):
+            if (
+                len(args) <= slice_on
+                or isinstance(data_iterators[0], str)
+                or isinstance(data_iterators[0], bytes)
+                or not isinstance(data_iterators[0], Iterable)
+            ):
+                # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
 
             final_result = []
