@@ -24,7 +24,6 @@ from jina.proto.jina_pb2 import (
     RequestProto,
     QueryLangProto,
 )
-import inspect
 
 DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
 PROTO_TO_PYDANTIC_MODELS = {}
@@ -85,7 +84,6 @@ def protobuf_to_pydantic_model(
 
     for f in protobuf_fields:
         field_name = f.name
-        print('field with name: ', field_name)
         camel_case_fields[field_name] = {'alias': f.camelcase_name}
 
         field_type = PROTOBUF_TO_PYTHON_TYPE[f.type]
@@ -187,7 +185,6 @@ class JinaRequestModel(BaseModel):
         List[bytes],
     ] = Field(..., example=[Document().dict()])
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
-    # TODO mime type is contained in documents already and should be removed
     mime_type: Optional[str] = ''
     queryset: Optional[List[PROTO_TO_PYDANTIC_MODELS['QueryLangProto']]] = None
     data_type: DataInputType = DataInputType.AUTO
