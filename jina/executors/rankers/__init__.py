@@ -107,6 +107,11 @@ class Chunk2DocRanker(BaseRanker):
             the value is extracted by the ``query_required_keys``.
         :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
             ``chunk_id``, the value is extracted by the ``match_required_keys``.
+
+
+        TODO:
+        - ``match_idx[:, 0]`` is redundant because all the matches have the same ``parent_id``.
+
         """
         raise NotImplementedError
 
