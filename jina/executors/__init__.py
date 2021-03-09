@@ -170,6 +170,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def fill_in_drivers(self, _requests: Optional[Dict]):
+        """
+        Fill in drivers in a BaseExecutor.
+
+        :param _requests: Dict containing driver information.
+        """
         from ..executors.requests import get_default_reqs
 
         default_requests = get_default_reqs(type.mro(self.__class__))
