@@ -213,3 +213,7 @@ class DaemonConnectivityError(Exception):
 
 class NotSupportedError(Exception):
     """Exeception when user accidentally using a retired argument."""
+
+
+class RequestTypeError(Exception):
+    """Raised when such request type does not exist"""
