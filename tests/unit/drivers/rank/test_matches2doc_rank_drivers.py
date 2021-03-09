@@ -1,5 +1,3 @@
-import numpy as np
-
 from jina import Document
 from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker

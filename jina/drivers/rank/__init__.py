@@ -51,7 +51,7 @@ class Matches2DocRankDriver(BaseRankDriver):
 
     def __init__(
         self,
-        reverse: bool = False,
+        reverse: bool = True,
         traversal_paths: Tuple[str] = ('r',),
         *args,
         **kwargs,
@@ -108,4 +108,4 @@ class Matches2DocRankDriver(BaseRankDriver):
         for match, score in zip(matches, match_scores):
             match.score = NamedScore(value=score, op_name=op_name, ref_id=ref_doc_id)
 
-        matches.sort(key=lambda x: x.score.value, reverse=True)
+        matches.sort(key=lambda x: x.score.value, reverse=self.reverse)
