@@ -334,7 +334,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param workspace_folder: Folder of the workspace.
         :param workspace_name: Name of the workspace.
         :param pea_id: Id of the pea,
-        :return: Return the workspace of the shard of this Executor.
+
+        :return: returns the workspace of the shard of this Executor.
         """
         # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
         return (
@@ -531,9 +532,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self.close()
 
     def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
-        """Attach this executor to a :class:`jina.peapods.runtime.BasePea`.
+        """Attach this executor to a Basepea
 
         This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
+        
+        :param runtime: Runtime procedure leveraging ZMQ.
+        :param args: Additional arguments.
+        :param kwards: Additional key word arguments.
         """
         for v in self._drivers.values():
             for d in v:
