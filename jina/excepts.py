@@ -212,4 +212,4 @@ class DaemonConnectivityError(Exception):
 
 
 class NotSupportedError(Exception):
-    """Exeception when user accidentally using a retired argument."""
+    """Exception when user accidentally using a retired argument."""

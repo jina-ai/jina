@@ -241,8 +241,13 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             )
             if keys:
                 np_keys = np.array(keys, (np.str_, self.key_length))
-                self._delete(np_keys)
-                self._add(np_keys, np.array(values))
+                try:
+                    self._delete(np_keys)
+                    self._add(np_keys, np.array(values))
+                except Exception:
+                    self.logger.warning(f'Transaction failed, rolling back...')
+                    self._rollback_delete(np_keys)
+                    raise
         else:
             self.logger.error(f'{self!r} is empty, update is aborted')
 
@@ -252,6 +257,14 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 # mark as `False` in mask
                 self.valid_indices[self._ext2int_id[key]] = False
                 self._size -= 1
+
+    def _rollback_delete(self, keys):
+        if keys.size:
+            for key in keys:
+                # mark as `True` in mask if already marked as false
+                if not self.valid_indices[self._ext2int_id[key]]:
+                    self.valid_indices[self._ext2int_id[key]] = True
+                    self._size += 1
 
     def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
         """Delete the embeddings from the index via document ids.
