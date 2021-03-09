@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import pytest
+import numpy as np
 
 from jina import Document
 from jina.types.sets import DocumentSet
@@ -218,3 +219,125 @@ def callback_fn(docs, *args, **kwargs) -> None:
         add_chunk(doc)
         add_match(doc)
         add_match(doc)
+
+
+@pytest.mark.parametrize('num_rows', [1, 2, 3])
+@pytest.mark.parametrize('field', ['content', 'blob', 'embedding'])
+def test_get_content(num_rows, field):
+    batch_size = 10
+    embed_size = 20
+
+    kwargs = {field: np.random.random((num_rows, embed_size))}
+
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs.append(Document())
+
+    contents, pts = docs._extract_docs(field)
+    assert isinstance(contents, np.ndarray)
+
+    assert contents.shape == (batch_size, num_rows, embed_size)
+
+
+@pytest.mark.parametrize('field', ['id', 'text'])
+def test_get_content_text_fields(field):
+    batch_size = 10
+
+    kwargs = {field: 'text'}
+
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(field)
+    assert isinstance(contents, np.ndarray)
+
+    assert contents.shape == (batch_size,)
+    assert len(contents) == batch_size
+    for content in contents:
+        assert content == 'text'
+
+
+@pytest.mark.parametrize('field', ['content', 'buffer'])
+def test_get_content_bytes_fields(field):
+    batch_size = 10
+
+    kwargs = {field: b'bytes'}
+
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(field)
+
+    assert contents.shape == (batch_size,)
+    assert len(contents) == batch_size
+    assert isinstance(contents, np.ndarray)
+    for content in contents:
+        assert content == b'bytes'
+
+
+@pytest.mark.parametrize('fields', [['id', 'text'], ['content_hash', 'modality']])
+def test_get_content_multiple_fields_text(fields):
+    batch_size = 10
+
+    kwargs = {field: f'text-{field}' for field in fields}
+
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(*fields)
+
+    assert len(contents) == len(fields)
+    assert isinstance(contents, list)
+    assert isinstance(contents[0], np.ndarray)
+    assert isinstance(contents[1], np.ndarray)
+
+    for content in contents:
+        assert len(content) == batch_size
+        assert content.shape == (batch_size,)
+
+
+@pytest.mark.parametrize('num_rows', [1, 2, 3])
+def test_get_content_multiple_fields_arrays(num_rows):
+    fields = ['blob', 'embedding']
+
+    batch_size = 10
+    embed_size = 20
+
+    kwargs = {field: np.random.random((num_rows, embed_size)) for field in fields}
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(*fields)
+
+    assert len(contents) == len(fields)
+    assert isinstance(contents, list)
+    assert isinstance(contents[0], np.ndarray)
+    assert isinstance(contents[1], np.ndarray)
+
+    for content in contents:
+        assert len(content) == batch_size
+        assert content.shape == (batch_size, num_rows, embed_size)
+
+
+@pytest.mark.parametrize('num_rows', [1, 2, 3])
+def test_get_content_multiple_fields_merge(num_rows):
+    fields = ['embedding', 'text']
+
+    batch_size = 10
+    embed_size = 20
+
+    kwargs = {
+        field: np.random.random((num_rows, embed_size))
+        if field == 'embedding'
+        else 'text'
+        for field in fields
+    }
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs._extract_docs(*fields)
+
+    assert len(contents) == len(fields)
+    assert isinstance(contents, list)
+    assert isinstance(contents[0], np.ndarray)
+    assert isinstance(contents[1], np.ndarray)
+
+    for content in contents:
+        assert len(content) == batch_size
+
+    assert contents[0].shape == (batch_size, num_rows, embed_size)
+    assert contents[1].shape == (batch_size,)
