@@ -41,6 +41,17 @@ class ExecutorType(type(JAMLCompatible), type):
     """The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""
 
     def __new__(cls, *args, **kwargs):
+        """
+
+
+        # noqa: DAR201
+        
+
+        # noqa: DAR101
+
+
+        # noqa: DAR102
+        """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
@@ -48,10 +59,13 @@ class ExecutorType(type(JAMLCompatible), type):
         """
 
 
-        # noqa: DAR102
+        # noqa: DAR201
         
 
         # noqa: DAR101
+
+
+        # noqa: DAR102
         """
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
@@ -320,6 +334,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """Get the file path of the binary serialized object
 
         The file name ends with `.bin`.
+
+        :return: the name of the file with `.bin`
         """
         return self.get_file_from_workspace(f'{self.name}.bin')
 
@@ -503,7 +519,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     ) -> Dict:
         """Inject config into the raw_config before loading into an object.
     
-        :param cls: executor type
         :param raw_config: raw config to work on
         :param pea_id: the id of the storage of this parallel pea
         :param read_only: if the executor should be readonly        
