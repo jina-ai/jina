@@ -10,7 +10,7 @@ from tests import validate_callback
 
 class DummyCrafter(BaseCrafter):
     @single
-    def craft(self, *args, **kwargs):
+    def craft(self, text, *args, **kwargs):
         return 1 / 0
 
 
