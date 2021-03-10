@@ -130,7 +130,7 @@ class AsyncCRUDFlowMixin:
     )
     async def index_lines(
         self,
-        lines: Union[Iterable[str], TextIO, None] = None,
+        lines: Optional[Union[Iterable[str], TextIO]] = None,
         filepath: Optional[str] = None,
         size: Optional[int] = None,
         sampling_rate: Optional[float] = None,
@@ -442,7 +442,7 @@ class AsyncCRUDFlowMixin:
     )
     async def search_lines(
         self,
-        lines: Union[Iterable[str], TextIO, None] = None,
+        lines: Optional[Union[Iterable[str], TextIO]] = None,
         filepath: Optional[str] = None,
         size: Optional[int] = None,
         sampling_rate: Optional[float] = None,

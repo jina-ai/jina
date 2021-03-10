@@ -38,7 +38,7 @@ class Zmqlet:
     def __init__(
         self,
         args: 'argparse.Namespace',
-        logger: 'JinaLogger' = None,
+        logger: Optional['JinaLogger'] = None,
         ctrl_addr: Optional[str] = None,
     ):
         self.args = args

@@ -284,7 +284,9 @@ class HubIO:
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
-    def _push_docker_hub(self, name: str = None, readme_path: str = None) -> None:
+    def _push_docker_hub(
+        self, name: Optional[str] = None, readme_path: Optional[str] = None
+    ) -> None:
         """Push to Docker Hub.
 
         :param name: name of image

@@ -18,7 +18,9 @@ async def request_generator(
     request_size: int = 0,
     mode: RequestType = RequestType.INDEX,
     mime_type: Optional[str] = None,
-    queryset: Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]] = None,
+    queryset: Optional[
+        Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]]
+    ] = None,
     data_type: DataInputType = DataInputType.AUTO,
     **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> AsyncIterator['Request']:

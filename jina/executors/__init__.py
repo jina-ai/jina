@@ -442,7 +442,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
-    def save(self, filename: str = None):
+    def save(self, filename: Optional[str] = None):
         """
         Persist data of this executor to the :attr:`shard_workspace`. The data could be
         a file or collection of files produced/used during an executor run.
@@ -521,7 +521,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         return tmp
 
     @staticmethod
-    def load(filename: str = None) -> AnyExecutor:
+    def load(filename: Optional[str] = None) -> AnyExecutor:
         """Build an executor from a binary file
 
         :param filename: the file path of the binary serialized file

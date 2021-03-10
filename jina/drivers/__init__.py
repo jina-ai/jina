@@ -196,7 +196,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
     def __init__(self, priority: int = 0, *args, **kwargs):
         self.attached = False  # : represent if this driver is attached to a
         # :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime` (& :class:`jina.executors.BaseExecutor`)
-        self.runtime = None  # type: Optional['ZEDRuntime']
+        self.runtime: Optional['ZEDRuntime'] = None
         self._priority = priority
 
     def attach(self, runtime: 'ZEDRuntime', *args, **kwargs) -> None:

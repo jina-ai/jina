@@ -92,7 +92,9 @@ class DaemonClient:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')
 
-    def upload(self, dependencies: Sequence[str], workspace_id: str = None) -> str:
+    def upload(
+        self, dependencies: Sequence[str], workspace_id: Optional[str] = None
+    ) -> str:
         """Upload local file dependencies to remote server by extracting from the pea_args
 
         :param dependencies: file dependencies

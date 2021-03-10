@@ -44,7 +44,7 @@ class Message:
 
     def __init__(
         self,
-        envelope: Union[bytes, 'jina_pb2.EnvelopeProto', None],
+        envelope: Optional[Union[bytes, 'jina_pb2.EnvelopeProto']],
         request: Union[bytes, 'jina_pb2.RequestProto'],
         *args,
         **kwargs,
