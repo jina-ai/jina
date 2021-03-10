@@ -68,7 +68,7 @@ def create_document_to_score_same_depth_level():
     # |  matches: (id: 5, parent_id: 30, score.value: 10, length: 1),
 
     doc = Document()
-    doc.id = str(1) * 16
+    doc.id = 1
 
     for match_id, parent_id, match_score, match_length in [
         (2, 20, 30, 3),
@@ -76,12 +76,12 @@ def create_document_to_score_same_depth_level():
         (4, 30, 20, 2),
         (5, 30, 10, 1),
     ]:
-        with Document() as match:
-            match.id = str(match_id) * 16
-            match.parent_id = str(parent_id) * 8
-            match.length = match_length
-            match.score = NamedScore(value=match_score, ref_id=doc.id)
-            doc.matches.append(match)
+        match = Document()
+        match.id = match_id
+        match.parent_id = parent_id
+        match.length = match_length
+        match.score = NamedScore(value=match_score, ref_id=doc.id)
+        doc.matches.append(match)
     return doc
 
 
@@ -93,9 +93,9 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
     driver()
     dm = list(doc.matches)
     assert len(dm) == 2
-    assert dm[0].id == '20' * 8
+    assert dm[0].id == '20'
     assert dm[0].score.value == 3
-    assert dm[1].id == '30' * 8
+    assert dm[1].id == '30'
     assert dm[1].score.value == 2
     for match in dm:
         # match score is computed w.r.t to doc.id
@@ -116,10 +116,10 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
     min_value_30 = sys.maxsize
     min_value_20 = sys.maxsize
     for match in doc.matches:
-        if match.parent_id == '30' * 8:
+        if match.parent_id == '30':
             if match.score.value < min_value_30:
                 min_value_30 = match.score.value
-        if match.parent_id == '20' * 8:
+        if match.parent_id == '20':
             if match.score.value < min_value_20:
                 min_value_20 = match.score.value
 
@@ -127,9 +127,9 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
     driver()
     dm = list(doc.matches)
     assert len(dm) == 2
-    assert dm[0].id == '30' * 8
+    assert dm[0].id == '30'
     assert dm[0].score.value == pytest.approx((1.0 / (1.0 + min_value_30)), 0.0000001)
-    assert dm[1].id == '20' * 8
+    assert dm[1].id == '20'
     assert dm[1].score.value == pytest.approx((1.0 / (1.0 + min_value_20)), 0.0000001)
     for match in dm:
         # match score is computed w.r.t to doc.id
@@ -150,9 +150,9 @@ def test_collect_matches2doc_ranker_driver_max_ranker(keep_source_matches_as_chu
     driver()
     dm = list(doc.matches)
     assert len(dm) == 2
-    assert dm[0].id == '20' * 8
+    assert dm[0].id == '20'
     assert dm[0].score.value == 40
-    assert dm[1].id == '30' * 8
+    assert dm[1].id == '30'
     assert dm[1].score.value == 20
     for match in dm:
         # match score is computed w.r.t to doc.id
