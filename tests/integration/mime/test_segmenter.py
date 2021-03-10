@@ -11,7 +11,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class DummySegment(BaseSegmenter):
-    @single
+    @single(flatten_output=False)
     def segment(self, *args, **kwargs):
         return [dict(buffer=b'aa'), dict(buffer=b'bb')]
 
