@@ -12,7 +12,11 @@ from jina.flow import Flow
 from jina.helper import expand_dict
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser
-from jina.parsers.hub import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
+from jina.parsers.hub import (
+    set_hub_build_parser,
+    set_hub_list_parser,
+    set_hub_pushpull_parser,
+)
 from jina.peapods import Pod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
