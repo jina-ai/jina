@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 import warnings
-from typing import Any
+from typing import Any, Dict
 
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
@@ -16,21 +16,6 @@ from .....logging import JinaLogger, default_logger
 from .....logging.profile import used_memory_readable
 from .....types.message import Message
 from .....types.request import Request
-
-
-# TODO instead of this function make sure that only one 'oneof field' is used.
-def _filter_none_values(dictionaries):
-    return [_filter_none_values_rec(dictionary) for dictionary in dictionaries]
-
-
-def _filter_none_values_rec(dictionary):
-    filtered_dictionary = {}
-    for key, value in dictionary.items():
-        if type(value) == dict:
-            value = _filter_none_values_rec(value)
-        if value:
-            filtered_dictionary[key] = value
-    return filtered_dictionary
 
 
 def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
@@ -161,7 +146,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from .....clients import BaseClient
 
         bd = body.dict()
-        bd['data'] = _filter_none_values(bd['data'])
         bd['mode'] = RequestType.INDEX
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(
@@ -179,7 +163,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from .....clients import BaseClient
 
         bd = body.dict()
-        bd['data'] = _filter_none_values(bd['data'])
         bd['mode'] = RequestType.SEARCH
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(
@@ -197,7 +180,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from .....clients import BaseClient
 
         bd = body.dict()
-        bd['data'] = _filter_none_values(bd['data'])
         bd['mode'] = RequestType.UPDATE
         BaseClient.add_default_kwargs(bd)
         return StreamingResponse(
