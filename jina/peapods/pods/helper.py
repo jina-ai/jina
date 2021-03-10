@@ -15,10 +15,6 @@ def _set_peas_args(
 
     for idx in range(args.parallel):
         _args = copy.deepcopy(args)
-        if head_args:
-            _args.port_in = head_args.port_out
-        if tail_args:
-            _args.port_out = tail_args.port_in
         _args.port_ctrl = helper.random_port()
         _args.socket_out = SocketType.PUSH_CONNECT
         if args.polling.is_push:
@@ -30,10 +26,6 @@ def _set_peas_args(
                 raise NotImplementedError
         else:
             _args.socket_in = SocketType.SUB_CONNECT
-        if head_args:
-            _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
-        if tail_args:
-            _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
 
         if args.parallel > 1:
             _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
