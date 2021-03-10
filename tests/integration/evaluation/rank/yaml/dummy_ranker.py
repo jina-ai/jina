@@ -1,8 +1,7 @@
-from typing import Dict
-
-import numpy as np
+from typing import Dict, List
 
 from jina.executors.rankers import Match2DocRanker
+from jina.executors.decorators import batching_multi_input
 
 
 class DummyRanker(Match2DocRanker):
@@ -12,16 +11,17 @@ class DummyRanker(Match2DocRanker):
         achieve a bigger=better sorting in the respective driver.
     """
 
-    required_keys = {'tags'}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.match_required_keys = ['tags__dummy_score']
 
+    @batching_multi_input(num_data=3)
     def score(
-        self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
-    ) -> "np.ndarray":
-        new_scores = [
-            (match_id, match_meta[match_id]['tags']['dummy_score'])
-            for match_id, old_score in old_match_scores.items()
+        self,
+        old_match_scores: List[Dict],
+        queries_metas: List[Dict],
+        matches_metas: List[List[Dict]],
+    ) -> List[List[float]]:
+        return [
+            [m['tags__dummy_score'] for m in match_meta] for match_meta in matches_metas
         ]
-        return np.array(
-            new_scores,
-            dtype=[(self.COL_MATCH_ID, np.object), (self.COL_SCORE, np.float64)],
-        )

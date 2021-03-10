@@ -70,13 +70,15 @@ class Matches2DocRankDriver(BaseRankDriver):
             - This driver will change in place the ordering of ``matches`` of the ``context_doc`.
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
+        old_scores = []
+        queries_metas = []
+        matches_metas = []
         for doc in docs:
             query_meta = (
                 doc.get_attrs(*self._exec_query_keys) if self._exec_query_keys else None
             )
 
             matches = doc.matches
-            num_matches = len(matches)
             old_match_scores = []
             needs_match_meta = self._exec_match_keys is not None
             match_meta = [] if needs_match_meta else None
@@ -86,18 +88,26 @@ class Matches2DocRankDriver(BaseRankDriver):
                     match_meta.append(match.get_attrs(*self._exec_match_keys))
 
             # if there are no matches, no need to sort them
-            if not old_match_scores:
-                continue
+            old_scores.append(old_match_scores)
+            queries_metas.append(query_meta)
+            matches_metas.append(match_meta)
 
-            new_scores = self.exec_fn(old_match_scores, query_meta, match_meta)
-            if num_matches != len(new_scores):
+        new_scores = self.exec_fn(old_scores, queries_metas, matches_metas)
+        if len(new_scores) != len(new_scores):
+            msg = f'The number of scores {len(new_scores)} does not match the number of queries {len(docs)}'
+            self.logger.error(msg)
+            raise ValueError(msg)
+
+        for doc, scores in zip(docs, new_scores):
+            matches = doc.matches
+            if len(doc.matches) != len(scores):
                 msg = (
-                    f'The number of matches to be scored {num_matches} do not match the number of scores returned '
-                    f'by the ranker {self.exec.__name__} '
+                    f'The number of matches to be scored {len(doc.matches)} do not match the number of scores returned '
+                    f'by the ranker {self.exec.__name__} for doc: {doc.id} '
                 )
                 self.logger.error(msg)
                 raise ValueError(msg)
-            self._sort_matches_in_place(matches, new_scores)
+            self._sort_matches_in_place(matches, scores)
 
     def _sort_matches_in_place(
         self, matches: 'MatchSet', match_scores: Iterable[float]
