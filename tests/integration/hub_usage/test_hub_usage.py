@@ -12,7 +12,7 @@ from jina.flow import Flow
 from jina.helper import expand_dict
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser
-from jina.parsers.hub import set_hub_build_parser, set_hub_list_parser
+from jina.parsers.hub import set_hub_build_parser, set_hub_list_parser, set_hub_pushpull_parser
 from jina.peapods import Pod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -90,6 +90,26 @@ def test_build_timeout_ready():
         timeout_ready=20000,
     ):
         pass
+
+
+@pytest.mark.timeout(360)
+def test_hub_pull():
+    args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder:0.0.6'])
+    HubIO(args).pull()
+
+
+@pytest.mark.timeout(360)
+def test_hub_list():
+    args = set_hub_list_parser().parse_args(['--keywords', 'numeric'])
+    response = HubIO(args).list()
+    assert len(response) > 0
+
+
+@pytest.mark.timeout(360)
+def test_hub_list_non_existing_kind():
+    args = set_hub_list_parser().parse_args(['--kind', 'does-not-exist'])
+    response = HubIO(args).list()
+    assert not response
 
 
 @pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
