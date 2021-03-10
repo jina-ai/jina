@@ -13,7 +13,7 @@ class DummySegment(BaseSegmenter):
         super().__init__(*args, **kwargs)
         self._label = random.random()
 
-    @single
+    @single(flatten_output=False)
     def segment(self, *args, **kwargs):
         return [
             dict(buffer=f'aa{self._label}'.encode()),
