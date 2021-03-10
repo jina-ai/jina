@@ -1,5 +1,6 @@
 import os
 import pickle
+import pytest
 
 from jina.drivers.control import RouteDriver
 from jina.executors import BaseExecutor
@@ -24,16 +25,31 @@ def test_dump_driver(tmpdir):
     assert not p.idle_dealer_ids
 
 
-def test_dump_excutor_with_drivers(tmpdir):
-    a = BaseExecutor.load_config(f'{cur_dir}/yaml/route.yml')
-    a.touch()
-    a._drivers['ControlRequest'][0].idle_dealer_ids = ('hello', 'there')
-    a.save(str(tmpdir / 'a.bin'))
+def test_dump_exegit_scutor_without_drivers(tmpdir):
+    # Create an executor from a yaml file and store it to disc
+    executor_a = BaseExecutor.load_config(f'{cur_dir}/yaml/route.yml')
+    executor_a.touch()
+    executor_a._drivers['ControlRequest'][0].idle_dealer_ids = ('hello', 'there')
+    executor_a.save(str(tmpdir / 'aux.bin'))
 
-    print(a._drivers)
+    # load the saved executor_a as executor_b
+    executor_b = BaseExecutor.load(str(tmpdir / 'aux.bin'))
+    assert hasattr(executor_b, '_drivers') is False
 
-    b = BaseExecutor.load(str(tmpdir / 'a.bin'))
-    print(b._drivers)
-    assert id(b._drivers['ControlRequest'][0]) != id(a._drivers['ControlRequest'][0])
 
-    assert not b._drivers['ControlRequest'][0].idle_dealer_ids
+@pytest.fixture
+def temp_workspace(tmpdir):
+    os.environ['JINA_TEST_LOAD_FROM_DUMP_WORKSPACE'] = str(tmpdir)
+    yield
+    del os.environ['JINA_TEST_LOAD_FROM_DUMP_WORKSPACE']
+
+
+def test_drivers_renewed_from_yml_when_loaded_from_dump(temp_workspace):
+    executor_a = BaseExecutor.load_config(f'{cur_dir}/yaml/example_1.yml')
+    assert executor_a._drivers['SearchRequest'][0]._is_update is True
+
+    with executor_a:
+        executor_a.touch()
+
+    executor_b = BaseExecutor.load_config(f'{cur_dir}/yaml/example_2.yml')
+    assert executor_b._drivers['SearchRequest'][0]._is_update is False
