@@ -15,7 +15,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockSegmenter(BaseSegmenter):
-    @single
+    @single(flatten_output=False)
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
         chunks = [
