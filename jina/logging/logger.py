@@ -137,7 +137,7 @@ class JinaLogger:
         for handler in self.logger.handlers:
             handler.close()
 
-    def add_handlers(self, config_path: str = None, **kwargs):
+    def add_handlers(self, config_path: Optional[str] = None, **kwargs):
         """
         Add handlers from config file.
 

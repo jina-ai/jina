@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import os
+from typing import Optional
 
 from . import BaseEncoder
 from ..devices import OnnxDevice, PaddleDevice, TorchDevice, TFDevice, MindsporeDevice
@@ -21,7 +22,11 @@ class BaseOnnxEncoder(OnnxDevice, BaseEncoder):
     """
 
     def __init__(
-        self, output_feature: str = None, model_path: str = None, *args, **kwargs
+        self,
+        output_feature: Optional[str] = None,
+        model_path: Optional[str] = None,
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.outputs_name = output_feature
@@ -119,7 +124,7 @@ class BaseMindsporeEncoder(MindsporeDevice, BaseEncoder):
         :param kwargs: additional key value arguments
     """
 
-    def __init__(self, model_path: str = None, *args, **kwargs):
+    def __init__(self, model_path: Optional[str] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_path = model_path
 

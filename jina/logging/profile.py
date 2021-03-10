@@ -5,6 +5,7 @@ import sys
 import time
 from collections import defaultdict
 from functools import wraps
+from typing import Optional
 
 from ..helper import colored, get_readable_size, get_readable_time
 
@@ -240,7 +241,7 @@ class ProgressBar(TimeContext):
             self.update()
             self._ticks = 0
 
-    def update(self, progress: int = None, *args, **kwargs) -> None:
+    def update(self, progress: Optional[int] = None, *args, **kwargs) -> None:
         """
         Increment the progress bar by one unit.
 

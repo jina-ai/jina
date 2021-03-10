@@ -37,17 +37,19 @@ class BaseIndexer(BaseExecutor):
                 b.add()
 
         So that it can safely save the data. Or you have to manually call `b.close()` to close the indexer safely.
+
+    :param index_filename: the name of the file for storing the index, when not given metas.name is used.
+    :param args:  Additional positional arguments
+    :param kwargs: Additional keyword arguments
     """
 
     def __init__(
-        self, index_filename: str = None, key_length: int = 36, *args, **kwargs
+        self,
+        index_filename: Optional[str] = None,
+        key_length: int = 36,
+        *args,
+        **kwargs,
     ):
-        """
-
-        :param index_filename: the name of the file for storing the index, when not given metas.name is used.
-        :param args:
-        :param kwargs:
-        """
         super().__init__(*args, **kwargs)
         self.index_filename = (
             index_filename  #: the file name of the stored index, no path is required
@@ -56,15 +58,30 @@ class BaseIndexer(BaseExecutor):
         self._size = 0
 
     def add(self, *args, **kwargs):
-        """Add documents to the index."""
+        """
+        Add documents to the index.
+
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
         raise NotImplementedError
 
     def update(self, *args, **kwargs):
-        """Update documents on the index."""
+        """
+        Update documents on the index.
+
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
         raise NotImplementedError
 
     def delete(self, *args, **kwargs):
-        """Delete documents from the index."""
+        """
+        Delete documents from the index.
+
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
         raise NotImplementedError
 
     def post_init(self):
@@ -74,17 +91,28 @@ class BaseIndexer(BaseExecutor):
         self.is_handler_loaded = False
 
     def query(self, *args, **kwargs):
-        """Query documents from the index."""
+        """
+        Query documents from the index.
+
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        """
         raise NotImplementedError
 
     @property
     def index_abspath(self) -> str:
-        """Get the file path of the index storage"""
+        """
+        Get the file path of the index storage
+
+        :return: absolute path
+        """
         return self.get_file_from_workspace(self.index_filename)
 
     @cached_property
     def query_handler(self):
         """A readable and indexable object, could be dict, map, list, numpy array etc.
+
+        :return: read handler
 
         .. note::
             :attr:`query_handler` and :attr:`write_handler` are by default mutex
@@ -107,17 +135,26 @@ class BaseIndexer(BaseExecutor):
 
     @cached_property
     def null_query_handler(self) -> Optional[Any]:
-        """The empty query handler when :meth:`get_query_handler` fails"""
+        """The empty query handler when :meth:`get_query_handler` fails
+
+        :return: nothing
+        """
         return
 
     @property
     def is_exist(self) -> bool:
-        """Check if the database is exist or not"""
+        """
+        Check if the database is exist or not
+
+        :return: true if the absolute index path exists, else false
+        """
         return os.path.exists(self.index_abspath)
 
     @cached_property
     def write_handler(self):
         """A writable and indexable object, could be dict, map, list, numpy array etc.
+
+        :return: write handler
 
         .. note::
             :attr:`query_handler` and :attr:`write_handler` are by default mutex
@@ -152,7 +189,11 @@ class BaseIndexer(BaseExecutor):
 
     @property
     def size(self) -> int:
-        """The number of vectors or documents indexed """
+        """
+        The number of vectors or documents indexed.
+
+        :return: size
+        """
         return self._size
 
     def __getstate__(self):
@@ -205,7 +246,8 @@ class BaseVectorIndexer(BaseIndexer):
         """Get the vectors by id, return a subset of indexed vectors
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :return: subset of indexed vectors
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
@@ -214,6 +256,8 @@ class BaseVectorIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
@@ -224,7 +268,8 @@ class BaseVectorIndexer(BaseIndexer):
 
         :param vectors: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
-        :return: ids as ndarray (`dtype=int`) and scores as ndarray (`dtype=float)
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
@@ -235,6 +280,8 @@ class BaseVectorIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
@@ -242,6 +289,8 @@ class BaseVectorIndexer(BaseIndexer):
         """Delete vectors from the index.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
@@ -261,14 +310,17 @@ class BaseKVIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
-    def query(self, key: str) -> Optional[bytes]:
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
         :param key: document id
-        :return: serialized documents
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
@@ -279,6 +331,8 @@ class BaseKVIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
@@ -286,6 +340,8 @@ class BaseKVIndexer(BaseIndexer):
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
