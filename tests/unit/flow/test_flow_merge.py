@@ -14,7 +14,7 @@ class DummySegment(BaseSegmenter):
         self._label = random.random()
 
     @single(flatten_output=False)
-    def segment(self, *args, **kwargs):
+    def segment(self, id, *args, **kwargs):
         return [
             dict(buffer=f'aa{self._label}'.encode()),
             dict(buffer=f'bb{self._label}'.encode()),
