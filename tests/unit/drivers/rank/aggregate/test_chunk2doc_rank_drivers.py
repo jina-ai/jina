@@ -157,11 +157,8 @@ def create_chunk_chunk_matches_to_score():
     return Document(doc)
 
 
-@pytest.mark.parametrize(
-    'executor', [MockMaxRanker(), MockPriceDiscountRanker(), MockLengthRanker()]
-)
 @pytest.mark.parametrize('keep_source_matches_as_chunks', [False, True])
-def test_chunk2doc_ranker_driver_mock_ranker(keep_source_matches_as_chunks, executor):
+def test_chunk2doc_ranker_driver_mock_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
     driver = SimpleChunk2DocRankDriver(
         docs=DocumentSet([doc]),
