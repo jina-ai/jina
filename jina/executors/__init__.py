@@ -1,5 +1,5 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+__copyright__ = 'Copyright (c) 2020 Jina AI Limited. All rights reserved.'
+__license__ = 'Apache-2.0'
 
 import os
 import pickle
@@ -42,22 +42,30 @@ class ExecutorType(type(JAMLCompatible), type):
 
     def __new__(cls, *args, **kwargs):
         """
-        Instantiate a registered class.
 
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        :return: registered class instantiation
+
+        # noqa: DAR201
+
+
+        # noqa: DAR101
+
+
+        # noqa: DAR102
         """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
     def __call__(cls, *args, **kwargs):
         """
-        Call ExecutorType
 
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        :return: called object
+
+        # noqa: DAR201
+
+
+        # noqa: DAR101
+
+
+        # noqa: DAR102
         """
         # do _preload_package
         getattr(cls, 'pre_init', lambda *x: None)()
@@ -137,8 +145,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     .. seealso::
         Meta fields :mod:`jina.executors.metas.defaults`.
 
-    :param args:  Additional positional arguments
-    :param kwargs: Additional keyword arguments
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
@@ -178,30 +184,35 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     _metas = get_default_metas()
 
                 self._fill_metas(_metas)
-
-                from ..executors.requests import get_default_reqs
-
-                default_requests = get_default_reqs(type.mro(self.__class__))
-
-                if not _requests:
-                    self._drivers = self._get_drivers_from_requests(default_requests)
-                else:
-                    parsed_drivers = self._get_drivers_from_requests(_requests)
-
-                    if _requests.get('use_default', False):
-                        default_drivers = self._get_drivers_from_requests(
-                            default_requests
-                        )
-
-                        for k, v in default_drivers.items():
-                            if k not in parsed_drivers:
-                                parsed_drivers[k] = v
-
-                    self._drivers = parsed_drivers
+                self.fill_in_drivers(_requests)
 
             _before = set(list(vars(self).keys()))
             self.post_init()
             self._post_init_vars = {k for k in vars(self) if k not in _before}
+
+    def fill_in_drivers(self, _requests: Optional[Dict]):
+        """
+        Fill in drivers in a BaseExecutor.
+
+        :param _requests: Dict containing driver information.
+        """
+        from ..executors.requests import get_default_reqs
+
+        default_requests = get_default_reqs(type.mro(self.__class__))
+
+        if not _requests:
+            self._drivers = self._get_drivers_from_requests(default_requests)
+        else:
+            parsed_drivers = self._get_drivers_from_requests(_requests)
+
+            if _requests.get('use_default', False):
+                default_drivers = self._get_drivers_from_requests(default_requests)
+
+                for k, v in default_drivers.items():
+                    if k not in parsed_drivers:
+                        parsed_drivers[k] = v
+
+            self._drivers = parsed_drivers
 
     @staticmethod
     def _get_drivers_from_requests(_requests):
@@ -320,17 +331,19 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def save_abspath(self) -> str:
-        """Get the file path of the binary serialized object. The file name ends with `.bin`.
+        """Get the file path of the binary serialized object
 
-        :return: absolute file name
+        The file name ends with `.bin`.
+
+        :return: the name of the file with `.bin`
         """
         return self.get_file_from_workspace(f'{self.name}.bin')
 
     @property
     def config_abspath(self) -> str:
-        """Get the file path of the YAML config The file name ends with `.yml`.
+        """Get the file path of the YAML config
 
-        :return: absolute path
+        :return: The file name ends with `.yml`.
         """
         return self.get_file_from_workspace(f'{self.name}.yml')
 
@@ -344,7 +357,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param workspace_folder: Folder of the workspace.
         :param workspace_name: Name of the workspace.
         :param pea_id: Id of the pea,
-        :return: Return the workspace of the shard of this Executor.
+
+        :return: returns the workspace of the shard of this Executor.
         """
         # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
         return (
@@ -355,10 +369,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def workspace_name(self):
-        """
-        Get the name of the workspace.
+        """Get the name of the workspace.
 
-        :return: name
+        :return: returns the name of the executor
         """
         return self.name
 
@@ -399,10 +412,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def physical_size(self) -> int:
-        """
-        Return the size of the current workspace in bytes
+        """Return the size of the current workspace in bytes
 
-        :return: physical size of files
+        :return: byte size of the current workspace
         """
         root_directory = Path(self.shard_workspace)
         return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
@@ -415,6 +427,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         cached = [k for k in d.keys() if k.startswith('CACHED_')]
         for k in cached:
             del d[k]
+
+        d.pop('_drivers', None)
         return d
 
     def __setstate__(self, d):
@@ -433,8 +447,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """
         Train this executor, need to be overrided
 
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
+        :param args: Additional arguments.
+        :param kwargs: Additional key word arguments.
         """
         pass
 
@@ -442,7 +456,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
-    def save(self, filename: Optional[str] = None):
+    def save(self, filename: str = None):
         """
         Persist data of this executor to the :attr:`shard_workspace`. The data could be
         a file or collection of files produced/used during an executor run.
@@ -508,8 +522,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param raw_config: raw config to work on
         :param pea_id: the id of the storage of this parallel pea
         :param read_only: if the executor should be readonly
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
+        :param args: Additional arguments.
+        :param kwargs: Additional key word arguments.
+
         :return: an executor object
         """
         if 'metas' not in raw_config:
@@ -521,7 +536,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         return tmp
 
     @staticmethod
-    def load(filename: Optional[str] = None) -> AnyExecutor:
+    def load(filename: str = None) -> AnyExecutor:
         """Build an executor from a binary file
 
         :param filename: the file path of the binary serialized file
@@ -551,13 +566,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self.close()
 
     def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
-        """Attach this executor to a :class:`jina.peapods.runtime.BasePea`.
+        """Attach this executor to a Basepea
 
         This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
 
-        :param runtime: Used runtime
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
+        :param runtime: Runtime procedure leveraging ZMQ.
+        :param args: Additional arguments.
+        :param kwargs: Additional key word arguments.
         """
         for v in self._drivers.values():
             for d in v:
@@ -569,11 +584,15 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def __call__(self, req_type, *args, **kwargs):
         """
-        Call the drivers of the executor which are defined for the req_type.
 
-        :param req_type: Type of the request which is used to find the related drivers
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
+
+        # noqa: DAR201
+
+
+        # noqa: DAR101
+
+
+        # noqa: DAR102
         """
         if req_type in self._drivers:
             for d in self._drivers[req_type]:
