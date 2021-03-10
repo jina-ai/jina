@@ -83,7 +83,7 @@ class MeanEvaluationCallback(OptimizerCallback):
         """
         Calculates and returns mean evaluation value on the metric defined in the :method:`__init__`.
 
-        :returns: The aggregation of all evaluation collected via :method:`__call__`
+        :return:: The aggregation of all evaluation collected via :method:`__call__`
         """
         if self._eval_name is not None:
             evaluation_name = self._eval_name
@@ -125,14 +125,14 @@ class ResultProcessor(JAMLCompatible):
     @property
     def study(self):
         """
-        :returns: Raw optuna study as calculated by the :py:class:`FlowOptimizer`.
+        :return:: Raw optuna study as calculated by the :py:class:`FlowOptimizer`.
         """
         return self._study
 
     @property
     def best_parameters(self):
         """
-        :returns: The parameter set, which got the best evaluation result during the optimization.
+        :return:: The parameter set, which got the best evaluation result during the optimization.
         """
         return self._best_parameters
 
@@ -255,7 +255,7 @@ class FlowOptimizer(JAMLCompatible):
         Will run the actual optimization.
 
         :param kwargs: extra parameters for optuna sampler
-        :returns: The aggregated result of the optimization run as a :class:`ResultProcessor`.
+        :return:: The aggregated result of the optimization run as a :class:`ResultProcessor`.
         """
         with ImportExtensions(required=True):
             import optuna

@@ -74,7 +74,7 @@ class NamedScore(ProtoTypeMixin):
     def ref_id(self) -> str:
         """
         Return the ``ref_id`` of this NamedScore, the `id` of which this NamedScore is a score.
-        :returns: the ref_id
+        :return:: the ref_id
         """
         return self._pb_body.ref_id
 
@@ -90,7 +90,7 @@ class NamedScore(ProtoTypeMixin):
     def operands(self) -> List['NamedScore']:
         """
         Returns list of nested NamedScore operands.
-        :returns: list of nested NamedScore operands.
+        :return:: list of nested NamedScore operands.
         """
         return [NamedScore(operand) for operand in self._pb_body.operands]
 
