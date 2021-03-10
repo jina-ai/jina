@@ -68,16 +68,6 @@ def _get_app():
     return app
 
 
-def _write_openapi_schema(filename='daemon.json'):
-    app = _get_app()
-    schema = app.openapi()
-    schema['info']['x-logo'] = {
-        'url': 'https://api.jina.ai/logo/logo-product/jina-core/horizontal-layout/colored/Product%20logo_Core_vertical_colorful%402x-margin.png'
-    }
-    with open(filename, 'w') as f:
-        json.dump(schema, f)
-
-
 def _start_uvicorn(app: 'FastAPI'):
     config = Config(
         app=app,
@@ -112,6 +102,7 @@ def _start_fluentd():
 
 
 def main():
+    """Entrypoint for JinaD"""
     global jinad_args
     jinad_args = _get_run_args()
     if not jinad_args.no_fluentd:
