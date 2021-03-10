@@ -52,7 +52,7 @@ class DummySegmenter(BaseSegmenter):
 
 
 class DummyModeIdSegmenter(BaseSegmenter):
-    @single
+    @single(flatten_output=False)
     def segment(self, text, *args, **kwargs):
         if 'chunk3' not in text:
             return [
