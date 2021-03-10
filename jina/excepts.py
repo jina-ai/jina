@@ -216,4 +216,16 @@ class NotSupportedError(Exception):
 
 
 class RequestTypeError(Exception):
-    """Raised when such request type does not exist"""
+    """Raised when such request type does not exist."""
+
+
+class ValidationError(Exception):
+    """Raised when a certain validation cannot be completed."""
+
+
+class MetricTypeError(Exception):
+    """Raised when such metric type does not exist."""
+
+
+class SocketTypeError(Exception):
+    """Raised when such socket type is not supported or does not exist."""
