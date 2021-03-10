@@ -29,7 +29,7 @@ class FiveImageCropper2(BaseSegmenter):
         self.target_size = target_size
         self.channel_axis = channel_axis
 
-    @single
+    @single(flatten_output=False)
     def segment(self, blob: 'np.ndarray', *args, **kwargs) -> List[Dict]:
         """
         Crop the input image array.
