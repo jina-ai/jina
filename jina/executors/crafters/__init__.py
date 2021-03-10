@@ -25,7 +25,7 @@ class BaseCrafter(BaseExecutor):
         self.required_keys = [
             k for k in inspect.getfullargspec(self.craft).args if k != 'self'
         ]
-        if len(self.required_keys) == 0:
+        if not self.required_keys:
             self.required_keys = [
                 k
                 for k in inspect.getfullargspec(inspect.unwrap(self.craft)).args
