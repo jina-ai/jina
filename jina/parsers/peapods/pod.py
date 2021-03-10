@@ -63,12 +63,14 @@ The polling strategy of the Pod (when `parallel>1`)
         else argparse.SUPPRESS,
     )
 
-    # hosts for peas
+    # hosts for peas, when parallel greater than 1 each pea should have it's own host
 
     gp.add_argument(
         '--peas-hosts',
         type=KVAppendAction,
         metavar='KEY=VALUE',
         nargs='*',
-        help='The hosts of the pea when parallel greater than 1'
+        help='''The hosts of the peas when parallel greater than 1,
+        each pea have a host. Represented as a key value pair in argument.
+        key is the host id, and value is the host address.'''
     )
