@@ -12,7 +12,7 @@ import inspect
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType
-from ..excepts import BadClient, BadClientInput
+from ..excepts import BadClient, BadClientInput, ValidationError
 from ..helper import typename
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
@@ -84,7 +84,7 @@ class BaseClient:
         kwargs['data'] = inputs
 
         if inspect.isasyncgenfunction(inputs) or inspect.isasyncgen(inputs):
-            raise NotImplementedError(
+            raise ValidationError(
                 'checking the validity of an async generator is not implemented yet'
             )
 

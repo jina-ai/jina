@@ -13,6 +13,7 @@ import numpy as np
 from . import BaseVectorIndexer
 from ..decorators import batching
 from ...helper import cached_property
+from ...excepts import MetricTypeError
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
@@ -495,7 +496,7 @@ class NumpyIndexer(BaseNumpyIndexer):
             _query_vectors = _ext_A(_norm(vectors))
             dist = self._cosine(_query_vectors, self.query_handler)
         else:
-            raise NotImplementedError(f'{self.metric} is not implemented')
+            raise MetricTypeError(f'{self.metric} is not implemented')
 
         idx, dist = self._get_sorted_top_k(dist, top_k)
         indices = self._int2ext_id[self.valid_indices][idx]
