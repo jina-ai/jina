@@ -3,6 +3,7 @@ import os
 import pytest
 
 from jina.executors.segmenters import BaseSegmenter
+from jina.executors.decorators import single
 from jina.flow import Flow
 from tests import random_docs, validate_callback
 
@@ -10,7 +11,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class DummySegment(BaseSegmenter):
-    def segment(self):
+    @single
+    def segment(self, *args, **kwargs):
         return [dict(buffer=b'aa'), dict(buffer=b'bb')]
 
 
