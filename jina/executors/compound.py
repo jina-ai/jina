@@ -201,7 +201,7 @@ class CompoundExecutor(BaseExecutor):
         self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
-        self._components: Optional[List[AnyExecutor]] = None
+        self._components = None  # type: Optional[List[AnyExecutor]]
         self._routes = routes
         self._is_updated = False  #: the internal update state of this compound executor
         self.resolve_all = resolve_all
