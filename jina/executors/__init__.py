@@ -1,5 +1,5 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+__copyright__ = 'Copyright (c) 2020 Jina AI Limited. All rights reserved.'
+__license__ = 'Apache-2.0'
 
 import os
 import pickle
@@ -337,7 +337,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: the name of the file with `.bin`
         """
-        return self.get_file_from_workspace(f"{self.name}.bin")
+        return self.get_file_from_workspace(f'{self.name}.bin')
 
     @property
     def config_abspath(self) -> str:
@@ -345,7 +345,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: The file name ends with `.yml`.
         """
-        return self.get_file_from_workspace(f"{self.name}.yml")
+        return self.get_file_from_workspace(f'{self.name}.yml')
 
     @staticmethod
     def get_shard_workspace(
@@ -362,7 +362,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """
         # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
         return (
-            os.path.join(workspace_folder, f"{workspace_name}-{pea_id}")
+            os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
             if (isinstance(pea_id, int) and pea_id > 0)
             else workspace_folder
         )
@@ -388,7 +388,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace property of the executor or default to './'
         """
-        return self.workspace or "./"
+        return self.workspace or './'
 
     @property
     def shard_workspace(self) -> str:
@@ -417,7 +417,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: byte size of the current workspace
         """
         root_directory = Path(self.shard_workspace)
-        return sum(f.stat().st_size for f in root_directory.glob("**/*") if f.is_file())
+        return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
     def __getstate__(self):
         d = dict(self.__dict__)
@@ -486,7 +486,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if self.max_snapshot > 0 and os.path.exists(f):
                 bak_f = (
                     f
-                    + f".snapshot-{self._last_snapshot_ts.strftime('%Y%m%d%H%M%S') or 'NA'}"
+                    + f'.snapshot-{self._last_snapshot_ts.strftime("%Y%m%d%H%M%S") or "NA"}'
                 )
                 os.rename(f, bak_f)
                 self._snapshot_files.append(bak_f)
@@ -527,11 +527,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: an executor object
         """
-        if "metas" not in raw_config:
-            raw_config["metas"] = {}
+        if 'metas' not in raw_config:
+            raw_config['metas'] = {}
         tmp = fill_metas_with_defaults(raw_config)
-        tmp["metas"]["pea_id"] = pea_id
-        tmp["metas"]["read_only"] = read_only
+        tmp['metas']['pea_id'] = pea_id
+        tmp['metas']['read_only'] = read_only
 
         return tmp
 
