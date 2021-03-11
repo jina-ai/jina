@@ -1066,7 +1066,7 @@ classDiagram
         """Displays the object in IPython as a side effect"""
         self.plot(inline_display=True)
 
-    def plot(self, output: str = None, inline_display: bool = False) -> None:
+    def plot(self, output: Optional[str] = None, inline_display: bool = False) -> None:
         """
         Visualize the Document recursively.
 

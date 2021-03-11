@@ -1,17 +1,34 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Optional, Sequence
+from typing import Dict, Optional, Sequence, Iterable
 
 import numpy as np
 
 from .. import BaseExecutor
 
-COL_STR_TYPE = 'U64'  #: the ID column data type for score matrix
-
 
 class BaseRanker(BaseExecutor):
-    """The base class for a `Ranker`"""
+    """
+    The base class for a `Ranker`
+    :param query_required_keys: Set of keys or features to be extracted from query `Document` by the `Driver` so that
+        they are passed as query features or metainfo.
+    :param match_required_keys: Set of keys or features to be extracted from match `Document` by the `Driver` so that
+        they are passed as match features or metainfo.
+    :param args: Extra positional arguments
+    :param kwargs: Extra keyword arguments
+
+    .. note::
+        See how the attributes are accessed in :class:`Document` in :meth:`get_attrs`.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            query = Document({'tags': {'color': 'blue'})
+            match = Document({'tags': {'color': 'blue', 'price': 1000}})
+
+            ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
+    """
 
     def __init__(
         self,
@@ -26,6 +43,8 @@ class BaseRanker(BaseExecutor):
             they are passed as query features or metainfo.
         :param match_required_keys: Set of keys or features to be extracted from match `Document` by the `Driver` so that
             they are passed as match features or metainfo.
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
 
         .. note::
             See how the attributes are accessed in :class:`Document` in :meth:`get_attrs`.
@@ -38,13 +57,15 @@ class BaseRanker(BaseExecutor):
 
                 ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
         """
-
         super().__init__(*args, **kwargs)
         self.query_required_keys = query_required_keys
         self.match_required_keys = match_required_keys
 
     def score(self, *args, **kwargs):
-        """Calculate the score. Base class method needs to be implemented in subclass."""
+        """Calculate the score. Base class method needs to be implemented in subclass.
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
+        """
         raise NotImplementedError
 
 
@@ -70,79 +91,29 @@ class Chunk2DocRanker(BaseRanker):
 
     def score(
         self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
-    ) -> 'np.ndarray':
+    ) -> float:
         """
-        Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
-        meta information of the query, hence the meta info of the query chunks and matched chunks are given
-        as arguments.
+        Given a set of queries (that may correspond to the chunks of a root level query) and a set of matches
+        corresponding to the same parent id, compute the matching score of the common parent of the set of matches.
+        Returns a score corresponding to the score of the parent document of the matches in `match_idx`
 
         :param match_idx: A [N x 4] numpy ``ndarray``, column-wise:
-                - ``match_idx[:, 0]``: ``doc_id`` of the matched chunks, integer
-                - ``match_idx[:, 1]``: ``chunk_id`` of the matched chunks, integer
-                - ``match_idx[:, 2]``: ``chunk_id`` of the query chunks, integer
-                - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
-        :type match_idx: np.ndarray.
+                - ``match_idx[:, 0]``: ``parent_id`` of the matched docs, integer
+                - ``match_idx[:, 1]``: ``id`` of the matched chunks, integer
+                - ``match_idx[:, 2]``: ``id`` of the query chunks, integer
+                - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float.
+                All the matches belong to the same `parent`
         :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
             the value is extracted by the ``query_required_keys``.
-        :type query_chunk_meta: Dict.
         :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
             ``chunk_id``, the value is extracted by the ``match_required_keys``.
-        :type match_chunk_meta: Dict.
-        :return: A [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
-                the second column is the score/distance/metric between the matched doc and the query doc (float).
-        :rtype: np.ndarray.
-        """
-        _groups = self.group_by_doc_id(match_idx)
-        r = []
-        for _g in _groups:
-            _doc_id, _doc_score = self._get_score(
-                _g, query_chunk_meta, match_chunk_meta
-            )
-            r.append((_doc_id, _doc_score))
-        return self.sort_doc_by_score(r)
 
-    def group_by_doc_id(self, match_idx):
-        """
-        Group the ``match_idx`` by ``doc_id``.
-        :return: an iterator over the groups.
-        :rtype: :class:`Chunk2DocRanker`.
-        """
-        return self._group_by(match_idx, self.COL_PARENT_ID)
 
-    @staticmethod
-    def _group_by(match_idx, col_name):
-        # sort by ``col
-        _sorted_m = np.sort(match_idx, order=col_name)
-        _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
-        # group by ``col``
-        return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
+        TODO:
+        - ``match_idx[:, 0]`` is redundant because all the matches have the same ``parent_id``.
 
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
+        """
         raise NotImplementedError
-
-    @staticmethod
-    def sort_doc_by_score(r):
-        """
-        Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
-        :param r: List of Tuples with document id and score
-        :type r: List[Tuple[Any, Any]]
-        :return: A `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
-        :rtype: np.ndarray
-        """
-        r = np.array(
-            r,
-            dtype=[
-                (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
-                (Chunk2DocRanker.COL_SCORE, np.float64),
-            ],
-        )
-        return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
-
-    def get_doc_id(self, match_with_same_doc_id):
-        """Return document id that matches with given id :param:`match_with_same_doc_id`"""
-        return match_with_same_doc_id[0][self.COL_PARENT_ID]
 
 
 class Match2DocRanker(BaseRanker):
@@ -160,22 +131,17 @@ class Match2DocRanker(BaseRanker):
     COL_SCORE = 'score'
 
     def score(
-        self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
-    ) -> 'np.ndarray':
+        self,
+        old_match_scores: Iterable[float],
+        query_meta: Dict,
+        match_meta: Iterable[Dict],
+    ) -> Iterable[float]:
         """
-        Calculates the new scores for matches and returns them.
+        Calculates the new scores for matches and returns them. Returns an iterable of the scores to be assined to the matches.
+        The returned scores need to be returned in the same order as the input `:param old_match_scores`.
 
-        :param query_meta: Dictionary containing all the query meta information
-            requested by the `required_keys` class_variable.
-        :type query_meta: Dict
-        :param old_match_scores: Contains old scores in the format {match_id: score}
-        :type old_match_scores: Dict
-        :param match_meta: Dictionary containing all the matches meta information
-            requested by the `required_keys` class_variable.
-            Format: {match_id: {attribute: attribute_value}}e.g.{5: {"length": 3}}
-        :type match_meta: Dict
-        :return: A `np.ndarray` in the shape of [N x 2] where `N` is the length of
-            the `old_match_scores`. Semantic: [[match_id, new_score]]
-        :rtype: np.ndarray
+        :param old_match_scores: Contains old scores in a list
+        :param query_meta: Dictionary containing all the query meta information requested by the `query_required_keys` class_variable.
+        :param match_meta: List containing all the matches meta information requested by the `match_required_keys` class_variable. Sorted in the same way as `old_match_scores`
         """
         raise NotImplementedError

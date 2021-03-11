@@ -85,8 +85,8 @@ class ImportExtensions:
         self,
         required: bool,
         logger=None,
-        help_text: str = None,
-        pkg_name: str = None,
+        help_text: Optional[str] = None,
+        pkg_name: Optional[str] = None,
         verbose: bool = True,
     ):
         self._required = required

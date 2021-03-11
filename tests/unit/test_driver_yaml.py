@@ -74,7 +74,7 @@ def test_load_yaml2(test_metas):
     a.touch()
     a.save()
     c = BaseExecutor.load(a.save_abspath)
-    assert a._drivers == c._drivers
+    assert not hasattr(c, '_drivers')
 
 
 @pytest.mark.parametrize(

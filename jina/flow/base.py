@@ -229,7 +229,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def add(
         self,
-        needs: Union[str, Tuple[str], List[str]] = None,
+        needs: Optional[Union[str, Tuple[str], List[str]]] = None,
         copy_flow: bool = True,
         pod_role: 'PodRoleType' = PodRoleType.POD,
         **kwargs,
@@ -703,7 +703,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def plot(
         self,
-        output: str = None,
+        output: Optional[str] = None,
         vertical_layout: bool = False,
         inline_display: bool = False,
         build: bool = True,
@@ -889,14 +889,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         except KeyboardInterrupt:
             pass
 
-    def use_grpc_gateway(self, port: int = None):
+    def use_grpc_gateway(self, port: Optional[int] = None):
         """Change to use gRPC gateway for IO
         :param port: the port to change"""
         self._common_kwargs['restful'] = False
         if port:
             self._common_kwargs['port_expose'] = port
 
-    def use_rest_gateway(self, port: int = None):
+    def use_rest_gateway(self, port: Optional[int] = None):
         """Change to use REST gateway for IO
         :param port: the port to change"""
         self._common_kwargs['restful'] = True

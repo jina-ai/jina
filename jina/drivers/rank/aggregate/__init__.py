@@ -3,7 +3,7 @@ from collections import defaultdict, namedtuple
 
 import numpy as np
 
-from ....executors.rankers import Chunk2DocRanker, COL_STR_TYPE
+from ....executors.rankers import Chunk2DocRanker
 from ....types.document import Document
 from ....types.score import NamedScore
 
@@ -11,6 +11,8 @@ from .. import BaseRankDriver
 
 if False:
     from ....types.sets import DocumentSet
+
+COL_STR_TYPE = 'U64'  #: the ID column data type for score matrix
 
 
 class BaseAggregateMatchesRankerDriver(BaseRankDriver):
@@ -67,6 +69,63 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
                 for match_chunk_id in parent_id_chunk_id_map[doc_id]:
                     m.chunks.append(chunk_matches_by_id[match_chunk_id])
             query.matches.append(m)
+
+    @staticmethod
+    def _group_by(match_idx, col_name):
+        # sort by ``col
+        _sorted_m = np.sort(match_idx, order=col_name)
+        _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
+        # group by ``col``
+        return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
+
+    @staticmethod
+    def _sort_doc_by_score(r):
+        """
+        Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
+
+        :param r: List of Tuples with document id and score
+        :type r: List[Tuple[np.str_, np.float64]]
+        :return: A `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
+        :rtype: np.ndarray
+        """
+        r = np.array(
+            r,
+            dtype=[
+                (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
+                (Chunk2DocRanker.COL_SCORE, np.float64),
+            ],
+        )
+        return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
+
+    def _score(
+        self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
+    ) -> 'np.ndarray':
+        """
+        Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
+        meta information of the query, hence the meta info of the query chunks and matched chunks are given
+        as arguments.
+
+        :param match_idx: A [N x 4] numpy ``ndarray``, column-wise:
+                - ``match_idx[:, 0]``: ``doc_id`` of the matched chunks, integer
+                - ``match_idx[:, 1]``: ``chunk_id`` of the matched chunks, integer
+                - ``match_idx[:, 2]``: ``chunk_id`` of the query chunks, integer
+                - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
+        :type match_idx: np.ndarray.
+        :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
+            the value is extracted by the ``query_required_keys``.
+        :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
+            ``chunk_id``, the value is extracted by the ``match_required_keys``.
+        :return: A [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
+                the second column is the score/distance/metric between the matched doc and the query doc (float).
+        :rtype: np.ndarray.
+        """
+        _groups = self._group_by(match_idx, Chunk2DocRanker.COL_PARENT_ID)
+        r = []
+        for _g in _groups:
+            match_id = _g[0][Chunk2DocRanker.COL_PARENT_ID]
+            score = self.exec_fn(_g, query_chunk_meta, match_chunk_meta)
+            r.append((match_id, score))
+        return self._sort_doc_by_score(r)
 
 
 class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
@@ -142,7 +201,7 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
                     ],
                 )
 
-                docs_scores = self.exec_fn(match_idx, query_meta, match_meta)
+                docs_scores = self._score(match_idx, query_meta, match_meta)
 
                 self._insert_query_matches(
                     query=doc,
@@ -227,7 +286,7 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
                     ],
                 )
 
-                docs_scores = self.exec_fn(match_idx, query_meta, match_meta)
+                docs_scores = self._score(match_idx, query_meta, match_meta)
                 # This ranker will change the current matches
                 doc.ClearField('matches')
                 self._insert_query_matches(

@@ -38,8 +38,8 @@ class Zmqlet:
     def __init__(
         self,
         args: 'argparse.Namespace',
-        logger: 'JinaLogger' = None,
-        ctrl_addr: str = None,
+        logger: Optional['JinaLogger'] = None,
+        ctrl_addr: Optional[str] = None,
     ):
         self.args = args
         self.identity = random_identity()
@@ -636,11 +636,11 @@ def _init_socket(
     host: str,
     port: Optional[int],
     socket_type: 'SocketType',
-    identity: str = None,
+    identity: Optional[str] = None,
     use_ipc: bool = False,
-    ssh_server: str = None,
-    ssh_keyfile: str = None,
-    ssh_password: str = None,
+    ssh_server: Optional[str] = None,
+    ssh_keyfile: Optional[str] = None,
+    ssh_password: Optional[str] = None,
 ) -> Tuple['zmq.Socket', str]:
     sock = {
         SocketType.PULL_BIND: lambda: ctx.socket(zmq.PULL),

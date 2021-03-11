@@ -21,6 +21,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - run: |
           JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
           JINA_MINOR_VERSION=${JINA_VERSION%.*}
@@ -32,28 +35,30 @@ jobs:
           cd schema
           mkdir -p schemas
           jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/latest.json schemas/latest --yaml-path "$JINA_VERSION.yml" latest.yml --json-path "$JINA_VERSION.json" latest.json latest
-          python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
-          python ../scripts/get-gateway-openapi.py
+          python ../scripts/get-openapi-schemas.py
+          npm install --prefix ~ snippet-enricher-cli
+          ~/node_modules/.bin/snippet-enricher-cli --input=gateway.json --targets=shell_curl > gateway-with-code.json
+          ~/node_modules/.bin/snippet-enricher-cli --input=daemon.json --targets=shell_curl > daemon-with-code.json
           cd -
       - name: redoc-cli-jinad
         uses: seeebiii/redoc-cli-github-action@v10
         with:
-          args: 'bundle schema/daemon.json -o jinad.html'
+          args: 'bundle schema/daemon-with-code.json -o jinad.html'
       - name: redoc-cli-gateway
         uses: seeebiii/redoc-cli-github-action@v10
         with:
-          args: 'bundle schema/gateway.json -o rest.html'
+          args: 'bundle schema/gateway-with-code.json -o rest.html'
       - name: push-to-api-repo
         run: |
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/index.html
           cp jinad.html schema/daemon/${{env.JINA_VERSION}}.html
-          rm schema/daemon.json
+          rm schema/daemon.json schema/daemon-with-code.json
           rm -rf schema/jinad
           mkdir -p schema/rest/
           cp rest.html schema/rest/index.html
           cp rest.html schema/rest/${{env.JINA_VERSION}}.html
-          rm schema/gateway.json
+          rm schema/gateway.json schema/gateway-with-code.json
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
