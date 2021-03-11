@@ -29,7 +29,7 @@ class FilterQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
     an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
     an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
-    :param *args: *args for super
+    :param args: *args for super
     :param *kwargs: **kwargs for super
     """
 

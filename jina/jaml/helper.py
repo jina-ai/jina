@@ -130,8 +130,8 @@ def parse_config_source(
     :param allow_class_type: flag
     :param allow_dict: flag
     :param allow_json: flag
-    :param *args: *args
-    :param **kwargs: **kwargs
+    :param args: *args
+    :param kwargs: **kwargs
     :return: a tuple, the first element is the text stream, the second element is the file path associate to it
             if available.
     """

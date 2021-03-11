@@ -23,8 +23,8 @@ class ExcludeQL(QuerySetReader, FlatRecursiveMixin, BaseRecursiveDriver):
 
     :param fields: the pruned field names in tuple
     :param traversal_paths: the traversal paths
-    :param *args: *args
-    :param **kwargs: **kwargs
+    :param args: *args
+    :param kwargs: **kwargs
     """
 
     def __init__(

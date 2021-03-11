@@ -26,8 +26,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
     :param method: the function name of the executor that the driver feeds to
     :param running_avg: always return running average instead of value of the current run
-    :param *args:
-    :param **kwargs:
+    :param args:
+    :param kwargs:
     """
 
     def __init__(
@@ -44,8 +44,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     def __call__(self, *args, **kwargs):
         """Load the ground truth pairs.
 
-        :param *args: *args for _traverse_apply
-        :param **kwargs: **kwargs for _traverse_apply
+        :param args: *args for _traverse_apply
+        :param kwargs: **kwargs for _traverse_apply
         """
         docs_groundtruths = DocumentGroundtruthSequence(
             [
@@ -93,8 +93,8 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
     Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`.
 
     :param field: the field name to be extracted from the Protobuf.
-    :param *args: *args for super
-    :param **kwargs: **kwargs for super
+    :param args: *args for super
+    :param kwargs: **kwargs for super
     """
 
     def __init__(self, field: str, *args, **kwargs):
@@ -120,8 +120,8 @@ class RankEvaluateDriver(BaseEvaluateDriver):
             The differences with `:class:FieldEvaluateDriver` are:
                 - More than one field is allowed. For instance, for NDCGComputation you may need to have both `ID` and `Relevance` information.
                 - The fields are extracted from the `matches` of the `Documents` and the `Groundtruth` so it returns a sequence of values.
-    :param *args:
-    :param **kwargs:
+    :param args:
+    :param kwargs:
     """
 
     @deprecated_alias(field=('fields', 0))

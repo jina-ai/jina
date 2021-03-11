@@ -479,8 +479,8 @@ class NumpyIndexer(BaseNumpyIndexer):
             Distance (the smaller the better) is returned, not the score.
 
         :param vectors: the vectors with which to search
-        :param *args: not used
-        :param **kwargs: not used
+        :param args: not used
+        :param kwargs: not used
         :param top_k: nr of results to return
         :return: tuple of indices within matrix and distances
         """

@@ -13,8 +13,8 @@ class BasePredictDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from :class:`BasePredictDriver` will bind :meth:`predict` by default
 
     :param fields: name of fields to be used to predict tags, default "embeddings"
-    :param *args: *args for super
-    :param **kwargs: **kwargs for super
+    :param args: *args for super
+    :param kwargs: **kwargs for super
     """
 
     def __init__(
@@ -33,8 +33,8 @@ class BaseLabelPredictDriver(BasePredictDriver):
     """Base class of a Driver for label prediction.
 
     :param output_tag: output label will be written to ``doc.tags``
-    :param *args: *args for super
-    :param **kwargs: **kwargs for super
+    :param args: *args for super
+    :param kwargs: **kwargs for super
     """
 
     def __init__(self, output_tag: str = 'prediction', *args, **kwargs):
@@ -94,8 +94,8 @@ class BinaryPredictDriver(BaseLabelPredictDriver):
 
         :param one_label: label when prediction is one
         :param zero_label: label when prediction is zero
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
+        :param args: *args for super
+        :param kwargs: **kwargs for super
         """
         super().__init__(*args, **kwargs)
         self.one_label = one_label

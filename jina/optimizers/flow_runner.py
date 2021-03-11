@@ -25,7 +25,7 @@ class FlowRunner(JAMLCompatible):
         :param trial_parameters: Parameters to be used as context
         :param workspace: Directory to be used for the flows
         :param callback: Callback that will be called by the Flows. Should store the evaluation results.
-        :param **kwargs: Further arguments passed to the Flow(s) as `context`
+        :param kwargs: Further arguments passed to the Flow(s) as `context`
         :raises NotImplementedError: :class:`FlowRunner` is just an interface. Please use any implemented subclass.
         """
         raise NotImplementedError

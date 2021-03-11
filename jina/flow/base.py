@@ -200,8 +200,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR401
         :param needs: list of service names to wait
         :param name: the name of this joiner, by default is ``joiner``
-        :param *args: *args for .add
-        :param **kwargs: **kwargs for .add
+        :param args: *args for .add
+        :param kwargs: **kwargs for .add
         :return: the modified Flow
         """
         if len(needs) <= 1:
@@ -217,8 +217,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         Collect all hanging Pods so far and add a blocker to the Flow; wait until all handing peas completed.
 
         :param name: the name of this joiner (default is ``joiner``)
-        :param *args: *args for .add or .needs
-        :param **kwargs: **kwargs for .add or .needs
+        :param args: *args for .add or .needs
+        :param kwargs: **kwargs for .add or .needs
         :return: the modified Flow
         """
         needs = _hanging_pods(self)
@@ -248,7 +248,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                            One can also use 'pod.Gateway' to indicate the connection with the gateway.
         :param pod_role: the role of the Pod, used for visualization and route planning
         :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
-        :param **kwargs: other keyword-value arguments that the Pod CLI supports
+        :param kwargs: other keyword-value arguments that the Pod CLI supports
         :return: a (new) Flow object with modification
         """
 
@@ -332,8 +332,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             :meth:`gather_inspect`
 
         :param name: name of the Pod
-        :param *args: *args for .add()
-        :param **kwargs: **kwargs for .add()
+        :param args: *args for .add()
+        :param kwargs: **kwargs for .add()
         :return: the new instance of the Flow
         """
         _last_pod = self.last_pod
@@ -376,8 +376,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param name: the name of the gather Pod
         :param uses: the config of the executor, by default is ``_pass``
         :param include_last_pod: if to include the last modified Pod in the Flow
-        :param *args: *args for .add()
-        :param **kwargs: **kwargs for .add()
+        :param args: *args for .add()
+        :param kwargs: **kwargs for .add()
         :return: the modified Flow or the copy of it
 
 
@@ -480,8 +480,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def __call__(self, *args, **kwargs):
         """Builds the Flow
-        :param *args: *args for build
-        :param **kwargs: **kwargs for build
+        :param args: *args for build
+        :param kwargs: **kwargs for build
         :return: the built Flow
         """
         return self.build(*args, **kwargs)

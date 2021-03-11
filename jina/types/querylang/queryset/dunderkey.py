@@ -45,7 +45,7 @@ def dunderkey(*args: str) -> str:
        >>> dunderkey('a', 'b', 'c')
        >>> 'a__b__c'
 
-    :param *args: the multiple strings
+    :param args: the multiple strings
     :return:: the joined key
     """
     return '__'.join(args)
