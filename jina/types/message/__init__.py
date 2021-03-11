@@ -44,12 +44,11 @@ class Message:
 
     def __init__(
         self,
-        envelope: Union[bytes, 'jina_pb2.EnvelopeProto', None],
+        envelope: Optional[Union[bytes, 'jina_pb2.EnvelopeProto']],
         request: Union[bytes, 'jina_pb2.RequestProto'],
         *args,
         **kwargs,
     ):
-        """Set constructor method."""
         self._size = 0
         if isinstance(envelope, bytes):
             self.envelope = jina_pb2.EnvelopeProto()
@@ -73,7 +72,11 @@ class Message:
 
     @property
     def request(self) -> 'Request':
-        """Get the request."""
+        """
+        Get the request.
+
+        :return: request
+        """
         if self.envelope and isinstance(self._request, Request):
             return self._request.as_typed_request(self.envelope.request_type)
         else:
@@ -82,7 +85,11 @@ class Message:
 
     @request.setter
     def request(self, val: Union[bytes, 'jina_pb2.RequestProto']):
-        """Set the request to :param: `val`."""
+        """
+        Set the request to :param: `val`.
+
+        :param val: serialized Request
+        """
         if isinstance(val, bytes):
             self._request = Request(val, self.envelope)
             self._size += sys.getsizeof(val)
@@ -95,7 +102,11 @@ class Message:
 
     @property
     def proto(self) -> 'jina_pb2.MessageProto':
-        """Get the RequestProto."""
+        """
+        Get the RequestProto.
+
+        :return: protobuf object
+        """
         r = jina_pb2.MessageProto()
         r.envelope.CopyFrom(self.envelope)
         if isinstance(self.request, jina_pb2.RequestProto):
@@ -112,6 +123,8 @@ class Message:
         .. warning::
             If ``request`` change the type, e.g. by leveraging the feature of ``oneof``, this
             property wont be updated. This is not considered as a good practice.
+
+        :return: boolean which states if data is requested
         """
         return self.envelope.request_type != 'ControlRequest'
 
@@ -120,8 +133,8 @@ class Message:
         pod_name,
         identity,
         check_version=False,
-        request_id: str = None,
-        request_type: str = None,
+        request_id: Optional[str] = None,
+        request_type: Optional[str] = None,
         compress: str = 'NONE',
         compress_min_bytes: int = 0,
         compress_min_ratio: float = 1.0,
@@ -137,6 +150,13 @@ class Message:
         :param pod_name: the name of the current pod
         :param identity: the identity of the current pod
         :param check_version: turn on check_version
+        :param args:  Additional positional arguments
+        :param kwargs: Additional keyword arguments
+        :param request_id: request id of the envelope
+        :param request_type: request type of the envelope
+        :param compress: used compression algorithm
+        :param compress_min_bytes: used for configuring compression
+        :param compress_min_ratio: used for configuring compression
         :return: the resulted protobuf message
         """
         envelope = jina_pb2.EnvelopeProto()
@@ -184,7 +204,11 @@ class Message:
         return envelope
 
     def dump(self) -> List[bytes]:
-        """Get the message in a list of bytes."""
+        """
+        Get the message in a list of bytes.
+
+        :return: array, containing encoded receiver id, serialized envelope and the compressed serialized envelope
+        """
         r2 = self.request.SerializeToString()
         r2 = self._compress(r2)
 
@@ -269,7 +293,7 @@ class Message:
     def colored_route(self) -> str:
         """Get the string representation of the routes in a message.
 
-        :return:
+        :return: colored route
         """
 
         def _pod_str(r):
@@ -301,6 +325,7 @@ class Message:
 
         :param name: the name of the pod service
         :param identity: the identity of the pod service
+        :param envelope: protobuf definition of the envelope
         """
         r = envelope.routes.add()
         r.pod = name
@@ -312,6 +337,7 @@ class Message:
         """Get the size in bytes.
 
         To get the latest size, use it after :meth:`dump`
+        :return: size of the message
         """
         return self._size
 
@@ -382,6 +408,7 @@ class Message:
 
         .. note::
             This should be only called at Gateway
+        :return: request object which contains the response
         """
         self.envelope.routes[0].end_time.GetCurrentTime()
         self.request.status.CopyFrom(self.envelope.status)
@@ -409,7 +436,7 @@ class Message:
         """Add exception to the last route in the envelope
 
         :param ex: Exception to be added
-        :return:
+        :param executor: Executor related to the exception
         """
         d = self.envelope.routes[-1].status
         if ex:
@@ -431,10 +458,18 @@ class Message:
 
     @property
     def is_error(self) -> bool:
-        """Return if the envelope status is ERROR."""
+        """
+        Return if the envelope status is ERROR.
+
+         :return: boolean stating if the status code of the envelope is error
+        """
         return self.envelope.status.code >= jina_pb2.StatusProto.ERROR
 
     @property
     def is_ready(self) -> bool:
-        """Return if the envelope status is READY."""
+        """
+        Return if the envelope status is READY.
+
+        :return: boolean stating if the status code of the envelope is ready
+        """
         return self.envelope.status.code == jina_pb2.StatusProto.READY
