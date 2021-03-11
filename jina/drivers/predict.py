@@ -1,4 +1,4 @@
-from typing import List, Any, Union, Tuple
+from typing import List, Any, Union, Tuple, Optional
 
 import numpy as np
 
@@ -19,7 +19,7 @@ class BasePredictDriver(FlatRecursiveMixin, BaseExecutableDriver):
 
     def __init__(
         self,
-        executor: str = None,
+        executor: Optional[str] = None,
         method: str = 'predict',
         fields: Union[Tuple, str] = 'embedding',
         *args,

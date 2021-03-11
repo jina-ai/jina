@@ -98,6 +98,7 @@ class JAML:
 
         :param value: the original YAML content
         :param include_unknown_tags: if to include unknown tags during escaping
+        :return: escaped YAML
         """
         if include_unknown_tags:
             r = r'!(\w+)\b'
@@ -113,6 +114,7 @@ class JAML:
 
         :param value: the escaped YAML content
         :param include_unknown_tags: if to include unknown tags during unescaping
+        :return: unescaped YAML
         """
         if include_unknown_tags:
             r = r'jtype: (\w+)\b'
@@ -126,6 +128,7 @@ class JAML:
         """
         Return a list of :class:`JAMLCompatible` classes that have been registered.
 
+        :return: tags
         """
         return list(
             v[1:]
@@ -148,7 +151,7 @@ class JAML:
     @staticmethod
     def expand_dict(
         d: Dict,
-        context: Union[Dict, SimpleNamespace, None] = None,
+        context: Optional[Union[Dict, SimpleNamespace]] = None,
         resolve_cycle_ref=True,
         resolve_passes: int = 3,
     ) -> Dict[str, Any]:
@@ -322,7 +325,13 @@ class JAML:
         except AttributeError:
 
             def t_y(representer, data):
-                """Inner function, get the representer."""
+                """
+                Wrapper function for the representer.
+
+                :param representer: yaml representer
+                :param data: state of the representer
+                :return: node
+                """
                 return representer.represent_yaml_object(
                     tag, data, cls, flow_style=representer.default_flow_style
                 )
@@ -333,7 +342,13 @@ class JAML:
         except AttributeError:
 
             def f_y(constructor, node):
-                """Inner function, get the constructor."""
+                """
+                Wrapper function for the constructor.
+
+                :param constructor: yaml constructor
+                :param node: to be added
+                :return: generator
+                """
                 return constructor.construct_yaml_object(node, cls)
 
             yaml.add_constructor(tag, f_y, JinaLoader)

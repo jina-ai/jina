@@ -5,7 +5,6 @@ import logging
 import logging.handlers
 import os
 import platform
-import re
 import sys
 from typing import Optional
 
@@ -14,92 +13,6 @@ from pkg_resources import resource_filename
 from . import formatter
 from ..enums import LogVerbosity
 from ..jaml import JAML
-
-
-class NTLogger:
-    """A compatible logger for Windows system, colors are all removed to keep compatible."""
-
-    def __init__(self, context: str, log_level: 'LogVerbosity' = LogVerbosity.INFO):
-        """
-        Create a compatible logger for Windows system, colors are all removed to keep compatible.
-
-        :param context: The name prefix of each log.
-        :param log_level: Level of log.
-        """
-        self.context = self._planify(context)
-        self.log_level = log_level
-
-    @staticmethod
-    def _planify(msg):
-        return re.sub(r'\u001b\[.*?[@-~]', '', msg)
-
-    def info(self, msg: str, **kwargs):
-        """
-        Log info-level message.
-
-        :param kwargs: Keyword arguments.
-        :param msg: Context of log.
-        """
-        if self.log_level <= LogVerbosity.INFO:
-            sys.stdout.write(f'{self.context}[I]:{self._planify(msg)}')
-
-    def critical(self, msg: str, **kwargs):
-        """
-        Log critical-level message.
-
-        :param kwargs: Keyword arguments.
-        :param msg: Context of log.
-        """
-        if self.log_level <= LogVerbosity.CRITICAL:
-            sys.stdout.write(f'{self.context}[C]:{self._planify(msg)}')
-
-    def debug(self, msg: str, **kwargs):
-        """
-        Log debug-level message.
-
-        :param kwargs: Keyword arguments.
-        :param msg: Content of log.
-        """
-        if self.log_level <= LogVerbosity.DEBUG:
-            sys.stdout.write(f'{self.context}[D]:{self._planify(msg)}')
-
-    def error(self, msg: str, **kwargs):
-        """
-        Log error-level message.
-
-        :param kwargs: Keyword arguments.
-        :param msg: Context of log.
-        """
-        if self.log_level <= LogVerbosity.ERROR:
-            sys.stdout.write(f'{self.context}[E]:{self._planify(msg)}')
-
-    def warning(self, msg: str, **kwargs):
-        """
-        Log warning-level message.
-
-        :param kwargs: Keyword arguments.
-        :param msg: Context of log.
-        """
-        if self.log_level <= LogVerbosity.WARNING:
-            sys.stdout.write(f'{self.context}[W]:{self._planify(msg)}')
-
-    def success(self, msg: str, **kwargs):
-        """
-        Log success-level message.
-
-        :param msg: Context of log.
-        :param kwargs: Keyword arguments.
-        """
-        if self.log_level <= LogVerbosity.SUCCESS:
-            sys.stdout.write(f'{self.context}[S]:{self._planify(msg)}')
-
-
-class PrintLogger(NTLogger):
-    """Print the message."""
-
-    @staticmethod
-    def _planify(msg):
-        return msg
 
 
 class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
@@ -224,7 +137,7 @@ class JinaLogger:
         for handler in self.logger.handlers:
             handler.close()
 
-    def add_handlers(self, config_path: str = None, **kwargs):
+    def add_handlers(self, config_path: Optional[str] = None, **kwargs):
         """
         Add handlers from config file.
 

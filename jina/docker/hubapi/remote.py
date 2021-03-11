@@ -22,9 +22,9 @@ from ...logging.profile import TimeContext
 
 def _list(
     logger,
-    image_name: str = None,
-    image_kind: str = None,
-    image_type: str = None,
+    image_name: Optional[str] = None,
+    image_kind: Optional[str] = None,
+    image_type: Optional[str] = None,
     image_keywords: Sequence = (),
 ) -> Optional[List[Dict[str, Any]]]:
     """Use Hub api to get the list of filtered images.
