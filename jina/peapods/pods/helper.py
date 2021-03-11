@@ -21,7 +21,7 @@ def _set_peas_args(
             _args.pea_role = PeaRoleType.PARALLEL
             _args.identity = random_identity()
             if _args.peas_hosts:
-                _args.host = _args.peas_hosts.get(str(_args.pea_id), args.host)
+                _args.host = _args.peas_hosts.get(_args.pea_id, args.host)
             if _args.name:
                 _args.name += f'/{_args.pea_id}'
             else:
