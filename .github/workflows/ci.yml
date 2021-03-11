@@ -72,9 +72,6 @@ jobs:
   check-docstring:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
@@ -89,9 +86,6 @@ jobs:
   check-black:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
         with:
