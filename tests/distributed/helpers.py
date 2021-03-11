@@ -48,7 +48,9 @@ def create_workspace(
 
 
 def create_flow_2(
-    flow_yaml: str, workspace_id: str = None, url: str = 'http://localhost:8000/flows'
+    flow_yaml: str,
+    workspace_id: Optional[str] = None,
+    url: str = 'http://localhost:8000/flows',
 ) -> str:
     with open(flow_yaml, 'rb') as f:
         r = requests.post(url, data={'workspace_id': workspace_id}, files={'flow': f})
@@ -61,7 +63,7 @@ def create_flow(
     flow_yaml: str,
     pod_dir: Optional[str] = None,
     url: str = 'http://localhost:8000',
-    workspace_id: str = None,
+    workspace_id: Optional[str] = None,
 ) -> str:
     with ExitStack() as file_stack:
         pymodules_files = []

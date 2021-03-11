@@ -215,8 +215,8 @@ def _merge_results_after_batching(
 
 
 def batching(
-    func: Callable[[Any], np.ndarray] = None,
-    batch_size: Union[int, Callable] = None,
+    func: Optional[Callable[[Any], np.ndarray]] = None,
+    batch_size: Optional[Union[int, Callable]] = None,
     num_batch: Optional[int] = None,
     split_over_axis: int = 0,
     merge_over_axis: int = 0,
@@ -330,8 +330,8 @@ def batching(
 
 
 def batching_multi_input(
-    func: Callable[[Any], np.ndarray] = None,
-    batch_size: Union[int, Callable] = None,
+    func: Optional[Callable[[Any], np.ndarray]] = None,
+    batch_size: Optional[Union[int, Callable]] = None,
     num_batch: Optional[int] = None,
     split_over_axis: int = 0,
     merge_over_axis: int = 0,
@@ -431,7 +431,7 @@ def batching_multi_input(
 
 
 def single(
-    func: Callable[[Any], np.ndarray] = None,
+    func: Optional[Callable[[Any], np.ndarray]] = None,
     merge_over_axis: int = 0,
     slice_on: int = 1,
     flatten_output: bool = True,
@@ -521,7 +521,7 @@ def single(
 
 
 def single_multi_input(
-    func: Callable[[Any], np.ndarray] = None,
+    func: Optional[Callable[[Any], np.ndarray]] = None,
     merge_over_axis: int = 0,
     slice_on: int = 1,
     num_data: int = 1,

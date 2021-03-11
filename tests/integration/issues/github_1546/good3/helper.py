@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional
 
 import numpy as np
 
@@ -31,8 +31,8 @@ def _load_image(blob: 'np.ndarray', channel_axis: int):
 def _crop_image(
     img,
     target_size: Union[Tuple[int, int], int],
-    top: int = None,
-    left: int = None,
+    top: Optional[int] = None,
+    left: Optional[int] = None,
     how: str = 'precise',
 ):
     """

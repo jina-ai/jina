@@ -654,7 +654,7 @@ def colored(
     text: str,
     color: Optional[str] = None,
     on_color: Optional[str] = None,
-    attrs: Union[str, list, None] = None,
+    attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color.
@@ -790,7 +790,7 @@ class ArgNamespace:
 
     @staticmethod
     def get_non_defaults_args(
-        args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = None
+        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
     ) -> Dict:
         """
         Get non-default args in a dict.

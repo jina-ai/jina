@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import sys
 
-from typing import Iterable
+from typing import Iterable, Optional
 
 from .. import QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver
 
@@ -32,7 +32,7 @@ class SliceQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     `SliceQL` will ensure that only the first 50 documents are returned from this `Pod`
     """
 
-    def __init__(self, start: int, end: int = None, *args, **kwargs):
+    def __init__(self, start: int, end: Optional[int] = None, *args, **kwargs):
         """
 
         :param start: Zero-based index at which to start extraction.

@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Optional
 
 from . import (
     BaseExecutableDriver,
@@ -21,7 +21,7 @@ class BaseSearchDriver(BaseExecutableDriver):
 
     def __init__(
         self,
-        executor: str = None,
+        executor: Optional[str] = None,
         method: str = 'query',
         traversal_paths: Tuple[str] = ('r', 'c'),
         *args,
@@ -95,7 +95,11 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Fill in the embedding by their document id."""
 
     def __init__(
-        self, executor: str = None, method: str = 'query_by_key', *args, **kwargs
+        self,
+        executor: Optional[str] = None,
+        method: str = 'query_by_key',
+        *args,
+        **kwargs,
     ):
         super().__init__(executor, method, *args, **kwargs)
 
