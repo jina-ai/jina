@@ -63,9 +63,9 @@ The polling strategy of the Pod (when `parallel>1`)
         else argparse.SUPPRESS,
     )
     gp.add_argument(
-        '--pea-host',
+        '--peas-hosts',
         action=KVAppendAction,
-        metavar='KEY=VALUE',
+        metavar='KEY: VALUE',
         nargs='*',
         help='''The hosts of the peas when parallel greater than 1,
         pea have a new host address if the pea_id present in the map.
