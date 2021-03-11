@@ -471,10 +471,7 @@ def single(
         def arg_wrapper(*args, **kwargs):
             # by default data is in args[1] (self needs to be taken into account)
 
-            try:
-                data = args[slice_on]
-            except IndexError as e:
-                return func(*args, **kwargs)
+            data = args[slice_on]
 
             # like this one can use the function with single kwargs
             if len(args) == 2 and slice_on == 1:
@@ -541,11 +538,6 @@ def single_multi_input(
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
             # by default data is in args[1:] (self needs to be taken into account)
-            try:
-                data_iterators = list([args[slice_on + i] for i in range(0, num_data)])
-            except IndexError as e:
-                return func(*args, **kwargs)
-
             args = list(args)
             default_logger.debug(f'batching disabled for {func.__qualname__}')
 
@@ -562,6 +554,7 @@ def single_multi_input(
                 if _use_shortcut:
                     return func(*args, **kwargs)
 
+            data_iterators = list([args[slice_on + i] for i in range(0, num_data)])
             final_result = []
             for i, instance in enumerate(data_iterators[0]):
                 args[slice_on] = instance
