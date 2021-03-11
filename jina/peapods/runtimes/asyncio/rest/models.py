@@ -63,7 +63,6 @@ def _get_oneof_validator(oneof_fields: List, oneof_key: str) -> Callable:
     :param oneof_key: oneof key
     :type oneof_key: str
     :return: classmethod for Pydantic model validation
-    :rtype: Callable
     """
 
     def oneof_validator(cls, values):
@@ -86,7 +85,6 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
     :param oneof_key: oneof key
     :type oneof_key: str
     :return: classmethod for Pydantic model validation
-    :rtype: Callable
     """
 
     def oneof_setter(cls, values):
@@ -110,7 +108,6 @@ def protobuf_to_pydantic_model(
     :param protobuf_model: message from jina.proto file
     :type protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]
     :return: Pydantic model
-    :rtype: BaseModel
     """
 
     all_fields = {}
