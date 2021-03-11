@@ -534,3 +534,16 @@ def test_single_multi_input_slice_on_error(slice_on, num_data):
     instance = A()
     with pytest.raises(IndexError):
         instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
+
+
+def test_single_multit_input_kwargs_call():
+    class A:
+        @single_multi_input()
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            assert isinstance(key, str)
+            return key, data
+
+    instance = A()
+    result = instance.f(data=[1] * 4, key=['a'] * 4)
+    assert result == 1
