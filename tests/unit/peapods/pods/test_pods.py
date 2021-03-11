@@ -82,14 +82,6 @@ def test_pod_args_remove_uses_ba():
         assert p.num_peas == 4
 
 
-# @pytest.mark.parametrize(
-#     'peas_hosts, parallel',
-#     [
-#
-#         ('1: 0.0.0.2', 2),  # test 1 pea host set, another pea host not set
-#         ('1: 0.0.0.2, 2: 0.0.0.3', 2),  # test all pea host set
-#     ],
-# )
 def test_pod_remote_pea_without_parallel():
     args = set_pod_parser().parse_args(
         ['--peas-hosts', '1: 0.0.0.1', '--parallel', str(1)]
