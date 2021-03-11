@@ -1,7 +1,8 @@
-import pytest
 from tests import random_docs
+from jina.types.document import Document
 from jina.peapods.runtimes.asyncio.rest.models import PROTO_TO_PYDANTIC_MODELS
 
+import pytest
 import pydantic
 
 
@@ -194,3 +195,15 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['parentId'] == pydantic_doc_chunk.parent_id
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
             assert jina_doc_chunk['contentHash'] == pydantic_doc_chunk.content_hash
+
+
+def test_pydatic_document_to_jina_document():
+    document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
+
+    jina_doc = Document(document_proto_model(text='abc').json())
+    assert jina_doc.text == 'abc'
+    assert jina_doc.content == 'abc'
+
+    jina_doc = Document(document_proto_model(text='abc').dict())
+    assert jina_doc.text == 'abc'
+    assert jina_doc.content == 'abc'
