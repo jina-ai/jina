@@ -211,7 +211,10 @@ def _merge_results_after_batching(
             num_cols = len(final_result[0])
             for col in range(num_cols):
                 reduced_result.append(
-                    np.concatenate([row[col] for row in final_result], merge_over_axis)
+                    np.concatenate(
+                        [np.atleast_1d(row[col]) for row in final_result],
+                        merge_over_axis,
+                    )
                 )
             final_result = tuple(reduced_result)
         elif isinstance(final_result[0], list) and flatten:
@@ -466,14 +469,14 @@ def single(
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
             # by default data is in args[1] (self needs to be taken into account)
-            if (
-                len(args) <= slice_on
-                or isinstance(args[slice_on], str)
-                or isinstance(args[slice_on], bytes)
-                or not isinstance(args[slice_on], Iterable)
-            ):
-                # like this one can use the function with single kwargs
-                return func(*args, **kwargs)
+            # like this one can use the function with single kwargs
+            if len(args) == 2 and slice_on == 1:
+                if (
+                    isinstance(args[slice_on], str)
+                    or isinstance(args[slice_on], bytes)
+                    or not isinstance(args[slice_on], Iterable)
+                ):
+                    return func(*args, **kwargs)
 
             data = args[slice_on]
 
@@ -536,20 +539,21 @@ def single_multi_input(
             args = list(args)
             default_logger.debug(f'batching disabled for {func.__qualname__}')
 
-            if len(args) <= slice_on:
-                # like this one can use the function with single kwargs
-                return func(*args, **kwargs)
+            if len(args) == (num_data + 1) and slice_on == 1:
+                _use_shortcut = True
+                for arg in args[1 : (num_data + 1)]:
+                    if not (
+                        isinstance(arg, str)
+                        or isinstance(arg, bytes)
+                        or not isinstance(arg, Iterable)
+                    ):
+                        _use_shortcut = False
+                        break
+                    # like this one can use the function with single kwargs
+                if _use_shortcut:
+                    return func(*args, **kwargs)
 
             data_iterators = [args[slice_on + i] for i in range(0, num_data)]
-
-            if (
-                len(args) <= slice_on
-                or isinstance(data_iterators[0], str)
-                or isinstance(data_iterators[0], bytes)
-                or not isinstance(data_iterators[0], Iterable)
-            ):
-                # like this one can use the function with single kwargs
-                return func(*args, **kwargs)
 
             final_result = []
             for i, instance in enumerate(data_iterators[0]):
