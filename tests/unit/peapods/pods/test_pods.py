@@ -85,8 +85,8 @@ def test_pod_args_remove_uses_ba():
     'peas_hosts, parallel',
     [
         ('k1: v1', 1),  # test pea_host has value, while it's a singleton pod
-        # ('1: "0.0.0.2"', 2),  # test 1 pea host set, another pea host not set, should be identical to pod host
-        # ('"1": "0.0.0.2", "2": "0.0.0.3"', 2),  # test all pea host set. should be identical to pod host
+        ('1: "0.0.0.2"', 2),  # test 1 pea host set, another pea host not set
+        ('1: "0.0.0.2", 2: "0.0.0.3"', 2),  # test all pea host set. should be identical to pod host
     ],
 )
 def test_pod_remote_pea_parallel(peas_hosts, parallel):
@@ -99,6 +99,6 @@ def test_pod_remote_pea_parallel(peas_hosts, parallel):
             if parallel == 1:
                 assert pea.args.host == pod.host
             else:
-                assert pea.args.host == peas_hosts.get(pea.pea_id)
+                assert pea.args.host == peas_hosts.get(pea.pea_id, pod.host)
 
     Pod(args).start().close()
