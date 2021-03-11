@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterable
+from typing import Iterable, Optional
 
 import numpy as np
 
@@ -14,7 +14,9 @@ if False:
 class BaseIndexDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`add` by default """
 
-    def __init__(self, executor: str = None, method: str = 'add', *args, **kwargs):
+    def __init__(
+        self, executor: Optional[str] = None, method: str = 'add', *args, **kwargs
+    ):
         super().__init__(executor, method, *args, **kwargs)
 
     def check_key_length(self, val: Iterable[str]):

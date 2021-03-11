@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 from collections import defaultdict
-from typing import Dict, List, Callable, Union
+from typing import Dict, List, Callable, Union, Optional
 
 from . import BaseExecutor, AnyExecutor
 
@@ -13,6 +13,15 @@ class CompoundExecutor(BaseExecutor):
     input of the current is the output of the former.
 
     A common use case of :class:`CompoundExecutor` is to glue multiple :class:`BaseExecutor` together, instead of breaking them into different Pods.
+
+    :param routes: a map of function routes. The key is the function name, the value is a tuple of two pieces,
+        where the first element is the name of the referred component (``metas.name``) and the second element
+        is the name of the referred function.
+
+        .. seealso::
+
+            :func:`add_route`
+    :param resolve_all: universally add ``*_all()`` to all functions that have the identical name
 
     **Example 1: a compound Chunk Indexer that does vector indexing and key-value index**
 
@@ -82,58 +91,10 @@ class CompoundExecutor(BaseExecutor):
             ControlRequest:
               - !ControlReqDriver {}
 
+    Create a new :class:`CompoundExecutor` object
 
-    One can access the component of a :class:`CompoundExecutor` via index, e.g.
 
-    .. highlight:: python
-    .. code-block:: python
-
-        c = BaseExecutor.load_config('compound-example.yaml')
-        assertTrue(c[0] == c['dummyA-1ef90ea8'])
-        c[0].add(obj)
-
-    .. note::
-        Component ``workspace`` and ``pea_id`` are overriden by their :class:`CompoundExecutor` counterparts.
-
-    .. warning::
-
-        When sub-component is external, ``py_modules`` must be given at root level ``metas`` not at the sub-level.
-
-    """
-
-    class _FnWrapper:
-        def __init__(self, fns):
-            self.fns = fns
-
-        def __call__(self, *args, **kwargs):
-            r = []
-            for f in self.fns:
-                r.append(f())
-            return r
-
-    class _FnAllWrapper(_FnWrapper):
-        def __call__(self, *args, **kwargs):
-            return all(super().__call__(*args, **kwargs))
-
-    class _FnOrWrapper(_FnWrapper):
-        def __call__(self, *args, **kwargs):
-            return any(super().__call__(*args, **kwargs))
-
-    def __init__(
-        self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs
-    ):
-        """Create a new :class:`CompoundExecutor` object
-
-        :param routes: a map of function routes. The key is the function name, the value is a tuple of two pieces,
-            where the first element is the name of the referred component (``metas.name``) and the second element
-            is the name of the referred function.
-
-            .. seealso::
-
-                :func:`add_route`
-        :param resolve_all: universally add ``*_all()`` to all functions that have the identical name
-
-        Example:
+     **Example 3: **
 
         We have two dummy executors as follows:
 
@@ -198,44 +159,98 @@ class CompoundExecutor(BaseExecutor):
 
             When setting inner `executors` in `components` the `workspace` configuration will not be used and will be overriden
             by a workspace extracted considering the name of the `CompoundExecutor`, the name of each internal `Component` and the `pea_id`
-        """
+
+
+    One can access the component of a :class:`CompoundExecutor` via index, e.g.
+
+    .. highlight:: python
+    .. code-block:: python
+
+        c = BaseExecutor.load_config('compound-example.yaml')
+        assertTrue(c[0] == c['dummyA-1ef90ea8'])
+        c[0].add(obj)
+
+    .. note::
+        Component ``workspace`` and ``pea_id`` are overriden by their :class:`CompoundExecutor` counterparts.
+
+    .. warning::
+
+        When sub-component is external, ``py_modules`` must be given at root level ``metas`` not at the sub-level.
+
+    """
+
+    class _FnWrapper:
+        def __init__(self, fns):
+            self.fns = fns
+
+        def __call__(self, *args, **kwargs):
+            r = []
+            for f in self.fns:
+                r.append(f())
+            return r
+
+    class _FnAllWrapper(_FnWrapper):
+        def __call__(self, *args, **kwargs):
+            return all(super().__call__(*args, **kwargs))
+
+    class _FnOrWrapper(_FnWrapper):
+        def __call__(self, *args, **kwargs):
+            return any(super().__call__(*args, **kwargs))
+
+    def __init__(
+        self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
-        self._components = None  # type: List[AnyExecutor]
+        self._components = None  # type: Optional[List[AnyExecutor]]
         self._routes = routes
         self._is_updated = False  #: the internal update state of this compound executor
         self.resolve_all = resolve_all
 
     @property
     def is_trained(self) -> bool:
-        """Return ``True`` only if all components are trained (i.e. ``is_trained=True``)"""
+        """
+        Return ``True`` only if all components are trained (i.e. ``is_trained=True``)
+
+        :return: only true if all components are trained or if the compound is trained
+        """
         return self.components and all(c.is_trained for c in self.components)
 
     @property
     def is_updated(self) -> bool:
-        """Return ``True``  if any components is updated"""
+        """
+        Return ``True``  if any components is updated.
+
+        :return: only true if all components are updated or if the compound is updated
+        """
         return (
             self.components and any(c.is_updated for c in self.components)
         ) or self._is_updated
 
     @is_updated.setter
     def is_updated(self, val: bool) -> None:
-        """Set :attr:`is_updated` for this :class:`CompoundExecutor`. Note, not to all its components """
+        """
+        Set :attr:`is_updated` for this :class:`CompoundExecutor`. Note, not to all its components
+
+        :param val: new value of :attr:`is_updated`
+        """
         self._is_updated = val
 
     @is_trained.setter
     def is_trained(self, val: bool) -> None:
-        """Set :attr:`is_trained` for all components of this :class:`CompoundExecutor` """
+        """
+        Set :attr:`is_trained` for all components of this :class:`CompoundExecutor`
+
+        :param val: value to set for the :attr:`is_trained` property of all components.
+        """
         for c in self.components:
             c.is_trained = val
 
-    def save(self, filename: str = None):
+    def save(self, filename: Optional[str] = None):
         """
-        Serialize this compound executor along with all components in it to binary files
+        Serialize this compound executor along with all components in it to binary files.
+        It uses ``pickle`` for dumping.
 
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
-        :return: successfully dumped or not
-
-        It uses ``pickle`` for dumping.
         """
         for c in self.components:
             c.save()
@@ -245,8 +260,12 @@ class CompoundExecutor(BaseExecutor):
 
     @property
     def components(self) -> List[AnyExecutor]:
-        """Return all component executors as a list. The list follows the order as defined in the YAML config or the
-        pre-given order when calling the setter."""
+        """
+        Return all component executors as a list. The list follows the order as defined in the YAML config or the
+        pre-given order when calling the setter.
+
+        :return: components
+        """
         return self._components
 
     @components.setter
