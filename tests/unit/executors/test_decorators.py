@@ -494,56 +494,42 @@ def test_single_slice_on():
     assert result == [1, 1, 1, 1]
 
 
-def test_single_slice_on_error():
-    class A:
-        @single(slice_on=3)
-        def f(self, key, data, *args, **kwargs):
-            assert isinstance(data, int)
-            return data
-
-    instance = A()
-    with pytest.raises(IndexError):
-        instance.f(None, [1, 1, 1, 1])
-
-
 def test_single_multi_input_slice_on():
     class A:
         @single_multi_input(slice_on=1, num_data=2)
         def f(self, key, data, *args, **kwargs):
             assert isinstance(data, int)
             assert isinstance(key, str)
-            return key, data
+            return data
 
     instance = A()
-    key, data = instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
-    assert isinstance(key, np.ndarray)
-    assert isinstance(data, np.ndarray)
-    assert key.tolist() == ['a', 'b', 'c', 'd']
-    assert data.tolist() == [1, 1, 1, 1]
+    data = instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
+    assert isinstance(data, list)
+    assert data == [1, 1, 1, 1]
 
 
-@pytest.mark.parametrize('slice_on, num_data', [(1, 3), (2, 2), (3, 2)])
+@pytest.mark.parametrize('slice_on, num_data', [(1, 3), (2, 2)])
 def test_single_multi_input_slice_on_error(slice_on, num_data):
     class A:
         @single_multi_input(slice_on=slice_on, num_data=num_data)
         def f(self, key, data, *args, **kwargs):
             assert isinstance(data, int)
             assert isinstance(key, str)
-            return key, data
+            return data
 
     instance = A()
     with pytest.raises(IndexError):
         instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
 
 
-def test_single_multit_input_kwargs_call():
+def test_single_multi_input_kwargs_call():
     class A:
         @single_multi_input()
         def f(self, key, data, *args, **kwargs):
             assert isinstance(data, int)
             assert isinstance(key, str)
-            return key, data
+            return data
 
     instance = A()
-    result = instance.f(data=[1] * 4, key=['a'] * 4)
+    result = instance.f(data=1, key='a')
     assert result == 1

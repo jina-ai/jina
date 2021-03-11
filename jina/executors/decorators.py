@@ -208,17 +208,6 @@ def _merge_results_after_batching(
     if isinstance(final_result[0], np.ndarray):
         if len(final_result[0].shape) > 1:
             final_result = np.concatenate(final_result, merge_over_axis)
-    elif isinstance(final_result[0], tuple):
-        reduced_result = []
-        num_cols = len(final_result[0])
-        for col in range(num_cols):
-            reduced_result.append(
-                np.concatenate(
-                    [np.atleast_1d(row[col]) for row in final_result],
-                    merge_over_axis,
-                )
-            )
-        final_result = tuple(reduced_result)
     elif isinstance(final_result[0], list) and flatten:
         final_result = list(chain.from_iterable(final_result))
 
@@ -464,25 +453,51 @@ def single(
             class OneByOneCrafter:
                 @single
                 def craft(self, text: str) -> Dict:
+
+    .. note:
+        Single decorator will let the user interact with the executor in 3 different ways:
+            - Providing batches: (This decorator will make sure that the actual method receives just a single instance)
+            - Providing a single instance
+            - Providing a single instance through kwargs.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            class OneByOneCrafter:
+                @single
+                def craft(self, text: str) -> Dict:
+                    return {'text' : f'{text}-crafted'}
+
+            crafter = OneByOneCrafter()
+
+            results = crafted.craft(['text1', 'text2'])
+            assert len(results) == 2
+            assert results[0] == {'text': 'text1-crafted'}
+            assert results[1] == {'text': 'text2-crafted'}
+
+            result = crafter.craft('text')
+            assert result['text'] == 'text-crafted'
+
+            results = crafted.craft(text='text')
+            assert result['text'] == 'text-crafted'
     """
 
     def _single(func):
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
-            # by default data is in args[1] (self needs to be taken into account)
-
-            data = args[slice_on]
 
             # like this one can use the function with single kwargs
-            if len(args) == 2 and slice_on == 1:
-                if (
-                    isinstance(data, str)
-                    or isinstance(data, bytes)
-                    or not isinstance(data, Iterable)
-                ):
-                    return func(*args, **kwargs)
+            if (
+                len(args) <= slice_on
+                or isinstance(args[slice_on], str)
+                or isinstance(args[slice_on], bytes)
+                or not isinstance(args[slice_on], Iterable)
+            ):
+                # like this one can use the function with single kwargs
+                return func(*args, **kwargs)
 
             args = list(args)
+            data = args[slice_on]
 
             default_logger.debug(f'batching disabled for {func.__qualname__}')
 
@@ -532,6 +547,35 @@ def single_multi_input(
                 @single_multi_input
                 def craft(self, text: str, id: str) -> Dict:
             ...
+
+    .. note:
+        Single multi input decorator will let the user interact with the executor in 3 different ways:
+            - Providing batches: (This decorator will make sure that the actual method receives just a single instance)
+            - Providing a single instance
+            - Providing a single instance through kwargs.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            class OneByOneCrafter:
+                @single_multi_input
+                def craft(self, text: str, id: str) -> Dict:
+                    return {'text': f'{text}-crafted', 'id': f'{id}-crafted'}
+
+            crafter = OneByOneCrafter()
+
+            results = crafted.craft(['text1', 'text2'], ['id1', 'id2'])
+            assert len(results) == 2
+            assert results[0] == {'text': 'text1-crafted', 'id': 'id1-crafted'}
+            assert results[1] == {'text': 'text2-crafted', 'id': 'id2-crafted'}
+
+            result = crafter.craft('text', 'id')
+            assert result['text'] == 'text-crafted'
+            assert result['id'] == 'id-crafted'
+
+            results = crafted.craft(text='text', id='id')
+            assert result['text'] == 'text-crafted'
+            assert result['id'] == 'id-crafted'
     """
 
     def _single_multi_input(func):
@@ -541,20 +585,21 @@ def single_multi_input(
             args = list(args)
             default_logger.debug(f'batching disabled for {func.__qualname__}')
 
-            if len(args) == (num_data + 1) and slice_on == 1:
-                _use_shortcut = True
-                for arg in args[1 : (num_data + 1)]:
-                    if not (
-                        isinstance(arg, str)
-                        or isinstance(arg, bytes)
-                        or not isinstance(arg, Iterable)
-                    ):
-                        _use_shortcut = False
-                        break
-                if _use_shortcut:
-                    return func(*args, **kwargs)
+            if len(args) <= slice_on:
+                # like this one can use the function with single kwargs
+                return func(*args, **kwargs)
 
             data_iterators = list([args[slice_on + i] for i in range(0, num_data)])
+
+            if (
+                len(args) <= slice_on
+                or isinstance(data_iterators[0], str)
+                or isinstance(data_iterators[0], bytes)
+                or not isinstance(data_iterators[0], Iterable)
+            ):
+                # like this one can use the function with single kwargs
+                return func(*args, **kwargs)
+
             final_result = []
             for i, instance in enumerate(data_iterators[0]):
                 args[slice_on] = instance
