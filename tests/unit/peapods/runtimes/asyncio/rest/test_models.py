@@ -81,7 +81,7 @@ def test_all_fields_in_document_proto():
         assert i in document_proto_properties_alias
 
 
-def test_oneof():
+def test_oneof_text():
     """ This tests: oneof field is correctly represented as `anyOf` """
 
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc')
@@ -89,10 +89,18 @@ def test_oneof():
     assert 'blob' not in doc.dict()
     assert 'buffer' not in doc.dict()
 
+
+def test_oneof_buffer():
+    """ This tests: oneof field is correctly represented as `anyOf` """
+
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(buffer=b'abc')
     assert doc.buffer == b'abc'
     assert 'text' not in doc.dict()
     assert 'blob' not in doc.dict()
+
+
+def test_oneof_blob():
+    """ This tests: oneof field is correctly represented as `anyOf` """
 
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
         blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
@@ -100,6 +108,10 @@ def test_oneof():
     assert doc.blob == PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
     assert 'text' not in doc.dict()
     assert 'buffer' not in doc.dict()
+
+
+def test_oneof_validation_error():
+    """ This tests validation error for invalid fields """
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc', buffer=b'abc')
