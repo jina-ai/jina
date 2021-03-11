@@ -6,7 +6,6 @@ from ..helpers import create_workspace, create_flow_2, assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
-flow_yaml = os.path.join(cur_dir, 'flow.yml')
 pod_dir = os.path.join(cur_dir, 'pods')
 dependencies = [
     f'{pod_dir}/index.yml',
@@ -16,13 +15,20 @@ dependencies = [
 ]
 
 
+@pytest.mark.parametrize(
+    'flow_yml',
+    [
+        os.path.join(cur_dir, 'flow.yml'),
+        os.path.join(cur_dir, 'flow_distributed_peas_in_pod.yml'),
+    ],
+)
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_flow(docker_compose):
+def test_flow(flow_yml, docker_compose):
     print(f'\nCreating workspace with dependencies')
     workspace_id = create_workspace(filepaths=dependencies)
 
-    print(f'\nCreating Flow: {flow_yaml} with workspace_id: {workspace_id}')
-    index_flow_id = create_flow_2(flow_yaml=flow_yaml, workspace_id=workspace_id)
+    print(f'\nCreating Flow: {flow_yml} with workspace_id: {workspace_id}')
+    index_flow_id = create_flow_2(flow_yaml=flow_yml, workspace_id=workspace_id)
 
     for x in range(100):
         text = 'text:hey, dude ' + str(x)
@@ -44,8 +50,8 @@ def test_flow(docker_compose):
         payload={'workspace': False},
     )
 
-    print(f'\nCreating query Flow {flow_yaml} with workspace_id: {workspace_id}')
-    query_flow_id = create_flow_2(flow_yaml=flow_yaml, workspace_id=workspace_id)
+    print(f'\nCreating query Flow {flow_yml} with workspace_id: {workspace_id}')
+    query_flow_id = create_flow_2(flow_yaml=flow_yml, workspace_id=workspace_id)
     assert query_flow_id is not None
 
     print(f'\nQuerying any text')
