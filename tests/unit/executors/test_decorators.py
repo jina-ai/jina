@@ -480,3 +480,56 @@ def test_batching_as_ndarray():
     np.testing.assert_equal(result, np.array(input_data))
     assert len(instance.batch_sizes) == 1
     assert instance.batch_sizes[0] == 4
+
+
+def test_single_slice_on():
+    class A:
+        @single(slice_on=2)
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            return data
+
+    instance = A()
+    result = instance.f(None, [1, 1, 1, 1])
+    assert result == [1, 1, 1, 1]
+
+
+def test_single_multi_input_slice_on():
+    class A:
+        @single_multi_input(slice_on=1, num_data=2)
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            assert isinstance(key, str)
+            return data
+
+    instance = A()
+    data = instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
+    assert isinstance(data, list)
+    assert data == [1, 1, 1, 1]
+
+
+@pytest.mark.parametrize('slice_on, num_data', [(1, 3), (2, 2)])
+def test_single_multi_input_slice_on_error(slice_on, num_data):
+    class A:
+        @single_multi_input(slice_on=slice_on, num_data=num_data)
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            assert isinstance(key, str)
+            return data
+
+    instance = A()
+    with pytest.raises(IndexError):
+        instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
+
+
+def test_single_multi_input_kwargs_call():
+    class A:
+        @single_multi_input()
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            assert isinstance(key, str)
+            return data
+
+    instance = A()
+    result = instance.f(data=1, key='a')
+    assert result == 1
