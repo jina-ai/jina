@@ -56,13 +56,13 @@ class CamelCaseConfig(BaseConfig):
 
 def _get_oneof_validator(oneof_fields: List, oneof_key: str) -> Callable:
     """
-    Pydantic root validator classmethod generator to confirm only one oneof field is passed
+    Pydantic root validator (pre) classmethod generator to confirm only one oneof field is passed
 
     :param oneof_fields: list of field names for oneof
     :type oneof_fields: List
     :param oneof_key: oneof key
     :type oneof_key: str
-    :return: classmethod for Pydantic model validation
+    :return: classmethod for validating oneof fields
     """
 
     def oneof_validator(cls, values):
@@ -78,13 +78,13 @@ def _get_oneof_validator(oneof_fields: List, oneof_key: str) -> Callable:
 
 def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
     """
-    Pydantic root validator classmethod generator to set the oneof key
+    Pydantic root validator (post) classmethod generator to set the oneof key
 
     :param oneof_fields: list of field names for oneof
     :type oneof_fields: List
     :param oneof_key: oneof key
     :type oneof_key: str
-    :return: classmethod for Pydantic model validation
+    :return: classmethod for setting oneof fields in Pydantic models
     """
 
     def oneof_setter(cls, values):
@@ -95,6 +95,26 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
 
     oneof_setter.__qualname__ = 'set_' + oneof_key
     return root_validator(pre=False, allow_reuse=True)(oneof_setter)
+
+
+def _get_tags_updater() -> Callable:
+    """
+    Pydantic root validator (pre) classmethod generator to update tags
+
+    :return: classmethod for updating tags in DocumentProto Pydantic model
+    """
+
+    @root_validator(pre=True)
+    def tags_updater(cls, values):
+        extra_fields = {k: values[k] for k in set(values).difference(cls.__fields__)}
+        if extra_fields:
+            if 'tags' not in values:
+                values['tags'] = cls.__fields__['tags'].default
+            if isinstance(values['tags'], Dict):
+                values['tags'].update({i: j for i, j in extra_fields.items()})
+        return values
+
+    return root_validator(pre=True, allow_reuse=True)(tags_updater)
 
 
 def protobuf_to_pydantic_model(
@@ -179,6 +199,9 @@ def protobuf_to_pydantic_model(
         oneof_field_validators[f'oneof_setter_{oneof_k}'] = _get_oneof_setter(
             oneof_fields=oneof_v_list, oneof_key=oneof_k
         )
+
+    if model_name == 'DocumentProto':
+        oneof_field_validators['tags_validator'] = _get_tags_updater()
 
     CamelCaseConfig.fields = camel_case_fields
     model = create_model(

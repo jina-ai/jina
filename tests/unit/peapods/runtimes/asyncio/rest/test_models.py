@@ -4,6 +4,7 @@ from jina.peapods.runtimes.asyncio.rest.models import PROTO_TO_PYDANTIC_MODELS
 
 import pytest
 import pydantic
+from google.protobuf.json_format import MessageToDict
 
 
 def test_schema_invocation():
@@ -109,6 +110,19 @@ def test_oneof():
             text='abc', buffer=b'abc', blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
         )
     assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
+
+
+def test_tags_document():
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world')
+    assert doc.tags == {'hello': 'world'}
+    assert MessageToDict(Document(doc.dict()).tags) == {'hello': 'world'}
+
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world', tags={'key': 'value'})
+    assert doc.tags == {'hello': 'world', 'key': 'value'}
+    assert MessageToDict(Document(doc.dict()).tags) == {
+        'hello': 'world',
+        'key': 'value',
+    }
 
 
 def test_repeated():
