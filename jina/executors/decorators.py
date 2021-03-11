@@ -202,26 +202,27 @@ def _get_total_size(full_data_size, batch_size, num_batch):
 def _merge_results_after_batching(
     final_result, merge_over_axis: int = 0, flatten: bool = True
 ):
-    if final_result:
-        if isinstance(final_result[0], np.ndarray):
-            if len(final_result[0].shape) > 1:
-                final_result = np.concatenate(final_result, merge_over_axis)
-        elif isinstance(final_result[0], tuple):
-            reduced_result = []
-            num_cols = len(final_result[0])
-            for col in range(num_cols):
-                reduced_result.append(
-                    np.concatenate(
-                        [np.atleast_1d(row[col]) for row in final_result],
-                        merge_over_axis,
-                    )
-                )
-            final_result = tuple(reduced_result)
-        elif isinstance(final_result[0], list) and flatten:
-            final_result = list(chain.from_iterable(final_result))
+    if not final_result:
+        return
 
-    if len(final_result):
-        return final_result
+    if isinstance(final_result[0], np.ndarray):
+        if len(final_result[0].shape) > 1:
+            final_result = np.concatenate(final_result, merge_over_axis)
+    elif isinstance(final_result[0], tuple):
+        reduced_result = []
+        num_cols = len(final_result[0])
+        for col in range(num_cols):
+            reduced_result.append(
+                np.concatenate(
+                    [np.atleast_1d(row[col]) for row in final_result],
+                    merge_over_axis,
+                )
+            )
+        final_result = tuple(reduced_result)
+    elif isinstance(final_result[0], list) and flatten:
+        final_result = list(chain.from_iterable(final_result))
+
+    return final_result
 
 
 def batching(
