@@ -88,8 +88,8 @@ class NdArray(BaseNdArray):
         :param is_sparse: if the ndarray is sparse, can be changed later
         :param dense_cls: the to-be-used class for DenseNdArray when `is_sparse=False`
         :param sparse_cls: the to-be-used class for SparseNdArray when `is_sparse=True`
-        :param args:
-        :param kwargs:
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         self.is_sparse = is_sparse
         self.dense_cls = dense_cls
@@ -99,12 +99,20 @@ class NdArray(BaseNdArray):
         self._kwargs = kwargs
 
     def null_proto(self):
-        """Get the new protobuf representation."""
+        """
+        Get the new protobuf representation.
+
+        :return: ndarray proto instance
+        """
         return jina_pb2.NdArrayProto()
 
     @property
     def value(self):
-        """Get the value of protobuf and return in corresponding type."""
+        """
+        Get the value of protobuf and return in corresponding type.
+
+        :return: value
+        """
         stype = self._pb_body.WhichOneof('content')
         if stype == 'dense':
             return self.dense_cls(self._pb_body.dense).value
@@ -113,7 +121,11 @@ class NdArray(BaseNdArray):
 
     @value.setter
     def value(self, value):
-        """Set the value of protobuf and with :param:`value`."""
+        """
+        Set the value of protobuf and with :param:`value`.
+
+        :param value: value to set
+        """
         if self.is_sparse:
             self.sparse_cls(self._pb_body.sparse).value = value
         else:

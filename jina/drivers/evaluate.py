@@ -26,8 +26,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
     :param method: the function name of the executor that the driver feeds to
     :param running_avg: always return running average instead of value of the current run
-    :param args:
-    :param kwargs:
+    :param args: additional positional arguments
+    :param kwargs: additional key value arguments
     """
 
     def __init__(
@@ -120,8 +120,8 @@ class RankEvaluateDriver(BaseEvaluateDriver):
             The differences with `:class:FieldEvaluateDriver` are:
                 - More than one field is allowed. For instance, for NDCGComputation you may need to have both `ID` and `Relevance` information.
                 - The fields are extracted from the `matches` of the `Documents` and the `Groundtruth` so it returns a sequence of values.
-    :param args:
-    :param kwargs:
+    :param args: additional positional arguments
+    :param kwargs: additional key value arguments
     """
 
     @deprecated_alias(field=('fields', 0))
