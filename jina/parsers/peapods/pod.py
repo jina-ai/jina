@@ -2,7 +2,7 @@
 import argparse
 
 from jina.enums import PollingType, SchedulerType, PodRoleType
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 
 
 def mixin_base_pod_parser(parser):
@@ -61,4 +61,15 @@ The polling strategy of the Pod (when `parallel>1`)
         help='The role of this pod in the flow'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
+    )
+    gp.add_argument(
+        '--peas-hosts',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''The hosts of the peas when parallel greater than 1,
+        pea have a new host address if the pea_id present in the map.
+        otherwise pea host will be identical to the host of pod.
+        Represented as a key value pair in argument.
+        key is the pea_id, and value is the host address.''',
     )
