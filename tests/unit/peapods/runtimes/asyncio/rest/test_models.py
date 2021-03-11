@@ -1,9 +1,14 @@
 from tests import random_docs
+from jina.types.document import Document
 from jina.peapods.runtimes.asyncio.rest.models import PROTO_TO_PYDANTIC_MODELS
+
+import pytest
+import pydantic
+from google.protobuf.json_format import MessageToDict
 
 
 def test_schema_invocation():
-    for k, v in PROTO_TO_PYDANTIC_MODELS.items():
+    for k, v in vars(PROTO_TO_PYDANTIC_MODELS).items():
         v.schema()
         v.schema_json()
 
@@ -19,26 +24,23 @@ def test_existing_definitions():
         'DocumentProto',
     ]:
         assert (
-            i
-            in PROTO_TO_PYDANTIC_MODELS['DocumentProto']()
-            .schema()['definitions']
-            .keys()
+            i in PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()['definitions'].keys()
         )
 
 
 def test_enum_definitions():
     """ This tests: all enums are defined properly as different levels """
-    quantization_enum_definition = PROTO_TO_PYDANTIC_MODELS['DocumentProto']().schema()[
+    quantization_enum_definition = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['QuantizationMode']
     assert quantization_enum_definition['enum'] == [0, 1, 2]
 
-    status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS['StatusProto']().schema()[
+    status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS.StatusProto().schema()[
         'definitions'
     ]['StatusCode']
     assert status_code_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
 
-    command_enum_definition = PROTO_TO_PYDANTIC_MODELS['RequestProto']().schema()[
+    command_enum_definition = PROTO_TO_PYDANTIC_MODELS.RequestProto().schema()[
         'definitions'
     ]['Command']
     assert command_enum_definition['enum'] == [0, 1, 3]
@@ -46,7 +48,7 @@ def test_enum_definitions():
 
 def test_all_fields_in_document_proto():
     """ This tests: all fields are picked from the proto definition """
-    document_proto_properties = PROTO_TO_PYDANTIC_MODELS['DocumentProto']().schema(
+    document_proto_properties = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema(
         by_alias=False
     )['definitions']['DocumentProto']['properties']
     for i in [
@@ -56,7 +58,6 @@ def test_all_fields_in_document_proto():
         'adjacency',
         'level_name',
         'parent_id',
-        'content',
         'chunks',
         'weight',
         'length',
@@ -73,45 +74,85 @@ def test_all_fields_in_document_proto():
     ]:
         assert i in document_proto_properties
 
-    document_proto_properties_alias = PROTO_TO_PYDANTIC_MODELS[
-        'DocumentProto'
-    ]().schema()['definitions']['DocumentProto']['properties']
+    document_proto_properties_alias = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
+        'definitions'
+    ]['DocumentProto']['properties']
     for i in ['contentHash', 'levelName', 'parentId', 'mimeType']:
         assert i in document_proto_properties_alias
 
 
-def test_oneof():
+def test_oneof_text():
     """ This tests: oneof field is correctly represented as `anyOf` """
-    content = PROTO_TO_PYDANTIC_MODELS['DocumentProto']().schema()['definitions'][
-        'DocumentProto'
-    ]['properties']['content']
-    assert 'anyOf' in content
-    assert len(content['anyOf']) == 3
-    assert {'$ref': '#/definitions/NdArrayProto'} in content['anyOf']
 
-    body = PROTO_TO_PYDANTIC_MODELS['RequestProto']().schema()['properties']['body']
-    assert 'anyOf' in body
-    assert len(body['anyOf']) == 6
-    assert {'$ref': '#/definitions/IndexRequestProto'} in body['anyOf']
-    assert {'$ref': '#/definitions/TrainRequestProto'} in body['anyOf']
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc')
+    assert doc.text == 'abc'
+    assert 'blob' not in doc.dict()
+    assert 'buffer' not in doc.dict()
+
+
+def test_oneof_buffer():
+    """ This tests: oneof field is correctly represented as `anyOf` """
+
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(buffer=b'abc')
+    assert doc.buffer == b'abc'
+    assert 'text' not in doc.dict()
+    assert 'blob' not in doc.dict()
+
+
+def test_oneof_blob():
+    """ This tests: oneof field is correctly represented as `anyOf` """
+
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
+        blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
+    )
+    assert doc.blob == PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
+    assert 'text' not in doc.dict()
+    assert 'buffer' not in doc.dict()
+
+
+def test_oneof_validation_error():
+    """ This tests validation error for invalid fields """
+
+    with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
+        doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc', buffer=b'abc')
+    assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
+
+    with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
+        doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
+            text='abc', buffer=b'abc', blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
+        )
+    assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
+
+
+def test_tags_document():
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world')
+    assert doc.tags == {'hello': 'world'}
+    assert MessageToDict(Document(doc.dict()).tags) == {'hello': 'world'}
+
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world', tags={'key': 'value'})
+    assert doc.tags == {'hello': 'world', 'key': 'value'}
+    assert MessageToDict(Document(doc.dict()).tags) == {
+        'hello': 'world',
+        'key': 'value',
+    }
 
 
 def test_repeated():
     """ This tests: repeated fields are represented as `array` """
     assert (
-        PROTO_TO_PYDANTIC_MODELS['DenseNdArrayProto']().schema()['properties']['shape'][
+        PROTO_TO_PYDANTIC_MODELS.DenseNdArrayProto().schema()['properties']['shape'][
             'type'
         ]
         == 'array'
     )
     assert (
-        PROTO_TO_PYDANTIC_MODELS['NamedScoreProto']().schema()['definitions'][
+        PROTO_TO_PYDANTIC_MODELS.NamedScoreProto().schema()['definitions'][
             'NamedScoreProto'
         ]['properties']['operands']['type']
         == 'array'
     )
     assert (
-        PROTO_TO_PYDANTIC_MODELS['DocumentProto']().schema()['definitions'][
+        PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()['definitions'][
             'DocumentProto'
         ]['properties']['chunks']['type']
         == 'array'
@@ -120,7 +161,7 @@ def test_repeated():
 
 def test_recursive_schema():
     """ This tests: recursive schmea definions are represented properly """
-    assert PROTO_TO_PYDANTIC_MODELS['NamedScoreProto']().schema()['definitions'][
+    assert PROTO_TO_PYDANTIC_MODELS.NamedScoreProto().schema()['definitions'][
         'NamedScoreProto'
     ]['properties']['operands']['items'] == {'$ref': '#/definitions/NamedScoreProto'}
 
@@ -128,7 +169,7 @@ def test_recursive_schema():
 def test_struct():
     """ This tests: google.protobuf.Struct are represented as `object` """
     assert (
-        PROTO_TO_PYDANTIC_MODELS['DocumentProto']().schema()['definitions'][
+        PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()['definitions'][
             'DocumentProto'
         ]['properties']['tags']['type']
         == 'object'
@@ -138,13 +179,13 @@ def test_struct():
 def test_timestamp():
     """ This tests: google.protobuf.Timestamp are represented as date-time """
     assert (
-        PROTO_TO_PYDANTIC_MODELS['RouteProto']().schema(by_alias=False)['properties'][
+        PROTO_TO_PYDANTIC_MODELS.RouteProto().schema(by_alias=False)['properties'][
             'start_time'
         ]['type']
         == 'string'
     )
     assert (
-        PROTO_TO_PYDANTIC_MODELS['RouteProto']().schema(by_alias=False)['properties'][
+        PROTO_TO_PYDANTIC_MODELS.RouteProto().schema(by_alias=False)['properties'][
             'start_time'
         ]['format']
         == 'date-time'
@@ -152,7 +193,7 @@ def test_timestamp():
 
 
 def test_jina_document_to_pydantic_document():
-    document_proto_model = PROTO_TO_PYDANTIC_MODELS['DocumentProto']
+    document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
 
     for jina_doc in random_docs(num_docs=10):
         jina_doc = jina_doc.dict()
@@ -180,3 +221,15 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['parentId'] == pydantic_doc_chunk.parent_id
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
             assert jina_doc_chunk['contentHash'] == pydantic_doc_chunk.content_hash
+
+
+def test_pydatic_document_to_jina_document():
+    document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
+
+    jina_doc = Document(document_proto_model(text='abc').json())
+    assert jina_doc.text == 'abc'
+    assert jina_doc.content == 'abc'
+
+    jina_doc = Document(document_proto_model(text='abc').dict())
+    assert jina_doc.text == 'abc'
+    assert jina_doc.content == 'abc'
