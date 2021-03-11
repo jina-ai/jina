@@ -64,7 +64,7 @@ The polling strategy of the Pod (when `parallel>1`)
     )
     gp.add_argument(
         '--peas-hosts',
-        type=KVAppendAction,
+        action=KVAppendAction,
         metavar='KEY=VALUE',
         nargs='*',
         help='''The hosts of the peas when parallel greater than 1,
