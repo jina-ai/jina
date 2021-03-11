@@ -63,7 +63,7 @@ The polling strategy of the Pod (when `parallel>1`)
         else argparse.SUPPRESS,
     )
     gp.add_argument(
-        '--peas-hosts',
+        '--pea-host',
         action=KVAppendAction,
         metavar='KEY=VALUE',
         nargs='*',
