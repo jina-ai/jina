@@ -13,8 +13,8 @@ pod_dir = os.path.join(cur_dir, 'pods')
     'flow_yml',
     [
         os.path.join(cur_dir, 'flow.yml'),
-        os.path.join(cur_dir, 'flow_distributed_peas_in_pod.yml')
-    ]
+        os.path.join(cur_dir, 'flow_distributed_peas_in_pod.yml'),
+    ],
 )
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(flow_yml, docker_compose):
