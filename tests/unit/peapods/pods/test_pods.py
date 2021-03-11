@@ -79,3 +79,26 @@ def test_pod_args_remove_uses_ba():
     )
     with Pod(args) as p:
         assert p.num_peas == 4
+
+
+@pytest.mark.parametrize(
+    'peas_hosts, parallel',
+    [
+        ('k1=v1', 1),  # test peas_host has value, while it's a singleton pod
+        ('1="0.0.0.2"', 2),
+        # ({}, 4, False)
+    ]
+)
+def test_pod_remote_pea_parallel(peas_hosts, parallel):
+    args = set_pod_parser().parse_args(
+        ['--peas-hosts', peas_hosts, '--parallel', str(parallel)]
+    )
+    with Pod(args) as pod:
+        peas = pod.peas
+        for pea in peas:
+            if parallel == 1:
+                assert pea.args.host == pod.host
+            else:
+                assert pea.args.host == peas_hosts
+
+    Pod(args).start().close()
