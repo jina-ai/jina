@@ -63,8 +63,8 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
         :param is_update: when set to true the retrieved docs are merged into current message;
             otherwise, the retrieved Document overrides the existing Document
         :param traversal_paths: traversal paths for the driver
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_update = is_update
@@ -118,8 +118,8 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         :param top_k: top-k document ids to retrieve
         :param fill_embedding: fill in the embedding of the corresponding doc,
                 this requires the executor to implement :meth:`query_by_key`
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().__init__(*args, **kwargs)
         self._top_k = top_k

@@ -24,8 +24,8 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         :param keep_source_matches_as_chunks: A flag to indicate if the driver must return the old matches of the query or its chunks
             (at a greater granularity level (k + 1)) as the chunks of the new computed `matches` (at granularity level k)
             Set it to `True` when keeping track of the chunks that lead to a retrieved result.
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
 
         .. note::
             When set `keep_source_matches_as_chunks=True`, the chunks of the match contains **ONLY** the chunks leading

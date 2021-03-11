@@ -14,8 +14,8 @@ class BaseCacheDriver(BaseIndexDriver):
     """A driver related to :class:`BaseCache`.
 
     :param with_serialization: feed serialized Document to the CacheIndexer
-    :param args: *args for super
-    :param kwargs: **kwargs for super
+    :param args: additional positional arguments
+    :param kwargs: additional key value arguments
     """
 
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
@@ -79,8 +79,8 @@ class TaggingCacheDriver(BaseCacheDriver):
         """Create a new TaggingCacheDriver.
 
         :param tags: the tags to be updated on hit docs
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().__init__(*args, **kwargs)
         self._tags = tags

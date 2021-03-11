@@ -22,8 +22,8 @@ class BaseCache(BaseKVIndexer):
     def __init__(self, *args, **kwargs):
         """Create a new BaseCache.
 
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().__init__(*args, **kwargs)
 
@@ -43,8 +43,8 @@ class DocCache(BaseCache):
 
     :param index_filename: file name for storing the cache data
     :param fields: fields to cache on (of Document)
-    :param args: *args for super
-    :param kwargs: **kwargs for super
+    :param args: additional positional arguments
+    :param kwargs: additional key value arguments
     """
 
     class CacheHandler:
@@ -99,8 +99,8 @@ class DocCache(BaseCache):
 
         :param keys: document ids to be added
         :param values: document cache values to be added
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         for key, value in zip(keys, values):
             self.query_handler.id_to_cache_val[key] = value

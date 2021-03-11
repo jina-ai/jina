@@ -32,8 +32,8 @@ class LogInfoDriver(BaseControlDriver):
         """
         :param key: (str) that represents a first level or nested key in the dict
         :param json: (bool) indicating if the log output should be formatted as json
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().__init__(*args, **kwargs)
         self.key = key
@@ -98,8 +98,8 @@ class RouteDriver(ControlReqDriver):
          mark it in the envelope if it is a control request in
 
     :param raise_no_dealer: raise a RuntimeError when no available dealer
-    :param args: *args for super
-    :param kwargs: **kwargs for super
+    :param args: additional positional arguments
+    :param kwargs: additional key value arguments
     """
 
     def __init__(self, raise_no_dealer: bool = False, *args, **kwargs):
@@ -111,8 +111,8 @@ class RouteDriver(ControlReqDriver):
     def __call__(self, *args, **kwargs):
         """Perform the routing.
 
-        :param args: *args for super().__call__
-        :param kwargs: **kwargs for super().__call__
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
 
 
         .. # noqa: DAR401

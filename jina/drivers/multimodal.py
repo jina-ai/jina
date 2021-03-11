@@ -69,8 +69,8 @@ class MultiModalDriver(FlatRecursiveMixin, BaseEncodeDriver):
         """Apply the driver to each of the Documents in docs.
 
         :param docs: the docs for which a ``multimodal embedding`` will be computed, whose chunks are of different
-        :param args: args
-        :param kwargs: kwargs
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         content_by_modality = defaultdict(
             list

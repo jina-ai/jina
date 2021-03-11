@@ -44,8 +44,8 @@ class BaseEvaluateDriver(BaseExecutableDriver):
     def __call__(self, *args, **kwargs):
         """Load the ground truth pairs.
 
-        :param args: *args for _traverse_apply
-        :param kwargs: **kwargs for _traverse_apply
+        :param args: args for _traverse_apply
+        :param kwargs: kwargs for _traverse_apply
         """
         docs_groundtruths = DocumentGroundtruthSequence(
             [
@@ -93,8 +93,8 @@ class FieldEvaluateDriver(BaseEvaluateDriver):
     Evaluate on the values from certain field, the extraction is implemented with :meth:`dunder_get`.
 
     :param field: the field name to be extracted from the Protobuf.
-    :param args: *args for super
-    :param kwargs: **kwargs for super
+    :param args: additional positional arguments
+    :param kwargs: additional key value arguments
     """
 
     def __init__(self, field: str, *args, **kwargs):

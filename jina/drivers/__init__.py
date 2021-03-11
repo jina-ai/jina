@@ -153,8 +153,8 @@ class DriverType(type(JAMLCompatible), type):
     def __new__(cls, *args, **kwargs):
         """Create and register a new class with this meta class.
 
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         :return: the newly registered class
         """
         _cls = super().__new__(cls, *args, **kwargs)
@@ -333,8 +333,8 @@ class ContextAwareRecursiveMixin:
     def __call__(self, *args, **kwargs):
         """Traverse with _apply_all
 
-        :param args: *args forwarded to ``_apply_all``
-        :param kwargs: **kwargs forwarded to ``_apply_all``
+        :param args: args forwarded to ``_apply_all``
+        :param kwargs: kwargs forwarded to ``_apply_all``
         """
         document_sets = self.docs.traverse(self._traversal_paths)
         self._apply_all(document_sets, *args, **kwargs)
@@ -372,8 +372,8 @@ class FlatRecursiveMixin:
     def __call__(self, *args, **kwargs):
         """Traverse with _apply_all
 
-        :param args: *args forwarded to ``_apply_all``
-        :param kwargs: **kwargs forwarded to ``_apply_all``
+        :param args: args forwarded to ``_apply_all``
+        :param kwargs: kwargs forwarded to ``_apply_all``
         """
         path_documents = self.docs.traverse_flattened_per_path(self._traversal_paths)
         for documents in path_documents:
@@ -406,8 +406,8 @@ class BaseRecursiveDriver(BaseDriver):
         """Initialize a :class:`BaseRecursiveDriver`
 
         :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
@@ -433,8 +433,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
-        :param args: *args for super
-        :param kwargs: **kwargs for super
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().__init__(*args, **kwargs)
         self._executor_name = executor
@@ -469,8 +469,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         """Attach the driver to a :class:`jina.executors.BaseExecutor`
 
         :param executor: the executor to which we attach
-        :param args: *args for super().attach()
-        :param kwargs: **kwargs for super().attach()
+        :param args: additional positional arguments
+        :param kwargs: additional key value arguments
         """
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
