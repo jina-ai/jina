@@ -185,10 +185,12 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size += 1
         self.write_handler.flush()
 
-    def query(self, key: str) -> Optional[bytes]:
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
         :param key: document id
+        :param args: extra arguments
+        :param kwargs: keyword arguments
         :return: serialized documents
         """
         pos_info = self.query_handler.header.get(key, None)
