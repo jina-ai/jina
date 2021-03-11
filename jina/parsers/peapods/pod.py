@@ -68,7 +68,8 @@ The polling strategy of the Pod (when `parallel>1`)
         metavar='KEY=VALUE',
         nargs='*',
         help='''The hosts of the peas when parallel greater than 1,
-        pea have a host if the pea_id present in the map.
+        pea have a new host address if the pea_id present in the map.
+        otherwise pea host will be identical to the host of pod.
         Represented as a key value pair in argument.
-        key is the pea id, and value is the host address.''',
+        key is the pea_id, and value is the host address.''',
     )
