@@ -3,6 +3,7 @@ import random
 import pytest
 
 from jina.executors.segmenters import BaseSegmenter
+from jina.executors.decorators import single
 from jina.flow import Flow
 from tests import random_docs, validate_callback
 
@@ -12,7 +13,8 @@ class DummySegment(BaseSegmenter):
         super().__init__(*args, **kwargs)
         self._label = random.random()
 
-    def segment(self):
+    @single
+    def segment(self, id, *args, **kwargs):
         return [
             dict(buffer=f'aa{self._label}'.encode()),
             dict(buffer=f'bb{self._label}'.encode()),

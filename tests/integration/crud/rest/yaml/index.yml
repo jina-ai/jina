@@ -4,11 +4,13 @@ components:
     with:
       index_filename: vec.gz
       metric: cosine
+      delete_on_dump: true
     metas:
       name: vecidx
   - !BinaryPbIndexer
     with:
       index_filename: doc.gz
+      delete_on_dump: true
     metas:
       name: docidx
 metas:

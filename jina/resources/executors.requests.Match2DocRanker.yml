@@ -2,7 +2,5 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    with:
-      traversal_paths: [ 'r' ]
     drivers:
       - !Matches2DocRankDriver {}
