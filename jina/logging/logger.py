@@ -44,7 +44,7 @@ class JinaLogger:
     :param identity: The id of the group the messages from this logger will belong, used by fluentd default
     configuration to group logs by pod.
     :param workspace_path: The workspace path where the log will be stored at (only apply to fluentd)
-    :returns: an executor object.
+    :return:: an executor object.
     """
 
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'FluentHandler'}
@@ -122,7 +122,7 @@ class JinaLogger:
         """
         Get the handlers of the logger.
 
-        :returns: Handlers of logger.
+        :return:: Handlers of logger.
         """
         return self.logger.handlers
 

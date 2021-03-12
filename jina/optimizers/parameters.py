@@ -106,7 +106,7 @@ def load_optimization_parameters(filepath: str):
     """
     Loads optimization parameters from a `.yml` file and parses it with the JAML parser.
     :param filepath: Path to a file that contains optimization parameters.
-    :returns: The loaded :class:`OptimizationParameter` objects.
+    :return:: The loaded :class:`OptimizationParameter` objects.
     """
 
     with open(filepath, encoding='utf8') as fp:
