@@ -93,7 +93,7 @@ class Matches2DocRankDriver(BaseRankDriver):
             matches_metas.append(match_meta)
 
         new_scores = self.exec_fn(old_scores, queries_metas, matches_metas)
-        if len(new_scores) != len(new_scores):
+        if len(new_scores) != len(docs):
             msg = f'The number of scores {len(new_scores)} does not match the number of queries {len(docs)}'
             self.logger.error(msg)
             raise ValueError(msg)
