@@ -525,6 +525,7 @@ def single_multi_input(
     merge_over_axis: int = 0,
     slice_on: int = 1,
     num_data: int = 1,
+    flatten_output: bool = True,
 ) -> Any:
     """Guarantee that the inputs of a function with more than one argument is provided as single instances and not in batches
 
@@ -533,6 +534,7 @@ def single_multi_input(
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
     :param num_data: the number of data inside the arguments
+    :param flatten_output: If this is set to True, the results from different batches will be chained and the returning value is a list of the results. Otherwise, the returning value is a list of lists, in which each element is a list containing the result from one single batch. Note if there is only one batch returned, the returned result is always flatten.
     :return: the merged result as if run :func:`func` once on the input.
 
     ..warning:
@@ -611,7 +613,9 @@ def single_multi_input(
                 if r is not None:
                     final_result.append(r)
 
-            return _merge_results_after_batching(final_result, merge_over_axis)
+            return _merge_results_after_batching(
+                final_result, merge_over_axis, flatten=flatten_output
+            )
 
         return arg_wrapper
 
