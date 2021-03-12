@@ -13,7 +13,6 @@ import numpy as np
 from . import BaseVectorIndexer
 from ..decorators import batching
 from ...helper import cached_property
-from ...excepts import MetricTypeError
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
