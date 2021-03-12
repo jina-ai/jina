@@ -72,30 +72,35 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
 
     @staticmethod
     def _group_by(match_idx, col_name):
-        # sort by ``col
+        """
+        Create an list of numpy arrays with the same ``doc_id`` in each position of the list
+
+        :param match_idx: Numpy array of Tuples with document id and score
+        :param col_name:  Column name in the structured numpy array of Tuples
+
+        :return: List of numpy arrays with the same ``doc_id`` in each position of the list
+        :rtype: np.ndarray.
+        """
         _sorted_m = np.sort(match_idx, order=col_name)
-        _, _doc_counts = np.unique(_sorted_m[col_name], return_counts=True)
-        # group by ``col``
-        return np.split(_sorted_m, np.cumsum(_doc_counts))[:-1]
+        list_numpy_arrays = []
+        current = _sorted_m[col_name][0]
+        prev_val = 0
+        for i,val in enumerate(_sorted_m[col_name]):
+            if val != current:
+                list_numpy_arrays.append(_sorted_m[prev_val:i])   
+                prev_val = i
+                current = val
+        return list_numpy_arrays
 
     @staticmethod
     def _sort_doc_by_score(r):
         """
-        Sort a list of (``doc_id``, ``score``) tuples by the ``score``.
+        Sort a numpy array  of dtype (``doc_id``, ``score``) by the ``score``.
 
-        :param r: List of Tuples with document id and score
-        :type r: List[Tuple[np.str_, np.float64]]
-        :return: A `np.ndarray` in the shape of [N x 2], where `N` in the length of the input list.
-        :rtype: np.ndarray
+        :param r: Numpy array of Tuples with document id and score
+        :type r: np.ndarray[Tuple[np.str_, np.float64]]
         """
-        r = np.array(
-            r,
-            dtype=[
-                (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
-                (Chunk2DocRanker.COL_SCORE, np.float64),
-            ],
-        )
-        return np.sort(r, order=Chunk2DocRanker.COL_SCORE)[::-1]
+        r[::-1].sort(order='scores')
 
     def _score(
         self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
@@ -120,12 +125,15 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         :rtype: np.ndarray.
         """
         _groups = self._group_by(match_idx, Chunk2DocRanker.COL_PARENT_ID)
-        r = []
-        for _g in _groups:
-            match_id = _g[0][Chunk2DocRanker.COL_PARENT_ID]
-            score = self.exec_fn(_g, query_chunk_meta, match_chunk_meta)
-            r.append((match_id, score))
-        return self._sort_doc_by_score(r)
+        n_groups = len(_groups)
+        res = np.empty((n_groups,), dtype=[('ids','U64'), ('scores', np.float64)] )
+        
+        for i,_g in enumerate(_groups):
+           #res[i] = (match_id,    score)
+            res[i] = (_g['c0'][0], self.exec_fn(_g, query_chunk_meta, match_chunk_meta))
+
+        self._sort_doc_by_score(res)
+        return res
 
 
 class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
