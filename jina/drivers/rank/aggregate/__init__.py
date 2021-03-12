@@ -12,7 +12,7 @@ from .. import BaseRankDriver
 if False:
     from ....types.sets import DocumentSet
 
-COL_STR_TYPE = "U64"  #: the ID column data type for score matrix
+COL_STR_TYPE = 'U64'  #: the ID column data type for score matrix
 
 
 class BaseAggregateMatchesRankerDriver(BaseRankDriver):
@@ -36,7 +36,7 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         self.keep_source_matches_as_chunks = keep_source_matches_as_chunks
 
     QueryMatchInfo = namedtuple(
-        "QueryMatchInfo", "match_parent_id match_id query_id score"
+        'QueryMatchInfo', 'match_parent_id match_id query_id score'
     )
 
     def _extract_query_match_info(self, match: Document, query: Document):
@@ -52,7 +52,7 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         query: Document,
         parent_id_chunk_id_map: dict,
         chunk_matches_by_id: dict,
-        docs_scores: "np.ndarray",
+        docs_scores: 'np.ndarray',
     ):
         """
         :param query: the query Document where the resulting matches will be inserted
@@ -100,11 +100,11 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         :param r: Numpy array of Tuples with document id and score
         :type r: np.ndarray[Tuple[np.str_, np.float64]]
         """
-        r[::-1].sort(order="scores")
+        r[::-1].sort(order='scores')
 
     def _score(
-        self, match_idx: "np.ndarray", query_chunk_meta: Dict, match_chunk_meta: Dict
-    ) -> "np.ndarray":
+        self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
+    ) -> 'np.ndarray':
         """
         Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
         meta information of the query, hence the meta info of the query chunks and matched chunks are given
@@ -159,10 +159,10 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
                 |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
     """
 
-    def __init__(self, traversal_paths: Tuple[str] = ("r",), *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: "DocumentSet", *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         """
         :param docs: the doc which gets bubbled up matches
         :param *args: not used (kept to maintain interface)
@@ -239,10 +239,10 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
     Using this Driver before querying a Binary Index with full binary document data can be very useful to implement a search system.
     """
 
-    def __init__(self, traversal_paths: Tuple[str] = ("r",), *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: "DocumentSet", *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         """
 
         :param docs: the document at granularity ``k``
@@ -292,7 +292,7 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
 
                 docs_scores = self._score(match_idx, query_meta, match_meta)
                 # This ranker will change the current matches
-                doc.ClearField("matches")
+                doc.ClearField('matches')
                 self._insert_query_matches(
                     query=doc,
                     parent_id_chunk_id_map=parent_id_chunk_id_map,
