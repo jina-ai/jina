@@ -27,7 +27,7 @@ class ColorFormatter(Formatter):
         Format the LogRecord with corresponding colour.
 
         :param record: A LogRecord object
-        :returns: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
+        :return:: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
         """
         cr = copy(record)
         if cr.levelname != 'INFO':
@@ -44,7 +44,7 @@ class PlainFormatter(Formatter):
         Format the LogRecord by removing all control chars and plain text, and restrict the max-length of msg to 512.
 
         :param record: A LogRecord object.
-        :returns: Formatted plain LogRecord.
+        :return:: Formatted plain LogRecord.
         """
         cr = copy(record)
         if isinstance(cr.msg, str):
@@ -77,7 +77,7 @@ class JsonFormatter(Formatter):
         Format the log message as a JSON object.
 
         :param record: A LogRecord object.
-        :returns: LogRecord with JSON format.
+        :return:: LogRecord with JSON format.
         """
         cr = copy(record)
         cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))
@@ -94,7 +94,7 @@ class ProfileFormatter(Formatter):
         Format the log message as JSON object and add the current used memory.
 
         :param record: A LogRecord object.
-        :returns: Return JSON formatted log if msg of LogRecord is dict type else return empty.
+        :return:: Return JSON formatted log if msg of LogRecord is dict type else return empty.
         """
         cr = copy(record)
         if isinstance(cr.msg, dict):

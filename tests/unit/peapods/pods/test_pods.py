@@ -6,6 +6,7 @@ from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 from jina.peapods.pods import BasePod
+from jina.peapods.pods.helper import get_public_ip, get_internal_ip
 
 
 @pytest.mark.parametrize('parallel', [1, 2, 4])
@@ -79,3 +80,84 @@ def test_pod_args_remove_uses_ba():
     )
     with Pod(args) as p:
         assert p.num_peas == 4
+
+
+def test_pod_remote_pea_without_parallel():
+    args = set_pod_parser().parse_args(
+        ['--peas-hosts', '1: 0.0.0.1', '--parallel', str(1)]
+    )
+    with Pod(args) as pod:
+        peas = pod.peas
+        for pea in peas:
+            assert pea.args.host == pod.host
+
+
+@pytest.mark.parametrize(
+    'pod_host, pea1_host, expected_host_in, expected_host_out',
+    [
+        ('0.0.0.0', '0.0.0.1', get_internal_ip(), get_internal_ip()),
+        ('0.0.0.1', '0.0.0.2', '0.0.0.1', '0.0.0.1'),
+        ('0.0.0.1', '0.0.0.0', '0.0.0.1', '0.0.0.1'),
+    ],
+)
+def test_pod_remote_pea_parallel_pea_host_set_partially(
+    pod_host,
+    pea1_host,
+    expected_host_in,
+    expected_host_out,
+):
+    args = set_pod_parser().parse_args(
+        ['--peas-hosts', f'1: {pea1_host}', '--parallel', str(2), '--host', pod_host]
+    )
+    assert args.host == pod_host
+    pod = Pod(args)
+    for k, v in pod.peas_args.items():
+        if k in ['head', 'tail']:
+            assert v.host == args.host
+        else:
+            for pea_arg in v:
+                if pea_arg.pea_id == 1:
+                    assert pea_arg.host == pea1_host
+                    assert pea_arg.host_in == expected_host_in
+                    assert pea_arg.host_out == expected_host_out
+                else:
+                    assert pea_arg.host == args.host
+                    assert pea_arg.host_in == '0.0.0.0'
+                    assert pea_arg.host_out == '0.0.0.0'
+
+
+@pytest.mark.parametrize(
+    'pod_host, peas_hosts, expected_host_in, expected_host_out',
+    [
+        ('0.0.0.0', ['0.0.0.1', '0.0.0.2'], get_internal_ip(), get_internal_ip()),
+        ('0.0.0.1', ['0.0.0.2', '0.0.0.3'], '0.0.0.1', '0.0.0.1'),
+        ('0.0.0.1', ['0.0.0.0', '0.0.0.2'], '0.0.0.1', '0.0.0.1'),
+    ],
+)
+def test_pod_remote_pea_parallel_pea_host_set_completely(
+    pod_host,
+    peas_hosts,
+    expected_host_in,
+    expected_host_out,
+):
+    args = set_pod_parser().parse_args(
+        [
+            '--peas-hosts',
+            f'1: {peas_hosts[0]}',
+            f'2: {peas_hosts[1]}',
+            '--parallel',
+            str(2),
+            '--host',
+            pod_host,
+        ]
+    )
+    assert args.host == pod_host
+    pod = Pod(args)
+    for k, v in pod.peas_args.items():
+        if k in ['head', 'tail']:
+            assert v.host == args.host
+        else:
+            for pea_arg, pea_host in zip(v, peas_hosts):
+                assert pea_arg.host == pea_host
+                assert pea_arg.host_in == expected_host_in
+                assert pea_arg.host_out == expected_host_out

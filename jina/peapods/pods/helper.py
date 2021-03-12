@@ -15,6 +15,21 @@ def _set_peas_args(
 
     for idx in range(args.parallel):
         _args = copy.deepcopy(args)
+
+        if args.parallel > 1:
+            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
+            _args.pea_role = PeaRoleType.PARALLEL
+            _args.identity = random_identity()
+            if _args.peas_hosts:
+                _args.host = _args.peas_hosts.get(str(_args.pea_id), args.host)
+            if _args.name:
+                _args.name += f'/{_args.pea_id}'
+            else:
+                _args.name = f'{_args.pea_id}'
+        else:
+            _args.pea_id = 0
+            _args.pea_role = PeaRoleType.SINGLETON
+
         if head_args:
             _args.port_in = head_args.port_out
         if tail_args:
@@ -35,18 +50,6 @@ def _set_peas_args(
             _args.host_in = _fill_in_host(bind_args=head_args, connect_args=_args)
         if tail_args:
             _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
-
-        if args.parallel > 1:
-            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
-            _args.pea_role = PeaRoleType.PARALLEL
-            _args.identity = random_identity()
-            if _args.name:
-                _args.name += f'/{_args.pea_id}'
-            else:
-                _args.name = f'{_args.pea_id}'
-        else:
-            _args.pea_id = 0
-            _args.pea_role = PeaRoleType.SINGLETON
 
         result.append(_args)
     return result
