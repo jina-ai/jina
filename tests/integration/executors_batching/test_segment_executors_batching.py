@@ -28,7 +28,7 @@ class DummySegmenterTextSingle(BaseSegmenter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @single(flatten_output=False)
+    @single
     def segment(self, text, *args, **kwargs):
         assert isinstance(text, str)
         return [{'text': f'{text}-chunk-{chunk}'} for chunk in range(NUM_CHUNKS)]

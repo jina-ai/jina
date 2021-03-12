@@ -15,7 +15,7 @@ class MockSegmenter(BaseSegmenter):
         super().__init__(*args, **kwargs)
         self.required_keys = {'text'}
 
-    @single(flatten_output=False)
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         if text == 'valid':
             # length, parent_id and id are protected keys that won't affect the segments

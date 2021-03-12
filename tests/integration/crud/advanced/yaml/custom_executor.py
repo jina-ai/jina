@@ -18,7 +18,7 @@ class DummySentencizer(BaseSegmenter):
             '\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(punct_chars)))
         )
 
-    @single(flatten_output=False)
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.

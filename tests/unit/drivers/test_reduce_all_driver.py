@@ -28,7 +28,7 @@ def docs():
 
 
 class MockSegmenterReduce(BaseSegmenter):
-    @single(flatten_output=False)
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
         chunks = [

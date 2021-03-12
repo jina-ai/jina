@@ -434,7 +434,7 @@ def single(
     func: Optional[Callable[[Any], np.ndarray]] = None,
     merge_over_axis: int = 0,
     slice_on: int = 1,
-    flatten_output: bool = True,
+    flatten_output: bool = False,
 ) -> Any:
     """
     Guarantee that the input of a function is provided as a single instance and not in batches

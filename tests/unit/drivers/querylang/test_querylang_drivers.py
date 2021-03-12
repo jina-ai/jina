@@ -46,13 +46,13 @@ def random_docs_with_tags():
 
 
 class DummySegmenter(BaseSegmenter):
-    @single(flatten_output=False)
+    @single
     def segment(self, text, *args, **kwargs):
         return [{'text': 'adasd' * (j + 1), 'tags': {'id': j}} for j in range(10)]
 
 
 class DummyModeIdSegmenter(BaseSegmenter):
-    @single(flatten_output=False)
+    @single
     def segment(self, text, *args, **kwargs):
         if 'chunk3' not in text:
             return [
