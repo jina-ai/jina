@@ -15,6 +15,22 @@ class MultimodalDocument(Document):
     .. warning::
         - It assumes that every ``chunk`` of a ``document`` belongs to a different modality.
         - It assumes that every :class:`MultimodalDocument` have at least two chunks.
+        - Build :class:`MultimodalDocument` from :attr:`modality_content_mapping` expects you assign
+          :attr:`Document.content` as the value of the dictionary.
+
+    :param document: the document to construct from. If ``bytes`` is given
+            then deserialize a :class:`DocumentProto`; ``dict`` is given then
+            parse a :class:`DocumentProto` from it; ``str`` is given, then consider
+            it as a JSON string and parse a :class:`DocumentProto` from it; finally,
+            one can also give `DocumentProto` directly, then depending on the ``copy``,
+            it builds a view or a copy from it.
+    :param chunks: the chunks of the multimodal document to initialize with. Expected to
+            received a list of :class:`Document`, with different modalities.
+    :param: `modality_content_mapping`: A Python dict, the keys are the modalities and the values
+            are the :attr:`content` of the :class:`Document`
+    :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
+            view (i.e. weak reference) from it or a deep copy from it.
+    :param kwargs: further key value arguments
     """
 
     def __init__(
@@ -25,26 +41,7 @@ class MultimodalDocument(Document):
         copy: bool = False,
         **kwargs,
     ):
-        """
 
-        :param document: the document to construct from. If ``bytes`` is given
-                then deserialize a :class:`DocumentProto`; ``dict`` is given then
-                parse a :class:`DocumentProto` from it; ``str`` is given, then consider
-                it as a JSON string and parse a :class:`DocumentProto` from it; finally,
-                one can also give `DocumentProto` directly, then depending on the ``copy``,
-                it builds a view or a copy from it.
-        :param chunks: the chunks of the multimodal document to initialize with. Expected to
-                received a list of :class:`Document`, with different modalities.
-        :param: `modality_content_mapping`: A Python dict, the keys are the modalities and the values
-                are the :attr:`content` of the :class:`Document`
-        :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
-                view (i.e. weak reference) from it or a deep copy from it.
-        :param kwargs: other parameters to be set
-
-        .. warning::
-            - Build :class:`MultimodalDocument` from :attr:`modality_content_mapping` expects you assign
-              :attr:`Document.content` as the value of the dictionary.
-        """
         super().__init__(document=document, copy=copy, **kwargs)
         if chunks or modality_content_map:
             if chunks:
@@ -69,6 +66,7 @@ class MultimodalDocument(Document):
 
         - Document should consist at least 2 chunks.
         - Length of modality is not identical to length of chunks.
+        :return: true if the document is valid
         """
         modalities = set([chunk.modality for chunk in self.chunks])
         return 2 <= len(self.chunks) == len(modalities)
@@ -112,7 +110,11 @@ class MultimodalDocument(Document):
 
     @modality_content_map.setter
     def modality_content_map(self, value: Dict[str, Any]):
-        """Set the mapping of modality and content."""
+        """
+        Set the mapping of modality and content.
+
+        :param value: map from modality to content
+        """
         for modality, content in value.items():
             with Document() as chunk:
                 chunk.modality = modality
@@ -139,7 +141,14 @@ class MultimodalDocument(Document):
         return list(self.modality_content_map.keys())
 
     def update_content_hash(
-        self, exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash')
+        self,
+        exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash'),
+        include_fields: Optional[Tuple[str]] = None,
     ) -> None:
-        """Update content hash of the document by including ``chunks`` when computing the hash"""
-        super().update_content_hash(exclude_fields)
+        """
+        Update content hash of the document by including ``chunks`` when computing the hash
+
+         :param exclude_fields: a tuple of field names that excluded when computing content hash
+        :param include_fields: a tuple of field names that included when computing content hash
+        """
+        super().update_content_hash(exclude_fields, include_fields)
