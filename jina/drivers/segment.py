@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Optional, Tuple
 
 from . import BaseExecutableDriver, FlatRecursiveMixin
+from ..excepts import LengthMismatchException
 from ..types.document import Document
 
 if False:
@@ -19,24 +20,44 @@ class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
         method: str = 'segment',
         traversal_paths: Tuple[str] = ('r',),
         *args,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             executor, method, traversal_paths=traversal_paths, *args, **kwargs
         )
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
+        if not docs:
+            self.logger.warning(f'an empty DocumentSet {docs}')
+            return
 
-        for doc in docs:
-            _args_dict = doc.get_attrs(*self.exec.required_keys)
-            ret = self.exec_fn(**_args_dict)
-            if ret:
-                self._update(doc, ret)
+        contents, docs_pts = docs.extract_docs(*self.exec.required_keys)
+
+        if not docs_pts:
+            self.logger.warning(f'no Document is extracted {docs}')
+            return
+
+        if len(self.exec.required_keys) > 1:
+            docs_chunks = self.exec_fn(*contents)
+        else:
+            docs_chunks = self.exec_fn(contents)
+
+        if len(docs_pts) != len(docs_chunks):
+            msg = (
+                f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
+                f'and length of returned crafted documents: {len(docs_chunks)}, the length must be the same'
+            )
+            self.logger.error(msg)
+            raise LengthMismatchException(msg)
+
+        for doc, chunks in zip(docs_pts, docs_chunks):
+            self._add_chunks(doc, chunks)
 
     @staticmethod
-    def _update(doc, ret):
-        for r in ret:
-            with Document(length=len(ret), **r) as c:
+    def _add_chunks(doc, chunks):
+        num_siblings = len(chunks)
+        for chunk in chunks:
+            with Document(length=num_siblings, **chunk) as c:
                 if not c.mime_type:
                     c.mime_type = doc.mime_type
             doc.chunks.append(c)
