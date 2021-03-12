@@ -126,11 +126,19 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         """
         _groups = self._group_by(match_idx, Chunk2DocRanker.COL_PARENT_ID)
         n_groups = len(_groups)
-        res = np.empty((n_groups,), dtype=[(Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
-                                           (Chunk2DocRanker.COL_SCORE, np.float64)])
+        res = np.empty(
+            (n_groups,),
+            dtype=[
+                (Chunk2DocRanker.COL_PARENT_ID, COL_STR_TYPE),
+                (Chunk2DocRanker.COL_SCORE, np.float64),
+            ],
+        )
 
         for i, _g in enumerate(_groups):
-            res[i] = (_g[Chunk2DocRanker.COL_PARENT_ID][0], self.exec_fn(_g, query_chunk_meta, match_chunk_meta) )
+            res[i] = (
+                _g[Chunk2DocRanker.COL_PARENT_ID][0],
+                self.exec_fn(_g, query_chunk_meta, match_chunk_meta),
+            )
 
         self._sort_doc_by_score(res)
         return res
