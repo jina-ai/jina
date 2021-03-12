@@ -495,8 +495,6 @@ class NumpyIndexer(BaseNumpyIndexer):
         elif self.metric == 'cosine':
             _query_vectors = _ext_A(_norm(vectors))
             dist = self._cosine(_query_vectors, self.query_handler)
-        else:
-            raise MetricTypeError(f'{self.metric} is not implemented')
 
         idx, dist = self._get_sorted_top_k(dist, top_k)
         indices = self._int2ext_id[self.valid_indices][idx]
