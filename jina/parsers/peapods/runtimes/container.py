@@ -28,7 +28,7 @@ the Docker container.
     gp.add_argument(
         '--docker-kwargs',
         action=KVAppendAction,
-        metavar='KEY=VALUE',
+        metavar='KEY: VALUE',
         nargs='*',
         help='''
 Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '

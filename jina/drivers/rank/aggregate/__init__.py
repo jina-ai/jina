@@ -149,10 +149,6 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
                 |    |- matches: {granularity: k}
                 |
                 |-matches: {granularity: k-1} (Ranked according to Ranker Executor)
-
-        .. note::
-            - It traverses on ``chunks`` not on ``matches``. This is because ranker needs context information
-            from ``matches`` for several ``chunks``
     """
 
     def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):

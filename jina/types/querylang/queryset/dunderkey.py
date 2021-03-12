@@ -46,7 +46,7 @@ def dunderkey(*args: str) -> str:
        >>> 'a__b__c'
 
     :param *args: the multiple strings
-    :returns: the joined key
+    :return:: the joined key
     """
     return '__'.join(args)
 
@@ -153,11 +153,22 @@ def undunder_keys(_dict: Dict) -> Dict:
     """
 
     def f(keys, value):
-        """Recursively undunder the keys."""
+        """
+        Recursively undunder the keys.
+
+        :param keys: keys to undunder
+        :param value: related value
+        :return: undundered keys
+        """
         return {keys[0]: f(keys[1:], value)} if keys else value
 
     def merge(dict1, dict2):
-        """Merge two dictionaries."""
+        """
+        Merge second dictionary into the first one.
+
+        :param dict1: dictionary which gets modified
+        :param dict2: dictionary to read from
+        """
         key, val = list(dict2.items())[0]
 
         if key in dict1:
