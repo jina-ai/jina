@@ -30,13 +30,17 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         def close(self):
             """Close the file."""
-            self.body.close()
-            self.header.close()
+            if not self.body.closed:
+                self.body.close()
+            if not self.header.closed:
+                self.header.close()
 
         def flush(self):
             """Clear the body and header."""
-            self.body.flush()
-            self.header.flush()
+            if not self.body.closed:
+                self.body.flush()
+            if not self.header.closed:
+                self.header.flush()
 
     class ReadHandler:
         """
@@ -68,7 +72,8 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         def close(self):
             """Close the file."""
-            self._body.close()
+            if not self._body.closed:
+                self._body.close()
 
     def __getstate__(self):
         # called on pickle save

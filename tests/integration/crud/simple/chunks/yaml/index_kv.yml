@@ -1,6 +1,7 @@
 !BinaryPbIndexer
 with:
   index_filename: doc.gzip
+  delete_on_dump: true
 metas:
   name: docIndexer
   workspace: $JINA_CRUD_CHUNKS
