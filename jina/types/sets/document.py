@@ -160,7 +160,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 and the documents have no embedding in a :class:`DocumentSet`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self._extract_docs('embedding')
+        return self.extract_docs('embedding')
 
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
@@ -170,11 +170,16 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 and the documents have no contents in a :class:`DocumentSet`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self._extract_docs('content')
+        return self.extract_docs('content')
 
-    def _extract_docs(
+    def extract_docs(
         self, *fields: str
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
+        """Return in batches all the values of the fields
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns an :class:`np.ndarray` or a list of :class:`np.ndarray` with the batches for these fields
+        """
 
         list_of_contents_output = len(fields) > 1
         contents = [[] for _ in fields if len(fields) > 1]

@@ -1,6 +1,7 @@
 from typing import Dict
 
 from jina.executors.crafters import BaseCrafter
+from jina.executors.decorators import single
 from jina.optimizers.parameters import IntegerParameter
 
 
@@ -47,7 +48,9 @@ class DummyCrafter(BaseCrafter):
             and self.param3 == DummyCrafter.GOOD_PARAM_3
         )
 
+    @single
     def craft(self, text, *args, **kwargs) -> Dict:
+
         if self.good_params:
             return {'text': text}
         else:

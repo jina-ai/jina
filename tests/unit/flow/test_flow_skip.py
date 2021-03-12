@@ -1,14 +1,17 @@
 import pytest
 
 from jina.enums import OnErrorStrategy
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import validate_callback
 
 
-class DummyCrafter(BaseCrafter):
-    def craft(self, *args, **kwargs):
+class DummyCrafterSkip(BaseCrafter):
+    @single
+    def craft(self, text, *args, **kwargs):
+        self.logger.warning('crafting division by zero')
         return 1 / 0
 
 
@@ -28,7 +31,7 @@ def test_bad_flow_skip_handle(mocker, restful):
 
     f = (
         Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
-        .add(name='r1', uses='DummyCrafter')
+        .add(name='r1', uses='!DummyCrafterSkip')
         .add(name='r2')
         .add(name='r3')
     )
@@ -67,7 +70,7 @@ def test_bad_flow_skip_handle_join(mocker, restful):
 
     f = (
         Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
-        .add(name='r1', uses='DummyCrafter')
+        .add(name='r1', uses='!DummyCrafterSkip')
         .add(name='r2')
         .add(name='r3', needs='r1')
         .needs(['r3', 'r2'])
@@ -94,7 +97,7 @@ def test_bad_flow_skip_exec(mocker, restful):
 
     f = (
         Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
-        .add(name='r1', uses='DummyCrafter')
+        .add(name='r1', uses='!DummyCrafterSkip')
         .add(name='r2')
         .add(name='r3')
     )
@@ -122,7 +125,7 @@ def test_bad_flow_skip_exec_join(mocker, restful):
 
     f = (
         Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
-        .add(name='r1', uses='DummyCrafter')
+        .add(name='r1', uses='!DummyCrafterSkip')
         .add(name='r2')
         .add(name='r3', needs='r1')
         .needs(['r3', 'r2'])
