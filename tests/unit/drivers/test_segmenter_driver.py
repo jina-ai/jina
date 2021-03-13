@@ -6,6 +6,7 @@ import pytest
 from jina import Document
 from jina.drivers.segment import SegmentDriver
 from jina.executors.segmenters import BaseSegmenter
+from jina.executors.decorators import single
 from jina.types.sets import DocumentSet
 
 
@@ -14,6 +15,7 @@ class MockSegmenter(BaseSegmenter):
         super().__init__(*args, **kwargs)
         self.required_keys = {'text'}
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         if text == 'valid':
             # length, parent_id and id are protected keys that won't affect the segments

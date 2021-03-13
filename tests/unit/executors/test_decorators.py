@@ -235,7 +235,8 @@ def test_batching():
     assert instance.batch_sizes[0] == 4
 
 
-def test_batching_np_array():
+@pytest.mark.parametrize('input_shape', [(4, 5), (4, 5, 5)])
+def test_batching_np_array(input_shape):
     class A:
         def __init__(self, batch_size):
             self.batch_size = batch_size
@@ -247,7 +248,7 @@ def test_batching_np_array():
             return data
 
     instance = A(1)
-    input_np = np.random.random((4, 5))
+    input_np = np.random.random(input_shape)
     result = instance.f(input_np)
     np.testing.assert_equal(result, input_np)
     assert len(instance.batch_sizes) == 4

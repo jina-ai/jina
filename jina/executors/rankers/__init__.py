@@ -132,16 +132,24 @@ class Match2DocRanker(BaseRanker):
 
     def score(
         self,
-        old_match_scores: Iterable[float],
-        query_meta: Dict,
-        match_meta: Iterable[Dict],
-    ) -> Iterable[float]:
+        old_matches_scores: Sequence[Sequence[float]],
+        queries_metas: Sequence[Dict],
+        matches_metas: Sequence[Sequence[Dict]],
+    ) -> Sequence[Sequence[float]]:
         """
-        Calculates the new scores for matches and returns them. Returns an iterable of the scores to be assined to the matches.
+        Calculates the new scores for matches and returns them. Returns an iterable of the scores to be assigned to the matches.
         The returned scores need to be returned in the same order as the input `:param old_match_scores`.
 
-        :param old_match_scores: Contains old scores in a list
-        :param query_meta: Dictionary containing all the query meta information requested by the `query_required_keys` class_variable.
-        :param match_meta: List containing all the matches meta information requested by the `match_required_keys` class_variable. Sorted in the same way as `old_match_scores`
+        .. note::
+            The length of `old_match_scores`, `queries_metas` and `matches_metas` correspond to the amount of queries in the batch for which
+            one wants to score its matches.
+
+            Every Sequence in match metas correspond to the amount of retrieved matches per query.
+
+            The resulting list of scores will provide a list of score for every query. And every list will be ordered in the same way as the `matches_metas` lists
+
+        :param old_matches_scores: Contains old scores in a list for every query
+        :param queries_metas: List of dictionaries containing all the query meta information requested by the `query_required_keys` class_variable for each query in a batch.
+        :param matches_metas: List of lists containing all the matches meta information requested by the `match_required_keys` class_variable for every query. Sorted in the same way as `old_match_scores`
         """
         raise NotImplementedError
