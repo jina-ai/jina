@@ -100,7 +100,7 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         :param r: Numpy array of Tuples with document id and score
         :type r: np.ndarray[Tuple[np.str_, np.float64]]
         """
-        r[::-1].sort(order='scores')
+        r[::-1].sort(order=Chunk2DocRanker.COL_SCORE)
 
     def _score(
         self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
