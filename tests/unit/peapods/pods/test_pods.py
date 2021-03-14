@@ -12,8 +12,12 @@ from jina.peapods.pods.helper import get_internal_ip
 @pytest.fixture(scope='function')
 def pod_args():
     args = [
-        '--name', 'test',
-        '--parallel', '2', '--host', '0.0.0.0',
+        '--name',
+        'test',
+        '--parallel',
+        '2',
+        '--host',
+        '0.0.0.0',
     ]
     return set_pod_parser().parse_args(args)
 
@@ -21,8 +25,14 @@ def pod_args():
 @pytest.fixture(scope='function')
 def pod_args_singleton():
     args = [
-        '--name', 'test2', '--uses-before', '_pass',
-        '--parallel', '1', '--host', '0.0.0.0',
+        '--name',
+        'test2',
+        '--uses-before',
+        '_pass',
+        '--parallel',
+        '1',
+        '--host',
+        '0.0.0.0',
     ]
     return set_pod_parser().parse_args(args)
 
