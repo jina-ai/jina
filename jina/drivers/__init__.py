@@ -377,7 +377,8 @@ class FlatRecursiveMixin:
         """
         path_documents = self.docs.traverse_flattened_per_path(self._traversal_paths)
         for documents in path_documents:
-            self._apply_all(documents, *args, **kwargs)
+            if documents:
+                self._apply_all(documents, *args, **kwargs)
 
     def _apply_all(
         self,

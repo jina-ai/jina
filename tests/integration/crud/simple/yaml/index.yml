@@ -9,6 +9,7 @@ components:
   - !BinaryPbIndexer
     with:
       index_filename: doc.gz
+      delete_on_dump: true
     metas:
       name: docidx
 metas:

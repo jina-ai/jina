@@ -1,5 +1,6 @@
 !BinaryPbIndexer
 with:
   index_filename: test-docs
+  delete_on_dump: true
 metas:
   workspace: 'test-workspace'

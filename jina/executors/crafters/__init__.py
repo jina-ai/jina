@@ -22,9 +22,15 @@ class BaseCrafter(BaseExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = {
+        self.required_keys = [
             k for k in inspect.getfullargspec(self.craft).args if k != 'self'
-        }
+        ]
+        if not self.required_keys:
+            self.required_keys = [
+                k
+                for k in inspect.getfullargspec(inspect.unwrap(self.craft)).args
+                if k != 'self'
+            ]
         if not self.required_keys:
             self.logger.warning(
                 f'{typename(self)} works on keys, but no keys are specified'
@@ -37,7 +43,7 @@ class BaseCrafter(BaseExecutor):
         from the protobuf request accordingly.
         The name of the arguments should be always valid keys defined in the protobuf.
 
-        :param args: unused
-        :param kwargs: unused
+        :param args: Extra variable length arguments
+        :param kwargs: Extra variable keyword arguments
         """
         raise NotImplementedError

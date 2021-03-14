@@ -972,6 +972,13 @@ class cached_property:
         value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
         return value
 
+    def __delete__(self, obj):
+        cached_value = obj.__dict__.get(f'CACHED_{self.func.__name__}', None)
+        if cached_value is not None:
+            if hasattr(cached_value, 'close'):
+                cached_value.close()
+            del obj.__dict__[f'CACHED_{self.func.__name__}']
+
 
 def get_now_timestamp():
     """
