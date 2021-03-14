@@ -33,6 +33,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7835,4 +7836,63 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e087208c```](https://github.com/jina-ai/jina/commit/e087208c8dd6851b27224fafe3f911ec29cf8b87)] __-__ update readme (*Han Xiao*)
  - [[```ddb2968d```](https://github.com/jina-ai/jina/commit/ddb2968d971914ead0a23c32745f16e7ebcd8436)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```ab26435d```](https://github.com/jina-ai/jina/commit/ab26435d6036a61dbee5d6274365e1ff09246d1b)] __-__ __version__: the next version will be 1.0.8 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-9></a>
+## Release Note (`1.0.9`)
+
+> Release time: 2021-03-14 23:12:30
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Wang Bo,  Jina Dev Bot,  Joan Fontanals,  Maximilian Werk,  Florian Hönicke,  cristian,  Deepankar Mahapatro,  Yongxuan Zhang,  David Buchaca Prats,  Arnau,  Han Xiao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```2940582d```](https://github.com/jina-ai/jina/commit/2940582dbc025b5432d6bdbd29e9d3697f84b44c)] __-__ enable batching for matches2docrankers (#2145) (*Joan Fontanals*)
+ - [[```bc062ee6```](https://github.com/jina-ai/jina/commit/bc062ee6486f15a204a06237d76b2a07a02029ba)] __-__ add batching capability for segmenters (#2141) (*Joan Fontanals*)
+ - [[```e689f203```](https://github.com/jina-ai/jina/commit/e689f20349144825ed14f6dd91ba7b63f08e3e29)] __-__ adapt for crafter batching (#2126) (*Joan Fontanals*)
+ - [[```7505f8c8```](https://github.com/jina-ai/jina/commit/7505f8c85db55328451c8e0692b507b4ad80309e)] __-__ distributed(remote) pea in pod (#2143) (*Wang Bo*)
+ - [[```b429d221```](https://github.com/jina-ai/jina/commit/b429d2215475e56a8808b5687db9e90c2d1e133e)] __-__ __schema__: generate pydantic based jsonschema for any jina proto (#2121) (*Deepankar Mahapatro*)
+
+### 🐞 Bug fixes
+
+ - [[```982fd9e2```](https://github.com/jina-ai/jina/commit/982fd9e2991d301787608c1cae8701c613e9ce4f)] __-__ add delete() for cached property (#2144) (*cristian*)
+ - [[```77b222a8```](https://github.com/jina-ai/jina/commit/77b222a8de13b3daa1c43cff0297428476e8d6ff)] __-__ __pydantic__: add oneof validations for correct document creation (#2146) (*Deepankar Mahapatro*)
+ - [[```3ef313f9```](https://github.com/jina-ai/jina/commit/3ef313f9140e6b4fc6f21503dc3b85ffecd3a623)] __-__ metavar for docker args (#2155) (*Wang Bo*)
+ - [[```22cd4151```](https://github.com/jina-ai/jina/commit/22cd415121a79f3e1eb960f61e6924c33cea2839)] __-__ avoid dump drivers (#2133) (*David Buchaca Prats*)
+
+### 🚧 Code Refactoring
+
+ - [[```9cbf6bd3```](https://github.com/jina-ai/jina/commit/9cbf6bd340c0b4c00d7bcc7225c3d18399a97402)] __-__ match parent method (#2159) (*Florian Hönicke*)
+ - [[```f12a4807```](https://github.com/jina-ai/jina/commit/f12a4807b0f14851116d159996414d0727091673)] __-__ returns to return (#2148) (*Florian Hönicke*)
+ - [[```1fd79ae8```](https://github.com/jina-ai/jina/commit/1fd79ae88068dcba2e8d27718c6d7917019e474f)] __-__ missing optional types (#2136) (*Florian Hönicke*)
+ - [[```441966b9```](https://github.com/jina-ai/jina/commit/441966b969102ecfbd20cd32cd231d62bba91754)] __-__ remove ntlogger (#2138) (*Yongxuan Zhang*)
+ - [[```e8079af3```](https://github.com/jina-ai/jina/commit/e8079af3d58f1de0f51f8aef6cdf1eb3d87a9873)] __-__ refactor rankers, move logic to driver (#2113) (*Joan Fontanals*)
+ - [[```f0b6a440```](https://github.com/jina-ai/jina/commit/f0b6a44045f7fccca05a34020fd42981ce34dc4e)] __-__ prepare changes to have batching for every executor (#2110) (*Joan Fontanals*)
+ - [[```caae3f6d```](https://github.com/jina-ai/jina/commit/caae3f6d9ba9e29583f08a7d721f8a1629e171fa)] __-__ crud delete types (#2014) (*Florian Hönicke*)
+ - [[```dd687735```](https://github.com/jina-ai/jina/commit/dd687735bb2c569f8dee51ff262d88b3f271b681)] __-__ __cli__: rename silent to quiet (#2122) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```7a8c6ceb```](https://github.com/jina-ai/jina/commit/7a8c6ceb05a705462b1158e136bf93445fd0198c)] __-__ fix docstring rankdriver (#2153) (*Joan Fontanals*)
+ - [[```06ebc5ce```](https://github.com/jina-ai/jina/commit/06ebc5cefcdb986340d2d8ba722a16f8e7b4a0b9)] __-__ __openapi__: autogenerate curl commands with redoc (#2130) (*Deepankar Mahapatro*)
+ - [[```b97e63bd```](https://github.com/jina-ai/jina/commit/b97e63bd7aecc641daed75d9d61510015a13629e)] __-__ __jina__: fix broken links in contributing doc instructions (#2125) (*Arnau*)
+ - [[```ded7f756```](https://github.com/jina-ai/jina/commit/ded7f756d1a40ac749d8d3843a7e56c7e90d1ee4)] __-__ type annotation (#2049) (*Florian Hönicke*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```95c689f1```](https://github.com/jina-ai/jina/commit/95c689f1342881d07c1d301251f82f87aa347422)] __-__ complete pod tests (#2164) (*Wang Bo*)
+ - [[```3dd0f53e```](https://github.com/jina-ai/jina/commit/3dd0f53e6629cb11077ca5ece4caedf1a5abbef5)] __-__ remove folder after test (#2162) (*Maximilian Werk*)
+ - [[```5222acda```](https://github.com/jina-ai/jina/commit/5222acda51bca331b91f4a04a922b845b8e7c559)] __-__ add delete on dump to more (#2150) (*cristian*)
+ - [[```5129f58d```](https://github.com/jina-ai/jina/commit/5129f58d69549ee3db0292db64d330a45f8e21a0)] __-__ check black and docstring only for added or modified files (#2131) (*Deepankar Mahapatro*)
+ - [[```23d77e22```](https://github.com/jina-ai/jina/commit/23d77e221a8534aa1200962d5c412fee991632d4)] __-__ crud api (#2104) (*Florian Hönicke*)
+ - [[```ae043c45```](https://github.com/jina-ai/jina/commit/ae043c45dea29d676765fac114a4c87959f66f69)] __-__ __encoders__: add tests (#2058) (*Yongxuan Zhang*)
+
+### 🍹 Other Improvements
+
+ - [[```a7f1b0e2```](https://github.com/jina-ai/jina/commit/a7f1b0e271bc882c30762c28e57230838e670f7e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```666d302e```](https://github.com/jina-ai/jina/commit/666d302ef490d35f7eb080f108994e4582c59dc2)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```47ac7b0a```](https://github.com/jina-ai/jina/commit/47ac7b0a8d55faf8032579cb6e114e9b02bf392f)] __-__ __version__: the next version will be 1.0.9 (*Jina Dev Bot*)
 
