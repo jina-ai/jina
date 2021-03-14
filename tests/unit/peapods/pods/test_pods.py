@@ -6,7 +6,96 @@ from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 from jina.peapods.pods import BasePod
-from jina.peapods.pods.helper import get_public_ip, get_internal_ip
+from jina.peapods.pods.helper import get_internal_ip
+
+
+@pytest.fixture(scope='function')
+def pod_args():
+    args = [
+        '--name',
+        'test',
+        '--parallel',
+        '2',
+        '--host',
+        '0.0.0.0',
+    ]
+    return set_pod_parser().parse_args(args)
+
+
+@pytest.fixture(scope='function')
+def pod_args_singleton():
+    args = [
+        '--name',
+        'test2',
+        '--uses-before',
+        '_pass',
+        '--parallel',
+        '1',
+        '--host',
+        '0.0.0.0',
+    ]
+    return set_pod_parser().parse_args(args)
+
+
+def test_name(pod_args):
+    with Pod(pod_args) as pod:
+        assert pod.name == 'test'
+
+
+def test_host(pod_args):
+    with Pod(pod_args) as pod:
+        assert pod.host == '0.0.0.0'
+        assert pod.host_in == '0.0.0.0'
+        assert pod.host_out == '0.0.0.0'
+
+
+def test_address_in_out(pod_args):
+    with Pod(pod_args) as pod:
+        assert pod.host in pod.address_in
+        assert pod.host in pod.address_out
+
+
+def test_is_ready(pod_args):
+    with Pod(pod_args) as pod:
+        assert pod.is_ready is True
+
+
+def test_equal(pod_args, pod_args_singleton):
+    pod1 = Pod(pod_args)
+    pod2 = Pod(pod_args)
+    assert pod1 == pod2
+    pod1.close()
+    pod2.close()
+    # test not equal
+    pod1 = Pod(pod_args)
+    pod2 = Pod(pod_args_singleton)
+    assert pod1 != pod2
+    pod1.close()
+    pod2.close()
+
+
+def test_head_args_get_set(pod_args, pod_args_singleton):
+    with Pod(pod_args) as pod:
+        assert pod.head_args == pod.peas_args['head']
+        pod.head_args = pod_args_singleton
+        assert pod.peas_args['head'] == pod_args_singleton
+
+    with Pod(pod_args_singleton) as pod:
+        assert pod.head_args == pod.first_pea_args
+        pod.head_args = pod_args
+        assert pod.peas_args['peas'][0] == pod_args
+
+
+def test_tail_args_get_set(pod_args, pod_args_singleton):
+    with Pod(pod_args) as pod:
+        assert pod.tail_args == pod.peas_args['tail']
+        pod.tail_args = pod_args_singleton
+        assert pod.peas_args['tail'] == pod_args_singleton
+
+    with Pod(pod_args_singleton) as pod:
+        assert pod.tail_args == pod.first_pea_args
+        pod.tail_args = pod_args
+        assert pod.peas_args['peas'][0] == pod_args
 
 
 @pytest.mark.parametrize('parallel', [1, 2, 4])
