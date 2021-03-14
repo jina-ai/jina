@@ -30,6 +30,11 @@ class SortQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
                traversal_paths: ['m']
 
        `SortQL` will ensure that only the documents are sorted by the score value before slicing the first top 50 documents
+        :param field: the value of the field drives the sort of the iterable docs
+        :param reverse: sort the value from big to small
+        :param traversal_paths: the traversal paths
+        :param args: additional positional arguments wich are just used for the parent initialization
+        :param kwargs: additional key value arguments wich are just used for the parent initialization
     """
 
     def __init__(
@@ -40,14 +45,6 @@ class SortQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
         *args,
         **kwargs
     ):
-        """
-        :param field: the value of the field drives the sort of the iterable docs
-        :param reverse: sort the value from big to small
-        :param traversal_paths: the traversal paths
-        :param args: additional positional arguments
-        :param kwargs: additional key value arguments
-        """
-
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._reverse = reverse
         self._field = field

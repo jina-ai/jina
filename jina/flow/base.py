@@ -200,8 +200,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR401
         :param needs: list of service names to wait
         :param name: the name of this joiner, by default is ``joiner``
-        :param args: additional positional arguments
-        :param kwargs: additional key value arguments
+        :param args: additional positional arguments forwarded to the add function
+        :param kwargs: additional key value arguments forwarded to the add function
         :return: the modified Flow
         """
         if len(needs) <= 1:
@@ -217,8 +217,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         Collect all hanging Pods so far and add a blocker to the Flow; wait until all handing peas completed.
 
         :param name: the name of this joiner (default is ``joiner``)
-        :param args: additional positional arguments
-        :param kwargs: additional key value arguments
+        :param args: additional positional arguments which are forwarded to the add and needs function
+        :param kwargs: additional key value arguments which are forwarded to the add and needs function
         :return: the modified Flow
         """
         needs = _hanging_pods(self)

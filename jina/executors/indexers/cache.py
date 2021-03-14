@@ -17,14 +17,12 @@ class BaseCache(BaseKVIndexer):
 
     The difference between a cache and a :class:`BaseKVIndexer` is the ``handler_mutex`` is released in cache,
     this allows one to query-while-indexing.
+
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
     """
 
     def __init__(self, *args, **kwargs):
-        """Create a new BaseCache.
-
-        :param args: additional positional arguments
-        :param kwargs: additional key value arguments
-        """
         super().__init__(*args, **kwargs)
 
     def post_init(self):
@@ -43,8 +41,8 @@ class DocCache(BaseCache):
 
     :param index_filename: file name for storing the cache data
     :param fields: fields to cache on (of Document)
-    :param args: additional positional arguments
-    :param kwargs: additional key value arguments
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
     """
 
     class CacheHandler:
@@ -99,8 +97,8 @@ class DocCache(BaseCache):
 
         :param keys: document ids to be added
         :param values: document cache values to be added
-        :param args: additional positional arguments
-        :param kwargs: additional key value arguments
+        :param args: not used
+        :param kwargs: not used
         """
         for key, value in zip(keys, values):
             self.query_handler.id_to_cache_val[key] = value

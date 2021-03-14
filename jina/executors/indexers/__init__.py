@@ -39,8 +39,8 @@ class BaseIndexer(BaseExecutor):
         So that it can safely save the data. Or you have to manually call `b.close()` to close the indexer safely.
 
     :param index_filename: the name of the file for storing the index, when not given metas.name is used.
-    :param args:  Additional positional arguments
-    :param kwargs: Additional keyword arguments
+    :param args:  Additional positional arguments wich are just used for the parent initialization
+    :param kwargs: Additional keyword arguments wich are just used for the parent initialization
     """
 
     def __init__(
@@ -61,7 +61,7 @@ class BaseIndexer(BaseExecutor):
         """
         Add documents to the index.
 
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -70,7 +70,7 @@ class BaseIndexer(BaseExecutor):
         """
         Update documents on the index.
 
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -79,7 +79,7 @@ class BaseIndexer(BaseExecutor):
         """
         Delete documents from the index.
 
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -94,7 +94,7 @@ class BaseIndexer(BaseExecutor):
         """
         Query documents from the index.
 
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -246,7 +246,7 @@ class BaseVectorIndexer(BaseIndexer):
         """Get the vectors by id, return a subset of indexed vectors
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -256,7 +256,7 @@ class BaseVectorIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -268,7 +268,7 @@ class BaseVectorIndexer(BaseIndexer):
 
         :param vectors: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -280,7 +280,7 @@ class BaseVectorIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -289,7 +289,7 @@ class BaseVectorIndexer(BaseIndexer):
         """Delete vectors from the index.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -310,7 +310,7 @@ class BaseKVIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -319,7 +319,7 @@ class BaseKVIndexer(BaseIndexer):
         """Find the serialized document to the index via document id.
 
         :param key: document id
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -331,7 +331,7 @@ class BaseKVIndexer(BaseIndexer):
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param values: serialized documents
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
@@ -340,7 +340,7 @@ class BaseKVIndexer(BaseIndexer):
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError

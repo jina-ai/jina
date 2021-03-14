@@ -521,8 +521,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             This function is most likely to be overridden by its subclass.
 
         :param raw_config: raw config to work on
-        :param args: additional positional arguments
-        :param kwargs: additional key value arguments
+        :param args: not used
+        :param kwargs: not used
         :return: the config
         """
         return raw_config

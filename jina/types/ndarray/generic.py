@@ -71,6 +71,12 @@ class NdArray(BaseNdArray):
     That is, you can not use a :class:`NdArray` equipped with Tensorflow sparse to
     set/get Pytorch or Scipy sparse matrices.
 
+    :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
+    :param is_sparse: if the ndarray is sparse, can be changed later
+    :param dense_cls: the to-be-used class for DenseNdArray when `is_sparse=False`
+    :param sparse_cls: the to-be-used class for SparseNdArray when `is_sparse=True`
+    :param args: additional positional arguments stored as member and used for the parent initialization
+    :param kwargs: additional key value arguments stored as member and used for the parent initialization
     """
 
     def __init__(
@@ -82,15 +88,6 @@ class NdArray(BaseNdArray):
         *args,
         **kwargs
     ):
-        """
-
-        :param proto: the protobuf message, when not given then create a new one via :meth:`get_null_proto`
-        :param is_sparse: if the ndarray is sparse, can be changed later
-        :param dense_cls: the to-be-used class for DenseNdArray when `is_sparse=False`
-        :param sparse_cls: the to-be-used class for SparseNdArray when `is_sparse=True`
-        :param args: additional positional arguments
-        :param kwargs: additional key value arguments
-        """
         self.is_sparse = is_sparse
         self.dense_cls = dense_cls
         self.sparse_cls = sparse_cls

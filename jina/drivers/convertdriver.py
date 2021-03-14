@@ -14,7 +14,7 @@ class ConvertDriver(FlatRecursiveMixin, BaseRecursiveDriver):
     def __init__(self, convert_fn: str, *args, **kwargs):
         """
         :param convert_fn: the method name from `:class:`Document` to be applied
-        :param args: additional positional arguments
+        :param args: additional positional arguments wich are just used for the parent initialization
         :param kwargs: the set of named arguments to be passed to `convert_fn`
         """
         super().__init__(*args, **kwargs)

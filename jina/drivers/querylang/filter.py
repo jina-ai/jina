@@ -29,8 +29,8 @@ class FilterQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     :param lookups: (dict) a dictionary where keys are interpreted by ``:class:`LookupLeaf`` to form a
     an evaluation function. For instance, a dictionary ``{ modality__in: [mode1, mode2] }``, would create
     an evaluation function that will check if the field `modality` is found in `[mode1, mode2]`
-    :param args: additional positional arguments
-    :param kwargs: additional key value arguments
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
     """
 
     def __init__(self, lookups: Dict[str, Any], *args, **kwargs):
