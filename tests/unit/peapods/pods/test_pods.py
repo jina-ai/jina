@@ -21,7 +21,7 @@ def pod_args():
 @pytest.fixture(scope='function')
 def pod_args_singleton():
     args = [
-        '--name', 'test', '--uses-before', '_pass',
+        '--name', 'test2', '--uses-before', '_pass',
         '--parallel', '1', '--host', '0.0.0.0',
     ]
     return set_pod_parser().parse_args(args)
@@ -50,10 +50,16 @@ def test_is_ready(pod_args):
         assert pod.is_ready is True
 
 
-def test_equal(pod_args):
+def test_equal(pod_args, pod_args_singleton):
     pod1 = Pod(pod_args)
     pod2 = Pod(pod_args)
     assert pod1 == pod2
+    pod1.close()
+    pod2.close()
+    # test not equal
+    pod1 = Pod(pod_args)
+    pod2 = Pod(pod_args_singleton)
+    assert pod1 != pod2
     pod1.close()
     pod2.close()
 
