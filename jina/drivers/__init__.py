@@ -470,8 +470,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         """Attach the driver to a :class:`jina.executors.BaseExecutor`
 
         :param executor: the executor to which we attach
-        :param args: additional positional arguments wich are just used for the parent call
-        :param kwargs: additional key value arguments wich are just used for the parent call
+        :param args: additional positional arguments for the call of super().attach()
+        :param kwargs: additional key value arguments for the call of super().attach()
         """
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):
