@@ -3,6 +3,7 @@ import string
 from typing import Dict, List
 
 from jina.executors.rankers import Chunk2DocRanker
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -15,6 +16,7 @@ class DummySentencizer(BaseSegmenter):
             '\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(punct_chars)))
         )
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
@@ -38,7 +40,5 @@ class DummySentencizer(BaseSegmenter):
 
 
 class MockMinRanker(Chunk2DocRanker):
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
-        return self.get_doc_id(match_idx), 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return 1.0 / (1.0 + match_idx[self.COL_SCORE].min())

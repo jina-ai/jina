@@ -30,13 +30,17 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         def close(self):
             """Close the file."""
-            self.body.close()
-            self.header.close()
+            if not self.body.closed:
+                self.body.close()
+            if not self.header.closed:
+                self.header.close()
 
         def flush(self):
             """Clear the body and header."""
-            self.body.flush()
-            self.header.flush()
+            if not self.body.closed:
+                self.body.flush()
+            if not self.header.closed:
+                self.header.flush()
 
     class ReadHandler:
         """
@@ -68,7 +72,8 @@ class BinaryPbIndexer(BaseKVIndexer):
 
         def close(self):
             """Close the file."""
-            self._body.close()
+            if not self._body.closed:
+                self._body.close()
 
     def __getstate__(self):
         # called on pickle save
@@ -185,10 +190,12 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size += 1
         self.write_handler.flush()
 
-    def query(self, key: str) -> Optional[bytes]:
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
         :param key: document id
+        :param args: extra arguments
+        :param kwargs: keyword arguments
         :return: serialized documents
         """
         pos_info = self.query_handler.header.get(key, None)
@@ -210,13 +217,13 @@ class BinaryPbIndexer(BaseKVIndexer):
         keys, values = self._filter_nonexistent_keys_values(
             keys, values, self.query_handler.header.keys()
         )
+        del self.query_handler
+        self.handler_mutex = False
         if keys:
             self._delete(keys)
             self.add(keys, values)
 
     def _delete(self, keys: Iterable[str]) -> None:
-        self.query_handler.close()
-        self.handler_mutex = False
         for key in keys:
             self.write_handler.header.write(
                 np.array(
@@ -229,9 +236,6 @@ class BinaryPbIndexer(BaseKVIndexer):
                     ],
                 ).tobytes()
             )
-
-            if self.query_handler:
-                del self.query_handler.header[key]
             self._size -= 1
 
     def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
@@ -242,6 +246,8 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param kwargs: keyword arguments
         """
         keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
+        del self.query_handler
+        self.handler_mutex = False
         if keys:
             self._delete(keys)
 

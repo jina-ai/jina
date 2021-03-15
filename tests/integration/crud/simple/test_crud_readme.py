@@ -1,11 +1,22 @@
 import numpy as np
+import shutil
+import os
+import pytest
 
 from jina import Flow, Document
 
 from tests import validate_callback
 
 
-def test_crud_in_readme(mocker):
+@pytest.fixture
+def clean_me_up_mock():
+    yield
+    to_be_deleted_folder = 'simple_indexer'
+    if os.path.isdir(to_be_deleted_folder):
+        shutil.rmtree(to_be_deleted_folder)
+
+
+def test_crud_in_readme(mocker, clean_me_up_mock):
     docs = [
         Document(
             id='🐲',

@@ -2,7 +2,7 @@ import re
 import string
 from typing import Dict, List
 
-from jina.executors.decorators import batching, as_ndarray
+from jina.executors.decorators import batching, as_ndarray, single
 from jina.executors.encoders import BaseTextEncoder
 from jina.executors.rankers import Chunk2DocRanker
 from jina.executors.segmenters import BaseSegmenter
@@ -18,6 +18,7 @@ class DummySentencizer(BaseSegmenter):
             '\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(punct_chars)))
         )
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.
@@ -49,18 +50,9 @@ class DummyMinRanker(Chunk2DocRanker):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        import warnings
 
-        warnings.warn(
-            "MinRanker is deprecated. Please use SimpleAggregateRanker instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-    def _get_score(
-        self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs
-    ):
-        return self.get_doc_id(match_idx), 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
+    def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
+        return 1.0 / (1.0 + match_idx[self.COL_SCORE].min())
 
 
 class DummyOneHotTextEncoder(BaseTextEncoder):

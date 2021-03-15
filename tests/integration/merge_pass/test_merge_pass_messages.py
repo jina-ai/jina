@@ -3,10 +3,13 @@ import time
 from jina import Flow
 from jina import Document
 from jina.executors.crafters import BaseCrafter
+from jina.executors.decorators import single
+
 from tests import validate_callback
 
 
 class SlowCrafter(BaseCrafter):
+    @single
     def craft(self, text, *args, **kwargs):
         time.sleep(2)
         return {'text': text, 'tags': {'id': 'slow'}}

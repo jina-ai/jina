@@ -16,14 +16,13 @@ class ControlMessage(Message):
     :param command: Command with string content. (e.g. 'IDLE', 'TERMINATE', 'STATUS')
     :param pod_name: Name of the current pod.
     :param identity: The identity of the current pod
-    :param args: Additional positional arguments.
-    :param kwargs: Additional keyword arguments.
+    :param args: Additional positional arguments wich are just used for the parent initialization
+    :param kwargs: Additional keyword arguments wich are just used for the parent initialization
     """
 
     def __init__(
         self, command: str, pod_name: str = 'ctl', identity: str = '', *args, **kwargs
     ):
-        """Set constructor method."""
         req = Request(jina_pb2.RequestProto())
         if command in _available_commands:
             req.control.command = getattr(

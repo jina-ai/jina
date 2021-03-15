@@ -1,8 +1,9 @@
-import numpy as np
+from typing import Dict, List
 
 from jina import Document
 from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker
+from jina.executors.decorators import batching_multi_input
 from jina.types.sets import DocumentSet
 
 
@@ -29,15 +30,17 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
             **kwargs
         )
 
-    def score(self, query_meta, old_match_scores, match_meta):
-        new_scores = [
-            (match_id, -abs(match_meta[match_id]['length'] - query_meta['length']))
-            for match_id, old_score in old_match_scores.items()
+    @batching_multi_input(num_data=3)
+    def score(
+        self,
+        old_match_scores: List[Dict],
+        queries_metas: List[Dict],
+        matches_metas: List[List[Dict]],
+    ) -> List[List[float]]:
+        return [
+            [-abs(m['length'] - query_meta['length']) for m in match_meta]
+            for query_meta, match_meta in zip(queries_metas, matches_metas)
         ]
-        return np.array(
-            new_scores,
-            dtype=[(self.COL_MATCH_ID, np.object), (self.COL_SCORE, np.float64)],
-        )
 
 
 def create_document_to_score():

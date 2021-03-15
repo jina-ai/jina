@@ -5,6 +5,7 @@ import pytest
 
 from jina import Document, DocumentSet
 from jina.drivers.craft import CraftDriver
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 from jina.types.ndarray.generic import NdArray
 
@@ -12,8 +13,8 @@ from jina.types.ndarray.generic import NdArray
 class MockCrafter(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.required_keys = {'text'}
 
+    @single
     def craft(self, text: str, *args, **kwargs) -> Dict:
         if text == 'valid':
             return {'blob': np.array([0.0, 0.0, 0.0]), 'weight': 10}

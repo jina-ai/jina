@@ -12,6 +12,7 @@ from jina.executors.decorators import (
     store_init_kwargs,
     batching_multi_input,
     single,
+    single_multi_input,
 )
 
 
@@ -104,6 +105,7 @@ def test_single():
 
         @single
         def f(self, data):
+            assert isinstance(data, int)
             self.call_nbr += 1
             return data
 
@@ -111,6 +113,94 @@ def test_single():
     result = instance.f([1, 1, 1, 1])
     assert result == [1, 1, 1, 1]
     assert instance.call_nbr == 4
+
+    result = instance.f(1)
+    assert result == 1
+
+
+def test_single_kwargs_call():
+    class A:
+        @single
+        def f(self, data):
+            assert isinstance(data, int)
+            return data
+
+    instance = A()
+    result = instance.f(data=1)
+    assert result == 1
+
+
+def test_single_np_ndarray():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single
+        def f(self, data):
+            assert isinstance(data, np.ndarray)
+            assert data.shape == (5,)
+            self.call_nbr += 1
+            return data
+
+    instance = A()
+    input_np = np.random.random((4, 5))
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
+    assert instance.call_nbr == 4
+
+
+def test_single_np_ndarray_kwargs_call():
+    class A:
+        @single
+        def f(self, data):
+            assert isinstance(data, np.ndarray)
+            assert data.shape == (5,)
+            return data
+
+    instance = A()
+    input_np = np.random.random(5)
+    result = instance.f(data=input_np)
+    np.testing.assert_equal(result, input_np)
+
+
+def test_single_string():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single
+        def f(self, data):
+            assert isinstance(data, str)
+            return data
+
+    instance = A()
+    result = instance.f(['test0', 'test1'])
+    assert len(result) == 2
+    for i, res in enumerate(result):
+        assert res == f'test{i}'
+
+    result = instance.f('test0')
+    assert result == 'test0'
+
+
+def test_single_bytes():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single
+        def f(self, data):
+            assert isinstance(data, bytes)
+            return data
+
+    instance = A()
+    result = instance.f([str.encode('test0'), str.encode('test1')])
+    assert len(result) == 2
+    for i, res in enumerate(result):
+        assert res == str.encode(f'test{i}')
+
+    result = instance.f(b'test0')
+    assert result == b'test0'
 
 
 def test_batching():
@@ -126,14 +216,14 @@ def test_batching():
 
     instance = A(1)
     result = instance.f([1, 1, 1, 1])
-    assert result == [[1], [1], [1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 4
     for batch_size in instance.batch_sizes:
         assert batch_size == 1
 
     instance = A(3)
     result = instance.f([1, 1, 1, 1])
-    assert result == [[1, 1, 1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 2
     assert instance.batch_sizes[0] == 3
     assert instance.batch_sizes[1] == 1
@@ -141,6 +231,40 @@ def test_batching():
     instance = A(5)
     result = instance.f([1, 1, 1, 1])
     assert result == [1, 1, 1, 1]
+    assert len(instance.batch_sizes) == 1
+    assert instance.batch_sizes[0] == 4
+
+
+@pytest.mark.parametrize('input_shape', [(4, 5), (4, 5, 5)])
+def test_batching_np_array(input_shape):
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+            self.batch_sizes = []
+
+        @batching
+        def f(self, data):
+            self.batch_sizes.append(len(data))
+            return data
+
+    instance = A(1)
+    input_np = np.random.random(input_shape)
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
+    assert len(instance.batch_sizes) == 4
+    for batch_size in instance.batch_sizes:
+        assert batch_size == 1
+
+    instance = A(3)
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
+    assert len(instance.batch_sizes) == 2
+    assert instance.batch_sizes[0] == 3
+    assert instance.batch_sizes[1] == 1
+
+    instance = A(5)
+    result = instance.f(input_np)
+    np.testing.assert_equal(result, input_np)
     assert len(instance.batch_sizes) == 1
     assert instance.batch_sizes[0] == 4
 
@@ -158,14 +282,14 @@ def test_batching_slice_on():
 
     instance = A(1)
     result = instance.f(None, [1, 1, 1, 1])
-    assert result == [[1], [1], [1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 4
     for batch_size in instance.batch_sizes:
         assert batch_size == 1
 
     instance = A(3)
     result = instance.f(None, [1, 1, 1, 1])
-    assert result == [[1, 1, 1], [1]]
+    assert result == [1, 1, 1, 1]
     assert len(instance.batch_sizes) == 2
     assert instance.batch_sizes[0] == 3
     assert instance.batch_sizes[1] == 1
@@ -209,7 +333,7 @@ def test_batching_ordinal_idx_arg(tmpdir):
     assert instance.ord_idx[4].start == 8
     assert instance.ord_idx[4].stop == 10
 
-    assert result == [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
+    assert result == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 @pytest.mark.skip(
@@ -263,6 +387,33 @@ def test_batching_multi():
         assert batch.shape == (batch_size, result_dim)
 
 
+def test_single_multi():
+    class A:
+        def __init__(self):
+            self.call_nbr = 0
+
+        @single_multi_input(num_data=3)
+        def f(self, data0, data1, data2):
+            assert isinstance(data0, int)
+            assert isinstance(data1, int)
+            assert isinstance(data2, int)
+            self.call_nbr += 1
+            return data1
+
+    instance = A()
+    data0 = [0, 0, 0, 0]
+    data1 = [1, 1, 1, 1]
+    data2 = [2, 2, 2, 2]
+    data = [data0, data1, data2]
+    result = instance.f(*data)
+    assert result == [1, 1, 1, 1]
+    assert instance.call_nbr == 4
+
+    instance = A()
+    result = instance.f(0, 1, 2)
+    assert result == 1
+
+
 def test_batching_multi_input_dictionary():
     batch_size = 2
 
@@ -293,3 +444,93 @@ def test_batching_multi_input_dictionary():
         assert batch[0] == query_meta
         assert len(batch[1]) == batch_size
         assert len(batch[2]) == batch_size
+
+
+def test_batching_as_ndarray():
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+            self.batch_sizes = []
+
+        @as_ndarray
+        @batching
+        def f(self, data):
+            self.batch_sizes.append(len(data))
+            return data
+
+    instance = A(1)
+    input_data = [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
+    result = instance.f(input_data)
+    assert isinstance(result, np.ndarray)
+    np.testing.assert_equal(result, np.array(input_data))
+    assert len(instance.batch_sizes) == 4
+    for batch_size in instance.batch_sizes:
+        assert batch_size == 1
+
+    instance = A(3)
+    result = instance.f(input_data)
+    assert isinstance(result, np.ndarray)
+    np.testing.assert_equal(result, np.array(input_data))
+    assert len(instance.batch_sizes) == 2
+    assert instance.batch_sizes[0] == 3
+    assert instance.batch_sizes[1] == 1
+
+    instance = A(5)
+    result = instance.f(input_data)
+    assert isinstance(result, np.ndarray)
+    np.testing.assert_equal(result, np.array(input_data))
+    assert len(instance.batch_sizes) == 1
+    assert instance.batch_sizes[0] == 4
+
+
+def test_single_slice_on():
+    class A:
+        @single(slice_on=2)
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            return data
+
+    instance = A()
+    result = instance.f(None, [1, 1, 1, 1])
+    assert result == [1, 1, 1, 1]
+
+
+def test_single_multi_input_slice_on():
+    class A:
+        @single_multi_input(slice_on=1, num_data=2)
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            assert isinstance(key, str)
+            return data
+
+    instance = A()
+    data = instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
+    assert isinstance(data, list)
+    assert data == [1, 1, 1, 1]
+
+
+@pytest.mark.parametrize('slice_on, num_data', [(1, 3), (2, 2)])
+def test_single_multi_input_slice_on_error(slice_on, num_data):
+    class A:
+        @single_multi_input(slice_on=slice_on, num_data=num_data)
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            assert isinstance(key, str)
+            return data
+
+    instance = A()
+    with pytest.raises(IndexError):
+        instance.f(['a', 'b', 'c', 'd'], [1, 1, 1, 1])
+
+
+def test_single_multi_input_kwargs_call():
+    class A:
+        @single_multi_input()
+        def f(self, key, data, *args, **kwargs):
+            assert isinstance(data, int)
+            assert isinstance(key, str)
+            return data
+
+    instance = A()
+    result = instance.f(data=1, key='a')
+    assert result == 1

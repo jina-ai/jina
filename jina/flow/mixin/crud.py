@@ -1,9 +1,9 @@
 import warnings
-from typing import Union, Iterable, TextIO, Dict
+from typing import Union, Iterable, TextIO, Dict, Optional
 
 import numpy as np
 
-from ...clients.base import InputType, CallbackFnType
+from ...clients.base import InputType, InputDeleteType, CallbackFnType
 from ...enums import DataInputType
 from ...helper import deprecated_alias
 
@@ -44,7 +44,7 @@ class CRUDFlowMixin:
         self,
         array: 'np.ndarray',
         axis: int = 0,
-        size: int = None,
+        size: Optional[int] = None,
         shuffle: bool = False,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
@@ -84,7 +84,7 @@ class CRUDFlowMixin:
         self,
         array: 'np.ndarray',
         axis: int = 0,
-        size: int = None,
+        size: Optional[int] = None,
         shuffle: bool = False,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
@@ -121,13 +121,13 @@ class CRUDFlowMixin:
     )
     def index_lines(
         self,
-        lines: Union[Iterable[str], TextIO] = None,
-        filepath: str = None,
-        size: int = None,
-        sampling_rate: float = None,
+        lines: Optional[Union[Iterable[str], TextIO]] = None,
+        filepath: Optional[str] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
         read_mode: str = 'r',
         line_format: str = 'json',
-        field_resolver: Dict[str, str] = None,
+        field_resolver: Optional[Dict[str, str]] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -172,9 +172,9 @@ class CRUDFlowMixin:
     def index_ndjson(
         self,
         lines: Union[Iterable[str], TextIO],
-        field_resolver: Dict[str, str] = None,
-        size: int = None,
-        sampling_rate: float = None,
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -212,9 +212,9 @@ class CRUDFlowMixin:
     def index_csv(
         self,
         lines: Union[Iterable[str], TextIO],
-        field_resolver: Dict[str, str] = None,
-        size: int = None,
-        sampling_rate: float = None,
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -252,9 +252,9 @@ class CRUDFlowMixin:
     def search_csv(
         self,
         lines: Union[Iterable[str], TextIO],
-        field_resolver: Dict[str, str] = None,
-        size: int = None,
-        sampling_rate: float = None,
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -299,9 +299,9 @@ class CRUDFlowMixin:
         self,
         patterns: Union[str, Iterable[str]],
         recursive: bool = True,
-        size: int = None,
-        sampling_rate: float = None,
-        read_mode: str = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
+        read_mode: Optional[str] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -342,9 +342,9 @@ class CRUDFlowMixin:
         self,
         patterns: Union[str, Iterable[str]],
         recursive: bool = True,
-        size: int = None,
-        sampling_rate: float = None,
-        read_mode: str = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
+        read_mode: Optional[str] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -383,11 +383,11 @@ class CRUDFlowMixin:
     )
     def search_lines(
         self,
-        lines: Union[Iterable[str], TextIO] = None,
-        filepath: str = None,
-        field_resolver: Dict[str, str] = None,
-        size: int = None,
-        sampling_rate: float = None,
+        lines: Optional[Union[Iterable[str], TextIO]] = None,
+        filepath: Optional[str] = None,
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
         read_mode: str = 'r',
         line_format: str = 'json',
         on_done: CallbackFnType = None,
@@ -434,9 +434,9 @@ class CRUDFlowMixin:
     def search_ndjson(
         self,
         lines: Union[Iterable[str], TextIO],
-        field_resolver: Dict[str, str] = None,
-        size: int = None,
-        sampling_rate: float = None,
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -520,7 +520,7 @@ class CRUDFlowMixin:
 
     def delete(
         self,
-        ids: Iterable[str],
+        ids: InputDeleteType,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,

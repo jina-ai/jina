@@ -104,6 +104,8 @@ class LegacyParser(VersionedYAMLParser):
             workspace_in_dump = getattr(obj, 'workspace', None)
             if workspace_in_dump != workspace_loaded_from:
                 obj.workspace = workspace_loaded_from
+
+            obj.fill_in_drivers(data.get('requests', None))
             load_from_dump = True
         else:
             cls._init_from_yaml = True

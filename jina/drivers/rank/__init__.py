@@ -1,9 +1,7 @@
-from typing import Tuple, Optional
-
-import numpy as np
+from typing import Tuple, Optional, Iterable
 
 from .. import BaseExecutableDriver, FlatRecursiveMixin
-from ...types.document import Document
+from ...types.sets import MatchSet
 from ...types.score import NamedScore
 
 if False:
@@ -23,10 +21,8 @@ class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
         """Property to provide backward compatibility to executors relying in `required_keys`
         :return: keys for attribute lookup in matches
         """
-        return (
-            self.exec.match_required_keys
-            if hasattr(self.exec, 'match_required_keys')
-            else getattr(self.exec, 'required_keys', None)
+        return getattr(
+            self.exec, 'match_required_keys', getattr(self.exec, 'required_keys', None)
         )
 
     @property
@@ -35,10 +31,8 @@ class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
 
         :return: keys for attribute lookup in matches
         """
-        return (
-            self.exec.query_required_keys
-            if hasattr(self.exec, 'query_required_keys')
-            else getattr(self.exec, 'required_keys', None)
+        return getattr(
+            self.exec, 'query_required_keys', getattr(self.exec, 'required_keys', None)
         )
 
 
@@ -57,10 +51,10 @@ class Matches2DocRankDriver(BaseRankDriver):
 
     def __init__(
         self,
-        reverse: bool = False,
+        reverse: bool = True,
         traversal_paths: Tuple[str] = ('r',),
         *args,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
@@ -69,42 +63,59 @@ class Matches2DocRankDriver(BaseRankDriver):
         """
 
         :param docs: the matches of the ``context_doc``, they are at granularity ``k``
-        :param *args: not used (kept to maintain interface)
-        :param **kwargs: not used (kept to maintain interface)
+        :param args: not used (kept to maintain interface)
+        :param kwargs: not used (kept to maintain interface)
 
         .. note::
             - This driver will change in place the ordering of ``matches`` of the ``context_doc`.
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
+        old_scores = []
+        queries_metas = []
+        matches_metas = []
         for doc in docs:
             query_meta = (
                 doc.get_attrs(*self._exec_query_keys) if self._exec_query_keys else None
             )
 
             matches = doc.matches
-            old_match_scores = {match.id: match.score.value for match in matches}
-            match_meta = (
-                {match.id: match.get_attrs(*self._exec_match_keys) for match in matches}
-                if self._exec_match_keys
-                else None
-            )
+            old_match_scores = []
+            needs_match_meta = self._exec_match_keys is not None
+            match_meta = [] if needs_match_meta else None
+            for match in matches:
+                old_match_scores.append(match.score.value)
+                if needs_match_meta:
+                    match_meta.append(match.get_attrs(*self._exec_match_keys))
 
             # if there are no matches, no need to sort them
-            if not old_match_scores:
-                continue
+            old_scores.append(old_match_scores)
+            queries_metas.append(query_meta)
+            matches_metas.append(match_meta)
 
-            new_match_scores = self.exec_fn(query_meta, old_match_scores, match_meta)
-            self._sort_matches_in_place(doc, new_match_scores)
+        new_scores = self.exec_fn(old_scores, queries_metas, matches_metas)
+        if len(new_scores) != len(docs):
+            msg = f'The number of scores {len(new_scores)} does not match the number of queries {len(docs)}'
+            self.logger.error(msg)
+            raise ValueError(msg)
+
+        for doc, scores in zip(docs, new_scores):
+            matches = doc.matches
+            if len(doc.matches) != len(scores):
+                msg = (
+                    f'The number of matches to be scored {len(doc.matches)} do not match the number of scores returned '
+                    f'by the ranker {self.exec.__name__} for doc: {doc.id} '
+                )
+                self.logger.error(msg)
+                raise ValueError(msg)
+            self._sort_matches_in_place(matches, scores)
 
     def _sort_matches_in_place(
-        self, context_doc: 'Document', match_scores: 'np.ndarray'
+        self, matches: 'MatchSet', match_scores: Iterable[float]
     ) -> None:
         op_name = self.exec.__class__.__name__
-        cm = context_doc.matches
-        cm.build()
-        for match_id, score in match_scores:
-            cm[match_id].score = NamedScore(
-                value=score, op_name=op_name, ref_id=context_doc.id
-            )
+        ref_doc_id = matches._ref_doc.id
 
-        cm.sort(key=lambda x: x.score.value, reverse=True)
+        for match, score in zip(matches, match_scores):
+            match.score = NamedScore(value=score, op_name=op_name, ref_id=ref_doc_id)
+
+        matches.sort(key=lambda x: x.score.value, reverse=self.reverse)

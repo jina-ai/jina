@@ -11,7 +11,7 @@ def mixin_distributed_feature_parser(parser):
     gp = add_arg_group(parser, title='Distributed')
 
     gp.add_argument(
-        '--silent-remote-logs',
+        '--quiet-remote-logs',
         action='store_true',
         default=False,
         help='Do not display the streaming of remote logs on local console',

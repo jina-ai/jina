@@ -1,6 +1,6 @@
 import copy
 from argparse import Namespace
-from typing import List
+from typing import List, Optional
 
 from ... import __default_host__
 from ...enums import SchedulerType, SocketType, PeaRoleType
@@ -9,12 +9,27 @@ from ... import helper
 
 
 def _set_peas_args(
-    args: Namespace, head_args: Namespace = None, tail_args: Namespace = None
+    args: Namespace, head_args: Optional[Namespace] = None, tail_args: Namespace = None
 ) -> List[Namespace]:
     result = []
 
     for idx in range(args.parallel):
         _args = copy.deepcopy(args)
+
+        if args.parallel > 1:
+            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
+            _args.pea_role = PeaRoleType.PARALLEL
+            _args.identity = random_identity()
+            if _args.peas_hosts:
+                _args.host = _args.peas_hosts.get(str(_args.pea_id), args.host)
+            if _args.name:
+                _args.name += f'/{_args.pea_id}'
+            else:
+                _args.name = f'{_args.pea_id}'
+        else:
+            _args.pea_id = 0
+            _args.pea_role = PeaRoleType.SINGLETON
+
         if head_args:
             _args.port_in = head_args.port_out
         if tail_args:
@@ -35,18 +50,6 @@ def _set_peas_args(
         if tail_args:
             _args.host_out = _fill_in_host(bind_args=tail_args, connect_args=_args)
 
-        if args.parallel > 1:
-            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
-            _args.pea_role = PeaRoleType.PARALLEL
-            _args.identity = random_identity()
-            if _args.name:
-                _args.name += f'/{_args.pea_id}'
-            else:
-                _args.name = f'{_args.pea_id}'
-        else:
-            _args.pea_id = 0
-            _args.pea_role = PeaRoleType.SINGLETON
-
         result.append(_args)
     return result
 
@@ -62,7 +65,14 @@ def _set_after_to_pass(args):
 def _copy_to_head_args(
     args: Namespace, is_push: bool, as_router: bool = True
 ) -> Namespace:
-    """Set the outgoing args of the head router"""
+    """
+    Set the outgoing args of the head router
+
+    :param args: basic arguments
+    :param is_push: if true, set socket_out based on the SchedulerType
+    :param as_router: if true, router configuration is applied
+    :return: enriched head arguments
+    """
 
     _head_args = copy.deepcopy(args)
     _head_args.port_ctrl = helper.random_port()
@@ -71,16 +81,12 @@ def _copy_to_head_args(
     if is_push:
         if args.scheduling == SchedulerType.ROUND_ROBIN:
             _head_args.socket_out = SocketType.PUSH_BIND
-            if as_router:
-                _head_args.uses = args.uses_before or '_pass'
         elif args.scheduling == SchedulerType.LOAD_BALANCE:
             _head_args.socket_out = SocketType.ROUTER_BIND
-            if as_router:
-                _head_args.uses = args.uses_before or '_pass'
     else:
         _head_args.socket_out = SocketType.PUB_BIND
-        if as_router:
-            _head_args.uses = args.uses_before or '_pass'
+    if as_router:
+        _head_args.uses = args.uses_before or '_pass'
 
     if as_router:
         _head_args.pea_role = PeaRoleType.HEAD
@@ -97,7 +103,13 @@ def _copy_to_head_args(
 
 
 def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
-    """Set the incoming args of the tail router"""
+    """
+    Set the incoming args of the tail router
+
+    :param args: configuration for the connection
+    :param as_router: if true, add router configuration
+    :return: enriched arguments
+    """
     _tail_args = copy.deepcopy(args)
     _tail_args.port_in = helper.random_port()
     _tail_args.port_ctrl = helper.random_port()
@@ -117,7 +129,13 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
 
 
 def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
-    """Compute the host address for ``connect_args`` """
+    """
+    Compute the host address for ``connect_args``
+
+    :param bind_args: configuration for the host ip binding
+    :param connect_args: configuration for the host ip connection
+    :return: host ip
+    """
     from sys import platform
 
     # by default __default_host__ is 0.0.0.0
