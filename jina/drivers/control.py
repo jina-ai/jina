@@ -26,15 +26,16 @@ class BaseControlDriver(BaseDriver):
 
 
 class LogInfoDriver(BaseControlDriver):
-    """Log output the request info"""
+    """
+    Log output the request info
+
+    :param key: (str) that represents a first level or nested key in the dict
+    :param json: (bool) indicating if the log output should be formatted as json
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
+    """
 
     def __init__(self, key: str = 'request', json: bool = True, *args, **kwargs):
-        """
-        :param key: (str) that represents a first level or nested key in the dict
-        :param json: (bool) indicating if the log output should be formatted as json
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
-        """
         super().__init__(*args, **kwargs)
         self.key = key
         self.json = json
@@ -42,8 +43,8 @@ class LogInfoDriver(BaseControlDriver):
     def __call__(self, *args, **kwargs):
         """Log the information.
 
-        :param *args: unused
-        :param **kwargs: unused
+        :param args: unused
+        :param kwargs: unused
         """
         data = dunder_get(self.msg.proto, self.key)
         if self.json:
@@ -70,8 +71,8 @@ class ControlReqDriver(BaseControlDriver):
     def __call__(self, *args, **kwargs):
         """Handle the request controlling.
 
-        :param *args: unused
-        :param **kwargs: unused
+        :param args: unused
+        :param kwargs: unused
         """
         if self.req.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
@@ -98,8 +99,8 @@ class RouteDriver(ControlReqDriver):
          mark it in the envelope if it is a control request in
 
     :param raise_no_dealer: raise a RuntimeError when no available dealer
-    :param *args: *args for super
-    :param **kwargs: **kwargs for super
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
     """
 
     def __init__(self, raise_no_dealer: bool = False, *args, **kwargs):
@@ -111,8 +112,8 @@ class RouteDriver(ControlReqDriver):
     def __call__(self, *args, **kwargs):
         """Perform the routing.
 
-        :param *args: *args for super().__call__
-        :param **kwargs: **kwargs for super().__call__
+        :param args: additional positional arguments wich are just used for calling the parent
+        :param kwargs: additional key value arguments wich are just used for calling the parent
 
 
         .. # noqa: DAR401

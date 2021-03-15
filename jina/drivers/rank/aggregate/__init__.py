@@ -16,22 +16,19 @@ COL_STR_TYPE = 'U64'  #: the ID column data type for score matrix
 
 
 class BaseAggregateMatchesRankerDriver(BaseRankDriver):
-    """Drivers inherited from this Driver focus on aggregating scores from `chunks` to its `parents`."""
+    """Drivers inherited from this Driver focus on aggregating scores from `chunks` to its `parents`.
 
-    def __init__(self, keep_source_matches_as_chunks: bool = False, *args, **kwargs):
-        """
-
-        :param keep_source_matches_as_chunks: A flag to indicate if the driver must return the old matches of the query or its chunks
+    :param keep_source_matches_as_chunks: A flag to indicate if the driver must return the old matches of the query or its chunks
             (at a greater granularity level (k + 1)) as the chunks of the new computed `matches` (at granularity level k)
             Set it to `True` when keeping track of the chunks that lead to a retrieved result.
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
 
-        .. note::
-            When set `keep_source_matches_as_chunks=True`, the chunks of the match contains **ONLY** the chunks leading
-            to the match rather than **ALL** the chunks of the match.
+    .. note::
+        When set `keep_source_matches_as_chunks=True`, the chunks of the match contains **ONLY** the chunks leading
+        to the match rather than **ALL** the chunks of the match."""
 
-        """
+    def __init__(self, keep_source_matches_as_chunks: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.keep_source_matches_as_chunks = keep_source_matches_as_chunks
 
@@ -157,8 +154,8 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         """
         :param docs: the doc which gets bubbled up matches
-        :param *args: not used (kept to maintain interface)
-        :param **kwargs: not used (kept to maintain interface)
+        :param args: not used (kept to maintain interface)
+        :param kwargs: not used (kept to maintain interface)
         """
         for doc in docs:
             chunks = doc.chunks
@@ -238,8 +235,8 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
         """
 
         :param docs: the document at granularity ``k``
-        :param *args: not used (kept to maintain interface)
-        :param **kwargs: not used (kept to maintain interface)
+        :param args: not used (kept to maintain interface)
+        :param kwargs: not used (kept to maintain interface)
 
         .. note::
             - This driver will substitute the ``matches`` of `docs` to the corresponding ``parent documents`` of its current ``matches`` according

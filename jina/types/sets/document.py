@@ -207,7 +207,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 contents.append(content)
                 docs_pts.append(doc)
 
-            is_bytes = contents is not None and isinstance(contents[0], bytes)
+            is_bytes = len(contents) > 0 and isinstance(contents[0], bytes)
             if not is_bytes:
                 contents = np.stack(contents) if contents else None
 

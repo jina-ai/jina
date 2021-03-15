@@ -142,7 +142,7 @@ class JAML:
         Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow.
 
         :param stream: the output stream
-        :param **kwargs: other kwargs
+        :param kwargs: other kwargs
         :return: the Python object
         """
         safe_yml = JAML.escape('\n'.join(v for v in stream))
@@ -299,7 +299,7 @@ class JAML:
 
         :param data: the data to serialize
         :param stream: the output stream
-        :param **kwargs: other kwargs
+        :param kwargs: other kwargs
         :return: the yaml output
         """
         return yaml.dump(
@@ -484,7 +484,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
-        :param **kwargs: **kwargs for parse_config_source
+        :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
         stream, s_path = parse_config_source(source, **kwargs)
@@ -521,8 +521,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             This function is most likely to be overridden by its subclass.
 
         :param raw_config: raw config to work on
-        :param *args: *args
-        :param **kwargs: **kwargs
+        :param args: not used
+        :param kwargs: not used
         :return: the config
         """
         return raw_config
