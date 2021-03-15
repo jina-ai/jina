@@ -69,8 +69,8 @@ class ConcatEmbedDriver(BaseRecursiveDriver):
     def __call__(self, *args, **kwargs):
         """Performs the concatenation of all embeddings in `self.docs`.
 
-        :param *args: *args not used. Only for complying with parent class interface.
-        :param **kwargs: **kwargs not used. Only for complying with parent class interface.
+        :param args: args not used. Only for complying with parent class interface.
+        :param kwargs: kwargs not used. Only for complying with parent class interface.
         """
         all_documents = self.docs.traverse_flatten(self._traversal_paths)
         doc_pointers = self._collect_embeddings(all_documents)

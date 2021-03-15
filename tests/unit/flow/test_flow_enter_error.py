@@ -49,14 +49,6 @@ class BrokenFlow(Flow):
 
         raise FlowStartupException
 
-        self.logger.info(
-            f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
-        )
-
-        self._show_success_message()
-
-        return self
-
 
 class WrapContextManager:
     def __init__(self, flow):
