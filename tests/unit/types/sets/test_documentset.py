@@ -255,21 +255,22 @@ def test_get_content_text_fields(field):
         assert content == 'text'
 
 
+@pytest.mark.parametrize('bytes_input', [b'bytes', np.array([0, 0, 0]).tobytes()])
 @pytest.mark.parametrize('field', ['content', 'buffer'])
-def test_get_content_bytes_fields(field):
+def test_get_content_bytes_fields(bytes_input, field):
     batch_size = 10
 
-    kwargs = {field: b'bytes'}
+    kwargs = {field: bytes_input}
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(field)
 
-    assert contents.shape == (batch_size,)
     assert len(contents) == batch_size
-    assert isinstance(contents, np.ndarray)
+    assert isinstance(contents, list)
     for content in contents:
-        assert content == b'bytes'
+        assert isinstance(content, bytes)
+        assert content == bytes_input
 
 
 @pytest.mark.parametrize('fields', [['id', 'text'], ['content_hash', 'modality']])
@@ -290,6 +291,27 @@ def test_get_content_multiple_fields_text(fields):
     for content in contents:
         assert len(content) == batch_size
         assert content.shape == (batch_size,)
+
+
+@pytest.mark.parametrize('bytes_input', [b'bytes', np.array([0, 0, 0]).tobytes()])
+def test_get_content_multiple_fields_text_buffer(bytes_input):
+    batch_size = 10
+    fields = ['id', 'buffer']
+    kwargs = {'id': 'text', 'buffer': bytes_input}
+
+    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+
+    contents, pts = docs.extract_docs(*fields)
+
+    assert len(contents) == len(fields)
+    assert isinstance(contents, list)
+    assert isinstance(contents[0], np.ndarray)
+    assert contents[0].shape == (batch_size,)
+    assert isinstance(contents[1], list)
+    assert isinstance(contents[1][0], bytes)
+
+    for content in contents:
+        assert len(content) == batch_size
 
 
 @pytest.mark.parametrize('num_rows', [1, 2, 3])
