@@ -18,7 +18,7 @@ class DeleteDriver(BaseExecutableDriver):
         """
         Call base executable driver on document ids for deletion.
 
-        :param args:  Additional positional arguments
-        :param kwargs: Additional keyword arguments
+        :param args: unused
+        :param kwargs: unused
         """
         self.exec_fn(self.req.ids)

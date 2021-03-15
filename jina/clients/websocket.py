@@ -39,7 +39,7 @@ class WebSocketClientMixin(BaseClient, ABC):
         :param on_done: the callback for on_done
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
-        :param **kwargs: **kwargs for _get_task_name and _get_requests
+        :param kwargs: kwargs for _get_task_name and _get_requests
         :yields: generator over results
         """
         with ImportExtensions(required=True):

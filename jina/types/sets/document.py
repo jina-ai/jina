@@ -195,8 +195,11 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 for i, c in enumerate(content):
                     contents[i].append(c)
                 docs_pts.append(doc)
-            for i in range(len(contents)):
-                contents[i] = np.stack(contents[i])
+            for idx, c in enumerate(contents):
+                if not c:
+                    continue
+                if not isinstance(c[0], bytes):
+                    contents[idx] = np.stack(c)
         else:
             for doc in self:
                 content = doc.get_attrs_values(*fields)[0]
@@ -205,7 +208,11 @@ class DocumentSet(TraversableSequence, MutableSequence):
                     continue
                 contents.append(content)
                 docs_pts.append(doc)
-            contents = np.stack(contents) if contents else None
+
+            if not contents:
+                contents = None
+            elif not isinstance(contents[0], bytes):
+                contents = np.stack(contents)
 
         if bad_docs:
             default_logger.warning(

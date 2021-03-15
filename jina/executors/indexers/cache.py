@@ -17,14 +17,12 @@ class BaseCache(BaseKVIndexer):
 
     The difference between a cache and a :class:`BaseKVIndexer` is the ``handler_mutex`` is released in cache,
     this allows one to query-while-indexing.
+
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
     """
 
     def __init__(self, *args, **kwargs):
-        """Create a new BaseCache.
-
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
-        """
         super().__init__(*args, **kwargs)
 
     def post_init(self):
@@ -43,8 +41,8 @@ class DocCache(BaseCache):
 
     :param index_filename: file name for storing the cache data
     :param fields: fields to cache on (of Document)
-    :param *args: *args for super
-    :param **kwargs: **kwargs for super
+    :param args: additional positional arguments wich are just used for the parent initialization
+    :param kwargs: additional key value arguments wich are just used for the parent initialization
     """
 
     class CacheHandler:
@@ -99,8 +97,8 @@ class DocCache(BaseCache):
 
         :param keys: document ids to be added
         :param values: document cache values to be added
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
+        :param args: not used
+        :param kwargs: not used
         """
         for key, value in zip(keys, values):
             self.query_handler.id_to_cache_val[key] = value
@@ -111,8 +109,8 @@ class DocCache(BaseCache):
         """Check whether the data exists in the cache.
 
         :param key: the value that we cached by (combination of the Document fields)
-        :param *args: not used
-        :param **kwargs: not used
+        :param args: not used
+        :param kwargs: not used
         :return: status
         """
         return key in self.query_handler.cache_val_to_id
@@ -124,8 +122,8 @@ class DocCache(BaseCache):
 
         :param keys: list of Document.id
         :param values: list of values (combination of the Document fields)
-        :param *args: not used
-        :param **kwargs: not used
+        :param args: not used
+        :param kwargs: not used
         """
 
         if len(self.fields) == 1 and self.fields[0] == ID_KEY:
@@ -144,8 +142,8 @@ class DocCache(BaseCache):
         """Delete documents from the cache.
 
         :param keys: list of Document.id
-        :param *args: not used
-        :param **kwargs: not used
+        :param args: not used
+        :param kwargs: not used
         """
         for key in keys:
             if key not in self.query_handler.id_to_cache_val:
