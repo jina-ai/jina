@@ -16,8 +16,8 @@ class BaseCrafter(BaseExecutor):
     transformations to single documents.
     The apply function is :func:`craft`, where the name of the arguments will be used as keys of the content.
 
-    :param args:  Additional positional arguments
-    :param kwargs: Additional keyword arguments
+    :param args: Additional positional arguments wich are just used for the parent initialization
+    :param kwargs: Additional keyword arguments wich are just used for the parent initialization
     """
 
     def __init__(self, *args, **kwargs):

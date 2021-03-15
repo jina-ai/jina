@@ -150,7 +150,7 @@ class Message:
         :param pod_name: the name of the current pod
         :param identity: the identity of the current pod
         :param check_version: turn on check_version
-        :param args:  Additional positional arguments
+        :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         :param request_id: request id of the envelope
         :param request_type: request type of the envelope
