@@ -3,6 +3,7 @@ import string
 from typing import Dict, List
 
 from jina.executors.rankers import Chunk2DocRanker
+from jina.executors.decorators import single
 from jina.executors.segmenters import BaseSegmenter
 
 
@@ -15,6 +16,7 @@ class DummySentencizer(BaseSegmenter):
             '\s*([^{0}]+)(?<!\s)[{0}]*'.format(''.join(set(punct_chars)))
         )
 
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         """
         Split the text into sentences.

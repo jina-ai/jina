@@ -98,6 +98,7 @@ class JAML:
 
         :param value: the original YAML content
         :param include_unknown_tags: if to include unknown tags during escaping
+        :return: escaped YAML
         """
         if include_unknown_tags:
             r = r'!(\w+)\b'
@@ -113,6 +114,7 @@ class JAML:
 
         :param value: the escaped YAML content
         :param include_unknown_tags: if to include unknown tags during unescaping
+        :return: unescaped YAML
         """
         if include_unknown_tags:
             r = r'jtype: (\w+)\b'
@@ -126,6 +128,7 @@ class JAML:
         """
         Return a list of :class:`JAMLCompatible` classes that have been registered.
 
+        :return: tags
         """
         return list(
             v[1:]
@@ -139,7 +142,7 @@ class JAML:
         Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow.
 
         :param stream: the output stream
-        :param **kwargs: other kwargs
+        :param kwargs: other kwargs
         :return: the Python object
         """
         safe_yml = JAML.escape('\n'.join(v for v in stream))
@@ -148,7 +151,7 @@ class JAML:
     @staticmethod
     def expand_dict(
         d: Dict,
-        context: Union[Dict, SimpleNamespace, None] = None,
+        context: Optional[Union[Dict, SimpleNamespace]] = None,
         resolve_cycle_ref=True,
         resolve_passes: int = 3,
     ) -> Dict[str, Any]:
@@ -296,7 +299,7 @@ class JAML:
 
         :param data: the data to serialize
         :param stream: the output stream
-        :param **kwargs: other kwargs
+        :param kwargs: other kwargs
         :return: the yaml output
         """
         return yaml.dump(
@@ -322,7 +325,13 @@ class JAML:
         except AttributeError:
 
             def t_y(representer, data):
-                """Inner function, get the representer."""
+                """
+                Wrapper function for the representer.
+
+                :param representer: yaml representer
+                :param data: state of the representer
+                :return: node
+                """
                 return representer.represent_yaml_object(
                     tag, data, cls, flow_style=representer.default_flow_style
                 )
@@ -333,7 +342,13 @@ class JAML:
         except AttributeError:
 
             def f_y(constructor, node):
-                """Inner function, get the constructor."""
+                """
+                Wrapper function for the constructor.
+
+                :param constructor: yaml constructor
+                :param node: to be added
+                :return: generator
+                """
                 return constructor.construct_yaml_object(node, cls)
 
             yaml.add_constructor(tag, f_y, JinaLoader)
@@ -469,7 +484,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
-        :param **kwargs: **kwargs for parse_config_source
+        :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
         stream, s_path = parse_config_source(source, **kwargs)
@@ -506,8 +521,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             This function is most likely to be overridden by its subclass.
 
         :param raw_config: raw config to work on
-        :param *args: *args
-        :param **kwargs: **kwargs
+        :param args: not used
+        :param kwargs: not used
         :return: the config
         """
         return raw_config

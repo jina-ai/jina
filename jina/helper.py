@@ -654,7 +654,7 @@ def colored(
     text: str,
     color: Optional[str] = None,
     on_color: Optional[str] = None,
-    attrs: Union[str, list, None] = None,
+    attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color.
@@ -790,7 +790,7 @@ class ArgNamespace:
 
     @staticmethod
     def get_non_defaults_args(
-        args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = None
+        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
     ) -> Dict:
         """
         Get non-default args in a dict.
@@ -971,6 +971,13 @@ class cached_property:
 
         value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
         return value
+
+    def __delete__(self, obj):
+        cached_value = obj.__dict__.get(f'CACHED_{self.func.__name__}', None)
+        if cached_value is not None:
+            if hasattr(cached_value, 'close'):
+                cached_value.close()
+            del obj.__dict__[f'CACHED_{self.func.__name__}']
 
 
 def get_now_timestamp():

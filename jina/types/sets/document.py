@@ -160,7 +160,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 and the documents have no embedding in a :class:`DocumentSet`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self._extract_docs('embedding')
+        return self.extract_docs('embedding')
 
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
@@ -170,11 +170,16 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 and the documents have no contents in a :class:`DocumentSet`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self._extract_docs('content')
+        return self.extract_docs('content')
 
-    def _extract_docs(
+    def extract_docs(
         self, *fields: str
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
+        """Return in batches all the values of the fields
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns an :class:`np.ndarray` or a list of :class:`np.ndarray` with the batches for these fields
+        """
 
         list_of_contents_output = len(fields) > 1
         contents = [[] for _ in fields if len(fields) > 1]
@@ -190,8 +195,11 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 for i, c in enumerate(content):
                     contents[i].append(c)
                 docs_pts.append(doc)
-            for i in range(len(contents)):
-                contents[i] = np.stack(contents[i])
+            for idx, c in enumerate(contents):
+                if not c:
+                    continue
+                if not isinstance(c[0], bytes):
+                    contents[idx] = np.stack(c)
         else:
             for doc in self:
                 content = doc.get_attrs_values(*fields)[0]
@@ -200,7 +208,11 @@ class DocumentSet(TraversableSequence, MutableSequence):
                     continue
                 contents.append(content)
                 docs_pts.append(doc)
-            contents = np.stack(contents) if contents else None
+
+            if not contents:
+                contents = None
+            elif not isinstance(contents[0], bytes):
+                contents = np.stack(contents)
 
         if bad_docs:
             default_logger.warning(

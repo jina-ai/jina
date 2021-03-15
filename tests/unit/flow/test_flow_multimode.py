@@ -7,6 +7,7 @@ import numpy as np
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
+from jina.executors.decorators import single
 from jina.flow import Flow
 from jina.proto import jina_pb2
 
@@ -14,6 +15,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MockSegmenter(BaseSegmenter):
+    @single
     def segment(self, text: str, *args, **kwargs) -> List[Dict]:
         split = text.split(',')
         chunks = [
@@ -24,7 +26,7 @@ class MockSegmenter(BaseSegmenter):
 
 
 class MockEncoder(BaseEncoder):
-    def encode(self, data: str, *args, **kwargs) -> 'np.ndarray':
+    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         output = []
         for r in data:
             if "mode1" in r:

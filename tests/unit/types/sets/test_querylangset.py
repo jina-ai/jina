@@ -7,7 +7,7 @@ from jina.types.sets.querylang import QueryLangSet
 
 @pytest.fixture(scope='function')
 def querylang_protos():
-    """:returns: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
+    """:return:: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
     req = RequestProto()
     for _ in range(3):
         req.queryset.extend([QueryLangProto()])
@@ -16,13 +16,13 @@ def querylang_protos():
 
 @pytest.fixture(scope='function')
 def querylang_set(querylang_protos):
-    """:returns: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
+    """:return:: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
     return QueryLangSet(querylang_protos=querylang_protos)
 
 
 @pytest.fixture(scope='function')
 def querylang_instance():
-    """:returns: An instance of :class:`QueryLang`."""
+    """:return:: An instance of :class:`QueryLang`."""
     query_lang = QueryLang()
     query_lang.name = 'test'
     query_lang.priority = 5

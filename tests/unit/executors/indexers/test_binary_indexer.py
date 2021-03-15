@@ -163,7 +163,7 @@ def test_binarypb_update_twice(test_metas, delete_on_dump):
 
 # benchmark only
 @pytest.mark.skipif(
-    'GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow'
+    'GITHUB_WORKFLOW' in os.environ, reason='skip the benchmark test on github workflow'
 )
 @pytest.mark.parametrize('delete_on_dump', [True, False])
 def test_binarypb_benchmark(test_metas, delete_on_dump):

@@ -52,11 +52,17 @@ class Request(ProtoTypeMixin):
 
     def __init__(
         self,
-        request: Union[bytes, dict, str, 'jina_pb2.RequestProto', None] = None,
+        request: Optional[Union[bytes, dict, str, 'jina_pb2.RequestProto']] = None,
         envelope: Optional['jina_pb2.EnvelopeProto'] = None,
         copy: bool = False,
     ):
-        """Set constructor method."""
+        """
+        Set constructor method.
+
+        :param request: request object as bytes, dictionary, string or protobuf instance
+        :param envelope: envelope of the request
+        :param copy: if true, request is copied
+        """
         self._buffer = None
         self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
         try:
@@ -93,7 +99,11 @@ class Request(ProtoTypeMixin):
 
     @property
     def body(self):
-        """Return the request type, raise ``ValueError`` if request_type not set."""
+        """
+        Return the request type, raise ``ValueError`` if request_type not set.
+
+        :return: body property
+        """
         if self._request_type:
             return getattr(self.proto, self._request_type)
         else:
@@ -105,12 +115,21 @@ class Request(ProtoTypeMixin):
 
     @property
     def request_type(self) -> Optional[str]:
-        """Return the request body type, when not set yet, return ``None``."""
+        """
+        Return the request body type, when not set yet, return ``None``.
+
+        :return: request type
+        """
         if self._request_type:
             return self.body.__class__.__name__
 
     def as_typed_request(self, request_type: str):
-        """Change the request class according to the one_of value in ``body``."""
+        """
+        Change the request class according to the one_of value in ``body``.
+
+        :param request_type: string representation of the request type
+        :return: self
+        """
         from .train import TrainRequest
         from .search import SearchRequest
         from .control import ControlRequest
@@ -137,7 +156,11 @@ class Request(ProtoTypeMixin):
 
     @request_type.setter
     def request_type(self, value: str):
-        """Set the type of this request, but keep the body empty."""
+        """
+        Set the type of this request, but keep the body empty.
+
+        :param value: string representation of request type
+        """
         value = value.lower()
         if value in _body_type:
             getattr(self.proto, value).SetInParent()
@@ -179,6 +202,8 @@ class Request(ProtoTypeMixin):
         Cast ``self`` to a :class:`jina_pb2.RequestProto`. This will trigger
         :attr:`is_used`. Laziness will be broken and serialization will be recomputed when calling
         :meth:`SerializeToString`.
+
+        :return: protobuf instance
         """
         if self._pb_body:
             # if request is already given while init
@@ -204,7 +229,11 @@ class Request(ProtoTypeMixin):
             return r
 
     def SerializeToString(self) -> bytes:
-        """Convert serialized data to string."""
+        """
+        Convert serialized data to string.
+
+        :return: serialized request
+        """
         if self.is_used:
             return self.proto.SerializeToString()
         else:
@@ -213,7 +242,11 @@ class Request(ProtoTypeMixin):
 
     @property
     def queryset(self) -> 'QueryLangSet':
-        """Get the queryset in :class:`QueryLangSet` type."""
+        """
+        Get the queryset in :class:`QueryLangSet` type.
+
+        :return: query lang set
+        """
         self.is_used = True
         return QueryLangSet(self.proto.queryset)
 

@@ -1,7 +1,7 @@
 """A module for the websockets-based Client for Jina."""
 import asyncio
 from abc import ABC
-from typing import Callable
+from typing import Callable, Optional
 
 from .base import BaseClient, InputType
 from .helper import callback_exec
@@ -17,8 +17,8 @@ class WebSocketClientMixin(BaseClient, ABC):
         self,
         inputs: InputType,
         on_done: Callable,
-        on_error: Callable = None,
-        on_always: Callable = None,
+        on_error: Optional[Callable] = None,
+        on_always: Optional[Callable] = None,
         **kwargs,
     ):
         """
@@ -39,7 +39,7 @@ class WebSocketClientMixin(BaseClient, ABC):
         :param on_done: the callback for on_done
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
-        :param **kwargs: **kwargs for _get_task_name and _get_requests
+        :param kwargs: kwargs for _get_task_name and _get_requests
         :yields: generator over results
         """
         with ImportExtensions(required=True):
