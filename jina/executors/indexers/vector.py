@@ -93,8 +93,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         self.key_bytes = valid_key_bytes
         self._size = len(valid)
         self.valid_indices = valid
-        del self.__dict__['CACHED__int2ext_id']
-        del self.__dict__['CACHED__ext2int_id']
+        del self._int2ext_id
+        del self._ext2int_id
 
     def _clean_memmap(self):
         # clean up the underlying matrix of entries marked for deletion
@@ -105,7 +105,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self.handler_mutex = False
         # force the raw_ndarray (underlying matrix) to re-read from disk
         # (needed when there were writing ops to be flushed)
-        del self.__dict__['CACHED__raw_ndarray']
+        del self._raw_ndarray
         filtered = self._raw_ndarray[self.valid_indices]
         # we need an intermediary file
         tmp_path = self.index_abspath + 'tmp'
@@ -123,7 +123,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         os.remove(self.index_abspath)
         os.rename(tmp_path, self.index_abspath)
         # force it to re-read again from the new file
-        del self.__dict__['CACHED__raw_ndarray']
+        del self._raw_ndarray
 
     def __getstate__(self):
         # called on pickle save

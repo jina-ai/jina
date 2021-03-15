@@ -2,6 +2,7 @@ import pytest
 
 import numpy as np
 
+from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
 from jina.flow import Flow
 from jina.proto import jina_pb2
@@ -9,8 +10,9 @@ from jina.proto import jina_pb2
 from tests import validate_callback
 
 
-class DummyCrafter(BaseCrafter):
-    def craft(self, *args, **kwargs):
+class DummyCrafterExcept(BaseCrafter):
+    @single
+    def craft(self, text, *args, **kwargs):
         return 1 / 0
 
 
@@ -53,7 +55,7 @@ def test_bad_flow_customized(mocker, restful):
     f = (
         Flow(restful=restful)
         .add(name='r1')
-        .add(name='r2', uses='!DummyCrafter')
+        .add(name='r2', uses='!DummyCrafterExcept')
         .add(name='r3', uses='!BaseEncoder')
     )
 
@@ -78,7 +80,7 @@ def test_except_with_parallel(mocker, restful):
             r.status for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
         assert len(err_routes) == 2
-        assert err_routes[0].exception.executor == 'DummyCrafter'
+        assert err_routes[0].exception.executor == 'DummyCrafterExcept'
         assert err_routes[1].exception.executor == 'BaseEncoder'
         assert err_routes[0].exception.name == 'ZeroDivisionError'
         assert err_routes[1].exception.name == 'NotImplementedError'
@@ -86,7 +88,7 @@ def test_except_with_parallel(mocker, restful):
     f = (
         Flow(restful=restful)
         .add(name='r1')
-        .add(name='r2', uses='!DummyCrafter', parallel=3)
+        .add(name='r2', uses='!DummyCrafterExcept', parallel=3)
         .add(name='r3', uses='!BaseEncoder')
     )
 
@@ -168,11 +170,12 @@ def test_flow_on_callback(restful):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_on_error_callback(restful):
-    class DummyCrafter(BaseCrafter):
-        def craft(self, *args, **kwargs):
+    class DummyCrafterNotImplemented(BaseCrafter):
+        @single
+        def craft(self, blob, *args, **kwargs):
             raise NotImplementedError
 
-    f = Flow(restful=restful).add(uses='DummyCrafter')
+    f = Flow(restful=restful).add(uses='!DummyCrafterNotImplemented')
     hit = []
 
     def f1(*args):

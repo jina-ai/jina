@@ -232,7 +232,7 @@ def test_get_content(num_rows, field):
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
     docs.append(Document())
 
-    contents, pts = docs._extract_docs(field)
+    contents, pts = docs.extract_docs(field)
     assert isinstance(contents, np.ndarray)
 
     assert contents.shape == (batch_size, num_rows, embed_size)
@@ -246,7 +246,7 @@ def test_get_content_text_fields(field):
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs._extract_docs(field)
+    contents, pts = docs.extract_docs(field)
     assert isinstance(contents, np.ndarray)
 
     assert contents.shape == (batch_size,)
@@ -263,7 +263,7 @@ def test_get_content_bytes_fields(field):
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs._extract_docs(field)
+    contents, pts = docs.extract_docs(field)
 
     assert contents.shape == (batch_size,)
     assert len(contents) == batch_size
@@ -280,7 +280,7 @@ def test_get_content_multiple_fields_text(fields):
 
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs._extract_docs(*fields)
+    contents, pts = docs.extract_docs(*fields)
 
     assert len(contents) == len(fields)
     assert isinstance(contents, list)
@@ -302,7 +302,7 @@ def test_get_content_multiple_fields_arrays(num_rows):
     kwargs = {field: np.random.random((num_rows, embed_size)) for field in fields}
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs._extract_docs(*fields)
+    contents, pts = docs.extract_docs(*fields)
 
     assert len(contents) == len(fields)
     assert isinstance(contents, list)
@@ -329,7 +329,7 @@ def test_get_content_multiple_fields_merge(num_rows):
     }
     docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs._extract_docs(*fields)
+    contents, pts = docs.extract_docs(*fields)
 
     assert len(contents) == len(fields)
     assert isinstance(contents, list)

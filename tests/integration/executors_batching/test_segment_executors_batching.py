@@ -3,7 +3,11 @@ import pytest
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.decorators import batching, single
 from jina import Document
+from jina.flow import Flow
 from jina.types.sets import DocumentSet
+from tests import validate_callback
+
+NUM_CHUNKS = 3
 
 
 class DummySegmenterTextBatching(BaseSegmenter):
@@ -14,9 +18,8 @@ class DummySegmenterTextBatching(BaseSegmenter):
     @batching(batch_size=3)
     def segment(self, text, *args, **kwargs):
         assert len(text) == 3
-        num_chunks = 3
         return [
-            [{'text': f'{txt}-chunk-{chunk}'} for chunk in range(num_chunks)]
+            [{'text': f'{txt}-chunk-{chunk}'} for chunk in range(NUM_CHUNKS)]
             for txt in text
         ]
 
@@ -25,11 +28,10 @@ class DummySegmenterTextSingle(BaseSegmenter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @single(flatten_output=False)
+    @single
     def segment(self, text, *args, **kwargs):
         assert isinstance(text, str)
-        num_chunks = 3
-        return [{'text': f'{text}-chunk-{chunk}'} for chunk in range(num_chunks)]
+        return [{'text': f'{text}-chunk-{chunk}'} for chunk in range(NUM_CHUNKS)]
 
 
 @pytest.mark.parametrize(
@@ -37,25 +39,33 @@ class DummySegmenterTextSingle(BaseSegmenter):
 )
 def test_batching_text_one_argument(segmenter):
     docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
-    texts, _ = docs._extract_docs('text')
+    texts, _ = docs.extract_docs('text')
 
     chunks_sets = segmenter.segment(texts)
     for i, chunks in enumerate(chunks_sets):
-        assert len(chunks) == 3
+        assert len(chunks) == NUM_CHUNKS
         for j, chunk in enumerate(chunks):
             assert chunk['text'] == f'text-{i}-chunk-{j}'
 
 
-class DummySegmenterBlobBatching(BaseSegmenter):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.counter = 0
+@pytest.mark.parametrize(
+    'segmenter', ['!DummySegmenterTextSingle', '!DummySegmenterTextBatching']
+)
+def test_batching_text_one_argument_flow(segmenter, mocker):
+    NUM_DOCS = 15
 
-    @batching(batch_size=3)
-    def segment(self, text, *args, **kwargs):
-        assert len(text) == 3
-        num_chunks = 3
-        return [
-            [{'text': f'{txt}-chunk-{chunk}'} for chunk in range(num_chunks)]
-            for txt in text
-        ]
+    def validate_response(resp):
+        assert len(resp.index.docs) == NUM_DOCS
+        for i, doc in enumerate(resp.index.docs):
+            assert len(doc.chunks) == NUM_CHUNKS
+            for j, chunk in enumerate(doc.chunks):
+                assert chunk.text == f'text-{i}-chunk-{j}'
+
+    docs = DocumentSet([Document(text=f'text-{i}') for i in range(NUM_DOCS)])
+    mock = mocker.Mock()
+
+    with Flow().add(name='segmenter', uses=segmenter) as f:
+        f.index(inputs=docs, on_done=mock)
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_response)

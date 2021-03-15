@@ -10,7 +10,10 @@ from jina.executors.decorators import (
     single_multi_input,
 )
 from jina import Document
+from jina.flow import Flow
+from jina.types.ndarray.generic import NdArray
 from jina.types.sets import DocumentSet
+from tests import validate_callback
 
 
 class DummyCrafterTextBatching(BaseCrafter):
@@ -38,11 +41,32 @@ class DummyCrafterTextSingle(BaseCrafter):
 )
 def test_batching_text_one_argument(crafter):
     docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
-    texts, _ = docs._extract_docs('text')
+    texts, _ = docs.extract_docs('text')
 
     crafted_docs = crafter.craft(texts)
     for i, crafted_doc in enumerate(crafted_docs):
         assert crafted_doc['text'] == f'text-{i}-crafted'
+
+
+@pytest.mark.parametrize(
+    'crafter', ['!DummyCrafterTextSingle', '!DummyCrafterTextBatching']
+)
+def test_batching_text_one_argument_flow(crafter, mocker):
+    NUM_DOCS = 15
+
+    def validate_response(resp):
+        assert len(resp.index.docs) == NUM_DOCS
+        for i, doc in enumerate(resp.index.docs):
+            assert doc.text == f'text-{i}-crafted'
+
+    docs = DocumentSet([Document(text=f'text-{i}') for i in range(NUM_DOCS)])
+    mock = mocker.Mock()
+
+    with Flow().add(name='crafter', uses=crafter) as f:
+        f.index(inputs=docs, on_done=mock)
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 class DummyCrafterTextIdBatching(BaseCrafter):
@@ -75,14 +99,37 @@ class DummyCrafterTextIdSingle(BaseCrafter):
 def test_batching_text_multi(crafter):
     docs = DocumentSet([Document(text=f'text-{i}', id=f'id-{i}') for i in range(15)])
     required_keys = ['text', 'id']
-    text_ids, _ = docs._extract_docs(*required_keys)
+    text_ids, _ = docs.extract_docs(*required_keys)
 
-    # args = [text_ids[:, i] for i in range(len(required_keys))]
     crafted_docs = crafter.craft(*text_ids)
 
     for i, crafted_doc in enumerate(crafted_docs):
         assert crafted_doc['text'] == f'text-{i}-crafted'
         assert crafted_doc['id'] == f'id-{i}-crafted'
+
+
+@pytest.mark.parametrize(
+    'crafter', ['!DummyCrafterTextIdSingle', '!DummyCrafterTextIdBatching']
+)
+def test_batching_text_multi_flow(crafter, mocker):
+    NUM_DOCS = 15
+
+    def validate_response(resp):
+        assert len(resp.index.docs) == NUM_DOCS
+        for i, doc in enumerate(resp.index.docs):
+            assert doc.text == f'text-{i}-crafted'
+            assert doc.id == f'id-{i}-crafted'
+
+    docs = DocumentSet(
+        [Document(text=f'text-{i}', id=f'id-{i}') for i in range(NUM_DOCS)]
+    )
+    mock = mocker.Mock()
+
+    with Flow().add(name='crafter', uses=crafter) as f:
+        f.index(inputs=docs, on_done=mock)
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 class DummyCrafterBlobBatching(BaseCrafter):
@@ -111,13 +158,38 @@ class DummyCrafterBlobSingle(BaseCrafter):
 )
 def test_batching_blob_one_argument(crafter):
     docs = DocumentSet([Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(15)])
-    texts, _ = docs._extract_docs('blob')
+    texts, _ = docs.extract_docs('blob')
 
     crafted_docs = crafter.craft(texts)
     for i, crafted_doc in enumerate(crafted_docs):
         np.testing.assert_equal(
             crafted_doc['blob'], np.array([[i, i, i, i, i], [i, i, i, i, i]])
         )
+
+
+@pytest.mark.parametrize(
+    'crafter', ['!DummyCrafterBlobSingle', '!DummyCrafterBlobBatching']
+)
+def test_batching_blob_one_argument_flow(crafter, mocker):
+    NUM_DOCS = 15
+
+    def validate_response(resp):
+        assert len(resp.index.docs) == NUM_DOCS
+        for i, doc in enumerate(resp.index.docs):
+            np.testing.assert_equal(
+                NdArray(doc.blob).value, np.array([[i] * 5, [i] * 5])
+            )
+
+    docs = DocumentSet(
+        [Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(NUM_DOCS)]
+    )
+    mock = mocker.Mock()
+
+    with Flow().add(name='crafter', uses=crafter) as f:
+        f.index(inputs=docs, on_done=mock)
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 class DummyCrafterBlobEmbeddingBatching(BaseCrafter):
@@ -151,22 +223,53 @@ def test_batching_blob_multi(crafter):
     docs = DocumentSet(
         [
             Document(
-                blob=np.array([[i, i, i, i, i], [i, i, i, i, i]]),
-                embedding=np.array([i, i, i, i, i]),
+                blob=np.array([[i] * 5, [i] * 5]),
+                embedding=np.array([i] * 5),
             )
             for i in range(15)
         ]
     )
     required_keys = ['blob', 'embedding']
-    text_ids, _ = docs._extract_docs(*required_keys)
+    text_ids, _ = docs.extract_docs(*required_keys)
 
     crafted_docs = crafter.craft(*text_ids)
 
     for i, crafted_doc in enumerate(crafted_docs):
-        np.testing.assert_equal(
-            crafted_doc['blob'], np.array([[i, i, i, i, i], [i, i, i, i, i]])
-        )
-        np.testing.assert_equal(crafted_doc['embedding'], np.array([i, i, i, i, i]))
+        np.testing.assert_equal(crafted_doc['blob'], np.array([[i] * 5, [i] * 5]))
+        np.testing.assert_equal(crafted_doc['embedding'], np.array([i] * 5))
+
+
+@pytest.mark.parametrize(
+    'crafter',
+    ['!DummyCrafterBlobEmbeddingSingle', '!DummyCrafterBlobEmbeddingBatching'],
+)
+def test_batching_blob_multi_flow(crafter, mocker):
+    NUM_DOCS = 15
+
+    def validate_response(resp):
+        assert len(resp.index.docs) == NUM_DOCS
+        for i, doc in enumerate(resp.index.docs):
+            np.testing.assert_equal(
+                NdArray(doc.blob).value, np.array([[i] * 5, [i] * 5])
+            )
+            np.testing.assert_equal(NdArray(doc.embedding).value, np.array([i] * 5))
+
+    docs = DocumentSet(
+        [
+            Document(
+                blob=np.array([[i] * 5, [i] * 5]),
+                embedding=np.array([i] * 5),
+            )
+            for i in range(NUM_DOCS)
+        ]
+    )
+    mock = mocker.Mock()
+
+    with Flow().add(name='crafter', uses=crafter) as f:
+        f.index(inputs=docs, on_done=mock)
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_response)
 
 
 class DummyCrafterTextEmbeddingBatching(BaseCrafter):
@@ -179,18 +282,21 @@ class DummyCrafterTextEmbeddingBatching(BaseCrafter):
         assert len(embedding) == 3
         assert text.shape == (3,)
         assert embedding.shape == (3, 5)
-        return [{'text': t, 'embedding': e} for t, e in zip(text, embedding)]
+        return [
+            {'text': f'{t}-crafted', 'embedding': e} for t, e in zip(text, embedding)
+        ]
 
 
 class DummyCrafterTextEmbeddingSingle(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.required_keys = ['text', 'embedding']
 
     @single_multi_input(num_data=2)
     def craft(self, text, embedding, *args, **kwargs):
         assert isinstance(text, str)
         assert isinstance(embedding, np.ndarray)
-        return {'text': text, 'embedding': embedding}
+        return {'text': f'{text}-crafted', 'embedding': embedding}
 
 
 @pytest.mark.parametrize(
@@ -198,16 +304,44 @@ class DummyCrafterTextEmbeddingSingle(BaseCrafter):
 )
 def test_batching_mix_multi(crafter):
     docs = DocumentSet(
-        [
-            Document(text=f'text-{i}', embedding=np.array([i, i, i, i, i]))
-            for i in range(15)
-        ]
+        [Document(text=f'text-{i}', embedding=np.array([i] * 5)) for i in range(15)]
     )
     required_keys = ['text', 'embedding']
-    text_ids, _ = docs._extract_docs(*required_keys)
+    text_ids, _ = docs.extract_docs(*required_keys)
 
     crafted_docs = crafter.craft(*text_ids)
 
     for i, crafted_doc in enumerate(crafted_docs):
-        assert crafted_doc['text'] == f'text-{i}'
-        np.testing.assert_equal(crafted_doc['embedding'], np.array([i, i, i, i, i]))
+        assert crafted_doc['text'] == f'text-{i}-crafted'
+        np.testing.assert_equal(crafted_doc['embedding'], np.array([i] * 5))
+
+
+@pytest.mark.parametrize(
+    'crafter',
+    ['!DummyCrafterTextEmbeddingSingle', '!DummyCrafterTextEmbeddingBatching'],
+)
+def test_batching_mix_multi_flow(crafter, mocker):
+    NUM_DOCS = 15
+
+    def validate_response(resp):
+        assert len(resp.index.docs) == NUM_DOCS
+        for i, doc in enumerate(resp.index.docs):
+            assert doc.text == f'text-{i}-crafted'
+            np.testing.assert_equal(NdArray(doc.embedding).value, np.array([i] * 5))
+
+    docs = DocumentSet(
+        [
+            Document(
+                text=f'text-{i}',
+                embedding=np.array([i] * 5),
+            )
+            for i in range(NUM_DOCS)
+        ]
+    )
+    mock = mocker.Mock()
+
+    with Flow().add(name='crafter', uses=crafter) as f:
+        f.index(inputs=docs, on_done=mock)
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_response)

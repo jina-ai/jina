@@ -202,27 +202,16 @@ def _get_total_size(full_data_size, batch_size, num_batch):
 def _merge_results_after_batching(
     final_result, merge_over_axis: int = 0, flatten: bool = True
 ):
-    if len(final_result) == 1:
-        # the only result of one batch
-        return final_result[0]
+    if not final_result:
+        return
 
-    if final_result:
-        if isinstance(final_result[0], np.ndarray):
-            if len(final_result[0].shape) > 1:
-                final_result = np.concatenate(final_result, merge_over_axis)
-        elif isinstance(final_result[0], tuple):
-            reduced_result = []
-            num_cols = len(final_result[0])
-            for col in range(num_cols):
-                reduced_result.append(
-                    np.concatenate([row[col] for row in final_result], merge_over_axis)
-                )
-            final_result = tuple(reduced_result)
-        elif isinstance(final_result[0], list) and flatten:
-            final_result = list(chain.from_iterable(final_result))
+    if isinstance(final_result[0], np.ndarray):
+        if len(final_result[0].shape) > 1:
+            final_result = np.concatenate(final_result, merge_over_axis)
+    elif isinstance(final_result[0], list) and flatten:
+        final_result = list(chain.from_iterable(final_result))
 
-    if len(final_result):
-        return final_result
+    return final_result
 
 
 def batching(
@@ -445,7 +434,7 @@ def single(
     func: Optional[Callable[[Any], np.ndarray]] = None,
     merge_over_axis: int = 0,
     slice_on: int = 1,
-    flatten_output: bool = True,
+    flatten_output: bool = False,
 ) -> Any:
     """
     Guarantee that the input of a function is provided as a single instance and not in batches
@@ -464,18 +453,51 @@ def single(
             class OneByOneCrafter:
                 @single
                 def craft(self, text: str) -> Dict:
+
+    .. note:
+        Single decorator will let the user interact with the executor in 3 different ways:
+            - Providing batches: (This decorator will make sure that the actual method receives just a single instance)
+            - Providing a single instance
+            - Providing a single instance through kwargs.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            class OneByOneCrafter:
+                @single
+                def craft(self, text: str) -> Dict:
+                    return {'text' : f'{text}-crafted'}
+
+            crafter = OneByOneCrafter()
+
+            results = crafted.craft(['text1', 'text2'])
+            assert len(results) == 2
+            assert results[0] == {'text': 'text1-crafted'}
+            assert results[1] == {'text': 'text2-crafted'}
+
+            result = crafter.craft('text')
+            assert result['text'] == 'text-crafted'
+
+            results = crafted.craft(text='text')
+            assert result['text'] == 'text-crafted'
     """
 
     def _single(func):
         @wraps(func)
         def arg_wrapper(*args, **kwargs):
-            # by default data is in args[1] (self needs to be taken into account)
-            data = args[slice_on]
 
-            if not isinstance(data, Iterable):
+            # like this one can use the function with single kwargs
+            if (
+                len(args) <= slice_on
+                or isinstance(args[slice_on], str)
+                or isinstance(args[slice_on], bytes)
+                or not isinstance(args[slice_on], Iterable)
+            ):
+                # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
 
             args = list(args)
+            data = args[slice_on]
 
             default_logger.debug(f'batching disabled for {func.__qualname__}')
 
@@ -503,6 +525,7 @@ def single_multi_input(
     merge_over_axis: int = 0,
     slice_on: int = 1,
     num_data: int = 1,
+    flatten_output: bool = True,
 ) -> Any:
     """Guarantee that the inputs of a function with more than one argument is provided as single instances and not in batches
 
@@ -511,6 +534,7 @@ def single_multi_input(
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
     :param num_data: the number of data inside the arguments
+    :param flatten_output: If this is set to True, the results from different batches will be chained and the returning value is a list of the results. Otherwise, the returning value is a list of lists, in which each element is a list containing the result from one single batch. Note if there is only one batch returned, the returned result is always flatten.
     :return: the merged result as if run :func:`func` once on the input.
 
     ..warning:
@@ -525,6 +549,35 @@ def single_multi_input(
                 @single_multi_input
                 def craft(self, text: str, id: str) -> Dict:
             ...
+
+    .. note:
+        Single multi input decorator will let the user interact with the executor in 3 different ways:
+            - Providing batches: (This decorator will make sure that the actual method receives just a single instance)
+            - Providing a single instance
+            - Providing a single instance through kwargs.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            class OneByOneCrafter:
+                @single_multi_input
+                def craft(self, text: str, id: str) -> Dict:
+                    return {'text': f'{text}-crafted', 'id': f'{id}-crafted'}
+
+            crafter = OneByOneCrafter()
+
+            results = crafted.craft(['text1', 'text2'], ['id1', 'id2'])
+            assert len(results) == 2
+            assert results[0] == {'text': 'text1-crafted', 'id': 'id1-crafted'}
+            assert results[1] == {'text': 'text2-crafted', 'id': 'id2-crafted'}
+
+            result = crafter.craft('text', 'id')
+            assert result['text'] == 'text-crafted'
+            assert result['id'] == 'id-crafted'
+
+            results = crafted.craft(text='text', id='id')
+            assert result['text'] == 'text-crafted'
+            assert result['id'] == 'id-crafted'
     """
 
     def _single_multi_input(func):
@@ -533,9 +586,20 @@ def single_multi_input(
             # by default data is in args[1:] (self needs to be taken into account)
             args = list(args)
             default_logger.debug(f'batching disabled for {func.__qualname__}')
-            data_iterators = [args[slice_on + i] for i in range(0, num_data)]
 
-            if not isinstance(data_iterators[0], Iterable):
+            if len(args) <= slice_on:
+                # like this one can use the function with single kwargs
+                return func(*args, **kwargs)
+
+            data_iterators = list([args[slice_on + i] for i in range(0, num_data)])
+
+            if (
+                len(args) <= slice_on
+                or isinstance(data_iterators[0], str)
+                or isinstance(data_iterators[0], bytes)
+                or not isinstance(data_iterators[0], Iterable)
+            ):
+                # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
 
             final_result = []
@@ -549,7 +613,9 @@ def single_multi_input(
                 if r is not None:
                     final_result.append(r)
 
-            return _merge_results_after_batching(final_result, merge_over_axis)
+            return _merge_results_after_batching(
+                final_result, merge_over_axis, flatten=flatten_output
+            )
 
         return arg_wrapper
 
