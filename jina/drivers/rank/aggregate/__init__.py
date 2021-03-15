@@ -85,13 +85,17 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         list_numpy_arrays = []
         current = _sorted_m[col_name][0]
         prev_val = 0
+        n_elements = len(_sorted_m[col_name])
         for i, val in enumerate(_sorted_m[col_name]):
             if val != current:
                 list_numpy_arrays.append(_sorted_m[prev_val:i])
                 prev_val = i
                 current = val
-        return list_numpy_arrays
+            if i == n_elements-1 and val == current:                
+                list_numpy_arrays.append(_sorted_m[prev_val:])
 
+        return list_numpy_arrays
+        
     @staticmethod
     def _sort_doc_by_score(r):
         """
