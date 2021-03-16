@@ -89,7 +89,6 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
                 prev_index = i
                 prev_val = current_val
         list_numpy_arrays.append(_sorted_m[prev_index:])
-
         return list_numpy_arrays
 
     @staticmethod

@@ -3,6 +3,7 @@ from typing import Dict, List
 from jina import Document
 from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker
+from jina.types.score import NamedScore
 from jina.executors.decorators import batching_multi_input
 from jina.types.sets import DocumentSet
 
@@ -61,7 +62,7 @@ def create_document_to_score():
         with Document() as match:
             match.id = str(match_id) * match_length
             match.length = match_score
-            match.score.value = match_score
+            match.score = NamedScore(value=match_score, ref_id=doc.id)
             doc.matches.append(match)
     return doc
 
