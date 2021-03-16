@@ -220,13 +220,11 @@ class HubIO:
     def push(
         self,
         name: Optional[str] = None,
-        readme_path: Optional[str] = None,
         build_result: Optional[Dict] = None,
     ) -> None:
         """Push image to Jina Hub.
 
         :param name: name of image
-        :param readme_path: path to readme
         :param build_result: dictionary containing the build summary
         :return: None
         """
@@ -251,7 +249,7 @@ class HubIO:
                     f'Image with name {name} does not exist. Pushing now...'
                 )
 
-            self._push_docker_hub(name, readme_path)
+            self._push_docker_hub(name)
 
             if not build_result:
                 file_path = get_summary_path(name)
@@ -284,13 +282,10 @@ class HubIO:
             if isinstance(e, ImageAlreadyExists):
                 raise e
 
-    def _push_docker_hub(
-        self, name: Optional[str] = None, readme_path: Optional[str] = None
-    ) -> None:
+    def _push_docker_hub(self, name: Optional[str] = None) -> None:
         """Push to Docker Hub.
 
         :param name: name of image
-        :param readme_path: path to README
         """
         check_registry(self.args.registry, name, self.args.repository)
         self._check_docker_image(name)
@@ -552,7 +547,7 @@ class HubIO:
             if result['is_build_success']:
                 self._write_summary_to_file(summary=result)
                 if self.args.push:
-                    self.push(image.tags[0], self.readme_path, result)
+                    self.push(image.tags[0], result)
 
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
@@ -706,7 +701,7 @@ class HubIO:
         dockerfile_path = get_exist_path(self.args.path, self.args.file)
         manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
-        self.readme_path = get_exist_path(self.args.path, 'README.md')
+        readme_path = get_exist_path(self.args.path, 'README.md')
         requirements_path = get_exist_path(self.args.path, 'requirements.txt')
 
         yaml_glob = set(glob.glob(os.path.join(self.args.path, '*.yml')))
@@ -723,7 +718,7 @@ class HubIO:
             'Dockerfile': dockerfile_path,
             'manifest.yml': manifest_path,
             'config.yml': self.config_yaml_path,
-            'README.md': self.readme_path,
+            'README.md': readme_path,
             'requirements.txt': requirements_path,
             '*.yml': yaml_glob,
             '*.py': py_glob,
