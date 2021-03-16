@@ -160,7 +160,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 and the documents have no embedding in a :class:`DocumentSet`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self.extract_docs('embedding')
+        return self.extract_docs('embedding', stack_contents=True)
 
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
