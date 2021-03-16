@@ -36,7 +36,7 @@ The Request mode. This applies to all Requests sent from this client.
     gp.add_argument(
         '--top-k',
         type=int,
-        help='The number of results will be returned. Sorted by their scores in descending order.',
+        help='At maximum k results are returned.',
     )
     gp.add_argument('--mime-type', type=str, help='MIME type of the input Documents.')
     gp.add_argument(
