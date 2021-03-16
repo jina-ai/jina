@@ -21,8 +21,8 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
     :param keep_source_matches_as_chunks: A flag to indicate if the driver must return the old matches of the query or its chunks
             (at a greater granularity level (k + 1)) as the chunks of the new computed `matches` (at granularity level k)
             Set it to `True` when keeping track of the chunks that lead to a retrieved result.
-    :param args: additional positional arguments wich are just used for the parent initialization
-    :param kwargs: additional key value arguments wich are just used for the parent initialization
+    :param args: additional positional arguments which are just used for the parent initialization
+    :param kwargs: additional key value arguments which are just used for the parent initialization
 
     .. note::
         When set `keep_source_matches_as_chunks=True`, the chunks of the match contains **ONLY** the chunks leading
@@ -88,9 +88,7 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
                 list_numpy_arrays.append(_sorted_m[prev_index:i])
                 prev_index = i
                 prev_val = current_val
-        if current_val == prev_val:
-            list_numpy_arrays.append(_sorted_m[prev_index:])
-
+        list_numpy_arrays.append(_sorted_m[prev_index:])
         return list_numpy_arrays
 
     @staticmethod

@@ -33,8 +33,8 @@ class SortQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
         :param field: the value of the field drives the sort of the iterable docs
         :param reverse: sort the value from big to small
         :param traversal_paths: the traversal paths
-        :param args: additional positional arguments wich are just used for the parent initialization
-        :param kwargs: additional key value arguments wich are just used for the parent initialization
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
     """
 
     def __init__(
