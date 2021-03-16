@@ -7,7 +7,6 @@ from jina.enums import BuildTestLevel
 from jina.logging import JinaLogger
 from jina.parsers.hub import set_hub_build_parser
 
-cli = docker.APIClient(base_url='unix://var/run/docker.sock')
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
