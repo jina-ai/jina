@@ -40,7 +40,9 @@ class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
         if len(self.exec.required_keys) > 1:
             docs_chunks = self.exec_fn(*contents)
         else:
-            docs_chunks = self.exec_fn(contents)
+            docs_chunks = []
+            for content in contents:
+                docs_chunks.append(self.exec_fn(content))
 
         if len(docs_pts) != len(docs_chunks):
             msg = (
