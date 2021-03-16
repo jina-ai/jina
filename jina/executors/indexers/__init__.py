@@ -39,8 +39,8 @@ class BaseIndexer(BaseExecutor):
         So that it can safely save the data. Or you have to manually call `b.close()` to close the indexer safely.
 
     :param index_filename: the name of the file for storing the index, when not given metas.name is used.
-    :param args:  Additional positional arguments wich are just used for the parent initialization
-    :param kwargs: Additional keyword arguments wich are just used for the parent initialization
+    :param args:  Additional positional arguments which are just used for the parent initialization
+    :param kwargs: Additional keyword arguments which are just used for the parent initialization
     """
 
     def __init__(

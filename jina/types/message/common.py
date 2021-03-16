@@ -16,8 +16,8 @@ class ControlMessage(Message):
     :param command: Command with string content. (e.g. 'IDLE', 'TERMINATE', 'STATUS')
     :param pod_name: Name of the current pod.
     :param identity: The identity of the current pod
-    :param args: Additional positional arguments wich are just used for the parent initialization
-    :param kwargs: Additional keyword arguments wich are just used for the parent initialization
+    :param args: Additional positional arguments which are just used for the parent initialization
+    :param kwargs: Additional keyword arguments which are just used for the parent initialization
     """
 
     def __init__(

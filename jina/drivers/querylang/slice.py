@@ -35,8 +35,8 @@ class SliceQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
     :param end:  Zero-based index before which to end extraction.
             slice extracts up to but not including end. For example, take(1,4) extracts
             the second element through the fourth element (elements indexed 1, 2, and 3).
-    :param args: additional positional arguments wich are just used for the parent initialization
-    :param kwargs: additional key value arguments wich are just used for the parent initialization
+    :param args: additional positional arguments which are just used for the parent initialization
+    :param kwargs: additional key value arguments which are just used for the parent initialization
     """
 
     def __init__(self, start: int, end: Optional[int] = None, *args, **kwargs):

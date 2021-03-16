@@ -17,8 +17,8 @@ class DenseNdArray(BaseDenseNdArray):
 
     :param proto: the protobuf message, when not given then create a new one
     :param quantize: the quantization method used when converting to protobuf.
-    :param args: Additional positional arguments wich are just used for the parent initialization
-    :param kwargs: Additional keyword arguments wich are just used for the parent initialization
+    :param args: Additional positional arguments which are just used for the parent initialization
+    :param kwargs: Additional keyword arguments which are just used for the parent initialization
         Availables are ``fp16``, ``uint8``, default is None.
 
     .. note::
