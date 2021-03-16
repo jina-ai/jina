@@ -1,11 +1,13 @@
 import os
 
 from jina import Segmenter, Crafter
+from jina.executors.decorators import single, single_multi_input
 
 
 class SimpleCrafter(Crafter):
     """Simple crafter for multimodal example."""
 
+    @single
     def craft(self, tags):
         """
         Read the data and add tags.
@@ -22,6 +24,7 @@ class SimpleCrafter(Crafter):
 class BiSegmenter(Segmenter):
     """Segmenter for multimodal example."""
 
+    @single_multi_input(num_data=2, flatten_output=False)
     def segment(self, text, uri):
         """
         Segment data into text and uri.
