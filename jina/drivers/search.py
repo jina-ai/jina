@@ -17,7 +17,7 @@ if False:
 
 
 class BaseSearchDriver(BaseExecutableDriver):
-    """Drivers inherited from this Driver will bind :meth:`craft` by default """
+    """Drivers inherited from this Driver will bind :meth:`query` by default """
 
     def __init__(
         self,
