@@ -79,17 +79,17 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         :rtype: np.ndarray.
         """
         _sorted_m = np.sort(match_idx, order=col_name)
-        list_numpy_arrays = []
-        current = _sorted_m[col_name][0]
-        prev_val = 0
         n_elements = len(_sorted_m[col_name])
-        for i, val in enumerate(_sorted_m[col_name]):
-            if val != current:
-                list_numpy_arrays.append(_sorted_m[prev_val:i])
-                prev_val = i
-                current = val
-            if i == n_elements - 1 and val == current:
-                list_numpy_arrays.append(_sorted_m[prev_val:])
+        list_numpy_arrays = []
+        prev_val = _sorted_m[col_name][0]
+        prev_index = 0
+        for i, current_val in enumerate(_sorted_m[col_name]):
+            if current_val != prev_val:
+                list_numpy_arrays.append(_sorted_m[prev_index:i])
+                prev_index = i
+                prev_val = current_val
+        if current_val == prev_val:
+           list_numpy_arrays.append(_sorted_m[prev_index:])
 
         return list_numpy_arrays
 
