@@ -157,7 +157,7 @@ class CompoundExecutor(BaseExecutor):
 
         .. warning::
 
-            When setting inner `executors` in `components` the `workspace` configuration will not be used and will be overriden
+            When setting inner `executors` in `components` the `workspace` configuration will not be used and will be overridden
             by a workspace extracted considering the name of the `CompoundExecutor`, the name of each internal `Component` and the `pea_id`
 
 
@@ -171,7 +171,7 @@ class CompoundExecutor(BaseExecutor):
         c[0].add(obj)
 
     .. note::
-        Component ``workspace`` and ``pea_id`` are overriden by their :class:`CompoundExecutor` counterparts.
+        Component ``workspace`` and ``pea_id`` are overridden by their :class:`CompoundExecutor` counterparts.
 
     .. warning::
 

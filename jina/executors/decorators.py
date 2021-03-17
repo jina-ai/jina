@@ -70,7 +70,7 @@ def as_train_method(func: Callable) -> Callable:
 
 
 def wrap_func(cls, func_lst, wrapper):
-    """Wrapping a class method only once, inherited but not overrided method will not be wrapped again
+    """Wrapping a class method only once, inherited but not overridden method will not be wrapped again
 
     :param cls: class
     :param func_lst: function list to wrap

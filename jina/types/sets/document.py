@@ -160,7 +160,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 and the documents have no embedding in a :class:`DocumentSet`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self.extract_docs('embedding')
+        return self.extract_docs('embedding', stack_contents=True)
 
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
@@ -170,14 +170,16 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 and the documents have no contents in a :class:`DocumentSet`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self.extract_docs('content')
+        # stack true for backward compatibility, but will not work if content is blob of different shapes
+        return self.extract_docs('content', stack_contents=True)
 
     def extract_docs(
-        self, *fields: str
+        self, *fields: str, stack_contents: bool = False
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
         """Return in batches all the values of the fields
 
         :param fields: Variable length argument with the name of the fields to extract
+        :param stack_contents: boolean flag indicating if output lists should be stacked with `np.stack`
         :return: Returns an :class:`np.ndarray` or a list of :class:`np.ndarray` with the batches for these fields
         """
 
@@ -198,7 +200,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
             for idx, c in enumerate(contents):
                 if not c:
                     continue
-                if not isinstance(c[0], bytes):
+                if stack_contents and not isinstance(c[0], bytes):
                     contents[idx] = np.stack(c)
         else:
             for doc in self:
@@ -211,7 +213,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
             if not contents:
                 contents = None
-            elif not isinstance(contents[0], bytes):
+            elif stack_contents and not isinstance(contents[0], bytes):
                 contents = np.stack(contents)
 
         if bad_docs:

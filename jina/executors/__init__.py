@@ -445,7 +445,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def train(self, *args, **kwargs) -> None:
         """
-        Train this executor, need to be overrided
+        Train this executor, need to be overridden
 
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
@@ -554,7 +554,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def close(self) -> None:
         """
-        Release the resources as executor is destroyed, need to be overrided
+        Release the resources as executor is destroyed, need to be overridden
         """
         self.save()
         self.logger.close()
