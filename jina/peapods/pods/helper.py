@@ -43,7 +43,7 @@ def _set_peas_args(
                 _args.socket_in = SocketType.DEALER_CONNECT
             else:
                 raise ValueError(
-                    f"{args.scheduling} is not supported as a SchedulerType!"
+                    f'{args.scheduling} is not supported as a SchedulerType!'
                 )
 
         else:
