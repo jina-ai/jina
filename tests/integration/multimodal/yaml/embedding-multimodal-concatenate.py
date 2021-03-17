@@ -13,7 +13,7 @@ class ConcatenateMultiModalEncoder(BaseMultiModalEncoder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(num_data=2)
+    @batching_multi_input(slice_nargs=2)
     @as_ndarray
     def encode(self, *data: 'np.ndarray', **kwargs):
         assert len(data) == 2

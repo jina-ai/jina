@@ -72,7 +72,7 @@ class DummyCrafterTextIdBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(batch_size=3, num_data=2)
+    @batching_multi_input(batch_size=3, slice_nargs=2)
     def craft(self, text, id, *args, **kwargs):
         assert len(text) == 3
         assert len(id) == 3
@@ -195,7 +195,7 @@ class DummyCrafterBlobEmbeddingBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(batch_size=3, num_data=2)
+    @batching_multi_input(batch_size=3, slice_nargs=2)
     def craft(self, blob, embedding, *args, **kwargs):
         assert len(blob) == 3
         assert len(embedding) == 3
@@ -275,7 +275,7 @@ class DummyCrafterTextEmbeddingBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(batch_size=3, num_data=2)
+    @batching_multi_input(batch_size=3, slice_nargs=2)
     def craft(self, text, embedding, *args, **kwargs):
         assert len(text) == 3
         assert len(embedding) == 3

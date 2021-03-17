@@ -336,7 +336,7 @@ def batching_multi_input(
         split_over_axis: int = 0,
         merge_over_axis: int = 0,
         slice_on: int = 1,
-        num_data: int = 1,
+        slice_nargs: int = 1,
 ) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
@@ -348,7 +348,7 @@ def batching_multi_input(
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
-    :param num_data: the number of data inside the arguments
+    :param slice_nargs: the number of data inside the arguments
     :return: the merged result as if run :func:`func` once on the input.
 
     ..warning:
@@ -397,24 +397,23 @@ def batching_multi_input(
             full_data_size = _get_size(args[slice_on], split_over_axis)
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
-            yield_dict = [
-                isinstance(args[slice_on + i], Dict) for i in range(0, num_data)
-            ]
+
+            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0, slice_nargs)]
+            yield_slice = [isinstance(args[slice_on + i], np.memmap) for i in range(0, slice_nargs)]
+
             data_iterators = [
                 batch_iterator(
                     _get_slice(args[slice_on + i], total_size),
                     b_size,
                     split_over_axis,
+                    yield_slice=yield_slice[i],
                     yield_dict=yield_dict[i],
                 )
-                for i in range(0, num_data)
+                for i in range(0, slice_nargs)
             ]
 
-            for batch in data_iterators[0]:
-                args[slice_on] = batch
-                for idx in range(1, num_data):
-                    args[slice_on + idx] = next(data_iterators[idx])
-
+            for new_args in zip(*data_iterators):
+                args[slice_on: slice_on + slice_nargs] = new_args
                 r = func(*args, **kwargs)
 
                 if r is not None:
