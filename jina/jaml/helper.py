@@ -163,11 +163,11 @@ def parse_config_source(
             'jina', '/'.join(('resources', f'executors.{path}.yml'))
         )
         return open(comp_path, encoding='utf8'), comp_path
-    elif allow_raw_yaml_content and path.lstrip().startswith('!'):
+    elif allow_raw_yaml_content and path.lstrip().startswith(('!', 'jtype')):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
         return io.StringIO(path), None
-    elif allow_raw_driver_yaml_content and path.lstrip().startswith('- !'):
+    elif allow_raw_driver_yaml_content and path.lstrip().startswith(('- !', 'jtype')):
         # possible driver YAML content, right now it is only used for debugging
         with open(
             resource_filename(
