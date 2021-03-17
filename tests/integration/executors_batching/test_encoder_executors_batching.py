@@ -39,7 +39,7 @@ class DummyEncoderTextSingle(BaseEncoder):
 )
 def test_batching_encode_text(encoder):
     docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
-    texts, _ = docs.all_contents
+    texts, _ = docs.extract_docs('text')
 
     embeds = encoder.encode(texts)
 
@@ -75,7 +75,7 @@ class DummyEncoderBlobSingle(BaseEncoder):
 )
 def test_batching_encode_blob(encoder):
     docs = DocumentSet([Document(blob=np.random.random((10, 20))) for _ in range(15)])
-    blob, _ = docs.all_contents
+    blob, _ = docs.extract_docs('blob')
 
     embeds = encoder.encode(blob)
 
