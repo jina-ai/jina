@@ -434,7 +434,7 @@ def single(
         merge_over_axis: int = 0,
         slice_on: int = 1,
         slice_nargs: int = 1,
-        flatten_output: bool = True,
+        flatten_output: bool = False,
 ) -> Any:
     """Guarantee that the inputs of a function with more than one argument is provided as single instances and not in batches
 
