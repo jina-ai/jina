@@ -9,10 +9,14 @@ echo 'removing files under /tests...'
 arrVar=()
 # we ignore tests files
 for changed_file in $CHANGED_FILES; do
-  if [[ ${changed_file} != tests/* ]]; then
-    echo keeping ${changed_file}
-    arrVar+=(${changed_file})
-  fi
+  case ${changed_file} in
+    !(tests/* | \
+    jina/proto/jina_pb2.py | \
+    jina/proto/jina_pb2_grpc.py))
+      echo keeping ${changed_file}
+      arrVar+=(${changed_file})
+    ;;
+  esac
 done
 
 # if array is empty
