@@ -17,6 +17,8 @@ _trigger_body_fields = set(
         jina_pb2.RequestProto.SearchRequestProto,
         jina_pb2.RequestProto.TrainRequestProto,
         jina_pb2.RequestProto.ControlRequestProto,
+        jina_pb2.RequestProto.EndTrainingRequestProto,
+        jina_pb2.RequestProto.ReloadFromTrainingRequestProto,
     ]
     for kk in v.DESCRIPTOR.fields_by_name.keys()
 )
@@ -136,6 +138,8 @@ class Request(ProtoTypeMixin):
         from .index import IndexRequest
         from .delete import DeleteRequest
         from .update import UpdateRequest
+        from .endtraining import EndTrainingRequest
+        from .reload import ReloadFromTrainingRequest
 
         rt = request_type.upper()
         if rt.startswith(str(RequestType.TRAIN)):
@@ -150,6 +154,10 @@ class Request(ProtoTypeMixin):
             self.__class__ = UpdateRequest
         elif rt.startswith(str(RequestType.CONTROL)):
             self.__class__ = ControlRequest
+        elif rt.startswith(str(RequestType.ENDTRAINING)):
+            self.__class__ = EndTrainingRequest
+        elif rt.startswith(str(RequestType.RELOADFROMTRAINING)):
+            self.__class__ = ReloadFromTrainingRequest
         else:
             raise TypeError(f'{request_type} is not recognized')
         return self

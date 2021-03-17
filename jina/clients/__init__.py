@@ -167,6 +167,48 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
+    def end_training(
+        self,
+        path: str,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
+        """Issue 'update' request to the Flow.
+        TODO to be done
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: additional parameters
+        :return: None
+        """
+        self.mode = RequestType.ENDTRAINING
+        return run_async(
+            self._get_results, path, on_done, on_error, on_always, **kwargs
+        )
+
+    def load_from_training(
+        self,
+        path: str,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ) -> None:
+        """Issue 'update' request to the Flow.
+        TODO to be done
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: additional parameters
+        :return: None
+        """
+        self.mode = RequestType.RELOADFROMTRAINING
+        return run_async(
+            self._get_results, path, on_done, on_error, on_always, **kwargs
+        )
+
 
 class WebSocketClient(Client, WebSocketClientMixin):
     """A Python Client to stream requests from a Flow with a REST Gateway.

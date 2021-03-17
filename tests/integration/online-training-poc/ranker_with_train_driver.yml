@@ -5,5 +5,7 @@ with:
   score_output: 0
 requests:
   on:
-    [TrainRequest]:
+    TrainRequest:
       - !TrainDriver {}
+    EndTrainingRequest:
+      - !DumpTrainDriver {}

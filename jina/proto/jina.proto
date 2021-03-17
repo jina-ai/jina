@@ -269,6 +269,16 @@ message RequestProto {
         ControlRequestProto control = 5; // a control request
         DeleteRequestProto delete = 9; // a delete request
         UpdateRequestProto update = 10; // an update request
+        EndTrainingRequestProto endtraining = 11;
+        ReloadFromTrainingRequestProto reloadfromtraining = 12;
+    }
+
+    message EndTrainingRequestProto {
+        string path = 1; // path for the index
+    }
+
+    message ReloadFromTrainingRequestProto {
+        string path = 1; // path for the index
     }
 
     /**
