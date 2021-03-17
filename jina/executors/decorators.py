@@ -5,6 +5,7 @@ __license__ = "Apache-2.0"
 
 import inspect
 from functools import wraps
+from itertools import islice, chain
 from typing import Callable, Any, Union, Iterator, List, Optional, Dict, Iterable
 
 import numpy as np
@@ -12,7 +13,6 @@ import numpy as np
 from .metas import get_default_metas
 from ..helper import batch_iterator, typename, convert_tuple_to_list
 from ..logging import default_logger
-from itertools import islice, chain
 
 
 def as_aggregate_method(func: Callable) -> Callable:
@@ -78,7 +78,7 @@ def wrap_func(cls, func_lst, wrapper):
     """
     for f_name in func_lst:
         if hasattr(cls, f_name) and all(
-            getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]
+                getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]
         ):
             setattr(cls, f_name, wrapper(getattr(cls, f_name)))
 
@@ -170,7 +170,7 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 def _get_slice(
-    data: Union[Iterator[Any], List[Any], np.ndarray], total_size: int
+        data: Union[Iterator[Any], List[Any], np.ndarray], total_size: int
 ) -> Union[Iterator[Any], List[Any], np.ndarray]:
     if isinstance(data, Dict):
         data = islice(data.items(), total_size)
@@ -200,7 +200,7 @@ def _get_total_size(full_data_size, batch_size, num_batch):
 
 
 def _merge_results_after_batching(
-    final_result, merge_over_axis: int = 0, flatten: bool = True
+        final_result, merge_over_axis: int = 0, flatten: bool = True
 ):
     if not final_result:
         return
@@ -215,15 +215,15 @@ def _merge_results_after_batching(
 
 
 def batching(
-    func: Optional[Callable[[Any], np.ndarray]] = None,
-    batch_size: Optional[Union[int, Callable]] = None,
-    num_batch: Optional[int] = None,
-    split_over_axis: int = 0,
-    merge_over_axis: int = 0,
-    slice_on: int = 1,
-    label_on: Optional[int] = None,
-    ordinal_idx_arg: Optional[int] = None,
-    flatten_output: bool = True,
+        func: Optional[Callable[[Any], np.ndarray]] = None,
+        batch_size: Optional[Union[int, Callable]] = None,
+        num_batch: Optional[int] = None,
+        split_over_axis: int = 0,
+        merge_over_axis: int = 0,
+        slice_on: int = 1,
+        label_on: Optional[int] = None,
+        ordinal_idx_arg: Optional[int] = None,
+        flatten_output: bool = True,
 ) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
@@ -266,8 +266,8 @@ def batching(
             args = list(args)
 
             b_size = (
-                batch_size(data) if callable(batch_size) else batch_size
-            ) or getattr(args[0], 'batch_size', None)
+                         batch_size(data) if callable(batch_size) else batch_size
+                     ) or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
             if b_size is None or data is None:
                 return func(*args, **kwargs)
@@ -288,7 +288,7 @@ def batching(
             slice_idx = None
 
             for b in batch_iterator(
-                data[:total_size], b_size, split_over_axis, yield_slice=yield_slice
+                    data[:total_size], b_size, split_over_axis, yield_slice=yield_slice
             ):
                 if yield_slice:
                     slice_idx = b
@@ -330,13 +330,13 @@ def batching(
 
 
 def batching_multi_input(
-    func: Optional[Callable[[Any], np.ndarray]] = None,
-    batch_size: Optional[Union[int, Callable]] = None,
-    num_batch: Optional[int] = None,
-    split_over_axis: int = 0,
-    merge_over_axis: int = 0,
-    slice_on: int = 1,
-    num_data: int = 1,
+        func: Optional[Callable[[Any], np.ndarray]] = None,
+        batch_size: Optional[Union[int, Callable]] = None,
+        num_batch: Optional[int] = None,
+        split_over_axis: int = 0,
+        merge_over_axis: int = 0,
+        slice_on: int = 1,
+        num_data: int = 1,
 ) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
@@ -431,101 +431,11 @@ def batching_multi_input(
 
 
 def single(
-    func: Optional[Callable[[Any], np.ndarray]] = None,
-    merge_over_axis: int = 0,
-    slice_on: int = 1,
-    flatten_output: bool = False,
-) -> Any:
-    """
-    Guarantee that the input of a function is provided as a single instance and not in batches
-
-    :param func: function to decorate
-    :param merge_over_axis: merge over which axis into a single result
-    :param slice_on: the location of the data. When using inside a class,
-            ``slice_on`` should take ``self`` into consideration.
-    :param flatten_output: Flag to determine if a result of list of lists needs to be flattened in output
-    :return: the merged result as if run :func:`func` once on the input.
-
-    Example:
-        .. highlight:: python
-        .. code-block:: python
-
-            class OneByOneCrafter:
-                @single
-                def craft(self, text: str) -> Dict:
-
-    .. note:
-        Single decorator will let the user interact with the executor in 3 different ways:
-            - Providing batches: (This decorator will make sure that the actual method receives just a single instance)
-            - Providing a single instance
-            - Providing a single instance through kwargs.
-
-        .. highlight:: python
-        .. code-block:: python
-
-            class OneByOneCrafter:
-                @single
-                def craft(self, text: str) -> Dict:
-                    return {'text' : f'{text}-crafted'}
-
-            crafter = OneByOneCrafter()
-
-            results = crafted.craft(['text1', 'text2'])
-            assert len(results) == 2
-            assert results[0] == {'text': 'text1-crafted'}
-            assert results[1] == {'text': 'text2-crafted'}
-
-            result = crafter.craft('text')
-            assert result['text'] == 'text-crafted'
-
-            results = crafted.craft(text='text')
-            assert result['text'] == 'text-crafted'
-    """
-
-    def _single(func):
-        @wraps(func)
-        def arg_wrapper(*args, **kwargs):
-
-            # like this one can use the function with single kwargs
-            if (
-                len(args) <= slice_on
-                or isinstance(args[slice_on], str)
-                or isinstance(args[slice_on], bytes)
-                or not isinstance(args[slice_on], Iterable)
-            ):
-                # like this one can use the function with single kwargs
-                return func(*args, **kwargs)
-
-            args = list(args)
-            data = args[slice_on]
-
-            default_logger.debug(f'batching disabled for {func.__qualname__}')
-
-            final_result = []
-            for instance in data:
-                args[slice_on] = instance
-                r = func(*args, **kwargs)
-                if r is not None:
-                    final_result.append(r)
-
-            return _merge_results_after_batching(
-                final_result, merge_over_axis, flatten_output
-            )
-
-        return arg_wrapper
-
-    if func:
-        return _single(func)
-    else:
-        return _single
-
-
-def single_multi_input(
-    func: Optional[Callable[[Any], np.ndarray]] = None,
-    merge_over_axis: int = 0,
-    slice_on: int = 1,
-    num_data: int = 1,
-    flatten_output: bool = True,
+        func: Optional[Callable[[Any], np.ndarray]] = None,
+        merge_over_axis: int = 0,
+        slice_on: int = 1,
+        slice_nargs: int = 1,
+        flatten_output: bool = True,
 ) -> Any:
     """Guarantee that the inputs of a function with more than one argument is provided as single instances and not in batches
 
@@ -533,7 +443,7 @@ def single_multi_input(
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
-    :param num_data: the number of data inside the arguments
+    :param slice_nargs: the number of positional arguments considered as data
     :param flatten_output: If this is set to True, the results from different batches will be chained and the returning value is a list of the results. Otherwise, the returning value is a list of lists, in which each element is a list containing the result from one single batch. Note if there is only one batch returned, the returned result is always flatten.
     :return: the merged result as if run :func:`func` once on the input.
 
@@ -546,7 +456,7 @@ def single_multi_input(
 
             class OneByOneCrafter:
 
-                @single_multi_input
+                @single
                 def craft(self, text: str, id: str) -> Dict:
             ...
 
@@ -560,7 +470,7 @@ def single_multi_input(
         .. code-block:: python
 
             class OneByOneCrafter:
-                @single_multi_input
+                @single
                 def craft(self, text: str, id: str) -> Dict:
                     return {'text': f'{text}-crafted', 'id': f'{id}-crafted'}
 
@@ -587,27 +497,26 @@ def single_multi_input(
             args = list(args)
             default_logger.debug(f'batching disabled for {func.__qualname__}')
 
+            data_iterators = args[slice_on: slice_on + slice_nargs]
+
             if len(args) <= slice_on:
                 # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
-
-            data_iterators = list([args[slice_on + i] for i in range(0, num_data)])
-
-            if (
-                len(args) <= slice_on
-                or isinstance(data_iterators[0], str)
-                or isinstance(data_iterators[0], bytes)
-                or not isinstance(data_iterators[0], Iterable)
+            elif len(args) < slice_on + slice_nargs:
+                raise IndexError(f'can not select positional args at {slice_on}: {slice_nargs}, '
+                                 f'your `args` has {len(args)} arguments.')
+            elif (
+                    len(args) <= slice_on
+                    or isinstance(data_iterators[0], str)
+                    or isinstance(data_iterators[0], bytes)
+                    or not isinstance(data_iterators[0], Iterable)
             ):
                 # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
 
             final_result = []
-            for i, instance in enumerate(data_iterators[0]):
-                args[slice_on] = instance
-                for idx in range(1, num_data):
-                    args[slice_on + idx] = data_iterators[idx][i]
-
+            for new_args in zip(*data_iterators):
+                args[slice_on: slice_on + slice_nargs] = new_args
                 r = func(*args, **kwargs)
 
                 if r is not None:

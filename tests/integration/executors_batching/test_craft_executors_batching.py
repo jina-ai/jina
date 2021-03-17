@@ -7,7 +7,6 @@ from jina.executors.decorators import (
     batching,
     batching_multi_input,
     single,
-    single_multi_input,
 )
 from jina import Document
 from jina.flow import Flow
@@ -86,7 +85,7 @@ class DummyCrafterTextIdSingle(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @single_multi_input(num_data=2)
+    @single(slice_nargs=2)
     def craft(self, text, id, *args, **kwargs):
         assert isinstance(text, str)
         assert isinstance(id, str)
@@ -209,7 +208,7 @@ class DummyCrafterBlobEmbeddingSingle(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @single_multi_input(num_data=2)
+    @single(slice_nargs=2)
     def craft(self, blob, embedding, *args, **kwargs):
         assert isinstance(blob, np.ndarray)
         assert isinstance(embedding, np.ndarray)
@@ -292,7 +291,7 @@ class DummyCrafterTextEmbeddingSingle(BaseCrafter):
         super().__init__(*args, **kwargs)
         self.required_keys = ['text', 'embedding']
 
-    @single_multi_input(num_data=2)
+    @single(slice_nargs=2)
     def craft(self, text, embedding, *args, **kwargs):
         assert isinstance(text, str)
         assert isinstance(embedding, np.ndarray)
