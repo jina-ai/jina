@@ -7,7 +7,8 @@ import numpy as np
 
 from typing import Sequence, Dict, Optional
 
-from jina.executors import BaseExecutor
+from jina.jaml import JAMLCompatible
+from jina.logging import JinaLogger
 from jina.executors.rankers import Match2DocRanker
 from jina.drivers import BaseExecutableDriver
 from jina.flow import Flow
@@ -42,9 +43,10 @@ class LoadFromTrainDriver(BaseExecutableDriver):
 
 
 # it only inherits BaseExecutor to guarantee is discovered by jina
-class RankerTrainer(BaseExecutor):
+class RankerTrainer(JAMLCompatible):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.logger = JinaLogger(self.__class__.__name__)
         self.current_output = 0
 
     def train(self, *args, **kwargs):

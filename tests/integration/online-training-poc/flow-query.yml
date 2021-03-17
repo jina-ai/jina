@@ -3,14 +3,18 @@ version: '1'
 pods:
   - name: index
     uses: indexer.yml
+    read_only: true
   - name: ranker_query # replica subscribed to queryrequests
     uses: ranker_with_query_driver.yml
     shards: 1
     needs: [index]
+    read_only: true
   - name: ranker_train # replica subscribed to trainrequests
     uses: ranker_with_train_driver.yml
     shards: 1
     needs: [index]
+    read_only: true
   - name: join_all
+    read_only: true
     uses: _pass
     needs: [ranker_train, ranker_query]
