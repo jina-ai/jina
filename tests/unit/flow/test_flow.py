@@ -10,12 +10,13 @@ from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
-from tests import random_docs, rm_files
+from jina.peapods.pods import BasePod
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_flow_with_jump():
+def test_flow_with_jump(tmpdir):
     def _validate(f):
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.PULL_CONNECT
@@ -51,47 +52,48 @@ def test_flow_with_jump():
             assert node.peas_args['peas'][0] == node.head_args
             assert node.peas_args['peas'][0] == node.tail_args
 
-    f = (Flow().add(name='r1')
-         .add(name='r2')
-         .add(name='r3', needs='r1')
-         .add(name='r4', needs='r2')
-         .add(name='r5', needs='r3')
-         .add(name='r6', needs='r4')
-         .add(name='r8', needs='r6')
-         .add(name='r9', needs='r5')
-         .add(name='r10', needs=['r9', 'r8']))
+    f = (
+        Flow()
+        .add(name='r1')
+        .add(name='r2')
+        .add(name='r3', needs='r1')
+        .add(name='r4', needs='r2')
+        .add(name='r5', needs='r3')
+        .add(name='r6', needs='r4')
+        .add(name='r8', needs='r6')
+        .add(name='r9', needs='r5')
+        .add(name='r10', needs=['r9', 'r8'])
+    )
 
     with f:
         _validate(f)
 
-    f.save_config('tmp.yml')
-    Flow.load_config('tmp.yml')
+    f.save_config(os.path.join(str(tmpdir), 'tmp.yml'))
+    Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
 
-    with Flow.load_config('tmp.yml') as f:
+    with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
         _validate(f)
-
-    rm_files(['tmp.yml'])
 
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_simple_flow(restful):
-    bytes_gen = (b'aaa' for _ in range(10))
+    bytes_gen = (Document() for _ in range(10))
 
     def bytes_fn():
         for _ in range(100):
-            yield b'aaa'
+            yield Document()
 
     f = Flow(restful=restful).add()
 
     with f:
-        f.index(input_fn=bytes_gen)
+        f.index(inputs=bytes_gen)
 
     with f:
-        f.index(input_fn=bytes_fn)
+        f.index(inputs=bytes_fn)
 
     with f:
-        f.index(input_fn=bytes_fn)
-        f.index(input_fn=bytes_fn)
+        f.index(inputs=bytes_fn)
+        f.index(inputs=bytes_fn)
 
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.PULL_CONNECT
@@ -108,19 +110,21 @@ def test_simple_flow(restful):
         assert node.peas_args['peas'][0] == node.tail_args
 
 
-def test_flow_identical():
+def test_flow_identical(tmpdir):
     with open(os.path.join(cur_dir, '../yaml/test-flow.yml')) as fp:
         a = Flow.load_config(fp)
 
-    b = (Flow()
-         .add(name='chunk_seg', parallel=3)
-         .add(name='wqncode1', parallel=2)
-         .add(name='encode2', parallel=2, needs='chunk_seg')
-         .join(['wqncode1', 'encode2']))
+    b = (
+        Flow()
+        .add(name='chunk_seg', parallel=3)
+        .add(name='wqncode1', parallel=2)
+        .add(name='encode2', parallel=2, needs='chunk_seg')
+        .join(['wqncode1', 'encode2'])
+    )
 
-    a.save_config('test2.yml')
+    a.save_config(os.path.join(str(tmpdir), 'test2.yml'))
 
-    c = Flow.load_config('test2.yml')
+    c = Flow.load_config(os.path.join(str(tmpdir), 'test2.yml'))
 
     assert a == b
     assert a == c
@@ -157,37 +161,48 @@ def test_flow_identical():
         assert node.tail_args.socket_in == SocketType.PULL_BIND
         assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
-    rm_files(['test2.yml'])
-
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_no_container(restful):
-    f = (Flow(restful=restful)
-         .add(name='dummyEncoder', uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml')))
+    f = Flow(restful=restful).add(
+        name='dummyEncoder',
+        uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml'),
+    )
 
     with f:
-        f.index(input_fn=random_docs(10))
+        f.index(inputs=random_docs(10))
 
 
-def test_shards():
-    f = Flow().add(name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3)
+@pytest.fixture
+def docpb_workspace(tmpdir):
+    os.environ['TEST_DOCSHARD_WORKSPACE'] = str(tmpdir)
+    yield
+    del os.environ['TEST_DOCSHARD_WORKSPACE']
+
+
+def test_shards(docpb_workspace):
+    f = Flow().add(
+        name='doc_pb', uses=os.path.join(cur_dir, '../yaml/test-docpb.yml'), parallel=3
+    )
     with f:
-        f.index(input_fn=random_docs(1000), random_doc_id=False)
+        f.index(inputs=random_docs(1000), random_doc_id=False)
     with f:
         pass
-    rm_files(['test-docshard-tmp'])
 
 
 def test_py_client():
-    f = (Flow().add(name='r1')
-         .add(name='r2')
-         .add(name='r3', needs='r1')
-         .add(name='r4', needs='r2')
-         .add(name='r5', needs='r3')
-         .add(name='r6', needs='r4')
-         .add(name='r8', needs='r6')
-         .add(name='r9', needs='r5')
-         .add(name='r10', needs=['r9', 'r8']))
+    f = (
+        Flow()
+        .add(name='r1')
+        .add(name='r2')
+        .add(name='r3', needs='r1')
+        .add(name='r4', needs='r2')
+        .add(name='r5', needs='r3')
+        .add(name='r6', needs='r4')
+        .add(name='r8', needs='r6')
+        .add(name='r9', needs='r5')
+        .add(name='r10', needs=['r9', 'r8'])
+    )
 
     with f:
         node = f._pod_nodes['gateway']
@@ -236,10 +251,7 @@ def test_py_client():
 
 
 def test_dry_run_with_two_pathways_diverging_at_gateway():
-    f = (Flow()
-         .add(name='r2')
-         .add(name='r3', needs='gateway')
-         .join(['r2', 'r3']))
+    f = Flow().add(name='r2').add(name='r3', needs='gateway').join(['r2', 'r3'])
 
     with f:
         node = f._pod_nodes['gateway']
@@ -260,11 +272,13 @@ def test_dry_run_with_two_pathways_diverging_at_gateway():
 
 
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
-    f = (Flow()
-         .add(name='r1')
-         .add(name='r2')
-         .add(name='r3', needs='r1')
-         .join(['r2', 'r3']))
+    f = (
+        Flow()
+        .add(name='r1')
+        .add(name='r2')
+        .add(name='r3', needs='r1')
+        .join(['r2', 'r3'])
+    )
 
     with f:
         node = f._pod_nodes['gateway']
@@ -289,10 +303,12 @@ def test_dry_run_with_two_pathways_diverging_at_non_gateway():
 
 
 def test_refactor_num_part():
-    f = (Flow()
-         .add(name='r1', uses='_logforward', needs='gateway')
-         .add(name='r2', uses='_logforward', needs='gateway')
-         .join(['r1', 'r2']))
+    f = (
+        Flow()
+        .add(name='r1', uses='_logforward', needs='gateway')
+        .add(name='r2', uses='_logforward', needs='gateway')
+        .join(['r1', 'r2'])
+    )
 
     with f:
         node = f._pod_nodes['gateway']
@@ -313,11 +329,13 @@ def test_refactor_num_part():
 
 
 def test_refactor_num_part_proxy():
-    f = (Flow()
-         .add(name='r1', uses='_logforward')
-         .add(name='r2', uses='_logforward', needs='r1')
-         .add(name='r3', uses='_logforward', needs='r1')
-         .join(['r2', 'r3']))
+    f = (
+        Flow()
+        .add(name='r1', uses='_logforward')
+        .add(name='r2', uses='_logforward', needs='r1')
+        .add(name='r3', uses='_logforward', needs='r1')
+        .join(['r2', 'r3'])
+    )
 
     with f:
         node = f._pod_nodes['gateway']
@@ -343,11 +361,13 @@ def test_refactor_num_part_proxy():
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_refactor_num_part_proxy_2(restful):
-    f = (Flow(restful=restful)
-         .add(name='r1', uses='_logforward')
-         .add(name='r2', uses='_logforward', needs='r1', parallel=2)
-         .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
-         .needs(['r2', 'r3']))
+    f = (
+        Flow(restful=restful)
+        .add(name='r1', uses='_logforward')
+        .add(name='r2', uses='_logforward', needs='r1', parallel=2)
+        .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
+        .needs(['r2', 'r3'])
+    )
 
     with f:
         f.index(['abbcs', 'efgh'])
@@ -355,36 +375,45 @@ def test_refactor_num_part_proxy_2(restful):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_refactor_num_part_2(restful):
-    f = (Flow(restful=restful)
-         .add(name='r1', uses='_logforward', needs='gateway', parallel=3, polling='ALL'))
+    f = Flow(restful=restful).add(
+        name='r1', uses='_logforward', needs='gateway', parallel=3, polling='ALL'
+    )
 
     with f:
         f.index(['abbcs', 'efgh'])
 
-    f = (Flow(restful=restful)
-         .add(name='r1', uses='_logforward', needs='gateway', parallel=3))
+    f = Flow(restful=restful).add(
+        name='r1', uses='_logforward', needs='gateway', parallel=3
+    )
 
     with f:
         f.index(['abbcs', 'efgh'])
+
+
+@pytest.fixture()
+def datauri_workspace(tmpdir):
+    os.environ['TEST_DATAURIINDEX_WORKSPACE'] = str(tmpdir)
+    yield
+    del os.environ['TEST_DATAURIINDEX_WORKSPACE']
 
 
 @pytest.mark.parametrize('restful', [False, True])
-def test_index_text_files(mocker, restful):
+def test_index_text_files(mocker, restful, datauri_workspace):
     def validate(req):
         assert len(req.docs) > 0
         for d in req.docs:
             assert d.text
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
-    f = (Flow(restful=restful, read_only=True)
-         .add(uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1))
+    f = Flow(restful=restful, read_only=True).add(
+        uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1
+    )
 
     with f:
         f.index_files('*.py', on_done=response_mock)
 
-    rm_files(['doc.gzip'])
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
@@ -394,17 +423,19 @@ def test_flow_with_publish_driver(mocker, restful):
         for d in req.docs:
             assert d.embedding is not None
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
-    f = (Flow(restful=restful)
-         .add(name='r2', uses='!OneHotTextEncoder')
-         .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
-         .join(needs=['r2', 'r3']))
+    f = (
+        Flow(restful=restful)
+        .add(name='r2', uses='!OneHotTextEncoder')
+        .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
+        .join(needs=['r2', 'r3'])
+    )
 
     with f:
         f.index(['text_1', 'text_2'], on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -413,7 +444,7 @@ def test_flow_with_modalitys_simple(mocker, restful):
         for d in req.index.docs:
             assert d.modality in ['mode1', 'mode2']
 
-    def input_fn():
+    def input_function():
         doc1 = DocumentProto()
         doc1.modality = 'mode1'
         doc2 = DocumentProto()
@@ -422,16 +453,21 @@ def test_flow_with_modalitys_simple(mocker, restful):
         doc3.modality = 'mode1'
         return [doc1, doc2, doc3]
 
-    response_mock = mocker.Mock(wrap=validate)
+    response_mock = mocker.Mock()
 
-    flow = (Flow(restful=restful)
-            .add(name='chunk_seg', parallel=3)
-            .add(name='encoder12', parallel=2,
-                 uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}'))
+    flow = (
+        Flow(restful=restful)
+        .add(name='chunk_seg', parallel=3)
+        .add(
+            name='encoder12',
+            parallel=2,
+            uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}',
+        )
+    )
     with flow:
-        flow.index(input_fn=input_fn, on_done=response_mock)
+        flow.index(inputs=input_function, on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate)
 
 
 def test_flow_arguments_priorities():
@@ -444,15 +480,18 @@ def test_flow_arguments_priorities():
 
 @pytest.mark.parametrize('restful', [False])
 def test_flow_arbitrary_needs(restful):
-    f = (Flow(restful=restful)
-         .add(name='p1').add(name='p2', needs='gateway')
-         .add(name='p3', needs='gateway')
-         .add(name='p4', needs='gateway')
-         .add(name='p5', needs='gateway')
-         .needs(['p2', 'p4'], name='r1')
-         .needs(['p3', 'p5'], name='r2')
-         .needs(['p1', 'r1'], name='r3')
-         .needs(['r2', 'r3'], name='r4'))
+    f = (
+        Flow(restful=restful)
+        .add(name='p1')
+        .add(name='p2', needs='gateway')
+        .add(name='p3', needs='gateway')
+        .add(name='p4', needs='gateway')
+        .add(name='p5', needs='gateway')
+        .needs(['p2', 'p4'], name='r1')
+        .needs(['p3', 'p5'], name='r2')
+        .needs(['p1', 'r1'], name='r3')
+        .needs(['r2', 'r3'], name='r4')
+    )
 
     with f:
         f.index(['abc', 'def'])
@@ -460,29 +499,31 @@ def test_flow_arbitrary_needs(restful):
 
 @pytest.mark.parametrize('restful', [False])
 def test_flow_needs_all(restful):
-    f = (Flow(restful=restful)
-         .add(name='p1', needs='gateway')
-         .needs_all(name='r1'))
+    f = Flow(restful=restful).add(name='p1', needs='gateway').needs_all(name='r1')
     assert f._pod_nodes['r1'].needs == {'p1'}
 
-    f = (Flow(restful=restful)
-         .add(name='p1', needs='gateway')
-         .add(name='p2', needs='gateway')
-         .add(name='p3', needs='gateway')
-         .needs(needs=['p1', 'p2'], name='r1')
-         .needs_all(name='r2'))
+    f = (
+        Flow(restful=restful)
+        .add(name='p1', needs='gateway')
+        .add(name='p2', needs='gateway')
+        .add(name='p3', needs='gateway')
+        .needs(needs=['p1', 'p2'], name='r1')
+        .needs_all(name='r2')
+    )
     assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
 
     with f:
         f.index_ndarray(np.random.random([10, 10]))
 
-    f = (Flow(restful=restful)
-         .add(name='p1', needs='gateway')
-         .add(name='p2', needs='gateway')
-         .add(name='p3', needs='gateway')
-         .needs(needs=['p1', 'p2'], name='r1')
-         .needs_all(name='r2')
-         .add(name='p4', needs='r2'))
+    f = (
+        Flow(restful=restful)
+        .add(name='p1', needs='gateway')
+        .add(name='p2', needs='gateway')
+        .add(name='p3', needs='gateway')
+        .needs(needs=['p1', 'p2'], name='r1')
+        .needs_all(name='r2')
+        .add(name='p4', needs='r2')
+    )
     assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
     assert f._pod_nodes['p4'].needs == {'r2'}
 
@@ -531,11 +572,15 @@ def test_return_results_sync_flow(return_results, restful):
             assert r is None
 
 
-@pytest.mark.parametrize('input, expect_host, expect_port',
-                         [('0.0.0.0', '0.0.0.0', None),
-                          ('0.0.0.0:12345', '0.0.0.0', 12345),
-                          ('123.456.789.0:45678', '123.456.789.0', 45678),
-                          ('api.jina.ai:45678', 'api.jina.ai', 45678)])
+@pytest.mark.parametrize(
+    'input, expect_host, expect_port',
+    [
+        ('0.0.0.0', '0.0.0.0', None),
+        ('0.0.0.0:12345', '0.0.0.0', 12345),
+        ('123.456.789.0:45678', '123.456.789.0', 45678),
+        ('api.jina.ai:45678', 'api.jina.ai', 45678),
+    ],
+)
 def test_flow_host_expose_shortcut(input, expect_host, expect_port):
     f = Flow().add(host=input).build()
     assert f['pod0'].args.host == expect_host
@@ -629,10 +674,13 @@ def test_bad_pod_graceful_termination():
 
 
 def test_socket_types_2_remote_one_local():
-    f = Flow().add(name='pod1', host='0.0.0.1'). \
-        add(name='pod2', parallel=2, host='0.0.0.2'). \
-        add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway']). \
-        join(name='join', needs=['pod2', 'pod3'])
+    f = (
+        Flow()
+        .add(name='pod1', host='0.0.0.1')
+        .add(name='pod2', parallel=2, host='0.0.0.2')
+        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['pod2', 'pod3'])
+    )
 
     f.build()
 
@@ -642,10 +690,13 @@ def test_socket_types_2_remote_one_local():
 
 
 def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote():
-    f = Flow().add(name='pod1', host='0.0.0.1'). \
-        add(name='pod2', parallel=2, host='0.0.0.2'). \
-        add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway']). \
-        join(name='join', needs=['pod2', 'pod3'])
+    f = (
+        Flow()
+        .add(name='pod1', host='0.0.0.1')
+        .add(name='pod2', parallel=2, host='0.0.0.2')
+        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['pod2', 'pod3'])
+    )
 
     f.build()
     for k, v in f:
@@ -661,3 +712,37 @@ def test_single_document_flow_index():
     with Flow().add() as f:
         f.index(d)
         f.index(lambda: d)
+
+
+def test_flow_equalities():
+    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
+    f2 = (
+        Flow()
+        .add(name='pod0')
+        .add(name='pod1', needs='gateway')
+        .add(name='joiner', needs=['pod0', 'pod1'])
+    )
+    assert f1 == f2
+
+    f2 = f2.add()
+    assert f1 != f2
+
+
+def test_flow_get_item():
+    f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
+    assert isinstance(f1[1], BasePod)
+    assert isinstance(f1['pod0'], BasePod)
+
+
+def test_flow_yaml_dump():
+    import io
+
+    f = io.StringIO()
+    f1 = Flow().add()
+    with f1:
+        f1.to_swarm_yaml(path=f)
+        assert 'gateway' in f.getvalue()
+        assert 'services' in f.getvalue()
+        assert 'jina pod' in f.getvalue()
+
+    assert '!Flow' in f1.yaml_spec

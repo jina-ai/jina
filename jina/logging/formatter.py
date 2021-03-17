@@ -6,6 +6,9 @@ from logging import Formatter
 from .profile import used_memory
 from ..helper import colored
 
+if False:
+    from logging import LogRecord
+
 
 class ColorFormatter(Formatter):
     """Format the log into colored logs based on the log-level."""
@@ -24,7 +27,7 @@ class ColorFormatter(Formatter):
         Format the LogRecord with corresponding colour.
 
         :param record: A LogRecord object
-        :returns: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
+        :return:: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
         """
         cr = copy(record)
         if cr.levelname != 'INFO':
@@ -41,7 +44,7 @@ class PlainFormatter(Formatter):
         Format the LogRecord by removing all control chars and plain text, and restrict the max-length of msg to 512.
 
         :param record: A LogRecord object.
-        :returns: Formatted plain LogRecord.
+        :return:: Formatted plain LogRecord.
         """
         cr = copy(record)
         if isinstance(cr.msg, str):
@@ -52,37 +55,52 @@ class PlainFormatter(Formatter):
 class JsonFormatter(Formatter):
     """Format the log message as a JSON object so that it can be later used/parsed in browser with javascript."""
 
-    KEYS = {'created', 'filename', 'funcName', 'levelname', 'lineno', 'msg',
-            'module', 'name', 'pathname', 'process', 'thread', 'processName',
-            'threadName', 'log_id'}  #: keys to extract from the log
+    KEYS = {
+        'created',
+        'filename',
+        'funcName',
+        'levelname',
+        'lineno',
+        'msg',
+        'module',
+        'name',
+        'pathname',
+        'process',
+        'thread',
+        'processName',
+        'threadName',
+        'log_id',
+    }  #: keys to extract from the log
 
-    def format(self, record):
+    def format(self, record: 'LogRecord'):
         """
         Format the log message as a JSON object.
 
         :param record: A LogRecord object.
-        :returns: LogRecord with JSON format.
+        :return:: LogRecord with JSON format.
         """
         cr = copy(record)
         cr.msg = re.sub(r'\u001b\[.*?[@-~]', '', str(cr.msg))
         return json.dumps(
-            {k: getattr(cr, k) for k in self.KEYS if hasattr(cr, k)},
-            sort_keys=True)
+            {k: getattr(cr, k) for k in self.KEYS if hasattr(cr, k)}, sort_keys=True
+        )
 
 
 class ProfileFormatter(Formatter):
     """Format the log message as JSON object and add the current used memory into it."""
 
-    def format(self, record):
+    def format(self, record: 'LogRecord'):
         """
         Format the log message as JSON object and add the current used memory.
 
         :param record: A LogRecord object.
-        :returns: Return JSON formatted log if msg of LogRecord is dict type else return empty.
+        :return:: Return JSON formatted log if msg of LogRecord is dict type else return empty.
         """
         cr = copy(record)
         if isinstance(cr.msg, dict):
-            cr.msg.update({k: getattr(cr, k) for k in ['created', 'module', 'process', 'thread']})
+            cr.msg.update(
+                {k: getattr(cr, k) for k in ['created', 'module', 'process', 'thread']}
+            )
             cr.msg['memory'] = used_memory(unit=1)
             return json.dumps(cr.msg, sort_keys=True)
         else:

@@ -1,0 +1,7 @@
+# .coveragerc to control coverage.py
+[report]
+# regrexes for lines to exclude from consideration
+exclude_lines =
+  NotImplementedError
+omit =
+  jina/resources/*

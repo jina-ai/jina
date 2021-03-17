@@ -12,9 +12,14 @@ from jina.types.request import _trigger_fields
 from tests import random_docs
 
 
-@pytest.mark.parametrize('field', _trigger_fields.difference({'command', 'args', 'flush'}))
+@pytest.mark.parametrize(
+    'field', _trigger_fields.difference({'command', 'args', 'flush'})
+)
 def test_lazy_access(field):
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
+    reqs = (
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    )
     for r in reqs:
         assert not r.is_used
 
@@ -26,7 +31,10 @@ def test_lazy_access(field):
 
 
 def test_multiple_access():
-    reqs = [Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10))]
+    reqs = [
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    ]
     for r in reqs:
         assert not r.is_used
         assert r
@@ -39,7 +47,10 @@ def test_multiple_access():
 
 
 def test_lazy_nest_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
+    reqs = (
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    )
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -50,7 +61,10 @@ def test_lazy_nest_access():
 
 
 def test_lazy_change_message_type():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
+    reqs = (
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    )
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -61,7 +75,10 @@ def test_lazy_change_message_type():
 
 
 def test_lazy_append_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
+    reqs = (
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    )
     for r in reqs:
         assert not r.is_used
         r.request_type = 'index'
@@ -72,7 +89,10 @@ def test_lazy_append_access():
 
 
 def test_lazy_clear_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
+    reqs = (
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    )
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -82,7 +102,10 @@ def test_lazy_clear_access():
 
 
 def test_lazy_nested_clear_access():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
+    reqs = (
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    )
     for r in reqs:
         assert not r.is_used
         # write access r.train
@@ -92,8 +115,17 @@ def test_lazy_nested_clear_access():
 
 
 def test_lazy_msg_access():
-    reqs = [Message(None, r.SerializeToString(), 'test', '123',
-                    request_id='123', request_type='IndexRequest') for r in request_generator(random_docs(10))]
+    reqs = [
+        Message(
+            None,
+            r.SerializeToString(),
+            'test',
+            '123',
+            request_id='123',
+            request_type='IndexRequest',
+        )
+        for r in request_generator(random_docs(10))
+    ]
     for r in reqs:
         assert not r.request.is_used
         assert r.envelope
@@ -120,19 +152,25 @@ def test_message_size():
         assert sys.getsizeof(r.envelope.SerializeToString())
         assert sys.getsizeof(r.request.SerializeToString())
         assert len(r.dump()) == 3
-        assert r.size > sys.getsizeof(r.envelope.SerializeToString()) \
-               + sys.getsizeof(r.request.SerializeToString())
+        assert r.size > sys.getsizeof(r.envelope.SerializeToString()) + sys.getsizeof(
+            r.request.SerializeToString()
+        )
 
 
 def test_lazy_request_fields():
-    reqs = (Request(r.SerializeToString(), EnvelopeProto()) for r in request_generator(random_docs(10)))
+    reqs = (
+        Request(r.SerializeToString(), EnvelopeProto())
+        for r in request_generator(random_docs(10))
+    )
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())
 
 
 def test_request_extend_queryset():
     q1 = {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}}
-    q2 = QueryLang({'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}, 'priority': 1})
+    q2 = QueryLang(
+        {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}, 'priority': 1}
+    )
     q3 = jina_pb2.QueryLangProto()
     q3.name = 'SliceQL'
     q3.parameters['start'] = 3
@@ -167,10 +205,15 @@ def test_request_extend_queryset():
         r.queryset.extend(1)
 
 
-@pytest.mark.parametrize('typ,pb_typ', [('train', jina_pb2.RequestProto.TrainRequestProto),
-                                        ('index', jina_pb2.RequestProto.IndexRequestProto),
-                                        ('search', jina_pb2.RequestProto.SearchRequestProto),
-                                        ('control', jina_pb2.RequestProto.ControlRequestProto)])
+@pytest.mark.parametrize(
+    'typ,pb_typ',
+    [
+        ('train', jina_pb2.RequestProto.TrainRequestProto),
+        ('index', jina_pb2.RequestProto.IndexRequestProto),
+        ('search', jina_pb2.RequestProto.SearchRequestProto),
+        ('control', jina_pb2.RequestProto.ControlRequestProto),
+    ],
+)
 def test_empty_request_type(typ, pb_typ):
     r = Request()
     assert r.request_type is None
@@ -182,8 +225,13 @@ def test_empty_request_type(typ, pb_typ):
     assert isinstance(r.body, pb_typ)
 
 
-@pytest.mark.parametrize('typ,pb_typ', [('index', jina_pb2.RequestProto.IndexRequestProto),
-                                        ('search', jina_pb2.RequestProto.SearchRequestProto)])
+@pytest.mark.parametrize(
+    'typ,pb_typ',
+    [
+        ('index', jina_pb2.RequestProto.IndexRequestProto),
+        ('search', jina_pb2.RequestProto.SearchRequestProto),
+    ],
+)
 def test_add_doc_to_type(typ, pb_typ):
     r = Request()
     r.request_type = typ

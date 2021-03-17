@@ -26,17 +26,21 @@ class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
     has three sockets for input, output and control.
 
+    :param args: the parsed arguments from the CLI
+    :param logger: the logger to use
+    :param ctrl_addr: control address
+
     .. warning::
         Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`.
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger' = None, ctrl_addr: str = None):
-        """
-
-        :param args: the parsed arguments from the CLI
-        :param logger: the logger to use
-        """
+    def __init__(
+        self,
+        args: 'argparse.Namespace',
+        logger: Optional['JinaLogger'] = None,
+        ctrl_addr: Optional[str] = None,
+    ):
         self.args = args
         self.identity = random_identity()
         self.name = args.name or self.__class__.__name__
@@ -46,7 +50,9 @@ class Zmqlet:
             self.ctrl_addr = ctrl_addr
             self.ctrl_with_ipc = self.ctrl_addr.startswith('ipc://')
         else:
-            self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(args.host, args.port_ctrl, args.ctrl_with_ipc)
+            self.ctrl_addr, self.ctrl_with_ipc = self.get_ctrl_address(
+                args.host, args.port_ctrl, args.ctrl_with_ipc
+            )
 
         self.bytes_sent = 0
         self.bytes_recv = 0
@@ -62,6 +68,7 @@ class Zmqlet:
             self.send_idle()
 
     def register_pollin(self):
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
@@ -77,7 +84,9 @@ class Zmqlet:
         self.poller.register(self.in_sock)
 
     @staticmethod
-    def get_ctrl_address(host: Optional[str], port_ctrl: Optional[str], ctrl_with_ipc: bool) -> Tuple[str, bool]:
+    def get_ctrl_address(
+        host: Optional[str], port_ctrl: Optional[str], ctrl_with_ipc: bool
+    ) -> Tuple[str, bool]:
         """Get the address of the control socket
 
         :param host: the host in the arguments
@@ -133,31 +142,52 @@ class Zmqlet:
         self.logger.debug('setting up sockets...')
         try:
             if self.ctrl_with_ipc:
-                ctrl_sock, ctrl_addr = _init_socket(ctx, self.ctrl_addr, None, SocketType.PAIR_BIND,
-                                                    use_ipc=self.ctrl_with_ipc)
+                ctrl_sock, ctrl_addr = _init_socket(
+                    ctx,
+                    self.ctrl_addr,
+                    None,
+                    SocketType.PAIR_BIND,
+                    use_ipc=self.ctrl_with_ipc,
+                )
             else:
-                ctrl_sock, ctrl_addr = _init_socket(ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND)
+                ctrl_sock, ctrl_addr = _init_socket(
+                    ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND
+                )
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
-            in_sock, in_addr = _init_socket(ctx, self.args.host_in, self.args.port_in, self.args.socket_in,
-                                            self.identity,
-                                            ssh_server=self.args.ssh_server,
-                                            ssh_keyfile=self.args.ssh_keyfile,
-                                            ssh_password=self.args.ssh_password)
-            self.logger.debug(f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}')
+            in_sock, in_addr = _init_socket(
+                ctx,
+                self.args.host_in,
+                self.args.port_in,
+                self.args.socket_in,
+                self.identity,
+                ssh_server=self.args.ssh_server,
+                ssh_keyfile=self.args.ssh_keyfile,
+                ssh_password=self.args.ssh_password,
+            )
+            self.logger.debug(
+                f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}'
+            )
 
-            out_sock, out_addr = _init_socket(ctx, self.args.host_out, self.args.port_out, self.args.socket_out,
-                                              self.identity,
-                                              ssh_server=self.args.ssh_server,
-                                              ssh_keyfile=self.args.ssh_keyfile,
-                                              ssh_password=self.args.ssh_password
-                                              )
-            self.logger.debug(f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}')
+            out_sock, out_addr = _init_socket(
+                ctx,
+                self.args.host_out,
+                self.args.port_out,
+                self.args.socket_out,
+                self.identity,
+                ssh_server=self.args.ssh_server,
+                ssh_keyfile=self.args.ssh_keyfile,
+                ssh_password=self.args.ssh_password,
+            )
+            self.logger.debug(
+                f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}'
+            )
 
             self.logger.info(
                 f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) '
                 f'output {colored(out_addr, "yellow")} ({self.args.socket_out.name}) '
-                f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})')
+                f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})'
+            )
 
             self.in_sock_type = in_sock.type
             self.out_sock_type = out_sock.type
@@ -194,14 +224,20 @@ class Zmqlet:
 
     def print_stats(self):
         """Print out the network stats of of itself """
-        self.logger.info(f'#sent: {self.msg_sent} '
-                         f'#recv: {self.msg_recv} '
-                         f'sent_size: {get_readable_size(self.bytes_sent)} '
-                         f'recv_size: {get_readable_size(self.bytes_recv)}')
-        profile_logger.info({'msg_sent': self.msg_sent,
-                             'msg_recv': self.msg_recv,
-                             'bytes_sent': self.bytes_sent,
-                             'bytes_recv': self.bytes_recv})
+        self.logger.info(
+            f'#sent: {self.msg_sent} '
+            f'#recv: {self.msg_recv} '
+            f'sent_size: {get_readable_size(self.bytes_sent)} '
+            f'recv_size: {get_readable_size(self.bytes_recv)}'
+        )
+        profile_logger.info(
+            {
+                'msg_sent': self.msg_sent,
+                'msg_recv': self.msg_recv,
+                'bytes_sent': self.bytes_sent,
+                'bytes_recv': self.bytes_recv,
+            }
+        )
 
     def send_message(self, msg: 'Message'):
         """Send a message via the output socket
@@ -228,7 +264,9 @@ class Zmqlet:
         self.msg_sent += 1
         self.logger.debug(f'idle and i {self.identity} told the router')
 
-    def recv_message(self, callback: Callable[['Message'], 'Message'] = None) -> 'Message':
+    def recv_message(
+        self, callback: Callable[['Message'], 'Message'] = None
+    ) -> 'Message':
         """Receive a protobuf message from the input socket
 
         :param callback: the callback function, which modifies the recevied message inplace.
@@ -264,27 +302,41 @@ class AsyncZmqlet(Zmqlet):
         :param msg: the protobuf message to send
         :param sleep: the sleep time of every two sends in millisecond.
                 A near-zero value could result in bad load balancing in the proceeding pods.
+        :param kwargs: keyword arguments
         """
         # await asyncio.sleep(sleep)  # preventing over-speed sending
         try:
-            num_bytes = await send_message_async(self.out_sock, msg, **self.send_recv_kwargs)
+            num_bytes = await send_message_async(
+                self.out_sock, msg, **self.send_recv_kwargs
+            )
             self.bytes_sent += num_bytes
             self.msg_sent += 1
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
-    async def recv_message(self, callback: Callable[['Message'], Union['Message', 'Request']] = None) -> 'Message':
+    async def recv_message(
+        self, callback: Callable[['Message'], Union['Message', 'Request']] = None
+    ) -> Optional['Message']:
+        """
+        Receive a protobuf message in async manner.
+
+        :param callback: Callback function to receive message
+        :return: Received protobuf message. Or None in case of any error.
+        """
         try:
             msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
-            self.bytes_recv += msg.size
             self.msg_recv += 1
-            if callback:
-                return callback(msg)
+            if msg is not None:
+                self.bytes_recv += msg.size
+                if callback:
+                    return callback(msg)
+            else:
+                self.logger.error('Received message is empty.')
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'receiving message error: {ex!r}, gateway cancelled?')
 
     def __enter__(self):
-        time.sleep(.2)  # sleep a bit until handshake is done
+        time.sleep(0.2)  # sleep a bit until handshake is done
         return self
 
 
@@ -298,8 +350,10 @@ class ZmqStreamlet(Zmqlet):
     """
 
     def register_pollin(self):
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
             import tornado.ioloop
+
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
@@ -315,7 +369,7 @@ class ZmqStreamlet(Zmqlet):
         """
         if not self.is_closed:
             # wait until the close signal is received
-            time.sleep(.01)
+            time.sleep(0.01)
             for s in self.opened_socks:
                 s.flush()
             super().close()
@@ -342,6 +396,12 @@ class ZmqStreamlet(Zmqlet):
         self.in_sock.on_recv(self._in_sock_callback)
 
     def start(self, callback: Callable[['Message'], 'Message']):
+        """
+        Open all sockets and start the ZMQ context associated to this `Zmqlet`.
+
+        :param callback: callback function to receive the protobuf message
+        """
+
         def _callback(msg, sock_type):
             msg = _parse_from_frames(sock_type, msg)
             self.bytes_recv += msg.size
@@ -368,6 +428,7 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
     :param address: the socket address to send
     :param cmd: the control command to send
     :param timeout: the waiting time (in ms) for the response
+    :return: received message
     """
     # control message is short, set a timeout and ask for quick response
     with zmq.Context() as ctx:
@@ -385,12 +446,15 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
         return r
 
 
-def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'Message', timeout: int = -1, **kwargs) -> int:
+def send_message(
+    sock: Union['zmq.Socket', 'ZMQStream'], msg: 'Message', timeout: int = -1, **kwargs
+) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
+    :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
     num_bytes = 0
@@ -401,7 +465,8 @@ def send_message(sock: Union['zmq.Socket', 'ZMQStream'], msg: 'Message', timeout
     except zmq.error.Again:
         raise TimeoutError(
             f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct?')
+            'is the server still online? is the network broken? are "port" correct?'
+        )
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     finally:
@@ -427,13 +492,15 @@ def _prep_recv_socket(sock, timeout):
         sock.setsockopt(zmq.RCVTIMEO, -1)
 
 
-async def send_message_async(sock: 'zmq.Socket', msg: 'Message', timeout: int = -1,
-                             **kwargs) -> int:
+async def send_message_async(
+    sock: 'zmq.Socket', msg: 'Message', timeout: int = -1, **kwargs
+) -> int:
     """Send a protobuf message to a socket in async manner
 
     :param sock: the target socket to send
     :param msg: the protobuf message
     :param timeout: waiting time (in seconds) for sending
+    :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
     """
     try:
@@ -443,7 +510,8 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'Message', timeout: int = 
     except zmq.error.Again:
         raise TimeoutError(
             f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? ')
+            'is the server still online? is the network broken? are "port" correct? '
+        )
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:
@@ -458,10 +526,11 @@ async def send_message_async(sock: 'zmq.Socket', msg: 'Message', timeout: int = 
 
 
 def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
-    """ Receive a protobuf message from a socket
+    """Receive a protobuf message from a socket
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
+    :param kwargs: keyword arguments
     :return: a tuple of two pieces
 
             - the received protobuf message
@@ -475,19 +544,22 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
     except zmq.error.Again:
         raise TimeoutError(
             f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? ')
+            'is the server still online? is the network broken? are "port" correct? '
+        )
     except Exception as ex:
         raise ex
     finally:
         sock.setsockopt(zmq.RCVTIMEO, -1)
 
 
-async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
-                             **kwargs) -> 'Message':
-    """ Receive a protobuf message from a socket in async manner
+async def recv_message_async(
+    sock: 'zmq.Socket', timeout: int = -1, **kwargs
+) -> 'Message':
+    """Receive a protobuf message from a socket in async manner
 
     :param sock: the socket to pull from
     :param timeout: max wait time for pulling, -1 means wait forever
+    :param kwargs: keyword arguments
     :return: a tuple of two pieces
 
             - the received protobuf message
@@ -502,7 +574,8 @@ async def recv_message_async(sock: 'zmq.Socket', timeout: int = -1,
     except zmq.error.Again:
         raise TimeoutError(
             f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? ')
+            'is the server still online? is the network broken? are "port" correct? '
+        )
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:
@@ -541,21 +614,34 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
 
 
 def _get_random_ipc() -> str:
-    """Get a random IPC address for control port """
+    """
+    Get a random IPC address for control port
+
+    :return: random IPC address
+    """
     try:
         tmp = os.environ['JINA_IPC_SOCK_TMP']
         if not os.path.exists(tmp):
-            raise ValueError(f'This directory for sockets ({tmp}) does not seems to exist.')
+            raise ValueError(
+                f'This directory for sockets ({tmp}) does not seems to exist.'
+            )
         tmp = os.path.join(tmp, random_identity())
     except KeyError:
         tmp = tempfile.NamedTemporaryFile().name
     return f'ipc://{tmp}'
 
 
-def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
-                 socket_type: 'SocketType', identity: str = None,
-                 use_ipc: bool = False, ssh_server: str = None,
-                 ssh_keyfile: str = None, ssh_password: str = None) -> Tuple['zmq.Socket', str]:
+def _init_socket(
+    ctx: 'zmq.Context',
+    host: str,
+    port: Optional[int],
+    socket_type: 'SocketType',
+    identity: Optional[str] = None,
+    use_ipc: bool = False,
+    ssh_server: Optional[str] = None,
+    ssh_keyfile: Optional[str] = None,
+    ssh_password: Optional[str] = None,
+) -> Tuple['zmq.Socket', str]:
     sock = {
         SocketType.PULL_BIND: lambda: ctx.socket(zmq.PULL),
         SocketType.PULL_CONNECT: lambda: ctx.socket(zmq.PULL),
@@ -585,7 +671,8 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
             # JEP2, if it is bind, then always bind to local
             if host != __default_host__:
                 default_logger.warning(
-                    f'host is set from {host} to {__default_host__} as the socket is in BIND type')
+                    f'host is set from {host} to {__default_host__} as the socket is in BIND type'
+                )
                 host = __default_host__
             if port is None:
                 sock.bind_to_random_port(f'tcp://{host}')
@@ -593,9 +680,11 @@ def _init_socket(ctx: 'zmq.Context', host: str, port: Optional[int],
                 try:
                     sock.bind(f'tcp://{host}:{port}')
                 except zmq.error.ZMQError:
-                    default_logger.error(f'error when binding port {port} to {host}, this port is occupied. '
-                                         f'If you are using Linux, try `lsof -i :{port}` to see which process '
-                                         f'occupies the port.')
+                    default_logger.error(
+                        f'error when binding port {port} to {host}, this port is occupied. '
+                        f'If you are using Linux, try `lsof -i :{port}` to see which process '
+                        f'occupies the port.'
+                    )
                     raise
     else:
         if port is None:

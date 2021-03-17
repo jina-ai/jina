@@ -4,28 +4,25 @@ import pytest
 
 from jina import Flow, Document
 
+from tests import validate_callback
+
 callback_was_called = False
 
 
 def get_index_flow():
     num_shards = 2
-    f = Flow() \
-        .add(
-        uses='vectorindexer.yml',
-        shards=num_shards
-    )
+    f = Flow().add(uses='vectorindexer.yml', shards=num_shards)
     return f
 
 
 def get_search_flow():
     num_shards = 2
-    f = Flow(read_only=True) \
-        .add(
+    f = Flow(read_only=True).add(
         uses='vectorindexer.yml',
         shards=num_shards,
         uses_after='_merge_matches',
         polling='all',
-        timeout_ready='-1'
+        timeout_ready='-1',
     )
     return f
 
@@ -60,13 +57,13 @@ def test_sharding_empty_index(tmpdir, execution_number, mocker):
             query.append(doc)
 
     def callback(result):
-        mock()
         assert len(result.docs) == num_query
         for d in result.docs:
             assert len(list(d.matches)) == num_docs
 
     mock = mocker.Mock()
     with f:
-        f.search(query, on_done=callback)
+        f.search(query, on_done=mock)
 
     mock.assert_called_once()
+    validate_callback(mock, callback)

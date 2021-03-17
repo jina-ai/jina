@@ -4,6 +4,7 @@ import pytest
 
 from jina import Document
 from jina.flow import Flow
+from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -11,14 +12,16 @@ flow_yml = os.path.join(cur_dir, 'flow.yml')
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-@pytest.mark.parametrize('encoder_needs, indexer_needs, indexer_method',
-                         [('crafter', 'encoder', 'add'), ('gateway', '[encoder, crafter]', 'needs')])
-def test_flow(docker_compose, tmpdir, mocker, encoder_needs, indexer_needs, indexer_method):
+@pytest.mark.parametrize(
+    'encoder_needs, indexer_needs, indexer_method',
+    [('crafter', 'encoder', 'add'), ('gateway', '[encoder, crafter]', 'needs')],
+)
+def test_flow(
+    docker_compose, tmpdir, mocker, encoder_needs, indexer_needs, indexer_method
+):
     text = 'cats rules'
-    m = mocker.Mock()
 
     def validate_output(resp):
-        m()
         assert len(resp.index.docs) == 1
         assert resp.index.docs[0].text == text
 
@@ -31,7 +34,9 @@ def test_flow(docker_compose, tmpdir, mocker, encoder_needs, indexer_needs, inde
     with Document() as doc:
         doc.content = text
 
+    mock = mocker.Mock()
     with Flow.load_config(flow_yml) as f:
-        f.index([doc], on_done=validate_output)
+        f.index([doc], on_done=mock)
 
-    m.assert_called_once()
+    mock.assert_called_once()
+    validate_callback(mock, validate_output)

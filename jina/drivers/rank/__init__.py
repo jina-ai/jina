@@ -1,25 +1,43 @@
-from typing import Tuple
+from typing import Tuple, Optional, Iterable
 
-import numpy as np
-
-from .. import BaseExecutableDriver, RecursiveMixin
-from ...types.document import Document
+from .. import BaseExecutableDriver, FlatRecursiveMixin
+from ...types.sets import MatchSet
 from ...types.score import NamedScore
-
 
 if False:
     from ...types.sets import DocumentSet
 
 
-class BaseRankDriver(RecursiveMixin, BaseExecutableDriver):
+class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`rank` by default """
 
-    def __init__(self, executor: str = None, method: str = 'score', *args, **kwargs):
+    def __init__(
+        self, executor: Optional[str] = None, method: str = 'score', *args, **kwargs
+    ):
         super().__init__(executor, method, *args, **kwargs)
+
+    @property
+    def _exec_match_keys(self):
+        """Property to provide backward compatibility to executors relying in `required_keys`
+        :return: keys for attribute lookup in matches
+        """
+        return getattr(
+            self.exec, 'match_required_keys', getattr(self.exec, 'required_keys', None)
+        )
+
+    @property
+    def _exec_query_keys(self):
+        """Property to provide backward compatibility to executors relying in `required_keys`
+
+        :return: keys for attribute lookup in matches
+        """
+        return getattr(
+            self.exec, 'query_required_keys', getattr(self.exec, 'required_keys', None)
+        )
 
 
 class Matches2DocRankDriver(BaseRankDriver):
-    """ This driver is intended to only resort the given matches on the 0 level granularity for a document.
+    """This driver is intended to only resort the given matches on the 0 level granularity for a document.
     It gets the scores from a Ranking Executor, which does only change the scores of matches.
     Afterwards, the Matches2DocRankDriver resorts all matches for a document.
     Input-Output ::
@@ -31,41 +49,73 @@ class Matches2DocRankDriver(BaseRankDriver):
             |- matches: {granularity: 0, adjacency: k+1} (Sorted according to scores from Ranker Executor)
     """
 
-    def __init__(self, reverse: bool = False, traversal_paths: Tuple[str] = ('m',), *args, **kwargs):
+    def __init__(
+        self,
+        reverse: bool = True,
+        traversal_paths: Tuple[str] = ('r',),
+        *args,
+        **kwargs,
+    ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
-    def _apply_all(self, docs: 'DocumentSet', context_doc: 'Document', *args,
-                   **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         """
 
         :param docs: the matches of the ``context_doc``, they are at granularity ``k``
-        :param context_doc: the query document having ``docs`` as its matches, it is at granularity ``k``
-        :param *args: not used (kept to maintain interface)
-        :param **kwargs: not used (kept to maintain interface)
+        :param args: not used (kept to maintain interface)
+        :param kwargs: not used (kept to maintain interface)
 
         .. note::
             - This driver will change in place the ordering of ``matches`` of the ``context_doc`.
             - Set the ``traversal_paths`` of this driver such that it traverses along the ``matches`` of the ``chunks`` at the level desired.
         """
+        old_scores = []
+        queries_metas = []
+        matches_metas = []
+        for doc in docs:
+            query_meta = (
+                doc.get_attrs(*self._exec_query_keys) if self._exec_query_keys else None
+            )
 
-        # if at the top-level already, no need to aggregate further
-        query_meta = context_doc.get_attrs(*self.exec.required_keys)
+            matches = doc.matches
+            old_match_scores = []
+            needs_match_meta = self._exec_match_keys is not None
+            match_meta = [] if needs_match_meta else None
+            for match in matches:
+                old_match_scores.append(match.score.value)
+                if needs_match_meta:
+                    match_meta.append(match.get_attrs(*self._exec_match_keys))
 
-        old_match_scores = {match.id: match.score.value for match in docs}
-        match_meta = {match.id: match.get_attrs(*self.exec.required_keys) for match in docs}
-        # if there are no matches, no need to sort them
-        if not old_match_scores:
-            return
+            # if there are no matches, no need to sort them
+            old_scores.append(old_match_scores)
+            queries_metas.append(query_meta)
+            matches_metas.append(match_meta)
 
-        new_match_scores = self.exec_fn(query_meta, old_match_scores, match_meta)
-        self._sort_matches_in_place(context_doc, new_match_scores)
+        new_scores = self.exec_fn(old_scores, queries_metas, matches_metas)
+        if len(new_scores) != len(docs):
+            msg = f'The number of scores {len(new_scores)} does not match the number of queries {len(docs)}'
+            self.logger.error(msg)
+            raise ValueError(msg)
 
-    def _sort_matches_in_place(self, context_doc: 'Document', match_scores: 'np.ndarray') -> None:
+        for doc, scores in zip(docs, new_scores):
+            matches = doc.matches
+            if len(doc.matches) != len(scores):
+                msg = (
+                    f'The number of matches to be scored {len(doc.matches)} do not match the number of scores returned '
+                    f'by the ranker {self.exec.__name__} for doc: {doc.id} '
+                )
+                self.logger.error(msg)
+                raise ValueError(msg)
+            self._sort_matches_in_place(matches, scores)
+
+    def _sort_matches_in_place(
+        self, matches: 'MatchSet', match_scores: Iterable[float]
+    ) -> None:
         op_name = self.exec.__class__.__name__
-        cm = context_doc.matches
-        cm.build()
-        for match_id, score in match_scores:
-            cm[match_id].score = NamedScore(value=score, op_name=op_name, ref_id=context_doc.id)
+        ref_doc_id = matches._ref_doc.id
 
-        cm.sort(key=lambda x: x.score.value, reverse=True)
+        for match, score in zip(matches, match_scores):
+            match.score = NamedScore(value=score, op_name=op_name, ref_id=ref_doc_id)
+
+        matches.sort(key=lambda x: x.score.value, reverse=self.reverse)

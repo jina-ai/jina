@@ -5,7 +5,6 @@ from jina.executors.encoders import BaseEncoder
 
 
 class DelayedExecutor(BaseEncoder):
-
     def post_init(self):
         self.logger.info('sleeping for 8 secs')
         time.sleep(8)

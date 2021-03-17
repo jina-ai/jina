@@ -1,0 +1,11 @@
+jtype: Flow
+version: '1.0'
+with:
+  compress_hwm: 1024
+pods:
+  - name: encode
+    uses: helloworld.encoder.yml
+    parallel: $PARALLEL
+  - name: index
+    uses: helloworld.indexer.yml
+    shards: $SHARDS

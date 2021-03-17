@@ -1,0 +1,16 @@
+jtype: CompoundIndexer
+components:
+  - jtype: NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: euclidean
+    metas:
+      name: vecidx  # a customized name
+  - jtype: BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: chunkidx
+metas:
+  name: chunk_indexer
+  workspace: $HW_WORKDIR

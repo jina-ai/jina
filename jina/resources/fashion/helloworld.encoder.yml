@@ -1,0 +1,19 @@
+jtype: MyEncoder
+metas:
+  name: myenc  # a customized name
+  workspace: $HW_WORKDIR
+  py_modules:
+    - components.py
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - jtype: Blob2PngURI
+        with:
+          height: 28
+          width: 28
+      - jtype: EncodeDriver {}
+      - jtype: ExcludeQL
+        with:
+          fields:
+            - buffer
+            - chunks

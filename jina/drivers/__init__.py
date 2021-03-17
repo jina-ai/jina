@@ -10,6 +10,7 @@ from typing import (
     Tuple,
     Optional,
     Sequence,
+    Iterable,
 )
 
 from google.protobuf.struct_pb2 import Struct
@@ -21,6 +22,7 @@ from ..executors.decorators import wrap_func
 from ..helper import convert_tuple_to_list
 from ..jaml import JAMLCompatible
 from ..types.querylang import QueryLang
+from ..types.sets import DocumentSet
 
 # noinspection PyUnreachableCode
 if False:
@@ -30,7 +32,7 @@ if False:
     from ..logging.logger import JinaLogger
     from ..types.message import Message
     from ..types.request import Request
-    from ..types.sets import QueryLangSet, DocumentSet
+    from ..types.sets import QueryLangSet
     from ..types.document import Document
 
 
@@ -104,6 +106,10 @@ class QuerySetReader:
 
     @property
     def as_querylang(self):
+        """Render as QueryLang parameters.
+
+
+        .. # noqa: DAR201"""
         parameters = {
             name: getattr(self, name) for name in self._init_kwargs_dict.keys()
         }
@@ -139,12 +145,28 @@ class QuerySetReader:
 
 
 class DriverType(type(JAMLCompatible), type):
+    """A meta class representing a Driver
+
+    When a new Driver is created, it gets registered
+    """
+
     def __new__(cls, *args, **kwargs):
+        """Create and register a new class with this meta class.
+
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
+        :return: the newly registered class
+        """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
     @staticmethod
     def register_class(cls):
+        """Register a class
+
+        :param cls: the class
+        :return: the class, after being registered
+        """
         reg_cls_set = getattr(cls, '_registered_class', set())
         if cls.__name__ not in reg_cls_set or getattr(cls, 'force_register', False):
             wrap_func(cls, ['__init__'], store_init_kwargs)
@@ -165,8 +187,8 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     :param priority: the priority of its default arg values (hardcoded in Python). If the
          received ``QueryLang`` has a higher priority, it will override the hardcoded value
-    :param *args: not used (kept to maintain interface)
-    :param **kwargs: not used (kept to maintain interface)
+    :param args: not used (kept to maintain interface)
+    :param kwargs: not used (kept to maintain interface)
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
@@ -181,20 +203,31 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         """Attach this driver to a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`
 
         :param runtime: the pea to be attached
-        :param *args: not used (kept to maintain interface)
-        :param **kwargs: not used (kept to maintain interface)
+        :param args: not used (kept to maintain interface)
+        :param kwargs: not used (kept to maintain interface)
         """
         self.runtime = runtime
         self.attached = True
 
     @property
     def req(self) -> 'Request':
-        """Get the current (typed) request, shortcut to ``self.runtime.request``"""
+        """Get the current (typed) request, shortcut to ``self.runtime.request``
+
+
+        .. # noqa: DAR201
+        """
         return self.runtime.request
 
     @property
     def partial_reqs(self) -> Sequence['Request']:
-        """The collected partial requests under the current ``request_id`` """
+        """The collected partial requests under the current ``request_id``
+
+
+        .. # noqa: DAR401
+
+
+        .. # noqa: DAR201
+        """
         if self.expect_parts > 1:
             return self.runtime.partial_requests
         else:
@@ -205,16 +238,48 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     @property
     def expect_parts(self) -> int:
-        """The expected number of partial messages """
+        """The expected number of partial messages
+
+
+        .. # noqa: DAR201
+        """
         return self.runtime.expect_parts
 
     @property
+    def docs(self) -> 'DocumentSet':
+        """The DocumentSet after applying the traversal
+
+
+        .. # noqa: DAR201"""
+        from ..types.sets import DocumentSet
+
+        if self.expect_parts > 1:
+            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
+        else:
+            return self.req.docs
+
+    @property
     def msg(self) -> 'Message':
-        """Get the current request, shortcut to ``self.runtime.message``"""
+        """Get the current request, shortcut to ``self.runtime.message``
+
+
+        .. # noqa: DAR201
+        """
         return self.runtime.message
 
     @property
     def queryset(self) -> 'QueryLangSet':
+        """
+
+
+        .. # noqa: DAR101
+
+
+        .. # noqa: DAR102
+
+
+        .. # noqa: DAR201
+        """
         if self.msg:
             return self.msg.request.queryset
         else:
@@ -222,10 +287,22 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
     @property
     def logger(self) -> 'JinaLogger':
-        """Shortcut to ``self.runtime.logger``"""
+        """Shortcut to ``self.runtime.logger``
+
+
+        .. # noqa: DAR201
+        """
         return self.runtime.logger
 
     def __call__(self, *args, **kwargs) -> None:
+        """
+
+
+        .. # noqa: DAR102
+
+
+        .. # noqa: DAR101
+        """
         raise NotImplementedError
 
     def __eq__(self, other):
@@ -243,117 +320,95 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return d
 
 
-class RecursiveMixin(BaseDriver):
-    """A mixin to traverse a set of Documents with a specific path. to be mixed in with :class:`BaseRecursiveDriver`
+class ContextAwareRecursiveMixin:
+    """
+    The full datastructure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
+    It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
+
+    .. seealso::
+       https://github.com/jina-ai/jina/issues/1932
+
     """
 
-    @property
-    def docs(self):
-        if self.expect_parts > 1:
-            return (d for r in reversed(self.partial_reqs) for d in r.docs)
-        else:
-            return self.req.docs
+    def __call__(self, *args, **kwargs):
+        """Traverse with _apply_all
 
-    def _apply_root(
+        :param args: args forwarded to ``_apply_all``
+        :param kwargs: kwargs forwarded to ``_apply_all``
+        """
+        document_sets = self.docs.traverse(self._traversal_paths)
+        self._apply_all(document_sets, *args, **kwargs)
+
+    def _apply_all(
         self,
-        docs: 'DocumentSet',
-        field: str,
+        doc_sequences: Iterable['DocumentSet'],
         *args,
         **kwargs,
     ) -> None:
-        return self._apply_all(docs, None, field, *args, **kwargs)
+        """Apply function works on an Iterable of DocumentSet, modify the docs in-place.
 
-    # TODO(Han): probably want to publicize this, as it is not obvious for driver
-    #  developer which one should be inherited
+        Each DocumentSet refers to a leaf (e.g. roots, matches or chunks wrapped
+        in a :class:`jina.DocumentSet`) in the traversal_paths. Modifications on the
+        DocumentSets (e.g. adding or deleting Documents) are directly applied on the underlying objects.
+        Adding a chunk to a ChunkSet results in adding a chunk to the parent Document.
+
+        :param doc_sequences: the Documents that should be handled
+        :param args: driver specific arguments, which might be forwarded to the Executor
+        :param kwargs: driver specific arguments, which might be forwarded to the Executor
+        """
+
+
+class FlatRecursiveMixin:
+    """
+    The batch optimized version of :class:`ContextAwareRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
+    It uses :meth:`traverse_flattened_per_path` in :class:`DocumentSet` and yield much better performance
+    when no context is needed and batching is possible.
+
+    .. seealso::
+       https://github.com/jina-ai/jina/issues/1932
+
+    """
+
+    def __call__(self, *args, **kwargs):
+        """Traverse with _apply_all
+
+        :param args: args forwarded to ``_apply_all``
+        :param kwargs: kwargs forwarded to ``_apply_all``
+        """
+        path_documents = self.docs.traverse_flattened_per_path(self._traversal_paths)
+        for documents in path_documents:
+            if documents:
+                self._apply_all(documents, *args, **kwargs)
+
     def _apply_all(
         self,
         docs: 'DocumentSet',
-        context_doc: 'Document',
-        field: str,
         *args,
         **kwargs,
     ) -> None:
-        """Apply function works on a list of docs, modify the docs in-place
+        """Apply function works on a list of docs, modify the docs in-place.
 
-        :param docs: a list of :class:`jina.Document` objects to work on; they could come from ``matches``/``chunks``.
-        :param context_doc: the owner of ``docs``
-        :param field: where ``docs`` comes from, either ``matches`` or ``chunks``
-        :param *args: *args
-        :param **kwargs: **kwargs
+        The list refers to all reachable leafes of a single ``traversal_path``.
+
+        :param docs: the Documents that should be handled
+        :param args: driver specific arguments, which might be forwarded to the Executor
+        :param kwargs: driver specific arguments, which might be forwarded to the Executor
+
         """
-
-    def __call__(self, *args, **kwargs):
-        self._traverse_apply(self.docs, *args, **kwargs)
-
-    def _traverse_apply(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        for path in self._traversal_paths:
-            if path[0] == 'r':
-                self._apply_root(docs, 'docs', *args, **kwargs)
-            for doc in docs:
-                self._traverse_rec(
-                    [doc],
-                    None,
-                    None,
-                    path,
-                    *args,
-                    **kwargs,
-                )
-
-    def _traverse_rec(self, docs, parent_doc, parent_edge_type, path, *args, **kwargs):
-        if path:
-            next_edge = path[0]
-            for doc in docs:
-                if next_edge == 'm':
-                    self._traverse_rec(
-                        doc.matches, doc, 'matches', path[1:], *args, **kwargs
-                    )
-                if next_edge == 'c':
-                    self._traverse_rec(
-                        doc.chunks, doc, 'chunks', path[1:], *args, **kwargs
-                    )
-        else:
-            self._apply_all(docs, parent_doc, parent_edge_type, *args, **kwargs)
-
-
-class FastRecursiveMixin:
-    """
-     The optimized version of :class:`RecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`
-     it uses :meth:`traverse` in :class:`DocumentSet` and yield much better performance for index and encode drivers.
-
-     .. seealso::
-        https://github.com/jina-ai/jina/issues/1932
-
-    """
-
-    def __call__(self, *args, **kwargs):
-        self._apply_all(self.docs, *args, **kwargs)
-
-    @property
-    def docs(self) -> 'DocumentSet':
-        from ..types.sets import DocumentSet
-
-        if self.expect_parts > 1:
-            return DocumentSet(
-                (d for r in reversed(self.partial_reqs) for d in r.docs)
-            ).traverse(self._traversal_paths)
-        else:
-            return self.req.docs.traverse(self._traversal_paths)
 
 
 class BaseRecursiveDriver(BaseDriver):
     """A :class:`BaseRecursiveDriver` is an abstract Driver class containing information about the `traversal_paths`
     that a `Driver` must apply its logic.
-    It is intended to be mixed in with either :class:`FastRecursiveMixin` or :class:`RecursiveMixin`
+    It is intended to be mixed in with either :class:`FlatRecursiveMixin` or :class:`ContextAwareRecursiveMixin`
     """
 
-    def __init__(self,
-                 traversal_paths: Tuple[str] = ('c', 'r'),
-                 *args, **kwargs):
+    def __init__(self, traversal_paths: Tuple[str] = ('c', 'r'), *args, **kwargs):
         """Initialize a :class:`BaseRecursiveDriver`
 
         :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
         """
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
@@ -368,15 +423,19 @@ class BaseExecutableDriver(BaseRecursiveDriver):
     This is done by :func:`attach`. Note that a deserialized :class:`BaseDriver` from file is always unattached.
     """
 
-    def __init__(self, executor: Optional[str] = None,
-                 method: Optional[str] = None,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        executor: Optional[str] = None,
+        method: Optional[str] = None,
+        *args,
+        **kwargs,
+    ):
         """Initialize a :class:`BaseExecutableDriver`
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
         """
         super().__init__(*args, **kwargs)
         self._executor_name = executor
@@ -386,7 +445,11 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
     @property
     def exec(self) -> 'AnyExecutor':
-        """the executor that to which the instance is attached"""
+        """the executor that to which the instance is attached
+
+
+        .. # noqa: DAR201
+        """
         return self._exec
 
     @property
@@ -407,8 +470,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         """Attach the driver to a :class:`jina.executors.BaseExecutor`
 
         :param executor: the executor to which we attach
-        :param *args: *args for super().attach()
-        :param **kwargs: **kwargs for super().attach()
+        :param args: additional positional arguments for the call of super().attach()
+        :param kwargs: additional key value arguments for the call of super().attach()
         """
         super().attach(*args, **kwargs)
         if self._executor_name and isinstance(executor, CompoundExecutor):

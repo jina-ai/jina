@@ -7,11 +7,12 @@ from .. import BaseEvaluator
 
 
 class BaseEmbeddingEvaluator(BaseEvaluator):
-    """A :class:`BaseEmbeddingEvaluator` evaluates the difference between actual and desired embeddings
-    """
+    """A :class:`BaseEmbeddingEvaluator` evaluates the difference between actual and desired embeddings"""
 
-    def evaluate(self, actual: 'np.array', desired: 'np.array', *args, **kwargs) -> float:
-        """"
+    def evaluate(
+        self, actual: 'np.array', desired: 'np.array', *args, **kwargs
+    ) -> float:
+        """ "
         :param actual: the embedding of the document (resulting from an Encoder)
         :param desired: the expected embedding of the document
         :return the evaluation metric value for the request document
@@ -20,6 +21,12 @@ class BaseEmbeddingEvaluator(BaseEvaluator):
 
 
 def expand_vector(vec):
+    """
+    Expand 1d vector with one dimension axis == 0.
+
+    :param vec: Vector to be expanded.
+    :return: Expanded vector,
+    """
     if not isinstance(vec, np.ndarray):
         vec = np.array(vec)
     if len(vec.shape) == 1:

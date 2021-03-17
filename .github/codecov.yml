@@ -3,12 +3,16 @@ codecov:
   allow_coverage_offsets: true
 ignore:
   - "jina/hub"
+  - "jina/resources"
 coverage:
   status:
     project:
       default:
         informational: true
         target: auto  # auto compares coverage to the previous base commit
+        flags:
+          - jina
+          - daemon
   comment:
     layout: "reach, diff, flags, files"
     behavior: default

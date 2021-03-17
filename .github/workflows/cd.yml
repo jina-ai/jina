@@ -17,7 +17,7 @@ jobs:
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -36,9 +36,12 @@ jobs:
           repository: jina-ai/api
           path: schema
           token: ${{ secrets.JINA_DEV_BOT }}
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - run: |
           pip install .[daemon] --no-cache-dir
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
@@ -49,27 +52,30 @@ jobs:
           cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
           cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
-          jina export-api --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
-          python -c "from daemon import _write_openapi_schema; _write_openapi_schema()"
-          python ../scripts/get-gateway-openapi.py
+          mkdir -p schemas
+          jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/master.json schemas/master --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
+          python ../scripts/get-openapi-schemas.py
+          npm install --prefix ~ snippet-enricher-cli
+          ~/node_modules/.bin/snippet-enricher-cli --input=gateway.json --targets=shell_curl > gateway-with-code.json
+          ~/node_modules/.bin/snippet-enricher-cli --input=daemon.json --targets=shell_curl > daemon-with-code.json
           cd -
       - name: redoc-cli-jinad
         uses: seeebiii/redoc-cli-github-action@v10
         with:
-          args: 'bundle schema/daemon.json -o jinad.html'
+          args: 'bundle schema/daemon-with-code.json -o jinad.html'
       - name: redoc-cli-gateway
         uses: seeebiii/redoc-cli-github-action@v10
         with:
-          args: 'bundle schema/gateway.json -o rest.html'
+          args: 'bundle schema/gateway-with-code.json -o rest.html'
       - name: push-to-api-repo
         run: |
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/master.html
-          rm schema/daemon.json
+          rm schema/daemon.json schema/daemon-with-code.json
           rm -rf schema/jinad
           mkdir -p schema/rest/
           cp rest.html schema/rest/master.html
-          rm schema/gateway.json
+          rm schema/gateway.json schema/gateway-with-code.json
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
@@ -93,7 +99,7 @@ jobs:
 
   update-docker:
     needs: update-doc
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -150,7 +156,7 @@ jobs:
 
   prep-testbed:
     needs: update-doc
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -177,7 +183,7 @@ jobs:
 
   core-test:
     needs: prep-testbed
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -188,7 +194,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Prepare enviroment
@@ -197,20 +203,35 @@ jobs:
           docker pull docker.pkg.github.com/jina-ai/jina/jina:test-pip
           docker tag docker.pkg.github.com/jina-ai/jina/jina:test-pip jinaai/jina:test-pip
           python -m pip install --upgrade pip
+          python -m pip install wheel
           pip install ".[cicd,test,daemon]" --no-cache-dir
           jina check
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test
+        id: test
         run: |
           if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
             docker rm -f jinad
           else
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml -n 1 --timeout=120 -v --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            SUB='daemon'
+            if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=daemon --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            else
+              pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+            fi
+          fi
+          SUB='daemon'
+          if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then
+            echo "flag it as daemon for codeoverage"
+            echo "::set-output name=codecov_flag::daemon"
+          else
+            echo "flag it as jina for codeoverage"
+            echo "::set-output name=codecov_flag::jina"
           fi
         timeout-minutes: 15
         env:
@@ -228,4 +249,5 @@ jobs:
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false

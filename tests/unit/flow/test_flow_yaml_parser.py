@@ -1,17 +1,16 @@
-from pathlib import Path
+import os
 
+from pathlib import Path
 import numpy as np
 import pytest
 
 from jina import Flow, AsyncFlow
-from jina.enums import FlowOptimizeLevel
 from jina.excepts import BadFlowYAMLVersion
 from jina.executors.encoders import BaseEncoder
 from jina.flow import BaseFlow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
-from tests import rm_files
 
 cur_dir = Path(__file__).parent
 
@@ -42,7 +41,13 @@ def test_load_legacy_and_v1():
 
 
 def test_add_needs_inspect(tmpdir):
-    f1 = (Flow().add(name='pod0', needs='gateway').add(name='pod1', needs='gateway').inspect().needs(['pod0', 'pod1']))
+    f1 = (
+        Flow()
+        .add(name='pod0', needs='gateway')
+        .add(name='pod1', needs='gateway')
+        .inspect()
+        .needs(['pod0', 'pod1'])
+    )
     with f1:
         f1.index_ndarray(np.random.random([5, 5]), on_done=print)
 
@@ -77,17 +82,14 @@ def test_load_flow_from_cli():
 
 def test_load_flow_from_yaml():
     with open(cur_dir.parent / 'yaml' / 'test-flow.yml') as fp:
-        a = Flow.load_config(fp)
+        _ = Flow.load_config(fp)
 
 
-def test_flow_yaml_dump():
-    f = Flow(optimize_level=FlowOptimizeLevel.IGNORE_GATEWAY,
-             no_gateway=True)
-    f.save_config('test1.yml')
-
-    fl = Flow.load_config('test1.yml')
-    assert f.args.optimize_level == fl.args.optimize_level
-    rm_files(['test1.yml'])
+def test_flow_yaml_dump(tmpdir):
+    f = Flow()
+    f.save_config(os.path.join(str(tmpdir), 'test1.yml'))
+    fl = Flow.load_config(os.path.join(str(tmpdir), 'test1.yml'))
+    assert f.args.inspect == fl.args.inspect
 
 
 def test_flow_yaml_from_string():
@@ -98,7 +100,9 @@ def test_flow_yaml_from_string():
         f2 = Flow.load_config(str_yaml)
         assert f1 == f2
 
-    f3 = Flow.load_config('!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]')
+    f3 = Flow.load_config(
+        '!Flow\nversion: 1.0\npods: [{name: ppp0, uses: _merge}, name: aaa1]'
+    )
     assert 'ppp0' in f3._pod_nodes.keys()
     assert 'aaa1' in f3._pod_nodes.keys()
     assert f3.num_pods == 2
@@ -108,7 +112,6 @@ def test_flow_uses_from_dict():
     class DummyEncoder(BaseEncoder):
         pass
 
-    d1 = {'__cls': 'DummyEncoder',
-          'metas': {'name': 'dummy1'}}
+    d1 = {'jtype': 'DummyEncoder', 'metas': {'name': 'dummy1'}}
     with Flow().add(uses=d1):
         pass

@@ -1,0 +1,28 @@
+jtype: WeightedRanker
+with:
+  query_required_keys:
+    - weight
+metas:
+  py_modules:
+    - weighted_ranker.py
+requests:
+  use_default: true
+  on:
+    SearchRequest:
+      - jtype: Chunk2DocRankDriver
+        with:
+          traversal_paths: ['r']
+      - jtype: SortQL
+        with:
+          reverse: true
+          field: 'score__value'
+          traversal_paths: ['m']
+      - jtype: SliceQL
+        with:
+          start: 0
+          end: 10 # is overwritten by the QueryLangDriver
+          traversal_paths: ['m']
+      - jtype: ExcludeQL
+        with:
+          fields:
+            - chunks

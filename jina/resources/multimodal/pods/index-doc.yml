@@ -1,0 +1,20 @@
+jtype: BinaryPbIndexer
+with:
+  index_filename: 'doc.gz'
+metas:
+  name: kv_indexer
+  workspace: ${{ENV.HW_WORKDIR}}/indexed
+requests:
+  use_default: true
+  on:
+    IndexRequest:
+      - jtype: ExcludeQL
+        with:
+          fields:
+            - chunks
+      - jtype: URI2DataURI {}
+      - jtype: ExcludeQL
+        with:
+          fields:
+            - buffer
+      - jtype: KVIndexDriver {}

@@ -17,22 +17,22 @@
 # 4. Tag `all` is reserved for representing all packages
 
 scipy>=1.4.1:               index, numeric, cicd
-fastapi:                    devel, cicd, http, test, daemon
-uvicorn>=0.12.1:            devel, cicd, http, test, daemon
-fluent-logger:              logging, http, sse, dashboard, devel, cicd, test, daemon
+fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal
+uvicorn>=0.12.1:            devel, cicd, http, test, daemon, chatbot, multimodal
+fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
 nmslib>=1.6.3:              index
-docker:                     devel, cicd, network, hub, test, daemon
-torch>=1.1.0:               framework, cicd
-transformers>=2.6.0:        nlp, cicd
+docker:                     devel, cicd, network, hub, daemon
+torch>=1.1.0:               framework, cicd, chatbot, multimodal
+transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 flair:                      nlp
 paddlepaddle:               framework, py37
 paddlehub:                  framework, py37
 tensorflow>=2.0:            framework, cicd
 tensorflow-hub:             framework, py37
-torchvision>=0.3.0:         framework, cv
+torchvision>=0.3.0:         framework, cv, multimodal, cicd
 onnx:                       framework, py37
 onnxruntime:                framework, py37
-Pillow:                     cv, cicd, test
+Pillow:                     cv, cicd, multimodal
 annoy>=1.9.5:               index
 sklearn:                    numeric
 plyvel:                     index
@@ -61,14 +61,16 @@ pytest-repeat:              test
 pytest-asyncio:             test
 flaky:                      test
 mock:                       test
-requests:                   http, devel, test, daemon
-prettytable:                devel, test
+requests:                   http, devel, cicd, daemon
+prettytable:                devel, cicd
 optuna:                     cicd, optimizer
-websockets:                 http, devel, test, ws, daemon
-wsproto:                    http, devel, test, ws, daemon
-pydantic:                   http, devel, test, daemon
-python-multipart:           http, devel, test, daemon
-aiofiles:                   devel, cicd, http, test, daemon
+websockets:                 http, devel, cicd, ws, daemon
+wsproto:                    http, devel, cicd, ws, daemon
+pydantic:                   http, devel, cicd, daemon
+python-multipart:           http, devel, cicd, daemon
+aiofiles:                   devel, cicd, http, daemon
 pytest-custom_exit_code:    cicd, test
 bs4:                        test
 aiostream:                  devel, cicd
+click:                      cicd
+jsonschema:                 cicd

@@ -7,7 +7,7 @@ from jina.types.sets.querylang import QueryLangSet
 
 @pytest.fixture(scope='function')
 def querylang_protos():
-    """:returns: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
+    """:return:: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
     req = RequestProto()
     for _ in range(3):
         req.queryset.extend([QueryLangProto()])
@@ -16,13 +16,13 @@ def querylang_protos():
 
 @pytest.fixture(scope='function')
 def querylang_set(querylang_protos):
-    """:returns: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
+    """:return:: A :class:`RepeatedCompositeContainer` consist list of :class:`QueryLangProto`."""
     return QueryLangSet(querylang_protos=querylang_protos)
 
 
 @pytest.fixture(scope='function')
 def querylang_instance():
-    """:returns: An instance of :class:`QueryLang`."""
+    """:return:: An instance of :class:`QueryLang`."""
     query_lang = QueryLang()
     query_lang.name = 'test'
     query_lang.priority = 5
@@ -84,7 +84,10 @@ def test_iter(querylang_set):
         assert isinstance(querylang, QueryLang)
 
 
-@pytest.mark.parametrize('querylang_item', [QueryLangProto(), QueryLang(), {'name': 'Driver', 'parameters': {'key': 'value'}}])
+@pytest.mark.parametrize(
+    'querylang_item',
+    [QueryLangProto(), QueryLang(), {'name': 'Driver', 'parameters': {'key': 'value'}}],
+)
 def test_append_success_proto(querylang_set, querylang_item):
     """Test :meth:`append`. Expect test three cases depends on the type of :attr:`value`.
     Such as :class:`BaseDriver`, :class:`QueryLangProto` and :class:`QueryLang`.

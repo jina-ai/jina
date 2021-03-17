@@ -1,8 +1,8 @@
 """Module for the Drivers for the Cache."""
-from typing import Any, Dict
+import hashlib
+from typing import Any, Dict, List
 
 from .index import BaseIndexDriver
-from ..executors.indexers.cache import CONTENT_HASH_KEY, ID_KEY
 
 # noinspection PyUnreachableCode
 if False:
@@ -14,32 +14,28 @@ class BaseCacheDriver(BaseIndexDriver):
     """A driver related to :class:`BaseCache`.
 
     :param with_serialization: feed serialized Document to the CacheIndexer
-    :param *args: *args for super
-    :param **kwargs: **kwargs for super
+    :param args: additional positional arguments which are just used for the parent initialization
+    :param kwargs: additional key value arguments which are just used for the parent initialization
     """
 
     def __init__(self, with_serialization: bool = False, *args, **kwargs):
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
-        self.field = None
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        self.field = self.exec.field
-
         if self._method_name == 'update':
-            self.exec_fn([d.id for d in docs], [d.id if self.field == ID_KEY else d.content_hash for d in docs])
+            values = [BaseCacheDriver.hash_doc(d, self.exec.fields) for d in docs]
+            self.exec_fn([d.id for d in docs], values)
         else:
             for d in docs:
-                data = d.id
-                if self.field == CONTENT_HASH_KEY:
-                    data = d.content_hash
-                result = self.exec[data]
+                value = BaseCacheDriver.hash_doc(d, self.exec.fields)
+                result = self.exec[value]
                 if result:
                     self.on_hit(d, result)
                 else:
-                    self.on_miss(d, data)
+                    self.on_miss(d, value)
 
-    def on_miss(self, req_doc: 'Document', value: str) -> None:
+    def on_miss(self, req_doc: 'Document', value: bytes) -> None:
         """Call when document is missing.
 
         The default behavior is to add to cache when miss.
@@ -55,10 +51,25 @@ class BaseCacheDriver(BaseIndexDriver):
     def on_hit(self, req_doc: 'Document', hit_result: Any) -> None:
         """Call when cache is hit for a document.
 
-        :param req_doc: the document in the request and hitted in the cache
+        :param req_doc: the document in the request and hit in the cache
         :param hit_result: the hit result returned by the cache
         """
         pass
+
+    @staticmethod
+    def hash_doc(doc: 'Document', fields: List[str]) -> bytes:
+        """Calculate hash by which we cache.
+
+        :param doc: the Document
+        :param fields: the list of fields
+        :return: the hash value of the fields
+        """
+        values = doc.get_attrs(*fields).values()
+        data = ''
+        for field, value in zip(fields, values):
+            data += f'{field}:{value};'
+        digest = hashlib.sha256(bytes(data.encode('utf8'))).digest()
+        return digest
 
 
 class TaggingCacheDriver(BaseCacheDriver):
@@ -68,8 +79,8 @@ class TaggingCacheDriver(BaseCacheDriver):
         """Create a new TaggingCacheDriver.
 
         :param tags: the tags to be updated on hit docs
-        :param *args: *args for super
-        :param **kwargs: **kwargs for super
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
         """
         super().__init__(*args, **kwargs)
         self._tags = tags

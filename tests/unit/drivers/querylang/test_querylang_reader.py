@@ -6,34 +6,34 @@ from jina.drivers.querylang.sort import SortQL
 from jina.drivers.querylang.slice import SliceQL
 from jina.drivers.querylang.select import ExcludeQL
 from jina.flow import Flow
-from jina.proto import jina_pb2
+from jina import Document
 from jina.types.querylang import QueryLang
 from jina.types.sets import QueryLangSet
+
+from tests import validate_callback
 
 
 def random_docs(num_docs):
     for j in range(num_docs):
-        d = jina_pb2.DocumentProto()
+        d = Document()
         d.tags['id'] = j
         d.text = 'hello world'
-        d.uri = 'doc://'
         for m in range(10):
-            dm = d.matches.add()
+            dm = Document()
             dm.text = 'match to hello world'
-            dm.uri = 'doc://match'
             dm.tags['id'] = m
             dm.score.ref_id = d.id
+            d.matches.add(dm)
             for mm in range(10):
-                dmm = dm.matches.add()
+                dmm = Document()
                 dmm.text = 'nested match to match'
-                dmm.uri = 'doc://match/match'
                 dmm.tags['id'] = mm
                 dmm.score.ref_id = dm.id
+                dm.matches.add(dmm)
         yield d
 
 
 class DummyDriver(QuerySetReader, BaseDriver):
-
     def __init__(self, arg1='hello', arg2=456, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._arg1 = arg1
@@ -41,7 +41,9 @@ class DummyDriver(QuerySetReader, BaseDriver):
 
 
 def test_querylang_request():
-    qs = QueryLang({'name': 'SliceQL', 'parameters': {'start': 1, 'end': 4}, 'priority': 1})
+    qs = QueryLang(
+        {'name': 'SliceQL', 'parameters': {'start': 1, 'end': 4}, 'priority': 1}
+    )
     Client.check_input(random_docs(10), queryset=qs)
 
 
@@ -52,11 +54,13 @@ def test_read_from_req(mocker):
     def validate2(req):
         assert len(req.docs) == 3
 
-    response_mock = mocker.Mock(wrap=validate1)
-    response_mock_2 = mocker.Mock(wrap=validate2)
-    response_mock_3 = mocker.Mock(wrap=validate1)
+    response_mock = mocker.Mock()
+    response_mock_2 = mocker.Mock()
+    response_mock_3 = mocker.Mock()
 
-    qs = QueryLang({'name': 'SliceQL', 'priority': 1, 'parameters': {'start': 1, 'end': 4}})
+    qs = QueryLang(
+        {'name': 'SliceQL', 'priority': 1, 'parameters': {'start': 1, 'end': 4}}
+    )
 
     f = Flow().add(uses='- !SliceQL | {start: 0, end: 5}')
 
@@ -64,19 +68,19 @@ def test_read_from_req(mocker):
     with f:
         f.index(random_docs(10), on_done=response_mock)
 
-    response_mock.assert_called()
+    validate_callback(response_mock, validate1)
     # with queryset
     with f:
         f.index(random_docs(10), queryset=qs, on_done=response_mock_2)
 
-    response_mock_2.assert_called()
+    validate_callback(response_mock_2, validate2)
 
     qs.priority = -1
     # with queryset, but priority is no larger than driver's default
     with f:
         f.index(random_docs(10), queryset=qs, on_done=response_mock_3)
 
-    response_mock_3.assert_called()
+    validate_callback(response_mock_3, validate1)
 
 
 def test_querlang_driver():
@@ -113,10 +117,15 @@ def test_as_querylang():
 
 
 class MockExcludeQL(ExcludeQL):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        ql = QueryLang({'name': 'MockExcludeQL', 'parameters': {'fields': ['updated_field1', 'updated_field2']}, 'priority': 3})
+        ql = QueryLang(
+            {
+                'name': 'MockExcludeQL',
+                'parameters': {'fields': ['updated_field1', 'updated_field2']},
+                'priority': 3,
+            }
+        )
         self.qset = QueryLangSet([ql.proto])
 
     @property
@@ -126,7 +135,9 @@ class MockExcludeQL(ExcludeQL):
 
 @pytest.mark.parametrize('driver_priority', [0, 4])
 def test_queryset_reader_excludeql(driver_priority):
-    querysetreader = MockExcludeQL(fields=('local_field1', 'local_field2'), priority=driver_priority)
+    querysetreader = MockExcludeQL(
+        fields=('local_field1', 'local_field2'), priority=driver_priority
+    )
     fields = querysetreader._get_parameter('fields', default=None)
 
     if driver_priority == 0:

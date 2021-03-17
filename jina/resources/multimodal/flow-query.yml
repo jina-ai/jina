@@ -1,0 +1,37 @@
+jtype: Flow
+version: '1'
+read_only: true
+pods:
+  # first pathway
+  - name: filter_text
+    uses: pods/filter.yml
+    env:
+      filter_mime: text/plain
+  - name: textEncoder
+    uses: pods/encode-text.yml
+  - name: textModIndexer
+    uses: pods/index-comp.yml
+    env:
+      indexer_name: text
+  # second pathway, in parallel
+  - name: filter_image
+    uses: pods/filter.yml
+    env:
+      filter_mime: image/jpeg
+    needs: gateway
+  - name: imageCrafter
+    uses: pods/crafte-image.yml
+  - name: imageEncoder
+    uses: pods/encode-image.yml
+  - name: imageModIndexer
+    uses: pods/index-comp.yml
+    env:
+      indexer_name: image
+  # join
+  - needs: [imageModIndexer, textModIndexer]
+    name: joiner
+    uses: _merge_chunks
+  - uses: pods/ranker.yml
+    name: ranker
+  - name: docIndexer
+    uses: pods/index-doc.yml

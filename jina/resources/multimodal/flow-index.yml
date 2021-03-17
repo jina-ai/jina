@@ -1,0 +1,37 @@
+jtype: Flow
+version: '1'
+pods:
+  - name: segment
+    uses: pods/segment.yml
+  # first pathway
+  - name: filter_text
+    uses: pods/filter.yml
+    env:
+      filter_mime: text/plain
+  - name: textEncoder
+    uses: pods/encode-text.yml
+  - name: textModIndexer
+    uses: pods/index-comp.yml
+    env:
+      indexer_name: text
+  # second pathway, in parallel
+  - name: filter_image
+    uses: pods/filter.yml
+    env:
+      filter_mime: image/jpeg
+    needs: segment
+  - name: imageCrafter
+    uses: pods/crafte-image.yml
+  - name: imageEncoder
+    uses: pods/encode-image.yml
+  - name: imageModIndexer
+    uses: pods/index-comp.yml
+    env:
+      indexer_name: image
+  # third pathway, in parallel
+  - name: docIndexer
+    uses: pods/index-doc.yml
+    needs: segment
+  # join all parallel works
+  - needs: [docIndexer, imageModIndexer, textModIndexer]
+    name: joiner

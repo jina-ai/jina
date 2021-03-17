@@ -11,23 +11,41 @@ from tests import random_docs
 
 
 def test_simple_zmqlet():
-    args = set_pea_parser().parse_args([
-        '--host-in', '0.0.0.0',
-        '--host-out', '0.0.0.0',
-        '--socket-in', 'PULL_CONNECT',
-        '--socket-out', 'PUSH_CONNECT',
-        '--timeout-ctrl', '-1'])
+    args = set_pea_parser().parse_args(
+        [
+            '--host-in',
+            '0.0.0.0',
+            '--host-out',
+            '0.0.0.0',
+            '--socket-in',
+            'PULL_CONNECT',
+            '--socket-out',
+            'PUSH_CONNECT',
+            '--timeout-ctrl',
+            '-1',
+        ]
+    )
 
-    args2 = set_pea_parser().parse_args([
-        '--host-in', '0.0.0.0',
-        '--host-out', '0.0.0.0',
-        '--port-in', str(args.port_out),
-        '--port-out', str(args.port_in),
-        '--socket-in', 'PULL_BIND',
-        '--socket-out', 'PUSH_BIND',
-        '--uses', '_logforward',
-        '--timeout-ctrl', '-1'
-    ])
+    args2 = set_pea_parser().parse_args(
+        [
+            '--host-in',
+            '0.0.0.0',
+            '--host-out',
+            '0.0.0.0',
+            '--port-in',
+            str(args.port_out),
+            '--port-out',
+            str(args.port_in),
+            '--socket-in',
+            'PULL_BIND',
+            '--socket-out',
+            'PUSH_BIND',
+            '--uses',
+            '_logforward',
+            '--timeout-ctrl',
+            '-1',
+        ]
+    )
 
     logger = logging.getLogger('zmq-test')
     with BasePea(args2), Zmqlet(args, logger) as z:
@@ -40,23 +58,25 @@ def test_simple_zmqlet():
 
 
 def test_flow_with_jump():
-    f = (Flow().add(name='r1')
-         .add(name='r2')
-         .add(name='r3', needs='r1')
-         .add(name='r4', needs='r2')
-         .add(name='r5', needs='r3')
-         .add(name='r6', needs='r4')
-         .add(name='r8', needs='r6')
-         .add(name='r9', needs='r5')
-         .add(name='r10', needs=['r9', 'r8']))
+    f = (
+        Flow()
+        .add(name='r1')
+        .add(name='r2')
+        .add(name='r3', needs='r1')
+        .add(name='r4', needs='r2')
+        .add(name='r5', needs='r3')
+        .add(name='r6', needs='r4')
+        .add(name='r8', needs='r6')
+        .add(name='r9', needs='r5')
+        .add(name='r10', needs=['r9', 'r8'])
+    )
 
     with f:
         f.index(random_docs(10))
 
 
 def test_flow_with_parallel():
-    f = (Flow().add(name='r1')
-         .add(name='r2', parallel=3))
+    f = Flow().add(name='r1').add(name='r2', parallel=3)
 
     with f:
         f.index(random_docs(100))

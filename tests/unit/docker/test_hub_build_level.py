@@ -7,7 +7,6 @@ from jina.enums import BuildTestLevel
 from jina.logging import JinaLogger
 from jina.parsers.hub import set_hub_build_parser
 
-cli = docker.APIClient(base_url='unix://var/run/docker.sock')
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -28,30 +27,45 @@ def docker_image():
         else:
             return False
 
+    img_name = 'jinahub/pod.dummy_mwu_encoder:0.0.6'
     client = docker.from_env()
+    client.images.pull(img_name)
     images = client.images.list()
     image_name = list(filter(lambda image: _filter_repo_tag(image), images))[0]
-
     return image_name
 
 
 def test_hub_build_level_pass(monkeypatch, test_workspace, docker_image):
-    args = set_hub_build_parser().parse_args(['path/hub-mwu', '--push', '--host-info', '--test-level', 'EXECUTOR'])
+    args = set_hub_build_parser().parse_args(
+        ['path/hub-mwu', '--push', '--host-info', '--test-level', 'EXECUTOR']
+    )
     expected_failed_levels = []
 
-    _, failed_levels = HubIO(args)._test_build(docker_image, BuildTestLevel.EXECUTOR,
-                                               os.path.join(cur_dir, 'yaml/test-joint.yml'), 60, True,
-                                               JinaLogger('unittest'))
+    _, failed_levels = HubIO(args)._test_build(
+        docker_image,
+        BuildTestLevel.EXECUTOR,
+        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        60000,
+        True,
+        JinaLogger('unittest'),
+    )
 
     assert expected_failed_levels == failed_levels
 
 
 def test_hub_build_level_fail(monkeypatch, test_workspace, docker_image):
-    args = set_hub_build_parser().parse_args(['path/hub-mwu', '--push', '--host-info', '--test-level', 'FLOW'])
-    expected_failed_levels = [BuildTestLevel.POD_NONDOCKER, BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]
+    args = set_hub_build_parser().parse_args(
+        ['path/hub-mwu', '--push', '--host-info', '--test-level', 'FLOW']
+    )
+    expected_failed_levels = [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]
 
-    _, failed_levels = HubIO(args)._test_build(docker_image, BuildTestLevel.FLOW,
-                                               os.path.join(cur_dir, 'yaml/test-joint.yml'), 60, True,
-                                               JinaLogger('unittest'))
+    _, failed_levels = HubIO(args)._test_build(
+        docker_image,
+        BuildTestLevel.FLOW,
+        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        60000,
+        True,
+        JinaLogger('unittest'),
+    )
 
     assert expected_failed_levels == failed_levels

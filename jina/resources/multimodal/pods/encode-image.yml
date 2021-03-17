@@ -1,0 +1,15 @@
+jtype: ImageTorchEncoder
+with:
+  channel_axis: -1
+requests:
+  use_default: true
+  on:
+    [IndexRequest, SearchRequest]:
+      with:
+        traversal_paths: ['c']
+      drivers:
+        - jtype: EncodeDriver {}
+        - jtype: ExcludeQL
+          with:
+            fields:
+              - blob

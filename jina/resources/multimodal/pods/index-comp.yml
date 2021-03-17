@@ -1,0 +1,50 @@
+jtype: CompoundIndexer
+components:
+  - jtype: NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: cosine
+    metas:
+      name: vecidx  # a customized name
+  - jtype: BinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: docidx
+metas:
+  name: '${{ ENV.indexer_name }}'
+  workspace: ${{ENV.HW_WORKDIR}}/indexed
+requests:
+  use_default: true
+  on:
+    SearchRequest:
+      drivers:
+        - jtype: VectorSearchDriver
+          with:
+            executor: BaseVectorIndexer
+            traversal_paths: [ 'c' ]
+        - jtype: KVSearchDriver
+          with:
+            executor: BaseKVIndexer
+            traversal_paths: [ 'cm' ]
+        - jtype: ExcludeQL
+          with:
+            fields:
+              - embedding
+              - blob
+            traversal_paths: [ 'cm', 'c' ]
+    [ IndexRequest, UpdateRequest ]:
+      with:
+        traversal_paths: [ 'c' ]
+      drivers:
+        - jtype: VectorIndexDriver
+          with:
+            executor: BaseVectorIndexer
+        - jtype: ExcludeQL
+          with:
+            fields:
+              - embedding
+              - blob
+        - jtype: KVIndexDriver
+          with:
+            executor: BaseKVIndexer

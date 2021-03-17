@@ -11,13 +11,17 @@ router = APIRouter(tags=['daemon'])
 @router.on_event('startup')
 async def startup():
     from ... import daemon_logger, jinad_args
-    daemon_logger.info(f'''
+
+    daemon_logger.info(
+        f'''
 Welcome to Jina daemon - the manager of distributed Jina
 💬 Swagger UI     :\thttp://localhost:{jinad_args.port_expose}/docs
 📚 Redoc          :\thttp://localhost:{jinad_args.port_expose}/redoc
 🔒 Private address:\thttp://{get_internal_ip()}:{jinad_args.port_expose}
-🌐 Public address :\thttp://{get_public_ip()}:{jinad_args.port_expose}''')
+🌐 Public address :\thttp://{get_public_ip()}:{jinad_args.port_expose}'''
+    )
     from jina import __ready_msg__
+
     daemon_logger.success(__ready_msg__)
 
 
@@ -32,9 +36,7 @@ async def _home():
 
 
 @router.get(
-    path='/status',
-    summary='Get the status of the daemon',
-    response_model=DaemonStatus
+    path='/status', summary='Get the status of the daemon', response_model=DaemonStatus
 )
 async def _status():
     _info = get_full_version()
@@ -45,5 +47,5 @@ async def _status():
         'pods': pod_store.status,
         'flows': flow_store.status,
         'workspaces': workspace_store.status,
-        'used_memory': used_memory_readable()
+        'used_memory': used_memory_readable(),
     }

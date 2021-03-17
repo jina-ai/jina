@@ -8,6 +8,8 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
 
+from tests import validate_callback
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -28,25 +30,35 @@ def test_queryset_with_struct(random_workspace, mocker):
         doc.tags['label'] = f'label{doc_id % 2 + 1}'
         docs.append(doc)
 
-    f = (Flow()
-         .add(uses='- !FilterQL | {lookups: {tags__label__in: [label1, label2]}, traversal_paths: [r]}'))
+    f = Flow().add(
+        uses='- !FilterQL | {lookups: {tags__label__in: [label1, label2]}, traversal_paths: [r]}'
+    )
 
     def validate_all_docs(resp):
-        mock1()
         assert len(resp.docs) == total_docs
 
     def validate_label2_docs(resp):
-        mock2()
         assert len(resp.docs) == total_docs / 2
 
     mock1 = mocker.Mock()
     mock2 = mocker.Mock()
     with f:
         # keep all the docs
-        f.index(docs, on_done=validate_all_docs)
+        f.index(docs, on_done=mock1)
         # keep only the docs with label2
-        qs = QueryLang({'name': 'FilterQL', 'priority': 1, 'parameters': {'lookups': {'tags__label': 'label2'}, 'traversal_paths': ['r']}})
-        f.index(docs, queryset=qs, on_done=validate_label2_docs)
+        qs = QueryLang(
+            {
+                'name': 'FilterQL',
+                'priority': 1,
+                'parameters': {
+                    'lookups': {'tags__label': 'label2'},
+                    'traversal_paths': ['r'],
+                },
+            }
+        )
+        f.index(docs, queryset=qs, on_done=mock2)
 
     mock1.assert_called_once()
+    validate_callback(mock1, validate_all_docs)
     mock2.assert_called_once()
+    validate_callback(mock2, validate_label2_docs)

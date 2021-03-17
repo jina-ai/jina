@@ -18,18 +18,41 @@ from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
 from types import SimpleNamespace
-from typing import Tuple, Optional, Iterator, Any, Union, List, Dict, Set, Sequence, Iterable
+from typing import (
+    Tuple,
+    Optional,
+    Iterator,
+    Any,
+    Union,
+    List,
+    Dict,
+    Set,
+    Sequence,
+    Iterable,
+)
 from urllib.request import Request, urlopen
 
 import numpy as np
 
-__all__ = ['batch_iterator',
-           'parse_arg',
-           'random_port', 'random_identity', 'random_uuid', 'expand_env_var',
-           'colored', 'ArgNamespace', 'is_valid_local_config_source',
-           'cached_property', 'is_url',
-           'typename', 'get_public_ip', 'get_internal_ip', 'convert_tuple_to_list',
-           'run_async', 'deprecated_alias']
+__all__ = [
+    'batch_iterator',
+    'parse_arg',
+    'random_port',
+    'random_identity',
+    'random_uuid',
+    'expand_env_var',
+    'colored',
+    'ArgNamespace',
+    'is_valid_local_config_source',
+    'cached_property',
+    'is_url',
+    'typename',
+    'get_public_ip',
+    'get_internal_ip',
+    'convert_tuple_to_list',
+    'run_async',
+    'deprecated_alias',
+]
 
 from jina.excepts import NotSupportedError
 
@@ -43,41 +66,61 @@ def deprecated_alias(**aliases):
     For example:
         .. highlight:: python
         .. code-block:: python
-            @deprecated_alias(buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+            @deprecated_alias(input_fn=('inputs', 0), buffer=('input_fn', 0), callback=('on_done', 1), output_fn=('on_done', 1))
+
+    :param aliases: maps aliases to new arguments
+    :return: wrapper
     """
 
-    def rename_kwargs(func_name: str, kwargs, aliases):
+    def _rename_kwargs(func_name: str, kwargs, aliases):
         """
         Raise warnings or exceptions for deprecated arguments.
 
         :param func_name: Name of the function.
+        :param kwargs: key word arguments from the function which is decorated.
         :param aliases: kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).
         """
         for alias, new_arg in aliases.items():
             if not isinstance(new_arg, tuple):
-                raise ValueError(f'{new_arg} must be a tuple, with first element as the new name, '
-                                 f'second element as the deprecated level: 0 as warning, 1 as exception')
+                raise ValueError(
+                    f'{new_arg} must be a tuple, with first element as the new name, '
+                    f'second element as the deprecated level: 0 as warning, 1 as exception'
+                )
             if alias in kwargs:
                 new_name, dep_level = new_arg
                 if new_name in kwargs:
-                    raise NotSupportedError(f'{func_name} received both {alias} and {new_name}')
+                    raise NotSupportedError(
+                        f'{func_name} received both {alias} and {new_name}'
+                    )
 
                 if dep_level == 0:
                     warnings.warn(
                         f'`{alias}` is renamed to `{new_name}` in `{func_name}()`, the usage of `{alias}` is '
                         f'deprecated and will be removed in the next version.',
-                        DeprecationWarning)
+                        DeprecationWarning,
+                    )
                     kwargs[new_name] = kwargs.pop(alias)
                 elif dep_level == 1:
                     raise NotSupportedError(f'{alias} has been renamed to `{new_name}`')
 
     def deco(f):
-        """Set Decorator function."""
+        """
+        Set Decorator function.
+
+        :param f: function the decorator is used for
+        :return: wrapper
+        """
 
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
-            """Set wrapper function."""
-            rename_kwargs(f.__name__, kwargs, aliases)
+            """
+            Set wrapper function.
+            :param args: wrapper arguments
+            :param kwargs: wrapper key word arguments
+
+            :return: result of renamed function.
+            """
+            _rename_kwargs(f.__name__, kwargs, aliases)
             return f(*args, **kwargs)
 
         return wrapper
@@ -124,8 +167,13 @@ def touch_dir(base_dir: str) -> None:
         os.makedirs(base_dir)
 
 
-def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
-                   yield_slice: bool = False, yield_dict: bool = False) -> Iterator[Any]:
+def batch_iterator(
+    data: Iterable[Any],
+    batch_size: int,
+    axis: int = 0,
+    yield_slice: bool = False,
+    yield_dict: bool = False,
+) -> Iterator[Any]:
     """
     Get an iterator of batches of data.
 
@@ -140,9 +188,11 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
     :param axis: Determine which axis to iterate for np.ndarray data.
     :param yield_slice: Return tuple type of data if True else return np.ndarray type.
     :param yield_dict: Return dict type of data if True else return tuple type.
+    :yield: data
     :return: An Iterator of batch data.
     """
     import numpy as np
+
     if not batch_size or batch_size <= 0:
         yield data
         return
@@ -168,7 +218,7 @@ def batch_iterator(data: Iterable[Any], batch_size: int, axis: int = 0,
             yield data
             return
         for _ in range(0, len(data), batch_size):
-            yield data[_:_ + batch_size]
+            yield data[_ : _ + batch_size]
     elif isinstance(data, Iterable):
         data = iter(data)
         # as iterator, there is no way to know the length of it
@@ -191,6 +241,10 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
     :param v: The string of arguments
     :return: The parsed arguments list.
     """
+    m = re.match(r'^[\'"](.*)[\'"]$', v)
+    if m:
+        return m.group(1)
+
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
         tmp = v.replace('[', '').replace(']', '').strip().split(',')
@@ -241,16 +295,112 @@ def countdown(t: int, reason: str = 'I am blocking this thread') -> None:
         sys.stdout.write('no more patience? good bye!')
 
 
-_random_names = (('first', 'great', 'local', 'small', 'right', 'large', 'young', 'early', 'major', 'clear', 'black',
-                  'whole', 'third', 'white', 'short', 'human', 'royal', 'wrong', 'legal', 'final', 'close', 'total',
-                  'prime', 'happy', 'sorry', 'basic', 'aware', 'ready', 'green', 'heavy', 'extra', 'civil', 'chief',
-                  'usual', 'front', 'fresh', 'joint', 'alone', 'rural', 'light', 'equal', 'quiet', 'quick', 'daily',
-                  'urban', 'upper', 'moral', 'vital', 'empty', 'brief',),
-                 ('world', 'house', 'place', 'group', 'party', 'money', 'point', 'state', 'night', 'water', 'thing',
-                  'order', 'power', 'court', 'level', 'child', 'south', 'staff', 'woman', 'north', 'sense', 'death',
-                  'range', 'table', 'trade', 'study', 'other', 'price', 'class', 'union', 'value', 'paper', 'right',
-                  'voice', 'stage', 'light', 'march', 'board', 'month', 'music', 'field', 'award', 'issue', 'basis',
-                  'front', 'heart', 'force', 'model', 'space', 'peter',))
+_random_names = (
+    (
+        'first',
+        'great',
+        'local',
+        'small',
+        'right',
+        'large',
+        'young',
+        'early',
+        'major',
+        'clear',
+        'black',
+        'whole',
+        'third',
+        'white',
+        'short',
+        'human',
+        'royal',
+        'wrong',
+        'legal',
+        'final',
+        'close',
+        'total',
+        'prime',
+        'happy',
+        'sorry',
+        'basic',
+        'aware',
+        'ready',
+        'green',
+        'heavy',
+        'extra',
+        'civil',
+        'chief',
+        'usual',
+        'front',
+        'fresh',
+        'joint',
+        'alone',
+        'rural',
+        'light',
+        'equal',
+        'quiet',
+        'quick',
+        'daily',
+        'urban',
+        'upper',
+        'moral',
+        'vital',
+        'empty',
+        'brief',
+    ),
+    (
+        'world',
+        'house',
+        'place',
+        'group',
+        'party',
+        'money',
+        'point',
+        'state',
+        'night',
+        'water',
+        'thing',
+        'order',
+        'power',
+        'court',
+        'level',
+        'child',
+        'south',
+        'staff',
+        'woman',
+        'north',
+        'sense',
+        'death',
+        'range',
+        'table',
+        'trade',
+        'study',
+        'other',
+        'price',
+        'class',
+        'union',
+        'value',
+        'paper',
+        'right',
+        'voice',
+        'stage',
+        'light',
+        'march',
+        'board',
+        'month',
+        'music',
+        'field',
+        'award',
+        'issue',
+        'basis',
+        'front',
+        'heart',
+        'force',
+        'model',
+        'space',
+        'peter',
+    ),
+)
 
 
 def random_name() -> str:
@@ -268,6 +418,7 @@ def random_port() -> Optional[int]:
 
     :return: A random port.
     """
+
     import threading
     import multiprocessing
     from contextlib import closing
@@ -277,9 +428,12 @@ def random_port() -> Optional[int]:
         with multiprocessing.Lock():
             with threading.Lock():
                 with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-                    s.bind(('', port))
-                    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                    return s.getsockname()[1]
+                    try:
+                        s.bind(('', port))
+                        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                        return s.getsockname()[1]
+                    except OSError:
+                        pass
 
     _port = None
     if 'JINA_RANDOM_PORTS' in os.environ:
@@ -289,10 +443,13 @@ def random_port() -> Optional[int]:
             if _get_port(_port) is not None:
                 break
         else:
-            raise OSError(f'Couldn\'t find an available port in [{min_port}, {max_port}].')
+            raise OSError(
+                f'Couldn\'t find an available port in [{min_port}, {max_port}].'
+            )
     else:
         _port = _get_port()
-    return _port
+
+    return int(_port)
 
 
 def random_identity(use_uuid1: bool = False) -> str:
@@ -336,13 +493,15 @@ def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
         return v
 
 
-def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Dict[str, Any]:
+def expand_dict(
+    d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
+) -> Dict[str, Any]:
     """
     Expand variables from YAML file.
 
     :param d: Target Dict.
     :param expand_fn: Parsed environment variables.
-    :param resolve_cycle_ref:
+    :param resolve_cycle_ref: Defines if cyclic references should be resolved.
     :return: Expanded variables.
     """
     expand_map = SimpleNamespace()
@@ -399,22 +558,25 @@ def expand_dict(d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True) -> Di
     return d
 
 
-_ATTRIBUTES = {'bold': 1,
-               'dark': 2,
-               'underline': 4,
-               'blink': 5,
-               'reverse': 7,
-               'concealed': 8}
+_ATTRIBUTES = {
+    'bold': 1,
+    'dark': 2,
+    'underline': 4,
+    'blink': 5,
+    'reverse': 7,
+    'concealed': 8,
+}
 
-_HIGHLIGHTS = {'on_grey': 40,
-               'on_red': 41,
-               'on_green': 42,
-               'on_yellow': 43,
-               'on_blue': 44,
-               'on_magenta': 45,
-               'on_cyan': 46,
-               'on_white': 47
-               }
+_HIGHLIGHTS = {
+    'on_grey': 40,
+    'on_red': 41,
+    'on_green': 42,
+    'on_yellow': 43,
+    'on_blue': 44,
+    'on_magenta': 45,
+    'on_cyan': 46,
+    'on_white': 47,
+}
 
 _COLORS = {
     'grey': 30,
@@ -424,7 +586,8 @@ _COLORS = {
     'blue': 34,
     'magenta': 35,
     'cyan': 36,
-    'white': 37}
+    'white': 37,
+}
 
 _RESET = '\033[0m'
 
@@ -438,20 +601,24 @@ def build_url_regex_pattern():
     ul = '\u00a1-\uffff'  # Unicode letters range (must not be a raw string).
 
     # IP patterns
-    ipv4_re = r'(?:25[0-5]|2[0-4]\d|[0-1]?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}'
+    ipv4_re = (
+        r'(?:25[0-5]|2[0-4]\d|[0-1]?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}'
+    )
     ipv6_re = r'\[[0-9a-f:.]+\]'  # (simple regex, validated later)
 
     # Host patterns
-    hostname_re = r'[a-z' + ul + r'0-9](?:[a-z' + ul + r'0-9-]{0,61}[a-z' + ul + r'0-9])?'
+    hostname_re = (
+        r'[a-z' + ul + r'0-9](?:[a-z' + ul + r'0-9-]{0,61}[a-z' + ul + r'0-9])?'
+    )
     # Max length for domain name labels is 63 characters per RFC 1034 sec. 3.1
     domain_re = r'(?:\.(?!-)[a-z' + ul + r'0-9-]{1,63}(?<!-))*'
     tld_re = (
-            r'\.'  # dot
-            r'(?!-)'  # can't start with a dash
-            r'(?:[a-z' + ul + '-]{2,63}'  # domain label
-                              r'|xn--[a-z0-9]{1,59})'  # or punycode label
-                              r'(?<!-)'  # can't end with a dash
-                              r'\.?'  # may have a trailing dot
+        r'\.'  # dot
+        r'(?!-)'  # can't start with a dash
+        r'(?:[a-z' + ul + '-]{2,63}'  # domain label
+        r'|xn--[a-z0-9]{1,59})'  # or punycode label
+        r'(?<!-)'  # can't end with a dash
+        r'\.?'  # may have a trailing dot
     )
     host_re = '(' + hostname_re + domain_re + tld_re + '|localhost)'
 
@@ -459,9 +626,11 @@ def build_url_regex_pattern():
         r'^(?:[a-z0-9.+-]*)://'  # scheme is validated separately
         r'(?:[^\s:@/]+(?::[^\s:@/]*)?@)?'  # user:pass authentication
         r'(?:' + ipv4_re + '|' + ipv6_re + '|' + host_re + ')'
-                                                           r'(?::\d{2,5})?'  # port
-                                                           r'(?:[/?#][^\s]*)?'  # resource path
-                                                           r'\Z', re.IGNORECASE)
+        r'(?::\d{2,5})?'  # port
+        r'(?:[/?#][^\s]*)?'  # resource path
+        r'\Z',
+        re.IGNORECASE,
+    )
 
 
 url_pat = build_url_regex_pattern()
@@ -481,43 +650,47 @@ if os.name == 'nt':
     os.system('color')
 
 
-def colored(text: str, color: Optional[str] = None,
-            on_color: Optional[str] = None, attrs: Union[str, list, None] = None) -> str:
+def colored(
+    text: str,
+    color: Optional[str] = None,
+    on_color: Optional[str] = None,
+    attrs: Optional[Union[str, list]] = None,
+) -> str:
     """
     Give the text with color.
 
     :param text: The target text.
     :param color: The color of text. Chosen from the following.
-    {
-        'grey': 30,
-        'red': 31,
-        'green': 32,
-        'yellow': 33,
-        'blue': 34,
-        'magenta': 35,
-        'cyan': 36,
-        'white': 37
-    }
+        {
+            'grey': 30,
+            'red': 31,
+            'green': 32,
+            'yellow': 33,
+            'blue': 34,
+            'magenta': 35,
+            'cyan': 36,
+            'white': 37
+        }
     :param on_color: The on_color of text. Chosen from the following.
-    {
-        'on_grey': 40,
-        'on_red': 41,
-        'on_green': 42,
-        'on_yellow': 43,
-        'on_blue': 44,
-        'on_magenta': 45,
-        'on_cyan': 46,
-        'on_white': 47
-    }
+        {
+            'on_grey': 40,
+            'on_red': 41,
+            'on_green': 42,
+            'on_yellow': 43,
+            'on_blue': 44,
+            'on_magenta': 45,
+            'on_cyan': 46,
+            'on_white': 47
+        }
     :param attrs: Attributes of color. Chosen from the following.
-    {
-       'bold': 1,
-       'dark': 2,
-       'underline': 4,
-       'blink': 5,
-       'reverse': 7,
-       'concealed': 8
-    }
+        {
+           'bold': 1,
+           'dark': 2,
+           'underline': 4,
+           'blink': 5,
+           'reverse': 7,
+           'concealed': 8
+        }
     :return: Colored text.
     """
     if 'JINA_LOG_NO_COLOR' not in os.environ:
@@ -547,6 +720,7 @@ class ArgNamespace:
         Convert dict to an argparse-friendly list.
 
         :param kwargs: dictionary of key-values to be converted
+        :return: argument list
         """
         args = []
         for k, v in kwargs.items():
@@ -564,54 +738,67 @@ class ArgNamespace:
         return args
 
     @staticmethod
-    def kwargs2namespace(kwargs: Dict[str, Union[str, int, bool]],
-                         parser: ArgumentParser) -> Namespace:
+    def kwargs2namespace(
+        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+    ) -> Namespace:
         """
         Convert dict to a namespace.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
         try:
             p_args, unknown_args = parser.parse_known_args(args)
         except SystemExit:
-            raise ValueError(f'bad arguments "{args}" with parser {parser}, '
-                             'you may want to double check your args ')
+            raise ValueError(
+                f'bad arguments "{args}" with parser {parser}, '
+                'you may want to double check your args '
+            )
         return p_args
 
     @staticmethod
-    def get_parsed_args(kwargs: Dict[str, Union[str, int, bool]],
-                        parser: ArgumentParser) -> Tuple[List[str], Namespace, List[Any]]:
+    def get_parsed_args(
+        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+    ) -> Tuple[List[str], Namespace, List[Any]]:
         """
         Get all parsed args info in a dict.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
+        :return: argument namespace, positional arguments and unknown arguments
         """
         args = ArgNamespace.kwargs2list(kwargs)
         try:
             p_args, unknown_args = parser.parse_known_args(args)
             if unknown_args:
                 from .logging import default_logger
+
                 default_logger.debug(
                     f'parser {typename(parser)} can not '
                     f'recognize the following args: {unknown_args}, '
                     f'they are ignored. if you are using them from a global args (e.g. Flow), '
-                    f'then please ignore this message')
+                    f'then please ignore this message'
+                )
         except SystemExit:
-            raise ValueError(f'bad arguments "{args}" with parser {parser}, '
-                             'you may want to double check your args ')
+            raise ValueError(
+                f'bad arguments "{args}" with parser {parser}, '
+                'you may want to double check your args '
+            )
         return args, p_args, unknown_args
 
     @staticmethod
-    def get_non_defaults_args(args: Namespace, parser: ArgumentParser, taboo: Set[Optional[str]] = None) -> Dict:
+    def get_non_defaults_args(
+        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
+    ) -> Dict:
         """
         Get non-default args in a dict.
 
         :param args: the namespace to parse
         :param parser: the parser for referring the default values
         :param taboo: exclude keys in the final result
+        :return: non defaults
         """
         if taboo is None:
             taboo = set()
@@ -623,10 +810,13 @@ class ArgNamespace:
         return non_defaults
 
     @staticmethod
-    def flatten_to_dict(args: Union[Dict[str, 'Namespace'], 'Namespace']) -> Dict[str, Any]:
+    def flatten_to_dict(
+        args: Union[Dict[str, 'Namespace'], 'Namespace']
+    ) -> Dict[str, Any]:
         """Convert argparse.Namespace to dict to be uploaded via REST.
 
         :param args: namespace or dict or namespace to dict.
+        :return: pea args
         """
         if isinstance(args, Namespace):
             return vars(args)
@@ -652,6 +842,7 @@ def is_valid_local_config_source(path: str) -> bool:
     """
     try:
         from .jaml import parse_config_source
+
         parse_config_source(path)
         return True
     except FileNotFoundError:
@@ -671,25 +862,27 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     from pkg_resources import resource_filename
     import platform
     from .logging import default_logger
+
     try:
 
-        info = {'jina': __version__,
-                'jina-proto': __proto_version__,
-                'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', '(unset)'),
-                'libzmq': zmq.zmq_version(),
-                'pyzmq': numpy.__version__,
-                'protobuf': google.protobuf.__version__,
-                'proto-backend': api_implementation._default_implementation_type,
-                'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
-                'pyyaml': yaml.__version__,
-                'python': platform.python_version(),
-                'platform': platform.system(),
-                'platform-release': platform.release(),
-                'platform-version': platform.version(),
-                'architecture': platform.machine(),
-                'processor': platform.processor(),
-                'jina-resources': resource_filename('jina', 'resources')
-                }
+        info = {
+            'jina': __version__,
+            'jina-proto': __proto_version__,
+            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', '(unset)'),
+            'libzmq': zmq.zmq_version(),
+            'pyzmq': numpy.__version__,
+            'protobuf': google.protobuf.__version__,
+            'proto-backend': api_implementation._default_implementation_type,
+            'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
+            'pyyaml': yaml.__version__,
+            'python': platform.python_version(),
+            'platform': platform.system(),
+            'platform-release': platform.release(),
+            'platform-version': platform.version(),
+            'architecture': platform.machine(),
+            'processor': platform.processor(),
+            'jina-resources': resource_filename('jina', 'resources'),
+        }
         env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
         full_version = info, env_info
     except Exception as e:
@@ -714,10 +907,14 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
 
 def _use_uvloop():
     from .importer import ImportExtensions
-    with ImportExtensions(required=False,
-                          help_text='Jina uses uvloop to manage events and sockets, '
-                                    'it often yields better performance than builtin asyncio'):
+
+    with ImportExtensions(
+        required=False,
+        help_text='Jina uses uvloop to manage events and sockets, '
+        'it often yields better performance than builtin asyncio',
+    ):
         import uvloop
+
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
@@ -775,6 +972,13 @@ class cached_property:
         value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
         return value
 
+    def __delete__(self, obj):
+        cached_value = obj.__dict__.get(f'CACHED_{self.func.__name__}', None)
+        if cached_value is not None:
+            if hasattr(cached_value, 'close'):
+                cached_value.close()
+            del obj.__dict__[f'CACHED_{self.func.__name__}']
+
 
 def get_now_timestamp():
     """
@@ -795,9 +999,12 @@ def get_readable_time(*args, **kwargs):
         .. code-block:: python
             get_readable_time(seconds=1000)
 
+    :param args: arguments for datetime.timedelta
+    :param kwargs: key word arguments for datetime.timedelta
     :return: Datetime in human readable format.
     """
     import datetime
+
     secs = float(datetime.timedelta(*args, **kwargs).total_seconds())
     units = [('day', 86400), ('hour', 3600), ('minute', 60), ('second', 1)]
     parts = []
@@ -819,6 +1026,7 @@ def get_internal_ip():
     :return: Private IP address.
     """
     import socket
+
     ip = '127.0.0.1'
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
@@ -848,7 +1056,11 @@ def get_public_ip():
         except:
             pass
 
-    ip = _get_ip('https://api.ipify.org') or _get_ip('https://ident.me') or _get_ip('https://ipinfo.io/ip')
+    ip = (
+        _get_ip('https://api.ipify.org')
+        or _get_ip('https://ident.me')
+        or _get_ip('https://ipinfo.io/ip')
+    )
 
     return ip
 
@@ -858,7 +1070,6 @@ def convert_tuple_to_list(d: Dict):
     Convert all the tuple type values from a dict to list.
 
     :param d: Dict type of data.
-    :return: Converted dict with list type values.
     """
     for k, v in d.items():
         if isinstance(v, tuple):
@@ -880,6 +1091,8 @@ def is_jupyter() -> bool:  # pragma: no cover
     shell = get_ipython().__class__.__name__  # noqa: F821
     if shell == 'ZMQInteractiveShell':
         return True  # Jupyter notebook or qtconsole
+    elif shell == 'Shell':
+        return True  # Google colab
     elif shell == 'TerminalInteractiveShell':
         return False  # Terminal running IPython
     else:
@@ -925,13 +1138,18 @@ def run_async(func, *args, **kwargs):
                 return thread.result
             except AttributeError:
                 from .excepts import BadClient
-                raise BadClient('something wrong when running the eventloop, result can not be retrieved')
+
+                raise BadClient(
+                    'something wrong when running the eventloop, result can not be retrieved'
+                )
         else:
 
-            raise RuntimeError('you have an eventloop running but not using Jupyter/ipython, '
-                               'this may mean you are using Jina with other integration? if so, then you '
-                               'may want to use AsyncClient/AsyncFlow instead of Client/Flow. If not, then '
-                               'please report this issue here: https://github.com/jina-ai/jina')
+            raise RuntimeError(
+                'you have an eventloop running but not using Jupyter/ipython, '
+                'this may mean you are using Jina with other integration? if so, then you '
+                'may want to use AsyncClient/AsyncFlow instead of Client/Flow. If not, then '
+                'please report this issue here: https://github.com/jina-ai/jina'
+            )
     else:
         return asyncio.run(func(*args, **kwargs))
 
@@ -951,8 +1169,10 @@ def slugify(value):
 def change_cwd(path):
     """
     Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.
+    Yields nothing
 
     :param path: Target path.
+    :yields: nothing
     """
     curdir = os.getcwd()
     os.chdir(path)
@@ -969,6 +1189,7 @@ def change_env(key, val):
 
     :param key: Old environment variable.
     :param val: New environment variable.
+    :yields: nothing
     """
     old_var = os.environ.get(key, None)
     os.environ[key] = val
@@ -1005,4 +1226,7 @@ def download_mermaid_url(mermaid_url, output) -> None:
             fp.write(urlopen(req).read())
     except:
         from jina.logging import default_logger
-        default_logger.error('can not download image, please check your graph and the network connections')
+
+        default_logger.error(
+            'can not download image, please check your graph and the network connections'
+        )

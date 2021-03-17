@@ -12,5 +12,7 @@ def test_discovery(tmpdir):
     pod_dir = os.path.join(tmpdir, 'pods')
     copy_tree(os.path.join(cur_dir, 'pods'), pod_dir)
     parameter_result_file = os.path.join(tmpdir, 'parameter.yml')
-    run_parameter_discovery([os.path.join(tmpdir, 'flow.yml')], parameter_result_file, True)
+    run_parameter_discovery(
+        [os.path.join(tmpdir, 'flow.yml')], parameter_result_file, True
+    )
     assert os.path.exists(parameter_result_file)

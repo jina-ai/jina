@@ -62,6 +62,7 @@ class AsyncFlow(AsyncCRUDFlowMixin, BaseFlow):
 
     One can think of :class:`Flow` as Jina-managed eventloop, whereas :class:`AsyncFlow` is self-managed eventloop.
     """
+
     _cls_client = AsyncClient  #: the type of the Client, can be changed to other class
 
     def _update_client(self):

@@ -1,8 +1,10 @@
 from jina.flow import Flow
 from jina.proto.jina_pb2 import DocumentProto
 
+from tests import validate_callback
 
-def input_fn():
+
+def input_function():
     doc1 = DocumentProto()
     doc2 = DocumentProto()
     # doc1 and doc2 should have the same id
@@ -17,7 +19,6 @@ def input_fn():
 
 def test_collect_evals_driver(mocker):
     def validate(req):
-        mock()
         assert len(req.docs) == 2
         # each doc should now have two evaluations
         for d in req.docs:
@@ -25,10 +26,14 @@ def test_collect_evals_driver(mocker):
 
     mock = mocker.Mock()
     # simulate two encoders
-    flow = (Flow().add(name='a')
-            .add(name='b', needs='gateway')
-            .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}'))
+    flow = (
+        Flow()
+        .add(name='a')
+        .add(name='b', needs='gateway')
+        .join(needs=['a', 'b'], uses='- !CollectEvaluationDriver {}')
+    )
     with flow:
-        flow.index(input_fn=input_fn, on_done=validate)
+        flow.index(inputs=input_function, on_done=mock)
 
     mock.assert_called_once()
+    validate_callback(mock, validate)

@@ -2,7 +2,7 @@
 
 Thanks for your interest in contributing to Jina. We're grateful for your initiative! ❤️
 
-I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below. 
+I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below.
 
 # Join Us on Slack!
 
@@ -27,14 +27,14 @@ In this guide, we're going to go through the steps for each kind of contribution
 <a name="-before-you-start"></a>
 ## 🏁 Before you Start
 
-Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](https://github.com/jina-ai/docs/tree/master/chapters/101), and [example tutorials](https://learn.jina.ai) so you have a good understanding of what Jina is and how it works.
+Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](https://101.jina.ai), and [example tutorials](https://learn.jina.ai) so you have a good understanding of what Jina is and how it works.
 
 ### Not a coder but still want to contribute?
 
 We're happy for any contributions, code or not. If you'd like to write a blog post, record a podcast, organize a meetup, or anything else to contribute to Jina, we'd love to hear from you!
 
-* [Contribute docs](#contributing-documentation)
-* For other contributions, please [get in touch](#getting-support) to discuss on Slack
+* [Contribute docs](#-contributing-documentation)
+* For other contributions, please [get in touch](#-getting-support) to discuss on Slack
 
 <a name="-bugs-and-issues"></a>
 ## 🐞 Bugs and Issues
@@ -51,6 +51,8 @@ There are also a couple of nice to haves:
 * **Environment:** You can find this with `jina --version-full`
 * **Screenshots:** If they're relevant
 
+To understand how our issues are labeled, check out our [issue label guide](./github_issue_label_guide.md).
+
 ### Fixing and Discussing Issues
 
 Right now we're working on a list of things we want help with and easy-to-fix bugs suitable for first-time contributors. Stay tuned to:
@@ -60,16 +62,16 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 * [Discussion required](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22discussion+required%22)
 
 <a name="-making-your-first-submission"></a>
-## 🥇 Making Your First Submission 
+## 🥇 Making Your First Submission
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
-1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jina-hub-submodule) for details. 
+1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jinahub-submodule) for details.
 1. Configure git pre-commit hooks. Please follow [the steps](#install-pre-commit-hooks)
 1. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 1. Work on this branch to do the fix/improvement.
 1. Check if your code changes follow the [code review guidelines](.github/CODE_REVIEW_GUIDELINES.md).
 1. Commit the changes with the [correct commit style](#writing-your-commit-message).
-1. Make a pull request. 
+1. Make a pull request.
 1. Submit your pull request and wait for all checks to pass.
 1. Request reviews from one of [the code owners](.github/CODEOWNERS).
 1. Get a LGTM 👍 and PR gets merged.
@@ -99,16 +101,20 @@ What happens after the merge? [Understand the development stage and release cycl
 
 ### Install pre-commit hooks
 
-In Jina we use git's pre-commit hooks in order to make sure the code matches our standards of quality and documentation. At the moment we employ them for checking the docstrings of the code. Documentation of code is crucial to maintaining productive developers and clear communication with new users.
+In Jina we use git's pre-commit hooks in order to make sure the code matches our standards of quality and documentation. At the moment we employ them for checking the style and the docstrings of the code. Documentation of code is crucial to maintaining productive developers and clear communication with new users. We also want to reduce all arguments about code styling.
 
 It's easy to configure it:
 
 1. `pip install pre-commit`
 1. `pre-commit install`
 
-Now you will be automatically reminded to add docstrings to your code.
+Now you will be automatically reminded to add docstrings to your code. `black` will take care that your code will match our style. Note that `black` will fail your commit but reformat your code, so you just need to add the files again and commit **again**.
 
 For more about our docstring style, refer to [this guide](https://docs.jina.ai/chapters/docstring/docstring.html).
+
+#### Restoring correct git blame
+
+Run `git config blame.ignoreRevsFile .github/.git-blame-ignore-revs`
 
 ### Check out `jina/hub` submodule
 
@@ -173,10 +179,10 @@ Your branch name should follow the format `type-scope(-issue_id)`:
 
 * `type` is one of the [types above](#specify-the-correct-types)
 * `scope` is optional, and represents the module your branch is working on.
-* `issue_id` is [the GitHub issue](https://github.com/jina-ai/jina/issues) number. Having the correct issue number will automatically link the Pull Request on this branch to that issue. 
+* `issue_id` is [the GitHub issue](https://github.com/jina-ai/jina/issues) number. Having the correct issue number will automatically link the Pull Request on this branch to that issue.
 
 > Good examples:
-> 
+>
 ```text
 fix-executor-loader-113
 chore-update-version
@@ -205,7 +211,7 @@ Commit messages should stick to our [naming conventions](#naming-conventions) ou
 For example, a commit that fixes a bug in the executor module should be phrased as: `fix(executor): fix the bad naming in init function`
 
 > Good examples:
-> 
+>
 ```text
 fix(indexer): fix wrong sharding number in indexer
 feat: add remote api
@@ -240,7 +246,7 @@ We don't enforce naming of PRs and branches, but we recommend you follow the sam
 <a name="-testing-jina-locally-and-on-ci"></a>
 ## 💥 Testing Jina Locally and on CI
 
-You need to build a local docker image tagged 'jinaai/jina:test-pip' for all the tests to run as in the CI, via: 
+You need to build a local docker image tagged 'jinaai/jina:test-pip' for all the tests to run as in the CI, via:
 
 ```bash
 docker build --build-arg PIP_TAG="[devel]" -f ${PATH_TO_JINA}/Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip ${PATH_TO_JINA}
@@ -279,11 +285,11 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 
 #### General Documentation
 
-This covers files like [Jina 101](https://github.com/jina-ai/docs/tree/master/chapters/101), [Input and Output Functions](https://docs.jina.ai/chapters/io/index.html), etc.
+This covers files like [Jina 101](https://101.jina.ai), [Input and Output Functions](https://docs.jina.ai/chapters/io/index.html), etc.
 
 These are typically written in Markdown, though some may be in RestructuredText.
 
-If you're just correcting a typo, feel free to make a pull request. For bigger ones, check out our [getting support section](#getting-support) to get in touch and discuss more.
+If you're just correcting a typo, feel free to make a pull request. For bigger ones, check out our [getting support section](#-getting-support) to get in touch and discuss more.
 
 #### Tutorials and Examples
 
@@ -291,11 +297,11 @@ This is anything under the [Jina Examples](https://github.com/jina-ai/examples) 
 
 If you're submitting a new example, be sure to get a good grounding in Jina, go through our previous examples, and test your code.
 
-If you're making small tweaks to an existing example, make a pull request. For bigger ones, check out our [getting support section](#getting-support) to get in touch and discuss more.
+If you're making small tweaks to an existing example, make a pull request. For bigger ones, check out our [getting support section](#-getting-support) to get in touch and discuss more.
 
 #### Docstrings
 
-Docstrings are how we document Jina's functions. This is suitable for more experienced documentation writers who understand Python functions, docstring formatting, and RestructuredText format. 
+Docstrings are how we document Jina's functions. This is suitable for more experienced documentation writers who understand Python functions, docstring formatting, and RestructuredText format.
 
 #### Building Documentation Locally
 

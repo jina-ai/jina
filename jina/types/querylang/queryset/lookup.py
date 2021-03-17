@@ -47,6 +47,7 @@ class QuerySet:
     """
 
     def __init__(self, data):
+        """Set constructor method."""
         self.data = data
 
     def filter(self, *args, **kwargs) -> 'QuerySet':
@@ -126,6 +127,7 @@ Collection = QuerySet
 
 ## filter and _lookup functions
 
+
 def filter_items(items: Iterable, *args, **kwargs) -> Iterable:
     """Filters an iterable using _lookup parameters
 
@@ -178,13 +180,17 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
         return iff_not_none(dunder_get(item, init), lambda y: y.startswith(val))
     elif last == 'istartswith':
         val = guard_str(val)
-        return iff_not_none(dunder_get(item, init), lambda y: y.lower().startswith(val.lower()))
+        return iff_not_none(
+            dunder_get(item, init), lambda y: y.lower().startswith(val.lower())
+        )
     elif last == 'endswith':
         val = guard_str(val)
         return iff_not_none(dunder_get(item, init), lambda y: y.endswith(val))
     elif last == 'iendswith':
         val = guard_str(val)
-        return iff_not_none(dunder_get(item, init), lambda y: y.lower().endswith(val.lower()))
+        return iff_not_none(
+            dunder_get(item, init), lambda y: y.lower().endswith(val.lower())
+        )
     elif last == 'gt':
         return iff_not_none(dunder_get(item, init), lambda y: y > val)
     elif last == 'gte':
@@ -194,7 +200,9 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
     elif last == 'lte':
         return iff_not_none(dunder_get(item, init), lambda y: y <= val)
     elif last == 'regex':
-        return iff_not_none(dunder_get(item, init), lambda y: re.search(val, y) is not None)
+        return iff_not_none(
+            dunder_get(item, init), lambda y: re.search(val, y) is not None
+        )
     elif last == 'filter':
         val = guard_Q(val)
         result = guard_iter(dunder_get(item, init))
@@ -205,13 +213,20 @@ def _lookup(key: str, val: Any, item: Dict) -> bool:
 
 ## Classes to compose compound lookups (Q object)
 
+
 class LookupTreeElem:
     """Base class for a child in the _lookup expression tree"""
 
     def __init__(self):
+        """Set constructor method."""
         self.negate = False
 
     def evaluate(self, item: Dict) -> bool:
+        """Evaluates the expression represented by the object for the item, needs to be implemented in subclass.
+
+        :param item : (dict) item
+        :return: (boolean) whether _lookup passed or failed
+        """
         raise NotImplementedError
 
     def __or__(self, other):
@@ -239,11 +254,17 @@ class LookupNode(LookupTreeElem):
     """
 
     def __init__(self):
+        """Set constructor method."""
         super().__init__()
         self.children = []
         self.op = 'and'
 
     def add_child(self, child):
+        """
+        Add child node into `self.children` list.
+
+        :param child: Node needs to be added.
+        """
         self.children.append(child)
 
     def evaluate(self, item: Dict) -> bool:
@@ -251,7 +272,6 @@ class LookupNode(LookupTreeElem):
 
         :param item : (dict) item
         :return: (boolean) whether _lookup passed or failed
-
         """
         results = map(lambda x: x.evaluate(item), self.children)
         result = any(results) if self.op == 'or' else all(results)
@@ -269,6 +289,7 @@ class LookupLeaf(LookupTreeElem):
     """Class for a leaf in the _lookup expression tree"""
 
     def __init__(self, **kwargs):
+        """Set constructor method."""
         super().__init__()
         self.lookups = kwargs
 
@@ -277,7 +298,6 @@ class LookupLeaf(LookupTreeElem):
 
         :param item : (dict) item
         :return: (boolean) whether _lookup passed or failed
-
         """
         result = all(_lookup(k, v, item) for k, v in self.lookups.items())
         return not result if self.negate else result
@@ -294,7 +314,10 @@ Q = LookupLeaf
 
 ## functions that work on the keys in a dict
 
-def include_keys(items: Iterable[Dict[str, Any]], fields: Iterable[str]) -> Iterable[Dict]:
+
+def include_keys(
+    items: Iterable[Dict[str, Any]], fields: Iterable[str]
+) -> Iterable[Dict]:
     """Function to keep only specified fields in data
 
     Returns a list of dict with only the keys mentioned in the

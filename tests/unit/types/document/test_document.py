@@ -2,14 +2,13 @@ import json
 
 import numpy as np
 import pytest
+
 from google.protobuf.json_format import MessageToDict
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
 from jina.types.score import NamedScore
 from tests import random_docs
-
-DOCUMENTS_PER_LEVEL = 1
 
 
 @pytest.mark.parametrize('field', ['blob', 'embedding'])
@@ -230,14 +229,12 @@ def test_doc_setattr():
 
 
 def test_doc_score():
-    from jina import Document
     from jina.types.score import NamedScore
+
     with Document() as doc:
         doc.text = 'text'
 
-    score = NamedScore(op_name='operation',
-                       value=10.0,
-                       ref_id=doc.id)
+    score = NamedScore(op_name='operation', value=10.0, ref_id=doc.id)
     doc.score = score
 
     assert doc.score.op_name == 'operation'
@@ -297,7 +294,9 @@ def test_include_repeated_fields():
     def build_document(chunk=None):
         d = Document()
         d.chunks.append(chunk)
-        d.chunks[0].update_content_hash(exclude_fields=('parent_id', 'id', 'content_hash'))
+        d.chunks[0].update_content_hash(
+            exclude_fields=('parent_id', 'id', 'content_hash')
+        )
         d.chunks[0].parent_id = 0
         d.update_content_hash(include_fields=('chunks',), exclude_fields=None)
         return d
@@ -321,11 +320,24 @@ def test_include_repeated_fields():
 
 
 @pytest.mark.parametrize('from_str', [True, False])
-@pytest.mark.parametrize('d_src', [
-    {'id': '123', 'mime_type': 'txt', 'parent_id': '456', 'tags': {'hello': 'world'}},
-    {'id': '123', 'mimeType': 'txt', 'parentId': '456', 'tags': {'hello': 'world'}},
-    {'id': '123', 'mimeType': 'txt', 'parent_id': '456', 'tags': {'hello': 'world'}},
-])
+@pytest.mark.parametrize(
+    'd_src',
+    [
+        {
+            'id': '123',
+            'mime_type': 'txt',
+            'parent_id': '456',
+            'tags': {'hello': 'world'},
+        },
+        {'id': '123', 'mimeType': 'txt', 'parentId': '456', 'tags': {'hello': 'world'}},
+        {
+            'id': '123',
+            'mimeType': 'txt',
+            'parent_id': '456',
+            'tags': {'hello': 'world'},
+        },
+    ],
+)
 def test_doc_from_dict_cases(d_src, from_str):
     # regular case
     if from_str:
@@ -377,10 +389,28 @@ def test_doc_field_resolver(from_str):
 
 
 def test_doc_plot():
-    docs = [Document(id='🐲', embedding=np.array([0, 0]), tags={'guardian': 'Azure Dragon', 'position': 'East'}),
-            Document(id='🐦', embedding=np.array([1, 0]), tags={'guardian': 'Vermilion Bird', 'position': 'South'}),
-            Document(id='🐢', embedding=np.array([0, 1]), tags={'guardian': 'Black Tortoise', 'position': 'North'}),
-            Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
+    docs = [
+        Document(
+            id='🐲',
+            embedding=np.array([0, 0]),
+            tags={'guardian': 'Azure Dragon', 'position': 'East'},
+        ),
+        Document(
+            id='🐦',
+            embedding=np.array([1, 0]),
+            tags={'guardian': 'Vermilion Bird', 'position': 'South'},
+        ),
+        Document(
+            id='🐢',
+            embedding=np.array([0, 1]),
+            tags={'guardian': 'Black Tortoise', 'position': 'North'},
+        ),
+        Document(
+            id='🐯',
+            embedding=np.array([1, 1]),
+            tags={'guardian': 'White Tiger', 'position': 'West'},
+        ),
+    ]
 
     docs[0].chunks.append(docs[1])
     docs[0].chunks[0].chunks.append(docs[2])
@@ -390,12 +420,20 @@ def test_doc_plot():
 
 
 def get_test_doc():
-    s = Document(id='🐲', content='hello-world', tags={'a': 'b'},
-                 embedding=np.array([1, 2, 3]),
-                 chunks=[Document(id='🐢')])
-    d = Document(id='🐦', content='goodbye-world', tags={'c': 'd'},
-                 embedding=np.array([4, 5, 6]),
-                 chunks=[Document(id='🐯')])
+    s = Document(
+        id='🐲',
+        content='hello-world',
+        tags={'a': 'b'},
+        embedding=np.array([1, 2, 3]),
+        chunks=[Document(id='🐢')],
+    )
+    d = Document(
+        id='🐦',
+        content='goodbye-world',
+        tags={'c': 'd'},
+        embedding=np.array([4, 5, 6]),
+        chunks=[Document(id='🐯')],
+    )
     return s, d
 
 
@@ -459,7 +497,6 @@ def test_update_embedding():
 
 def test_non_empty_fields():
     d_score = Document(score=NamedScore(value=42))
-    print(d_score.ListFields())
     assert d_score.non_empty_fields == ('id', 'score')
 
     d = Document()
@@ -495,3 +532,128 @@ def test_update_exclude_field():
     # check if merging on embedding is correct
     assert len(d.chunks) == 1
     assert d.chunks[0].id == '🐢'
+
+
+def test_get_attr():
+    d = Document(
+        {
+            'id': '123',
+            'text': 'document',
+            'feature1': 121,
+            'name': 'name',
+            'tags': {'id': 'identity', 'a': 'b', 'c': 'd'},
+        }
+    )
+    d.score = NamedScore(value=42)
+
+    required_keys = [
+        'id',
+        'text',
+        'tags__name',
+        'tags__feature1',
+        'score__value',
+        'tags__c',
+        'tags__id',
+        'tags__inexistant',
+        'inexistant',
+    ]
+    res = d.get_attrs(*required_keys)
+
+    assert len(res.keys()) == len(required_keys)
+    assert res['id'] == '123'
+    assert res['tags__feature1'] == 121
+    assert res['tags__name'] == 'name'
+    assert res['text'] == 'document'
+    assert res['tags__c'] == 'd'
+    assert res['tags__id'] == 'identity'
+    assert res['score__value'] == 42
+    assert res['tags__inexistant'] is None
+    assert res['inexistant'] is None
+
+    res2 = d.get_attrs(*['tags', 'text'])
+    assert len(res2.keys()) == 2
+    assert res2['text'] == 'document'
+    assert res2['tags'] == d.tags
+
+    d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
+    res3 = d.get_attrs(*['tags__outterkey__innerkey'])
+    assert len(res3.keys()) == 1
+    assert res3['tags__outterkey__innerkey'] == 'real_value'
+
+    d = Document(content=np.array([1, 2, 3]))
+    res4 = d.get_attrs(*['blob'])
+    np.testing.assert_equal(res4['blob'], np.array([1, 2, 3]))
+
+
+def test_get_attr_values():
+    d = Document(
+        {
+            'id': '123',
+            'text': 'document',
+            'feature1': 121,
+            'name': 'name',
+            'tags': {'id': 'identity', 'a': 'b', 'c': 'd'},
+        }
+    )
+    d.score = NamedScore(value=42)
+
+    required_keys = [
+        'id',
+        'text',
+        'tags__name',
+        'tags__feature1',
+        'score__value',
+        'tags__c',
+        'tags__id',
+        'tags__inexistant',
+        'inexistant',
+    ]
+    res = d.get_attrs_values(*required_keys)
+
+    assert len(res) == len(required_keys)
+    assert res[required_keys.index('id')] == '123'
+    assert res[required_keys.index('tags__feature1')] == 121
+    assert res[required_keys.index('tags__name')] == 'name'
+    assert res[required_keys.index('text')] == 'document'
+    assert res[required_keys.index('tags__c')] == 'd'
+    assert res[required_keys.index('tags__id')] == 'identity'
+    assert res[required_keys.index('score__value')] == 42
+    assert res[required_keys.index('tags__inexistant')] is None
+    assert res[required_keys.index('inexistant')] is None
+
+    required_keys_2 = ['tags', 'text']
+    res2 = d.get_attrs_values(*required_keys_2)
+    assert len(res2) == 2
+    assert res2[required_keys_2.index('text')] == 'document'
+    assert res2[required_keys_2.index('tags')] == d.tags
+
+    d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
+    required_keys_3 = ['tags__outterkey__innerkey']
+    res3 = d.get_attrs_values(*required_keys_3)
+    assert len(res3) == 1
+    assert res3[required_keys_3.index('tags__outterkey__innerkey')] == 'real_value'
+
+    d = Document(content=np.array([1, 2, 3]))
+    res4 = d.get_attrs(*['blob'])
+    np.testing.assert_equal(res4['blob'], np.array([1, 2, 3]))
+
+
+def test_pb_obj2dict():
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        document.tags['id'] = 'id in tags'
+        document.tags['inner_dict'] = {'id': 'id in inner_dict'}
+        with Document() as chunk:
+            chunk.text = 'text in chunk'
+            chunk.tags['id'] = 'id in chunk tags'
+        document.chunks.add(chunk)
+    res = document.get_attrs('text', 'tags', 'chunks')
+    assert res['text'] == 'this is text'
+    assert res['tags']['id'] == 'id in tags'
+    assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
+    rcs = list(res['chunks'])
+    assert len(rcs) == 1
+    assert isinstance(rcs[0], Document)
+    assert rcs[0].text == 'text in chunk'
+    assert rcs[0].tags['id'] == 'id in chunk tags'

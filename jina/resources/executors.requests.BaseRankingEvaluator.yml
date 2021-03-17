@@ -2,15 +2,15 @@ on:
   ControlRequest:
     - !ControlReqDriver {}
   SearchRequest:
-    - !ExcludeQL
-      with:
-        fields:
-          - embedding
-          - buffer
-          - blob
-          - text
+    with:
       traversal_paths: ['r']
-    - !RankEvaluateDriver
-      with:
-        id_tag: 'id'
-        traversal_paths: ['r']
+    drivers:
+      - !ExcludeQL
+        with:
+          fields:
+            - embedding
+            - buffer
+            - blob
+            - text
+      - !RankEvaluateDriver {}
+

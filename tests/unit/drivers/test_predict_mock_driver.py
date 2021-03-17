@@ -1,16 +1,36 @@
 import numpy as np
+import pytest
 from google.protobuf.struct_pb2 import ListValue
-
-from jina.drivers.predict import BinaryPredictDriver, MultiLabelPredictDriver, OneHotPredictDriver, \
-    Prediction2DocBlobDriver
+from jina import Document
+from jina.drivers.predict import (
+    BinaryPredictDriver,
+    MultiLabelPredictDriver,
+    OneHotPredictDriver,
+    Prediction2DocBlobDriver,
+)
+from jina.executors.classifiers import BaseClassifier
 from jina.types.ndarray.generic import NdArray
 from jina.types.sets import DocumentSet
 from tests import random_docs
 
 
+@pytest.fixture(scope='function')
+def num_docs():
+    return 10
+
+
+@pytest.fixture(scope='function')
+def docs_to_encode(num_docs):
+    docs = []
+    for idx in range(num_docs):
+        doc = Document(content=np.array([idx]))
+        docs.append(doc)
+    return DocumentSet(docs)
+
+
 class MockBinaryPredictDriver(BinaryPredictDriver):
     def exec_fn(self, embed):
-        random_label = np.random.randint(0, 1, [embed.shape[0]])
+        random_label = np.random.randint(0, 2, [embed.shape[0]])
         return random_label.astype(np.int64)
 
 
@@ -32,6 +52,24 @@ class MockAllLabelPredictDriver(MultiLabelPredictDriver):
 class MockPrediction2DocBlobDriver(Prediction2DocBlobDriver):
     def exec_fn(self, embed):
         return np.eye(3)[np.random.choice(3, embed.shape[0])]
+
+
+class MockClassifierDriver(BinaryPredictDriver):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+
+class MockClassifier(BaseClassifier):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        # predict 0 or 1 based on divisiblity by 2
+        return (data % 2 == 0).astype(int)
 
 
 def test_binary_predict_driver():
@@ -82,3 +120,16 @@ def test_as_blob_driver():
 
     for d in docs:
         assert NdArray(d.blob).value.shape == (3,)
+
+
+def test_predict_driver_without_embeddings(docs_to_encode, num_docs):
+    executor = MockClassifier(total_num_docs=num_docs)
+    driver = MockClassifierDriver(fields='content')  # use doc.content to predict tags
+    driver.attach(executor=executor, runtime=None)
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
+        assert doc.embedding is None
+    driver._apply_all(docs_to_encode)
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
+        assert doc.tags['prediction'] in ['yes', 'no']

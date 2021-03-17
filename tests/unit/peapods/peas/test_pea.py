@@ -140,10 +140,20 @@ def test_pea_runtime_env_setting_in_process():
 
     os.environ['key_parent'] = 'value3'
 
-    with Pea(set_pea_parser().parse_args(['--uses', 'EnvChecker',
-                                          '--env', 'key1=value1',
-                                          '--env', 'key2=value2',
-                                          '--runtime-backend', 'process'])):
+    with Pea(
+        set_pea_parser().parse_args(
+            [
+                '--uses',
+                'EnvChecker',
+                '--env',
+                'key1=value1',
+                '--env',
+                'key2=value2',
+                '--runtime-backend',
+                'process',
+            ]
+        )
+    ):
         pass
 
     # should not affect the main process
@@ -166,10 +176,20 @@ def test_pea_runtime_env_setting_in_thread():
 
     os.environ['key_parent'] = 'value3'
 
-    with Pea(set_pea_parser().parse_args(['--uses', 'EnvChecker',
-                                          '--env', 'key1=value1',
-                                          '--env', 'key2=value2',
-                                          '--runtime-backend', 'thread'])):
+    with Pea(
+        set_pea_parser().parse_args(
+            [
+                '--uses',
+                'EnvChecker',
+                '--env',
+                'key1=value1',
+                '--env',
+                'key2=value2',
+                '--runtime-backend',
+                'thread',
+            ]
+        )
+    ):
         pass
 
     # should not affect the main process

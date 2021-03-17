@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import numpy as np
 
@@ -16,6 +17,8 @@ class DenseNdArray(BaseDenseNdArray):
 
     :param proto: the protobuf message, when not given then create a new one
     :param quantize: the quantization method used when converting to protobuf.
+    :param args: Additional positional arguments which are just used for the parent initialization
+    :param kwargs: Additional keyword arguments which are just used for the parent initialization
         Availables are ``fp16``, ``uint8``, default is None.
 
     .. note::
@@ -30,14 +33,23 @@ class DenseNdArray(BaseDenseNdArray):
         the quantize type is stored and the blob is self-contained to recover the original numpy array
     """
 
-    def __init__(self, proto: 'jina_pb2.NdArrayProto' = None, quantize: str = None, *args, **kwargs):
-        """Set constructor method."""
+    def __init__(
+        self,
+        proto: 'jina_pb2.NdArrayProto' = None,
+        quantize: Optional[str] = None,
+        *args,
+        **kwargs
+    ):
         super().__init__(proto, *args, **kwargs)
         self.quantize = os.environ.get('JINA_ARRAY_QUANT', quantize)
 
     @property
     def value(self) -> 'np.ndarray':
-        """Get the value of protobuf and return in :class:`np.ndarray`."""
+        """
+        Get the value of protobuf and return in :class:`np.ndarray`.
+
+        :return: ndarray value
+        """
         blob = self._pb_body
         if blob.buffer:
             x = np.frombuffer(blob.buffer, dtype=blob.dtype)
@@ -51,7 +63,11 @@ class DenseNdArray(BaseDenseNdArray):
 
     @value.setter
     def value(self, value: 'np.ndarray'):
-        """Set the value of protobuf with :param:`value` :class:`np.ndarray`."""
+        """
+        Set the value of protobuf with :param:`value` :class:`np.ndarray`.
+
+        :param value: set the ndarray
+        """
         blob = self._pb_body
         x = value
 
@@ -59,7 +75,9 @@ class DenseNdArray(BaseDenseNdArray):
             blob.quantization = jina_pb2.DenseNdArrayProto.FP16
             blob.original_dtype = x.dtype.name
             x = x.astype(np.float16)
-        elif self.quantize == 'uint8' and (x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16):
+        elif self.quantize == 'uint8' and (
+            x.dtype == np.float32 or x.dtype == np.float64 or x.dtype == np.float16
+        ):
             blob.quantization = jina_pb2.DenseNdArrayProto.UINT8
             blob.max_val, blob.min_val = x.max(), x.min()
             blob.original_dtype = x.dtype.name

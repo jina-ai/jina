@@ -29,19 +29,22 @@ def test_all_cli(cli):
 
 
 def test_parse_env_map():
-    a = set_pod_parser().parse_args(['--env', 'key1=value1',
-                                     '--env', 'key2=value2'])
+    a = set_pod_parser().parse_args(['--env', 'key1=value1', '--env', 'key2=value2'])
     assert a.env == {'key1': 'value1', 'key2': 'value2'}
 
-    a = set_pod_parser().parse_args(['--env', 'key1=value1', 'key2=value2'])
-    assert a.env == {'key1': 'value1', 'key2': 'value2'}
+    a = set_pod_parser().parse_args(['--env', 'key1=value1', 'key2=value2', 'key3=3'])
+    assert a.env == {'key1': 'value1', 'key2': 'value2', 'key3': 3}
 
 
 def test_ping():
     a1 = set_pea_parser().parse_args([])
-    a2 = set_ping_parser().parse_args(['0.0.0.0', str(a1.port_ctrl), '--print-response'])
+    a2 = set_ping_parser().parse_args(
+        ['0.0.0.0', str(a1.port_ctrl), '--print-response']
+    )
 
-    a3 = set_ping_parser().parse_args(['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000'])
+    a3 = set_ping_parser().parse_args(
+        ['0.0.0.1', str(a1.port_ctrl), '--timeout', '1000']
+    )
 
     with pytest.raises(SystemExit) as cm:
         with Pea(a1):

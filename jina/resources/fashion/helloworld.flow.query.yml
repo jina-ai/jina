@@ -1,0 +1,17 @@
+jtype: Flow
+version: '1.0'
+with:
+  read_only: true  # better add this in the query time
+  compress_hwm: 1024
+pods:
+  - name: encode
+    uses: helloworld.encoder.yml
+    parallel: $PARALLEL
+  - name: index
+    uses: helloworld.indexer.yml
+    shards: $SHARDS
+    polling: all
+    uses_after: helloworld.reduce.yml
+    timeout_ready: 100000 # larger timeout as in query time will read all the data
+  - name: evaluate  # optional evaluation, do another step for precision/recall computing
+    uses: _eval_pr  # use internal evaluator on precision & recall

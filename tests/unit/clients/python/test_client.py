@@ -8,7 +8,7 @@ from jina.clients import Client
 from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
-from jina.helper import random_port
+from jina import helper
 from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
@@ -36,26 +36,29 @@ def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
 
 
-@pytest.mark.parametrize('input_fn', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])])
-def test_check_input_success(input_fn):
-    Client.check_input(input_fn)
+@pytest.mark.parametrize(
+    'inputs', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])]
+)
+def test_check_input_success(inputs):
+    Client.check_input(inputs)
 
 
-@pytest.mark.parametrize('input_fn', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])])
-def test_check_input_fail(input_fn):
+@pytest.mark.parametrize(
+    'inputs', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])]
+)
+def test_check_input_fail(inputs):
     with pytest.raises(BadClientInput):
-        Client.check_input(input_fn)
+        Client.check_input(inputs)
 
 
 @pytest.mark.parametrize(
     'port_expose, route, status_code',
-    [
-        (random_port(), '/status', 200),
-        (random_port(), '/api/ass', 405)
-    ]
+    [(helper.random_port(), '/status', 200), (helper.random_port(), '/api/ass', 405)],
 )
 def test_gateway_ready(port_expose, route, status_code):
-    p = set_gateway_parser().parse_args(['--port-expose', str(port_expose), '--runtime-cls', 'RESTRuntime'])
+    p = set_gateway_parser().parse_args(
+        ['--port-expose', str(port_expose), '--runtime-cls', 'RESTRuntime']
+    )
     with Pea(p):
         time.sleep(0.5)
         a = requests.get(f'http://0.0.0.0:{p.port_expose}{route}')
@@ -67,9 +70,7 @@ def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
         time.sleep(0.5)
         r = requests.post(
             f'http://0.0.0.0:{flow_with_rest_api_enabled.port_expose}/api/index',
-            json={
-                'data': [test_img_1, test_img_2]
-            },
+            json={'data': [test_img_1, test_img_2]},
         )
         assert r.status_code == 200
         resp = r.json()
@@ -93,18 +94,20 @@ def test_mime_type(restful):
 @pytest.mark.parametrize('func_name', ['index', 'search'])
 @pytest.mark.parametrize('restful', [False, True])
 def test_client_ndjson(restful, mocker, func_name):
-    with Flow(restful=restful).add() as f, \
-            open(os.path.join(cur_dir, 'docs.jsonlines')) as fp:
-        m = mocker.Mock()
-        getattr(f, f'{func_name}_ndjson')(fp, on_done=m)
-        m.assert_called_once()
+    with Flow(restful=restful).add() as f, open(
+        os.path.join(cur_dir, 'docs.jsonlines')
+    ) as fp:
+        mock = mocker.Mock()
+        getattr(f, f'{func_name}_ndjson')(fp, on_done=mock)
+        mock.assert_called_once()
 
 
 @pytest.mark.parametrize('func_name', ['index', 'search'])
 @pytest.mark.parametrize('restful', [False, True])
 def test_client_csv(restful, mocker, func_name):
-    with Flow(restful=restful).add() as f, \
-            open(os.path.join(cur_dir, 'docs.csv')) as fp:
-        m = mocker.Mock()
-        getattr(f, f'{func_name}_csv')(fp, on_done=m)
-        m.assert_called_once()
+    with Flow(restful=restful).add() as f, open(
+        os.path.join(cur_dir, 'docs.csv')
+    ) as fp:
+        mock = mocker.Mock()
+        getattr(f, f'{func_name}_csv')(fp, on_done=mock)
+        mock.assert_called_once()

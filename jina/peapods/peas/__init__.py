@@ -36,22 +36,26 @@ class BasePea(metaclass=PeaType):
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
         self.logger = JinaLogger(self.name, **vars(self.args))
 
-        self._envs = {'JINA_POD_NAME': self.name,
-                      'JINA_LOG_ID': self.args.identity}
+        self._envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.identity}
+        if self.args.quiet:
+            self._envs['JINA_LOG_CONFIG'] = 'QUIET'
         if self.args.env:
             self._envs.update(self.args.env)
 
         try:
             self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
-            self.logger.error(f'{ex!r} during {self.runtime_cls.__init__!r}' +
-                              f'\n add "--hide-exc-info" to suppress the exception details'
-                              if not self.args.hide_exc_info else '',
-                              exc_info=not self.args.hide_exc_info)
+            self.logger.error(
+                f'{ex!r} during {self.runtime_cls.__init__!r}'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
             raise RuntimeFailToStart from ex
 
     def run(self):
-        """ Method representing the :class:`BaseRuntime` activity.
+        """Method representing the :class:`BaseRuntime` activity.
 
         This method overrides :meth:`run` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
@@ -65,10 +69,13 @@ class BasePea(metaclass=PeaType):
         try:
             self.runtime.setup()
         except Exception as ex:
-            self.logger.error(f'{ex!r} during {self.runtime.setup!r}' +
-                              f'\n add "--hide-exc-info" to suppress the exception details'
-                              if not self.args.hide_exc_info else '',
-                              exc_info=not self.args.hide_exc_info)
+            self.logger.error(
+                f'{ex!r} during {self.runtime.setup!r}'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
         else:
             self.is_ready.set()
             try:
@@ -78,25 +85,31 @@ class BasePea(metaclass=PeaType):
             except KeyboardInterrupt:
                 self.logger.info(f'{self.runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
-                self.logger.error(f'{ex!r} during {self.runtime.run_forever!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                self.logger.error(
+                    f'{ex!r} during {self.runtime.run_forever!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
 
             try:
                 self.runtime.teardown()
             except Exception as ex:
-                self.logger.error(f'{ex!r} during {self.runtime.teardown!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                self.logger.error(
+                    f'{ex!r} during {self.runtime.teardown!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
         finally:
             self.is_shutdown.set()
             self.is_ready.clear()
             self._unset_envs()
 
     def start(self):
-        """ Start the Pea.
+        """Start the Pea.
 
         This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
@@ -120,21 +133,26 @@ class BasePea(metaclass=PeaType):
         if self.ready_or_shutdown.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                if self.args.hide_exc_info:
-                    self.logger.critical(f'fail to start {self!r} because {self.runtime!r} throws some exception, '
-                                         f'remove "--hide-exc-info" to see the exception stack in details')
+                if self.args.quiet_error:
+                    self.logger.critical(
+                        f'fail to start {self!r} because {self.runtime!r} throws some exception, '
+                        f'remove "--quiet-error" to see the exception stack in details'
+                    )
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
         else:
-            self.logger.warning(f'{self.runtime!r} timeout after waiting for {self.args.timeout_ready}ms, '
-                                f'if your executor takes time to load, you may increase --timeout-ready')
+            self.logger.warning(
+                f'{self.runtime!r} timeout after waiting for {self.args.timeout_ready}ms, '
+                f'if your executor takes time to load, you may increase --timeout-ready'
+            )
             self.close()
             raise TimeoutError(
-                f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms')
+                f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms'
+            )
 
     def close(self) -> None:
-        """ Close the Pea
+        """Close the Pea
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
@@ -142,7 +160,7 @@ class BasePea(metaclass=PeaType):
         # the is case where in subprocess, runtime.setup() fails and _finally() is not yet executed, BUT close() in the
         # main process is calling runtime.cancel(), which is completely unnecessary as runtime.run_forever() is not
         # started yet.
-        self.join(.1)
+        self.join(0.1)
 
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
@@ -150,10 +168,13 @@ class BasePea(metaclass=PeaType):
                 self.runtime.cancel()
                 self.is_shutdown.wait()
             except Exception as ex:
-                self.logger.error(f'{ex!r} during {self.runtime.cancel!r}' +
-                                  f'\n add "--hide-exc-info" to suppress the exception details'
-                                  if not self.args.hide_exc_info else '',
-                                  exc_info=not self.args.hide_exc_info)
+                self.logger.error(
+                    f'{ex!r} during {self.runtime.cancel!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
@@ -175,7 +196,9 @@ class BasePea(metaclass=PeaType):
         """
         if self.args.env:
             if self.args.runtime_backend == RuntimeBackendType.THREAD:
-                self.logger.warning('environment variables should not be set when runtime="thread".')
+                self.logger.warning(
+                    'environment variables should not be set when runtime="thread".'
+                )
             else:
                 os.environ.update(self._envs)
 
@@ -195,10 +218,13 @@ class BasePea(metaclass=PeaType):
         if not self.runtime_cls:
             if self.args.host != __default_host__:
                 self.args.runtime_cls = 'JinadRuntime'
-            if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith('docker://'):
+            if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
+                'docker://'
+            ):
                 self.args.runtime_cls = 'ContainerRuntime'
 
             from ..runtimes import get_runtime
+
             v = get_runtime(self.args.runtime_cls)
         return v
 

@@ -3,13 +3,16 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from pkg_resources import resource_filename
-
 from jina.clients.sugary_io import _input_ndarray
 from jina.flow import Flow
-from jina.helloworld import download_data
-from jina.helper import random_port
-from jina.parsers.helloworld import set_hw_parser, set_hw_chatbot_parser
+from jina.helloworld.helper import download_data
+from jina import helper
+from jina.parsers.helloworld import (
+    set_hw_parser,
+    set_hw_chatbot_parser,
+    set_hw_multimodal_parser,
+)
+from pkg_resources import resource_filename
 
 EMPTY_IMAGE_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAECklEQVR42u2WSSi2axjH+ZSFDaUUFobMQ5mHzFPmKfOQKVNIIYkMGUJJUrIRZWFhIbEgWVhZsLBUpCgsJRtDhuv0u/S853O+Tr1Op3M231v3ez/P/dzP/f//r+t/X/djIf/xz+I34P8G+PHxIQsLCzI4OChra2vy+Pio429vb98DfH19la2tLTk/P5fV1VWZm5uT8fFxGR0dlY6ODsnOzpbIyEhxc3OTlJQUaW9vl9raWhkeHjYR+Rbg4eGhJCYmSnFxsVRUVEhTU5M0NjZKfX29NDc3m+7b2tqkt7dXx6qrq2VgYOCL+m8BxsXFSVpammRlZUleXp4UFRVJfn6+qsvNzdXxpKQkycjIkIKCAn3W2dn5C6A5wBYXFxcKSLjS09N1UfqEhARtEDHA4uPjFZy5XV1dXwDNVWlxfX2tCyYnJ5tAU1NTJSYmRokQ7qioKAXmmgjQd3d3fzHN+/u7eYDPz88aOhYB0FBFY9xQZig3SJHLf5RD/ggTTkRZdHS0gsXGxuo96rlmzCBDXquqquTu7u5b6kyAODQ8PFyVGC00NFQB6QHJyclRcMaIRmlpqZSXl5ul8udnCsgi5AslNEIGaGFhoRLBmfSAEg0IAEbb2dnRhZ6ensxXSHhgDQhmoYcABuEeZSEhIbpdAKUgNDQ0KODGxoYuhBdeXl7MAyR/sEYpbiVXGAalgNbV1eniNTU1UllZKZmZmRIQECBeXl5SVlYmR0dHv4QQ91LF6MkxjXEF7O/vVyPQKFuwLykpUdURERHi4OAgVlZW2tvY2MiPHz/E0dFR505PT+v8paUlubm5MU/hw8ODBAYGirOzs9ja2uqilpaWYm1tLXZ2dmJvby9hYWFftgUkqastLS0yOzsrY2Nj0tfXJ1NTU7K4uCjb29tyfHysIZ+ZmZG9vb0/AYk/gO7u7homX19fbYxhFsDIKXnEtUZxwFTU2dbWVpmcnFQQwIaGhpQE9XZkZETVU5tPTk4+ATc3N01bISgoSPPj6empzc/PzwTOcw8PD3FxcdFQk19yCCAgLN7T0yPr6+tydnamCufn5/UAgPTExMQnIKGANS5kEfYlxoAECgFFub+/vwJDyiDEPep5h7wbBwChB4R3cDoKIaWAMKLCYBpOAlzKxsaxhpkobZgIRxPa4OBgVY5izkquIYZ6iADEOmw5jjNOl6urq0/A29tbZYEqo44a1QXlkEEh7FENEa5RxRzyCVEI8R65hTDPaD+fnaZPDJgQHpgDboTOx8dHdnd3dc79/b2srKxo6CHg5OQk3t7eepoYRiKUrq6umgrWPDg4MIGxJ02AFOL9/X39buHzAtex0U9PT/92T11eXsry8rJuDaoP+5I88bny159R4H9/Jv7rvz8AY0k6gVZiXR4AAAAASUVORK5CYII='
 
@@ -17,6 +20,7 @@ EMPTY_IMAGE_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAB
 def check_hello_world_results(html_path: str):
     from bs4 import BeautifulSoup
     import re
+
     with open(html_path, 'r') as fp:
         page = fp.read()
     soup = BeautifulSoup(page)
@@ -34,15 +38,14 @@ def check_hello_world_results(html_path: str):
     assert len(evaluation_results) == 2
     # not exact to avoid instability, but enough accurate to current results to raise some alarms
     assert float(evaluation_results[0]) > 50.0
-    assert float(evaluation_results[1]) > 0.5
+    assert float(evaluation_results[1]) >= 0.5
 
 
 @pytest.mark.timeout(360)
 def test_helloworld_execution(tmpdir):
     cmd = ['jina', 'hello-world', '--workdir', str(tmpdir)]
     is_hello_world_in_stdout = False
-    with subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                          universal_newlines=True) as proc:
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True) as proc:
         for stdout_line in iter(proc.stdout.readline, ""):
             #  'cli = hello-world' is in stdoutput of hello-world script
             #  this should be an indicator that hello-world script is executed
@@ -51,13 +54,15 @@ def test_helloworld_execution(tmpdir):
         proc.communicate()
         assert proc.returncode == 0, 'Script exited with non-zero code'
     # is_hello_world_in_stdout  = True
-    assert is_hello_world_in_stdout, 'No cli = hello-world in stdoutput,' \
-                                     'probably hello-world wasn\'t executed'
+    assert is_hello_world_in_stdout, (
+        'No cli = hello-world in stdoutput,' 'probably hello-world wasn\'t executed'
+    )
 
 
 @pytest.mark.timeout(360)
 def test_helloworld_py(tmpdir):
-    from jina.helloworld import hello_world
+    from jina.helloworld.fashion import hello_world
+
     hello_world(set_hw_parser().parse_args(['--workdir', str(tmpdir)]))
     check_hello_world_results(os.path.join(str(tmpdir), 'hello-world.html'))
 
@@ -65,31 +70,59 @@ def test_helloworld_py(tmpdir):
 @pytest.mark.timeout(360)
 def test_helloworld_py_chatbot(tmpdir):
     from jina.helloworld.chatbot import hello_world
-    hello_world(set_hw_chatbot_parser().parse_args(['--workdir', str(tmpdir),
-                                                    '--unblock-query-flow',
-                                                    '--port-expose', str(random_port())]))
+
+    hello_world(
+        set_hw_chatbot_parser().parse_args(
+            [
+                '--workdir',
+                str(tmpdir),
+                '--unblock-query-flow',
+                '--port-expose',
+                str(helper.random_port()),
+            ]
+        )
+    )
 
 
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
+@pytest.mark.timeout(600)
+def test_helloworld_py_multimodal(tmpdir):
+    from jina.helloworld.multimodal import hello_world
+
+    hello_world(
+        set_hw_multimodal_parser().parse_args(
+            [
+                '--workdir',
+                str(tmpdir),
+                '--unblock-query-flow',
+                '--port-expose',
+                str(helper.random_port()),
+            ]
+        )
+    )
+
+
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow'
+)
 def test_helloworld_flow(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources/fashion')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
 
-    f = Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml'))))
+    f = Flow.load_config('helloworld.flow.index.yml')
 
     targets = {
         'index': {
             'url': args.index_data_url,
-            'filename': os.path.join(tmpdir, 'index-original')
+            'filename': os.path.join(tmpdir, 'index-original'),
         },
         'query': {
             'url': args.query_data_url,
-            'filename': os.path.join(tmpdir, 'query-original')
-        }
+            'filename': os.path.join(tmpdir, 'query-original'),
+        },
     }
 
     # download the data
@@ -98,37 +131,48 @@ def test_helloworld_flow(tmpdir):
 
     # run it!
     with f:
-        f.index(_input_ndarray(targets['index']['data']), request_size=args.index_request_size)
+        f.index(
+            _input_ndarray(targets['index']['data']),
+            request_size=args.index_request_size,
+        )
 
 
 def test_helloworld_flow_dry_run(tmpdir):
     args = set_hw_parser().parse_args([])
 
-    os.environ['RESOURCE_DIR'] = resource_filename('jina', 'resources')
+    os.environ['PATH'] += os.pathsep + resource_filename('jina', 'resources/fashion')
     os.environ['SHARDS'] = str(args.shards)
     os.environ['PARALLEL'] = str(args.parallel)
     os.environ['HW_WORKDIR'] = str(tmpdir)
 
     # run it!
-    with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.index.yml')))):
+    with Flow.load_config('helloworld.flow.index.yml'):
         pass
 
     # run it!
-    with Flow.load_config(resource_filename('jina', '/'.join(('resources', 'helloworld.flow.query.yml')))):
+    with Flow.load_config('helloworld.flow.query.yml'):
         pass
 
 
-@pytest.mark.skipif('GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow')
-@pytest.mark.skipif('HTTP_PROXY' not in os.environ, reason='skipped. '
-                                                           'Set os env `HTTP_PROXY` if you want run test at your local env.')
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' in os.environ, reason='skip the network test on github workflow'
+)
+@pytest.mark.skipif(
+    'HTTP_PROXY' not in os.environ,
+    reason='skipped. '
+    'Set os env `HTTP_PROXY` if you want run test at your local env.',
+)
 def test_download_proxy():
     import urllib.request
+
     # first test no proxy
     args = set_hw_parser().parse_args([])
 
     opener = urllib.request.build_opener()
     if args.download_proxy:
-        proxy = urllib.request.ProxyHandler({'http': args.download_proxy, 'https': args.download_proxy})
+        proxy = urllib.request.ProxyHandler(
+            {'http': args.download_proxy, 'https': args.download_proxy}
+        )
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
     # head check
@@ -141,7 +185,9 @@ def test_download_proxy():
 
     opener = urllib.request.build_opener()
     if args.download_proxy:
-        proxy = urllib.request.ProxyHandler({'http': args.download_proxy, 'https': args.download_proxy})
+        proxy = urllib.request.ProxyHandler(
+            {'http': args.download_proxy, 'https': args.download_proxy}
+        )
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
     # head check

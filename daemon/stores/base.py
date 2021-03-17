@@ -11,7 +11,6 @@ from .. import jinad_args
 
 
 class BaseStore(MutableMapping):
-
     def __init__(self):
         self._items = {}  # type: Dict['uuid.UUID', Dict[str, Any]]
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
@@ -28,11 +27,13 @@ class BaseStore(MutableMapping):
         """Add a new element to the store. This method needs to be overridden by the subclass"""
         raise NotImplementedError
 
-    def delete(self,
-               id: Union[str, uuid.UUID],
-               workspace: bool = False,
-               everything: bool = False,
-               **kwargs):
+    def delete(
+        self,
+        id: Union[str, uuid.UUID],
+        workspace: bool = False,
+        everything: bool = False,
+        **kwargs,
+    ):
         if isinstance(id, str):
             id = uuid.UUID(id)
 
@@ -49,7 +50,9 @@ class BaseStore(MutableMapping):
                 self._logger.debug(f'directory to be deleted: {v["workdir"]}')
                 shutil.rmtree(v['workdir'])
             del self[id]
-            self._logger.success(f'{colored(str(id), "cyan")} is released from the store.')
+            self._logger.success(
+                f'{colored(str(id), "cyan")} is released from the store.'
+            )
         else:
             raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
 
@@ -96,5 +99,5 @@ class BaseStore(MutableMapping):
             'time_updated': self._time_updated,
             'num_add': self._num_add,
             'num_del': self._num_del,
-            'items': self._items
+            'items': self._items,
         }

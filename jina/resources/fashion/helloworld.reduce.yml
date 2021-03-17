@@ -1,0 +1,21 @@
+jtype: BaseExecutor
+with: {}
+metas:
+  name: top50
+requests:
+  on:
+    SearchRequest:
+      with:
+        traversal_paths: ['m']
+      drivers:
+        - jtype: ReduceAllDriver {}
+        - jtype: SortQL
+          with:
+            reverse: true
+            field: 'score__value'
+        - jtype: SliceQL
+          with:
+            start: 0
+            end: 20
+    ControlRequest:
+      - jtype: ControlReqDriver {}

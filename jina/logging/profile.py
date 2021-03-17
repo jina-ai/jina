@@ -5,6 +5,7 @@ import sys
 import time
 from collections import defaultdict
 from functools import wraps
+from typing import Optional
 
 from ..helper import colored, get_readable_size, get_readable_time
 
@@ -22,11 +23,15 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     """
     try:
         import resource
+
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
     except ModuleNotFoundError:
         from . import default_logger
-        default_logger.error('module "resource" can not be found and you are likely running it on Windows, '
-                             'i will return 0')
+
+        default_logger.error(
+            'module "resource" can not be found and you are likely running it on Windows, '
+            'i will return 0'
+        )
         return 0
 
 
@@ -51,6 +56,8 @@ def profiling(func):
         def foo():
             print(1)
 
+    :param func: function to be profiled
+    :return: arguments wrapper
     """
     from . import default_logger
 
@@ -64,7 +71,9 @@ def profiling(func):
         # level_prefix = ''.join('-' for v in inspect.stack() if v and v.index is not None and v.index >= 0)
         level_prefix = ''
         mem_status = f'memory Δ {get_readable_size(end_mem - start_mem)} {get_readable_size(start_mem)} -> {get_readable_size(end_mem)}'
-        default_logger.info(f'{level_prefix} {func.__qualname__} time: {elapsed}s {mem_status}')
+        default_logger.info(
+            f'{level_prefix} {func.__qualname__} time: {elapsed}s {mem_status}'
+        )
         return r
 
     return arg_wrapper
@@ -97,15 +106,19 @@ class TimeDict:
             self.reset()
 
     def __call__(self, key: str, *args, **kwargs):
+        """
+        Add time counter.
+
+        :param key: key name of the counter
+        :param args: extra arguments
+        :param kwargs: keyword arguments
+        :return: self object
+        """
         self._key_stack.append(key)
         return self
 
     def reset(self):
-        """
-        Clear the time information.
-
-        :return: None
-        """
+        """Clear the time information."""
         if self._key_stack:
             self._pending_reset = True
         else:
@@ -163,13 +176,25 @@ class TimeContext:
         self._exit_msg()
 
     def now(self) -> float:
+        """
+        Get the passed time from start to now.
+
+        :return: passed time
+        """
         return time.perf_counter() - self.start
 
     def _exit_msg(self):
         if self._logger:
-            self._logger.info(f'{self.task_name} takes {self.readable_duration} ({self.duration:.2f}s)')
+            self._logger.info(
+                f'{self.task_name} takes {self.readable_duration} ({self.duration:.2f}s)'
+            )
         else:
-            print(colored(f'    {self.readable_duration} ({self.duration:.2f}s)', 'green'), flush=True)
+            print(
+                colored(
+                    f'    {self.readable_duration} ({self.duration:.2f}s)', 'green'
+                ),
+                flush=True,
+            )
 
 
 class ProgressBar(TimeContext):
@@ -184,7 +209,13 @@ class ProgressBar(TimeContext):
                 do_busy()
     """
 
-    def __init__(self, bar_len: int = 20, task_name: str = '', batch_unit: str = 'batch', logger=None):
+    def __init__(
+        self,
+        bar_len: int = 20,
+        task_name: str = '',
+        batch_unit: str = 'batch',
+        logger=None,
+    ):
         """
         Create the ProgressBar.
 
@@ -199,7 +230,7 @@ class ProgressBar(TimeContext):
         self._ticks = 0
         self.batch_unit = batch_unit
 
-    def update_tick(self, tick: float = .1) -> None:
+    def update_tick(self, tick: float = 0.1) -> None:
         """
         Increment the progress bar by one tick, when the ticks accumulate to one, trigger one :meth:`update`.
 
@@ -210,11 +241,13 @@ class ProgressBar(TimeContext):
             self.update()
             self._ticks = 0
 
-    def update(self, progress: int = None, *args, **kwargs) -> None:
+    def update(self, progress: Optional[int] = None, *args, **kwargs) -> None:
         """
         Increment the progress bar by one unit.
 
         :param progress: The number of unit to increment.
+        :param args: extra arguments
+        :param kwargs: keyword arguments
         """
         self.num_reqs += 1
         sys.stdout.write('\r')
@@ -233,21 +266,28 @@ class ProgressBar(TimeContext):
                 elapsed,
                 self.num_docs / elapsed,
                 self.num_reqs,
-                self.batch_unit
-            ))
+                self.batch_unit,
+            )
+        )
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
         sys.stdout.flush()
         from . import profile_logger
-        profile_logger.info({'num_bars': num_bars,
-                             'num_reqs': self.num_reqs,
-                             'bar_len': self.bar_len,
-                             'progress': num_bars / self.bar_len,
-                             'task_name': self.task_name,
-                             'qps': self.num_reqs / elapsed,
-                             'speed': (self.num_docs if self.num_docs > 0 else self.num_reqs) / elapsed,
-                             'speed_unit': ('Documents' if self.num_docs > 0 else 'Requests'),
-                             'elapsed': elapsed})
+
+        profile_logger.info(
+            {
+                'num_bars': num_bars,
+                'num_reqs': self.num_reqs,
+                'bar_len': self.bar_len,
+                'progress': num_bars / self.bar_len,
+                'task_name': self.task_name,
+                'qps': self.num_reqs / elapsed,
+                'speed': (self.num_docs if self.num_docs > 0 else self.num_reqs)
+                / elapsed,
+                'speed_unit': ('Documents' if self.num_docs > 0 else 'Requests'),
+                'elapsed': elapsed,
+            }
+        )
 
     def __enter__(self):
         super().__enter__()
@@ -264,4 +304,6 @@ class ProgressBar(TimeContext):
             speed = self.num_docs / self.duration
         else:
             speed = self.num_reqs / self.duration
-        sys.stdout.write(f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s", "green")}\n')
+        sys.stdout.write(
+            f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s", "green")}\n'
+        )
