@@ -1,0 +1,38 @@
+!CompoundIndexer
+components:
+  - !NumpyIndexer
+    with:
+      index_filename: vec.gz
+      metric: cosine
+    metas:
+      name: vecidx
+  - !BinaryPbIndexer
+    with:
+      index_filename: doc.gz
+    metas:
+      name: docidx
+metas:
+  name: indexer
+  workspace: $JINA_ONLINE_TRAINING_POC
+requests:
+  on:
+    IndexRequest:
+      - !VectorIndexDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['r']
+      - !KVIndexDriver
+        with:
+          executor: docidx
+          traversal_paths: ['r']
+    [SearchRequest, TrainRequest]:
+      - !VectorSearchDriver
+        with:
+          executor: vecidx
+          traversal_paths: ['r']
+      - !KVSearchDriver
+        with:
+          executor: docidx
+          is_update: true
+          traversal_paths: ['m']
+

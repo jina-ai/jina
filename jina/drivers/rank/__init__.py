@@ -103,7 +103,7 @@ class Matches2DocRankDriver(BaseRankDriver):
             if len(doc.matches) != len(scores):
                 msg = (
                     f'The number of matches to be scored {len(doc.matches)} do not match the number of scores returned '
-                    f'by the ranker {self.exec.__name__} for doc: {doc.id} '
+                    f'by the ranker {self.exec} for doc: {doc.id} '
                 )
                 self.logger.error(msg)
                 raise ValueError(msg)

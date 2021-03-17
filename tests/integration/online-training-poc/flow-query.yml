@@ -1,0 +1,16 @@
+!Flow
+version: '1'
+pods:
+  - name: index
+    uses: indexer.yml
+  - name: ranker_query
+    uses: ranker_with_query_driver.yml
+    shards: 1
+    needs: [index]
+  - name: ranker_train
+    uses: ranker_with_train_driver.yml
+    shards: 1
+    needs: [index]
+  - name: join_all
+    uses: _pass
+    needs: [ranker_train, ranker_query]

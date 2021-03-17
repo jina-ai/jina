@@ -1,0 +1,9 @@
+!TrainableRanker
+with:
+  trainer:
+    !RankerTrainer {}
+  score_output: 0
+requests:
+  on:
+    [TrainRequest]:
+      - !TrainDriver {}

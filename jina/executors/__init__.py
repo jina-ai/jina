@@ -601,7 +601,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 else:
                     raise UnattachedDriver(d)
         else:
-            raise NoDriverForRequest(f'{req_type} for {self}')
+            # this is a proxy of having a Pea subscribed to only a set of Request types
+            self.logger.warning(f'No driver for {req_type} in {self}')
+            # raise NoDriverForRequest(f'{req_type} for {self}')
 
     def __str__(self):
         return self.__class__.__name__

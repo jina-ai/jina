@@ -1,0 +1,5 @@
+!Flow
+version: '1'
+pods:
+  - name: index
+    uses: indexer.yml
