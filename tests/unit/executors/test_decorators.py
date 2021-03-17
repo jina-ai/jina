@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import pytest
-
 from jina.executors.decorators import (
     as_update_method,
     as_train_method,
@@ -12,7 +11,6 @@ from jina.executors.decorators import (
     store_init_kwargs,
     batching_multi_input,
     single,
-    single_multi_input,
 )
 
 
@@ -363,7 +361,7 @@ def test_batching_multi():
             self.batch_size = batch_size
             self.batching = []
 
-        @batching_multi_input(num_data=num_data)
+        @batching_multi_input(slice_nargs=num_data)
         def f(self, *datas):
             assert len(datas) == num_data
             concat = np.concatenate(datas, axis=1)
@@ -392,7 +390,7 @@ def test_single_multi():
         def __init__(self):
             self.call_nbr = 0
 
-        @single_multi_input(num_data=3)
+        @single(slice_nargs=3)
         def f(self, data0, data1, data2):
             assert isinstance(data0, int)
             assert isinstance(data1, int)
@@ -422,7 +420,7 @@ def test_batching_multi_input_dictionary():
             self.batch_size = batch_size
             self.batches = []
 
-        @batching_multi_input(slice_on=2, num_data=2)
+        @batching_multi_input(slice_on=2, slice_nargs=2)
         def score(self, query_meta, old_match_scores, match_meta):
             self.batches.append([query_meta, old_match_scores, match_meta])
             return np.array([(x, y) for x, y in old_match_scores.items()])
@@ -497,7 +495,7 @@ def test_single_slice_on():
 
 def test_single_multi_input_slice_on():
     class A:
-        @single_multi_input(slice_on=1, num_data=2)
+        @single(slice_on=1, slice_nargs=2)
         def f(self, key, data, *args, **kwargs):
             assert isinstance(data, int)
             assert isinstance(key, str)
@@ -512,7 +510,7 @@ def test_single_multi_input_slice_on():
 @pytest.mark.parametrize('slice_on, num_data', [(1, 3), (2, 2)])
 def test_single_multi_input_slice_on_error(slice_on, num_data):
     class A:
-        @single_multi_input(slice_on=slice_on, num_data=num_data)
+        @single(slice_on=slice_on, slice_nargs=num_data)
         def f(self, key, data, *args, **kwargs):
             assert isinstance(data, int)
             assert isinstance(key, str)
@@ -525,7 +523,7 @@ def test_single_multi_input_slice_on_error(slice_on, num_data):
 
 def test_single_multi_input_kwargs_call():
     class A:
-        @single_multi_input()
+        @single
         def f(self, key, data, *args, **kwargs):
             assert isinstance(data, int)
             assert isinstance(key, str)

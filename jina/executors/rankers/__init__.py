@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Dict, Optional, Sequence, Iterable
+from typing import Dict, Optional, List
 
 import numpy as np
 
@@ -32,8 +32,8 @@ class BaseRanker(BaseExecutor):
 
     def __init__(
         self,
-        query_required_keys: Optional[Sequence[str]] = None,
-        match_required_keys: Optional[Sequence[str]] = None,
+        query_required_keys: Optional[List[str]] = None,
+        match_required_keys: Optional[List[str]] = None,
         *args,
         **kwargs
     ):
@@ -132,10 +132,10 @@ class Match2DocRanker(BaseRanker):
 
     def score(
         self,
-        old_matches_scores: Sequence[Sequence[float]],
-        queries_metas: Sequence[Dict],
-        matches_metas: Sequence[Sequence[Dict]],
-    ) -> Sequence[Sequence[float]]:
+        old_matches_scores: List[List[float]],
+        queries_metas: List[Dict],
+        matches_metas: List[List[Dict]],
+    ) -> List[List[float]]:
         """
         Calculates the new scores for matches and returns them. Returns an iterable of the scores to be assigned to the matches.
         The returned scores need to be returned in the same order as the input `:param old_match_scores`.

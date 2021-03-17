@@ -1,4 +1,4 @@
-"""The default meta config that all executors follow, they can be overrided by the YAML config
+"""The default meta config that all executors follow, they can be overridden by the YAML config
 
 .. warning::
 
@@ -47,7 +47,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         By default it is not set, if you expect your executor to be persisted or to persist any data, remember to set it
         to the desired value.
 
-        When a `BaseExecutor` is a component of a `CompoundExecutor`, its `workspace` value will be overriden by the `workspace`
+        When a `BaseExecutor` is a component of a `CompoundExecutor`, its `workspace` value will be overridden by the `workspace`
         coming from the `CompoundExecutor` unless a particular `workspace` value is set for the component `BaseExecutor`.
 
         :type: str
@@ -154,7 +154,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
     .. note::
 
         ``pea_id`` is set in a way that when the executor ``A`` is used as
-        a component of a :class:`jina.executors.compound.CompoundExecutor` ``B``, then ``A``'s setting will be overrided by B's counterpart.
+        a component of a :class:`jina.executors.compound.CompoundExecutor` ``B``, then ``A``'s setting will be overridden by B's counterpart.
 
     These **meta** fields can be accessed via `self.is_trained` or loaded from a YAML config via :func:`load_config`:
 
@@ -183,7 +183,11 @@ _defaults = None
 
 
 def get_default_metas() -> Dict:
-    """Get a copy of default meta variables"""
+    """
+    Get a copy of default meta variables.
+
+    :return: default metas
+    """
     import copy
 
     global _defaults
@@ -206,6 +210,7 @@ def fill_metas_with_defaults(d: Dict) -> Dict:
     """Fill the incomplete ``metas`` field with complete default values
 
     :param d: the loaded YAML map
+    :return: dictionary with injected metas
     """
 
     def _scan(sub_d: Union[Dict, List]):

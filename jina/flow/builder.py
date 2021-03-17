@@ -127,7 +127,7 @@ def _connect(
     .. # noqa: DAR401
     :param first: the first BasePod
     :param second: the second BasePod
-    :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
+    :param first_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND
     """
     first.tail_args.socket_out = first_socket_type
     second.head_args.socket_in = first.tail_args.socket_out.paired

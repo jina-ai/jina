@@ -29,7 +29,7 @@ The working directory, for persisting the artifacts of the executor. An artifact
 
 By default it is not set, if you expect your executor to be persisted or to persist any data, remember to set it to the desired value.
 
-When a BaseExecutor is a component of a `CompoundExecutor`, its workspace value will be overriden by the workspace coming from the `CompoundExecutor` unless a particular workspace value is set for the component BaseExecutor.                
+When a BaseExecutor is a component of a `CompoundExecutor`, its workspace value will be overridden by the workspace coming from the `CompoundExecutor` unless a particular workspace value is set for the component BaseExecutor.                
                 ''',
                 'type': 'string',
                 'default': None,

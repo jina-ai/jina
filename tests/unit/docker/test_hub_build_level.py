@@ -7,7 +7,6 @@ from jina.enums import BuildTestLevel
 from jina.logging import JinaLogger
 from jina.parsers.hub import set_hub_build_parser
 
-cli = docker.APIClient(base_url='unix://var/run/docker.sock')
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -28,10 +27,11 @@ def docker_image():
         else:
             return False
 
+    img_name = 'jinahub/pod.dummy_mwu_encoder:0.0.6'
     client = docker.from_env()
+    client.images.pull(img_name)
     images = client.images.list()
     image_name = list(filter(lambda image: _filter_repo_tag(image), images))[0]
-
     return image_name
 
 

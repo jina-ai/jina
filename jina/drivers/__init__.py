@@ -322,7 +322,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
 class ContextAwareRecursiveMixin:
     """
-    The full datastructure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
+    The full data structure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
     It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
 
     .. seealso::
@@ -388,7 +388,7 @@ class FlatRecursiveMixin:
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place.
 
-        The list refers to all reachable leafes of a single ``traversal_path``.
+        The list refers to all reachable leaves of a single ``traversal_path``.
 
         :param docs: the Documents that should be handled
         :param args: driver specific arguments, which might be forwarded to the Executor
