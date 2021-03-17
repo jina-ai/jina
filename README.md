@@ -446,7 +446,7 @@ Input four `Document`s, each `document.blob` is an `ndarray([2])`
 
 ```python
 with f, open('index.csv') as fp:
-  f.index_csv(fp1, field_resolver={'pic_url': 'uri'})
+  f.index_csv(fp, field_resolver={'pic_url': 'uri'})
 ```
 
 </sup>
@@ -468,7 +468,7 @@ Each line in `index.csv` is constructed as a `Document`, CSV field `pic_url` map
 
 ```python
 with f, open('index.ndjson') as fp:
-  f.index_ndjson(fp1, field_resolver={'question_id': 'id'})
+  f.index_ndjson(fp, field_resolver={'question_id': 'id'})
 ```
 
 </sup>
