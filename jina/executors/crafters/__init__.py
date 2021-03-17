@@ -2,7 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
-from typing import Dict
+from typing import Dict, Union, List
 
 from .. import BaseExecutor
 from ...helper import typename
@@ -16,8 +16,8 @@ class BaseCrafter(BaseExecutor):
     transformations to single documents.
     The apply function is :func:`craft`, where the name of the arguments will be used as keys of the content.
 
-    :param args: Additional positional arguments wich are just used for the parent initialization
-    :param kwargs: Additional keyword arguments wich are just used for the parent initialization
+    :param args: Additional positional arguments which are just used for the parent initialization
+    :param kwargs: Additional keyword arguments which are just used for the parent initialization
     """
 
     def __init__(self, *args, **kwargs):
@@ -36,7 +36,7 @@ class BaseCrafter(BaseExecutor):
                 f'{typename(self)} works on keys, but no keys are specified'
             )
 
-    def craft(self, *args, **kwargs) -> Dict:
+    def craft(self, *args, **kwargs) -> Union[List[Dict], Dict]:
         """
         Apply function of this executor.
         The name of the arguments are used as keys, which are then used to tell :class:`Driver` what information to extract

@@ -47,7 +47,6 @@ class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
                 f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
                 f'and length of returned crafted documents: {len(docs_chunks)}, the length must be the same'
             )
-            self.logger.error(msg)
             raise LengthMismatchException(msg)
 
         for doc, chunks in zip(docs_pts, docs_chunks):

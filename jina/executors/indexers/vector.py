@@ -72,8 +72,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'num_dim extracted from `ref_indexer` to {ref_indexer.num_dim} \n'
                 f'_size extracted from `ref_indexer` to {ref_indexer._size} \n'
                 f'dtype extracted from `ref_indexer` to {ref_indexer.dtype} \n'
-                f'compress_level overriden from `ref_indexer` to {ref_indexer.compress_level} \n'
-                f'index_filename overriden from `ref_indexer` to {ref_indexer.index_filename}'
+                f'compress_level overridden from `ref_indexer` to {ref_indexer.compress_level} \n'
+                f'index_filename overridden from `ref_indexer` to {ref_indexer.index_filename}'
             )
             self.ref_indexer_workspace_name = ref_indexer.workspace_name
             self.delete_on_dump = getattr(ref_indexer, 'delete_on_dump', delete_on_dump)

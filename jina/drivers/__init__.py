@@ -153,8 +153,8 @@ class DriverType(type(JAMLCompatible), type):
     def __new__(cls, *args, **kwargs):
         """Create and register a new class with this meta class.
 
-        :param args: additional positional arguments wich are just used for the parent initialization
-        :param kwargs: additional key value arguments wich are just used for the parent initialization
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
         :return: the newly registered class
         """
         _cls = super().__new__(cls, *args, **kwargs)
@@ -322,7 +322,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
 class ContextAwareRecursiveMixin:
     """
-    The full datastructure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
+    The full data structure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
     It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
 
     .. seealso::
@@ -388,7 +388,7 @@ class FlatRecursiveMixin:
     ) -> None:
         """Apply function works on a list of docs, modify the docs in-place.
 
-        The list refers to all reachable leafes of a single ``traversal_path``.
+        The list refers to all reachable leaves of a single ``traversal_path``.
 
         :param docs: the Documents that should be handled
         :param args: driver specific arguments, which might be forwarded to the Executor
@@ -407,8 +407,8 @@ class BaseRecursiveDriver(BaseDriver):
         """Initialize a :class:`BaseRecursiveDriver`
 
         :param traversal_paths: Describes the leaves of the document tree on which _apply_all are called
-        :param args: additional positional arguments wich are just used for the parent initialization
-        :param kwargs: additional key value arguments wich are just used for the parent initialization
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
         """
         super().__init__(*args, **kwargs)
         self._traversal_paths = [path.lower() for path in traversal_paths]
@@ -434,8 +434,8 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
-        :param args: additional positional arguments wich are just used for the parent initialization
-        :param kwargs: additional key value arguments wich are just used for the parent initialization
+        :param args: additional positional arguments which are just used for the parent initialization
+        :param kwargs: additional key value arguments which are just used for the parent initialization
         """
         super().__init__(*args, **kwargs)
         self._executor_name = executor

@@ -3,6 +3,7 @@ codecov:
   allow_coverage_offsets: true
 ignore:
   - "jina/hub"
+  - "jina/resources"
 coverage:
   status:
     project:

@@ -34,6 +34,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -193,6 +194,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`1.0.7`)](#release-note-107)
 - [Release Note (`1.0.8`)](#release-note-108)
 - [Release Note (`1.0.9`)](#release-note-109)
+- [Release Note (`1.0.10`)](#release-note-1010)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -7896,4 +7898,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a7f1b0e2```](https://github.com/jina-ai/jina/commit/a7f1b0e271bc882c30762c28e57230838e670f7e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```666d302e```](https://github.com/jina-ai/jina/commit/666d302ef490d35f7eb080f108994e4582c59dc2)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```47ac7b0a```](https://github.com/jina-ai/jina/commit/47ac7b0a8d55faf8032579cb6e114e9b02bf392f)] __-__ __version__: the next version will be 1.0.9 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-10></a>
+## Release Note (`1.0.10`)
+
+> Release time: 2021-03-16 07:49:35
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Yongxuan Zhang,  Jina Dev Bot,  Florian Hönicke,  Joan Fontanals,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```5d985ee1```](https://github.com/jina-ai/jina/commit/5d985ee1690a17d7998e5345791d3ce94515b918)] __-__ stacking bytes changes to np.bytes_ (#2169) (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```e80b3833```](https://github.com/jina-ai/jina/commit/e80b3833cce452b1cb08ad173b43cb429d374037)] __-__ remove unreachable code (#2170) (*Florian Hönicke*)
+
+### 📗 Documentation
+
+ - [[```0f88deb6```](https://github.com/jina-ai/jina/commit/0f88deb6ddb87d9fbf8089b000ab889f15560e1b)] __-__ kwargs without unpacking (#2158) (*Florian Hönicke*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b3550e90```](https://github.com/jina-ai/jina/commit/b3550e901b2a340924330b5ba2801603e493c933)] __-__ __driver__: refactor rank driver tests (#2135) (*Yongxuan Zhang*)
+
+### 🍹 Other Improvements
+
+ - [[```fba4308c```](https://github.com/jina-ai/jina/commit/fba4308c58270270daa7e5bc90d3037f5424ce53)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```23b3b484```](https://github.com/jina-ai/jina/commit/23b3b48452e6fe1a9c2050baa51a9dd87d37be32)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```cb6607c5```](https://github.com/jina-ai/jina/commit/cb6607c52370682a5b3790a78acb70f2a7089624)] __-__ __version__: the next version will be 1.0.10 (*Jina Dev Bot*)
 
