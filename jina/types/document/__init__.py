@@ -282,7 +282,7 @@ class Document(ProtoTypeMixin, Traversable):
 
         .. note::
             *. if neither ``exclude_fields`` nor ``include_fields`` is given,
-                then destination is overrided by the source completely.
+                then destination is overridden by the source completely.
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
 
