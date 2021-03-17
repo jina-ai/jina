@@ -101,6 +101,17 @@ def test_add_same_del_all(api, payload, fastapi_client):
             },
         ),
         (
+            '/flows',
+            {
+                'files': {
+                    'flow': (
+                        'good_flow_jtype.yml',
+                        open(str(cur_dir / 'good_flow_jtype.yml'), 'rb'),
+                    ),
+                }
+            },
+        ),
+        (
             '/workspaces',
             {
                 'files': [
