@@ -84,7 +84,7 @@ def create_document_to_score():
             match.id = str(match_id)
             parent_id = 10 * int(match_id)
             match.parent_id = str(parent_id)
-            match.length = int(match_id)
+            match.siblings = int(match_id)
             # to be used by MaxRanker and MinRanker
             match.score = NamedScore(value=int(match_id), ref_id=chunk.id)
             match.tags['price'] = match.score.value
@@ -117,7 +117,7 @@ def create_chunk_matches_to_score():
             match.parent_id = str(parent_id)
             match.score = NamedScore(value=score_value, ref_id=chunk.id)
             match.id = str(10 * int(parent_id) + score_value)
-            match.length = 4
+            match.siblings = 4
             chunk.matches.append(match)
         doc.chunks.append(chunk)
     return doc
@@ -150,7 +150,7 @@ def create_chunk_chunk_matches_to_score():
             match.parent_id = str(parent_id)
             match.score = NamedScore(value=score_value, ref_id=chunk_chunk.id)
             match.id = str(10 * parent_id + score_value)
-            match.length = 4
+            match.siblings = 4
             chunk_chunk.matches.append(match)
         chunk.chunks.append(chunk_chunk)
     doc.chunks.append(chunk)

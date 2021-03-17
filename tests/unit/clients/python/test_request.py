@@ -88,7 +88,7 @@ def test_request_generate_lines():
     request = next(req)
     assert len(request.index.docs) == 100
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 100
+        assert doc.siblings == 100
         assert doc.mime_type == 'text/plain'
         assert doc.text == f'i\'m dummy doc {index}'
 
@@ -102,7 +102,7 @@ def test_request_generate_lines_from_list():
     request = next(req)
     assert len(request.index.docs) == 100
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 100
+        assert doc.siblings == 100
         assert doc.mime_type == 'text/plain'
         assert doc.text == f'i\'m dummy doc {index}'
 
@@ -117,7 +117,7 @@ def test_request_generate_lines_with_fake_url():
     request = next(req)
     assert len(request.index.docs) == 100
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 100
+        assert doc.siblings == 100
         assert doc.mime_type == 'text/plain'
         assert doc.text == f'https://github.com i\'m dummy doc {index}'
 
@@ -132,7 +132,7 @@ def test_request_generate_bytes():
     request = next(req)
     assert len(request.index.docs) == 100
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 100
+        assert doc.siblings == 100
         assert doc.text == f'i\'m dummy doc {index}'
         assert doc.mime_type == 'text/plain'
 
@@ -152,7 +152,7 @@ def test_request_generate_docs():
     request = next(req)
     assert len(request.index.docs) == 100
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 100
+        assert doc.siblings == 100
         assert doc.mime_type == 'mime_type'
         assert doc.text == f'i\'m dummy doc {index}'
         assert doc.offset == 1000
@@ -226,13 +226,13 @@ def test_request_generate_numpy_arrays():
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 5
+        assert doc.siblings == 5
         assert NdArray(doc.blob).value.shape == (10,)
 
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 5
+        assert doc.siblings == 5
         assert NdArray(doc.blob).value.shape == (10,)
 
 
@@ -248,11 +248,11 @@ def test_request_generate_numpy_arrays_iterator():
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 5
+        assert doc.siblings == 5
         assert NdArray(doc.blob).value.shape == (10,)
 
     request = next(req)
     assert len(request.index.docs) == 5
     for index, doc in enumerate(request.index.docs, 1):
-        assert doc.length == 5
+        assert doc.siblings == 5
         assert NdArray(doc.blob).value.shape == (10,)
