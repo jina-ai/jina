@@ -32,7 +32,7 @@ class DummyRankerSingle(Match2DocRanker):
         super().__init__(*args, **kwargs)
         self.match_required_keys = ['tags__dummy_score']
 
-    @single(num_data=3, flatten_output=False)
+    @single(slice_nargs=3, flatten_output=False)
     def score(self, old_match_scores, query_metas, match_meta) -> List[List[float]]:
         return [m['tags__dummy_score'] for m in match_meta]
 
