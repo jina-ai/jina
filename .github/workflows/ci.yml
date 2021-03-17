@@ -128,7 +128,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   core-test:
-    needs: [prep-testbed, commit-lint, lint-flake-8, check-docstring, check-black]
+    needs: [prep-testbed, commit-lint, lint-flake-8]
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -198,7 +198,7 @@ jobs:
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
-    needs: [core-test, docker-image-test]
+    needs: [core-test, docker-image-test, check-docstring, check-black]
     if: always()
     runs-on: ubuntu-20.04
     steps:

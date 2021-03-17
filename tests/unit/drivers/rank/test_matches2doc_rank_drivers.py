@@ -31,7 +31,7 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
             **kwargs
         )
 
-    @batching_multi_input(num_data=3)
+    @batching_multi_input(slice_nargs=3)
     def score(
         self,
         old_match_scores: List[Dict],
