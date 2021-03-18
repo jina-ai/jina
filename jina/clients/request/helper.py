@@ -3,7 +3,7 @@ from typing import Tuple, Sequence
 
 from ... import Document, Request
 from ...enums import DataInputType, RequestType
-from ...excepts import BadDocType, BadRequestType
+from ...excepts import BadDocType, BadRequestType, RequestTypeError
 
 
 def _new_doc_from_data(
@@ -51,7 +51,7 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
         elif mode == RequestType.RELOADFROMTRAINING:
             req.path = batch
         else:
-            raise NotImplementedError(
+            raise RequestTypeError(
                 f'generating request from {mode} is not yet supported'
             )
     except Exception as ex:

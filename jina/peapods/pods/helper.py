@@ -42,7 +42,10 @@ def _set_peas_args(
             elif args.scheduling == SchedulerType.LOAD_BALANCE:
                 _args.socket_in = SocketType.DEALER_CONNECT
             else:
-                raise NotImplementedError
+                raise ValueError(
+                    f'{args.scheduling} is not supported as a SchedulerType!'
+                )
+
         else:
             _args.socket_in = SocketType.SUB_CONNECT
         if head_args:

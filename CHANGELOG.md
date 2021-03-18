@@ -35,6 +35,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -7931,4 +7932,51 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```fba4308c```](https://github.com/jina-ai/jina/commit/fba4308c58270270daa7e5bc90d3037f5424ce53)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```23b3b484```](https://github.com/jina-ai/jina/commit/23b3b48452e6fe1a9c2050baa51a9dd87d37be32)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```cb6607c5```](https://github.com/jina-ai/jina/commit/cb6607c52370682a5b3790a78acb70f2a7089624)] __-__ __version__: the next version will be 1.0.10 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-11></a>
+## Release Note (`1.0.11`)
+
+> Release time: 2021-03-18 03:20:12
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Florian Hönicke,  Jina Dev Bot,  Betim Sherifi,  Joan Fontanals,  Han Xiao,  Deepankar Mahapatro,  Yongxuan Zhang,  Robert Rodger,  cristian,  David Buchaca Prats,  Wang Bo,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```8c3f1e9b```](https://github.com/jina-ai/jina/commit/8c3f1e9bbbcfa5b0b19e611086b893f981800168)] __-__ linter ignore generated files (#2199) (*Florian Hönicke*)
+ - [[```3caf7df9```](https://github.com/jina-ai/jina/commit/3caf7df9a6aac27ac315fd8ec4723acfc6d3b262)] __-__ fix multimodal example (#2195) (*Joan Fontanals*)
+ - [[```b5f80102```](https://github.com/jina-ai/jina/commit/b5f8010218e5e026dcf96b732a629b8b61594396)] __-__ __jaml__: read raw yaml with jtype (#2180) (*Deepankar Mahapatro*)
+ - [[```1e74ce64```](https://github.com/jina-ai/jina/commit/1e74ce64a8382fdfa85425f360f6f7326913d418)] __-__ hub_build_level  test (#2189) (*Yongxuan Zhang*)
+ - [[```88492002```](https://github.com/jina-ai/jina/commit/884920026d0594397552e783eea3f352d365c325)] __-__ fix multimodal example (#2178) (*Joan Fontanals*)
+ - [[```fc0888e0```](https://github.com/jina-ai/jina/commit/fc0888e0cea3abd4babfb68c0d003b7b59d5fa4b)] __-__ optimize scores avoiding array creation (#2163) (*David Buchaca Prats*)
+
+### 🚧 Code Refactoring
+
+ - [[```1bb8f2b0```](https://github.com/jina-ai/jina/commit/1bb8f2b0838292aee62879a777d1d4e0e56efbf0)] __-__ incorrect exception usage (#2147) (*Betim Sherifi*)
+ - [[```0308fd7a```](https://github.com/jina-ai/jina/commit/0308fd7accc1931fda573952f770afb8f03a0144)] __-__ refactor signatures after batching adaptation (#2196) (*Joan Fontanals*)
+ - [[```abceba07```](https://github.com/jina-ai/jina/commit/abceba077e06d787ed2d3c0515f5dfc939db4784)] __-__ __helper__: merge single and single_multi_input into one (#2192) (*Han Xiao*)
+ - [[```ef155a32```](https://github.com/jina-ai/jina/commit/ef155a32b4f3c8e2b9f9e4a67fd3f5247f5eeb69)] __-__ remove unused variable (#2171) (*Florian Hönicke*)
+ - [[```e3403fbb```](https://github.com/jina-ai/jina/commit/e3403fbbff021b34b94d792411cc9923311d82d4)] __-__ remove useless if (#2177) (*David Buchaca Prats*)
+ - [[```8f9258b9```](https://github.com/jina-ai/jina/commit/8f9258b94639ed3c8b2a0a75dcbf2f7de74098d3)] __-__ try to remove reduce driver (#2107) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```c278ba15```](https://github.com/jina-ai/jina/commit/c278ba15b2253e44ae1bfa3471ed13c09760e468)] __-__ spelling correction (#2190) (*Florian Hönicke*)
+ - [[```f8ba303f```](https://github.com/jina-ai/jina/commit/f8ba303fa68911b35caab53c1df1e4d61bb8eff9)] __-__ fix fp1 typo in readme (#2188) (*Robert Rodger*)
+ - [[```3bf8c157```](https://github.com/jina-ai/jina/commit/3bf8c1578f4f1a39b1c154705a535c52e1490141)] __-__ fix typo (#2179) (*cristian*)
+ - [[```b3d2f77a```](https://github.com/jina-ai/jina/commit/b3d2f77a5aab40e4c1b17747d415f4e135c1542b)] __-__ fix docstring in search driver (#2174) (*Wang Bo*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```d184452c```](https://github.com/jina-ai/jina/commit/d184452c8dee9a2e22b3dafd16431b1f68b6d316)] __-__ ignore resources folder for pytest and codecov (#2166) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```17889ba3```](https://github.com/jina-ai/jina/commit/17889ba3d14cb935ff955d8ece26bc54f68fcb6d)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```44e6e91c```](https://github.com/jina-ai/jina/commit/44e6e91ca3bbc72d443d566174ae8cdd60d14d69)] __-__ Revert &#34;fix: fix multimodal example (#2178)&#34; (#2191) (*Han Xiao*)
+ - [[```4578fd65```](https://github.com/jina-ai/jina/commit/4578fd65c4b5477f1fd2ddf723aaa7a7e9cbc22d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```035e909f```](https://github.com/jina-ai/jina/commit/035e909f78a22d68457aa47ba726a681e0fd9e12)] __-__ __version__: the next version will be 1.0.11 (*Jina Dev Bot*)
 
