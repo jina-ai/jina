@@ -498,12 +498,12 @@ class Document(ProtoTypeMixin, Traversable):
         elif scipy.sparse.issparse(v) == True:
             from ..ndarray.sparse.scipy import SparseNdArray
 
-            placeholder = NdArray(
+            protbuff_updater = NdArray(
                 is_sparse=True,
                 sparse_cls=SparseNdArray,
                 proto=getattr(self._pb_body, k),
             )
-            placeholder.value = v
+            protbuff_updater.value = v
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
