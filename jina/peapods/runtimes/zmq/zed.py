@@ -147,6 +147,10 @@ class ZEDRuntime(ZMQRuntime):
             msgs = self._pending_msgs.pop(msg.envelope.request_id)
             msg.merge_envelope_from(msgs)
 
+        from jina.types.request.endtraining import EndTrainingRequest
+
+        if isinstance(msg.request, EndTrainingRequest):
+            self._send_async_message(msg.request.proto.endtraining.path)
         msg.update_timestamp()
         return self
 

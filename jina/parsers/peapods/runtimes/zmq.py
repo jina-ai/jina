@@ -24,6 +24,12 @@ def mixin_zmq_runtime_parser(parser):
         help='If set, use ipc protocol for control socket',
     )
     gp.add_argument(
+        '--port-sync',
+        type=int,
+        default=os.environ.get('JINA_SYNC_PORT', helper.random_port()),
+        help='The port for syncing the runtime, default a random port between [49152, 65535]',
+    )
+    gp.add_argument(
         '--timeout-ctrl',
         type=int,
         default=5000,

@@ -3,7 +3,7 @@ from abc import ABC
 from typing import Union, Dict
 
 from ..base import BaseRuntime
-from ...zmq import Zmqlet, send_ctrl_message
+from ...zmq import Zmqlet, send_ctrl_message, _send_async_message
 
 
 class ZMQRuntime(BaseRuntime, ABC):
@@ -14,10 +14,26 @@ class ZMQRuntime(BaseRuntime, ABC):
         self.ctrl_addr = Zmqlet.get_ctrl_address(
             self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
+        self.other_pea_sync_addr = 'tcp://0.0.0.0:55333'
 
     def cancel(self):
         """Send cancel control message."""
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
+
+    def _send_async_message(self, path):
+        from jina.types.message import Message
+        from jina.types.request.reload import ReloadFromTrainingRequest
+        from jina.proto import jina_pb2
+
+        if self.name == 'ranker_train/ZEDRuntime':
+            req = jina_pb2.RequestProto()
+            req.reloadfromtraining.path = path
+            msg = Message(
+                request=req, envelope=None, pod_name=self.name, identity='identity'
+            )
+            _send_async_message(
+                self.other_pea_sync_addr, msg, timeout=self.args.timeout_ctrl
+            )
 
     @property
     def status(self):

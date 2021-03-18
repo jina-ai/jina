@@ -7,6 +7,7 @@ pods:
   - name: ranker_query # replica subscribed to queryrequests
     uses: ranker_with_query_driver.yml
     shards: 1
+    port_sync: 55333
     needs: [index]
     read_only: true
   - name: ranker_train # replica subscribed to trainrequests

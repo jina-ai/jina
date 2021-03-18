@@ -55,7 +55,7 @@ class Zmqlet:
                 args.host, args.port_ctrl, args.ctrl_with_ipc
             )
 
-        self.sync_addr = sync_addr
+        self.sync_addr = 'tcp://0.0.0.0:55333' if self.name == 'ranker_query' else None
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0
@@ -72,7 +72,7 @@ class Zmqlet:
         self._register_pollin()
 
         self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
-        if self.sync_sock:
+        if self.sync_sock is not None:
             self.opened_socks.append(self.sync_sock)
 
         if self.in_sock_type == zmq.DEALER:
@@ -171,8 +171,9 @@ class Zmqlet:
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
             # TODO: __default_host__ is not enough for sync
-            sync_sock, sync_addr = None
+            sync_sock, sync_addr = None, None
             if self.sync_addr:
+                self.logger.warning(f'_init sync socket in {self.args.port_sync}')
                 sync_sock, sync_addr = _init_socket(
                     ctx, __default_host__, self.args.port_sync, SocketType.PAIR_BIND
                 )
@@ -213,10 +214,16 @@ class Zmqlet:
                 f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})'
             )
 
+            if sync_addr:
+                self.logger.info(
+                    f'sync {colored(sync_addr, "yellow")} ({SocketType.PAIR_BIND.name}) '
+                )
+
             self.in_sock_type = in_sock.type
             self.out_sock_type = out_sock.type
             self.ctrl_sock_type = ctrl_sock.type
-            self.sync_sock_type = sync_sock.type
+            if sync_sock:
+                self.sync_sock_type = sync_sock.type
 
             return ctx, in_sock, out_sock, ctrl_sock, sync_sock
         except zmq.error.ZMQError as ex:
@@ -378,7 +385,8 @@ class ZmqStreamlet(Zmqlet):
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
         # Socket to receive synchronization requests
-        self.sync_sock = ZMQStream(self.sync_sock, self.io_loop)
+        if self.sync_sock:
+            self.sync_sock = ZMQStream(self.sync_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
     def close(self):
@@ -453,11 +461,34 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
     :param timeout: the waiting time (in ms) for the response
     :return: received message
     """
-    # control message is short, set a timeout and ask for quick response
+    # control message is short, set a timeout and ask for quick response3
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
         msg = ControlMessage(cmd)
+        send_message(sock, msg, timeout)
+        r = None
+        try:
+            r = recv_message(sock, timeout)
+        except TimeoutError:
+            pass
+        finally:
+            sock.close()
+        return r
+
+
+def _send_async_message(address: str, msg, timeout: int) -> 'Message':
+    """Send a control message to a specific address and wait for the response
+
+    :param address: the socket address to send
+    :param msg: the control command to send
+    :param timeout: the waiting time (in ms) for the response
+    :return: received message
+    """
+    # control message is short, set a timeout and ask for quick response
+    with zmq.Context() as ctx:
+        ctx.setsockopt(zmq.LINGER, 0)
+        sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
         send_message(sock, msg, timeout)
         r = None
         try:

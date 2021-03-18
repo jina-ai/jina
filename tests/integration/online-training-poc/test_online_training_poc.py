@@ -62,11 +62,11 @@ class RankerTrainer(JAMLCompatible):
 
 class TrainableRanker(Match2DocRanker):
     def __init__(
-            self,
-            score_output: float,
-            trainer: Optional[RankerTrainer] = None,
-            *args,
-            **kwargs,
+        self,
+        score_output: float,
+        trainer: Optional[RankerTrainer] = None,
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.trainer = trainer
@@ -86,10 +86,10 @@ class TrainableRanker(Match2DocRanker):
         self.trainer.dump(path=path)
 
     def score(
-            self,
-            old_matches_scores: Sequence[Sequence[float]],
-            queries_metas: Sequence[Dict],
-            matches_metas: Sequence[Sequence[Dict]],
+        self,
+        old_matches_scores: Sequence[Sequence[float]],
+        queries_metas: Sequence[Dict],
+        matches_metas: Sequence[Sequence[Dict]],
     ) -> Sequence[Sequence[float]]:
         ret = []
         for queries, matches in zip(queries_metas, matches_metas):
@@ -145,7 +145,7 @@ def test_poc_online_training(tmp_workspace, dump_path, mocker):
         f.train(inputs=index_docs[0:1], top_k=2)
         f.train(inputs=index_docs[0:1], top_k=2)
         f.end_training(path=dump_path)
-        f.load_from_training(path=dump_path)
+        # f.load_from_training(path=dump_path)
         f.search(inputs=index_docs[0:1], on_done=mock_after_train, top_k=2)
 
     mock_pre_train.assert_called_once()
