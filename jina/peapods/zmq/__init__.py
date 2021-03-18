@@ -40,6 +40,7 @@ class Zmqlet:
         args: 'argparse.Namespace',
         logger: Optional['JinaLogger'] = None,
         ctrl_addr: Optional[str] = None,
+        sync_addr: Optional[str] = None,
     ):
         self.args = args
         self.identity = random_identity()
@@ -54,16 +55,26 @@ class Zmqlet:
                 args.host, args.port_ctrl, args.ctrl_with_ipc
             )
 
+        self.sync_addr = sync_addr
         self.bytes_sent = 0
         self.bytes_recv = 0
         self.msg_recv = 0
         self.msg_sent = 0
         self.is_closed = False
         self.opened_socks = []  # this must be here for `close()`
-        self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self._init_sockets()
+        (
+            self.ctx,
+            self.in_sock,
+            self.out_sock,
+            self.ctrl_sock,
+            self.sync_sock,
+        ) = self._init_sockets()
         self._register_pollin()
 
         self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
+        if self.sync_sock:
+            self.opened_socks.append(self.sync_sock)
+
         if self.in_sock_type == zmq.DEALER:
             self._send_idle()
 
@@ -72,6 +83,8 @@ class Zmqlet:
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
+        if self.sync_sock:
+            self.poller.register(self.sync_sock, zmq.POLLIN)
         if self.out_sock_type == zmq.ROUTER:
             self.poller.register(self.out_sock, zmq.POLLIN)
 
@@ -116,6 +129,8 @@ class Zmqlet:
         # the priority ctrl_sock > in_sock
         if socks.get(self.ctrl_sock) == zmq.POLLIN:
             return self.ctrl_sock
+        elif self.sync_sock and socks.get(self.sync_sock) == zmq.POLLIN:
+            return self.sync_sock
         elif socks.get(self.out_sock) == zmq.POLLIN:
             return self.out_sock  # for dealer return idle status to router
         elif socks.get(self.in_sock) == zmq.POLLIN:
@@ -155,6 +170,15 @@ class Zmqlet:
                 )
             self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
 
+            # TODO: __default_host__ is not enough for sync
+            sync_sock, sync_addr = None
+            if self.sync_addr:
+                sync_sock, sync_addr = _init_socket(
+                    ctx, __default_host__, self.args.port_sync, SocketType.PAIR_BIND
+                )
+
+            self.logger.debug(f'synchronization over {colored(sync_addr, "yellow")}')
+
             in_sock, in_addr = _init_socket(
                 ctx,
                 self.args.host_in,
@@ -192,8 +216,9 @@ class Zmqlet:
             self.in_sock_type = in_sock.type
             self.out_sock_type = out_sock.type
             self.ctrl_sock_type = ctrl_sock.type
+            self.sync_sock_type = sync_sock.type
 
-            return ctx, in_sock, out_sock, ctrl_sock
+            return ctx, in_sock, out_sock, ctrl_sock, sync_sock
         except zmq.error.ZMQError as ex:
             self.close()
             raise ex
@@ -352,6 +377,8 @@ class ZmqStreamlet(Zmqlet):
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
+        # Socket to receive synchronization requests
+        self.sync_sock = ZMQStream(self.sync_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
     def close(self):
@@ -377,6 +404,8 @@ class ZmqStreamlet(Zmqlet):
                         self.out_sock._handle_events = lambda *args, **kwargs: None
                     if hasattr(self.ctrl_sock, '_handle_events'):
                         self.ctrl_sock._handle_events = lambda *args, **kwargs: None
+                    if hasattr(self.sync_sock, '_handle_events'):
+                        self.sync_sock._handle_events = lambda *args, **kwargs: None
                 except AttributeError as e:
                     self.logger.error(f'failed to stop. {e!r}')
 
@@ -405,9 +434,10 @@ class ZmqStreamlet(Zmqlet):
             if msg:
                 self.send_message(msg)
 
-        self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
-        self.in_sock.on_recv(self._in_sock_callback)
+        self.in_sock.on_recv(lambda x: _callback(x, self.in_sock_type))
         self.ctrl_sock.on_recv(lambda x: _callback(x, self.ctrl_sock_type))
+        if self.sync_sock:
+            self.sync_sock.on_recv(lambda x: _callback(x, self.sync_sock_type))
         if self.out_sock_type == zmq.ROUTER:
             self.out_sock.on_recv(lambda x: _callback(x, self.out_sock_type))
         self.io_loop.start()
