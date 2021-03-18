@@ -50,14 +50,14 @@ class SimpleCollectMatchesRankDriver(AggregateMatches2DocRankDriver):
 class MockLengthRanker(Chunk2DocRanker):
     def __init__(self, *args, **kwargs):
         super().__init__(
-            query_required_keys=('length',),
-            match_required_keys=('length',),
+            query_required_keys=('weight',),
+            match_required_keys=('weight',),
             *args,
             **kwargs
         )
 
     def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length']
+        return match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['weight']
 
 
 def create_document_to_score_same_depth_level():
@@ -70,15 +70,16 @@ def create_document_to_score_same_depth_level():
     doc = Document()
     doc.id = 1
 
-    for match_id, parent_id, match_score in [
-        (2, 20, 30),
-        (3, 20, 40),
-        (4, 30, 20),
-        (5, 30, 10),
+    for match_id, parent_id, match_score, weight in [
+        (2, 20, 30, 3),
+        (3, 20, 40, 4),
+        (4, 30, 20, 2),
+        (5, 30, 10, 1),
     ]:
         match = Document()
         match.id = match_id
         match.parent_id = parent_id
+        match.weight = weight
         match.score = NamedScore(value=match_score, ref_id=doc.id)
         doc.matches.append(match)
     return doc
@@ -93,9 +94,9 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
     dm = list(doc.matches)
     assert len(dm) == 2
     assert dm[0].id == '20'
-    assert dm[0].score.value == 3
+    assert dm[0].score.value == 3.0
     assert dm[1].id == '30'
-    assert dm[1].score.value == 2
+    assert dm[1].score.value == 2.0
     for match in dm:
         # match score is computed w.r.t to doc.id
         assert match.score.ref_id == doc.id

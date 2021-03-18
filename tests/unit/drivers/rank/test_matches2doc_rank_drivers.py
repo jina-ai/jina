@@ -25,8 +25,8 @@ class MockMatches2DocRankDriver(Matches2DocRankDriver):
 class MockAbsoluteLengthRanker(Match2DocRanker):
     def __init__(self, *args, **kwargs):
         super().__init__(
-            query_required_keys=('length',),
-            match_required_keys=('length',),
+            query_required_keys=('weight',),
+            match_required_keys=('weight',),
             *args,
             **kwargs
         )
@@ -39,7 +39,7 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
         matches_metas: List[List[Dict]],
     ) -> List[List[float]]:
         return [
-            [-abs(m['length'] - query_meta['length']) for m in match_meta]
+            [-abs(m['weight'] - query_meta['weight']) for m in match_meta]
             for query_meta, match_meta in zip(queries_metas, matches_metas)
         ]
 
@@ -59,8 +59,9 @@ def create_document_to_score():
         (5, 8, 16),
     ]:
         with Document() as match:
-            match.id = str(match_id) * match_length
+            match.id = match_id
             match.score = NamedScore(value=match_score, ref_id=doc.id)
+            match.weight = match_length
             doc.matches.append(match)
     return doc
 
@@ -72,14 +73,14 @@ def test_chunk2doc_ranker_driver_mock_exec():
     driver.attach(executor=executor, runtime=None)
     driver()
     assert len(doc.matches) == 4
-    assert doc.matches[0].id == '3' * 24
-    assert doc.matches[0].score.value == -1
-    assert doc.matches[1].id == '2' * 16
-    assert doc.matches[1].score.value == -2
-    assert doc.matches[2].id == '5' * 16
-    assert doc.matches[2].score.value == -3
-    assert doc.matches[3].id == '4' * 8
-    assert doc.matches[3].score.value == -4
+    assert doc.matches[0].id == '4'
+    assert doc.matches[0].score.value == -8.0
+    assert doc.matches[1].id == '2'
+    assert doc.matches[1].score.value == -16.0
+    assert doc.matches[2].id == '5'
+    assert doc.matches[2].score.value == -16.0
+    assert doc.matches[3].id == '3'
+    assert doc.matches[3].score.value == -24.0
     for match in doc.matches:
         assert match.score.ref_id == doc.id
         assert match.score.op_name == 'MockAbsoluteLengthRanker'
