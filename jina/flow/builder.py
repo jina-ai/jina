@@ -4,7 +4,7 @@ from typing import Dict, List, Callable
 
 from .. import __default_host__
 from ..enums import SocketType, FlowBuildLevel, PodRoleType
-from ..excepts import FlowBuildLevelError
+from ..excepts import FlowBuildLevelError, SocketTypeError
 from ..peapods.pods import _fill_in_host
 
 # noinspection PyUnreachableCode
@@ -153,4 +153,4 @@ def _connect(
         )  # the hostname of s_pod
         second.head_args.port_in = first.tail_args.port_out
     else:
-        raise NotImplementedError(f'{first_socket_type!r} is not supported here')
+        raise SocketTypeError(f'{first_socket_type!r} is not supported here')
