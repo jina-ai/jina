@@ -158,6 +158,45 @@ def test_generic():
     np.testing.assert_equal(b.value, c)
 
 
+def test_sparse_scipy_formats():
+    from jina.types.ndarray.generic import NdArray
+    import scipy.sparse as sp
+    from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
+    from jina import Document
+
+    row = np.array([0, 0, 1, 2, 2, 2])
+    col = np.array([0, 2, 2, 0, 1, 2])
+    data = np.array([1, 2, 3, 4, 5, 6])
+
+    X = sp.coo_matrix((data, (row, col)), shape=(4, 10))
+    d = Document()
+    d.embedding = X
+    # The following print statement is true because data is converted to coo_matrix
+    print('d.embedding == sp.coo_matrix: ', d.embedding == sp.coo_matrix)
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+
+    X = sp.bsr_matrix((data, (row, col)), shape=(3, 3))
+    d = Document()
+    d.embedding = X
+    # The following print statement is False because data is converted to coo_matrix
+    print('d.embedding == sp.bsr_matrix: ', d.embedding == sp.bsr_matrix)
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+
+    X = sp.csr_matrix((data, (row, col)), shape=(4, 10))
+    d = Document()
+    d.embedding = X
+    # The following print statement is False because data is converted to coo_matrix
+    print('d.embedding == sp.csr_matrix: ', d.embedding == sp.csr_matrix)
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+
+    X = sp.csc_matrix((data, (row, col)), shape=(4, 10))
+    d = Document()
+    d.embedding = X
+    # The following print statement is False because data is converted to coo_matrix
+    print('d.embedding == sp.csc_matrix: ', d.embedding == sp.csc_matrix)
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+
+
 @pytest.mark.parametrize('shape', [[10], [7, 8], [7, 8, 9]])
 def test_dummy_numpy_sparse(shape):
     a = np.random.random(shape)

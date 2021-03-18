@@ -10,6 +10,7 @@ from hashlib import blake2b
 from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List
 
 import numpy as np
+import scipy
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
@@ -26,6 +27,7 @@ from ...helper import is_url, typename, random_identity, download_mermaid_url
 from ...importer import ImportExtensions
 from ...logging import default_logger
 from ...proto import jina_pb2
+
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -282,7 +284,7 @@ class Document(ProtoTypeMixin, Traversable):
 
         .. note::
             *. if neither ``exclude_fields`` nor ``include_fields`` is given,
-                then destination is overrided by the source completely.
+                then destination is overridden by the source completely.
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
 
@@ -482,6 +484,7 @@ class Document(ProtoTypeMixin, Traversable):
 
         :param value: the array value to set the embedding
         """
+        # breakpoint()
         self._update_ndarray('embedding', value)
 
     def _update_ndarray(self, k, v):
@@ -492,6 +495,15 @@ class Document(ProtoTypeMixin, Traversable):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
+        elif scipy.sparse.issparse(v) == True:
+            from ..ndarray.sparse.scipy import SparseNdArray
+
+            placeholder = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            placeholder.value = v
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
