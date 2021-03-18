@@ -13,6 +13,7 @@ import numpy as np
 from . import BaseVectorIndexer
 from ..decorators import batching
 from ...helper import cached_property
+from ...importer import ImportExtensions
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
@@ -520,11 +521,6 @@ class NumpyIndexer(BaseNumpyIndexer):
 
     @batching(merge_over_axis=1, slice_on=2)
     def _cdist(self, *args, **kwargs):
-        try:
+        with ImportExtensions(required=True):
             from scipy.spatial.distance import cdist
-
-            return cdist(*args, **kwargs, metric=self.metric)
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError(
-                f'your metric {self.metric} requires scipy, but scipy is not found'
-            )
+        return cdist(*args, **kwargs, metric=self.metric)
