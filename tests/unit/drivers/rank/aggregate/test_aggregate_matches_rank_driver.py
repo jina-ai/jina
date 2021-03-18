@@ -70,16 +70,15 @@ def create_document_to_score_same_depth_level():
     doc = Document()
     doc.id = 1
 
-    for match_id, parent_id, match_score, match_siblings in [
-        (2, 20, 30, 3),
-        (3, 20, 40, 4),
-        (4, 30, 20, 2),
-        (5, 30, 10, 1),
+    for match_id, parent_id, match_score in [
+        (2, 20, 30),
+        (3, 20, 40),
+        (4, 30, 20),
+        (5, 30, 10),
     ]:
         match = Document()
         match.id = match_id
         match.parent_id = parent_id
-        match.siblings = match_siblings
         match.score = NamedScore(value=match_score, ref_id=doc.id)
         doc.matches.append(match)
     return doc

@@ -52,7 +52,6 @@ def create_document_to_score():
     # |- matches: (id: 5, parent_id: 1, score.value: 5),
     doc = Document()
     doc.id = '1' * 20
-    doc.siblings = 5
     for match_id, match_score, match_length in [
         (2, 3, 16),
         (3, 6, 24),
@@ -61,7 +60,6 @@ def create_document_to_score():
     ]:
         with Document() as match:
             match.id = str(match_id) * match_length
-            match.siblings = match_score
             match.score = NamedScore(value=match_score, ref_id=doc.id)
             doc.matches.append(match)
     return doc
