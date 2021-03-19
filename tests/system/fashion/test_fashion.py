@@ -1,6 +1,7 @@
 import os
 
 import pytest
+import numpy as np
 from pkg_resources import resource_filename
 
 from jina import Document
@@ -12,9 +13,7 @@ from tests import validate_callback
 
 @pytest.fixture
 def helloworld_args(tmpdir):
-    return set_hw_parser().parse_args(
-        ['--workdir', str(tmpdir)]
-    )
+    return set_hw_parser().parse_args(['--workdir', str(tmpdir)])
 
 
 @pytest.fixture
@@ -24,14 +23,7 @@ def test_query_image():
 
 @pytest.fixture
 def query_document(test_query_image):
-    return Document(
-        {
-            'weight': 0.5,
-            'uri': test_query_image,
-            'granularity': 1,
-            'mime_type': 'image/jpeg',
-        }
-    )
+    return Document(content=np.random.rand(28, 28))
 
 
 def test_multimodal(helloworld_args, query_document, mocker):
@@ -48,7 +40,9 @@ def test_multimodal(helloworld_args, query_document, mocker):
     mock_on_done = mocker.Mock()
     mock_on_fail = mocker.Mock()
 
-    with Flow.load_config(os.path.join(flow_query_path, 'helloworld.flow.query.yml')) as f:
+    with Flow.load_config(
+        os.path.join(flow_query_path, 'helloworld.flow.query.yml')
+    ) as f:
         f.search(
             inputs=[query_document],
             on_done=mock_on_done,
