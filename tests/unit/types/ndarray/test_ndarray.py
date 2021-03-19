@@ -205,8 +205,6 @@ def test_sparse_scipy_formats():
     np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
 
-
-
 @pytest.mark.parametrize('shape', [[10], [7, 8], [7, 8, 9]])
 def test_dummy_numpy_sparse(shape):
     a = np.random.random(shape)
