@@ -60,7 +60,7 @@ __version__ = '1.0.12'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.78'
+__proto_version__ = '0.0.79'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
@@ -143,9 +143,12 @@ _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 
 def _set_nofile(nofile_atleast=4096):
     """
-    sets nofile soft limit to at least 4096, useful for running matlplotlib/seaborn on
+    Set nofile soft limit to at least 4096, useful for running matlplotlib/seaborn on
     parallel executing plot generators vs. Ubuntu default ulimit -n 1024 or OS X El Captian 256
     temporary setting extinguishing with Python session.
+
+    :param nofile_atleast: nofile soft limit
+    :return: nofile soft limit and nofile hard limit
     """
 
     try:

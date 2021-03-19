@@ -205,24 +205,6 @@ class Document(ProtoTypeMixin, Traversable):
         self._mermaid_id = random_identity()  #: for mermaid visualize id
 
     @property
-    def length(self) -> int:
-        """
-        The number of siblings of the :class:``Document``
-
-        .. # noqa: DAR201
-        :getter: number of siblings
-        :setter: number of siblings
-        :type: int
-        """
-        # TODO(Han): rename this to siblings as this shadows the built-in `length`
-
-        return self._pb_body.length
-
-    @length.setter
-    def length(self, value: int):
-        self._pb_body.length = value
-
-    @property
     def weight(self) -> float:
         """
         :return: the weight of the document
