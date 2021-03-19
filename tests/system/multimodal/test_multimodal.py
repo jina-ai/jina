@@ -54,11 +54,23 @@ def query_document(image_chunk, text_chunk):
     return query_document
 
 
-def test_multimodal(helloworld_args, query_document):
+def test_multimodal(helloworld_args, query_document, mocker):
     """Regression test for multimodal example."""
+    def validate_response(resp):
+        assert len(resp.search.docs) == 1
+        for doc in resp.search.docs:
+            assert len(doc.matches) == 10
+
     hello_world(helloworld_args)
     flow_query_path = os.path.join(resource_filename('jina', 'resources'), 'multimodal')
+
+    mock_on_done = mocker.Mock()
+    mock_on_fail = mocker.Mock()
+
     with Flow.load_config(os.path.join(flow_query_path, 'flow-query.yml')) as f:
         f.search(
-            inputs=[query_document], on_done=lambda x: print(x.docs[0].matches), top_k=10,
+            inputs=[query_document], on_done=mock_on_done, on_fail=mock_on_fail, top_k=10,
         )
+
+    mock_on_fail.assert_not_called()
+    validate_callback(mock_on_done, validate_response)
