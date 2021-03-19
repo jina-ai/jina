@@ -10,7 +10,6 @@ from hashlib import blake2b
 from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List
 
 import numpy as np
-import scipy
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
