@@ -171,30 +171,40 @@ def test_sparse_scipy_formats():
     X = sp.coo_matrix((data, (row, col)), shape=(4, 10))
     d = Document()
     d.embedding = X
+    d.blob = X
     # The following print statement is true because data is converted to coo_matrix
     print('d.embedding == sp.coo_matrix: ', d.embedding == sp.coo_matrix)
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
     X = sp.bsr_matrix((data, (row, col)), shape=(3, 3))
     d = Document()
     d.embedding = X
+    d.blob = X
     # The following print statement is False because data is converted to coo_matrix
     print('d.embedding == sp.bsr_matrix: ', d.embedding == sp.bsr_matrix)
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
     X = sp.csr_matrix((data, (row, col)), shape=(4, 10))
     d = Document()
     d.embedding = X
+    d.blob = X
     # The following print statement is False because data is converted to coo_matrix
     print('d.embedding == sp.csr_matrix: ', d.embedding == sp.csr_matrix)
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
     X = sp.csc_matrix((data, (row, col)), shape=(4, 10))
     d = Document()
     d.embedding = X
+    d.blob = X
     # The following print statement is False because data is converted to coo_matrix
     print('d.embedding == sp.csc_matrix: ', d.embedding == sp.csc_matrix)
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
+
+
 
 
 @pytest.mark.parametrize('shape', [[10], [7, 8], [7, 8, 9]])
