@@ -44,6 +44,37 @@ _document_fields = set(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
+scipy_installed = False
+tensorflow_installed = False
+pytoch_installed = False
+
+with ImportExtensions(
+    required=False,
+    pkg_name='scipy',
+    help_text=f'can not import scipy: pip install scipy ',
+):
+    import scipy
+
+    scipy_installed = True
+
+with ImportExtensions(
+    required=False,
+    pkg_name='tensorflow',
+    help_text=f'can not import tensorflow: pip install tensorflow ',
+):
+    import tensorflow
+
+    tensorflow_installed = True
+
+with ImportExtensions(
+    required=False,
+    pkg_name='torch',
+    help_text=f'can not import torch: pip install torch ',
+):
+    import torch
+
+    pytoch_installed = True
+
 
 class Document(ProtoTypeMixin, Traversable):
     """
@@ -476,7 +507,7 @@ class Document(ProtoTypeMixin, Traversable):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
-        elif scipy.sparse.issparse(v) == True:
+        elif scipy_installed and scipy.sparse.issparse(v):
             from ..ndarray.sparse.scipy import SparseNdArray
 
             protbuff_updater = NdArray(
