@@ -45,7 +45,6 @@ class SimpleSegmentDriver(SegmentDriver):
 def test_segment_driver():
     valid_doc = Document()
     valid_doc.text = 'valid'
-    valid_doc.length = 2
     valid_doc.mime_type = 'image/png'
 
     driver = SimpleSegmentDriver()
@@ -53,27 +52,22 @@ def test_segment_driver():
     driver.attach(executor=executor, runtime=None)
     driver._apply_all(DocumentSet([valid_doc]))
 
-    assert valid_doc.length == 2
-
     assert valid_doc.chunks[0].tags['id'] == 3
     assert valid_doc.chunks[0].parent_id == valid_doc.id
     np.testing.assert_equal(valid_doc.chunks[0].blob, np.array([0.0, 0.0, 0.0]))
     assert valid_doc.chunks[0].weight == 0.0
-    assert valid_doc.chunks[0].length == 3
     assert valid_doc.chunks[0].mime_type == 'text/plain'
 
     assert valid_doc.chunks[1].tags['id'] == 4
     assert valid_doc.chunks[1].parent_id == valid_doc.id
     np.testing.assert_equal(valid_doc.chunks[1].blob, np.array([1.0, 1.0, 1.0]))
     assert valid_doc.chunks[1].weight == 1.0
-    assert valid_doc.chunks[1].length == 3
     assert valid_doc.chunks[1].mime_type == 'image/png'
 
     assert valid_doc.chunks[2].tags['id'] == 5
     assert valid_doc.chunks[2].parent_id == valid_doc.id
     np.testing.assert_equal(valid_doc.chunks[2].blob, np.array([2.0, 2.0, 2.0]))
     assert valid_doc.chunks[2].weight == 2.0
-    assert valid_doc.chunks[2].length == 3
     assert valid_doc.chunks[2].mime_type == 'image/png'
 
 
@@ -85,9 +79,6 @@ def test_broken_document():
     invalid_doc = Document()
     invalid_doc.id = 1
     invalid_doc.text = 'invalid'
-    invalid_doc.length = 2
-
-    assert invalid_doc.length == 2
 
     with pytest.raises(AttributeError):
         driver._apply_all([DocumentSet([invalid_doc])])

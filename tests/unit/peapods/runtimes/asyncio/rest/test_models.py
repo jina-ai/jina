@@ -60,7 +60,6 @@ def test_all_fields_in_document_proto():
         'parent_id',
         'chunks',
         'weight',
-        'length',
         'matches',
         'mime_type',
         'uri',

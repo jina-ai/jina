@@ -22,14 +22,14 @@ class MockMinRanker(Chunk2DocRanker):
 class MockLengthRanker(Chunk2DocRanker):
     def __init__(self, *args, **kwargs):
         super().__init__(
-            query_required_keys=['length'],
-            match_required_keys=['length'],
+            query_required_keys=['weight'],
+            match_required_keys=['weight'],
             *args,
             **kwargs
         )
 
     def score(self, match_idx, query_chunk_meta, match_chunk_meta, *args, **kwargs):
-        return match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['length']
+        return match_chunk_meta[match_idx[0][self.COL_DOC_CHUNK_ID]]['weight']
 
 
 class MockPriceDiscountRanker(Chunk2DocRanker):
@@ -84,11 +84,11 @@ def create_document_to_score():
             match.id = str(match_id)
             parent_id = 10 * int(match_id)
             match.parent_id = str(parent_id)
-            match.length = int(match_id)
             # to be used by MaxRanker and MinRanker
             match.score = NamedScore(value=int(match_id), ref_id=chunk.id)
             match.tags['price'] = match.score.value
             match.tags['discount'] = DISCOUNT_VAL
+            match.weight = 2 * int(chunk_id) + m
             chunk.matches.append(match)
         doc.chunks.append(chunk)
     return doc
@@ -117,7 +117,6 @@ def create_chunk_matches_to_score():
             match.parent_id = str(parent_id)
             match.score = NamedScore(value=score_value, ref_id=chunk.id)
             match.id = str(10 * int(parent_id) + score_value)
-            match.length = 4
             chunk.matches.append(match)
         doc.chunks.append(chunk)
     return doc
@@ -150,7 +149,6 @@ def create_chunk_chunk_matches_to_score():
             match.parent_id = str(parent_id)
             match.score = NamedScore(value=score_value, ref_id=chunk_chunk.id)
             match.id = str(10 * parent_id + score_value)
-            match.length = 4
             chunk_chunk.matches.append(match)
         chunk.chunks.append(chunk_chunk)
     doc.chunks.append(chunk)
