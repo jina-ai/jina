@@ -23,11 +23,6 @@ def test_query_image():
 
 
 @pytest.fixture
-def test_query_text():
-    return 'Woman using app on iPhone with black and neon color lion print case'
-
-
-@pytest.fixture
 def image_chunk(test_query_image):
     return Document(
         {
