@@ -3,10 +3,6 @@ on:
     - !VectorSearchDriver
       with:
         executor: BaseVectorIndexer
-    - !ExcludeQL
-      with:
-        fields:
-          - embedding
     - !KVSearchDriver
       with:
         executor: BaseKVIndexer
