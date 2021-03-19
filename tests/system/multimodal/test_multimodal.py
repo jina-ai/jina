@@ -30,7 +30,12 @@ def test_query_text():
 @pytest.fixture
 def image_chunk(test_query_image):
     return Document(
-        {'weight': 0.5, 'uri': test_query_image, 'granularity': 1, 'mime_type': 'image/jpeg'}
+        {
+            'weight': 0.5,
+            'uri': test_query_image,
+            'granularity': 1,
+            'mime_type': 'image/jpeg',
+        }
     )
 
 
@@ -56,6 +61,7 @@ def query_document(image_chunk, text_chunk):
 
 def test_multimodal(helloworld_args, query_document, mocker):
     """Regression test for multimodal example."""
+
     def validate_response(resp):
         assert len(resp.search.docs) == 1
         for doc in resp.search.docs:
@@ -69,7 +75,10 @@ def test_multimodal(helloworld_args, query_document, mocker):
 
     with Flow.load_config(os.path.join(flow_query_path, 'flow-query.yml')) as f:
         f.search(
-            inputs=[query_document], on_done=mock_on_done, on_fail=mock_on_fail, top_k=10,
+            inputs=[query_document],
+            on_done=mock_on_done,
+            on_fail=mock_on_fail,
+            top_k=10,
         )
 
     mock_on_fail.assert_not_called()
