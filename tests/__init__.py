@@ -61,8 +61,8 @@ def validate_callback(mock, validate_func):
 
 
 np.random.seed(0)
-d_embedding = np.array([1, 1, 1, 1, 1, 1, 1])
-c_embedding = np.array([2, 2, 2, 2, 2, 2, 2])
+d_embedding = np.array([1, 1, 1, 1, 1, 1, 1], dtype=np.float64)
+c_embedding = np.array([2, 2, 2, 2, 2, 2, 2], dtype=np.float64)
 
 
 def get_documents(chunks, same_content, nr=10, index_start=0, same_tag_content=None):

@@ -1,0 +1,5 @@
+!Flow
+version: '1'
+pods:
+  - name: indexer_crud
+    uses: indexer_crud.yml

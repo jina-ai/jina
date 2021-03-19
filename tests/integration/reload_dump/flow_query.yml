@@ -1,0 +1,6 @@
+!Flow
+version: '1'
+pods:
+  - name: indexer_query
+    uses: indexer_query.yml
+#    shards: 3

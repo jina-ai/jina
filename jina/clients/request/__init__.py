@@ -54,7 +54,9 @@ def request_generator(
         if not isinstance(data, Iterable):
             data = [data]
         for batch in batch_iterator(data, request_size):
-            yield _new_request_from_batch(_kwargs, batch, data_type, mode, queryset)
+            yield _new_request_from_batch(
+                _kwargs, batch, data_type, mode, queryset, **kwargs
+            )
 
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception

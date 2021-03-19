@@ -303,6 +303,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 
         .. # noqa: DAR101
         """
+        # print(f'## {self.__class__=}')
         raise NotImplementedError
 
     def __eq__(self, other):
@@ -474,9 +475,12 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         :param kwargs: additional key value arguments for the call of super().attach()
         """
         super().attach(*args, **kwargs)
+        # print(f'## {self._executor_name=}. {executor.name=}')
         if self._executor_name and isinstance(executor, CompoundExecutor):
             if self._executor_name in executor:
                 self._exec = executor[self._executor_name]
+            elif self._executor_name == executor.name:
+                self._exec = executor
             else:
                 for c in executor.components:
                     if any(
@@ -493,13 +497,15 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             self._exec = executor
 
         if self._method_name:
+            # print(f'## {self._method_name=}; {BaseExecutor.exec_methods=}')
             if self._method_name not in BaseExecutor.exec_methods:
                 self.logger.warning(
                     f'Using method {self._method_name} as driver execution function which is not registered'
                     f'as a potential `exec_method` of an Executor. It won\'t work if used inside a CompoundExecutor'
                 )
-
+            # print(f'## going to set exec_fn to {getattr(self.exec, self._method_name)=}')
             self._exec_fn = getattr(self.exec, self._method_name)
+        # print(f'## {self._exec_fn=}')
 
     def __getstate__(self) -> Dict[str, Any]:
         """Do not save the executor and executor function, as it would be cross-referencing and unserializable.

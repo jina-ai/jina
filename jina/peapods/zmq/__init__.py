@@ -415,7 +415,7 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
+def send_ctrl_message(address: str, cmd: str, timeout: int, *args) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
@@ -427,7 +427,7 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        msg = ControlMessage(cmd)
+        msg = ControlMessage(cmd, *args)
         send_message(sock, msg, timeout)
         r = None
         try:

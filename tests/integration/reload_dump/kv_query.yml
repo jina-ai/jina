@@ -1,0 +1,25 @@
+jtype: QueryBinaryPbIndexer
+with:
+  index_filename: vec.gz
+  metric: euclidean
+metas:
+  name: vecidx
+  # match # doc id = 2
+  workspace: $JINA_WORKSPACE_QUERY_KV
+on:
+  SearchRequest:
+    - !VectorSearchDriver
+      with:
+        executor: BaseVectorIndexer
+    - !ExcludeQL
+      with:
+        fields:
+          - embedding
+    - !KVSearchDriver
+      with:
+        executor: BaseKVIndexer
+        is_update: True
+        traversal_paths: ['m']
+  ControlRequest:
+    - !ReloadControlReqDriver {}  # passes the SAME path to all the Peas (executors) --> data is duplicated --> same as 'polling' : 'all' at index time
+    # solution: Peas need to know their id?

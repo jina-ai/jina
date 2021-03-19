@@ -1,10 +1,12 @@
+import os
 import warnings
-from typing import Union, Iterable, TextIO, Dict, Optional
+from typing import Union, Iterable, TextIO, Dict, Optional, List
 
 import numpy as np
 
 from ...clients.base import InputType, InputDeleteType, CallbackFnType
 from ...enums import DataInputType
+from ...executors.reload_helpers import DumpTypes
 from ...helper import deprecated_alias
 
 
@@ -535,6 +537,55 @@ class CRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).delete(ids, on_done, on_error, on_always, **kwargs)
+
+    def reload(
+        self,
+        path: str,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs,
+    ):
+        """Do deletion on the current Flow
+        # TODO to be done
+        :param ids: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        self._get_client(**kwargs).reload(path, on_done, on_error, on_always, **kwargs)
+
+    def dump(
+        self,
+        path: str,
+        shards: int = None,
+        formats: List[DumpTypes] = None,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs,
+    ):
+        """Do deletion on the current Flow
+        # TODO to be done
+        :param formats:
+        :param path:
+        :param shards:
+        :param ids: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        """
+        self._get_client(**kwargs).dump(
+            path,
+            on_done,
+            on_error,
+            on_always,
+            shards=shards,
+            formats=formats,
+            **kwargs,
+        )
 
     @deprecated_alias(
         input_fn=('inputs', 0),
