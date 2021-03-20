@@ -31,7 +31,7 @@ def expected_result():
     return '''There’s no evidence from the outbreak that eating garlic, sipping water every 15 minutes or taking vitamin C will protect people from the new coronavirus.'''
 
 
-def test_chatbot(chatbot_args, query_document, payload, post_uri, expected_result):
+def test_chatbot(chatbot_args, payload, post_uri, expected_result):
     """Regression test for multimodal example."""
     hello_world(chatbot_args)
     resp = requests.post(post_uri, json=payload)
