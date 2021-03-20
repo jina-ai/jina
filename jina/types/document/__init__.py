@@ -464,7 +464,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> 'np.ndarray':
+    def blob(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
@@ -483,12 +483,19 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'np.ndarray':
+    def embedding(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
         """
         return NdArray(self._pb_body.embedding).value
+
+    def cast_embedding(self, output_type) -> 'Union[np.ndarray, scipy.coo_matrix]':
+        """Return ``embedding`` of the content of a Document.
+
+        :return: the embedding from the proto
+        """
+        return NdArray(self._pb_body.embedding, output_type).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
@@ -514,6 +521,16 @@ class Document(ProtoTypeMixin, Traversable):
                 sparse_cls=SparseNdArray,
                 proto=getattr(self._pb_body, k),
             )
+            protbuff_updater.value = v
+        elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
+            from ..ndarray.sparse.tensorflow import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            # breakpoint()
             protbuff_updater.value = v
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')

@@ -172,8 +172,11 @@ def test_sparse_scipy_formats():
     d = Document()
     d.embedding = X
     d.blob = X
-    # The following print statement is true because data is converted to coo_matrix
-    print('d.embedding == sp.coo_matrix: ', d.embedding == sp.coo_matrix)
+    # The following print statement is True because data is converted to coo_matrix
+    print(
+        'isinstance(d.embedding, sp.coo_matrix):',
+        isinstance(d.embedding, sp.coo_matrix),
+    )
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
     np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
@@ -182,7 +185,10 @@ def test_sparse_scipy_formats():
     d.embedding = X
     d.blob = X
     # The following print statement is False because data is converted to coo_matrix
-    print('d.embedding == sp.bsr_matrix: ', d.embedding == sp.bsr_matrix)
+    print(
+        'isinstance(d.embedding, sp.bsr_matrix):',
+        isinstance(d.embedding, sp.bsr_matrix),
+    )
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
     np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
@@ -191,7 +197,10 @@ def test_sparse_scipy_formats():
     d.embedding = X
     d.blob = X
     # The following print statement is False because data is converted to coo_matrix
-    print('d.embedding == sp.csr_matrix: ', d.embedding == sp.csr_matrix)
+    print(
+        'isinstance(d.embedding, sp.csr_matrix):',
+        isinstance(d.embedding, sp.csr_matrix),
+    )
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
     np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
@@ -200,7 +209,32 @@ def test_sparse_scipy_formats():
     d.embedding = X
     d.blob = X
     # The following print statement is False because data is converted to coo_matrix
-    print('d.embedding == sp.csc_matrix: ', d.embedding == sp.csc_matrix)
+    print(
+        'isinstance(d.embedding, sp.csc_matrix):',
+        isinstance(d.embedding, sp.coo_matrix),
+    )
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
+
+
+def test_sparse_tensorflow_formats():
+    from jina.types.ndarray.generic import NdArray
+    import tensorflow as tf
+    from jina import Document
+
+    row = np.array([0, 0, 1, 2, 2, 2])
+    col = np.array([0, 2, 2, 0, 1, 2])
+    data = np.array([1, 2, 3, 4, 5, 6])
+    X = tf.SparseTensor(indices=[[0, 3], [2, 4]], values=data, dense_shape=[4, 10])
+
+    d = Document()
+    d.embedding = X
+    d.blob = X
+    # The following print statement is False because data is converted to coo_matrix
+    print(
+        'isinstance(d.embedding, tf.SparseTensor):',
+        isinstance(d.embedding, tf.SparseTensor),
+    )
     np.testing.assert_array_equal(d.embedding.todense(), X.todense())
     np.testing.assert_array_equal(d.blob.todense(), X.todense())
 
