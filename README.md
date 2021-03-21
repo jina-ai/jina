@@ -257,6 +257,8 @@ with f:
 </tr>
 </table>
 
+For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)  
+
 
 #### Document
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
