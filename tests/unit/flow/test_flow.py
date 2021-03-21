@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pytest
+
 from jina import Flow, Document
 from jina.enums import SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
@@ -753,5 +754,19 @@ def test_flow_add_class():
 
     f = Flow().add(uses=BaseExecutor).add(uses=CustomizedExecutor)
 
+    with f:
+        pass
+
+
+def test_flow_allinone_yaml():
+    from jina import Encoder
+    class CustomizedEncoder(Encoder):
+        pass
+
+    f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-allinone.yml'))
+    with f:
+        pass
+
+    f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-allinone-oldstyle.yml'))
     with f:
         pass
