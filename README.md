@@ -525,7 +525,7 @@ To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Exec
 
 
 ```python
-f = (Flow().add(uses='MyBertEncoder')  # class name of a Jina Executor
+f = (Flow().add(uses=MyBertEncoder)  # the class of a Jina Executor
            .add(uses='docker://jinahub/pod.encoder.dummy_mwu_encoder:0.0.6-0.9.3')  # the image name
            .add(uses='myencoder.yml')  # YAML serialization of a Jina Executor
            .add(uses='!WaveletTransformer | {freq: 20}')  # inline YAML config
