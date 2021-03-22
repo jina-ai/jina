@@ -530,7 +530,6 @@ class Document(ProtoTypeMixin, Traversable):
                 sparse_cls=SparseNdArray,
                 proto=getattr(self._pb_body, k),
             )
-            # breakpoint()
             protbuff_updater.value = v
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')

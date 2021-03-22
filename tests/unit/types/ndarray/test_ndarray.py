@@ -225,7 +225,11 @@ def test_sparse_tensorflow_formats():
     row = np.array([0, 0, 1, 2, 2, 2])
     col = np.array([0, 2, 2, 0, 1, 2])
     data = np.array([1, 2, 3, 4, 5, 6])
-    X = tf.SparseTensor(indices=[[0, 3], [2, 4]], values=data, dense_shape=[4, 10])
+    indices=[(x,y) for x,y in zip(row,col)]
+
+    X = tf.SparseTensor(indices=indices,
+                        values=data,
+                        dense_shape=[4, 10])
 
     d = Document()
     d.embedding = X
@@ -235,8 +239,8 @@ def test_sparse_tensorflow_formats():
         'isinstance(d.embedding, tf.SparseTensor):',
         isinstance(d.embedding, tf.SparseTensor),
     )
-    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
-    np.testing.assert_array_equal(d.blob.todense(), X.todense())
+    np.testing.assert_array_equal(d.embedding.todense(), tf.sparse.to_dense(X))
+    np.testing.assert_array_equal(d.blob.todense(), tf.sparse.to_dense(X))
 
 
 @pytest.mark.parametrize('shape', [[10], [7, 8], [7, 8, 9]])
