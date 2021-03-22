@@ -252,6 +252,7 @@ class RequestType(BetterEnum):
     UPDATE = 3
     CONTROL = 4
     TRAIN = 5
+    RECONNECTPOD = 6
 
 
 class CompressAlgo(BetterEnum):

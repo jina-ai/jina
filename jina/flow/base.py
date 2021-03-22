@@ -7,15 +7,16 @@ import copy
 import os
 import re
 import threading
+import time
 import uuid
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
 
 from .builder import build_required, _build_flow, _hanging_pods
-from .. import __default_host__
+from .. import __default_host__, helper, Document
 from ..clients import Client, WebSocketClient
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, SocketType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
     colored,
@@ -28,10 +29,11 @@ from ..helper import (
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
-
+from copy import deepcopy
 __all__ = ['BaseFlow']
 
 from ..peapods import BasePod
+from ..peapods.zmq import send_ctrl_message
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -567,6 +569,69 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._show_success_message()
 
         return self
+
+
+    def adjust_args(self, old_args):
+        # the new pod should have the exact same parameters but needs a different new_args.port_in
+        # also the workspace can be changed here in the future.
+        new_args = deepcopy(old_args)
+        # new_args.port_ctrl = helper.random_port()
+
+        new_args.port_in = 54000
+        # new_args.port_out is 53000 and does not need to be changed
+
+        # if we would not set it to SocketType.PUSH_CONNECT it would default to SocketType.PUSH_BIND
+        # this is only necessary to do since we are creating the pod without gateway
+        new_args.socket_out = SocketType.PUSH_CONNECT
+
+        # just for illustration purpose, we assign a new name to the pod. It can have the original name as well
+        new_args.name = 'new_pod2'
+        return new_args
+
+    def update_pod(self, pod_name):
+        # TODO for some reason, it hangs when runnig in thread
+        # x = threading.Thread(target=self.update_pod_thread, args=(pod_name,))
+        # x.start()
+        self.update_pod_thread(pod_name)
+
+    def update_pod_thread(self, pod_name):
+        # run in thread
+        print('### start updating pod')
+        old_pod = self._pod_nodes[pod_name]
+        new_pod_args = self.adjust_args(old_pod.args)
+        # new_pod_args.name = 'replica'
+        print('### create new BasePod')
+        new_pod = BasePod(new_pod_args, needs=old_pod.needs)
+        try:
+            new_pod.args.noblock_on_start = True
+            print('### enter context')
+            self.enter_context(new_pod)
+            print('### wait until started')
+            new_pod.wait_start_success()
+            time.sleep(2) # simulate loading new pea takes some time
+            print('### second pod started')
+        except Exception as ex:
+            self.logger.error(
+                f'{new_pod!r} can not be started due to {ex!r}, Flow is aborted'
+            )
+            self.close()
+            raise
+        ### hack ###
+        self.pod_name = pod_name
+        self.new_pod = new_pod
+        self.old_pod = old_pod
+
+
+
+    def reconnect_pod(
+            self,
+            pod
+    ):
+        self._get_client().reconnect_pod(pod+f'/tail,{self.new_pod.args.port_in}')
+        self._pod_nodes[self.pod_name] = self.new_pod
+        print('### close original pod')
+        self.old_pod.close()
+        print('### original pod closed')
 
     @property
     def num_pods(self) -> int:

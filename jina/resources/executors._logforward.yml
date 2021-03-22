@@ -6,5 +6,5 @@ requests:
   on:
     ControlRequest:
       - !ControlReqDriver {}
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
+    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ReconnectPodRequest]:
       - !LogInfoDriver {}

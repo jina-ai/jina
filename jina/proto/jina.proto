@@ -266,6 +266,7 @@ message RequestProto {
         ControlRequestProto control = 5; // a control request
         DeleteRequestProto delete = 9; // a delete request
         UpdateRequestProto update = 10; // an update request
+        ReconnectPodRequestProto reconnectpod = 11; //
     }
 
     /**
@@ -298,6 +299,13 @@ message RequestProto {
      */
     message DeleteRequestProto {
         repeated string ids = 1; // a list of Document Ids to delete
+    }
+
+    /**
+     * Represents a reload_pod request
+     */
+    message ReconnectPodRequestProto {
+        repeated string pod_and_out_port = 1; //TODO use control request instead
     }
 
     /**

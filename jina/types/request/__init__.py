@@ -136,6 +136,7 @@ class Request(ProtoTypeMixin):
         from .index import IndexRequest
         from .delete import DeleteRequest
         from .update import UpdateRequest
+        from .ReconnectPodRequest import ReconnectPodRequest
 
         rt = request_type.upper()
         if rt.startswith(str(RequestType.TRAIN)):
@@ -150,6 +151,9 @@ class Request(ProtoTypeMixin):
             self.__class__ = UpdateRequest
         elif rt.startswith(str(RequestType.CONTROL)):
             self.__class__ = ControlRequest
+        elif rt.startswith(str(RequestType.RECONNECTPOD)):
+            self.__class__ = ReconnectPodRequest
+
         else:
             raise TypeError(f'{request_type} is not recognized')
         return self

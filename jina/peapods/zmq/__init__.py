@@ -354,6 +354,30 @@ class ZmqStreamlet(Zmqlet):
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
+    def update_out_port(self, port_out):
+        ctx = self.ctx
+        # print(f'### {self.args.name}: change port_out from {self.args.port_out} to {port_out}')
+        self.args.port_out = port_out
+        self.out_sock.close()
+        out_sock, out_addr = _init_socket(
+            ctx,
+            self.args.host_out,
+            self.args.port_out,
+            self.args.socket_out,
+            self.identity,
+            ssh_server=self.args.ssh_server,
+            ssh_keyfile=self.args.ssh_keyfile,
+            ssh_password=self.args.ssh_password,
+        )
+        self.out_sock = ZMQStream(out_sock, self.io_loop)
+
+
+        if self.out_sock_type == zmq.ROUTER:
+            self.out_sock.on_recv(lambda x: self.callback(x, self.out_sock_type))
+
+        self.opened_socks[1] = self.out_sock
+
+
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
 
