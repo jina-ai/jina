@@ -1,22 +1,74 @@
 import os
+import json
+import base64
+from pathlib import Path
 
 import pytest
+import requests
 
 from jina.docker.hubio import HubIO
 from jina.parsers.hub import set_hub_build_parser, set_hub_pushpull_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+DUMMY_ACCESS_TOKEN = 'dummy access'
+
+
+@pytest.fixture
+def dummy_access_token(tmpdir):
+    os.mkdir(os.path.join(str(tmpdir), '.jina'))
+    access_path = os.path.join(os.path.join(str(tmpdir), '.jina'), 'access.yml')
+
+    with open(access_path, 'w') as wp:
+        wp.write(f'access_token: {DUMMY_ACCESS_TOKEN}')
+
+
+class MockResponse:
+    def __init__(self, response_code: int = 200):
+        self.response_code = response_code
+
+    @property
+    def text(self):
+        return json.dumps(
+            {
+                'docker_username': base64.b64encode('abc'.encode('ascii')).decode(
+                    'ascii'
+                ),
+                'docker_password': base64.b64encode('def'.encode('ascii')).decode(
+                    'ascii'
+                ),
+            }
+        )
+
+    @property
+    def status_code(self):
+        return self.response_code
 
 
 @pytest.mark.timeout(360)
-def test_hub_build_pull():
+def test_hub_build_pull(mocker, monkeypatch, tmpdir, dummy_access_token):
+
+    mock = mocker.Mock()
+
+    def _mock_get(url, headers):
+        mock(url=url, headers=headers)
+        return MockResponse(response_code=requests.codes.ok)
+
+    def _mock_post(url, headers, data):
+        mock(url=url, headers=headers, data=data)
+        return MockResponse(response_code=requests.codes.ok)
+
+    def _mock_home():
+        return Path(str(tmpdir))
+
+    monkeypatch.setattr(Path, 'home', _mock_home)
+    monkeypatch.setattr(requests, 'get', _mock_get)
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    monkeypatch.setattr(HubIO, '_docker_login', mock)
+
     args = set_hub_build_parser().parse_args(
-        [os.path.join(cur_dir, 'hub-mwu'), '--push', '--test-uses', '--raise-error']
+        [os.path.join(cur_dir, 'hub-mwu'), '--push', '--raise-error']
     )
     HubIO(args).build()
-
-    args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder'])
-    HubIO(args).pull()
 
     args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder:0.0.6'])
     HubIO(args).pull()

@@ -1,12 +1,13 @@
-"""Module wrapping interactions with the remote Jina Hub."""
-import base64
+"""Module wrapping interactions with the remote Jina Hub API"""
+from jina.logging.logger import JinaLogger
 import json
-from typing import Dict, Sequence, Any, Optional, List, Tuple
+import base64
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-
 from pkg_resources import resource_stream
+from typing import Dict, Sequence, Any, Optional, List, Tuple
+
 
 from .local import (
     _fetch_access_token,
@@ -14,14 +15,15 @@ from .local import (
     _make_hub_table_with_local,
     _load_local_hub_manifest,
 )
+from ...jaml import JAML
 from ...helper import colored
 from ...importer import ImportExtensions
-from ...jaml import JAML
 from ...logging.profile import TimeContext
+from ...excepts import HubLoginRequired
 
 
 def _list(
-    logger,
+    logger: JinaLogger,
     image_name: Optional[str] = None,
     image_kind: Optional[str] = None,
     image_type: Optional[str] = None,
@@ -74,7 +76,7 @@ def _list(
         return response
 
 
-def _fetch_docker_auth(logger) -> Tuple[str, str]:
+def _fetch_docker_auth(logger: JinaLogger) -> Tuple[str, str]:
     """Use Hub api to get docker credentials.
 
     :param logger: the logger instance
@@ -84,68 +86,58 @@ def _fetch_docker_auth(logger) -> Tuple[str, str]:
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
 
-    try:
-        with ImportExtensions(
-            required=True,
-            help_text='missing "requests" dependency, please do pip install "jina[http]"',
-        ):
-            import requests
-        headers = {
-            'Accept': 'application/json',
-            'authorizationToken': _fetch_access_token(logger),
-        }
-        response = requests.get(url=f'{hubapi_url}', headers=headers)
-        if response.status_code != requests.codes.ok:
-            logger.error(
-                f'failed to fetch docker credentials. status code {response.status_code}'
-            )
-        json_response = json.loads(response.text)
-        username = base64.b64decode(json_response['docker_username']).decode('ascii')
-        password = base64.b64decode(json_response['docker_password']).decode('ascii')
-        logger.debug(f'Successfully fetched docker creds for user')
-        return username, password
-    except Exception as exp:
-        logger.error(f'got an exception while fetching docker credentials {exp!r}')
+    with ImportExtensions(
+        required=True,
+        help_text='Missing "requests" dependency, please do pip install "jina[http]"',
+    ):
+        import requests
+
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': _fetch_access_token(logger),
+    }
+    response = requests.get(url=f'{hubapi_url}', headers=headers)
+    if response.status_code != requests.codes.ok:
+        raise HubLoginRequired(
+            f'❌ Failed to fetch docker credentials. status code {response.status_code}'
+        )
+    json_response = json.loads(response.text)
+    username = base64.b64decode(json_response['docker_username']).decode('ascii')
+    password = base64.b64decode(json_response['docker_password']).decode('ascii')
+    logger.debug(f'✅ Successfully fetched docker creds for user')
+    return username, password
 
 
-def _register_to_mongodb(logger, summary: Optional[Dict] = None):
+def _register_to_mongodb(logger: JinaLogger, summary: Optional[Dict] = None):
     """Hub API Invocation to run `hub push`.
 
     :param logger: the logger instance
     :param summary: the summary dict object
     """
+    # TODO(Deepankar): implement to jsonschema based validation for summary
     logger.info('registering image to Jina Hub database...')
 
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
 
-    try:
-        with ImportExtensions(
-            required=True,
-            help_text='missing "requests" dependency, please do pip install "jina[http]"',
-        ):
-            import requests
+    with ImportExtensions(
+        required=True,
+        help_text='Missing "requests" dependency, please do pip install "jina[http]"',
+    ):
+        import requests
 
-            headers = {
-                'Accept': 'application/json',
-                'authorizationToken': _fetch_access_token(logger),
-            }
-            response = requests.post(
-                url=f'{hubapi_url}', headers=headers, data=json.dumps(summary)
-            )
-            if response.status_code == requests.codes.ok:
-                logger.info(response.text)
-            elif response.status_code == requests.codes.unauthorized:
-                logger.critical(
-                    f'user is unauthorized to perform push operation. '
-                    f'please login using command: {colored("jina hub login", attrs=["bold"])}'
-                )
-            elif response.status_code == requests.codes.internal_server_error:
-                logger.critical(
-                    f'got an error from the API: {response.text}. If there are any authentication issues, '
-                    f'please remember to login using command: '
-                    f'{colored("jina hub login", attrs=["bold"])}'
-                )
-    except Exception as exp:
-        logger.error(f'got an exception while invoking hubapi for push {exp!r}')
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': _fetch_access_token(logger),
+    }
+    response = requests.post(
+        url=f'{hubapi_url}', headers=headers, data=json.dumps(summary)
+    )
+    if response.status_code == requests.codes.ok:
+        logger.success(f'✅ Successfully updated the database. {response.text}')
+    else:
+        raise HubLoginRequired(
+            f'❌ Got an error from the API: {response.text.rstrip()}. '
+            f'Please login using command: {colored("jina hub login", attrs=["bold"])}'
+        )
