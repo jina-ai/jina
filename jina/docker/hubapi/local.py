@@ -2,7 +2,7 @@
 
 import os
 import pkgutil
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List, Optional
 
 from pkg_resources import parse_version
 from setuptools import find_packages
@@ -65,30 +65,40 @@ def _list_local(logger) -> Optional[Dict[str, Any]]:
     return manifests
 
 
-def _fetch_access_token(logger):
-    """ Fetch github access token from credentials file, return as a request header """
+def _fetch_access_token(logger) -> Optional[str]:
+    """
+    Fetch github access token from credentials file, return as a request header
+
+    :param logger: the logger object with which to print
+    :return: local github access token (if found)
+    """
     logger.info('fetching github access token...')
 
     if not credentials_file().is_file():
-        logger.critical(
-            f'User not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}'
+        raise HubLoginRequired(
+            f'❌ User not logged in. please login using command: {colored("jina hub login", attrs=["bold"])}'
         )
-        raise HubLoginRequired
-
     try:
         with open(credentials_file(), 'r') as cf:
             cred_yml = JAML.load(cf)
             access_token = cred_yml['access_token']
             return access_token
-    except KeyError:
-        logger.error(
-            f'Invalid access file. '
+    except Exception:
+        raise HubLoginRequired(
+            f'❌ Invalid access file. '
             f'please re-login using command: {colored("jina hub login", attrs=["bold"])}'
         )
-        raise HubLoginRequired
 
 
-def _make_hub_table_with_local(images, local_images):
+def _make_hub_table_with_local(images: Dict, local_images: Dict) -> List[str]:
+    """
+    Pretty print remote and local hub images
+
+    :param images: remote images as a dict
+    :param local_images: local images as a dict
+    :return: table content to be pretty printed as a list
+    """
+
     info_table = [
         f'found {len(images)} matched hub images',
         '{:<50s}{:<25s}{:<30s}{:<25s}{:<30s}{:<50s}'.format(
@@ -130,7 +140,13 @@ def _make_hub_table_with_local(images, local_images):
     return info_table
 
 
-def _make_hub_table(images):
+def _make_hub_table(images) -> List[str]:
+    """
+    Pretty print local hub images
+
+    :param images: local images as a dict
+    :return: table content to be pretty printed as a list
+    """
     info_table = [
         f'found {len(images)} matched hub images',
         '{:<50s}{:<25s}{:<25s}{:<30s}'.format(

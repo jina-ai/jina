@@ -18,10 +18,10 @@ from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
 from .. import __version__ as jina_version
 from ..enums import BuildTestLevel
 from ..excepts import (
-    DockerLoginFailed,
     HubBuilderError,
     HubBuilderBuildError,
     HubBuilderTestError,
+    HubLoginRequired,
     ImageAlreadyExists,
 )
 from ..executors import BaseExecutor
@@ -166,7 +166,7 @@ class HubIO:
                     '3. Come back to this terminal\n'
                 )
                 # allowing sometime for the user to view the message
-                time.sleep(0.5)
+                time.sleep(1)
                 webbrowser.open(verification_uri, new=2)
             except:
                 pass  # intentional pass, browser support isn't cross-platform
@@ -193,13 +193,13 @@ class HubIO:
                     token = {'access_token': access_token_response['access_token']}
                     with open(credentials_file(), 'w') as cf:
                         JAML.dump(token, cf)
-                    self.logger.success(f'successfully logged in!')
+                    self.logger.success(f'✅ Successfully logged in!')
                     break
             else:
-                self.logger.error(f'max retries {login_max_retry} reached')
+                self.logger.error(f'❌ Max retries {login_max_retry} reached')
 
         except KeyError as exp:
-            self.logger.error(f'can not read the key in response: {exp}')
+            self.logger.error(f'❌ Can not read the key in response: {exp}')
 
     def list(self) -> Optional[List[Dict[str, Any]]]:
         """List all hub images given a filter specified by CLI.
@@ -279,7 +279,7 @@ class HubIO:
 
         except Exception as e:
             self.logger.error(f'Error when trying to push image {name}: {e!r}')
-            if isinstance(e, ImageAlreadyExists):
+            if isinstance(e, (ImageAlreadyExists, HubLoginRequired)):
                 raise e
 
     def _push_docker_hub(self, name: Optional[str] = None) -> None:
@@ -367,9 +367,11 @@ class HubIO:
                 password=self.args.password,
                 registry=self.args.registry,
             )
-            self.logger.debug(f'successfully logged in to docker hub')
+            self.logger.debug(f'✅ Successfully logged in to docker hub')
         except APIError:
-            raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
+            raise HubLoginRequired(
+                f'❌ Invalid docker credentials passed. docker login failed'
+            )
 
     def build(self) -> Dict:
         """

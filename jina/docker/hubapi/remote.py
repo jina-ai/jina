@@ -85,30 +85,26 @@ def _fetch_docker_auth(logger) -> Tuple[str, str]:
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
 
-    try:
-        with ImportExtensions(
-            required=True,
-            help_text='Missing "requests" dependency, please do pip install "jina[http]"',
-        ):
-            import requests
+    with ImportExtensions(
+        required=True,
+        help_text='Missing "requests" dependency, please do pip install "jina[http]"',
+    ):
+        import requests
 
-        headers = {
-            'Accept': 'application/json',
-            'authorizationToken': _fetch_access_token(logger),
-        }
-        response = requests.get(url=f'{hubapi_url}', headers=headers)
-        if response.status_code != requests.codes.ok:
-            logger.error(
-                f'Failed to fetch docker credentials. status code {response.status_code}'
-            )
-            raise HubLoginRequired
-        json_response = json.loads(response.text)
-        username = base64.b64decode(json_response['docker_username']).decode('ascii')
-        password = base64.b64decode(json_response['docker_password']).decode('ascii')
-        logger.debug(f'Successfully fetched docker creds for user')
-        return username, password
-    except Exception as exp:
-        logger.error(f'Got an exception while fetching docker credentials {exp!r}')
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': _fetch_access_token(logger),
+    }
+    response = requests.get(url=f'{hubapi_url}', headers=headers)
+    if response.status_code != requests.codes.ok:
+        raise HubLoginRequired(
+            f'❌ Failed to fetch docker credentials. status code {response.status_code}'
+        )
+    json_response = json.loads(response.text)
+    username = base64.b64decode(json_response['docker_username']).decode('ascii')
+    password = base64.b64decode(json_response['docker_password']).decode('ascii')
+    logger.debug(f'✅ Successfully fetched docker creds for user')
+    return username, password
 
 
 def _register_to_mongodb(logger, summary: Optional[Dict] = None):
@@ -123,27 +119,23 @@ def _register_to_mongodb(logger, summary: Optional[Dict] = None):
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
 
-    try:
-        with ImportExtensions(
-            required=True,
-            help_text='Missing "requests" dependency, please do pip install "jina[http]"',
-        ):
-            import requests
+    with ImportExtensions(
+        required=True,
+        help_text='Missing "requests" dependency, please do pip install "jina[http]"',
+    ):
+        import requests
 
-        headers = {
-            'Accept': 'application/json',
-            'authorizationToken': _fetch_access_token(logger),
-        }
-        response = requests.post(
-            url=f'{hubapi_url}', headers=headers, data=json.dumps(summary)
+    headers = {
+        'Accept': 'application/json',
+        'authorizationToken': _fetch_access_token(logger),
+    }
+    response = requests.post(
+        url=f'{hubapi_url}', headers=headers, data=json.dumps(summary)
+    )
+    if response.status_code == requests.codes.ok:
+        logger.success(f'✅ Successfully updated the database. {response.text}')
+    else:
+        raise HubLoginRequired(
+            f'❌ Got an error from the API: {response.text.rstrip()}. '
+            f'Please login using command: {colored("jina hub login", attrs=["bold"])}'
         )
-        if response.status_code == requests.codes.ok:
-            logger.success(f'Successfully updated the database. {response.text}')
-        else:
-            logger.critical(
-                f'Got an error from the API: {response.text.rstrip()}. '
-                f'Please login using command: {colored("jina hub login", attrs=["bold"])}'
-            )
-            raise HubLoginRequired
-    except Exception as exp:
-        logger.error(f'Got an exception while invoking hubapi for push {exp!r}')
