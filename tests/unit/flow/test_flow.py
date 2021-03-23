@@ -402,7 +402,7 @@ def test_index_text_files(mocker, restful, datauri_workspace):
     def validate(req):
         assert len(req.docs) > 0
         for d in req.docs:
-            assert d.text
+            assert d.mime_type == 'text/plain'
 
     response_mock = mocker.Mock()
 
