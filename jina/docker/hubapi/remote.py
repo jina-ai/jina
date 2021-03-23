@@ -1,4 +1,5 @@
 """Module wrapping interactions with the remote Jina Hub API"""
+from jina.logging.logger import JinaLogger
 import json
 import base64
 from urllib.error import HTTPError
@@ -22,7 +23,7 @@ from ...excepts import HubLoginRequired
 
 
 def _list(
-    logger,
+    logger: JinaLogger,
     image_name: Optional[str] = None,
     image_kind: Optional[str] = None,
     image_type: Optional[str] = None,
@@ -75,7 +76,7 @@ def _list(
         return response
 
 
-def _fetch_docker_auth(logger) -> Tuple[str, str]:
+def _fetch_docker_auth(logger: JinaLogger) -> Tuple[str, str]:
     """Use Hub api to get docker credentials.
 
     :param logger: the logger instance
@@ -107,12 +108,13 @@ def _fetch_docker_auth(logger) -> Tuple[str, str]:
     return username, password
 
 
-def _register_to_mongodb(logger, summary: Optional[Dict] = None):
+def _register_to_mongodb(logger: JinaLogger, summary: Optional[Dict] = None):
     """Hub API Invocation to run `hub push`.
 
     :param logger: the logger instance
     :param summary: the summary dict object
     """
+    # TODO(Deepankar): implement to jsonschema based validation for summary
     logger.info('registering image to Jina Hub database...')
 
     with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
