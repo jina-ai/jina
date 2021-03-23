@@ -32,7 +32,6 @@ def expected_result():
 
 @pytest.fixture(autouse=True)
 def start_server(xprocess, chatbot_args):
-
     class Starter(ProcessStarter):
         pattern = "You should see a demo page opened in your browser"
         args = ["jina", "hello", "chatbot"]
