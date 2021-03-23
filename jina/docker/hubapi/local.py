@@ -12,11 +12,14 @@ from ...excepts import HubLoginRequired
 from ...helper import colored
 from ...jaml import JAML
 from ...logging import default_logger
+from ... import __version__
 
 _header_attrs = ['bold', 'underline']
 
 
 def _load_local_hub_manifest():
+    from ..checker import safe_url_name
+
     namespace = 'jina.hub'
     try:
         path = os.path.dirname(pkgutil.get_loader(namespace).path)
@@ -33,9 +36,16 @@ def _load_local_hub_manifest():
             try:
                 with open(m_yml) as fp:
                     m = JAML.load(fp)
+                    m['source_path'] = info.module_finder.path
+                    exec_name = safe_url_name(
+                        f'jinahub/'
+                        + f'{m["type"]}.{m["kind"]}.{m["name"]}'
+                    )
+                    tag = exec_name + f':{m["version"]}-{__version__}'
+                    m['image_tag'] = tag
                     hub_images[m['name']] = m
             except:
-                pass
+                pass  #: intentionally suppress the error, as some dirs do not fit to a valid hub structure
 
     hub_images = {}
 
