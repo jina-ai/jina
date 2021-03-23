@@ -2,6 +2,7 @@ from multiprocessing import Process
 
 import pytest
 import requests
+from xprocess import ProcessStarter
 
 from jina.helloworld.chatbot import hello_world
 from jina.parsers.helloworld import set_hw_chatbot_parser
@@ -29,15 +30,27 @@ def expected_result():
     return '''There’s no evidence from the outbreak that eating garlic, sipping water every 15 minutes or taking vitamin C will protect people from the new coronavirus.'''
 
 
-@pytest.fixture
-def server(chatbot_args):
-    proc = Process(target=hello_world(chatbot_args), daemon=True)
-    proc.start()
+@pytest.fixture(autouse=True)
+def start_server(xprocess, chatbot_args):
+
+    class Starter(ProcessStarter):
+        pattern = "You should see a demo page opened in your browser"
+
+        # command to start process
+        args = ["jina", "hello", "chatbot"]
+
+        max_read_lines = 10000
+
+    # ensure process is running and return its logfile
+    xprocess.ensure("server", Starter)
+
     yield
-    proc.kill()
+
+    # clean up whole process tree afterwards
+    xprocess.getinfo("server").terminate()
 
 
-def test_chatbot(server, payload, post_uri, expected_result):
+def test_chatbot(payload, post_uri, expected_result):
     """Regression test for chatbot example."""
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
