@@ -1,5 +1,3 @@
-from multiprocessing import Process
-
 import pytest
 import requests
 from xprocess import ProcessStarter
