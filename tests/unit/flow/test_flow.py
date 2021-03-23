@@ -54,15 +54,15 @@ def test_flow_with_jump(tmpdir):
 
     f = (
         Flow()
-            .add(name='r1')
-            .add(name='r2')
-            .add(name='r3', needs='r1')
-            .add(name='r4', needs='r2')
-            .add(name='r5', needs='r3')
-            .add(name='r6', needs='r4')
-            .add(name='r8', needs='r6')
-            .add(name='r9', needs='r5')
-            .add(name='r10', needs=['r9', 'r8'])
+        .add(name='r1')
+        .add(name='r2')
+        .add(name='r3', needs='r1')
+        .add(name='r4', needs='r2')
+        .add(name='r5', needs='r3')
+        .add(name='r6', needs='r4')
+        .add(name='r8', needs='r6')
+        .add(name='r9', needs='r5')
+        .add(name='r10', needs=['r9', 'r8'])
     )
 
     with f:
@@ -116,10 +116,10 @@ def test_flow_identical(tmpdir):
 
     b = (
         Flow()
-            .add(name='chunk_seg', parallel=3)
-            .add(name='wqncode1', parallel=2)
-            .add(name='encode2', parallel=2, needs='chunk_seg')
-            .join(['wqncode1', 'encode2'])
+        .add(name='chunk_seg', parallel=3)
+        .add(name='wqncode1', parallel=2)
+        .add(name='encode2', parallel=2, needs='chunk_seg')
+        .join(['wqncode1', 'encode2'])
     )
 
     a.save_config(os.path.join(str(tmpdir), 'test2.yml'))
@@ -193,15 +193,15 @@ def test_shards(docpb_workspace):
 def test_py_client():
     f = (
         Flow()
-            .add(name='r1')
-            .add(name='r2')
-            .add(name='r3', needs='r1')
-            .add(name='r4', needs='r2')
-            .add(name='r5', needs='r3')
-            .add(name='r6', needs='r4')
-            .add(name='r8', needs='r6')
-            .add(name='r9', needs='r5')
-            .add(name='r10', needs=['r9', 'r8'])
+        .add(name='r1')
+        .add(name='r2')
+        .add(name='r3', needs='r1')
+        .add(name='r4', needs='r2')
+        .add(name='r5', needs='r3')
+        .add(name='r6', needs='r4')
+        .add(name='r8', needs='r6')
+        .add(name='r9', needs='r5')
+        .add(name='r10', needs=['r9', 'r8'])
     )
 
     with f:
@@ -274,10 +274,10 @@ def test_dry_run_with_two_pathways_diverging_at_gateway():
 def test_dry_run_with_two_pathways_diverging_at_non_gateway():
     f = (
         Flow()
-            .add(name='r1')
-            .add(name='r2')
-            .add(name='r3', needs='r1')
-            .join(['r2', 'r3'])
+        .add(name='r1')
+        .add(name='r2')
+        .add(name='r3', needs='r1')
+        .join(['r2', 'r3'])
     )
 
     with f:
@@ -305,9 +305,9 @@ def test_dry_run_with_two_pathways_diverging_at_non_gateway():
 def test_refactor_num_part():
     f = (
         Flow()
-            .add(name='r1', uses='_logforward', needs='gateway')
-            .add(name='r2', uses='_logforward', needs='gateway')
-            .join(['r1', 'r2'])
+        .add(name='r1', uses='_logforward', needs='gateway')
+        .add(name='r2', uses='_logforward', needs='gateway')
+        .join(['r1', 'r2'])
     )
 
     with f:
@@ -331,10 +331,10 @@ def test_refactor_num_part():
 def test_refactor_num_part_proxy():
     f = (
         Flow()
-            .add(name='r1', uses='_logforward')
-            .add(name='r2', uses='_logforward', needs='r1')
-            .add(name='r3', uses='_logforward', needs='r1')
-            .join(['r2', 'r3'])
+        .add(name='r1', uses='_logforward')
+        .add(name='r2', uses='_logforward', needs='r1')
+        .add(name='r3', uses='_logforward', needs='r1')
+        .join(['r2', 'r3'])
     )
 
     with f:
@@ -363,10 +363,10 @@ def test_refactor_num_part_proxy():
 def test_refactor_num_part_proxy_2(restful):
     f = (
         Flow(restful=restful)
-            .add(name='r1', uses='_logforward')
-            .add(name='r2', uses='_logforward', needs='r1', parallel=2)
-            .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
-            .needs(['r2', 'r3'])
+        .add(name='r1', uses='_logforward')
+        .add(name='r2', uses='_logforward', needs='r1', parallel=2)
+        .add(name='r3', uses='_logforward', needs='r1', parallel=3, polling='ALL')
+        .needs(['r2', 'r3'])
     )
 
     with f:
@@ -402,7 +402,7 @@ def test_index_text_files(mocker, restful, datauri_workspace):
     def validate(req):
         assert len(req.docs) > 0
         for d in req.docs:
-            assert d.text
+            assert d.mime_type == 'text/plain'
 
     response_mock = mocker.Mock()
 
@@ -427,9 +427,9 @@ def test_flow_with_publish_driver(mocker, restful):
 
     f = (
         Flow(restful=restful)
-            .add(name='r2', uses='!OneHotTextEncoder')
-            .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
-            .join(needs=['r2', 'r3'])
+        .add(name='r2', uses='!OneHotTextEncoder')
+        .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
+        .join(needs=['r2', 'r3'])
     )
 
     with f:
@@ -457,8 +457,8 @@ def test_flow_with_modalitys_simple(mocker, restful):
 
     flow = (
         Flow(restful=restful)
-            .add(name='chunk_seg', parallel=3)
-            .add(
+        .add(name='chunk_seg', parallel=3)
+        .add(
             name='encoder12',
             parallel=2,
             uses='- !FilterQL | {lookups: {modality__in: [mode1, mode2]}, traversal_paths: [c]}',
@@ -482,15 +482,15 @@ def test_flow_arguments_priorities():
 def test_flow_arbitrary_needs(restful):
     f = (
         Flow(restful=restful)
-            .add(name='p1')
-            .add(name='p2', needs='gateway')
-            .add(name='p3', needs='gateway')
-            .add(name='p4', needs='gateway')
-            .add(name='p5', needs='gateway')
-            .needs(['p2', 'p4'], name='r1')
-            .needs(['p3', 'p5'], name='r2')
-            .needs(['p1', 'r1'], name='r3')
-            .needs(['r2', 'r3'], name='r4')
+        .add(name='p1')
+        .add(name='p2', needs='gateway')
+        .add(name='p3', needs='gateway')
+        .add(name='p4', needs='gateway')
+        .add(name='p5', needs='gateway')
+        .needs(['p2', 'p4'], name='r1')
+        .needs(['p3', 'p5'], name='r2')
+        .needs(['p1', 'r1'], name='r3')
+        .needs(['r2', 'r3'], name='r4')
     )
 
     with f:
@@ -504,11 +504,11 @@ def test_flow_needs_all(restful):
 
     f = (
         Flow(restful=restful)
-            .add(name='p1', needs='gateway')
-            .add(name='p2', needs='gateway')
-            .add(name='p3', needs='gateway')
-            .needs(needs=['p1', 'p2'], name='r1')
-            .needs_all(name='r2')
+        .add(name='p1', needs='gateway')
+        .add(name='p2', needs='gateway')
+        .add(name='p3', needs='gateway')
+        .needs(needs=['p1', 'p2'], name='r1')
+        .needs_all(name='r2')
     )
     assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
 
@@ -517,12 +517,12 @@ def test_flow_needs_all(restful):
 
     f = (
         Flow(restful=restful)
-            .add(name='p1', needs='gateway')
-            .add(name='p2', needs='gateway')
-            .add(name='p3', needs='gateway')
-            .needs(needs=['p1', 'p2'], name='r1')
-            .needs_all(name='r2')
-            .add(name='p4', needs='r2')
+        .add(name='p1', needs='gateway')
+        .add(name='p2', needs='gateway')
+        .add(name='p3', needs='gateway')
+        .needs(needs=['p1', 'p2'], name='r1')
+        .needs_all(name='r2')
+        .add(name='p4', needs='r2')
     )
     assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
     assert f._pod_nodes['p4'].needs == {'r2'}
@@ -676,10 +676,10 @@ def test_bad_pod_graceful_termination():
 def test_socket_types_2_remote_one_local():
     f = (
         Flow()
-            .add(name='pod1', host='0.0.0.1')
-            .add(name='pod2', parallel=2, host='0.0.0.2')
-            .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
-            .join(name='join', needs=['pod2', 'pod3'])
+        .add(name='pod1', host='0.0.0.1')
+        .add(name='pod2', parallel=2, host='0.0.0.2')
+        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['pod2', 'pod3'])
     )
 
     f.build()
@@ -692,10 +692,10 @@ def test_socket_types_2_remote_one_local():
 def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote():
     f = (
         Flow()
-            .add(name='pod1', host='0.0.0.1')
-            .add(name='pod2', parallel=2, host='0.0.0.2')
-            .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
-            .join(name='join', needs=['pod2', 'pod3'])
+        .add(name='pod1', host='0.0.0.1')
+        .add(name='pod2', parallel=2, host='0.0.0.2')
+        .add(name='pod3', parallel=2, host='1.2.3.4', needs=['gateway'])
+        .join(name='join', needs=['pod2', 'pod3'])
     )
 
     f.build()
@@ -718,9 +718,9 @@ def test_flow_equalities():
     f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
     f2 = (
         Flow()
-            .add(name='pod0')
-            .add(name='pod1', needs='gateway')
-            .add(name='joiner', needs=['pod0', 'pod1'])
+        .add(name='pod0')
+        .add(name='pod1', needs='gateway')
+        .add(name='joiner', needs=['pod0', 'pod1'])
     )
     assert f1 == f2
 
@@ -760,6 +760,7 @@ def test_flow_add_class():
 
 def test_flow_allinone_yaml():
     from jina import Encoder
+
     class CustomizedEncoder(Encoder):
         pass
 
