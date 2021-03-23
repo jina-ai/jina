@@ -13,7 +13,7 @@ from typing import Dict, Any, List
 
 from .checker import *
 from .helper import credentials_file
-from .hubapi.local import _list_local
+from .hubapi.local import _list_local, _load_local_hub_manifest
 from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
 from .. import __version__ as jina_version
 from ..enums import BuildTestLevel
@@ -421,6 +421,7 @@ class HubIO:
                                 _logs.append(line)
                 except Exception as ex:
                     # if pytest fails it should end up here as well
+                    self.logger.error(ex)
                     is_build_success = False
                     ex = HubBuilderBuildError(ex)
                     _except_strs.append(repr(ex))
@@ -454,7 +455,7 @@ class HubIO:
 
             else:
                 self.logger.error(
-                    f'can not build the image, please double check the log'
+                    f'can not build the image due to {_except_strs}'
                 )
                 _details = {}
 
@@ -699,7 +700,36 @@ class HubIO:
                 with open(requirements_path, 'w') as fp:
                     fp.write('\n'.join(new_requirements))
 
+    @staticmethod
+    def _alias_to_local_path(alias: str):
+        """
+        Convert user given alias to the actual local path of the image, if fails return the original
+
+        :param alias: the name of the hub image, given by user
+        :return: the local path of the hub image, if not matched then return the original input
+        """
+        all_local_images = _load_local_hub_manifest()
+        if alias in all_local_images:
+            return all_local_images[alias]['source_path']
+        else:
+            return alias
+
+    @staticmethod
+    def _alias_to_docker_image_name(alias: str):
+        """
+        Convert user given alias to the actual image tag, if fails return the original
+
+        :param alias: the name of the hub image, given by user
+        :return: the actual image tag, if not matched then return the original input
+        """
+        all_local_images = _load_local_hub_manifest()
+        if alias in all_local_images:
+            return all_local_images[alias]['image_tag']
+        else:
+            return alias
+
     def _check_completeness(self) -> Dict:
+        self.args.path = self._alias_to_local_path(self.args.path)
         dockerfile_path = get_exist_path(self.args.path, self.args.file)
         manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')

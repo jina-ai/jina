@@ -183,6 +183,10 @@ class ImageAlreadyExists(Exception):
     """Exception when an image with the name, module version, and Jina version already exists on the Hub."""
 
 
+class BadImageNameError(Exception):
+    """Exception when an image name can not be found either local & remote"""
+
+
 class BadFlowYAMLVersion(Exception):
     """Exception when Flow YAML config specifies a wrong version number."""
 
