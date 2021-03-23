@@ -10,22 +10,23 @@ See my deck on our readme issues!
 
 From top to bottom
 
-| What                       | Why                                                           |
-|----------------------------|---------------------------------------------------------------|
-| Bigger logo                | Catch eye. Common in trending repos                           |
-| Redo slogan                | Shorter, punchier, bigger                                     |
-| Add Slack badge            | Show how many users; get ppl to join immediately              |
-| Add downloads badge        | Show off our many downloads                                   |
-| Remove CI failing badge    | Makes us look not-great                                       |
-| Remove codecov badge       | It's not 100%. Makes us look not-great                        |
-| Elevator pitch tweak       | Focus on the what, now how. Use `media` bc more familiar word |
-| Animations to the top      | Show Jina in action; catch eye                                |
-| Why Jina bullets           | Verb-oriented - more action item-y                            |
-| Installation simplify      | Table was overwhelming                                        |
-| The big long feature list  | Removed. It belongs somewhere else, **not** in the readme     |
-| Re-add basics(?)           | They disappeared somewhere in the mess                        |
-| Basics, run demo sections  | Super simple intro stuff                                      |
-| Remove documentation image | It wasn't paying its rent                                     |
+| What                       | Why                                                                                |
+|----------------------------|------------------------------------------------------------------------------------|
+| Bigger logo                | Catch eye. Common in trending repos                                                |
+| Redo slogan                | Shorter, punchier, bigger                                                          |
+| Add Slack badge            | Show how many users; get ppl to join immediately                                   |
+| Add downloads badge        | Show off our many downloads                                                        |
+| Remove CI failing badge    | That badge made us look not-great                                                  |
+| Remove codecov badge       | Badge wasn't 100%. Makes us look not-great                                         |
+| Elevator pitch tweak       | Focus on the what, now how. Use `data` bc more familiar word                       |
+| Animations to the top      | Show Jina in action; catch eye                                                     |
+| Why Jina bullets           | Verb-oriented - more action item-y                                                 |
+| Installation simplify      | Table was overwhelming                                                             |
+| The big long feature list  | Removed. It belongs somewhere else, **not** in the readme                          |
+| Remove video links         | Who looks at a repo and thinks "dang, I wish I could watch a video to explain it"? |
+| Re-add basics(?)           | They disappeared somewhere in the mess                                             |
+| Basics, run demo sections  | Super simple intro stuff                                                           |
+| Remove documentation image | It wasn't paying its rent                                                          |
 
 ### Todo
 
