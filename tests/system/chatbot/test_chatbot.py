@@ -35,18 +35,11 @@ def start_server(xprocess, chatbot_args):
 
     class Starter(ProcessStarter):
         pattern = "You should see a demo page opened in your browser"
-
-        # command to start process
         args = ["jina", "hello", "chatbot"]
-
         max_read_lines = 10000
 
-    # ensure process is running and return its logfile
     xprocess.ensure("server", Starter)
-
     yield
-
-    # clean up whole process tree afterwards
     xprocess.getinfo("server").terminate()
 
 
