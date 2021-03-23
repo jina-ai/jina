@@ -367,7 +367,7 @@ class HubIO:
                 password=self.args.password,
                 registry=self.args.registry,
             )
-            self.logger.debug(f'✅ Successfully logged in to docker hub')
+            self.logger.success(f'✅ Successfully logged in to docker hub')
         except APIError:
             raise HubLoginRequired(
                 f'❌ Invalid docker credentials passed. docker login failed'
