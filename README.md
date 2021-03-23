@@ -2,7 +2,7 @@
 <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="400px">
 </p>
 <p align="center">
-<h2 align="center">Deep Learning Search Framework for Any Kind of Media</h2>
+<h2 align="center">Deep Learning Search Framework for Any Kind of Data</h2>
 </p>
 <p align=center>
 <a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACI"><img src="https://github.com/jina-ai/jina/workflows/CI/badge.svg" alt="CI"></a>
@@ -42,12 +42,12 @@ Jina is a search framework for building <strong>cross-/multi-media search system
       <a href="http://demo.jina.ai/#chatbot">Q+A Chatbot</a>
     </th>
     <th>
-      <a href="http://demo.jina.ai/#cross-media">Cross Media search</a>
+      <a href="http://demo.jina.ai/#cross-media">Cross-Media search</a>
     </td>
   </tr>
 </table>
 
-With Jina you can search through any kind of data with pre-trained models developed by Facebook, Google, Spotify, and more. With the modular framework you can find the right tool for the right job -- whether that's crafting, encoding, classifying, indexing, or querying data. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
+With Jina you can search through any kind of data with machine learning models pre-trained and released by Facebook, Google, Spotify, and more. With the modular framework you can find the right tool for the right job -- whether that's crafting, encoding, classifying, indexing, or querying data. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
 
 Configuration is stored in YAML files, away from your actual code. So tweaking model parameters or other settings is a breeze, especially with our [YAML completion feature for PyCharm and VS Code](https://youtu.be/qOD-6mihUzQ).
 
