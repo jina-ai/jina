@@ -1,13 +1,10 @@
 import os
-import pickle
 import sys
-from typing import Union, Iterable, Tuple
+from typing import Iterable, Tuple
 
 import numpy as np
 
 from jina.enums import BetterEnum
-
-SYNC_MODE = True
 
 
 class DumpTypes(BetterEnum):
@@ -21,13 +18,6 @@ BYTE_PADDING = 4
 
 
 class DumpPersistor:
-    @staticmethod
-    def export_dump(path, data):
-        # split into vectors and kv
-        pickle.dump(data['ids'], open(os.path.join(path, 'ids.pkl'), 'wb'))
-        pickle.dump(data['vectors'], open(os.path.join(path, 'vectors.pkl'), 'wb'))
-        pickle.dump(data['kv'], open(os.path.join(path, 'kv.pkl'), 'wb'))
-
     @staticmethod
     def export_dump_streaming(
         path,
@@ -56,57 +46,18 @@ class DumpPersistor:
 
     @staticmethod
     def import_metas(path):
-        # TODO
-        pass
+        ids_gen = DumpPersistor._ids_gen(path)
+        metas_gen = DumpPersistor._metas_gen(path)
+        return ids_gen, metas_gen
 
     @staticmethod
-    def import_dump(path, content: Union['all', 'vector', 'kv']):
-        # split into vectors and kv
-        # TODO maybe split into separate functions based on 'content'
-        if content == 'vector':
-            return [['id1', 'id2', 'id3'], np.ones([3, 7])]
-        elif content == 'kv':
-            return [
-                ['id1', 'id2', 'id3'],
-                [
-                    {
-                        'id': 'id1',
-                        'text': 'our text 1',
-                        'embedding': np.ones(
-                            [
-                                7,
-                            ]
-                        ),
-                    },
-                    {
-                        'id': 'id2',
-                        'text': 'our text 2',
-                        'embedding': np.zeros(
-                            [
-                                7,
-                            ]
-                        ),
-                    },
-                    {
-                        'id': 'id3',
-                        'text': 'our text 3',
-                        'embedding': np.zeros(
-                            [
-                                7,
-                            ]
-                        ),
-                    },
-                ],
-            ]
-
-    @classmethod
-    def _ids_gen(cls, path):
+    def _ids_gen(path):
         with open(os.path.join(path, 'ids'), 'r') as ids_fh:
             for l in ids_fh:
                 yield l.strip()
 
-    @classmethod
-    def _vecs_gen(cls, path):
+    @staticmethod
+    def _vecs_gen(path):
         with open(os.path.join(path, 'vectors'), 'rb') as vectors_fh:
             while True:
                 next_size = vectors_fh.read(BYTE_PADDING)
@@ -117,5 +68,17 @@ class DumpPersistor:
                         dtype=np.float64,
                     )
                     yield vec
+                else:
+                    break
+
+    @staticmethod
+    def _metas_gen(path):
+        with open(os.path.join(path, 'metas'), 'rb') as metas_fh:
+            while True:
+                next_size = metas_fh.read(BYTE_PADDING)
+                next_size = int.from_bytes(next_size, byteorder=sys.byteorder)
+                if next_size:
+                    meta = metas_fh.read(next_size)
+                    yield meta
                 else:
                     break

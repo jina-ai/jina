@@ -6,7 +6,7 @@ import numpy as np
 
 from ...clients.base import InputType, InputDeleteType, CallbackFnType
 from ...enums import DataInputType
-from ...executors.reload_helpers import DumpTypes
+from ...executors.dump import DumpTypes
 from ...helper import deprecated_alias
 
 
@@ -541,20 +541,21 @@ class CRUDFlowMixin:
     def reload(
         self,
         path: str,
+        workspace: str,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs,
     ):
         """Do deletion on the current Flow
-        # TODO to be done
-        :param ids: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param path: the path where we dump
+        :param workspace: the workspace to assign to the new indexer
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
-        self._get_client(**kwargs).reload(path, on_done, on_error, on_always, **kwargs)
+        self._get_client(**kwargs).reload(path, on_done, on_error, on_always, workspace=workspace, **kwargs)
 
     def dump(
         self,

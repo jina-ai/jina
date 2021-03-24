@@ -1,7 +1,5 @@
-import datetime
 import time
 from collections import defaultdict
-from threading import Thread
 from typing import Dict, List
 
 import zmq
@@ -20,8 +18,7 @@ from ....excepts import (
     RuntimeTerminated,
 )
 from ....executors import BaseExecutor
-from ....executors.compound_query import QueryBaseExecutor
-from ....executors.reload_helpers import SYNC_MODE
+from ....executors.indexers.query import QueryReloadIndexer
 from ....helper import random_identity
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
@@ -177,14 +174,8 @@ class ZEDRuntime(ZMQRuntime):
             or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
             if self.request_type == ReloadRequest.__name__:
-                if SYNC_MODE:
-                    self._next_executor_prepare(self.request)
-                else:
-                    self._next_executor_prepare_thread = Thread(
-                        target=getattr(self, '_next_executor_prepare'),
-                        args=(self.request,),
-                    )
-                    self._next_executor_prepare_thread.start()
+                # noinspection PyTypeChecker
+                self._next_executor_prepare(self.request)
                 return self
             else:
                 if self._next_executor_ready:
@@ -197,16 +188,13 @@ class ZEDRuntime(ZMQRuntime):
             raise ChainedPodException
         return self
 
-    def _next_executor_prepare(self, req):
-        # TODO this will use the same workspace and thus overwrite data
-        # Problem 1. hOw do we pass workspace to this?
-        # Problem 2. How do we tell it from where to import data?
-        self._next_executor = QueryBaseExecutor.load_config(
+    def _next_executor_prepare(self, req: ReloadRequest):
+        # TODO this will be done with replacing the entire Pod
+        self._next_executor = QueryReloadIndexer.load_config(
             self.args.uses,
             pea_id=self.args.pea_id,
             read_only=self.args.read_only,
-            # TODO move ws arg to a nice interface of the ReloadRequest
-            metas={'workspace': f'some_new_path-{time.time()}'},
+            metas={'workspace': req.workspace},
         )
         self._next_executor.import_uri_path(req.path)
         self._next_executor_ready = True

@@ -315,7 +315,8 @@ message RequestProto {
      * Represents a reload request
      */
     message ReloadRequestProto {
-        string path = 1; // path for the index
+        string path = 1; // path to dump the data
+        string workspace = 2; // new workspace path for the indexer
     }
 
    /**

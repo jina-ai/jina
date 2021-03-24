@@ -1,20 +1,20 @@
 jtype: DBMSBinaryPbIndexer
 with:
-  index_filename: mongodb.bin
+  index_filename: binarypb.bin
 metas:
-  workspace: $JINA_WORKSPACE_CRUD
-  name: mongodb
+  workspace: $DBMS_WORKSPACE
+  name: binarypb
 requests:
   on:
     DumpRequest:
       - jtype: DumpControlReqDriver
         with:
-          executor: mongodb
+          executor: binarypb
     [IndexRequest, UpdateRequest]:
       - jtype: DBMSIndexDriver
         with:
-          executor: mongodb
+          executor: binarypb
     DeleteRequest:
       - jtype: DeleteDriver
         with:
-          executor: mongodb
+          executor: binarypb

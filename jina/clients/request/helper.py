@@ -49,6 +49,7 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset, **kwargs)
             _add_ids(req, batch)
         elif mode == RequestType.RELOAD:
             req.path = batch
+            req.workspace = kwargs.get('workspace')
         elif mode == RequestType.DUMP:
             req.path = batch
             req.shards = kwargs.get('shards')

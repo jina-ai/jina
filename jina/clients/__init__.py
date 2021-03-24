@@ -10,7 +10,7 @@ from .helper import callback_exec
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 from ..enums import RequestType
-from ..executors.reload_helpers import DumpTypes
+from ..executors.dump import DumpTypes
 from ..helper import run_async, deprecated_alias
 
 
@@ -176,11 +176,12 @@ class Client(BaseClient):
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
+        workspace: str = None,
         **kwargs,
     ) -> None:
         """Issue 'update' request to the Flow.
-        TODO to be done
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
+        :param path: the path where we dump
+        :param workspace: the workspace to assign to the new indexer
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -189,7 +190,7 @@ class Client(BaseClient):
         """
         self.mode = RequestType.RELOAD
         return run_async(
-            self._get_results, path, on_done, on_error, on_always, **kwargs
+            self._get_results, path, on_done, on_error, on_always, workspace=workspace, **kwargs
         )
 
     def dump(

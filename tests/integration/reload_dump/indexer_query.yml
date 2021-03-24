@@ -5,30 +5,27 @@ components:
       index_filename: vec.gz
       metric: euclidean
     metas:
-      name: vecidx  # a customized name
-#  - !QueryBinaryPbIndexer
-#    with:
-#      index_filename: chunk.gz
-#    metas:
-#      name: kvidx
+      name: vecidx
+  - !QueryBinaryPbIndexer
+    with:
+      index_filename: chunk.gz
+    metas:
+      name: kvidx
 metas:
   name: compound_indexer
-  workspace: $HW_WORKDIR
+  workspace: $QUERY_WORKSPACE
 requests:
   on:
     SearchRequest:
       - !VectorSearchDriver
         with:
           executor: vecidx
-      - !ExcludeQL
+          fill_embedding: True  # to test embeddings
+      - !KVSearchDriver
         with:
-          fields:
-            - embedding
-#      - !KVSearchDriver
-#        with:
-#          executor: kvidx
-#          is_update: True
-#          traversal_paths: ['m']
+          executor: kvidx
+          is_update: True
+          traversal_paths: ['m']
     ReloadRequest:
       - !ForwardDriver
         with:

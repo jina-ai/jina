@@ -163,6 +163,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param args: extra arguments
         :param kwargs: keyword arguments
         """
+        print(f'{any(keys)=}')
         if not any(keys):
             return
 
