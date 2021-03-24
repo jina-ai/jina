@@ -4,6 +4,39 @@
 
 See my deck on our readme issues!
 
+## A good README
+
+For a developer, a good README:
+
+- **Interests users** - give elevator pitch high-level overview to make users want to take next step
+- **Is short and sweet** - we want users to take action, not get bogged down in minutiae
+- **Leads users to take action**: Clear action items
+- **Shows (not tells)**: Don't talk about our capability, show it as a gif
+
+From our end, it also:
+
+- **Is easy to maintain**
+- **Covers us legally**: Copyright and license block
+- **Looks professional to investors**
+
+## What action do we want users to take?
+
+Our README is one step of our developer funnel. And it's the step where we lose them! We want clear action items that we can track:
+
+| Action                       | How track             |
+|------------------------------|-----------------------|
+| Star our repo                | GitHub analytics      |
+| Join our Slack community     | Slack analytics       |
+| Download via pip or Docker   | Docker/pypi analytics |
+| Visit our docs to learn more | Google analytics      |
+| Apply for a job              | HR track              |
+
+If an item in the readme doesn't do at least one of these (directly or indirectly), it gets kicked out.
+
+## "Best Practices"
+
+Technically "there are no best practices for writing a readme". In that case we can look at what others do. That's nearer the end of this doc for now
+
 ## Changelog
 
 ### Done
@@ -37,7 +70,7 @@ From top to bottom
 | Fix demo links          | Show working demos                       | We don't yet have demo's domain or live demos |
 | Check CRUD, etc in docs | CRUD, etc section wasn't paying its rent | Need time to check and/or docs team to write  |
 
-## What do other popular repo's do?
+## "Best Practices": What do other popular repo's do?
 
 ### They're short
 
