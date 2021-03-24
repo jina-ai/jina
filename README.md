@@ -5,14 +5,13 @@
 <h2 align="center">Deep Learning Search Framework for Any Kind of Data</h2>
 </p>
 <p align=center>
-<a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACI"><img src="https://github.com/jina-ai/jina/workflows/CI/badge.svg" alt="CI"></a>
+<!--<a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACI"><img src="https://github.com/jina-ai/jina/workflows/CI/badge.svg" alt="CI"></a>-->
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8 3.9" title="Jina supports Python 3.7 and above"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://pepy.tech/project/jina"><img src="https://pepy.tech/badge/jina/month"></a>
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
-
 
 Jina is a search framework for building <strong>cross-/multi-media search systems</strong> on the cloud, powered by best-in-class AI models.
 
@@ -160,6 +159,56 @@ Example code to build your own projects
 Please check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
 
 Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [our official blog](https://jina.ai/blog).
+
+## How Does it Work?
+
+Every Jina app uses [Flows]() to index or query your data:
+
+**`app.py`**
+
+```python
+from jina.flow import Flow
+
+f = Flow.load_config('flows/index.yml') # Load Flow config from YAML file
+
+with f:
+    f.index_lines("my_data.txt") # Index each line of the text file as a single document
+```
+
+A Flow lays out all of the steps to process and index your data, and can be written in [YAML](https://docs.jina.ai/chapters/yaml/) or directly in [Python](https://docs.jina.ai/chapters/flow/). A very simple Flow looks like:
+
+**`flows/index.yml`**
+
+```yaml
+!Flow
+version: '1'
+pods:
+  - name: encoder
+    uses: pods/encode.yml
+  - name: indexer
+    uses: pods/index.yml
+```
+
+Each step (encoding, indexing) is performed by a [Pod](), with its settings once again defined in YAML:
+
+**`pods/encode.yml`**
+
+```yaml
+!TransformerTorchEncoder
+with:
+  pretrained_model_name_or_path: distilbert-base-cased # name of your pretrained model
+  ... # other (optional) encoder settings
+```
+
+To start indexing your data, simply run:
+
+```sh
+python app.py index
+```
+
+Or run `python app.py query` to start querying your data via a [REST](https://docs.jina.ai/chapters/restapi/index.html) or gRPC gateway.
+
+For a simple app example check [Wikipedia sentence search]() or see [My First Jina App]() to build your own.
 
 ## Documentation
 
