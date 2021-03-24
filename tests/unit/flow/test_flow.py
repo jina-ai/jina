@@ -409,9 +409,9 @@ def test_index_text_files(mocker, restful, datauri_workspace):
     f = Flow(restful=restful, read_only=True).add(
         uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1
     )
-
+    files = os.path.join(cur_dir, 'yaml/*.yml')
     with f:
-        f.index_files('*.py', on_done=response_mock)
+        f.index_files(files, on_done=response_mock)
 
     validate_callback(response_mock, validate)
 
