@@ -39,16 +39,17 @@ def test_port_configuration(replicas_and_parallel):
             port_in_next, _ = get_outer_ports(pods[i + 1])
             assert port_out == port_in_next
 
-    def validate_ports_replica(replica, pod_head_port_out, pod_tail_port_in, parallel):
-        assert pod_head_port_out == replica.args.port_in
-        assert replica.args.port_out == pod_tail_port_in
+    def validate_ports_replica(replica, replica_port_in, replica_port_out, parallel):
+        assert replica_port_in == replica.args.port_in
+        assert replica.args.port_out == replica_port_out
         peas_args = replica.peas_args
         peas = peas_args['peas']
-        if parallel == 1:  # TODO validate parallel == 1
-            pass
-            # assert len(peas) == 1
-            # assert peas[f'{replica.args.name}/1'].port_in == pod_head_port_out
-            # assert peas[f'{replica.args.name}/1'].port_out == pod_tail_port_in
+        assert len(peas) == parallel
+        if parallel == 1:
+            assert peas_args['head'] is None
+            assert peas_args['tail'] is None
+            assert peas[0].port_in == replica_port_in
+            assert peas[0].port_out == replica_port_out
         else:
             shard_head = peas_args['head']
             shard_tail = peas_args['tail']
@@ -70,8 +71,13 @@ def test_port_configuration(replicas_and_parallel):
         for pod_name, pod in pods.items():
             if pod_name == 'gateway':
                 continue
-            pod_head_out = pod.head_args.port_out
-            pod_tail_in = pod.tail_args.port_in
+            if pod.args.replicas == 1:
+                assert len(pod.replica_list) == 1
+                replica_port_in = pod.args.port_in
+                replica_port_out = pod.args.port_out
+            else:
+                replica_port_in = pod.head_args.port_out
+                replica_port_out = pod.tail_args.port_in
             # replica_head_out = pod.replicas_args['head'].port_out, # equals
             # replica_tail_in = pod.replicas_args['tail'].port_in, # equals
 
@@ -79,8 +85,8 @@ def test_port_configuration(replicas_and_parallel):
                 if not ('head' in replica.name or 'tail' in replica.name):
                     validate_ports_replica(
                         replica,
-                        pod_head_out,
-                        pod_tail_in,
+                        replica_port_in,
+                        replica_port_out,
                         getattr(pod.args, 'parallel', 1),
                     )
         assert pod
