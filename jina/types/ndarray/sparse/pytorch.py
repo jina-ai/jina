@@ -25,9 +25,15 @@ class SparseNdArray(BaseSparseNdArray):
         To comply with Tensorflow, `transpose_indices` is set to True by default
     """
 
-    def __init__(self, transpose_indices: bool = True, *args, **kwargs):
+    def __init__(
+        self,
+        proto: 'jina_pb2.SparseNdArrayProto' = None,
+        transpose_indices: bool = True,
+        *args,
+        **kwargs
+    ):
         """Set constructor method."""
-        super().__init__(*args, **kwargs)
+        super().__init__(proto, *args, **kwargs)
         self.transpose_indices = transpose_indices
 
     def sparse_constructor(
