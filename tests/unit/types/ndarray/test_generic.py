@@ -12,25 +12,27 @@ from jina.types.ndarray.sparse.scipy import SparseNdArray as SPSparseNdArray
 @pytest.fixture
 def tf_sparse_tensor():
     from tensorflow import SparseTensor
+
     return SparseTensor(indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4])
 
 
 @pytest.fixture
 def pt_sparse_tensor():
     import torch
+
     i = [[0, 2], [1, 0], [1, 2]]
-    v =  [3,      4,      5    ]
+    v = [3, 4, 5]
     return torch.sparse_coo_tensor(list(zip(*i)), v, (2, 3))
 
 
 @pytest.fixture
 def sp_sparse_tensor():
     from scipy.sparse import csr_matrix
+
     row = np.array([0, 3, 1, 0])
     col = np.array([0, 3, 1, 2])
     data = np.array([4, 5, 7, 9])
     return csr_matrix((data, (row, col)), shape=(3, 3)).toarray()
-
 
 
 @pytest.fixture
@@ -54,12 +56,14 @@ def np_ndarray():
     return NdArray(None, False, DenseNdArray, None)
 
 
-@pytest.fixture(params=[
-    tf_ndarray,
-    sp_ndarray,
-    pt_ndarray,
-    np_ndarray,
-])
+@pytest.fixture(
+    params=[
+        tf_ndarray,
+        sp_ndarray,
+        pt_ndarray,
+        np_ndarray,
+    ]
+)
 def NdArrayCls(request):
     yield request.param
 
