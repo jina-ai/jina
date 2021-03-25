@@ -54,8 +54,9 @@ class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
 
     @staticmethod
     def _add_chunks(doc, chunks):
+        num_siblings = len(chunks)
         for chunk in chunks:
-            with Document(**chunk) as c:
+            with Document(siblings=num_siblings, **chunk) as c:
                 if not c.mime_type:
                     c.mime_type = doc.mime_type
             doc.chunks.append(c)
