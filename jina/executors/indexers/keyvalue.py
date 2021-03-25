@@ -163,7 +163,6 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param args: extra arguments
         :param kwargs: keyword arguments
         """
-        print(f'{any(keys)=}')
         if not any(keys):
             return
 
@@ -199,6 +198,9 @@ class BinaryPbIndexer(BaseKVIndexer):
         :param kwargs: keyword arguments
         :return: serialized documents
         """
+        if self.size == 0:
+            return None
+
         pos_info = self.query_handler.header.get(key, None)
         if pos_info is not None:
             p, r, l = pos_info

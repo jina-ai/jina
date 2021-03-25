@@ -192,7 +192,7 @@ class TimeContext:
         else:
             print(
                 colored(
-                    f'    {self.readable_duration} ({self.duration:.2f}s)', 'green'
+                    f'{self.task_name} takes {self.readable_duration} ({self.duration:.2f}s)'
                 ),
                 flush=True,
             )

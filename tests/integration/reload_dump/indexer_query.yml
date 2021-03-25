@@ -25,8 +25,8 @@ requests:
         with:
           executor: kvidx
           is_update: True
-          traversal_paths: ['m']
+          traversal_paths: ['r']
     ReloadRequest:
-      - !ForwardDriver
+      - !ReloadDriver
         with:
           executor: compound_indexer

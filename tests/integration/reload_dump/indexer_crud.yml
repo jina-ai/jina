@@ -7,7 +7,7 @@ metas:
 requests:
   on:
     DumpRequest:
-      - jtype: DumpControlReqDriver
+      - jtype: DumpDriver
         with:
           executor: binarypb
     [IndexRequest, UpdateRequest]:

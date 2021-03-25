@@ -161,6 +161,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         'delete',
         'update',
         'reload',
+        'dump',
     ]
 
     def __init__(self, *args, **kwargs):

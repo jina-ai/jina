@@ -31,6 +31,7 @@ class ZEDRuntime(ZMQRuntime):
     def __init__(self, *args_, **kwargs):
         super().__init__(*args_, **kwargs)
         self._next_executor_ready = False
+        print(f'### {self.args.pea_id=}')
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
@@ -173,16 +174,21 @@ class ZEDRuntime(ZMQRuntime):
             msg.envelope.status.code != jina_pb2.StatusProto.ERROR
             or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
+            # TODO this needs to be replace with the Pod switching logic
+            print(f'### before checking request type in zed: {self.name=}')
             if self.request_type == ReloadRequest.__name__:
+                print(f'### self._next_executor_prepare(self.request)')
                 # noinspection PyTypeChecker
                 self._next_executor_prepare(self.request)
                 return self
             else:
                 if self._next_executor_ready:
+                    print(f'### switching executors in zed')
                     self._executor = self._next_executor
                     self._executor.attach(runtime=self)
                     self._next_executor_ready = False
                     self._next_executor = None
+                print(f'### Passing req {self.request_type} to {self._executor}')
                 self._executor(self.request_type)
         else:
             raise ChainedPodException
@@ -190,13 +196,16 @@ class ZEDRuntime(ZMQRuntime):
 
     def _next_executor_prepare(self, req: ReloadRequest):
         # TODO this will be done with replacing the entire Pod
+        print(f'### _next_executor_prepare {self.args.uses=}')
+        print(f'### _next_executor_prepare {self.args.pea_id=}')
+        print(f'### _next_executor_prepare {self.name}')
         self._next_executor = QueryReloadIndexer.load_config(
             self.args.uses,
             pea_id=self.args.pea_id,
             read_only=self.args.read_only,
             metas={'workspace': req.workspace},
         )
-        self._next_executor.import_uri_path(req.path)
+        self._executor(self.request_type)
         self._next_executor_ready = True
 
     def _callback(self, msg: 'Message'):

@@ -13,12 +13,14 @@ class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
             yield id_, vec, meta
 
     def dump(self, path, shards, formats) -> None:
+        print(f'### dump {self.pea_id=}')
         self.write_handler.close()
         del self.write_handler
         self.handler_mutex = False
         ids = self.query_handler.header.keys()
-        # TODO split for shards
-        DumpPersistor.export_dump_streaming(path, self._get_generator(ids))
+        DumpPersistor.export_dump_streaming(
+            path, shards=shards, size=self.size, data=self._get_generator(ids)
+        )
         self.query_handler.close()
         self.handler_mutex = False
         del self.query_handler

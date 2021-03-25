@@ -3,3 +3,5 @@ version: '1'
 pods:
   - name: indexer_query
     uses: indexer_query.yml
+    parallel: $SHARDS
+    uses_after: $USES_AFTER

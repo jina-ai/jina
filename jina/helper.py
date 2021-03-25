@@ -16,7 +16,9 @@ import warnings
 from argparse import ArgumentParser, Namespace
 from contextlib import contextmanager
 from datetime import datetime
+from functools import wraps
 from itertools import islice
+from time import time
 from types import SimpleNamespace
 from typing import (
     Tuple,
@@ -724,6 +726,7 @@ class ArgNamespace:
         """
         args = []
         from .executors import BaseExecutor
+
         for k, v in kwargs.items():
             k = k.replace('_', '-')
             if v is not None:
@@ -1233,3 +1236,22 @@ def download_mermaid_url(mermaid_url, output) -> None:
         default_logger.error(
             'can not download image, please check your graph and the network connections'
         )
+
+
+@contextmanager
+def measure_time_context_mgr(text='Total execution time'):
+    """context manager to print the execution time of a function
+
+    Usage::
+
+        with measure_time_context_mgr(text='indexing 100 docs'):
+            flow.index(docs)
+
+    :param text: prefix to the print statement
+    """
+    start = int(round(time() * 1000))
+    try:
+        yield
+    finally:
+        end_ = int(round(time() * 1000)) - start
+        print(f'{text}: {end_ if end_ > 0 else 0} ms')

@@ -23,13 +23,13 @@ class QueryBinaryPbIndexer(BinaryPbIndexer, QueryReloadIndexer):
         self.uri_path = uri_path
         self.preparing = False
         if self.uri_path:
-            self.import_uri_path(self.uri_path)
+            self.reload(self.uri_path)
         else:
             self.logger.warning(
                 f'The indexer does not have any data. Make sure to use ReloadRequest to tell it how to import data...'
             )
 
-    def import_uri_path(self, path):
+    def reload(self, path):
         """This can be a universal dump format(to be defined)
         Or optimized to the Indexer format.
 
@@ -42,13 +42,14 @@ class QueryBinaryPbIndexer(BinaryPbIndexer, QueryReloadIndexer):
 
         The shards are configured per dump
         """
-        print(f'### QBP Importing from dump at {path}')
-        ids, metas = DumpPersistor.import_metas(path)
+        print(f'### QBP {self.pea_id} Importing from dump at {path}')
+        ids, metas = DumpPersistor.import_metas(path, str(self.pea_id))
         self.add(list(ids), list(metas))
         self.write_handler.flush()
         self.write_handler.close()
         self.handler_mutex = False
         self.is_handler_loaded = False
+        del self.write_handler
         # warming up
         self.query('someid')
         print(f'### QBP self.size after import: {self.size}')
