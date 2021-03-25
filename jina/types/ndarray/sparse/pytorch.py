@@ -76,5 +76,4 @@ class SparseNdArray(BaseSparseNdArray):
             'indices': indices,
             'values': values,
             'shape': shape,
-            #'transpose_indices':True, ???
         }
