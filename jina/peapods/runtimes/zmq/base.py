@@ -69,7 +69,6 @@ class ZMQManyRuntime(BaseRuntime, ABC):
 
     def cancel(self):
         """Send cancel control messages to all control address."""
-        # TODO: can use send_message_async to avoid sequential waiting
         for ctrl_addr in self.many_ctrl_addr:
             send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=self.timeout_ctrl)
 
@@ -80,7 +79,6 @@ class ZMQManyRuntime(BaseRuntime, ABC):
 
         :return: received messages
         """
-        # TODO: can use send_ctrl_message to avoid sequential waiting
         result = []
         for ctrl_addr in self.many_ctrl_addr:
             result.append(

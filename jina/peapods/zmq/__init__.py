@@ -428,7 +428,7 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
         msg = ControlMessage(cmd)
-        send_message(sock, msg, timeout)
+        send_message_async(sock, msg, timeout)
         r = None
         try:
             r = recv_message(sock, timeout)
