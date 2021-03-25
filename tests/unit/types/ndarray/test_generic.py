@@ -73,23 +73,22 @@ def test_null_proto(NdArrayCls):
 
 
 def test_value_get_set(NdArrayCls, tf_sparse_tensor, pt_sparse_tensor):
-    ndarray_instance = NdArrayCls()
-    assert ndarray_instance.value is None
-    if isinstance(ndarray_instance, TFSparseNdArray):
-        print(ndarray_instance)
-        assert ndarray_instance.value is None
-        ndarray_instance.value = tf_sparse_tensor
-        assert ndarray_instance.value == tf_sparse_tensor
-        assert ndarray_instance.is_sparse is True
-    elif isinstance(ndarray_instance, SPSparseNdArray):
-        ndarray_instance.value = sp_sparse_tensor
-        assert ndarray_instance.value == sp_sparse_tensor
-        assert ndarray_instance.is_sparse is True
-    elif isinstance(ndarray_instance, PTSparseNdArray):
-        ndarray_instance.value = pt_sparse_tensor
-        assert ndarray_instance.value == pt_sparse_tensor
-        assert ndarray_instance.is_sparse is True
-    elif isinstance(ndarray_instance, DenseNdArray):
-        ndarray_instance.value = np_dense_tensor
-        assert ndarray_instance.value == np_dense_tensor
-        assert ndarray_instance.is_sparse is False
+    ndarray = NdArrayCls()
+    assert ndarray.value is None
+    if isinstance(ndarray, TFSparseNdArray):
+        assert ndarray.value is None
+        ndarray.value = tf_sparse_tensor
+        assert ndarray.value == tf_sparse_tensor
+        assert ndarray.is_sparse is True
+    elif isinstance(ndarray, SPSparseNdArray):
+        ndarray.value = sp_sparse_tensor
+        assert ndarray.value == sp_sparse_tensor
+        assert ndarray.is_sparse is True
+    elif isinstance(ndarray, PTSparseNdArray):
+        ndarray.value = pt_sparse_tensor
+        assert ndarray.value == pt_sparse_tensor
+        assert ndarray.is_sparse is True
+    elif isinstance(ndarray, DenseNdArray):
+        ndarray.value = np_dense_tensor
+        assert ndarray.value == np_dense_tensor
+        assert ndarray.is_sparse is False
