@@ -5,6 +5,7 @@ import numpy as np
 from torch.sparse import FloatTensor
 
 from . import BaseSparseNdArray
+from ....proto import jina_pb2
 
 if False:
     import numpy as np
@@ -19,7 +20,11 @@ class SparseNdArray(BaseSparseNdArray):
     .. seealso::
         https://pytorch.org/docs/stable/sparse.html
 
+    :param proto: protobuf instance, default is None.
     :param transpose_indices: in torch, the input to LongTensor is NOT a list of index tuples.
+    :param args: positional arguments.
+    :param kwargs: positional key value arguments.
+
     If you want to write your indices this way, you should transpose before passing them to the sparse constructor
 
     .. note::
@@ -33,7 +38,6 @@ class SparseNdArray(BaseSparseNdArray):
         *args,
         **kwargs
     ):
-        """Set constructor method."""
         super().__init__(proto, *args, **kwargs)
         self.transpose_indices = transpose_indices
 

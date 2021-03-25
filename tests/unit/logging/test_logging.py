@@ -43,7 +43,7 @@ def test_logging_default():
         try:
             import fluent
 
-            assert len(logger.handlers) == 3
+            assert len(logger.handlers) == 2
         except (ModuleNotFoundError, ImportError):
             # if fluent not installed
             assert len(logger.handlers) == 2
