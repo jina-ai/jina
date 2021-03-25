@@ -76,7 +76,6 @@ def test_value_get_set(NdArrayCls, tf_sparse_tensor, pt_sparse_tensor):
     ndarray = NdArrayCls()
     assert ndarray.value is None
     if isinstance(ndarray, TFSparseNdArray):
-        assert ndarray.value is None
         ndarray.value = tf_sparse_tensor
         assert ndarray.value == tf_sparse_tensor
         assert ndarray.is_sparse is True
