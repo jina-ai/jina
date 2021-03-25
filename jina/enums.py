@@ -221,6 +221,7 @@ class PeaRoleType(BetterEnum):
     HEAD = 1
     TAIL = 2
     PARALLEL = 3
+    REPLICA = 4
 
 
 class PodRoleType(BetterEnum):

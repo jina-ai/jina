@@ -30,7 +30,7 @@ def _update_autocomplete():
 
 if __name__ == "__main__":
     _update_autocomplete()
-
+#TODO add replicas to auto complete
 ac_table = {
     "commands": [
         "--help",

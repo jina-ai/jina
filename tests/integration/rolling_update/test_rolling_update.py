@@ -3,6 +3,53 @@ import time
 from jina.flow import Flow
 
 
+
+# get_replica_ports()
+
+def test_port_configuration():
+    def get_outer_ports(pod):
+        if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
+            assert pod.replicas_args['tail'] is None
+            assert pod.replicas_args['head'] is None
+            replica = pod.replicas_args['replicas'][0]
+            return replica.port_in, replica.port_out
+        else:
+            assert pod.args.replicas == len(pod.replicas_args['replicas'])
+            assert pod.args.replicas == len(pod.replica_list) - 2 # head and tail pea
+            assert pod.args.parallel == len(pod.replica_list[0].peas_args['peas'])
+            return pod.replicas_args['head'].port_in, pod.replicas_args['tail'].port_out
+
+    def validate_ports_pods(pods):
+        for i in range(len(pods) - 1):
+            _, port_out = get_outer_ports(pods[i])
+            port_in_next, _ = get_outer_ports(pods[i+1])
+            assert port_out == port_in_next
+
+    def validate_ports_replica(replicas, pod_head_port_out, pod_tail_port_in, parallel):
+        for replica_name, replica in replicas.items:
+            peas = replica.peas
+
+            if parallel == 1:
+                peas = replica.peas
+                assert len(peas) == 1
+                assert peas[f'{replica_name}/1'].port_in == pod_head_port_out
+                assert peas[f'{replica_name}/1'].port_out == pod_tail_port_in
+            else:
+                pass
+                # for..
+
+    with Flow().add(name='pod1', replicas=2, parallel=3).add(name='pod2', replicas=3, parallel=1) as flow:
+        pods = flow._pod_nodes
+        validate_ports_pods([pods['gateway'], pods['pod1'], pods['pod2'], pods['gateway']])
+        for pod in pods:
+            validate_ports_replica(pod.replicas, pod.head_pea.port_out, pod.tail_pea.port_in, pod.args['parallel'])
+
+
+        assert pod
+
+def test_use_before_use_after():
+    pass
+
 def test_experimental_pod_update():
     '''
         1. Create 3 pods pod1, pod2, pod3.

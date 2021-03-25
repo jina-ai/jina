@@ -29,7 +29,16 @@ def mixin_base_pod_parser(parser):
         '--shards',
         type=int,
         default=1,
+        # TODO adjust definition of parallel
         help='The number of parallel peas in the pod running at the same time, '
+        '`port_in` and `port_out` will be set to random, '
+        'and routers will be added automatically when necessary',
+    )
+    gp.add_argument(
+        '--replicas',
+        type=int,
+        default=1,
+        help='The number of replicas in the pod, '
         '`port_in` and `port_out` will be set to random, '
         'and routers will be added automatically when necessary',
     )

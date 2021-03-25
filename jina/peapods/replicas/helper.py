@@ -8,17 +8,17 @@ from ...helper import get_public_ip, get_internal_ip, random_identity
 from ... import helper
 
 
-def _set_replica_args(
+def _set_peas_args(
     args: Namespace, head_args: Optional[Namespace] = None, tail_args: Namespace = None
 ) -> List[Namespace]:
     result = []
 
-    for idx in range(args.replicas):
+    for idx in range(args.parallel):
         _args = copy.deepcopy(args)
 
-        if args.replicas > 1:
+        if args.parallel > 1:
             _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
-            _args.pea_role = PeaRoleType.REPLICA
+            _args.pea_role = PeaRoleType.PARALLEL
             _args.identity = random_identity()
             if _args.peas_hosts:
                 _args.host = _args.peas_hosts.get(str(_args.pea_id), args.host)
@@ -36,8 +36,16 @@ def _set_replica_args(
             _args.port_out = tail_args.port_in
         _args.port_ctrl = helper.random_port()
         _args.socket_out = SocketType.PUSH_CONNECT
-        if args.polling.is_push: #TODO always set to is _push LOAD_BALANCE
-            _args.socket_in = SocketType.DEALER_CONNECT
+        if args.polling.is_push:
+            if args.scheduling == SchedulerType.ROUND_ROBIN:
+                _args.socket_in = SocketType.PULL_CONNECT
+            elif args.scheduling == SchedulerType.LOAD_BALANCE:
+                _args.socket_in = SocketType.DEALER_CONNECT
+            else:
+                raise ValueError(
+                    f'{args.scheduling} is not supported as a SchedulerType!'
+                )
+
         else:
             _args.socket_in = SocketType.SUB_CONNECT
         if head_args:

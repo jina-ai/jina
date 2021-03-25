@@ -7,18 +7,18 @@ from contextlib import ExitStack
 from typing import Optional, Dict, List, Union, Set
 
 from .helper import (
-    _set_replica_args,
+    _set_peas_args,
     _set_after_to_pass,
     _copy_to_head_args,
     _copy_to_tail_args,
     _fill_in_host,
 )
-from ..replicas import BaseReplica
+from ..peas import BasePea
 from ...enums import *
 
 
-class BasePod(ExitStack):
-    """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
+class BaseReplica(ExitStack):
+    """A BasePod is a immutable set of peas, which run in shards. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
@@ -34,7 +34,7 @@ class BasePod(ExitStack):
             needs if needs else set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
-        self.replica_list = []  # type: List['BaseReplica']
+        self.peas = []  # type: List['BasePea']
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
@@ -42,9 +42,9 @@ class BasePod(ExitStack):
 
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
-            self.replicas_args = args
+            self.peas_args = args
         else:
-            self.replicas_args = self._parse_args(args)
+            self.peas_args = self._parse_args(args)
 
     @property
     def role(self) -> 'PodRoleType':
@@ -95,52 +95,50 @@ class BasePod(ExitStack):
     def first_pea_args(self) -> Namespace:
         """Return the first non-head/tail pea's args """
         # note this will be never out of boundary
-        return self.replicas_args['replicas'][0]
+        return self.peas_args['peas'][0]
 
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        replicas_args = {'head': None, 'tail': None, 'replicas': []}
-        if getattr(args, 'replicas', 1) > 1:
+        peas_args = {'head': None, 'tail': None, 'peas': []}
+        if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
             _set_after_to_pass(args)
             self.is_head_router = True
             self.is_tail_router = True
-            replicas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
-            replicas_args['tail'] = _copy_to_tail_args(args)
-            replicas_args['replicas'] = _set_replica_args(
-                args, replicas_args['head'], replicas_args['tail']
+            peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
+            peas_args['tail'] = _copy_to_tail_args(args)
+            peas_args['peas'] = _set_peas_args(
+                args, peas_args['head'], peas_args['tail']
             )
-
-        # TODO this case does properly not exist anymore
         elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
             getattr(args, 'uses_after', None) and args.uses_after != '_pass'
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
                 self.is_head_router = True
-                replicas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
+                peas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             if getattr(args, 'uses_after', None):
                 self.is_tail_router = True
-                replicas_args['tail'] = _copy_to_tail_args(args)
-            replicas_args['replicas'] = _set_replica_args(
-                args, replicas_args.get('head', None), replicas_args.get('tail', None)
+                peas_args['tail'] = _copy_to_tail_args(args)
+            peas_args['peas'] = _set_peas_args(
+                args, peas_args.get('head', None), peas_args.get('tail', None)
             )
         else:
             self.is_head_router = False
             self.is_tail_router = False
-            replicas_args['replicas'] = [args]
+            peas_args['peas'] = [args]
 
-        # note that replicas_args['replicas'][0] exist either way and carries the original property
-        return replicas_args
+        # note that peas_args['peas'][0] exist either way and carries the original property
+        return peas_args
 
     @property
     def head_args(self):
         """Get the arguments for the `head` of this BasePod. """
-        if self.is_head_router and self.replicas_args['head']:
-            return self.replicas_args['head']
-        elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
+        if self.is_head_router and self.peas_args['head']:
+            return self.peas_args['head']
+        elif not self.is_head_router and len(self.peas_args['peas']) == 1:
             return self.first_pea_args
         elif self.deducted_head:
             return self.deducted_head
@@ -150,10 +148,10 @@ class BasePod(ExitStack):
     @head_args.setter
     def head_args(self, args):
         """Set the arguments for the `head` of this BasePod. """
-        if self.is_head_router and self.replicas_args['head']:
-            self.replicas_args['head'] = args
-        elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
-            self.replicas_args['replicas'][0] = args  # weak reference
+        if self.is_head_router and self.peas_args['head']:
+            self.peas_args['head'] = args
+        elif not self.is_head_router and len(self.peas_args['peas']) == 1:
+            self.peas_args['peas'][0] = args  # weak reference
         elif self.deducted_head:
             self.deducted_head = args
         else:
@@ -162,9 +160,9 @@ class BasePod(ExitStack):
     @property
     def tail_args(self):
         """Get the arguments for the `tail` of this BasePod. """
-        if self.is_tail_router and self.replicas_args['tail']:
-            return self.replicas_args['tail']
-        elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
+        if self.is_tail_router and self.peas_args['tail']:
+            return self.peas_args['tail']
+        elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
             return self.first_pea_args
         elif self.deducted_tail:
             return self.deducted_tail
@@ -174,10 +172,10 @@ class BasePod(ExitStack):
     @tail_args.setter
     def tail_args(self, args):
         """Set the arguments for the `tail` of this BasePod. """
-        if self.is_tail_router and self.replicas_args['tail']:
-            self.replicas_args['tail'] = args
-        elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
-            self.replicas_args['replicas'][0] = args  # weak reference
+        if self.is_tail_router and self.peas_args['tail']:
+            self.peas_args['tail'] = args
+        elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
+            self.peas_args['peas'][0] = args  # weak reference
         elif self.deducted_tail:
             self.deducted_tail = args
         else:
@@ -187,36 +185,36 @@ class BasePod(ExitStack):
     def all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod. """
         return (
-            ([self.replicas_args['head']] if self.replicas_args['head'] else [])
-            + ([self.replicas_args['tail']] if self.replicas_args['tail'] else [])
-            + self.replicas_args['replicas']
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            + self.peas_args['peas']
         )
 
     @property
     def num_peas(self) -> int:
-        """Get the number of running :class:`BaseReplica`"""
-        return len(self.replica_list)
+        """Get the number of running :class:`BasePea`"""
+        return len(self.peas)
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
     def start(self) -> 'BasePod':
-        """Start to run all :class:`BaseReplica` in this BasePod.
+        """Start to run all :class:`BasePea` in this BasePod.
 
         .. note::
-            If one of the :class:`BaseReplica` fails to start, make sure that all of them
+            If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
             for _args in self.all_args:
                 _args.noblock_on_start = True
-                self._enter_replica(BaseReplica(_args))
+                self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
                 for _args in self.all_args:
-                    self._enter_replica(BaseReplica(_args))
+                    self._enter_pea(BasePea(_args))
             except:
                 self.close()
                 raise
@@ -234,15 +232,15 @@ class BasePod(ExitStack):
             )
 
         try:
-            for p in self.replica_list:
+            for p in self.peas:
                 p.wait_start_success()
         except:
             self.close()
             raise
 
-    def _enter_replica(self, replica: 'BaseReplica') -> None:
-        self.replica_list.append(replica)
-        self.enter_context(replica)
+    def _enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -254,12 +252,12 @@ class BasePod(ExitStack):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for p in self.replica_list:
+            for p in self.peas:
                 p.join()
         except KeyboardInterrupt:
             pass
         finally:
-            self.replica_list.clear()
+            self.peas.clear()
 
     @staticmethod
     def _set_conditional_args(args):
@@ -275,4 +273,4 @@ class BasePod(ExitStack):
         .. note::
             A Pod is ready when all the Peas it contains are ready
         """
-        return all(p.is_ready.is_set() for p in self.replica_list)
+        return all(p.is_ready.is_set() for p in self.peas)
