@@ -29,15 +29,15 @@ def pt_sparse_tensor():
 def sp_sparse_tensor():
     from scipy.sparse import csr_matrix
 
-    row = np.array([0, 3, 1, 0])
-    col = np.array([0, 3, 1, 2])
-    data = np.array([4, 5, 7, 9])
-    return csr_matrix((data, (row, col)), shape=(3, 3)).toarray()
+    row = np.array([0, 0, 1, 2, 2, 2])
+    col = np.array([0, 2, 2, 0, 1, 2])
+    data = np.array([1, 2, 3, 4, 5, 6])
+    return csr_matrix((data, (row, col)), shape=(3, 3))
 
 
 @pytest.fixture
 def np_dense_tensor(sp_sparse_tensor):
-    return sp_sparse_tensor.todense().toarray()
+    return sp_sparse_tensor.todense()
 
 
 def tf_ndarray():
@@ -72,7 +72,9 @@ def test_null_proto(NdArrayCls):
     assert NdArrayCls().null_proto() == jina_pb2.NdArrayProto()
 
 
-def test_value_get_set(NdArrayCls, tf_sparse_tensor, pt_sparse_tensor):
+def test_value_get_set(
+    NdArrayCls, tf_sparse_tensor, pt_sparse_tensor, sp_sparse_tensor, np_dense_tensor
+):
     ndarray = NdArrayCls()
     assert ndarray.value is None
     if isinstance(ndarray, TFSparseNdArray):
