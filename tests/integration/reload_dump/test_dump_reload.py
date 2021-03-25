@@ -1,4 +1,5 @@
 import os
+import time
 
 import numpy as np
 
@@ -41,6 +42,29 @@ def test_dump_index(tmpdir):
     )
 
 
+def basic_benchmark(tmpdir, docs, validate_results_nonempty, error_callback):
+    os.environ['BASIC_QUERY_WS'] = os.path.join(tmpdir, 'basic_query')
+    os.environ['BASIC_INDEX_WS'] = os.path.join(tmpdir, 'basic_index')
+    with Flow().add(uses='basic/query.yml') as flow:
+        flow.index(docs)
+
+    with Flow().add(uses='basic/query.yml') as flow:
+        flow_query_start = time.time()
+        flow.search(docs, on_done=validate_results_nonempty, on_error=error_callback)
+        flow_query_end = time.time()
+        print(
+            f'basic query time: {flow_query_end - flow_query_start} for {len(docs)} docs. docs/sec = {len(docs)/(flow_query_end - flow_query_start)}'
+        )
+
+    with Flow().add(uses='basic/index.yml') as flow_index:
+        flow_index_start = time.time()
+        flow_index.index(docs)
+        flow_index_end = time.time()
+        print(
+            f'basic index time: {flow_index_end - flow_index_start} for {len(docs)} docs. docs/sec = {len(docs)/(flow_index_end - flow_index_start)}'
+        )
+
+
 def test_dump_reload(tmpdir):
     def validate_results_empty(resp):
         for d in resp.docs:
@@ -58,9 +82,11 @@ def test_dump_reload(tmpdir):
 
     docs = list(
         get_documents(
-            chunks=0, same_content=False, nr=1, index_start=0, same_tag_content=False
+            chunks=0, same_content=False, nr=100, index_start=0, same_tag_content=False
         )
     )
+
+    basic_benchmark(tmpdir, docs, validate_results_nonempty, error_callback)
 
     DUMP_PATH = os.path.join(str(tmpdir), 'dump_dir')
     os.environ['QUERY_WORKSPACE'] = os.path.join(str(tmpdir), 'query_ws')
@@ -70,7 +96,12 @@ def test_dump_reload(tmpdir):
             flow_query.search(
                 docs, on_done=validate_results_empty, on_error=error_callback
             )
+            flow_index_start = time.time()
             flow_index.index(docs)
+            flow_index_end = time.time()
+            print(
+                f'dbms index time: {flow_index_end - flow_index_start} for {len(docs)} docs. docs/sec = {len(docs)/(flow_index_end - flow_index_start)}'
+            )
             flow_index.dump(DUMP_PATH, shards=1, formats=[DumpTypes.DEFAULT])
 
             # test data
@@ -86,6 +117,11 @@ def test_dump_reload(tmpdir):
             )
 
             flow_query.reload(DUMP_PATH, os.path.join(tmpdir, 'new_workspace'))
+            flow_query_start = time.time()
             flow_query.search(
                 docs, on_done=validate_results_nonempty, on_error=error_callback
+            )
+            flow_query_end = time.time()
+            print(
+                f'reload query time: {flow_query_end - flow_query_start} for {len(docs)} docs. docs/sec = {len(docs)/(flow_query_end - flow_query_start)}'
             )
