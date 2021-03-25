@@ -1,6 +1,7 @@
 from typing import List
 
 import torch
+import numpy as np
 from torch.sparse import FloatTensor
 
 from . import BaseSparseNdArray
@@ -25,9 +26,15 @@ class SparseNdArray(BaseSparseNdArray):
         To comply with Tensorflow, `transpose_indices` is set to True by default
     """
 
-    def __init__(self, transpose_indices: bool = True, *args, **kwargs):
+    def __init__(
+        self,
+        proto: 'jina_pb2.SparseNdArrayProto' = None,
+        transpose_indices: bool = True,
+        *args,
+        **kwargs
+    ):
         """Set constructor method."""
-        super().__init__(*args, **kwargs)
+        super().__init__(proto, *args, **kwargs)
         self.transpose_indices = transpose_indices
 
     def sparse_constructor(
@@ -59,8 +66,11 @@ class SparseNdArray(BaseSparseNdArray):
         indices = value._indices().numpy()
         if self.transpose_indices:
             indices = indices.T
+        values = value._values().numpy()
+        shape = list(value.size())
         return {
             'indices': indices,
-            'values': value._values().numpy(),
-            'shape': list(value.shape),
+            'values': values,
+            'shape': shape,
+            #'transpose_indices':True, ???
         }

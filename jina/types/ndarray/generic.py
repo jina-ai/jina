@@ -124,7 +124,8 @@ class NdArray(BaseNdArray):
         :param value: value to set
         """
         if self.is_sparse:
-            self.sparse_cls(self._pb_body.sparse).value = value
+            aux = self.sparse_cls(self._pb_body.sparse)
+            aux.value = value
         else:
             self.dense_cls(self._pb_body.dense).value = value
 

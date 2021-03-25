@@ -45,7 +45,7 @@ _all_mime_types = set(mimetypes.types_map.values())
 
 scipy_installed = False
 tensorflow_installed = False
-pytoch_installed = False
+pytorch_installed = False
 
 with ImportExtensions(
     required=False,
@@ -72,7 +72,7 @@ with ImportExtensions(
 ):
     import torch
 
-    pytoch_installed = True
+    pytorch_installed = True
 
 
 class Document(ProtoTypeMixin, Traversable):
@@ -490,13 +490,6 @@ class Document(ProtoTypeMixin, Traversable):
         """
         return NdArray(self._pb_body.embedding).value
 
-    def cast_embedding(self, output_type) -> 'Union[np.ndarray, scipy.coo_matrix]':
-        """Return ``embedding`` of the content of a Document.
-
-        :return: the embedding from the proto
-        """
-        return NdArray(self._pb_body.embedding, output_type).value
-
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
         """Set the ``embedding`` of the content of a Document.
@@ -524,6 +517,16 @@ class Document(ProtoTypeMixin, Traversable):
             protbuff_updater.value = v
         elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
             from ..ndarray.sparse.tensorflow import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            protbuff_updater.value = v
+
+        elif pytorch_installed and isinstance(v, torch.Tensor) and v.is_sparse:
+            from ..ndarray.sparse.pytorch import SparseNdArray
 
             protbuff_updater = NdArray(
                 is_sparse=True,
