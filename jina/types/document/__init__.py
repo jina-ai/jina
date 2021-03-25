@@ -508,34 +508,19 @@ class Document(ProtoTypeMixin, Traversable):
             NdArray(getattr(self._pb_body, k)).value = v.value
         elif scipy_installed and scipy.sparse.issparse(v):
             from ..ndarray.sparse.scipy import SparseNdArray
-
-            protbuff_updater = NdArray(
-                is_sparse=True,
-                sparse_cls=SparseNdArray,
-                proto=getattr(self._pb_body, k),
-            )
-            protbuff_updater.value = v
         elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
             from ..ndarray.sparse.tensorflow import SparseNdArray
-
-            protbuff_updater = NdArray(
-                is_sparse=True,
-                sparse_cls=SparseNdArray,
-                proto=getattr(self._pb_body, k),
-            )
-            protbuff_updater.value = v
-
         elif pytorch_installed and isinstance(v, torch.Tensor) and v.is_sparse:
             from ..ndarray.sparse.pytorch import SparseNdArray
-
-            protbuff_updater = NdArray(
-                is_sparse=True,
-                sparse_cls=SparseNdArray,
-                proto=getattr(self._pb_body, k),
-            )
-            protbuff_updater.value = v
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
+
+        protbuff_updater = NdArray(
+            is_sparse=True,
+            sparse_cls=SparseNdArray,
+            proto=getattr(self._pb_body, k),
+        )
+        protbuff_updater.value = v
 
     @property
     def matches(self) -> 'MatchSet':
