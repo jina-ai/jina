@@ -1,19 +1,31 @@
 import time
 
+import pytest
+
 from jina.flow import Flow
 
 
 def test_simple_config():
-    with Flow().add(name='pod1', replicas=2, parallel=2, port_in=5100, port_out=5200) as flow:
+    with Flow().add(
+            name='pod1', replicas=2, parallel=2, port_in=5100, port_out=5200
+    ) as flow:
         print('test')
 
 
-def test_port_configuration():
+@pytest.mark.parametrize(
+    'replicas_and_parallel', (
+            ((1, 1),),
+            ((1, 2),),
+            ((2, 1),),
+            ((2, 3),),
+            ((2, 1), (3, 4), (1, 2), (1, 1), (2, 2)),
+    ))
+def test_port_configuration(replicas_and_parallel):
     def get_outer_ports(pod):
         if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
             assert pod.replicas_args['tail'] is None
             assert pod.replicas_args['head'] is None
-            replica = pod.replicas_args['replicas'][0] # there is only one
+            replica = pod.replicas_args['replicas'][0]  # there is only one
             return replica.port_in, replica.port_out
         else:
             assert pod.args.replicas == len(pod.replicas_args['replicas'])
@@ -32,7 +44,7 @@ def test_port_configuration():
         assert replica.args.port_out == pod_tail_port_in
         peas_args = replica.peas_args
         peas = peas_args['peas']
-        if parallel == 1: #TODO handle parallel == 1
+        if parallel == 1:  # TODO validate parallel == 1
             pass
             # assert len(peas) == 1
             # assert peas[f'{replica.args.name}/1'].port_in == pod_head_port_out
@@ -46,13 +58,14 @@ def test_port_configuration():
                 assert shard_head.port_out == pea.port_in
                 assert pea.port_out == shard_tail.port_in
 
+    flow = Flow()
+    for i, (replicas, parallel) in enumerate(replicas_and_parallel):
+        flow.add(name=f'pod{i}', replicas=replicas, parallel=parallel, copy_flow=False)
 
-    with Flow().add(name='pod1', replicas=2, parallel=3).add(
-        name='pod2', replicas=3, parallel=1
-    ) as flow:
+    with flow:
         pods = flow._pod_nodes
         validate_ports_pods(
-            [pods['gateway'], pods['pod1'], pods['pod2'], pods['gateway']]
+            [pods['gateway']] + [pods[f'pod{i}'] for i in range(len(replicas_and_parallel))] + [pods['gateway']]
         )
         for pod_name, pod in pods.items():
             if pod_name == 'gateway':
@@ -62,20 +75,20 @@ def test_port_configuration():
             # replica_head_out = pod.replicas_args['head'].port_out, # equals
             # replica_tail_in = pod.replicas_args['tail'].port_in, # equals
 
-
-            for replica in pod.replica_list: # TODO handle replicas == 1 case
+            for replica in pod.replica_list:  # TODO validate replicas == 1 case
                 if not ('head' in replica.name or 'tail' in replica.name):
                     validate_ports_replica(
                         replica,
                         pod_head_out,
                         pod_tail_in,
-                        getattr(pod.args, 'parallel', 1)
+                        getattr(pod.args, 'parallel', 1),
                     )
         assert pod
 
 
 def test_use_before_use_after():
     pass
+
 
 def test_gateway():
     pass
@@ -98,10 +111,10 @@ def test_experimental_pod_update():
         print(resp)
 
     with Flow().add(
-        name='pod1',
-        parallel=2,
-        port_in=51000,
-        port_out=52000,  # <-- getting changed to 54000
+            name='pod1',
+            parallel=2,
+            port_in=51000,
+            port_out=52000,  # <-- getting changed to 54000
     ).add(
         name='pod2',  # <-- getting removed
         parallel=2,
