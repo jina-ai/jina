@@ -657,3 +657,106 @@ def test_pb_obj2dict():
     assert isinstance(rcs[0], Document)
     assert rcs[0].text == 'text in chunk'
     assert rcs[0].tags['id'] == 'id in chunk tags'
+
+
+def test_document_sparse_attributes_scipy():
+    from jina.types.ndarray.generic import NdArray
+    import scipy.sparse as sp
+    from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
+    from jina import Document
+
+    row = np.array([0, 0, 1, 2, 2, 2])
+    col = np.array([0, 2, 2, 0, 1, 2])
+    data = np.array([1, 2, 3, 4, 5, 6])
+
+    X = sp.coo_matrix((data, (row, col)), shape=(4, 10))
+    d = Document()
+    d.embedding = X
+    d.blob = X
+    # The following print statement is True because data is converted to coo_matrix
+    print(
+        'isinstance(d.embedding, sp.coo_matrix):',
+        isinstance(d.embedding, sp.coo_matrix),
+    )
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
+
+    X = sp.bsr_matrix((data, (row, col)), shape=(3, 3))
+    d = Document()
+    d.embedding = X
+    d.blob = X
+    # The following print statement is False because data is converted to coo_matrix
+    print(
+        'isinstance(d.embedding, sp.bsr_matrix):',
+        isinstance(d.embedding, sp.bsr_matrix),
+    )
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
+
+    X = sp.csr_matrix((data, (row, col)), shape=(4, 10))
+    d = Document()
+    d.embedding = X
+    d.blob = X
+    # The following print statement is False because data is converted to coo_matrix
+    print(
+        'isinstance(d.embedding, sp.csr_matrix):',
+        isinstance(d.embedding, sp.csr_matrix),
+    )
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
+
+    X = sp.csc_matrix((data, (row, col)), shape=(4, 10))
+    d = Document()
+    d.embedding = X
+    d.blob = X
+    # The following print statement is False because data is converted to coo_matrix
+    print(
+        'isinstance(d.embedding, sp.csc_matrix):',
+        isinstance(d.embedding, sp.coo_matrix),
+    )
+    np.testing.assert_array_equal(d.embedding.todense(), X.todense())
+    np.testing.assert_array_equal(d.blob.todense(), X.todense())
+
+
+def test_document_sparse_attributes_tensorflow():
+    from jina.types.ndarray.generic import NdArray
+    import tensorflow as tf
+    from jina import Document
+
+    row = np.array([0, 0, 1, 2, 2, 2])
+    col = np.array([0, 2, 2, 0, 1, 2])
+    data = np.array([1, 2, 3, 4, 5, 6])
+    indices = [(x, y) for x, y in zip(row, col)]
+
+    X = tf.SparseTensor(indices=indices, values=data, dense_shape=[4, 10])
+
+    d = Document()
+    d.embedding = X
+    d.blob = X
+    # The following print statement is False because data is converted to coo_matrix
+    print(
+        'isinstance(d.embedding, tf.SparseTensor):',
+        isinstance(d.embedding, tf.SparseTensor),
+    )
+    np.testing.assert_array_equal(d.embedding.todense(), tf.sparse.to_dense(X))
+    np.testing.assert_array_equal(d.blob.todense(), tf.sparse.to_dense(X))
+
+
+def test_document_sparse_attributes_pytorch():
+    from jina.types.ndarray.sparse.pytorch import SparseNdArray
+    import torch
+    from jina import Document
+
+    row = np.array([0, 0, 1, 2, 2, 2])
+    col = np.array([0, 2, 2, 0, 1, 2])
+    data = np.array([1, 2, 3, 4, 5, 6])
+    shape = [4, 10]
+    indices = [list(row), list(col)]
+    X = torch.sparse_coo_tensor(indices, data, shape)
+
+    d = Document()
+    d.embedding = X
+    d.blob = X
+
+    np.testing.assert_array_equal(d.embedding.todense(), X.to_dense().numpy())
+    np.testing.assert_array_equal(d.blob.todense(), X.to_dense().numpy())
