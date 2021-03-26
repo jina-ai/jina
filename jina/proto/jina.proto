@@ -107,7 +107,7 @@ message DocumentProto {
     float weight = 5;
 
     // total number of siblings of this document (docs that are in the same granularity and have the same parent_id)
-    uint32 siblings = 6;
+    uint32 siblings = 24;
 
     // the top-k matched Docs on the same level (recursive structure)
     repeated DocumentProto matches = 8;
@@ -349,4 +349,3 @@ service JinaRPC {
     rpc Call (stream RequestProto) returns (stream RequestProto) {
     }
 }
-
