@@ -64,7 +64,6 @@ The polling strategy of the Pod (when `parallel>1`)
     )
     gp.add_argument(
         '--peas-hosts',
-        type=list,
         nargs='+',
         type=str,
         help='''The hosts of the peas when parallel greater than 1.
