@@ -5,6 +5,7 @@ import numpy as np
 
 from jina.executors.crafters import BaseCrafter
 from jina.executors.decorators import single
+from jina.importer import ImportExtensions
 from .helper import _crop_image, _move_channel_axis, _load_image
 
 
@@ -35,19 +36,26 @@ class ImageReader(BaseCrafter):
         :param uri: the image file path
 
         """
-        from PIL import Image
+        with ImportExtensions(
+            required=True,
+            verbose=True,
+            pkg_name='Pillow',
+            logger=self.logger,
+            help_text='PIL is missing. Install it with `pip install Pillow`',
+        ):
+            from PIL import Image
 
-        if buffer:
-            raw_img = Image.open(io.BytesIO(buffer))
-        elif uri:
-            raw_img = Image.open(uri)
-        else:
-            raise ValueError('no value found in "buffer" and "uri"')
-        raw_img = raw_img.convert('RGB')
-        img = np.array(raw_img).astype('float32')
-        if self.channel_axis != -1:
-            img = np.moveaxis(img, -1, self.channel_axis)
-        return dict(blob=img)
+            if buffer:
+                raw_img = Image.open(io.BytesIO(buffer))
+            elif uri:
+                raw_img = Image.open(uri)
+            else:
+                raise ValueError('no value found in "buffer" and "uri"')
+            raw_img = raw_img.convert('RGB')
+            img = np.array(raw_img).astype('float32')
+            if self.channel_axis != -1:
+                img = np.moveaxis(img, -1, self.channel_axis)
+            return dict(blob=img)
 
 
 class CenterImageCropper(BaseCrafter):
