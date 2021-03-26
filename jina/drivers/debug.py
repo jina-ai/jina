@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from jina.drivers import FlatRecursiveMixin, BaseRecursiveDriver
+from jina.importer import ImportExtensions
 
 if False:
     # noinspection PyUnreachableCode
@@ -43,10 +44,17 @@ class PngToDiskDriver(FlatRecursiveMixin, BaseRecursiveDriver):
             return np.moveaxis(img, channel_axis_to_move, target_channel_axis)
 
         def _load_image(blob: 'np.ndarray', channel_axis: int):
-            from PIL import Image
+            with ImportExtensions(
+                required=True,
+                pkg_name='Pillow',
+                verbose=True,
+                logger=self.logger,
+                help_text='PIL is missing. Install it with `pip install Pillow`',
+            ):
+                from PIL import Image
 
-            img = _move_channel_axis(blob, channel_axis)
-            return Image.fromarray(img.astype('uint8'))
+                img = _move_channel_axis(blob, channel_axis)
+                return Image.fromarray(img.astype('uint8'))
 
         for d in docs:
             if self.done < self.top:

@@ -5,6 +5,8 @@ from typing import Tuple, Union
 
 import numpy as np
 
+from jina.importer import ImportExtensions
+
 
 def _move_channel_axis(
     img: 'np.ndarray', channel_axis_to_move: int, target_channel_axis: int = -1
@@ -21,11 +23,16 @@ def _load_image(blob: 'np.ndarray', channel_axis: int):
     """
     Load an image array and return a `PIL.Image` object.
     """
+    with ImportExtensions(
+        required=True,
+        verbose=True,
+        pkg_name='Pillow',
+        help_text='PIL is missing. Install it with `pip install Pillow`',
+    ):
+        from PIL import Image
 
-    from PIL import Image
-
-    img = _move_channel_axis(blob, channel_axis)
-    return Image.fromarray(img.astype('uint8'))
+        img = _move_channel_axis(blob, channel_axis)
+        return Image.fromarray(img.astype('uint8'))
 
 
 def _crop_image(
