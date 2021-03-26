@@ -13,8 +13,13 @@ def _set_peas_args(
     args: Namespace, head_args: Optional[Namespace] = None, tail_args: Namespace = None
 ) -> List[Namespace]:
     result = []
-
-    _host_list = args.peas_hosts if args.peas_hosts else [args.host, ]
+    _host_list = (
+        args.peas_hosts
+        if args.peas_hosts
+        else [
+            args.host,
+        ]
+    )
 
     for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
         _args = copy.deepcopy(args)
