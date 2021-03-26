@@ -97,6 +97,12 @@ docker run jinaai/jina:latest
 - [Q+A chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
 - [Cross media search](./.github/pages/hello-world.md#-multimodal-document-search)
 
+### Get Support
+
+#### Slack
+
+Join our [**Slack community**](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
+
 ### Examples ([View all](https://github.com/jina-ai/examples))
 
 Example code to build your own projects
@@ -231,24 +237,23 @@ We welcome all kinds of contributions from the open-source community, individual
 ## Community
 
 - [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
-- [Slack workspace](https://slack.jina.ai) - join #general on our Slack to meet the team and ask questions
+- [Slack community](https://slack.jina.ai) - join #general on our Slack to meet the team and ask questions
 - [YouTube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
 - [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
 - [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow and interact with us using hashtag `#JinaSearch`
 - [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source.
 
-## Open Governance
+#### Engineering All Hands
 
 <a href="https://www.youtube.com/c/jina-ai">
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/eah-god.png?raw=true " />
 </a>
 
-As part of our open governance model, we host Jina's [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) in public. This Zoom meeting recurs monthly on the second Tuesday of each month, at 14:00-15:30 (CET). Everyone can join in via the following calendar invite.
+As part of our open governance model, we host Jina's [Engineering All Hands]((https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/)) where we present the latest features and answer community questions.
 
-- [Add to Google Calendar](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)
-- [Download .ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)
+- **When?** The second Tuesday of every month
+- **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai)
 
-The meeting will also be live-streamed and later published to our [YouTube channel](https://youtube.com/c/jina-ai).
 
 ## Join Us
 
