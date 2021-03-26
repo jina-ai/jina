@@ -13,6 +13,7 @@ from tests import random_docs
 
 def scipy_sparse_list():
     from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
+
     return [coo_matrix, bsr_matrix, csr_matrix, csc_matrix]
 
 
@@ -40,6 +41,7 @@ def scipy_sparse_matrix(request, row, column, data):
 @pytest.fixture
 def tf_sparse_matrix(row, column, data):
     import tensorflow as tf
+
     indices = [(x, y) for x, y in zip(row, column)]
     return tf.SparseTensor(indices=indices, values=data, dense_shape=[4, 10])
 
@@ -47,6 +49,7 @@ def tf_sparse_matrix(row, column, data):
 @pytest.fixture
 def torch_sparse_matrix(row, column, data):
     import torch
+
     shape = [4, 10]
     indices = [list(row), list(column)]
     return torch.sparse_coo_tensor(indices, data, shape)
@@ -710,11 +713,16 @@ def test_document_sparse_attributes_scipy(scipy_sparse_matrix):
 
 def test_document_sparse_attributes_tensorflow(tf_sparse_matrix):
     import tensorflow as tf
+
     d = Document()
     d.embedding = tf_sparse_matrix
     d.blob = tf_sparse_matrix
-    np.testing.assert_array_equal(d.embedding.todense(), tf.sparse.to_dense(tf_sparse_matrix))
-    np.testing.assert_array_equal(d.blob.todense(), tf.sparse.to_dense(tf_sparse_matrix))
+    np.testing.assert_array_equal(
+        d.embedding.todense(), tf.sparse.to_dense(tf_sparse_matrix)
+    )
+    np.testing.assert_array_equal(
+        d.blob.todense(), tf.sparse.to_dense(tf_sparse_matrix)
+    )
 
 
 def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
@@ -722,5 +730,9 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
     d.embedding = torch_sparse_matrix
     d.blob = torch_sparse_matrix
 
-    np.testing.assert_array_equal(d.embedding.todense(), torch_sparse_matrix.to_dense().numpy())
-    np.testing.assert_array_equal(d.blob.todense(), torch_sparse_matrix.to_dense().numpy())
+    np.testing.assert_array_equal(
+        d.embedding.todense(), torch_sparse_matrix.to_dense().numpy()
+    )
+    np.testing.assert_array_equal(
+        d.blob.todense(), torch_sparse_matrix.to_dense().numpy()
+    )
