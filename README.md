@@ -38,7 +38,7 @@ Jina is a search framework for building <strong>cross-/multi-media search system
       <a href="http://demo.jina.ai/#image-search">Image search</a>
     </th>
     <th>
-      <a href="http://demo.jina.ai/#chatbot">Q+A Chatbot</a>
+      <a href="http://demo.jina.ai/#chatbot">Q+A Search</a>
     </th>
     <th>
       <a href="http://demo.jina.ai/#cross-media">Cross-Media search</a>
