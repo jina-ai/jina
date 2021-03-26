@@ -39,7 +39,7 @@ def mixin_base_pod_parser(parser):
         choices=list(PollingType),
         default=PollingType.ANY,
         help='''
-The polling strategy of the Pod (when `parallel>1`) 
+The polling strategy of the Pod (when `parallel>1`)
 - ANY: only one (whoever is idle) Pea polls the message
 - ALL: all Peas poll the message (like a broadcast)
 ''',
@@ -64,9 +64,10 @@ The polling strategy of the Pod (when `parallel>1`)
     )
     gp.add_argument(
         '--peas-hosts',
+        type=list,
         nargs='+',
         type=str,
         help='''The hosts of the peas when parallel greater than 1.
-        Peas will be evenly distributed among the hosts. By default, 
+        Peas will be evenly distributed among the hosts. By default,
         peas are running in the same host as the pod.''',
     )
