@@ -57,7 +57,7 @@ With Jina you can search through any kind of data, whether that's [text](https:/
 
 🧠 **First-class AI models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
 
-🌩️ **Scale up to the Cloud** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
+🌩️ **Scale up to the cloud** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
@@ -104,7 +104,7 @@ Example code to build your own projects
 <table>
   <tr>
     <td>
-      <h1>📄</h1>
+      <h2>📄</h2>
     </td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences">NLP Semantic Wikipedia Search with Transformers and DistilBERT</a></h4>
@@ -113,7 +113,7 @@ Example code to build your own projects
   </tr>
   <tr>
     <td>
-      <h1>📄</h1>
+      <h2>📄</h2>
     </td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental">Add Incremental Indexing to Wikipedia Search</a></h4>
@@ -122,7 +122,7 @@ Example code to build your own projects
   </tr>
   <tr>
     <td>
-      <h1>📄</h1>
+      <h2>📄</h2>
     </td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/multires-lyrics-search">Search Lyrics with Transformers and PyTorch</a></h4>
@@ -131,7 +131,7 @@ Example code to build your own projects
   </tr>
   <tr>
     <td>
-      <h1>🖼️</h1>
+      <h2>🖼️</h2>
     </td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
@@ -140,7 +140,7 @@ Example code to build your own projects
   </tr>
   <tr>
     <td>
-      <h1>🎧</h1>
+      <h2>🎧</h2>
     </td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Search YouTube audio data with Vggish</a></h4>
@@ -149,7 +149,7 @@ Example code to build your own projects
   </tr>
   <tr>
     <td>
-      <h1>🎞️ </h1>
+      <h2>🎞️ </h2>
     </td>
     <td>
       <h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Search Tumblr GIFs with KerasEncoder</a></h4>
