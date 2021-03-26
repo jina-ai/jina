@@ -99,9 +99,9 @@ docker run jinaai/jina:latest
 
 ### Get Support
 
-- Join our [**Slack community**](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
-- Join our [**Engineering All Hands**](https://github.com/jina-ai/jina/tree/refactor-readme-2021-03#engineering-all-hands) meet-up to discuss your use case and learn Jina's new features.
-- See [**upcoming features**](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about
+- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
+- Join our [Engineering All Hands](https://github.com/jina-ai/jina/tree/refactor-readme-2021-03#engineering-all-hands) meet-up to discuss your use case and learn Jina's new features.
+- See [upcoming features](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about
 
 ## Examples ([View all](https://github.com/jina-ai/examples))
 
