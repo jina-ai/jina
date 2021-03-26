@@ -17,12 +17,12 @@ Jina is a neural search framework for building <strong>cross-/multi-media search
 <table>
   <tr>
     <td>
-      <a href="https://docs.jina.ai/">
+      <a href="./.github/pages/hello-world.md#-fashion-image-search">
         <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" />
       </a>
     </td>
     <td>
-<a href="https://docs.jina.ai/">
+<a href="./.github/pages/hello-world.md#-covid-19-chatbot">
 <img src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
 </a>
     </td>
@@ -34,13 +34,13 @@ Jina is a neural search framework for building <strong>cross-/multi-media search
   </tr>
   <tr>
     <th>
-      <a href="./.github/pages/hello-world.md#image-search">Image search</a>
+      <a href="./.github/pages/hello-world.md#-fashion-image-search">Image search</a>
     </th>
     <th>
-      <a href="./.github/pages/hello-world.md#qa-search">Q+A search</a>
+      <a href="./.github/pages/hello-world.md#-covid-19-chatbot">Q+A search</a>
     </th>
     <th>
-      <a href="./.github/pages/hello-world.md#cross-media-search">Cross-Media search</a>
+      <a href="./.github/pages/hello-world.md#-multimodal-document-search">Multi-media search</a>
     </td>
   </tr>
 </table>
@@ -93,9 +93,9 @@ docker run jinaai/jina:latest
 
 ### Run a Demo: Jina Hello World
 
-- [Fashion MNIST image search](./.github/pages/hello-world.md#image-search)
-- [Q+A chatbot](./.github/pages/hello-world.md#qa-search)
-- [Cross media search](./.github/pages/hello-world.md#cross-media-search)
+- [Fashion MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
+- [Q+A chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
+- [Cross media search](./.github/pages/hello-world.md#-multimodal-document-search)
 
 ### Examples ([View all](https://github.com/jina-ai/examples))
 
