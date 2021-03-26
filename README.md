@@ -99,11 +99,9 @@ docker run jinaai/jina:latest
 
 ### Get Support
 
-#### Slack
-
 Join our [**Slack community**](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
 
-### Examples ([View all](https://github.com/jina-ai/examples))
+## Examples ([View all](https://github.com/jina-ai/examples))
 
 Example code to build your own projects
 
