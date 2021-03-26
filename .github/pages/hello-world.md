@@ -1,8 +1,8 @@
-## Jina "Hello, World!" 👋🌍
+# Jina "Hello, World!" 👋🌍
 
 Just starting out? Try Jina's "Hello, World" - `jina hello --help`
 
-### 👗 Fashion Image Search
+## 👗 Fashion Image Search
 
 
 <a href="https://docs.jina.ai/">
@@ -19,7 +19,7 @@ jina hello fashion  # more options in --help
 
 ```bash
 docker run -v "$(pwd)/j:/j" jinaai/jina hello fashion --workdir /j && open j/hello-world.html
-# replace "open" with "xdg-open" on Linux
+ replace "open" with "xdg-open" on Linux
 ```
 
 <details>
@@ -34,7 +34,7 @@ docker run -v "$(pwd)/j:/j" jinaai/jina hello fashion --workdir /j && open j/hel
 This downloads the Fashion-MNIST training and test dataset and tells Jina to index 60,000 images from the training set. Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results. The whole process takes about 1 minute.
 
 
-### 🤖 Covid-19 Chatbot
+## 🤖 Covid-19 Chatbot
 
 <a href="https://docs.jina.ai/">
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
@@ -51,7 +51,7 @@ This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tell
 
 <br><br>
 
-### 🪆 Multimodal Document Search
+## 🪆 Multimodal Document Search
 
 <a href="https://youtu.be/B_nH8GCmBfc">
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-multimodal.gif?raw=true" />

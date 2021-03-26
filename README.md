@@ -85,7 +85,7 @@ docker run jinaai/jina:latest
 
 ### The Basics
 
-- [Code snippets for all Jina functionality](./.github/pages/snippets.md)
+- [Code snippets for all Jina functionality](./.github/pages/snippets.md), which you can run in your browser
 - [What is neural search, and how is it different to symbolic search?](https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html)
 - [Jina 101: Learn Jina's key components](https://docs.jina.ai/chapters/101/)
 - [Jina 102: Learn how Jina's components fit together](https://docs.jina.ai/chapters/102/)
@@ -167,6 +167,28 @@ Apart from the learning resources above, We highly recommended you go through ou
 Docs are built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
 
 Are you a "Doc"-star? [Join us!](https://jobs.jina.ai) We welcome all kinds of improvements on the documentation.
+
+### Videos
+
+<table>
+  <tr>
+    <td width="33%">
+    <a href="https://youtu.be/zvXkQkqd2I8">
+      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/basic-concept.png?raw=true"/>
+    </a>
+    </td>
+    <td width="33%">
+    <a href="https://youtu.be/qOD-6mihUzQ">
+      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/speedup.png?raw=true"/>
+    </a>
+    </td>
+    <td width="33%">
+    <a href="https://youtu.be/B_nH8GCmBfc">
+      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/multimodal-search.png?raw=true"/>
+    </a>
+    </td>
+  </tr>
+</table>
 
 ## Contributing
 

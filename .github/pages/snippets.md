@@ -1,3 +1,6 @@
+# Jina Code Snippets
+
+These code snippets cover all aspects of Jina's functionality. To run a snippet in a Jupyter Notebook, just click the "run" button next to the snippet.
 
 |     |   |
 | --- |---|
@@ -5,9 +8,9 @@
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
-### 🥚 Fundamentals
+## 🥚 Fundamentals
 
-#### CRUD Functions
+### CRUD Functions
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With Documents below as an example:
@@ -37,7 +40,7 @@ f = Flow().add(uses='_index')
     <td>
 
 ```python
-# save four docs (both embedding and structured info) into storage
+ save four docs (both embedding and structured info) into storage
 with f:
     f.index(docs, on_done=print)
 ```
@@ -51,7 +54,7 @@ with f:
     <td>
 
 ```python
-# retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively
+ retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively
 with f:
     f.search(docs[0], top_k=3, on_done=lambda x: print(x.docs[0].matches))
 ```
@@ -73,7 +76,7 @@ with f:
     <td>
 
 ```python
-# update 🐲 embedding in the storage
+ update 🐲 embedding in the storage
 docs[0].embedding = np.array([1, 1])
 with f:
     f.update(docs[0])
@@ -87,7 +90,7 @@ with f:
     <td>
 
 ```python
-# remove 🐦🐲 Documents from the storage
+ remove 🐦🐲 Documents from the storage
 with f:
     f.delete(['🐦', '🐲'])
 ```
@@ -98,7 +101,7 @@ with f:
 For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)  
 
 
-#### Document
+### Document
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 `Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and be accompanied by rich meta information. To construct a Document, you can use:
@@ -144,7 +147,7 @@ d0.plot()  # simply `d0` on JupyterLab
   <summary>Click here to see more about MultimodalDocument</summary>
 
 
-#### MultimodalDocument
+### MultimodalDocument
 
 A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
 
@@ -172,7 +175,7 @@ doc_img.tags['date'] = '10/08/2019'
 document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
 ```
 
-##### Fusion Embeddings from Different Modalities
+#### Fusion Embeddings from Different Modalities
 
 To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unique `encode` interface.
 
@@ -197,7 +200,7 @@ Interested readers can refer to [`jina-ai/example`: how to build a multimodal se
 
 </details>
 
-#### Flow
+### Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 Jina provides a high-level Flow API to simplify building CRUD workflows. To create a new Flow:
@@ -228,9 +231,9 @@ Get the vibe? Now we're talking! Let's learn more about the basic concepts and f
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
 
-### 🐣 Basic
+## 🐣 Basic
 
-#### Feed Data
+### Feed Data
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-feed-data.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty Documents and index them:
@@ -342,7 +345,7 @@ Each file captured is constructed as a `Document`, and Document content (`text`,
 
 </table>
 
-#### Fetch Result
+### Fetch Result
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-fetch-result.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface: You can add callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written to `output.txt`.
@@ -358,7 +361,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
             on_done=print, on_error=beep, on_always=lambda x: fp.write(x.json()))
 ```
 
-#### Add Logic
+### Add Logic
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-add-logic.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://101.jina.ai/#executor). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
@@ -375,7 +378,7 @@ f = (Flow().add(uses=MyBertEncoder)  # the class of a Jina Executor
 
 The power of Jina lies in its decentralized architecture: Each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
 
-#### Inter & Intra Parallelism
+### Inter & Intra Parallelism
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 Chaining `.add()`s creates a sequential Flow. For parallelism, use the `needs` parameter:
@@ -400,7 +403,7 @@ f = (Flow().add(name='p1', needs='gateway')
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
 
-#### Decentralized Flow
+### Decentralized Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=decentralized-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 A Flow does not have to be local-only: You can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod`, is put to a remote machine for parallelization, whereas other Pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
@@ -411,9 +414,9 @@ A Flow does not have to be local-only: You can put any Pod to remote(s). In the 
     <td>
 
 ```bash
-# have docker installed
+ have docker installed
 docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
-# to stop it
+ to stop it
 docker rm -f jinad
 ```
 
@@ -454,7 +457,7 @@ with Flow().add().add(host='cloud.jina.ai:8000') as f:
     f.index(['hello', 'world'])
 ```
 
-#### Asynchronous Flow
+### Asynchronous Flow
 <a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 While synchronous from outside, Jina runs asynchronously under the hood: it manages the eventloop(s) for scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
@@ -506,9 +509,9 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
 
-### 🐥 Breakdown of `hello-world`
+## 🐥 Breakdown of `hello-world`
 
-#### Customize Encoder
+### Customize Encoder
 
 Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do this, we simply inherit from `BaseImageEncoder`: a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
 
@@ -537,7 +540,7 @@ Jina provides [a family of `Executor` classes](https://101.jina.ai/#executor), w
 pip install jina[hub] && jina hub new
 ```
 
-#### Test Encoder in Flow
+### Test Encoder in Flow
 
 Let's test our encoder in the Flow with some synthetic data:
 
@@ -556,7 +559,7 @@ with f:
 
 All good! Now our `validate` function confirms that all one hundred 28x28 synthetic images have been embedded into 100x64 vectors.
 
-#### Parallelism & Batching
+### Parallelism & Batching
 
 By setting a larger input, you can play with `batch_size` and `parallel`:
 
@@ -568,7 +571,7 @@ with f:
     f.index_ndarray(numpy.random.random([60000, 28, 28]), batch_size=1024)
 ```
 
-#### Add Data Indexer
+### Add Data Indexer
 
 Now we need to add an indexer to store all the embeddings and the image for later retrieval. Jina provides a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combine them in a single YAML file:
 
@@ -603,7 +606,7 @@ c = CompoundIndexer()
 c.components = lambda: [a, b]
 ```
 
-#### Compose Flow from YAML
+### Compose Flow from YAML
 
 Now let's add our indexer YAML file to the Flow with `.add(uses=)`. Let's also add two shards to the indexer to improve its scalability:
 
@@ -633,7 +636,7 @@ And then load it in Python:
 f = Flow.load_config('flow.yml')
 ```
 
-#### Search
+### Search
 
 Querying a Flow is similar to what we did with indexing. Simply load the query Flow and switch from `f.index` to `f.search`. Say you want to retrieve the top 50 documents that are similar to your query and then plot them in HTML:
 
@@ -644,7 +647,7 @@ with f:
     f.search_ndarray(numpy.random.random([10, 28, 28]), shuffle=True, on_done=plot_in_html, top_k=50)
 ```
 
-#### Evaluation
+### Evaluation
 
 To compute precision recall on the retrieved result, you can add `_eval_pr`, a built-in evaluator for computing precision & recall.
 
@@ -670,7 +673,7 @@ f.search(query_iterator, ...)
 ```
 
 
-#### REST Interface
+### REST Interface
 
 In practice, the query Flow and the client (i.e. data sender) are often physically separated. Moreover, the client may prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn on [REST support](https://api.jina.ai/rest/) with `restful=True`:
 
@@ -689,25 +692,3 @@ pip install jina[hub] && jina hub new --type app
 ```
 
 This creates a Python entrypoint, YAML configs and a Dockerfile. You can start from there.
-
-## Learn
-
-<table>
-  <tr>
-    <td width="33%">
-    <a href="https://youtu.be/zvXkQkqd2I8">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/basic-concept.png?raw=true"/>
-    </a>
-    </td>
-    <td width="33%">
-    <a href="https://youtu.be/qOD-6mihUzQ">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/speedup.png?raw=true"/>
-    </a>
-    </td>
-    <td width="33%">
-    <a href="https://youtu.be/B_nH8GCmBfc">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/multimodal-search.png?raw=true"/>
-    </a>
-    </td>
-  </tr>
-</table>
