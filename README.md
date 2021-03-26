@@ -1,11 +1,10 @@
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="400px">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
 </p>
 <p align="center">
-<h2 align="center">Deep Learning Search Framework for Any Kind of Data</h2>
+<h2 align="center">Deep Learning Neural Search Framework for Any Kind of Data</h2>
 </p>
 <p align=center>
-<!--<a href="https://github.com/jina-ai/jina/actions?query=workflow%3ACI"><img src="https://github.com/jina-ai/jina/workflows/CI/badge.svg" alt="CI"></a>-->
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8 3.9" title="Jina supports Python 3.7 and above"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
@@ -13,7 +12,7 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
-Jina is a search framework for building <strong>cross-/multi-media search systems</strong> on the cloud, powered by best-in-class AI models.
+Jina is a neural search framework for building <strong>cross-/multi-media search systems</strong> on the cloud, powered by best-in-class AI models.
 
 <table>
   <tr>
@@ -35,34 +34,36 @@ Jina is a search framework for building <strong>cross-/multi-media search system
   </tr>
   <tr>
     <th>
-      <a href="http://demo.jina.ai/#image-search">Image search</a>
+      <a href="./.github/pages/hello-world.md#image-search">Image search</a>
     </th>
     <th>
-      <a href="http://demo.jina.ai/#chatbot">Q+A Search</a>
+      <a href="./.github/pages/hello-world.md#qa-search">Q+A search</a>
     </th>
     <th>
-      <a href="http://demo.jina.ai/#cross-media">Cross-Media search</a>
+      <a href="./.github/pages/hello-world.md#cross-media-search">Cross-Media search</a>
     </td>
   </tr>
 </table>
 
-With Jina you can search through any kind of data with machine learning models pre-trained and released by Facebook, Google, Spotify, and more. With the modular framework you can find the right tool for the right job -- whether that's crafting, encoding, classifying, indexing, or querying data. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
+## What is Neural Search?
 
-Configuration is stored in YAML files, away from your actual code. So tweaking model parameters or other settings is a breeze, especially with our [YAML completion feature for PyCharm and VS Code](https://youtu.be/qOD-6mihUzQ).
+Neural search is a new approach to retrieving information. Traditional symbolic search needs extensive rules and fragile pipelines. Neural search simply uses a pre-trained neural network to do the heavy lifting. This saves developers time and effort.
+
+With Jina you can search through any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). We leverage AI models that have pre-trained and released by Facebook, Google, Spotify, and more. With the modular framework you can find the right tool for the right job -- whether that's crafting, encoding, classifying, indexing, or querying data. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
 
 ## Why Jina?
+
+🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
+
+🧠 **First-class AI models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
+
+🌩️ **Scale up to the Cloud** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
 🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with fragmented, multi-vendor, generic legacy tools.
 
-🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
-
-🧠 **First-Class AI Models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
-
-🌩️ **Scale up to the Cloud** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
-
-❤️  **Made with Love** - Never compromise on quality, actively maintained by a [passionate full-time, venture-backed team](https://jina.ai).
+❤️  **Made with love** - Never compromise on quality, actively maintained by a [passionate full-time, venture-backed team](https://jina.ai).
 
 ## Installation
 
@@ -84,16 +85,17 @@ docker run jinaai/jina:latest
 
 ### The Basics
 
-- What is neural search, and how is it different to symbolic search?
-- Jina 101: Learn Jina's key components
-- Jina 102: Learn how Jina's components fit together
-- My First Jina App: Build your first simple app
+- [Code snippets for all Jina functionality](./.github/pages/snippets.md)
+- [What is neural search, and how is it different to symbolic search?](https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html)
+- [Jina 101: Learn Jina's key components](https://docs.jina.ai/chapters/101/)
+- [Jina 102: Learn how Jina's components fit together](https://docs.jina.ai/chapters/102/)
+- [My First Jina App: Build your first simple app](https://docs.jina.ai/chapters/my_first_jina_app/)
 
-### Run a Demo
+### Run a Demo: Jina Hello World
 
-- [Fashion MNIST image search](http://demo.jina.ai/#image-search): blah blah blah
-- [Q+A chatbot](http://demo.jina.ai/#image-search): blah blah blah
-- [Cross media search](http://demo.jina.ai/#image-search): blah blah blah
+- [Fashion MNIST image search](./.github/pages/hello-world.md#image-search)
+- [Q+A chatbot](./.github/pages/hello-world.md#qa-search)
+- [Cross media search](./.github/pages/hello-world.md#cross-media-search)
 
 ### Examples ([View all](https://github.com/jina-ai/examples))
 
@@ -156,67 +158,15 @@ Example code to build your own projects
   </tr>
 </table>
 
-Please check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
-
-Want to read more? Check our Founder [Han Xiao's blog](https://hanxiao.io) and [our official blog](https://jina.ai/blog).
-
-## How Does it Work?
-
-Every Jina app uses [Flows]() to index or query your data:
-
-**`app.py`**
-
-```python
-from jina.flow import Flow
-
-f = Flow.load_config('flows/index.yml') # Load Flow config from YAML file
-
-with f:
-    f.index_lines("my_data.txt") # Index each line of the text file as a single document
-```
-
-A Flow lays out all of the steps to process and index your data, and can be written in [YAML](https://docs.jina.ai/chapters/yaml/) or directly in [Python](https://docs.jina.ai/chapters/flow/). A very simple Flow looks like:
-
-**`flows/index.yml`**
-
-```yaml
-!Flow
-version: '1'
-pods:
-  - name: encoder
-    uses: pods/encode.yml
-  - name: indexer
-    uses: pods/index.yml
-```
-
-Each step (encoding, indexing) is performed by a [Pod](), with its settings once again defined in YAML:
-
-**`pods/encode.yml`**
-
-```yaml
-!TransformerTorchEncoder
-with:
-  pretrained_model_name_or_path: distilbert-base-cased # name of your pretrained model
-  ... # other (optional) encoder settings
-```
-
-To start indexing your data, simply run:
-
-```sh
-python app.py index
-```
-
-Or run `python app.py query` to start querying your data via a [REST](https://docs.jina.ai/chapters/restapi/index.html) or gRPC gateway.
-
-For a simple app example check [Wikipedia sentence search]() or see [My First Jina App]() to build your own.
+Check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
 
 ## Documentation
 
 Apart from the learning resources above, We highly recommended you go through our [**documentation**](https://docs.jina.ai) to master Jina.
 
-Our docs are built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
+Docs are built on every push, merge, and release of Jina's master branch. Documentation for older versions is archived [here](https://github.com/jina-ai/docs/releases).
 
-Are you a "Doc"-star? Join us! We welcome all kinds of improvements on the documentation.
+Are you a "Doc"-star? [Join us!](https://jobs.jina.ai) We welcome all kinds of improvements on the documentation.
 
 ## Contributing
 
