@@ -199,6 +199,7 @@ Are you a "Doc"-star? [Join us!](https://jobs.jina.ai) We welcome all kinds of i
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
 
 - [Contributing guidelines](CONTRIBUTING.md)
+- [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
 
 ### Contributors ✨
