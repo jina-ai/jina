@@ -13,6 +13,7 @@ from .helper import (
     _copy_to_tail_args,
     _fill_in_host,
 )
+from .. import BasePea
 from ..replicas import BaseReplica
 from ...enums import *
 
@@ -35,6 +36,7 @@ class BasePod(ExitStack):
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.replica_list = []  # type: List['BaseReplica']
+        self.peas = []  # type: List['BasePea']
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
@@ -98,7 +100,7 @@ class BasePod(ExitStack):
         return self.replicas_args['replicas'][0]
 
     def _parse_args(
-        self, args: Namespace
+            self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         replicas_args = {'head': None, 'tail': None, 'replicas': []}
         if getattr(args, 'replicas', 1) > 1:
@@ -115,7 +117,7 @@ class BasePod(ExitStack):
 
         # TODO this case does properly not exist anymore
         elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+                getattr(args, 'uses_after', None) and args.uses_after != '_pass'
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
@@ -184,13 +186,18 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
     @property
-    def all_args(self) -> List[Namespace]:
+    def all_args(self) -> Dict[
+        str, Union[List[Union[List[Namespace], Namespace, None]], list, List[Namespace], Namespace, None]]:
         """Get all arguments of all Peas in this BasePod. """
-        return (
-            ([self.replicas_args['head']] if self.replicas_args['head'] else [])
-            + ([self.replicas_args['tail']] if self.replicas_args['tail'] else [])
-            + self.replicas_args['replicas']
-        )
+        args = {
+            'peas': ([
+                self.replicas_args['head']
+            ] if self.replicas_args['head'] else []) + ([
+                self.replicas_args['tail']
+            ] if self.replicas_args['tail'] else []),
+            'replicas': self.replicas_args['replicas']
+        }
+        return args
 
     @property
     def num_peas(self) -> int:
@@ -208,14 +215,20 @@ class BasePod(ExitStack):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args:
+            for _args in self.all_args['peas']:
+                _args.noblock_on_start = True
+                self._enter_pea(BasePea(_args))
+            for _args in self.all_args['replicas']:
                 _args.noblock_on_start = True
                 self._enter_replica(BaseReplica(_args))
+
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args:
+                for _args in self.all_args['peas']:
+                    self._enter_pea(BasePea(_args))
+                for _args in self.all_args['replicas']:
                     self._enter_replica(BaseReplica(_args))
             except:
                 self.close()
@@ -234,6 +247,8 @@ class BasePod(ExitStack):
             )
 
         try:
+            for p in self.peas:
+                p.wait_start_success()
             for p in self.replica_list:
                 p.wait_start_success()
         except:
@@ -243,6 +258,10 @@ class BasePod(ExitStack):
     def _enter_replica(self, replica: 'BaseReplica') -> None:
         self.replica_list.append(replica)
         self.enter_context(replica)
+
+    def _enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -254,11 +273,14 @@ class BasePod(ExitStack):
     def join(self):
         """Wait until all peas exit"""
         try:
+            for p in self.peas:
+                p.join()
             for p in self.replica_list:
                 p.join()
         except KeyboardInterrupt:
             pass
         finally:
+            self.peas.clear()
             self.replica_list.clear()
 
     @staticmethod
@@ -275,4 +297,4 @@ class BasePod(ExitStack):
         .. note::
             A Pod is ready when all the Peas it contains are ready
         """
-        return all(p.is_ready.is_set() for p in self.replica_list)
+        return all([p.is_ready.is_set() for p in self.peas] + [p.is_ready.is_set() for p in self.replica_list])

@@ -158,15 +158,18 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: the message received
         :return: ZEDRuntime procedure.
         """
-        if ((self.name == 'pod2/tail/ZEDRuntime' or self.name == 'new_pod2/tail/ZEDRuntime') and msg.request.request_type == 'SearchRequestProto'):
-            print(f'### search request {self.name} {id(self)}')
-        if (msg.request.request_type == 'ReconnectPodRequestProto'
-                and len(msg.request.body.pod_and_out_port[0].split(',')) == 2 # TODO for some reason it is getting here two times
-        ): # TODO handle with control request
-            pod_name, port_out = msg.request.body.pod_and_out_port[0].split(',')
-            if self.name.startswith(f'{pod_name}'):
-                self._zmqlet.update_out_port(port_out)
-            print()
+        # if ((self.name == 'pod2/tail/ZEDRuntime' or self.name == 'new_pod2/tail/ZEDRuntime') and msg.request.request_type == 'SearchRequestProto'):
+        #     print(f'### search request {self.name} {id(self)}')
+        # if (msg.request.request_type == 'ReconnectPodRequestProto'
+        #         and len(msg.request.body.pod_and_out_port[0].split(',')) == 2 # TODO for some reason it is getting here two times
+        # ): # TODO handle with control request
+        #     pod_name, port_out = msg.request.body.pod_and_out_port[0].split(',')
+        #     if self.name.startswith(f'{pod_name}'):
+        #         self._zmqlet.update_out_port(port_out)
+        #     print()
+
+        if msg.request.request_type == 'IndexRequestProto':
+            print(f'### handle {self.name}')
 
         if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
             # NOTE: reduce priority is higher than chain exception

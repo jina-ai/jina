@@ -23,9 +23,9 @@ def _set_peas_args(
             if _args.peas_hosts:
                 _args.host = _args.peas_hosts.get(str(_args.pea_id), args.host)
             if _args.name:
-                _args.name += f'/{_args.pea_id}'
+                _args.name += f'/pea_{_args.pea_id}'
             else:
-                _args.name = f'{_args.pea_id}'
+                _args.name = f'pea_{_args.pea_id}'
         else:
             _args.pea_id = 0
             _args.pea_role = PeaRoleType.SINGLETON
@@ -94,9 +94,9 @@ def _copy_to_head_args(
     if as_router:
         _head_args.pea_role = PeaRoleType.HEAD
         if args.name:
-            _head_args.name = f'{args.name}/head'
+            _head_args.name = f'{args.name}/replica_head'
         else:
-            _head_args.name = f'head'
+            _head_args.name = f'replica_head'
 
     # in any case, if header is present, it represent this Pod to consume `num_part`
     # the following peas inside the pod will have num_part=1
@@ -122,9 +122,9 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     if as_router:
         _tail_args.uses = args.uses_after or '_pass'
         if args.name:
-            _tail_args.name = f'{args.name}/tail'
+            _tail_args.name = f'{args.name}/replica_tail'
         else:
-            _tail_args.name = f'tail'
+            _tail_args.name = f'replica_tail'
         _tail_args.pea_role = PeaRoleType.TAIL
         _tail_args.num_part = 1 if args.polling.is_push else args.parallel
 

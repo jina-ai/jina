@@ -9,17 +9,17 @@ def test_simple_run():
     with Flow().add(
             name='pod1', replicas=2, parallel=3, port_in=5100, port_out=5200
     ) as flow:
-        flow.index()
-        flow.rolling_update()
-        flow.index()
+        flow.index('test document')
+        # flow.rolling_update()
+        # flow.index()
 
 
 @pytest.mark.parametrize(
     'replicas_and_parallel', (
-            ((1, 1),),
-            ((1, 2),),
-            ((2, 1),),
-            ((2, 3),),
+            # ((1, 1),),
+            # ((1, 2),),
+            # ((2, 1),),
+            # ((2, 3),),
             ((2, 1), (3, 4), (1, 2), (1, 1), (2, 2)),
     ))
 def test_port_configuration(replicas_and_parallel):
@@ -27,11 +27,14 @@ def test_port_configuration(replicas_and_parallel):
         if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
             assert pod.replicas_args['tail'] is None
             assert pod.replicas_args['head'] is None
+            assert len(pod.replica_list) == 1
+            assert len(pod.peas) == 0
             replica = pod.replicas_args['replicas'][0]  # there is only one
             return replica.port_in, replica.port_out
         else:
             assert pod.args.replicas == len(pod.replicas_args['replicas'])
-            assert pod.args.replicas == len(pod.replica_list) - 2  # head and tail pea
+            assert pod.args.replicas == len(pod.replica_list)
+            assert len(pod.peas) == 2
             assert pod.args.parallel == len(pod.replica_list[0].peas_args['peas'])
             return pod.replicas_args['head'].port_in, pod.replicas_args['tail'].port_out
 
@@ -63,7 +66,14 @@ def test_port_configuration(replicas_and_parallel):
 
     flow = Flow()
     for i, (replicas, parallel) in enumerate(replicas_and_parallel):
-        flow.add(name=f'pod{i}', replicas=replicas, parallel=parallel, copy_flow=False)
+        flow.add(
+            name=f'pod{i}',
+            replicas=replicas,
+            parallel=parallel,
+            # port_in=f'51{i}00', #TODO remove ports
+            port_out=f'51{i+1}00',
+            copy_flow=False
+        )
 
     with flow:
         pods = flow._pod_nodes
@@ -83,14 +93,20 @@ def test_port_configuration(replicas_and_parallel):
             # replica_head_out = pod.replicas_args['head'].port_out, # equals
             # replica_tail_in = pod.replicas_args['tail'].port_in, # equals
 
-            for replica in pod.replica_list:  # TODO validate replicas == 1 case
-                if not ('head' in replica.name or 'tail' in replica.name):
-                    validate_ports_replica(
-                        replica,
-                        replica_port_in,
-                        replica_port_out,
-                        getattr(pod.args, 'parallel', 1),
-                    )
+            for pea in pod.peas:
+                if 'head' in pea.name:
+                    assert pea.args.port_in == pod.args.port_in
+                    assert pea.args.port_out == replica_port_in
+                if 'tail' in pea.name:
+                    assert pea.args.port_in == replica_port_out
+                    assert pea.args.port_out == pod.args.port_out
+            for replica in pod.replica_list:
+                validate_ports_replica(
+                    replica,
+                    replica_port_in,
+                    replica_port_out,
+                    getattr(pod.args, 'parallel', 1))
+
         assert pod
 
 
