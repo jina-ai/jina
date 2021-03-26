@@ -64,12 +64,8 @@ The polling strategy of the Pod (when `parallel>1`)
     )
     gp.add_argument(
         '--peas-hosts',
-        action=KVAppendAction,
-        metavar='KEY: VALUE',
-        nargs='*',
-        help='''The hosts of the peas when parallel greater than 1,
-        pea have a new host address if the pea_id present in the map.
-        otherwise pea host will be identical to the host of pod.
-        Represented as a key value pair in argument.
-        key is the pea_id, and value is the host address.''',
+        nargs='+',
+        help='''The hosts of the peas when parallel greater than 1.
+        Peas will be evenly distributed among the hosts. By default, 
+        peas are running in the same host as the pod. ''',
     )
