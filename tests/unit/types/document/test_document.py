@@ -657,3 +657,26 @@ def test_pb_obj2dict():
     assert isinstance(rcs[0], Document)
     assert rcs[0].text == 'text in chunk'
     assert rcs[0].tags['id'] == 'id in chunk tags'
+
+
+def test_siblings_needs_to_be_set_manually():
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        for i in range(3):
+            chunk = Document()
+            chunk.text = 'text in chunk'
+            document.chunks.append(chunk)
+    for i in range(3):
+        assert document.chunks[i].siblings == 0
+
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        for i in range(3):
+            chunk = Document()
+            chunk.text = 'text in chunk'
+            chunk.siblings = 3
+            document.chunks.append(chunk)
+    for i in range(3):
+        assert document.chunks[i].siblings == 3
