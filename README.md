@@ -9,10 +9,11 @@
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://pepy.tech/project/jina"><img src="https://pepy.tech/badge/jina/month"></a>
+<a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
-Jina is a neural search framework for building <strong>cross-/multi-media search systems</strong> on the cloud, powered by best-in-class AI models.
+Jina is a neural search framework for building <strong>cross-/multi-media search systems</strong> on the cloud, powered by best-in-class ML models.
 
 <table>
   <tr>
@@ -47,9 +48,9 @@ Jina is a neural search framework for building <strong>cross-/multi-media search
 
 ## What is Neural Search?
 
-Neural search is a new approach to retrieving information. Traditional symbolic search needs extensive rules and fragile pipelines. Neural search simply uses a pre-trained neural network to do the heavy lifting. This saves developers time and effort.
+Neural search is a new approach to retrieving information. Traditional symbolic search needs extensive rules and fragile pipelines. Neural search uses a pre-trained neural network to do the heavy lifting, saving developers time and effort.
 
-With Jina you can search through any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). We leverage AI models that have pre-trained and released by Facebook, Google, Spotify, and more. With the modular framework you can find the right tool for the right job -- whether that's crafting, encoding, classifying, indexing, or querying data. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
+With Jina you can search through any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). We leverage AI models that have been pre-trained and released by Facebook, Google, Spotify, and more. With the modular framework you can find the right tool for the right job -- whether that's crafting, encoding, classifying, indexing, or querying data. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
 
 ## Why Jina?
 
@@ -85,7 +86,7 @@ docker run jinaai/jina:latest
 
 ### The Basics
 
-- [Code snippets for all Jina functionality](./.github/pages/snippets.md), which you can run in your browser
+- [Code snippets for Jina functionality](./.github/pages/snippets.md), which you can run in your browser
 - [What is neural search, and how is it different to symbolic search?](https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html)
 - [Jina 101: Learn Jina's key components](https://docs.jina.ai/chapters/101/)
 - [Jina 102: Learn how Jina's components fit together](https://docs.jina.ai/chapters/102/)

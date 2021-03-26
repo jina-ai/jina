@@ -1,6 +1,6 @@
 # Jina Code Snippets
 
-These code snippets cover all aspects of Jina's functionality. To run a snippet in a Jupyter Notebook, just click the "run" button next to the snippet.
+These code snippets provide a short introduction to Jina's functionality and design framework. To run a snippet in a Jupyter Notebook, just click the "run" button next to the snippet.
 
 |     |   |
 | --- |---|
