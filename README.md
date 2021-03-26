@@ -96,7 +96,7 @@ docker run jinaai/jina:latest
 
 - [Fashion MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
 - [Q+A chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
-- [Cross media search](./.github/pages/hello-world.md#-multimodal-document-search)
+- [Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
 
 ### Get Support
 
