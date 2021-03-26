@@ -67,5 +67,5 @@ The polling strategy of the Pod (when `parallel>1`)
         nargs='+',
         help='''The hosts of the peas when parallel greater than 1.
         Peas will be evenly distributed among the hosts. By default, 
-        peas are running in the same host as the pod. ''',
+        peas are running in the same host as the pod.''',
     )
