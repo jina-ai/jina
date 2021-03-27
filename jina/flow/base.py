@@ -1031,3 +1031,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     # for backward support
     join = needs
+
+    def rolling_update(self, pod_name):
+        # print('### start rolling update')
+        # # self._pod_nodes[pod_name].replica_list[0].close()
+        # self._pod_nodes[pod_name].replica_list[1].close()
+        # print('### finished rolling update')
+        for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
+            print(f'## join replica {i}')
+            replica.close()
+            print(f'## join replica done {i}')
+            time.sleep(1)
+            replica.start()
+            print(f'## join replica started {i}')
+            time.sleep(1)

@@ -36,7 +36,7 @@ def _set_replica_args(
             _args.port_out = tail_args.port_in
         _args.port_ctrl = helper.random_port()
         _args.socket_out = SocketType.PUSH_CONNECT
-        if args.polling.is_push:  # TODO always set to is _push LOAD_BALANCE
+        if args.polling.is_push:  # means any -> TODO always set to is _push LOAD_BALANCE
             _args.socket_in = SocketType.DEALER_CONNECT
         else:
             _args.socket_in = SocketType.SUB_CONNECT

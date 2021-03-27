@@ -113,7 +113,7 @@ class BasePea(metaclass=PeaType):
 
         This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
-
+        print(f'### start peas {self.name}')
         super().start()  #: required here to call process/thread method
         if not self.args.noblock_on_start:
             self.wait_start_success()

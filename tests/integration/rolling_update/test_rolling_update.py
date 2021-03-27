@@ -1,3 +1,4 @@
+import os
 import time
 
 import pytest
@@ -6,12 +7,22 @@ from jina.flow import Flow
 
 
 def test_simple_run():
-    with Flow().add(
-            name='pod1', replicas=2, parallel=3, port_in=5100, port_out=5200
-    ) as flow:
+    flow = Flow().add(
+        name='pod1', replicas=2, parallel=3, port_in=5100, port_out=5200,  # TODO always needs to be any for replicas and all for shards
+    )
+    # TODO replica plot
+    # flow.plot(output=os.path.join('flow2.jpg'), copy_flow=True)
+    with flow:
         flow.index('test document')
-        # flow.rolling_update()
-        # flow.index()
+        print('#### before update ')
+        time.sleep(1)
+        # TODO test index request if it is sent only once or more often
+        # TODO check original implementation
+        # TODO check where ide request is sent
+        flow.rolling_update('pod1')
+        # print('#### after update ')
+        # time.sleep(10000)
+        flow.index('test2')
 
 
 @pytest.mark.parametrize(
@@ -65,15 +76,20 @@ def test_port_configuration(replicas_and_parallel):
                 assert pea.port_out == shard_tail.port_in
 
     flow = Flow()
+    # flow.plot() # TODO crashes for some reason when copy_flow=False
+    flow.plot(output=os.path.join('flow.svg'), copy_flow=True)
     for i, (replicas, parallel) in enumerate(replicas_and_parallel):
         flow.add(
             name=f'pod{i}',
             replicas=replicas,
             parallel=parallel,
-            # port_in=f'51{i}00', #TODO remove ports
-            port_out=f'51{i+1}00',
+            # TODO create ticket for port_in port_out inconsistency. It is not possible to only set a custom port out
+            # instead of configuring port_in and port out we should just configure the communication ports once
+            port_in=f'51{i}00',  #info: needs to be set in this test since the test is asserting pod args with pod tail args
+            port_out=f'51{i+1}00', #outside this test, it don't have to be set
             copy_flow=False
         )
+    print('port assertion in configuration')
 
     with flow:
         pods = flow._pod_nodes

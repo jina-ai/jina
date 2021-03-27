@@ -29,6 +29,8 @@ class BasePod(ExitStack):
         :param args: arguments parsed from the CLI
         """
         super().__init__()
+
+        args.polling = PollingType.ANY
         self.args = args
         self._set_conditional_args(self.args)
         self.needs = (

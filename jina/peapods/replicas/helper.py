@@ -126,6 +126,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
         else:
             _tail_args.name = f'replica_tail'
         _tail_args.pea_role = PeaRoleType.TAIL
+        # TODO parallel should not be used here
         _tail_args.num_part = 1 if args.polling.is_push else args.parallel
 
     return _tail_args

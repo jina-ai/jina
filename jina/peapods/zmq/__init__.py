@@ -215,6 +215,9 @@ class Zmqlet:
             This method is idempotent.
 
         """
+        # if self.in_sock_type == zmq.DEALER:
+        #     print('### return busy request', self.name)
+        #     self._send_busy()
         if not self.is_closed:
             self.is_closed = True
             self._close_sockets()
@@ -251,15 +254,25 @@ class Zmqlet:
         else:
             o_sock = self.ctrl_sock
 
+        print('### send message', self.name)
         self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
+        print('### done sending', self.name, o_sock == self.out_sock, self.in_sock_type == zmq.DEALER)
         self.msg_sent += 1
 
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
+            print('### return idle request', self.name)
             self._send_idle()
 
     def _send_idle(self):
         """Tell the upstream router this dealer is idle """
         msg = ControlMessage('IDLE', pod_name=self.name, identity=self.identity)
+        self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
+        self.msg_sent += 1
+        self.logger.debug(f'idle and i {self.identity} told the router')
+
+    def _send_busy(self):
+        """Tell the upstream router this dealer is idle """
+        msg = ControlMessage('BUSY', pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
         self.logger.debug(f'idle and i {self.identity} told the router')
@@ -384,6 +397,10 @@ class ZmqStreamlet(Zmqlet):
         .. note::
             This method is idempotent.
         """
+        if self.in_sock_type == zmq.DEALER:
+            print('### return busy request', self.name)
+            self._send_busy()
+
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)

@@ -28,6 +28,7 @@ class BaseReplica(ExitStack):
         :param args: arguments parsed from the CLI
         """
         super().__init__()
+        args.polling = PollingType.ALL
         self.args = args
         self._set_conditional_args(self.args)
         self.needs = (
@@ -205,6 +206,7 @@ class BaseReplica(ExitStack):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
+        print(f'### start replica {self.name}')
         if getattr(self.args, 'noblock_on_start', False):
             for _args in self.all_args:
                 _args.noblock_on_start = True
@@ -219,6 +221,19 @@ class BaseReplica(ExitStack):
                 self.close()
                 raise
             return self
+
+    def close(self) -> None:
+        print(f'try closing head {self.peas[0].name}')
+        self.peas[0].close()
+        for pea in self.peas[2:]:
+            print(f'try closing pea {pea.name}')
+            pea.close()
+        self.peas[1].close()
+        print(f'try closing tail {self.peas[0].name}')
+
+        # self.join() #TODO right order
+        # # self.peas[0].close()
+        # # self.peas[1].close()
 
     def wait_start_success(self) -> None:
         """Block until all peas starts successfully.

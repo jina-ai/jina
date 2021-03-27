@@ -80,6 +80,11 @@ class ControlReqDriver(BaseControlDriver):
         elif self.req.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
             self.req.args = vars(self.runtime.args)
+        elif self.req.command == 'BUSY':
+            # TODO why is this needed?
+            print('### BUSY is used in control req driver')
+            self.envelope.status.code = jina_pb2.StatusProto.READY
+            self.req.args = vars(self.runtime.args)
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
@@ -118,6 +123,8 @@ class RouteDriver(ControlReqDriver):
 
         .. # noqa: DAR401
         """
+        if self.runtime.args.name == 'pod1/pod_head':
+            print('### name:pod1/pod_head')
         if self.msg.is_data_request:
             self.logger.debug(self.idle_dealer_ids)
             if self.idle_dealer_ids:
@@ -152,6 +159,11 @@ class RouteDriver(ControlReqDriver):
                 self.runtime._zmqlet.resume_pollin()
                 self.is_polling_paused = False
             raise NoExplicitMessage
+        elif self.req.command == 'BUSY':
+            print('### busy request arrived', self.envelope.receiver_id)
+            if self.envelope.receiver_id in self.idle_dealer_ids:
+                print('### dealer needs to be removed')
+                self.idle_dealer_ids.remove(self.envelope.receiver_id)
         else:
             super().__call__(*args, **kwargs)
 
