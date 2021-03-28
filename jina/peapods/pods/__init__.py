@@ -26,6 +26,8 @@ class BasePod(ExitStack):
     def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
         """
 
+        # noqa: DAR101
+
         :param args: arguments parsed from the CLI
         """
         super().__init__()
@@ -52,57 +54,77 @@ class BasePod(ExitStack):
 
     @property
     def role(self) -> 'PodRoleType':
-        """Return the role of this :class:`BasePod`."""
+        """
+        # noqa: DAR201
+        Return the role of this :class:`BasePod`."""
         return self.args.pod_role
 
     @property
     def is_singleton(self) -> bool:
-        """Return if the Pod contains only a single Pea """
+        """
+        # noqa: DAR201
+        Return if the Pod contains only a single Pea"""
         return not (self.is_head_router or self.is_tail_router)
 
     @property
     def name(self) -> str:
-        """The name of this :class:`BasePod`. """
+        """
+        # noqa: DAR201
+        The name of this :class:`BasePod`."""
         return self.args.name
 
     @property
     def port_expose(self) -> int:
-        """Get the grpc port number """
+        """
+        # noqa: DAR201
+        Get the grpc port number"""
         return self.first_pea_args.port_expose
 
     @property
     def host(self) -> str:
-        """Get the host name of this Pod"""
+        """
+        # noqa: DAR201
+        Get the host name of this Pod"""
         return self.first_pea_args.host
 
     @property
     def host_in(self) -> str:
-        """Get the host_in of this pod"""
+        """
+        # noqa: DAR201
+        Get the host_in of this pod"""
         return self.head_args.host_in
 
     @property
     def host_out(self) -> str:
-        """Get the host_out of this pod"""
+        """
+        # noqa: DAR201
+        Get the host_out of this pod"""
         return self.tail_args.host_out
 
     @property
     def address_in(self) -> str:
-        """Get the full incoming address of this pod"""
+        """
+        # noqa: DAR201
+        Get the full incoming address of this pod"""
         return f'{self.head_args.host_in}:{self.head_args.port_in} ({self.head_args.socket_in!s})'
 
     @property
     def address_out(self) -> str:
-        """Get the full outgoing address of this pod"""
+        """
+        # noqa: DAR201
+        Get the full outgoing address of this pod"""
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
     @property
     def first_pea_args(self) -> Namespace:
-        """Return the first non-head/tail pea's args """
+        """
+        # noqa: DAR201
+        Return the first non-head/tail pea's args"""
         # note this will be never out of boundary
         return self.replicas_args['replicas'][0]
 
     def _parse_args(
-            self, args: Namespace
+        self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         replicas_args = {'head': None, 'tail': None, 'replicas': []}
         if getattr(args, 'replicas', 1) > 1:
@@ -119,7 +141,7 @@ class BasePod(ExitStack):
 
         # TODO this case does properly not exist anymore
         elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-                getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
@@ -141,7 +163,9 @@ class BasePod(ExitStack):
 
     @property
     def head_args(self):
-        """Get the arguments for the `head` of this BasePod. """
+        """
+        # noqa: DAR201
+        Get the arguments for the `head` of this BasePod."""
         if self.is_head_router and self.replicas_args['head']:
             return self.replicas_args['head']
         elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
@@ -153,7 +177,10 @@ class BasePod(ExitStack):
 
     @head_args.setter
     def head_args(self, args):
-        """Set the arguments for the `head` of this BasePod. """
+        """
+        # noqa: DAR201
+        # noqa: DAR101
+        Set the arguments for the `head` of this BasePod."""
         if self.is_head_router and self.replicas_args['head']:
             self.replicas_args['head'] = args
         elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
@@ -165,7 +192,9 @@ class BasePod(ExitStack):
 
     @property
     def tail_args(self):
-        """Get the arguments for the `tail` of this BasePod. """
+        """
+        # noqa: DAR201
+        Get the arguments for the `tail` of this BasePod."""
         if self.is_tail_router and self.replicas_args['tail']:
             return self.replicas_args['tail']
         elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
@@ -177,7 +206,13 @@ class BasePod(ExitStack):
 
     @tail_args.setter
     def tail_args(self, args):
-        """Set the arguments for the `tail` of this BasePod. """
+        """
+
+        # noqa: DAR201
+        # noqa: DAR101
+
+        Set the arguments for the `tail` of this BasePod.
+        """
         if self.is_tail_router and self.replicas_args['tail']:
             self.replicas_args['tail'] = args
         elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
@@ -188,29 +223,42 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
     @property
-    def all_args(self) -> Dict[
-        str, Union[List[Union[List[Namespace], Namespace, None]], list, List[Namespace], Namespace, None]]:
-        """Get all arguments of all Peas in this BasePod. """
+    def all_args(
+        self,
+    ) -> Dict[
+        str,
+        Union[
+            List[Union[List[Namespace], Namespace, None]],
+            list,
+            List[Namespace],
+            Namespace,
+            None,
+        ],
+    ]:
+        """
+        # noqa: DAR201
+        Get all arguments of all Peas in this BasePod."""
         args = {
-            'peas': ([
-                self.replicas_args['head']
-            ] if self.replicas_args['head'] else []) + ([
-                self.replicas_args['tail']
-            ] if self.replicas_args['tail'] else []),
-            'replicas': self.replicas_args['replicas']
+            'peas': ([self.replicas_args['head']] if self.replicas_args['head'] else [])
+            + ([self.replicas_args['tail']] if self.replicas_args['tail'] else []),
+            'replicas': self.replicas_args['replicas'],
         }
         return args
 
     @property
     def num_peas(self) -> int:
-        """Get the number of running :class:`BaseReplica`"""
+        """
+        # noqa: DAR201
+        Get the number of running :class:`BaseReplica`"""
         return len(self.replica_list)
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
     def start(self) -> 'BasePod':
-        """Start to run all :class:`BaseReplica` in this BasePod.
+        """
+        # noqa: DAR201
+        Start to run all :class:`BaseReplica` in this BasePod.
 
         .. note::
             If one of the :class:`BaseReplica` fails to start, make sure that all of them
@@ -238,7 +286,9 @@ class BasePod(ExitStack):
             return self
 
     def wait_start_success(self) -> None:
-        """Block until all peas starts successfully.
+        """
+        # noqa: DAR201
+        Block until all peas starts successfully.
 
         If not success, it will raise an error hoping the outer function to catch it
         """
@@ -273,7 +323,9 @@ class BasePod(ExitStack):
         self.join()
 
     def join(self):
-        """Wait until all peas exit"""
+        """
+        # noqa: DAR201
+        Wait until all peas exit"""
         try:
             for p in self.peas:
                 p.join()
@@ -295,8 +347,13 @@ class BasePod(ExitStack):
 
     @property
     def is_ready(self) -> bool:
-        """Checks if Pod is read.
+        """
+        # noqa: DAR201
+        Checks if Pod is read.
         .. note::
             A Pod is ready when all the Peas it contains are ready
         """
-        return all([p.is_ready.is_set() for p in self.peas] + [p.is_ready.is_set() for p in self.replica_list])
+        return all(
+            [p.is_ready.is_set() for p in self.peas]
+            + [p.is_ready.is_set() for p in self.replica_list]
+        )
