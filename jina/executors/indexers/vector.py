@@ -4,9 +4,10 @@ __license__ = "Apache-2.0"
 import gzip
 import io
 import os
+import random
 from functools import lru_cache
 from os import path
-from typing import Optional, Iterable, Tuple, Dict
+from typing import Optional, Iterable, Tuple, Dict, Union
 
 import numpy as np
 
@@ -40,12 +41,12 @@ class BaseNumpyIndexer(BaseVectorIndexer):
     """
 
     def __init__(
-        self,
-        compress_level: int = 1,
-        ref_indexer: Optional['BaseNumpyIndexer'] = None,
-        delete_on_dump: bool = False,
-        *args,
-        **kwargs,
+            self,
+            compress_level: int = 1,
+            ref_indexer: Optional['BaseNumpyIndexer'] = None,
+            delete_on_dump: bool = False,
+            *args,
+            **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.num_dim = None
@@ -114,7 +115,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         # write the bytes in the respective files
         if self.compress_level > 0:
             with gzip.open(
-                tmp_path, 'wb', compresslevel=self.compress_level
+                    tmp_path, 'wb', compresslevel=self.compress_level
             ) as new_gzip_fh:
                 new_gzip_fh.write(filtered.tobytes())
         else:
@@ -226,7 +227,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self._size += keys.shape[0]
 
     def update(
-        self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs
+            self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs
     ) -> None:
         """Update the embeddings on the index via document ids.
 
@@ -306,7 +307,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             )
 
     @cached_property
-    def _raw_ndarray(self) -> Optional['np.ndarray']:
+    def _raw_ndarray(self) -> Union['np.ndarray', 'np.memmap', None]:
         if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
 
@@ -323,8 +324,12 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 shape=(self.size + deleted_keys, self.num_dim),
             )
 
+    def sample(self):
+        k = random.sample(list(self._ext2int_id.values()), k=1)[0]
+        return self._raw_ndarray[k]
+
     def query_by_key(
-        self, keys: Iterable[str], *args, **kwargs
+            self, keys: Iterable[str], *args, **kwargs
     ) -> Optional['np.ndarray']:
         """
         Search the index by the external key (passed during `.add(`).
@@ -385,8 +390,8 @@ def _get_ones(x, y):
 def _ext_A(A):
     nA, dim = A.shape
     A_ext = _get_ones(nA, dim * 3)
-    A_ext[:, dim : 2 * dim] = A
-    A_ext[:, 2 * dim :] = A ** 2
+    A_ext[:, dim: 2 * dim] = A
+    A_ext[:, 2 * dim:] = A ** 2
     return A_ext
 
 
@@ -394,7 +399,7 @@ def _ext_B(B):
     nB, dim = B.shape
     B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
-    B_ext[dim : 2 * dim] = -2.0 * B.T
+    B_ext[dim: 2 * dim] = -2.0 * B.T
     del B
     return B_ext
 
@@ -430,12 +435,12 @@ class NumpyIndexer(BaseNumpyIndexer):
     batch_size = 512
 
     def __init__(
-        self,
-        metric: str = 'cosine',
-        backend: str = 'numpy',
-        compress_level: int = 0,
-        *args,
-        **kwargs,
+            self,
+            metric: str = 'cosine',
+            backend: str = 'numpy',
+            compress_level: int = 0,
+            *args,
+            **kwargs,
     ):
         super().__init__(*args, compress_level=compress_level, **kwargs)
         self.metric = metric
@@ -443,7 +448,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
     @staticmethod
     def _get_sorted_top_k(
-        dist: 'np.array', top_k: int
+            dist: 'np.array', top_k: int
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find top-k smallest distances in ascending order.
 
@@ -467,7 +472,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         return idx, dist
 
     def query(
-        self, vectors: 'np.ndarray', top_k: int, *args, **kwargs
+            self, vectors: 'np.ndarray', top_k: int, *args, **kwargs
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 

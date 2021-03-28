@@ -117,6 +117,7 @@ def test_binarypb_add_and_update_not_working(test_metas, delete_on_dump):
         assert idxer.query('11') == b'eleven'
         assert idxer.query('12') == b'twelve-new'
         assert idxer.size == 2
+        assert idxer.sample() in (b'eleven', b'twelve-new')
 
 
 @pytest.mark.parametrize('delete_on_dump', [True, False])

@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import mmap
 import os
+import random
 from typing import Iterable, Optional
 
 import numpy as np
@@ -154,7 +155,7 @@ class BinaryPbIndexer(BaseKVIndexer):
         self.delete_on_dump = delete_on_dump
 
     def add(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+            self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Add the serialized documents to the index via document ids.
 
@@ -169,10 +170,10 @@ class BinaryPbIndexer(BaseKVIndexer):
         for key, value in zip(keys, values):
             l = len(value)  #: the length
             p = (
-                int(self._start / self._page_size) * self._page_size
+                    int(self._start / self._page_size) * self._page_size
             )  #: offset of the page
             r = (
-                self._start % self._page_size
+                    self._start % self._page_size
             )  #: the remainder, i.e. the start position given the offset
             self.write_handler.header.write(
                 np.array(
@@ -190,6 +191,11 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size += 1
         self.write_handler.flush()
 
+    def sample(self) -> Optional[bytes]:
+        """Return a random entry from the indexer for sanity check """
+        k = random.sample(self.query_handler.header.keys(), k=1)[0]
+        return self.query(k)
+
     def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
@@ -205,7 +211,7 @@ class BinaryPbIndexer(BaseKVIndexer):
                 return m[r:]
 
     def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+            self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Update the serialized documents on the index via document ids.
 
@@ -255,10 +261,10 @@ class BinaryPbIndexer(BaseKVIndexer):
         for key, value in zip(keys, values):
             l = len(value)  #: the length
             p = (
-                int(self._start / self._page_size) * self._page_size
+                    int(self._start / self._page_size) * self._page_size
             )  #: offset of the page
             r = (
-                self._start % self._page_size
+                    self._start % self._page_size
             )  #: the remainder, i.e. the start position given the offset
             # noinspection PyTypeChecker
             writer.header.write(
