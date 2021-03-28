@@ -30,6 +30,7 @@ from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 from copy import deepcopy
+
 __all__ = ['BaseFlow']
 
 from ..peapods import BasePod
@@ -570,7 +571,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return self
 
-
     def adjust_args(self, old_args):
         # the new pod should have the exact same parameters but needs a different new_args.port_in
         # also the workspace can be changed here in the future.
@@ -608,7 +608,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.enter_context(new_pod)
             print('### wait until started')
             new_pod.wait_start_success()
-            time.sleep(2) # simulate loading new pea takes some time
+            time.sleep(2)  # simulate loading new pea takes some time
             print('### second pod started')
         except Exception as ex:
             self.logger.error(
@@ -620,18 +620,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self.pod_name = pod_name
         self.new_pod = new_pod
         self.old_pod = old_pod
-
-
-
-    def reconnect_pod(
-            self,
-            pod
-    ):
-        self._get_client().reconnect_pod(pod+f'/tail,{self.new_pod.args.port_in}')
-        self._pod_nodes[self.pod_name] = self.new_pod
-        print('### close original pod')
-        self.old_pod.close()
-        print('### original pod closed')
 
     @property
     def num_pods(self) -> int:
@@ -1038,14 +1026,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         x.start()
         print('thread is running')
 
-
     def rolling_update(self, pod_name):
         for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
-            print(f'## join replica {i}')
+            print(f'### close replica {i+1}')
             replica.close()
-            print(f'## join replica done {i}')
+            print(f'### replica closed {i+1}')
             time.sleep(1)
             replica.start()
-            print(f'## join replica started {i}')
+            print(f'### replica started {i+1}')
             time.sleep(1)
         print('### rolling update done')

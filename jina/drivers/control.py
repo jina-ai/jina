@@ -123,8 +123,8 @@ class RouteDriver(ControlReqDriver):
 
         .. # noqa: DAR401
         """
-        if self.runtime.args.name == 'pod1/pod_head':
-            print('### name:pod1/pod_head')
+        # if self.runtime.args.name == 'pod1/pod_head':
+        # print('### name:pod1/pod_head')
         if self.msg.is_data_request:
             self.logger.debug(self.idle_dealer_ids)
             if self.idle_dealer_ids:

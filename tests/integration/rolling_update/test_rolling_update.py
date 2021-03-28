@@ -3,11 +3,17 @@ import time
 
 import pytest
 
+from jina import Document
 from jina.flow import Flow
+
 
 def test_simple_run():
     flow = Flow().add(
-        name='pod1', replicas=2, parallel=3, port_in=5100, port_out=5200,  # TODO always needs to be any for replicas and all for shards
+        name='pod1',
+        replicas=2,
+        parallel=3,
+        port_in=5100,
+        port_out=5200,  # TODO always needs to be any for replicas and all for shards
     )
     # TODO replica plot
     # flow.plot(output=os.path.join('flow2.jpg'), copy_flow=True)
@@ -19,36 +25,42 @@ def test_simple_run():
         # TODO check where ide request is sent
         flow.rolling_update('pod1')
         print('# index while roling update')
-        flow.index('documents before rolling update')
+        flow.index('documents after rolling update')
         print('# terminate flow')
+
 
 def test_async_run():
     flow = Flow().add(
-        name='pod1', replicas=2, parallel=3, port_in=5100, port_out=5200,  # TODO always needs to be any for replicas and all for shards
+        name='pod1',
+        replicas=2,
+        parallel=3,
+        port_in=5100,
+        port_out=5200,  # TODO always needs to be any for replicas and all for shards
     )
     with flow:
-        for i in range(1):
-            flow.index('documents before rolling update')
+        for i in range(5):
+            flow.index(Document(text='documents before rolling update'))
+            time.sleep(1)
         print('#### before update ')
         flow.rolling_update_async('pod1')
         print('# index while roling update')
-        for i in range(100):
-            flow.index('documents before rolling update')
-            time.sleep(0.2)
+        for i in range(40):
+            flow.index(Document(text='documents after rolling update'))
+            time.sleep(0.5)
         print('# terminate flow')
-
-
-
+    print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
 
 
 @pytest.mark.parametrize(
-    'replicas_and_parallel', (
-            # ((1, 1),),
-            # ((1, 2),),
-            # ((2, 1),),
-            # ((2, 3),),
-            ((2, 1), (3, 4), (1, 2), (1, 1), (2, 2)),
-    ))
+    'replicas_and_parallel',
+    (
+        # ((1, 1),),
+        # ((1, 2),),
+        # ((2, 1),),
+        # ((2, 3),),
+        ((2, 1), (3, 4), (1, 2), (1, 1), (2, 2)),
+    ),
+)
 def test_port_configuration(replicas_and_parallel):
     def get_outer_ports(pod):
         if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
@@ -101,16 +113,18 @@ def test_port_configuration(replicas_and_parallel):
             parallel=parallel,
             # TODO create ticket for port_in port_out inconsistency. It is not possible to only set a custom port out
             # instead of configuring port_in and port out we should just configure the communication ports once
-            port_in=f'51{i}00',  #info: needs to be set in this test since the test is asserting pod args with pod tail args
-            port_out=f'51{i+1}00', #outside this test, it don't have to be set
-            copy_flow=False
+            port_in=f'51{i}00',  # info: needs to be set in this test since the test is asserting pod args with pod tail args
+            port_out=f'51{i+1}00',  # outside this test, it don't have to be set
+            copy_flow=False,
         )
     print('port assertion in configuration')
 
     with flow:
         pods = flow._pod_nodes
         validate_ports_pods(
-            [pods['gateway']] + [pods[f'pod{i}'] for i in range(len(replicas_and_parallel))] + [pods['gateway']]
+            [pods['gateway']]
+            + [pods[f'pod{i}'] for i in range(len(replicas_and_parallel))]
+            + [pods['gateway']]
         )
         for pod_name, pod in pods.items():
             if pod_name == 'gateway':
@@ -137,7 +151,8 @@ def test_port_configuration(replicas_and_parallel):
                     replica,
                     replica_port_in,
                     replica_port_out,
-                    getattr(pod.args, 'parallel', 1))
+                    getattr(pod.args, 'parallel', 1),
+                )
 
         assert pod
 
@@ -150,64 +165,9 @@ def test_gateway():
     pass
 
 
-# def test_experimental_pod_update():
-#     """
-#     1. Create 3 pods pod1, pod2, pod3.
-#     2. Create a 4th pod new_pod2.
-#     3. Send 5 SearchRequests. They are going to pod2.
-#     4. Send a ReconnectPodRequest to the tail pea of pod1, to reconfigure the port_out to new_pod2.
-#     5. Send 5 SearchRequests. They are going to new_pod2.
-#
-#     You can now search in the log for '### search request' and find:
-#     - 5 request to pod2/tail
-#     - 5 request to new_pod2/tail
-#     """
-#
-#     def callback(resp):
-#         print(resp)
-#
-#     with Flow().add(
-#             name='pod1',
-#             parallel=2,
-#             port_in=51000,
-#             port_out=52000,  # <-- getting changed to 54000
-#     ).add(
-#         name='pod2',  # <-- getting removed
-#         parallel=2,
-#         port_in=52000,
-#         port_out=53000,
-#         ########### This pod will be added ###########
-#         # ).add(
-#         #     name='new_pod2', # <-- new pod will be created. The name is just different for illustration purpose
-#         #     parallel=2,
-#         #     port_in=54000, # <-- has a different port_in
-#         #     port_out=53000,
-#         ##############################################
-#     ).add(
-#         name='pod3',
-#         parallel=2,
-#         port_in=53000,
-#     ) as flow:
-#         # create new pod asynchronously. Can take a lot of time.....
-#         flow.update_pod('pod2')
-#
-#         # search requests on the old peas
-#         for i in range(5):
-#             flow.search('my_text', on_done=callback)
-#             time.sleep(1)
-#
-#         # reconnect
-#         print('### second pod connecting')
-#         start_time = time.time()
-#         # switch traffic to new pod. Blocking request, but it is super fast since the new pod is there already.
-#         flow.reconnect_pod('pod1')
-#         print(
-#             '### finished - second pod connected. Took ',
-#             time.time() - start_time,
-#             'seconds',
-#         )
-#
-#         # search requests on the new peas
-#         for i in range(5):
-#             flow.search('my_text', on_done=callback)
-#             time.sleep(1)
+def test_flow_plot():
+    pass
+
+
+def test_workspace_configuration():
+    pass

@@ -254,13 +254,13 @@ class Zmqlet:
         else:
             o_sock = self.ctrl_sock
 
-        print('### send message', self.name)
+        # print('### send message', self.name)
         self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
-        print('### done sending', self.name, o_sock == self.out_sock, self.in_sock_type == zmq.DEALER)
+        # print('### done sending', self.name, o_sock == self.out_sock, self.in_sock_type == zmq.DEALER)
         self.msg_sent += 1
 
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
-            print('### return idle request', self.name)
+            # print('### return idle request', self.name)
             self._send_idle()
 
     def _send_idle(self):
@@ -384,12 +384,10 @@ class ZmqStreamlet(Zmqlet):
         )
         self.out_sock = ZMQStream(out_sock, self.io_loop)
 
-
         if self.out_sock_type == zmq.ROUTER:
             self.out_sock.on_recv(lambda x: self.callback(x, self.out_sock_type))
 
         self.opened_socks[1] = self.out_sock
-
 
     def close(self):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.

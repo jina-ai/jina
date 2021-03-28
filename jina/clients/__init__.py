@@ -139,18 +139,6 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
-
-    def reconnect_pod(
-        self,
-        pod_and_out_port,
-        **kwargs
-    ) -> None:
-
-        self.mode = RequestType.RECONNECTPOD
-        return run_async(
-            self._get_results, pod_and_out_port, None, None, None, **kwargs
-        )
-
     @deprecated_alias(
         input_fn=('inputs', 0),
         buffer=('inputs', 1),

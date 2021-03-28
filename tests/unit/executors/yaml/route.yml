@@ -15,5 +15,3 @@ requests:
       - !RouteDriver {}
     TrainRequest:
       - !RouteDriver {}
-    ReconnectPodRequest:
-      - !RouteDriver {}
