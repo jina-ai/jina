@@ -40,6 +40,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8093,4 +8094,38 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```8be28cfe```](https://github.com/jina-ai/jina/commit/8be28cfef7880ed74d964c32c7c87c6c2f40a6cc)] __-__ __version__: the next version will be 1.0.15 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-16></a>
+## Release Note (`1.0.16`)
+
+> Release time: 2021-03-28 23:03:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  David Buchaca Prats,  cristian,  Wang Bo,  CatStark,  🙇
+
+
+### 🆕 New Features
+
+ - [[```13ca1a80```](https://github.com/jina-ai/jina/commit/13ca1a80185f4d5f5a42296cc0ba05517ddef461)] __-__ support for sparse arrays in documents (#2207) (*David Buchaca Prats*)
+ - [[```2fe2fe82```](https://github.com/jina-ai/jina/commit/2fe2fe82a1528ae87c448cb40c97b3e8b3b59f72)] __-__ add pngtodisk driver (#2209) (*cristian*)
+
+### 🐞 Bug fixes
+
+ - [[```f2def8a4```](https://github.com/jina-ai/jina/commit/f2def8a464a6a6e38314892e894cceee12245e0e)] __-__ proper usage of importextensions (#2237) (*cristian*)
+ - [[```2be26c6d```](https://github.com/jina-ai/jina/commit/2be26c6dcc0cff897cb99d0eb29258338c5b86ca)] __-__ pytorch sparse ndarray constructor (#2233) (*Wang Bo*)
+ - [[```9b3ab472```](https://github.com/jina-ai/jina/commit/9b3ab472f18c0366aa7eda3be97ef9ed0ebbd4d2)] __-__ test expects files with contents (#2221) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1c9949ca```](https://github.com/jina-ai/jina/commit/1c9949ca64ddb289a7b12d34dca38797540ca972)] __-__ add zmq runtime test (#2230) (*Wang Bo*)
+ - [[```3d1b9548```](https://github.com/jina-ai/jina/commit/3d1b954867720a39732135b4e7852b5542be119f)] __-__ add regression for chatbot (#2218) (*Wang Bo*)
+ - [[```8b80cec6```](https://github.com/jina-ai/jina/commit/8b80cec692ebcd07ff1223ea7da4dc820f4fd03c)] __-__ assert there are no embeddings by default (#2229) (*CatStark*)
+
+### 🍹 Other Improvements
+
+ - [[```d0e4ae94```](https://github.com/jina-ai/jina/commit/d0e4ae94488ad4a77e9d3f87baaafa54e19ccc35)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```72e5c838```](https://github.com/jina-ai/jina/commit/72e5c8387663a5229eb1a0c5b077e49313d719f3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```576a3c86```](https://github.com/jina-ai/jina/commit/576a3c86fb75ce7666feeaec3860efb86764fd68)] __-__ __version__: the next version will be 1.0.16 (*Jina Dev Bot*)
 
