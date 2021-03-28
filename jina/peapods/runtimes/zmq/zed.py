@@ -161,8 +161,8 @@ class ZEDRuntime(ZMQRuntime):
 
         if (
             msg.request.request_type == 'IndexRequestProto'
-            and 'replica_head' in self.name
-        ):
+            or msg.request.request_type == 'SearchRequestProto'
+        ) and 'replica_head' in self.name:
             print(f'### handle {self.name}, {list(msg.request.docs)[0].text}')
 
         if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):

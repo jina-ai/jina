@@ -1,26 +1,14 @@
-!NumpyIndexer
+!MockVectorIndexer
 with:
   index_filename: vec.gz
   metric: cosine
 metas:
   name: vecidx
-  workspace: $JINA_SHARDING_DIR
-
+  workspace: $JINA_REPLICA_DIR
+  py_modules:
+    - custom.py
 requests:
   on:
-    UpdateRequest:
-      - !VectorIndexDriver
-        with:
-          method: update
-          executor: vecidx
-          traversal_paths: [ 'r' ]
-    DeleteRequest:
-      - !DeleteDriver {}
-    IndexRequest:
-      - !VectorIndexDriver
-        with:
-          executor: vecidx
-          traversal_paths: ['r']
     SearchRequest:
       - !VectorSearchDriver
         with:

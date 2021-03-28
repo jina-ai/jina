@@ -1,10 +1,16 @@
 import os
 import time
-
 import pytest
 
 from jina import Document
 from jina.flow import Flow
+
+
+@pytest.fixture
+def config(tmpdir):
+    os.environ['JINA_REPLICA_DIR'] = str(tmpdir)
+    yield
+    del os.environ['JINA_REPLICA_DIR']
 
 
 def test_simple_run():
@@ -13,7 +19,7 @@ def test_simple_run():
         replicas=2,
         parallel=3,
         port_in=5100,
-        port_out=5200,  # TODO always needs to be any for replicas and all for shards
+        port_out=5200,
     )
     # TODO replica plot
     # flow.plot(output=os.path.join('flow2.jpg'), copy_flow=True)
@@ -35,7 +41,7 @@ def test_async_run():
         replicas=2,
         parallel=3,
         port_in=5100,
-        port_out=5200,  # TODO always needs to be any for replicas and all for shards
+        port_out=5200,
     )
     with flow:
         for i in range(5):
@@ -46,6 +52,29 @@ def test_async_run():
         print('# index while roling update')
         for i in range(40):
             flow.index(Document(text='documents after rolling update'))
+            time.sleep(0.5)
+        print('# terminate flow')
+    print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
+
+
+# TODO tests are taking too much time to run
+def test_vector_indexer_async(config):
+    with Flow().add(
+        name='pod1',
+        used='yaml/index_vector.yml',
+        replicas=2,
+        parallel=3,
+        port_in=5100,
+        port_out=5200,
+    ) as flow:
+        for i in range(5):
+            flow.search(Document(text='documents before rolling update'))
+            time.sleep(1)
+        print('#### before update ')
+        flow.rolling_update_async('pod1')
+        print('# index while rolling update')
+        for i in range(40):
+            flow.search(Document(text='documents after rolling update'))
             time.sleep(0.5)
         print('# terminate flow')
     print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
@@ -105,7 +134,7 @@ def test_port_configuration(replicas_and_parallel):
 
     flow = Flow()
     # flow.plot() # TODO crashes for some reason when copy_flow=False
-    flow.plot(output=os.path.join('flow.svg'), copy_flow=True)
+    # flow.plot(output=os.path.join('flow.svg'), copy_flow=True)
     for i, (replicas, parallel) in enumerate(replicas_and_parallel):
         flow.add(
             name=f'pod{i}',
