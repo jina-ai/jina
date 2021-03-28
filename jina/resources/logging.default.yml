@@ -1,6 +1,5 @@
 handlers:  # enabled handlers, order does not matter
   - StreamHandler
-  - SysLogHandler
   - FluentHandler
 level: INFO  # set verbose level
 configs:

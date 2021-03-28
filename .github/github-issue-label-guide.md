@@ -21,7 +21,7 @@ All issues are assigned a type label. Some issues may be assigned a priority, st
 **An issue should only ever have one type label, one status label, one priority label, and one area label.**
 
 This is an example of a correctly labelled issue
-![alt text](.github/images/github_issue_label.png)
+![alt text](images/github_issue_label.png)
 
 
 

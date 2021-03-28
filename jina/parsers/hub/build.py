@@ -12,18 +12,18 @@ def mixin_hub_build_parser(parser):
     gp.add_argument(
         'path',
         type=str,
-        help='path to the directory containing '
-        'Dockerfile, manifest.yml, README.md '
-        'zero or more yaml config, '
-        'zero or more Python file. '
-        'All files in this directory will be shipped into a Docker image',
+        help='''
+The content source to be shipped into a Docker image. It can one of the followings:
+- a directory containing Dockerfile, manifest.yml, README.md, zero or more yaml config, zero or more Python file.
+- a name of the Jina Hub executor given by `jina hub list --local-only`.
+''',
     )
     gp.add_argument(
         '-f',
         '--file',
         type=str,
         default='Dockerfile',
-        help='Name of the Dockerfile (Default is `path/Dockerfile`',
+        help='Name of the Dockerfile (Default is `path/Dockerfile`)',
     )
     gp.add_argument(
         '--pull',

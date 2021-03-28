@@ -303,6 +303,10 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         def containers(self):
             return MockContainers()
 
+        @property
+        def images(self):
+            return {}
+
     monkeypatch.setattr(docker, 'from_env', MockClient)
     args = set_pea_parser().parse_args(
         [

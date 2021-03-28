@@ -124,10 +124,6 @@ class TimedOutException(Exception):
     """Errors raised for timeout operations."""
 
 
-class DockerLoginFailed(Exception):
-    """Exception to raise for docker hub login failures."""
-
-
 class ModelCheckpointNotExist(FileNotFoundError):
     """Exception to raise for executors depending on pretrained model files when they do not exist."""
 
@@ -185,6 +181,10 @@ class LengthMismatchException(Exception):
 
 class ImageAlreadyExists(Exception):
     """Exception when an image with the name, module version, and Jina version already exists on the Hub."""
+
+
+class BadImageNameError(Exception):
+    """Exception when an image name can not be found either local & remote"""
 
 
 class BadFlowYAMLVersion(Exception):
