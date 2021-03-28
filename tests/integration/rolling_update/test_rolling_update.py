@@ -5,7 +5,6 @@ import pytest
 
 from jina.flow import Flow
 
-
 def test_simple_run():
     flow = Flow().add(
         name='pod1', replicas=2, parallel=3, port_in=5100, port_out=5200,  # TODO always needs to be any for replicas and all for shards
@@ -13,16 +12,33 @@ def test_simple_run():
     # TODO replica plot
     # flow.plot(output=os.path.join('flow2.jpg'), copy_flow=True)
     with flow:
-        flow.index('test document')
+        flow.index('documents before rolling update')
         print('#### before update ')
-        time.sleep(1)
         # TODO test index request if it is sent only once or more often
         # TODO check original implementation
         # TODO check where ide request is sent
         flow.rolling_update('pod1')
-        # print('#### after update ')
-        # time.sleep(10000)
-        flow.index('test2')
+        print('# index while roling update')
+        flow.index('documents before rolling update')
+        print('# terminate flow')
+
+def test_async_run():
+    flow = Flow().add(
+        name='pod1', replicas=2, parallel=3, port_in=5100, port_out=5200,  # TODO always needs to be any for replicas and all for shards
+    )
+    with flow:
+        for i in range(1):
+            flow.index('documents before rolling update')
+        print('#### before update ')
+        flow.rolling_update_async('pod1')
+        print('# index while roling update')
+        for i in range(100):
+            flow.index('documents before rolling update')
+            time.sleep(0.2)
+        print('# terminate flow')
+
+
+
 
 
 @pytest.mark.parametrize(

@@ -1032,11 +1032,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
+    def rolling_update_async(self, pod_name):
+        print('start thread')
+        x = threading.Thread(target=self.rolling_update, args=(pod_name,))
+        x.start()
+        print('thread is running')
+
+
     def rolling_update(self, pod_name):
-        # print('### start rolling update')
-        # # self._pod_nodes[pod_name].replica_list[0].close()
-        # self._pod_nodes[pod_name].replica_list[1].close()
-        # print('### finished rolling update')
         for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
             print(f'## join replica {i}')
             replica.close()
@@ -1045,3 +1048,4 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             replica.start()
             print(f'## join replica started {i}')
             time.sleep(1)
+        print('### rolling update done')
