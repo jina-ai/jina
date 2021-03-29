@@ -1,6 +1,7 @@
 import copy
 from argparse import Namespace
 from typing import List, Optional
+from itertools import cycle
 
 from ... import __default_host__
 from ...enums import SchedulerType, SocketType, PeaRoleType
@@ -12,8 +13,15 @@ def _set_peas_args(
     args: Namespace, head_args: Optional[Namespace] = None, tail_args: Namespace = None
 ) -> List[Namespace]:
     result = []
+    _host_list = (
+        args.peas_hosts
+        if args.peas_hosts
+        else [
+            args.host,
+        ]
+    )
 
-    for idx in range(args.parallel):
+    for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
         _args = copy.deepcopy(args)
 
         if args.parallel > 1:
@@ -21,7 +29,7 @@ def _set_peas_args(
             _args.pea_role = PeaRoleType.PARALLEL
             _args.identity = random_identity()
             if _args.peas_hosts:
-                _args.host = _args.peas_hosts.get(str(_args.pea_id), args.host)
+                _args.host = pea_host
             if _args.name:
                 _args.name += f'/{_args.pea_id}'
             else:

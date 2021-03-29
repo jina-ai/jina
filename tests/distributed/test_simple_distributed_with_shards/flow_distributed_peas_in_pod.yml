@@ -10,12 +10,12 @@ pods:
     parallel: 3
     host: $JINA_POD1_HOST
     peas_hosts:
-      1: $JINA_POD2_HOST
+      - $JINA_POD2_HOST
     port_expose: 8000
   - name: pod2
     uses: _pass
     parallel: 3
     host: $JINA_POD2_HOST
     peas_hosts:
-      1: $JINA_POD1_HOST
+      - $JINA_POD1_HOST
     port_expose: 8000
