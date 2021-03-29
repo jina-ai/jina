@@ -317,6 +317,7 @@ message RequestProto {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
             IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
+            BUSY = 4; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
         }
         Command command = 1; // the control command
 

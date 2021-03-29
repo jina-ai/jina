@@ -65,7 +65,7 @@ class Zmqlet:
 
         self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
         if self.in_sock_type == zmq.DEALER:
-            self._send_idle()
+            self._send_idle_to_router()
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
@@ -255,14 +255,23 @@ class Zmqlet:
         self.msg_sent += 1
 
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
-            self._send_idle()
+            self._send_idle_to_router()
 
-    def _send_idle(self):
-        """Tell the upstream router this dealer is idle """
-        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.identity)
+    def _send_control_to_router(self, command):
+        msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
         self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
-        self.logger.debug(f'idle and i {self.identity} told the router')
+        self.logger.debug(
+            f'control message {command} with id {self.identity} is sent to the router'
+        )
+
+    def _send_idle_to_router(self):
+        """Tell the upstream router this dealer is idle """
+        self._send_control_to_router('IDLE')
+
+    def _send_busy_to_router(self):
+        """Tell the upstream router this dealer is busy """
+        self._send_control_to_router('BUSY')
 
     def recv_message(
         self, callback: Callable[['Message'], 'Message'] = None
@@ -360,6 +369,9 @@ class ZmqStreamlet(Zmqlet):
         .. note::
             This method is idempotent.
         """
+        if self.in_sock_type == zmq.DEALER:
+            print('### return busy request', self.name)
+            self._send_busy_to_router()
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
