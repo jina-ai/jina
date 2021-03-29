@@ -35,7 +35,9 @@ def test_shard_workspace(test_workspace, pea_id):
             )
         )
     else:
-        assert os.path.exists(os.path.join(tmpdir, f'{executor.name}.bin'))
+        assert os.path.exists(
+            os.path.join(tmpdir, f'test1-{pea_id}', f'{executor.name}.bin')
+        )
 
     with BaseExecutor.load_config(
         os.path.join(cur_dir, 'yaml/test-workspace.yml'), pea_id=pea_id
@@ -62,13 +64,9 @@ def test_compound_indexer_no_workspace_in_components(
         if dump_compound:
             executor.touch()
 
-    compound_bin_expected = None
-    if pea_id > 0:
-        compound_bin_expected = os.path.join(
-            tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin'
-        )
-    else:
-        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}.bin')
+    compound_bin_expected = os.path.join(
+        tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin'
+    )
 
     if dump_compound:
         assert os.path.exists(compound_bin_expected)
@@ -87,7 +85,12 @@ def test_compound_indexer_no_workspace_in_components(
             )
         else:
             assert os.path.exists(
-                os.path.join(tmpdir, f'{executor.name}', f'{component.name}.bin')
+                os.path.join(
+                    tmpdir,
+                    f'{executor.name}',
+                    f'{component.name}-{component.pea_id}',
+                    f'{component.name}.bin',
+                )
             )
 
     with BaseExecutor.load_config(
@@ -131,7 +134,9 @@ def test_compound_indexer_with_workspace_in_components(
             tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin'
         )
     else:
-        compound_bin_expected = os.path.join(tmpdir, f'{executor.name}.bin')
+        compound_bin_expected = os.path.join(
+            tmpdir, f'{executor.name}-{executor.pea_id}', f'{executor.name}.bin'
+        )
 
     if dump_compound:
         assert os.path.exists(compound_bin_expected)
@@ -150,7 +155,9 @@ def test_compound_indexer_with_workspace_in_components(
         else:
             assert os.path.exists(
                 os.path.join(
-                    comp1_dir if i == 0 else comp2_dir, f'{component.name}.bin'
+                    comp1_dir if i == 0 else comp2_dir,
+                    f'{component.name}-{component.pea_id}',
+                    f'{component.name}.bin',
                 )
             )
 
@@ -185,7 +192,13 @@ def test_indexer_ref_indexer(test_workspace, pea_id):
             )
         )
     else:
-        assert os.path.exists(os.path.join(tmpdir, f'{ref_indexer.name}.bin'))
+        assert os.path.exists(
+            os.path.join(
+                tmpdir,
+                f'{ref_indexer.name}-{ref_indexer.pea_id}',
+                f'{ref_indexer.name}.bin',
+            )
+        )
 
     with BaseExecutor.load_config(
         os.path.join(cur_dir, 'yaml/test-refindexer-workspace.yml'), pea_id=pea_id
@@ -214,7 +227,12 @@ def test_compound_indexer_ref_indexer(test_workspace, pea_id):
         )
     else:
         assert os.path.exists(
-            os.path.join(tmpdir, f'{compound_indexer.name}', f'{ref_indexer.name}.bin')
+            os.path.join(
+                tmpdir,
+                f'{compound_indexer.name}',
+                f'{ref_indexer.name}-{ref_indexer.pea_id}',
+                f'{ref_indexer.name}.bin',
+            )
         )
 
     with BaseExecutor.load_config(
@@ -246,14 +264,11 @@ def test_simple_indexer_workspace_move_to_docker(test_workspace_move, tmpdir, pe
     ) as indexer:
         indexer.add(keys, content)
 
-    if pea_id > 0:
-        assert os.path.exists(
-            os.path.join(
-                old_tmpdir, f'{indexer.name}-{indexer.pea_id}', f'{indexer.name}.bin'
-            )
+    assert os.path.exists(
+        os.path.join(
+            old_tmpdir, f'{indexer.name}-{indexer.pea_id}', f'{indexer.name}.bin'
         )
-    else:
-        assert os.path.exists(os.path.join(old_tmpdir, f'{indexer.name}.bin'))
+    )
 
     shutil.copytree(os.environ['JINA_TEST_WORKSPACE'], docker_tmpdir)
 

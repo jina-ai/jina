@@ -117,7 +117,7 @@ def test_index(test_workspace_index):
     with f:
         f.index(inputs=random_docs(50))
     for j in range(3):
-        assert os.path.exists(os.path.join(test_workspace_index, f'test2-{j + 1}/tmp2'))
+        assert os.path.exists(os.path.join(test_workspace_index, f'test2-{j}', f'tmp2'))
 
 
 def test_compound_idx(test_workspace_joint, mocker):

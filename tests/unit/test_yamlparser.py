@@ -7,7 +7,6 @@ from pkg_resources import resource_filename
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.executors.compound import CompoundExecutor
-from jina.executors.indexers.vector import NumpyIndexer
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
@@ -132,16 +131,6 @@ def test_joint_indexer(test_workspace):
     b.attach(runtime=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]
-
-
-@pytest.mark.parametrize(
-    'yaml_dir, executor',
-    [('yaml/dummy_exec1.yml', BaseExecutor), ('yaml/dummy_exec2.yml', NumpyIndexer)],
-)
-def test_load_yaml(yaml_dir, executor, tmpdir):
-    with executor.load_config(yaml_dir) as e:
-        e.save(tmpdir.join(e.save_abspath))
-        e.save_config(tmpdir.join(e.config_abspath))
 
 
 def test_load_external_fail():
