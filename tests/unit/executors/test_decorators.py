@@ -361,7 +361,7 @@ def test_batching_multi():
             self.batch_size = batch_size
             self.batching = []
 
-        @batching_multi_input(slice_nargs=num_data)
+        @batching(slice_nargs=num_data)
         def f(self, *datas):
             assert len(datas) == num_data
             concat = np.concatenate(datas, axis=1)
@@ -420,7 +420,7 @@ def test_batching_multi_input_dictionary():
             self.batch_size = batch_size
             self.batches = []
 
-        @batching_multi_input(slice_on=2, slice_nargs=2)
+        @batching(slice_on=2, slice_nargs=2)
         def score(self, query_meta, old_match_scores, match_meta):
             self.batches.append([query_meta, old_match_scores, match_meta])
             return np.array([(x, y) for x, y in old_match_scores.items()])
