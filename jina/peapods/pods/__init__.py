@@ -17,7 +17,49 @@ from ..peas import BasePea
 from ...enums import *
 
 
+class PodBuilder:
+
+    @staticmethod
+    def get_pod(args, replicas):
+        if replicas == 1:
+            return Pod(args)
+        else:
+            return CompoundPod(args)
+
+
 class BasePod(ExitStack):
+    def __init__(self):
+        super().__init__()
+
+    def start(self):
+        pass
+
+    @property
+    def host_in(self) -> str:
+        pass
+
+    @property
+    def host_out(self) -> str:
+        pass
+
+    @property
+    def address_in(self) -> str:
+        pass
+
+    @property
+    def address_out(self) -> str:
+        """Get the full outgoing address of this pod"""
+        pass
+
+    def __enter__(self) -> 'BasePod':
+        return self.start()
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        super().__exit__(exc_type, exc_val, exc_tb)
+        self.join()
+
+
+class Pod(BasePod):
     """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
@@ -64,35 +106,35 @@ class BasePod(ExitStack):
     @property
     def port_expose(self) -> int:
         """Get the grpc port number """
-        return self.first_pea_args.port_expose
+        return self._first_pea_args.port_expose
 
     @property
     def host(self) -> str:
         """Get the host name of this Pod"""
-        return self.first_pea_args.host
+        return self._first_pea_args.host
 
     @property
     def host_in(self) -> str:
         """Get the host_in of this pod"""
-        return self.head_args.host_in
+        return self._head_args.host_in
 
     @property
     def host_out(self) -> str:
         """Get the host_out of this pod"""
-        return self.tail_args.host_out
+        return self._tail_args.host_out
 
     @property
     def address_in(self) -> str:
         """Get the full incoming address of this pod"""
-        return f'{self.head_args.host_in}:{self.head_args.port_in} ({self.head_args.socket_in!s})'
+        return f'{self._head_args.host_in}:{self._head_args.port_in} ({self._head_args.socket_in!s})'
 
     @property
     def address_out(self) -> str:
         """Get the full outgoing address of this pod"""
-        return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
+        return f'{self._tail_args.host_out}:{self._tail_args.port_out} ({self._tail_args.socket_out!s})'
 
     @property
-    def first_pea_args(self) -> Namespace:
+    def _first_pea_args(self) -> Namespace:
         """Return the first non-head/tail pea's args """
         # note this will be never out of boundary
         return self.peas_args['peas'][0]
@@ -134,19 +176,19 @@ class BasePod(ExitStack):
         return peas_args
 
     @property
-    def head_args(self):
+    def _head_args(self):
         """Get the arguments for the `head` of this BasePod. """
         if self.is_head_router and self.peas_args['head']:
             return self.peas_args['head']
         elif not self.is_head_router and len(self.peas_args['peas']) == 1:
-            return self.first_pea_args
+            return self._first_pea_args
         elif self.deducted_head:
             return self.deducted_head
         else:
             raise ValueError('ambiguous head node, maybe it is deducted already?')
 
-    @head_args.setter
-    def head_args(self, args):
+    @_head_args.setter
+    def _head_args(self, args):
         """Set the arguments for the `head` of this BasePod. """
         if self.is_head_router and self.peas_args['head']:
             self.peas_args['head'] = args
@@ -158,19 +200,19 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous head node, maybe it is deducted already?')
 
     @property
-    def tail_args(self):
+    def _tail_args(self):
         """Get the arguments for the `tail` of this BasePod. """
         if self.is_tail_router and self.peas_args['tail']:
             return self.peas_args['tail']
         elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
-            return self.first_pea_args
+            return self._first_pea_args
         elif self.deducted_tail:
             return self.deducted_tail
         else:
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
-    @tail_args.setter
-    def tail_args(self, args):
+    @_tail_args.setter
+    def _tail_args(self, args):
         """Set the arguments for the `tail` of this BasePod. """
         if self.is_tail_router and self.peas_args['tail']:
             self.peas_args['tail'] = args
@@ -182,7 +224,7 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
     @property
-    def all_args(self) -> List[Namespace]:
+    def _all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod. """
         return (
             ([self.peas_args['head']] if self.peas_args['head'] else [])
@@ -191,12 +233,12 @@ class BasePod(ExitStack):
         )
 
     @property
-    def num_peas(self) -> int:
+    def _num_peas(self) -> int:
         """Get the number of running :class:`BasePea`"""
         return len(self.peas)
 
     def __eq__(self, other: 'BasePod'):
-        return self.num_peas == other.num_peas and self.name == other.name
+        return self._num_peas == other._num_peas and self.name == other.name
 
     def start(self) -> 'BasePod':
         """Start to run all :class:`BasePea` in this BasePod.
@@ -206,14 +248,14 @@ class BasePod(ExitStack):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args:
+            for _args in self._all_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args:
+                for _args in self._all_args:
                     self._enter_pea(BasePea(_args))
             except:
                 self.close()
@@ -242,13 +284,6 @@ class BasePod(ExitStack):
         self.peas.append(pea)
         self.enter_context(pea)
 
-    def __enter__(self) -> 'BasePod':
-        return self.start()
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        super().__exit__(exc_type, exc_val, exc_tb)
-        self.join()
-
     def join(self):
         """Wait until all peas exit"""
         try:
@@ -274,3 +309,70 @@ class BasePod(ExitStack):
             A Pod is ready when all the Peas it contains are ready
         """
         return all(p.is_ready.is_set() for p in self.peas)
+
+
+class CompoundPod(BasePod):
+    """
+
+    Wrapper around Pods where as many Pods as replicas are created
+    """
+
+    def __init__(
+        self,
+        args: Union['argparse.Namespace', Dict],
+        needs: Set[str] = None,
+        replication: int = 1,
+    ):
+        """
+
+        :param args: arguments parsed from the CLI
+        """
+        super().__init__(args)
+        self.args = args
+
+        # expand args into `self.pod_args`
+        self.pod_args = [args]
+        self.head_pod_args = None
+        self.tail_pod_args = None
+        self.pods = []
+
+    @property
+    def host_in(self) -> str:
+        # the host in of the extra HeadPea
+        pass
+
+    @property
+    def host_out(self) -> str:
+        # the host in of the extra TailPea
+        pass
+
+    @property
+    def address_in(self) -> str:
+        # the address of the extra HeadPea
+        pass
+
+    @property
+    def address_out(self) -> str:
+        # the address of the extra TailPea
+        pass
+
+    def start(self) -> 'CompoundPod':
+        try:
+            for pod_args in self.pods_args:
+                pod = Pod(pod_args)
+                self.pods.append(pod)
+                self.enter_context(Pod(pod_args))
+        except:
+            self.close()
+            raise
+        return self
+
+    def join(self):
+        """Wait until all peas exit"""
+        try:
+            for p in self.pods:
+                p.join()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.pods.clear()
