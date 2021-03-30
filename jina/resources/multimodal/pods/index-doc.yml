@@ -1,4 +1,4 @@
-jtype: BinaryPbIndexer
+jtype: KeyValueIndexer
 with:
   index_filename: 'doc.gz'
 metas:

@@ -15,10 +15,10 @@ on:
           - buffer
     - !KVIndexDriver
       with:
-        executor: BinaryPbIndexer
+        executor: KeyValueIndexer
   SearchRequest:
     - !KVSearchDriver
       with:
-        executor: BinaryPbIndexer
+        executor: KeyValueIndexer
   ControlRequest:
     - !ControlReqDriver {}
