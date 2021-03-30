@@ -78,7 +78,7 @@ def wrap_func(cls, func_lst, wrapper):
     """
     for f_name in func_lst:
         if hasattr(cls, f_name) and all(
-                getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]
+            getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]
         ):
             setattr(cls, f_name, wrapper(getattr(cls, f_name)))
 
@@ -170,7 +170,7 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 
 def _get_slice(
-        data: Union[Iterator[Any], List[Any], np.ndarray], total_size: int
+    data: Union[Iterator[Any], List[Any], np.ndarray], total_size: int
 ) -> Union[Iterator[Any], List[Any], np.ndarray]:
     if isinstance(data, Dict):
         data = islice(data.items(), total_size)
@@ -200,7 +200,7 @@ def _get_total_size(full_data_size, batch_size, num_batch):
 
 
 def _merge_results_after_batching(
-        final_result, merge_over_axis: int = 0, flatten: bool = True
+    final_result, merge_over_axis: int = 0, flatten: bool = True
 ):
     if not final_result:
         return
@@ -215,15 +215,16 @@ def _merge_results_after_batching(
 
 
 def batching(
-        func: Optional[Callable[[Any], np.ndarray]] = None,
-        batch_size: Optional[Union[int, Callable]] = None,
-        num_batch: Optional[int] = None,
-        split_over_axis: int = 0,
-        merge_over_axis: int = 0,
-        slice_on: int = 1,
-        label_on: Optional[int] = None,
-        ordinal_idx_arg: Optional[int] = None,
-        flatten_output: bool = True,
+    func: Optional[Callable[[Any], np.ndarray]] = None,
+    batch_size: Optional[Union[int, Callable]] = None,
+    num_batch: Optional[int] = None,
+    split_over_axis: int = 0,
+    merge_over_axis: int = 0,
+    slice_on: int = 1,
+    slice_nargs: int = 1,
+    label_on: Optional[int] = None,
+    ordinal_idx_arg: Optional[int] = None,
+    flatten_output: bool = True,
 ) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
@@ -235,6 +236,7 @@ def batching(
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
+    :param slice_nargs: the number of arguments
     :param label_on: the location of the labels. Useful for data with any kind of accompanying labels
     :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
             where function decorated needs to know the ordinal indexes of the data in the batch
@@ -266,8 +268,8 @@ def batching(
             args = list(args)
 
             b_size = (
-                         batch_size(data) if callable(batch_size) else batch_size
-                     ) or getattr(args[0], 'batch_size', None)
+                batch_size(data) if callable(batch_size) else batch_size
+            ) or getattr(args[0], 'batch_size', None)
             # no batching if b_size is None
             if b_size is None or data is None:
                 return func(*args, **kwargs)
@@ -288,7 +290,7 @@ def batching(
             slice_idx = None
 
             for b in batch_iterator(
-                    data[:total_size], b_size, split_over_axis, yield_slice=yield_slice
+                data[:total_size], b_size, split_over_axis, yield_slice=yield_slice
             ):
                 if yield_slice:
                     slice_idx = b
@@ -300,14 +302,14 @@ def batching(
                     if slice_idx.start is None or slice_idx.stop is None:
                         slice_idx = None
 
-                if not isinstance(b, tuple):
+                if label_on:
+                    args[slice_on] = b[0]
+                    args[label_on] = b[1]
+                else:
                     # for now, keeping ordered_idx is only supported if no labels
                     args[slice_on] = b
                     if ordinal_idx_arg and slice_idx is not None:
                         args[ordinal_idx_arg] = slice_idx
-                else:
-                    args[slice_on] = b[0]
-                    args[label_on] = b[1]
 
                 r = func(*args, **kwargs)
 
@@ -330,13 +332,13 @@ def batching(
 
 
 def batching_multi_input(
-        func: Optional[Callable[[Any], np.ndarray]] = None,
-        batch_size: Optional[Union[int, Callable]] = None,
-        num_batch: Optional[int] = None,
-        split_over_axis: int = 0,
-        merge_over_axis: int = 0,
-        slice_on: int = 1,
-        slice_nargs: int = 1,
+    func: Optional[Callable[[Any], np.ndarray]] = None,
+    batch_size: Optional[Union[int, Callable]] = None,
+    num_batch: Optional[int] = None,
+    split_over_axis: int = 0,
+    merge_over_axis: int = 0,
+    slice_on: int = 1,
+    slice_nargs: int = 1,
 ) -> Any:
     """Split the input of a function into small batches and call :func:`func` on each batch
     , collect the merged result and return. This is useful when the input is too big to fit into memory
@@ -398,8 +400,12 @@ def batching_multi_input(
             total_size = _get_total_size(full_data_size, b_size, num_batch)
             final_result = []
 
-            yield_dict = [isinstance(args[slice_on + i], Dict) for i in range(0, slice_nargs)]
-            yield_slice = [isinstance(args[slice_on + i], np.memmap) for i in range(0, slice_nargs)]
+            yield_dict = [
+                isinstance(args[slice_on + i], Dict) for i in range(0, slice_nargs)
+            ]
+            yield_slice = [
+                isinstance(args[slice_on + i], np.memmap) for i in range(0, slice_nargs)
+            ]
 
             data_iterators = [
                 batch_iterator(
@@ -413,7 +419,7 @@ def batching_multi_input(
             ]
 
             for new_args in zip(*data_iterators):
-                args[slice_on: slice_on + slice_nargs] = new_args
+                args[slice_on : slice_on + slice_nargs] = new_args
                 r = func(*args, **kwargs)
 
                 if r is not None:
@@ -430,11 +436,11 @@ def batching_multi_input(
 
 
 def single(
-        func: Optional[Callable[[Any], np.ndarray]] = None,
-        merge_over_axis: int = 0,
-        slice_on: int = 1,
-        slice_nargs: int = 1,
-        flatten_output: bool = False,
+    func: Optional[Callable[[Any], np.ndarray]] = None,
+    merge_over_axis: int = 0,
+    slice_on: int = 1,
+    slice_nargs: int = 1,
+    flatten_output: bool = False,
 ) -> Any:
     """Guarantee that the inputs of a function with more than one argument is provided as single instances and not in batches
 
@@ -496,26 +502,28 @@ def single(
             args = list(args)
             default_logger.debug(f'batching disabled for {func.__qualname__}')
 
-            data_iterators = args[slice_on: slice_on + slice_nargs]
+            data_iterators = args[slice_on : slice_on + slice_nargs]
 
             if len(args) <= slice_on:
                 # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
             elif len(args) < slice_on + slice_nargs:
-                raise IndexError(f'can not select positional args at {slice_on}: {slice_nargs}, '
-                                 f'your `args` has {len(args)} arguments.')
+                raise IndexError(
+                    f'can not select positional args at {slice_on}: {slice_nargs}, '
+                    f'your `args` has {len(args)} arguments.'
+                )
             elif (
-                    len(args) <= slice_on
-                    or isinstance(data_iterators[0], str)
-                    or isinstance(data_iterators[0], bytes)
-                    or not isinstance(data_iterators[0], Iterable)
+                len(args) <= slice_on
+                or isinstance(data_iterators[0], str)
+                or isinstance(data_iterators[0], bytes)
+                or not isinstance(data_iterators[0], Iterable)
             ):
                 # like this one can use the function with single kwargs
                 return func(*args, **kwargs)
 
             final_result = []
             for new_args in zip(*data_iterators):
-                args[slice_on: slice_on + slice_nargs] = new_args
+                args[slice_on : slice_on + slice_nargs] = new_args
                 r = func(*args, **kwargs)
 
                 if r is not None:

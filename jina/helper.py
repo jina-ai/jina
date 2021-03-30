@@ -220,7 +220,6 @@ def batch_iterator(
         for _ in range(0, len(data), batch_size):
             yield data[_ : _ + batch_size]
     elif isinstance(data, Iterable):
-        data = iter(data)
         # as iterator, there is no way to know the length of it
         while True:
             if yield_dict:
@@ -724,6 +723,7 @@ class ArgNamespace:
         """
         args = []
         from .executors import BaseExecutor
+
         for k, v in kwargs.items():
             k = k.replace('_', '-')
             if v is not None:
