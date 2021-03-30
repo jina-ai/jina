@@ -48,13 +48,10 @@
   </tr>
 </table>
 
-## What is Neural Search?
-
-Neural search is a new approach to retrieving information. Traditional symbolic search is built on extensive rules and fragile pipelines. Neural search uses pre-trained neural networks to do the heavy lifting, saving developers time and effort. 
-
-Unlike traditional search, with Jina you can search through any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). We leverage AI models that have been pre-trained for specific use cases. With the modular framework you can find the right tool for the right job -- whether that's crafting, encoding, classifying, indexing, or ranking data. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
-
 ## Why Jina?
+
+Jina lets you build a search engine for any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). With our modular framework we provide the right tool for building each part of your search system. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
+
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
 
@@ -242,14 +239,16 @@ Example code to build your own projects
 
 Check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
 
-## Documentation
+## Documentation & Support
 
-https://docs.jina.ai
-
-## Get Support
-
+- Docs: https://docs.jina.ai
 - Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
-- Join our [Engineering All Hands](https://github.com/jina-ai/jina/tree/refactor-readme-2021-03#engineering-all-hands) meet-up to discuss your use case and learn Jina's new features.
+- Join our Engineering All Hands meet-up to discuss your use case and learn Jina's new features.
+
+    - **When?** The second Tuesday of every month
+    - **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai))
+
+- Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai).
 
 
 ## Contributing
@@ -257,9 +256,12 @@ https://docs.jina.ai
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
 
 - [Contributing guidelines](CONTRIBUTING.md)
+- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
 - [Upcoming features](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about.
+
+
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-133-orange.svg?style=flat-square)](#contributors-)
@@ -289,26 +291,6 @@ We welcome all kinds of contributions from the open-source community, individual
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
-## Community
-
-- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
-- [Slack community](https://slack.jina.ai) - join #general on our Slack to meet the team and ask questions
-- [YouTube channel](https://youtube.com/c/jina-ai) - subscribe to the latest video tutorials, release demos, webinars and presentations.
-- [LinkedIn](https://www.linkedin.com/company/jinaai/) - get to know Jina AI as a company and find job opportunities
-- [![Twitter Follow](https://img.shields.io/twitter/follow/JinaAI_?label=Follow%20%40JinaAI_&style=social)](https://twitter.com/JinaAI_) - follow and interact with us using hashtag `#JinaSearch`
-- [Company](https://jina.ai) - know more about our company and how we are fully committed to open-source.
-
-#### Engineering All Hands
-
-<a href="https://www.youtube.com/c/jina-ai">
-<img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/eah-god.png?raw=true " />
-</a>
-
-We host Jina's [Engineering All Hands](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/) where we present the latest features and answer community questions.
-
-- **When?** The second Tuesday of every month
-- **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai))
 
 
 ## Join Us
