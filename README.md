@@ -151,7 +151,7 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 ### Cookbook
 
-- [Code snippets that help to use Jina better](./.github/pages/snippets.md)
+- [Code snippets that help you to use Jina better](./.github/pages/snippets.md)
 
 ### Video tutorials
 
