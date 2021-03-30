@@ -328,6 +328,9 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         k = random.sample(list(self._ext2int_id.values()), k=1)[0]
         return self._raw_ndarray[k]
 
+    def __iter__(self):
+        return self._raw_ndarray.__iter__()
+
     def query_by_key(
             self, keys: Iterable[str], *args, **kwargs
     ) -> Optional['np.ndarray']:
@@ -529,3 +532,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         with ImportExtensions(required=True):
             from scipy.spatial.distance import cdist
         return cdist(*args, **kwargs, metric=self.metric)
+
+
+class VectorIndexer(NumpyIndexer):
+    """Alias to :class:`NumpyIndexer` """

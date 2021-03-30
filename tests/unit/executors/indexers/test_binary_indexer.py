@@ -4,7 +4,6 @@ import time
 
 import numpy as np
 import pytest
-
 from jina.executors.indexers import BaseIndexer
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
@@ -190,3 +189,14 @@ def test_binarypb_benchmark(test_metas, delete_on_dump):
     print(
         f'delete_on_dump = {delete_on_dump}, entries={entries}. took {time_end - time_now} seconds'
     )
+
+
+def test_kvindexer_iterate(test_metas):
+    """two updates in a row does work"""
+    with BinaryPbIndexer(metas=test_metas) as idxer:
+        idxer.add(['1', '2', '3'], [b'oldvalue', b'same', b'random'])
+        save_abspath = idxer.save_abspath
+
+    with BaseIndexer.load(save_abspath) as idxer:
+        assert list(idxer) == [b'oldvalue', b'same', b'random']
+

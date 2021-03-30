@@ -528,6 +528,7 @@ def test_numpy_indexer_with_ref_indexer(compress_level, test_metas):
     with NumpyIndexer(
         metric='euclidean', ref_indexer=indexer, metas=test_metas
     ) as new_indexer:
+        np.testing.assert_equal(np.array(list(new_indexer)), vectors)
         assert new_indexer.compress_level == compress_level
         assert new_indexer.index_filename == index_filename
         assert isinstance(indexer, NumpyIndexer)

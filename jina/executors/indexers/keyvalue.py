@@ -194,7 +194,11 @@ class BinaryPbIndexer(BaseKVIndexer):
     def sample(self) -> Optional[bytes]:
         """Return a random entry from the indexer for sanity check """
         k = random.sample(self.query_handler.header.keys(), k=1)[0]
-        return self.query(k)
+        return self[k]
+
+    def __iter__(self):
+        for k in self.query_handler.header.keys():
+            yield self[k]
 
     def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
@@ -282,6 +286,10 @@ class BinaryPbIndexer(BaseKVIndexer):
             writer.body.write(value)
             self._size += 1
         writer.flush()
+
+
+class KeyValueIndexer(BinaryPbIndexer):
+    """Alias for :class:`BinaryPbIndexer` """
 
 
 class DataURIPbIndexer(BinaryPbIndexer):

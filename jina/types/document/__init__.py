@@ -781,7 +781,7 @@ class Document(ProtoTypeMixin, Traversable):
             if r:
                 self._pb_body.mime_type = r
             else:
-                raise ValueError(f'{value} is not a valid MIME type')
+                self._pb_body.mime_type = value
 
     def __enter__(self):
         return self
