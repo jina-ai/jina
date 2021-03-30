@@ -269,9 +269,9 @@ class Zmqlet:
         """Tell the upstream router this dealer is idle """
         self._send_control_to_router('IDLE')
 
-    def _send_busy_to_router(self):
-        """Tell the upstream router this dealer is busy """
-        self._send_control_to_router('BUSY')
+    def _send_cancel_to_router(self):
+        """Tell the upstream router this dealer is canceled """
+        self._send_control_to_router('CANCEL')
 
     def recv_message(
         self, callback: Callable[['Message'], 'Message'] = None
@@ -370,8 +370,8 @@ class ZmqStreamlet(Zmqlet):
             This method is idempotent.
         """
         if self.in_sock_type == zmq.DEALER:
-            print('### return busy request', self.name)
-            self._send_busy_to_router()
+            print('### return cancel request', self.name)
+            self._send_cancel_to_router()
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)

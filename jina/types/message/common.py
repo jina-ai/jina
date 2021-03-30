@@ -13,7 +13,7 @@ class ControlMessage(Message):
     """
     Class of the protobuf message.
 
-    :param command: Command with string content. (e.g. 'IDLE', 'BUSY', 'TERMINATE', 'STATUS')
+    :param command: Command with string content. (e.g. 'IDLE', 'CANCEL', 'TERMINATE', 'STATUS')
     :param pod_name: Name of the current pod.
     :param identity: The identity of the current pod
     :param args: Additional positional arguments which are just used for the parent initialization

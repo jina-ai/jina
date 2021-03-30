@@ -145,7 +145,7 @@ class RouteDriver(ControlReqDriver):
             # where some dealer is broken/fails to start, so `idle_dealer_ids` is empty
             # IDLE requests add the dealer id to the router. Therefore, it knows which dealer would be available for
             # new data requests.
-            # BUSY requests  remove the dealer id from the router. Therefore, it can not send any more data requests
+            # CANCEL requests remove the dealer id from the router. Therefore, it can not send any more data requests
             # to the dealer.
         elif self.req.command == 'IDLE':
             self.idle_dealer_ids.add(self.envelope.receiver_id)
@@ -156,7 +156,7 @@ class RouteDriver(ControlReqDriver):
                 self.runtime._zmqlet.resume_pollin()
                 self.is_polling_paused = False
             raise NoExplicitMessage
-        elif self.req.command == 'BUSY':
+        elif self.req.command == 'CANCEL':
             if self.envelope.receiver_id in self.idle_dealer_ids:
                 self.idle_dealer_ids.remove(self.envelope.receiver_id)
         else:
