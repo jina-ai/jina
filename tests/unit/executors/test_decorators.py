@@ -310,12 +310,16 @@ def test_batching_ordinal_idx_arg(tmpdir):
             self.batch_size = batch_size
             self.ord_idx = []
 
-        @batching(ordinal_idx_arg=2)
+        @batching(
+            ordinal_idx_arg=2
+        )  # f = batching(ordinal_idx_arg=2) f, args[ordinal_idx_arg] = slice_idx(new_args)
         def f(self, data, ord_idx):
+            print(f'ord_idx : {ord_idx}')
             self.ord_idx.append(ord_idx)
             return list(range(ord_idx.start, ord_idx.stop))
 
     instance = A(2)
+    print(f'vector shape 0: {vec.shape[0]}')
     result = instance.f(
         np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0]
     )
@@ -361,7 +365,7 @@ def test_batching_multi():
             self.batch_size = batch_size
             self.batching = []
 
-        @batching_multi_input(batch_size=2, slice_nargs=slice_nargs)
+        @batching(batch_size=2, slice_nargs=slice_nargs)
         def f(self, *datas):
             d0, d1, d2 = datas
             assert d0.shape[0] == 2
@@ -415,6 +419,7 @@ def test_single_multi():
     assert result == 1
 
 
+'''
 def test_batching_multi_input_dictionary():
     batch_size = 2
 
@@ -445,6 +450,7 @@ def test_batching_multi_input_dictionary():
         assert batch[0] == query_meta
         assert len(batch[1]) == batch_size
         assert len(batch[2]) == batch_size
+'''
 
 
 def test_batching_as_ndarray():
