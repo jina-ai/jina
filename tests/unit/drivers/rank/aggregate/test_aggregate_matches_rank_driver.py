@@ -4,7 +4,7 @@ from jina import Document
 from jina.drivers.rank.aggregate import AggregateMatches2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
 from jina.types.score import NamedScore
-from jina.types.sets import DocumentSet
+from jina.types.lists import DocumentList
 
 
 class MockMaxRanker(Chunk2DocRanker):
@@ -87,7 +87,7 @@ def create_document_to_score_same_depth_level():
 
 def test_collect_matches2doc_ranker_driver_mock_ranker():
     doc = create_document_to_score_same_depth_level()
-    driver = SimpleCollectMatchesRankDriver(docs=DocumentSet([doc]))
+    driver = SimpleCollectMatchesRankDriver(docs=DocumentList([doc]))
     executor = MockLengthRanker()
     driver.attach(executor=executor, runtime=None)
     driver()
@@ -106,7 +106,7 @@ def test_collect_matches2doc_ranker_driver_mock_ranker():
 def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
     driver = SimpleCollectMatchesRankDriver(
-        docs=DocumentSet([doc]),
+        docs=DocumentList([doc]),
         keep_source_matches_as_chunks=keep_source_matches_as_chunks,
     )
     executor = MockMinRanker()
@@ -142,7 +142,7 @@ def test_collect_matches2doc_ranker_driver_min_ranker(keep_source_matches_as_chu
 def test_collect_matches2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score_same_depth_level()
     driver = SimpleCollectMatchesRankDriver(
-        docs=DocumentSet([doc]),
+        docs=DocumentList([doc]),
         keep_source_matches_as_chunks=keep_source_matches_as_chunks,
     )
     executor = MockMaxRanker()

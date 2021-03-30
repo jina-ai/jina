@@ -4,7 +4,7 @@ from jina import Document
 from jina.drivers.rank.aggregate import Chunk2DocRankDriver
 from jina.executors.rankers import Chunk2DocRanker
 from jina.types.score import NamedScore
-from jina.types.sets import DocumentSet
+from jina.types.lists import DocumentList
 
 DISCOUNT_VAL = 0.5
 
@@ -159,7 +159,7 @@ def create_chunk_chunk_matches_to_score():
 def test_chunk2doc_ranker_driver_mock_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
     driver = SimpleChunk2DocRankDriver(
-        docs=DocumentSet([doc]),
+        docs=DocumentList([doc]),
         keep_source_matches_as_chunks=keep_source_matches_as_chunks,
     )
     executor = MockLengthRanker()
@@ -185,7 +185,7 @@ def test_chunk2doc_ranker_driver_mock_ranker(keep_source_matches_as_chunks):
 def test_chunk2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
     driver = SimpleChunk2DocRankDriver(
-        docs=DocumentSet([doc]),
+        docs=DocumentList([doc]),
         keep_source_matches_as_chunks=keep_source_matches_as_chunks,
     )
     executor = MockMaxRanker()
@@ -212,7 +212,7 @@ def test_chunk2doc_ranker_driver_max_ranker(keep_source_matches_as_chunks):
 def test_chunk2doc_ranker_driver_min_ranker(keep_source_matches_as_chunks):
     doc = create_document_to_score()
     driver = SimpleChunk2DocRankDriver(
-        docs=DocumentSet([doc]),
+        docs=DocumentList([doc]),
         keep_source_matches_as_chunks=keep_source_matches_as_chunks,
     )
     executor = MockMinRanker()
@@ -240,7 +240,7 @@ def test_chunk2doc_ranker_driver_traverse_apply(keep_source_matches_as_chunks):
         create_chunk_matches_to_score(),
     ]
     driver = SimpleChunk2DocRankDriver(
-        docs=DocumentSet(docs),
+        docs=DocumentList(docs),
         keep_source_matches_as_chunks=keep_source_matches_as_chunks,
     )
     executor = MockMinRanker()
@@ -263,7 +263,7 @@ def test_chunk2doc_ranker_driver_traverse_apply_larger_range():
         create_chunk_chunk_matches_to_score(),
     ]
     driver = SimpleChunk2DocRankDriver(
-        traversal_paths=('cc', 'c'), docs=DocumentSet(docs)
+        traversal_paths=('cc', 'c'), docs=DocumentList(docs)
     )
     executor = MockMinRanker()
     driver.attach(executor=executor, runtime=None)

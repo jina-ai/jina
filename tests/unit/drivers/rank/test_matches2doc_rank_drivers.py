@@ -4,8 +4,8 @@ from jina import Document
 from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker
 from jina.types.score import NamedScore
-from jina.executors.decorators import batching
-from jina.types.sets import DocumentSet
+from jina.executors.decorators import batching_multi_input
+from jina.types.lists import DocumentList
 
 
 class MockMatches2DocRankDriver(Matches2DocRankDriver):
@@ -68,7 +68,7 @@ def create_document_to_score():
 
 def test_chunk2doc_ranker_driver_mock_exec():
     doc = create_document_to_score()
-    driver = MockMatches2DocRankDriver(DocumentSet([doc]))
+    driver = MockMatches2DocRankDriver(DocumentList([doc]))
     executor = MockAbsoluteLengthRanker()
     driver.attach(executor=executor, runtime=None)
     driver()
