@@ -46,4 +46,4 @@ def test_flow_runner(tmpdir, mocker):
     )
 
     validate_callback(mock, callback)
-    assert os.path.exists(os.path.join(workspace, 'tmp2'))
+    assert os.path.exists(os.path.join(workspace, 'vecidx-0', 'tmp2'))

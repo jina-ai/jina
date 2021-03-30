@@ -53,7 +53,7 @@ def hello_world(args):
     # index it!
     f = Flow.load_config('flow-index.yml')
     with f, open(f'{args.workdir}/people-img/meta.csv') as fp:
-        f.index_csv(fp)
+        f.index_csv(fp, request_size=64)
 
     # search it!
 

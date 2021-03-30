@@ -1,4 +1,0 @@
-!NumpyIndexer
-with:
-  metric: euclidean
-  index_filename: 'test.gzip'

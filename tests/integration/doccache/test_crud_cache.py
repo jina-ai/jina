@@ -60,7 +60,7 @@ def get_delete_flow(field, tmp_path, shards, indexers):
 def check_indexers_size(
     chunks, nr_docs, field, tmp_path, same_content, shards, post_op
 ):
-    cache_indexer_path = os.path.join(tmp_path, 'cache.bin')
+    cache_indexer_path = os.path.join(tmp_path, 'cache-0', 'cache.bin')
     with BaseIndexer.load(cache_indexer_path) as cache:
         assert isinstance(cache, DocCache)
         cache_full_size = cache.size
@@ -78,14 +78,14 @@ def check_indexers_size(
             )
             workspace_folder = (
                 CompoundExecutor.get_component_workspace_from_compound_workspace(
-                    tmp_path, compound_name, i + 1 if shards > 1 else 0
+                    tmp_path, compound_name, i
                 )
             )
             indexer_path = os.path.join(
                 BaseIndexer.get_shard_workspace(
                     workspace_folder=workspace_folder,
                     workspace_name=indexer_fname.rstrip('.bin'),
-                    pea_id=i + 1 if shards > 1 else 0,
+                    pea_id=i,
                 ),
                 f'{indexer_fname}',
             )
