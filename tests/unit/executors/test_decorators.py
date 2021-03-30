@@ -423,7 +423,7 @@ def test_batching_multi_input_dictionary():
             self.batch_size = batch_size
             self.batches = []
 
-        @batching(slice_on=2, slice_nargs=2)
+        @batching(slice_on=2)
         def score(self, query_meta, old_match_scores, match_meta):
             self.batches.append([query_meta, old_match_scores, match_meta])
             return np.array([(x, y) for x, y in old_match_scores.items()])

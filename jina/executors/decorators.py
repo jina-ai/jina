@@ -221,6 +221,7 @@ def batching(
     split_over_axis: int = 0,
     merge_over_axis: int = 0,
     slice_on: int = 1,
+    slice_nargs: int = 1,
     label_on: Optional[int] = None,
     ordinal_idx_arg: Optional[int] = None,
     flatten_output: bool = True,
@@ -235,6 +236,7 @@ def batching(
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
+    :param slice_nargs: the number of arguments
     :param label_on: the location of the labels. Useful for data with any kind of accompanying labels
     :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
             where function decorated needs to know the ordinal indexes of the data in the batch
@@ -300,14 +302,14 @@ def batching(
                     if slice_idx.start is None or slice_idx.stop is None:
                         slice_idx = None
 
-                if not isinstance(b, tuple):
+                if label_on:
+                    args[slice_on] = b[0]
+                    args[label_on] = b[1]
+                else:
                     # for now, keeping ordered_idx is only supported if no labels
                     args[slice_on] = b
                     if ordinal_idx_arg and slice_idx is not None:
                         args[ordinal_idx_arg] = slice_idx
-                else:
-                    args[slice_on] = b[0]
-                    args[label_on] = b[1]
 
                 r = func(*args, **kwargs)
 
