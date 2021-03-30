@@ -145,9 +145,9 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 ### Run a Demo: Jina Hello World
 
-- [Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
-- [QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
-- [Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
+- [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
+- [🪆 Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
 
 ### Cookbook
 
@@ -177,8 +177,6 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 
 ## Examples ([View all](https://github.com/jina-ai/examples))
-
-Example code to build your own projects
 
 <table>
   <tr>
@@ -245,7 +243,7 @@ Check our [examples repo](https://github.com/jina-ai/examples) for advanced and 
 - Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
 - Join our Engineering All Hands meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
-    - **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai))
+    - **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai)
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai).
 
 
