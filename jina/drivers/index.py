@@ -7,7 +7,7 @@ from . import BaseExecutableDriver, FlatRecursiveMixin
 from ..enums import EmbeddingClsType
 
 if False:
-    from ..types.sets import DocumentSet
+    from ..types.lists import DocumentList
 
 
 class BaseIndexDriver(FlatRecursiveMixin, BaseExecutableDriver):
@@ -64,7 +64,7 @@ class VectorIndexDriver(BaseIndexDriver):
 class KVIndexDriver(BaseIndexDriver):
     """Forwards pairs of serialized documents and ids to the executor."""
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentList', *args, **kwargs) -> None:
         info = [(doc.id, doc.SerializeToString()) for doc in docs]
         if info:
             keys, values = zip(*info)

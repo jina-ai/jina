@@ -31,7 +31,7 @@ from ..helper import (
 )
 from ..jaml import JAMLCompatible
 from ..types.querylang import QueryLang
-from ..types.sets import DocumentSet
+from ..types.lists import DocumentList
 
 # noinspection PyUnreachableCode
 if False:
@@ -41,7 +41,7 @@ if False:
     from ..logging.logger import JinaLogger
     from ..types.message import Message
     from ..types.request import Request
-    from ..types.sets import QueryLangSet
+    from ..types.lists import QueryLangList
     from ..types.document import Document
 
 
@@ -255,15 +255,15 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.runtime.expect_parts
 
     @property
-    def docs(self) -> 'DocumentSet':
-        """The DocumentSet after applying the traversal
+    def docs(self) -> 'DocumentList':
+        """The DocumentList after applying the traversal
 
 
         .. # noqa: DAR201"""
-        from ..types.sets import DocumentSet
+        from ..types.lists import DocumentList
 
         if self.expect_parts > 1:
-            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
+            return DocumentList([d for r in reversed(self.partial_reqs) for d in r.docs])
         else:
             return self.req.docs
 
@@ -277,7 +277,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.runtime.message
 
     @property
-    def queryset(self) -> 'QueryLangSet':
+    def queryset(self) -> 'QueryLangList':
         """
 
 
@@ -332,7 +332,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 class ContextAwareRecursiveMixin:
     """
     The full data structure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
-    It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
+    It uses :meth:`traverse` in :class:`DocumentList` and allows direct manipulation of Chunk-/Match-/DocumentLists.
 
     .. seealso::
        https://github.com/jina-ai/jina/issues/1932
@@ -350,16 +350,16 @@ class ContextAwareRecursiveMixin:
 
     def _apply_all(
         self,
-        doc_sequences: Iterable['DocumentSet'],
+        doc_sequences: Iterable['DocumentList'],
         *args,
         **kwargs,
     ) -> None:
-        """Apply function works on an Iterable of DocumentSet, modify the docs in-place.
+        """Apply function works on an Iterable of DocumentList, modify the docs in-place.
 
-        Each DocumentSet refers to a leaf (e.g. roots, matches or chunks wrapped
-        in a :class:`jina.DocumentSet`) in the traversal_paths. Modifications on the
-        DocumentSets (e.g. adding or deleting Documents) are directly applied on the underlying objects.
-        Adding a chunk to a ChunkSet results in adding a chunk to the parent Document.
+        Each DocumentList refers to a leaf (e.g. roots, matches or chunks wrapped
+        in a :class:`jina.DocumentList`) in the traversal_paths. Modifications on the
+        DocumentLists (e.g. adding or deleting Documents) are directly applied on the underlying objects.
+        Adding a chunk to a ChunkList results in adding a chunk to the parent Document.
 
         :param doc_sequences: the Documents that should be handled
         :param args: driver specific arguments, which might be forwarded to the Executor
@@ -370,7 +370,7 @@ class ContextAwareRecursiveMixin:
 class FlatRecursiveMixin:
     """
     The batch optimized version of :class:`ContextAwareRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
-    It uses :meth:`traverse_flattened_per_path` in :class:`DocumentSet` and yield much better performance
+    It uses :meth:`traverse_flattened_per_path` in :class:`DocumentList` and yield much better performance
     when no context is needed and batching is possible.
 
     .. seealso::
@@ -391,7 +391,7 @@ class FlatRecursiveMixin:
 
     def _apply_all(
         self,
-        docs: 'DocumentSet',
+        docs: 'DocumentList',
         *args,
         **kwargs,
     ) -> None:

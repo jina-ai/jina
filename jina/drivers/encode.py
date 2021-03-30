@@ -7,7 +7,7 @@ from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 
 # noinspection PyUnreachableCode
 if False:
-    from .. import Document, DocumentSet, NdArray
+    from .. import Document, DocumentArray, NdArray
     import numpy as np
     from ..proto import jina_pb2
 
@@ -42,7 +42,7 @@ class ScipySparseEncodeDriver(
 ):
     """Extract the content from documents and call executor and do encoding"""
 
-    def update_docs(self, docs_pts: 'DocumentSet', exec_results: Any) -> None:
+    def update_docs(self, docs_pts: 'DocumentArray', exec_results: Any) -> None:
         """Update the document embedding with returned sparse matrix
 
         :param: docs_pts: the set of document to be updated
