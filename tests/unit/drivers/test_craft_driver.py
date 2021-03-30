@@ -3,7 +3,7 @@ from typing import Dict
 import numpy as np
 import pytest
 
-from jina import Document, DocumentSet
+from jina import Document, DocumentList
 from jina.drivers.craft import CraftDriver
 from jina.executors.decorators import single
 from jina.executors.crafters import BaseCrafter
@@ -41,7 +41,7 @@ def craft_driver():
 
 def test_valid_document(craft_driver):
     valid_document = Document(content='valid')
-    docs = DocumentSet([valid_document])
+    docs = DocumentList([valid_document])
     craft_driver._apply_all(docs)
     np.testing.assert_equal(
         NdArray(valid_document.blob).value, np.array([0.0, 0.0, 0.0])
@@ -51,7 +51,7 @@ def test_valid_document(craft_driver):
 
 def test_invalid_document(craft_driver):
     invalid_document = Document(content='invalid')
-    docs = DocumentSet([invalid_document])
+    docs = DocumentList([invalid_document])
     with pytest.raises(AttributeError) as error:
         craft_driver._apply_all(docs)
         assert error.value.__str__() == '\'non_existing_key\' is not recognized'

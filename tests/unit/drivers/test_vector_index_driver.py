@@ -4,7 +4,7 @@ from typing import Iterable
 import numpy as np
 import pytest
 
-from jina import DocumentSet
+from jina import DocumentList
 from jina.drivers.delete import DeleteDriver
 from jina.drivers.index import VectorIndexDriver
 from jina.executors.indexers import BaseVectorIndexer
@@ -72,7 +72,7 @@ def documents():
             d.id = f'{idx:0>16}'
             d.embedding = np.random.random([10])
             docs.append(d)
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 @pytest.fixture(scope='function')
@@ -83,7 +83,7 @@ def updated_documents():
             d.id = f'{idx:0>16}'
             d.embedding = np.random.random([10])
             docs.append(d)
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 @pytest.fixture(scope='function')
@@ -93,7 +93,7 @@ def deleted_documents():
         with Document() as d:
             d.id = f'{idx:0>16}'
             docs.append(d)
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 @pytest.fixture(scope='function')
@@ -103,7 +103,7 @@ def empty_documents():
         with Document() as d:
             d.id = f'{idx:0>16}'
             docs.append(d)
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 def test_vector_index_driver_add(

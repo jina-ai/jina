@@ -6,8 +6,8 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina.types.request import Request
-from jina.types.sets.document import DocumentSet
-from jina.types.sets.querylang import QueryLangSet
+from jina.types.lists.document import DocumentList
+from jina.types.lists.querylang import QueryLangList
 
 
 @pytest.fixture(scope='function')
@@ -37,7 +37,7 @@ def test_docs(req, req_type):
     request.request_type = req_type
     docs = request.docs
     assert request.is_used
-    assert isinstance(docs, DocumentSet)
+    assert isinstance(docs, DocumentList)
     if req_type == 'index':
         assert len(docs) == 1
     else:
@@ -50,7 +50,7 @@ def test_groundtruth(req, req_type):
     request.request_type = req_type
     groundtruths = request.groundtruths
     assert request.is_used
-    assert isinstance(groundtruths, DocumentSet)
+    assert isinstance(groundtruths, DocumentList)
     assert len(groundtruths) == 0
 
 
@@ -70,7 +70,7 @@ def test_queryset(req):
     request = Request(request=req, copy=False)
     queryset = request.queryset
     assert request.is_used
-    assert isinstance(queryset, QueryLangSet)
+    assert isinstance(queryset, QueryLangList)
 
 
 def test_command(req):

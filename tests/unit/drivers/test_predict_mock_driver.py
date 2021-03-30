@@ -10,7 +10,7 @@ from jina.drivers.predict import (
 )
 from jina.executors.classifiers import BaseClassifier
 from jina.types.ndarray.generic import NdArray
-from jina.types.sets import DocumentSet
+from jina.types.lists import DocumentList
 from tests import random_docs
 
 
@@ -25,7 +25,7 @@ def docs_to_encode(num_docs):
     for idx in range(num_docs):
         doc = Document(content=np.array([idx]))
         docs.append(doc)
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 class MockBinaryPredictDriver(BinaryPredictDriver):
@@ -73,7 +73,7 @@ class MockClassifier(BaseClassifier):
 
 
 def test_binary_predict_driver():
-    docs = DocumentSet(random_docs(2))
+    docs = DocumentList(random_docs(2))
     driver = MockBinaryPredictDriver()
     driver._apply_all(docs)
 
@@ -84,7 +84,7 @@ def test_binary_predict_driver():
 
 
 def test_one_hot_predict_driver():
-    docs = DocumentSet(random_docs(2))
+    docs = DocumentList(random_docs(2))
     driver = MockOneHotPredictDriver(labels=['cat', 'dog', 'human'])
     driver._apply_all(docs)
 
@@ -95,7 +95,7 @@ def test_one_hot_predict_driver():
 
 
 def test_multi_label_predict_driver():
-    docs = DocumentSet(random_docs(2))
+    docs = DocumentList(random_docs(2))
     driver = MockMultiLabelPredictDriver(labels=['cat', 'dog', 'human'])
     driver._apply_all(docs)
 
@@ -104,7 +104,7 @@ def test_multi_label_predict_driver():
         for t in d.tags['prediction']:
             assert t in {'cat', 'dog', 'human'}
 
-    docs = DocumentSet(random_docs(2))
+    docs = DocumentList(random_docs(2))
     driver = MockAllLabelPredictDriver(labels=['cat', 'dog', 'human'])
     driver._apply_all(docs)
 
@@ -114,7 +114,7 @@ def test_multi_label_predict_driver():
 
 
 def test_as_blob_driver():
-    docs = DocumentSet(random_docs(2))
+    docs = DocumentList(random_docs(2))
     driver = MockPrediction2DocBlobDriver()
     driver._apply_all(docs)
 

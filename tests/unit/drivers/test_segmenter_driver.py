@@ -7,7 +7,7 @@ from jina import Document
 from jina.drivers.segment import SegmentDriver
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.decorators import single
-from jina.types.sets import DocumentSet
+from jina.types.lists import DocumentList
 
 
 class MockSegmenter(BaseSegmenter):
@@ -50,7 +50,7 @@ def test_segment_driver():
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
     driver.attach(executor=executor, runtime=None)
-    driver._apply_all(DocumentSet([valid_doc]))
+    driver._apply_all(DocumentList([valid_doc]))
 
     assert valid_doc.chunks[0].tags['id'] == 3
     assert valid_doc.chunks[0].parent_id == valid_doc.id
@@ -103,4 +103,4 @@ def test_broken_document():
     invalid_doc.text = 'invalid'
 
     with pytest.raises(AttributeError):
-        driver._apply_all([DocumentSet([invalid_doc])])
+        driver._apply_all([DocumentList([invalid_doc])])
