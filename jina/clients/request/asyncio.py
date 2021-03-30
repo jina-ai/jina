@@ -10,7 +10,7 @@ from ... import Request
 from ...enums import RequestType, DataInputType
 from ...importer import ImportExtensions
 from ...logging import default_logger
-from ...types.sets.querylang import AcceptQueryLangType
+from ...types.lists.querylang import AcceptQueryLangType
 
 
 async def request_generator(

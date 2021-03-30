@@ -13,7 +13,7 @@ from ..types.document import Document
 from ..types.score import NamedScore
 
 if False:
-    from ..types.sets import DocumentSet
+    from ..types.lists import DocumentList
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -68,7 +68,7 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
         self._is_update = is_update
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentList'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             miss_idx = (
@@ -101,7 +101,7 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     ):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentList', *args, **kwargs) -> None:
         embeds = self.exec_fn([d.id for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding = embedding

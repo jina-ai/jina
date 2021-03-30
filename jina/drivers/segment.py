@@ -8,7 +8,7 @@ from ..excepts import LengthMismatchException
 from ..types.document import Document
 
 if False:
-    from .. import DocumentSet
+    from .. import DocumentList
 
 
 class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
@@ -26,9 +26,9 @@ class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
             executor, method, traversal_paths=traversal_paths, *args, **kwargs
         )
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
+    def _apply_all(self, docs: 'DocumentList', *args, **kwargs):
         if not docs:
-            self.logger.warning(f'an empty DocumentSet {docs}')
+            self.logger.warning(f'an empty DocumentList {docs}')
             return
 
         contents, docs_pts = docs.extract_docs(*self.exec.required_keys)

@@ -19,8 +19,8 @@ from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..querylang.queryset.dunderkey import dunder_get
 from ..score import NamedScore
-from ..sets.chunk import ChunkSet
-from ..sets.match import MatchSet
+from ..lists.chunk import ChunkList
+from ..lists.match import MatchList
 from ...excepts import BadDocType
 from ...helper import is_url, typename, random_identity, download_mermaid_url
 from ...importer import ImportExtensions
@@ -615,20 +615,20 @@ class Document(ProtoTypeMixin, Traversable):
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
-    def matches(self) -> 'MatchSet':
+    def matches(self) -> 'MatchList':
         """Get all matches of the current document.
 
         :return: the set of matches attached to this document
         """
-        return MatchSet(self._pb_body.matches, reference_doc=self)
+        return MatchList(self._pb_body.matches, reference_doc=self)
 
     @property
-    def chunks(self) -> 'ChunkSet':
+    def chunks(self) -> 'ChunkList':
         """Get all chunks of the current document.
 
         :return: the set of chunks of this document
         """
-        return ChunkSet(self._pb_body.chunks, reference_doc=self)
+        return ChunkList(self._pb_body.chunks, reference_doc=self)
 
     def __getattr__(self, item):
         if hasattr(self._pb_body, item):

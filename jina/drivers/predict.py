@@ -6,7 +6,7 @@ from . import BaseExecutableDriver, FlatRecursiveMixin
 from ..helper import typename
 
 if False:
-    from ..types.sets import DocumentSet
+    from ..types.lists import DocumentList
 
 
 class BasePredictDriver(FlatRecursiveMixin, BaseExecutableDriver):
@@ -43,7 +43,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
 
     def _apply_all(
         self,
-        docs: 'DocumentSet',
+        docs: 'DocumentList',
         *args,
         **kwargs,
     ) -> None:
@@ -185,7 +185,7 @@ class Prediction2DocBlobDriver(BasePredictDriver):
 
     def _apply_all(
         self,
-        docs: 'DocumentSet',
+        docs: 'DocumentList',
         *args,
         **kwargs,
     ) -> None:

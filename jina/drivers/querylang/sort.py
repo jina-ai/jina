@@ -7,7 +7,7 @@ from ...types.querylang.queryset.dunderkey import dunder_get
 from .. import QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver
 
 if False:
-    from ...types.sets import DocumentSet
+    from ...types.lists import DocumentList
 
 
 class SortQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
@@ -50,7 +50,7 @@ class SortQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
         self._field = field
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentList'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             docs.sort(key=lambda x: dunder_get(x, self.field), reverse=self.reverse)
