@@ -20,13 +20,12 @@ from ...enums import *
 class BasePod(ExitStack):
     """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
+
+    :param args: arguments parsed from the CLI
+    :param needs: Set of Pod names that are needed as input
     """
 
     def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
-        """
-
-        :param args: arguments parsed from the CLI
-        """
         super().__init__()
         self.args = args
         self._set_conditional_args(self.args)
@@ -48,52 +47,72 @@ class BasePod(ExitStack):
 
     @property
     def role(self) -> 'PodRoleType':
-        """Return the role of this :class:`BasePod`."""
+        """Return the role of this :class:`BasePod`.
+        :return: the role of this :class:`BasePod`.
+        """
         return self.args.pod_role
 
     @property
     def is_singleton(self) -> bool:
-        """Return if the Pod contains only a single Pea """
+        """Return if the Pod contains only a single Pea.
+        :return: if the Pod contains only a single Pea.
+        """
         return not (self.is_head_router or self.is_tail_router)
 
     @property
     def name(self) -> str:
-        """The name of this :class:`BasePod`. """
+        """The name of this :class:`BasePod`.
+        :return: The name of this :class:`BasePod`.
+        """
         return self.args.name
 
     @property
     def port_expose(self) -> int:
-        """Get the grpc port number """
-        return self.first_pea_args.port_expose
+        """Get the grpc port number.
+        :return: The grpc port number.
+        """
+        return self._first_pea_args.port_expose
 
     @property
     def host(self) -> str:
-        """Get the host name of this Pod"""
-        return self.first_pea_args.host
+        """Get the host name of this Pod.
+        :return: The host name of this Pod.
+        """
+        return self._first_pea_args.host
 
     @property
     def host_in(self) -> str:
-        """Get the host_in of this pod"""
+        """Get the host_in of this Pod
+        :return: The host_in of this Pod.
+        """
         return self.head_args.host_in
 
     @property
     def host_out(self) -> str:
-        """Get the host_out of this pod"""
+        """Get the host_out of this Pod
+        :return: The host_out of this Pod.
+        """
         return self.tail_args.host_out
 
     @property
     def address_in(self) -> str:
-        """Get the full incoming address of this pod"""
+        """Get the full incoming address of this Pod.
+        :return: The full incoming address of this Pod.
+        """
         return f'{self.head_args.host_in}:{self.head_args.port_in} ({self.head_args.socket_in!s})'
 
     @property
     def address_out(self) -> str:
-        """Get the full outgoing address of this pod"""
+        """Get the full outgoing address of this Pod.
+        :return: The full outgoing address of this Pod.
+        """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
     @property
-    def first_pea_args(self) -> Namespace:
-        """Return the first non-head/tail pea's args """
+    def _first_pea_args(self) -> Namespace:
+        """Return the first non-head/tail Pea's args.
+        :return: The first non-head/tail Pea's args.
+        """
         # note this will be never out of boundary
         return self.peas_args['peas'][0]
 
@@ -135,11 +154,13 @@ class BasePod(ExitStack):
 
     @property
     def head_args(self):
-        """Get the arguments for the `head` of this BasePod. """
+        """Get the arguments for the `head` of this BasePod.
+        :return: the arguments for the `head` of this BasePod.
+        """
         if self.is_head_router and self.peas_args['head']:
             return self.peas_args['head']
         elif not self.is_head_router and len(self.peas_args['peas']) == 1:
-            return self.first_pea_args
+            return self._first_pea_args
         elif self.deducted_head:
             return self.deducted_head
         else:
@@ -147,7 +168,9 @@ class BasePod(ExitStack):
 
     @head_args.setter
     def head_args(self, args):
-        """Set the arguments for the `head` of this BasePod. """
+        """Set the arguments for the `head` of this BasePod.
+        :param args: the arguments for the `head` of this BasePod.
+        """
         if self.is_head_router and self.peas_args['head']:
             self.peas_args['head'] = args
         elif not self.is_head_router and len(self.peas_args['peas']) == 1:
@@ -159,11 +182,13 @@ class BasePod(ExitStack):
 
     @property
     def tail_args(self):
-        """Get the arguments for the `tail` of this BasePod. """
+        """Get the arguments for the `tail` of this BasePod.
+        :return: the arguments for the `tail` of this BasePod.
+        """
         if self.is_tail_router and self.peas_args['tail']:
             return self.peas_args['tail']
         elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
-            return self.first_pea_args
+            return self._first_pea_args
         elif self.deducted_tail:
             return self.deducted_tail
         else:
@@ -171,7 +196,9 @@ class BasePod(ExitStack):
 
     @tail_args.setter
     def tail_args(self, args):
-        """Set the arguments for the `tail` of this BasePod. """
+        """Set the arguments for the `tail` of this BasePod.
+        :param args: the arguments for the `tail` of this BasePod.
+        """
         if self.is_tail_router and self.peas_args['tail']:
             self.peas_args['tail'] = args
         elif not self.is_tail_router and len(self.peas_args['peas']) == 1:
@@ -182,8 +209,10 @@ class BasePod(ExitStack):
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
     @property
-    def all_args(self) -> List[Namespace]:
-        """Get all arguments of all Peas in this BasePod. """
+    def _all_args(self) -> List[Namespace]:
+        """Get all arguments of all Peas in this BasePod.
+        :return: all arguments of all Peas in this BasePod.
+        """
         return (
             ([self.peas_args['head']] if self.peas_args['head'] else [])
             + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
@@ -192,7 +221,9 @@ class BasePod(ExitStack):
 
     @property
     def num_peas(self) -> int:
-        """Get the number of running :class:`BasePea`"""
+        """Get the number of running :class:`BasePea`.
+        :return: the number of running :class:`BasePea`.
+        """
         return len(self.peas)
 
     def __eq__(self, other: 'BasePod'):
@@ -204,16 +235,18 @@ class BasePod(ExitStack):
         .. note::
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
+
+        :return: the started instance.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args:
+            for _args in self._all_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args:
+                for _args in self._all_args:
                     self._enter_pea(BasePea(_args))
             except:
                 self.close()
@@ -269,8 +302,10 @@ class BasePod(ExitStack):
 
     @property
     def is_ready(self) -> bool:
-        """Checks if Pod is read.
+        """Checks if Pod is ready.
         .. note::
             A Pod is ready when all the Peas it contains are ready
+
+        :return: if a Pod is ready
         """
         return all(p.is_ready.is_set() for p in self.peas)
