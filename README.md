@@ -257,7 +257,7 @@ with f:
 </tr>
 </table>
 
-For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)  
+For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)
 
 
 #### Document
@@ -280,7 +280,7 @@ A Document can be recursed both vertically and horizontally to have nested Docum
     <td>
 
 ```python
-import numpy
+import numpy as np
 from jina import Document
 
 d0 = Document(id='🐲', embedding=np.array([0, 0]))
