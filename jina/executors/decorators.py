@@ -283,41 +283,80 @@ def batching(
             total_size = _get_total_size(full_data_size, batch_size, num_batch)
 
             final_result = []
-
             data = (data, args[label_on]) if label_on else data
 
-            yield_slice = isinstance(data, np.memmap)
+            yield_slice = [
+                isinstance(args[slice_on + i], np.memmap) for i in range(0, slice_nargs)
+            ]
+
             slice_idx = None
+            '''
+            for i in range(slice_nargs):
+                for b in batch_iterator(
+                    args[slice_on + i], b_size, split_over_axis, yield_slice=yield_slice[i]#, yield_dict=yield_dict
+                ):
+                    if yield_slice[i]:
+                        slice_idx = b
+                        new_memmap = np.memmap(
+                            data.filename, dtype=data.dtype, mode='r', shape=data.shape
+                        )
+                        b = new_memmap[slice_idx]
+                        slice_idx = slice_idx[split_over_axis]
+                        if slice_idx.start is None or slice_idx.stop is None:
+                            slice_idx = None
+                        #elif yield_dict:
+                        #    pass
+                        '''
 
-            for b in batch_iterator(
-                data[:total_size], b_size, split_over_axis, yield_slice=yield_slice
-            ):
-                if yield_slice:
-                    slice_idx = b
-                    new_memmap = np.memmap(
-                        data.filename, dtype=data.dtype, mode='r', shape=data.shape
-                    )
-                    b = new_memmap[slice_idx]
-                    slice_idx = slice_idx[split_over_axis]
-                    if slice_idx.start is None or slice_idx.stop is None:
-                        slice_idx = None
+            data_iterators = [
+                batch_iterator(
+                    data[:total_size],
+                    b_size,
+                    split_over_axis,
+                    yield_slice=yield_slice[i],
+                    # yield_dict=yield_dict[i],
+                )
+                for i in range(0, slice_nargs)
+            ]
 
-                if label_on:
-                    args[slice_on] = b[0]
-                    args[label_on] = b[1]
-                else:
-                    # for now, keeping ordered_idx is only supported if no labels
-                    args[slice_on] = b
-                    if ordinal_idx_arg and slice_idx is not None:
-                        args[ordinal_idx_arg] = slice_idx
-
+            for new_args in zip(*data_iterators):
+                args[slice_on : slice_on + slice_nargs] = new_args  # a tuple of arrays
+                # print(f'data:{data}')
+                # print(f'args:{args}')
+                print(f'new arg: {new_args}')
+                slice_idx = new_args
+                '''
+                new_memmap = np.memmap(
+                    data.filename, dtype=data.dtype, mode='r', shape=data.shape
+                )
+                new_args = new_memmap[slice_idx]'''
+                slice_idx = slice_idx[split_over_axis]
+                '''
+                if slice_idx.start is None or slice_idx.stop is None:
+                    slice_idx = None'''
+                if ordinal_idx_arg and slice_idx is not None:
+                    args[ordinal_idx_arg] = slice_idx
                 r = func(*args, **kwargs)
-
-                if yield_slice:
-                    del new_memmap
 
                 if r is not None:
                     final_result.append(r)
+                '''
+                        if label_on:
+                            args[slice_on] = b[0]
+                            args[label_on] = b[1]
+                        else:
+                            # for now, keeping ordered_idx is only supported if no labels
+                            args[slice_on+i] = b
+                            if ordinal_idx_arg and slice_idx is not None:
+                                args[ordinal_idx_arg] = slice_idx
+                        print(f'args:{args}')
+                        r = func(*args, **kwargs)
+
+                        if yield_slice:
+                            del new_memmap
+
+                        if r is not None:
+                            final_result.append(r)'''
 
             return _merge_results_after_batching(
                 final_result, merge_over_axis, flatten_output
@@ -419,7 +458,10 @@ def batching_multi_input(
             ]
 
             for new_args in zip(*data_iterators):
-                args[slice_on : slice_on + slice_nargs] = new_args
+                args[slice_on : slice_on + slice_nargs] = new_args  # a tuple of arrays
+                # print(f'data:{data}')
+                # print(f'args:{args}')
+                print(f'new arg: {new_args}')
                 r = func(*args, **kwargs)
 
                 if r is not None:
