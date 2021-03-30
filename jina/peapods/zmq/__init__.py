@@ -370,8 +370,10 @@ class ZmqStreamlet(Zmqlet):
             This method is idempotent.
         """
         if self.in_sock_type == zmq.DEALER:
-            print('### return cancel request', self.name)
-            self._send_cancel_to_router()
+            try:
+                self._send_cancel_to_router()
+            except:
+                pass  # in case the router is down already it throws an exception which can be silently ignored
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
