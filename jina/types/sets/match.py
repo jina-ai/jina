@@ -1,9 +1,11 @@
 from .document import DocumentSet
+from ...helper import deprecated_class
 
 if False:
     from ..document import Document
 
 
+@deprecated_class(new_classname="MatchList")
 class MatchSet(DocumentSet):
     """
     :class:`MatchSet` inherits from :class:`DocumentSet`.

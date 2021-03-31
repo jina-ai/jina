@@ -128,6 +128,47 @@ def deprecated_alias(**aliases):
     return deco
 
 
+def deprecated_class(dep_class=None, new_classname=""):
+    """
+    Usage, new_classname is a new name of the deprecated class.
+
+    For example:
+        .. highlight:: python
+        .. code-block:: python
+            @deprecated_class(new_classname="NewClassname")
+
+    :param new_classname: new name of the class
+    :return: wrapper
+    """
+
+    if not dep_class:
+        return functools.partial(deprecated_class, new_classname=new_classname)
+
+    old_init = dep_class.__init__
+
+    @functools.wraps(dep_class)
+    def wrapper(*args, **kwargs):
+        """
+        Set wrapper function.
+        :param args: wrapper arguments
+        :param kwargs: wrapper key word arguments
+
+        :return: deprecated class instance.
+        """
+
+        warnings_msg = f'{dep_class.__name__} class is deprecated and will be removed in the next version. '
+        if new_classname:
+            warnings_msg += f'A new name of the class is {new_classname}.'
+        warnings.warn(
+            warnings_msg,
+            DeprecationWarning,
+        )
+        return old_init(*args, **kwargs)
+
+    dep_class.__init__ = wrapper
+    return dep_class
+
+
 def get_readable_size(num_bytes: Union[int, float]) -> str:
     """
     Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).
