@@ -214,7 +214,7 @@ class ProgressBar(TimeContext):
         self,
         bar_len: int = 20,
         task_name: str = '',
-        batch_unit: str = 'batch',
+        batch_unit: str = 'requests',
         logger=None,
     ):
         """

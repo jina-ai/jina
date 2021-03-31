@@ -454,9 +454,7 @@ class HubIO:
                 )
 
             else:
-                self.logger.error(
-                    f'can not build the image due to {_except_strs}'
-                )
+                self.logger.error(f'can not build the image due to {_except_strs}')
                 _details = {}
 
             if is_build_success:

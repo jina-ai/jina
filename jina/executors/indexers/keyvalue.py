@@ -3,6 +3,7 @@ __license__ = "Apache-2.0"
 
 import mmap
 import os
+import random
 from typing import Iterable, Optional
 
 import numpy as np
@@ -190,6 +191,18 @@ class BinaryPbIndexer(BaseKVIndexer):
             self._size += 1
         self.write_handler.flush()
 
+    def sample(self) -> Optional[bytes]:
+        """Return a random entry from the indexer for sanity check.
+
+        :return: A random entry from the indexer.
+        """
+        k = random.sample(self.query_handler.header.keys(), k=1)[0]
+        return self[k]
+
+    def __iter__(self):
+        for k in self.query_handler.header.keys():
+            yield self[k]
+
     def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
@@ -276,6 +289,10 @@ class BinaryPbIndexer(BaseKVIndexer):
             writer.body.write(value)
             self._size += 1
         writer.flush()
+
+
+class KeyValueIndexer(BinaryPbIndexer):
+    """Alias for :class:`BinaryPbIndexer` """
 
 
 class DataURIPbIndexer(BinaryPbIndexer):
