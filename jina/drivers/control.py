@@ -159,6 +159,7 @@ class RouteDriver(ControlReqDriver):
         elif self.req.command == 'CANCEL':
             if self.envelope.receiver_id in self.idle_dealer_ids:
                 self.idle_dealer_ids.remove(self.envelope.receiver_id)
+            raise NoExplicitMessage
         else:
             super().__call__(*args, **kwargs)
 
