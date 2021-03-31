@@ -324,7 +324,11 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 shape=(self.size + deleted_keys, self.num_dim),
             )
 
-    def sample(self):
+    def sample(self) -> Optional[bytes]:
+        """Return a random entry from the indexer for sanity check.
+
+        :return: A random entry from the indexer.
+        """
         k = random.sample(list(self._ext2int_id.values()), k=1)[0]
         return self._raw_ndarray[k]
 

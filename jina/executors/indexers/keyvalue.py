@@ -192,7 +192,10 @@ class BinaryPbIndexer(BaseKVIndexer):
         self.write_handler.flush()
 
     def sample(self) -> Optional[bytes]:
-        """Return a random entry from the indexer for sanity check """
+        """Return a random entry from the indexer for sanity check.
+
+        :return: A random entry from the indexer.
+        """
         k = random.sample(self.query_handler.header.keys(), k=1)[0]
         return self[k]
 
