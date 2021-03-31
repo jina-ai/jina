@@ -1,12 +1,12 @@
 jtype: CompoundIndexer
 components:
-  - jtype: NumpyIndexer
+  - jtype: VectorIndexer
     with:
       index_filename: vec.gz
       metric: euclidean
     metas:
       name: vecidx  # a customized name
-  - jtype: BinaryPbIndexer
+  - jtype: KeyValueIndexer
     with:
       index_filename: chunk.gz
     metas:

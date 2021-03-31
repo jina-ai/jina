@@ -24,8 +24,8 @@ def _set_peas_args(
     for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
         _args = copy.deepcopy(args)
 
+        _args.pea_id = idx
         if args.parallel > 1:
-            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
             _args.pea_role = PeaRoleType.PARALLEL
             _args.identity = random_identity()
             if _args.peas_hosts:
@@ -35,7 +35,6 @@ def _set_peas_args(
             else:
                 _args.name = f'{_args.pea_id}'
         else:
-            _args.pea_id = 0
             _args.pea_role = PeaRoleType.SINGLETON
 
         if head_args:

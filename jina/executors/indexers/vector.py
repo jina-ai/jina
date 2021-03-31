@@ -4,9 +4,10 @@ __license__ = "Apache-2.0"
 import gzip
 import io
 import os
+import random
 from functools import lru_cache
 from os import path
-from typing import Optional, Iterable, Tuple, Dict
+from typing import Optional, Iterable, Tuple, Dict, Union
 
 import numpy as np
 
@@ -306,7 +307,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             )
 
     @cached_property
-    def _raw_ndarray(self) -> Optional['np.ndarray']:
+    def _raw_ndarray(self) -> Union['np.ndarray', 'np.memmap', None]:
         if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
 
@@ -322,6 +323,17 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 mode='r',
                 shape=(self.size + deleted_keys, self.num_dim),
             )
+
+    def sample(self) -> Optional[bytes]:
+        """Return a random entry from the indexer for sanity check.
+
+        :return: A random entry from the indexer.
+        """
+        k = random.sample(list(self._ext2int_id.values()), k=1)[0]
+        return self._raw_ndarray[k]
+
+    def __iter__(self):
+        return self._raw_ndarray.__iter__()
 
     def query_by_key(
         self, keys: Iterable[str], *args, **kwargs
@@ -524,3 +536,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         with ImportExtensions(required=True):
             from scipy.spatial.distance import cdist
         return cdist(*args, **kwargs, metric=self.metric)
+
+
+class VectorIndexer(NumpyIndexer):
+    """Alias to :class:`NumpyIndexer` """

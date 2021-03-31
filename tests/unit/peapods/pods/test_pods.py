@@ -145,12 +145,12 @@ def test_pod_naming_with_parallel(runtime):
     with BasePod(args) as bp:
         assert bp.peas[0].name == 'pod/head'
         assert bp.peas[1].name == 'pod/tail'
-        assert bp.peas[2].name == 'pod/1'
-        assert bp.peas[3].name == 'pod/2'
+        assert bp.peas[2].name == 'pod/0'
+        assert bp.peas[3].name == 'pod/1'
         assert bp.peas[0].runtime.name == 'pod/head/ZEDRuntime'
         assert bp.peas[1].runtime.name == 'pod/tail/ZEDRuntime'
-        assert bp.peas[2].runtime.name == 'pod/1/ZEDRuntime'
-        assert bp.peas[3].runtime.name == 'pod/2/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod/0/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod/1/ZEDRuntime'
 
 
 def test_pod_args_remove_uses_ba():
@@ -205,7 +205,7 @@ def test_pod_remote_pea_parallel_pea_host_set_partially(
             assert v.host == args.host
         else:
             for pea_arg in v:
-                if pea_arg.pea_id in (1, 2):
+                if pea_arg.pea_id in (0, 1):
                     assert pea_arg.host == pea1_host
                     assert pea_arg.host_in == expected_host_in
                     assert pea_arg.host_out == expected_host_out

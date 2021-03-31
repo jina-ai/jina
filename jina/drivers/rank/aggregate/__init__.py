@@ -79,7 +79,6 @@ class BaseAggregateMatchesRankerDriver(BaseRankDriver):
         :rtype: np.ndarray.
         """
         _sorted_m = np.sort(match_idx, order=col_name)
-        n_elements = len(_sorted_m[col_name])
         list_numpy_arrays = []
         prev_val = _sorted_m[col_name][0]
         prev_index = 0

@@ -38,8 +38,7 @@ def _load_local_hub_manifest():
                     m = JAML.load(fp)
                     m['source_path'] = info.module_finder.path
                     exec_name = safe_url_name(
-                        f'jinahub/'
-                        + f'{m["type"]}.{m["kind"]}.{m["name"]}'
+                        f'jinahub/' + f'{m["type"]}.{m["kind"]}.{m["name"]}'
                     )
                     tag = exec_name + f':{m["version"]}-{__version__}'
                     m['image_tag'] = tag

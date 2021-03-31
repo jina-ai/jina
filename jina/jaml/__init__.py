@@ -108,10 +108,11 @@ class JAML:
         return re.sub(r, r'jtype: \1', value)
 
     @staticmethod
-    def unescape(value: str,
-                 include_unknown_tags: bool = True,
-                 jtype_whitelist: Tuple[str, ...] = None,
-                 ) -> str:
+    def unescape(
+        value: str,
+        include_unknown_tags: bool = True,
+        jtype_whitelist: Tuple[str, ...] = None,
+    ) -> str:
         """
         Unescape the YAML content by replacing all ``jtype: `` to tags.
 
@@ -515,10 +516,13 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
                 )
             from ..flow import BaseFlow
+
             if issubclass(cls, BaseFlow):
-                tag_yml = JAML.unescape(JAML.dump(no_tag_yml),
-                                        include_unknown_tags=False,
-                                        jtype_whitelist=('Flow', 'AsyncFlow'))
+                tag_yml = JAML.unescape(
+                    JAML.dump(no_tag_yml),
+                    include_unknown_tags=False,
+                    jtype_whitelist=('Flow', 'AsyncFlow'),
+                )
             else:
                 # revert yaml's tag and load again, this time with substitution
                 tag_yml = JAML.unescape(JAML.dump(no_tag_yml))

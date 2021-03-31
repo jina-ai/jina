@@ -360,12 +360,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
-        return (
-            os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
-            if (isinstance(pea_id, int) and pea_id > 0)
-            else workspace_folder
-        )
+        return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
 
     @property
     def workspace_name(self):
