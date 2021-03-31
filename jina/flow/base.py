@@ -71,10 +71,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
     def __init__(
-        self,
-        args: Optional['argparse.Namespace'] = None,
-        env: Optional[Dict] = None,
-        **kwargs,
+            self,
+            args: Optional['argparse.Namespace'] = None,
+            env: Optional[Dict] = None,
+            **kwargs,
     ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
@@ -194,7 +194,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._pod_nodes[pod_name] = BasePod(args, needs)
 
     def needs(
-        self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
+            self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
     ) -> 'BaseFlow':
         """
         Add a blocker to the Flow, wait until all peas defined in **needs** completed.
@@ -231,11 +231,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return self.needs(name=name, needs=needs, *args, **kwargs)
 
     def add(
-        self,
-        needs: Optional[Union[str, Tuple[str], List[str]]] = None,
-        copy_flow: bool = True,
-        pod_role: 'PodRoleType' = PodRoleType.POD,
-        **kwargs,
+            self,
+            needs: Optional[Union[str, Tuple[str], List[str]]] = None,
+            copy_flow: bool = True,
+            pod_role: 'PodRoleType' = PodRoleType.POD,
+            **kwargs,
     ) -> 'BaseFlow':
         """
         Add a Pod to the current Flow object and return the new modified Flow object.
@@ -290,9 +290,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if 'host' in kwargs:
             m = re.match(_regex_port, kwargs['host'])
             if (
-                kwargs.get('host', __default_host__) != __default_host__
-                and m
-                and 'port_expose' not in kwargs
+                    kwargs.get('host', __default_host__) != __default_host__
+                    and m
+                    and 'port_expose' not in kwargs
             ):
                 kwargs['port_expose'] = m.group(2)
                 kwargs['host'] = m.group(1)
@@ -361,12 +361,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return op_flow
 
     def gather_inspect(
-        self,
-        name: str = 'gather_inspect',
-        uses='_merge_eval',
-        include_last_pod: bool = True,
-        *args,
-        **kwargs,
+            self,
+            name: str = 'gather_inspect',
+            uses='_merge_eval',
+            include_last_pod: bool = True,
+            *args,
+            **kwargs,
     ) -> 'BaseFlow':
         """Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
         is returned.
@@ -571,56 +571,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return self
 
-    def adjust_args(self, old_args):
-        # the new pod should have the exact same parameters but needs a different new_args.port_in
-        # also the workspace can be changed here in the future.
-        new_args = deepcopy(old_args)
-        # new_args.port_ctrl = helper.random_port()
-
-        new_args.port_in = 54000
-        # new_args.port_out is 53000 and does not need to be changed
-
-        # if we would not set it to SocketType.PUSH_CONNECT it would default to SocketType.PUSH_BIND
-        # this is only necessary to do since we are creating the pod without gateway
-        new_args.socket_out = SocketType.PUSH_CONNECT
-
-        # just for illustration purpose, we assign a new name to the pod. It can have the original name as well
-        new_args.name = 'new_pod2'
-        return new_args
-
-    def update_pod(self, pod_name):
-        # TODO for some reason, it hangs when runnig in thread
-        # x = threading.Thread(target=self.update_pod_thread, args=(pod_name,))
-        # x.start()
-        self.update_pod_thread(pod_name)
-
-    def update_pod_thread(self, pod_name):
-        # run in thread
-        print('### start updating pod')
-        old_pod = self._pod_nodes[pod_name]
-        new_pod_args = self.adjust_args(old_pod.args)
-        # new_pod_args.name = 'replica'
-        print('### create new BasePod')
-        new_pod = BasePod(new_pod_args, needs=old_pod.needs)
-        try:
-            new_pod.args.noblock_on_start = True
-            print('### enter context')
-            self.enter_context(new_pod)
-            print('### wait until started')
-            new_pod.wait_start_success()
-            time.sleep(2)  # simulate loading new pea takes some time
-            print('### second pod started')
-        except Exception as ex:
-            self.logger.error(
-                f'{new_pod!r} can not be started due to {ex!r}, Flow is aborted'
-            )
-            self.close()
-            raise
-        ### hack ###
-        self.pod_name = pod_name
-        self.new_pod = new_pod
-        self.old_pod = old_pod
-
     @property
     def num_pods(self) -> int:
         """Get the number of Pods in this Flow
@@ -755,12 +705,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return '\n'.join(mermaid_graph)
 
     def plot(
-        self,
-        output: Optional[str] = None,
-        vertical_layout: bool = False,
-        inline_display: bool = False,
-        build: bool = True,
-        copy_flow: bool = False,
+            self,
+            output: Optional[str] = None,
+            vertical_layout: bool = False,
+            inline_display: bool = False,
+            build: bool = True,
+            copy_flow: bool = False,
     ) -> 'BaseFlow':
         """
         Visualize the Flow up to the current point
@@ -1028,11 +978,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def rolling_update(self, pod_name):
         for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
-            print(f'### close replica {i+1}')
+            print(f'### close replica {i + 1}')
             replica.close()
-            print(f'### replica closed {i+1}')
+            print(f'### replica closed {i + 1}')
             time.sleep(1)
             replica.start()
-            print(f'### replica started {i+1}')
+            print(f'### replica started {i + 1}')
             time.sleep(1)
         print('### rolling update done')

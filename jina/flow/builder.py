@@ -145,7 +145,6 @@ def _connect(
         # (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)
         # https://github.com/jina-ai/jina/pull/1654
         # second.head_args.host_in = __default_host__
-        # TODO needs to be moved to a more obvious place - it leads to an inconsistency between args, head and tail
         first.tail_args.port_out = second.head_args.port_in
     elif first_socket_type == SocketType.PUB_BIND:
         first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
