@@ -9,7 +9,6 @@ from jina.executors.decorators import (
     batching,
     require_train,
     store_init_kwargs,
-    batching_multi_input,
     single,
 )
 
