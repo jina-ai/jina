@@ -3,7 +3,7 @@ from typing import Union, Iterable, Tuple, Sequence, List, Optional
 
 import numpy as np
 
-from ...helper import typename
+from ...helper import typename, deprecated_class
 from ...logging import default_logger
 
 try:
@@ -59,6 +59,7 @@ if False:
     )
 
 
+@deprecated_class(new_classname="DocumentList")
 class DocumentSet(TraversableSequence, MutableSequence):
     """
     :class:`DocumentSet` is a mutable sequence of :class:`Document`.

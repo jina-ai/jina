@@ -1,6 +1,7 @@
 from collections.abc import MutableSequence
 from typing import Iterable, Union, Dict
 
+from ...helper import deprecated_class
 
 try:
     # when protobuf using Cpp backend
@@ -23,6 +24,7 @@ AcceptQueryLangType = Union[QueryLang, QueryLangProto, Dict]
 __all__ = ['QueryLangSet', 'AcceptQueryLangType']
 
 
+@deprecated_class(new_classname="QueryLangList")
 class QueryLangSet(MutableSequence):
     """
     :class:`QueryLangSet` is a mutable sequence of :class:`QueryLang`.
