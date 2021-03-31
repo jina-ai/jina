@@ -299,6 +299,29 @@ def test_batching_slice_on():
     assert instance.batch_sizes[0] == 4
 
 
+def test_batching_memmap(tmpdir):
+    path = os.path.join(str(tmpdir), 'vec.gz')
+    vec = np.random.random([10, 10])
+    with open(path, 'wb') as f:
+        f.write(vec.tobytes())
+
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+
+        @batching
+        def f(self, data):
+            assert data.shape == (2, 10)
+            return data
+
+    instance = A(2)
+    result = instance.f(
+        np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape)
+    )
+    assert result.shape == (10, 10)
+    assert isinstance(result, np.ndarray)
+
+
 def test_batching_ordinal_idx_arg(tmpdir):
     path = os.path.join(str(tmpdir), 'vec.gz')
     vec = np.random.random([10, 10])
