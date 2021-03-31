@@ -7,6 +7,7 @@ import inspect
 from functools import wraps
 from itertools import islice, chain
 from typing import Callable, Any, Union, Iterator, List, Optional, Dict, Iterable
+import copy
 
 import numpy as np
 
@@ -287,22 +288,21 @@ def batching(
             ]
 
             slice_idx = None
-            '''
-            for i in range(slice_nargs):
-                for b in batch_iterator(
-                    args[slice_on + i], b_size, split_over_axis, yield_slice=yield_slice[i]#, yield_dict=yield_dict
-                ):
-                    if yield_slice[i]:
-                        slice_idx = b
-                        new_memmap = np.memmap(
-                            data[i].filename, dtype=data.dtype, mode='r', shape=data.shape
-                        )
-                        b = new_memmap[slice_idx]
-                        slice_idx = slice_idx[split_over_axis]
-                        if slice_idx.start is None or slice_idx.stop is None:
-                            slice_idx = None
-                        #elif yield_dict:
-                        #    pass  '''
+            # for i in range(slice_nargs):
+            #     for b in batch_iterator(
+            #         args[slice_on + i], b_size, split_over_axis, yield_slice=yield_slice[i]#, yield_dict=yield_dict
+            #     ):
+            #         if yield_slice[i]:
+            #             slice_idx = b
+            #             new_memmap = np.memmap(
+            #                 data[i].filename, dtype=data.dtype, mode='r', shape=data.shape
+            #             )
+            #             b = new_memmap[slice_idx]
+            #             slice_idx = slice_idx[split_over_axis]
+            #             if slice_idx.start is None or slice_idx.stop is None:
+            #                 slice_idx = None
+            #             #elif yield_dict:
+            #             #    pass
 
             print(f'yield_slice: {yield_slice}')
             data_iterators = []
@@ -316,32 +316,52 @@ def batching(
                         # yield_dict=yield_dict[i],
                     )
                 )
+                '''
                 slice_idx = data[i]
                 print(f'slice_idx type :{type(slice_idx)}')
-                '''
+                
                 new_memmap = np.memmap(
                     data.filename, dtype=data.dtype, mode='r', shape=data.shape
                 )
-                new_args = new_memmap[slice_idx]'''
+                new_args = new_memmap[slice_idx]
                 slice_idx = slice_idx[split_over_axis]
-                '''
+     
                 if slice_idx.start is None or slice_idx.stop is None:
-                    slice_idx = None'''
+                    slice_idx = None
                 if ordinal_idx_arg and slice_idx is not None:
-                    args[ordinal_idx_arg] = slice_idx
-
+                    args[ordinal_idx_arg] = slice_idx'''
+            copy_args = copy.copy(args)
             for new_args in zip(*data_iterators):
-                if slice_nargs:
-                    args[
-                        slice_on : slice_on + slice_nargs
-                    ] = new_args  # a tuple of arrays
-                else:
-                    args[slice_on : slice_on + slice_nargs] = new_args[0]
+                new_args = list(new_args)
+                for i, (_yield_slice, _arg) in enumerate(zip(yield_slice, new_args)):
+                    if _yield_slice:
+                        slice_idx = _arg
+                        original_arg = args[slice_on + i]
+                        new_memmap = np.memmap(
+                            original_arg.filename,
+                            dtype=original_arg.dtype,
+                            mode='r',
+                            shape=original_arg.shape,
+                        )
+                        new_args[i] = new_memmap[slice_idx]
+                        slice_idx = slice_idx[split_over_axis]
+                        if slice_idx.start is None or slice_idx.stop is None:
+                            slice_idx = None
+                    # TODO: figure out what is ordinal_idx_arg
+                    if not isinstance(new_args[i], tuple):
+                        print(f'new_args {new_args}')
+                        print(f'slice_on {slice_on}')
+                        # args[slice_on] = _arg
+                        if ordinal_idx_arg and slice_idx is not None:
+                            copy_args[ordinal_idx_arg] = slice_idx
+                copy_args[
+                    slice_on : slice_on + slice_nargs
+                ] = new_args  # a tuple of arrays
                 # print(f'data:{data}')
                 # print(f'args:{args}')
                 print(f'new arg: {new_args}')
 
-                r = func(*args, **kwargs)
+                r = func(*copy_args, **kwargs)
 
                 if r is not None:
                     final_result.append(r)
