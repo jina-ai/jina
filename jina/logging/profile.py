@@ -7,11 +7,12 @@ from collections import defaultdict
 from functools import wraps
 from typing import Optional
 
+from ..importer import ImportExtensions
 from ..helper import colored, get_readable_size, get_readable_time
 
 if False:
     # fix type-hint complain for sphinx and flake
-    from . import JinaLogger
+    from ..logging import JinaLogger
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -21,18 +22,18 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     :param unit: Unit of the memory, default in Gigabytes.
     :return: Memory usage of the current process.
     """
-    try:
+    with ImportExtensions(required=False):
         import resource
 
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
-    except ModuleNotFoundError:
-        from . import default_logger
 
-        default_logger.error(
-            'module "resource" can not be found and you are likely running it on Windows, '
-            'i will return 0'
-        )
-        return 0
+    from . import default_logger
+
+    default_logger.error(
+        'module "resource" can not be found and you are likely running it on Windows, '
+        'i will return 0'
+    )
+    return 0
 
 
 def used_memory_readable() -> str:
@@ -213,7 +214,7 @@ class ProgressBar(TimeContext):
         self,
         bar_len: int = 20,
         task_name: str = '',
-        batch_unit: str = 'batch',
+        batch_unit: str = 'requests',
         logger=None,
     ):
         """

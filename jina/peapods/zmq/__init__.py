@@ -60,14 +60,14 @@ class Zmqlet:
         self.msg_sent = 0
         self.is_closed = False
         self.opened_socks = []  # this must be here for `close()`
-        self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self.init_sockets()
-        self.register_pollin()
+        self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self._init_sockets()
+        self._register_pollin()
 
         self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
         if self.in_sock_type == zmq.DEALER:
-            self.send_idle()
+            self._send_idle_to_router()
 
-    def register_pollin(self):
+    def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
@@ -121,12 +121,12 @@ class Zmqlet:
         elif socks.get(self.in_sock) == zmq.POLLIN:
             return self.in_sock
 
-    def close_sockets(self):
+    def _close_sockets(self):
         """Close input, output and control sockets of this `Zmqlet`. """
         for k in self.opened_socks:
             k.close()
 
-    def init_sockets(self) -> Tuple:
+    def _init_sockets(self) -> Tuple:
         """Initialize all sockets and the ZMQ context.
 
         :return: A tuple of four pieces:
@@ -217,7 +217,7 @@ class Zmqlet:
         """
         if not self.is_closed:
             self.is_closed = True
-            self.close_sockets()
+            self._close_sockets()
             if hasattr(self, 'ctx'):
                 self.ctx.term()
             self.print_stats()
@@ -255,14 +255,29 @@ class Zmqlet:
         self.msg_sent += 1
 
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
-            self.send_idle()
+            self._send_idle_to_router()
 
-    def send_idle(self):
-        """Tell the upstream router this dealer is idle """
-        msg = ControlMessage('IDLE', pod_name=self.name, identity=self.identity)
-        self.bytes_sent += send_message(self.in_sock, msg, **self.send_recv_kwargs)
+    def _send_control_to_router(self, command, raise_exception=False):
+        msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
+        self.bytes_sent += send_message(
+            self.in_sock, msg, raise_exception=raise_exception, **self.send_recv_kwargs
+        )
         self.msg_sent += 1
-        self.logger.debug(f'idle and i {self.identity} told the router')
+        self.logger.debug(
+            f'control message {command} with id {self.identity} is sent to the router'
+        )
+
+    def _send_idle_to_router(self):
+        """Tell the upstream router this dealer is idle """
+        self._send_control_to_router('IDLE')
+
+    def _send_cancel_to_router(self, raise_exception=False):
+        """
+        Tell the upstream router this dealer is canceled
+
+        :param raise_exception: if true: raise an exception which might occur during send, if false: log error
+        """
+        self._send_control_to_router('CANCEL', raise_exception)
 
     def recv_message(
         self, callback: Callable[['Message'], 'Message'] = None
@@ -279,13 +294,6 @@ class Zmqlet:
             self.msg_recv += 1
             if callback:
                 return callback(msg)
-
-    def clear_stats(self):
-        """Reset the internal counter of send and receive bytes to zero. """
-        self.bytes_recv = 0
-        self.bytes_sent = 0
-        self.msg_recv = 0
-        self.msg_sent = 0
 
 
 class AsyncZmqlet(Zmqlet):
@@ -349,7 +357,7 @@ class ZmqStreamlet(Zmqlet):
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
-    def register_pollin(self):
+    def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
             import tornado.ioloop
@@ -367,6 +375,14 @@ class ZmqStreamlet(Zmqlet):
         .. note::
             This method is idempotent.
         """
+        if self.in_sock_type == zmq.DEALER:
+            try:
+                self._send_cancel_to_router(raise_exception=True)
+            except zmq.error.ZMQError:
+                self.logger.info(
+                    f'The dealer {self.name} can not unsubscribe from the router. '
+                    f'In case the router is down this is expected.'
+                )
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
@@ -447,12 +463,17 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
 
 
 def send_message(
-    sock: Union['zmq.Socket', 'ZMQStream'], msg: 'Message', timeout: int = -1, **kwargs
+    sock: Union['zmq.Socket', 'ZMQStream'],
+    msg: 'Message',
+    raise_exception: bool = False,
+    timeout: int = -1,
+    **kwargs,
 ) -> int:
     """Send a protobuf message to a socket
 
     :param sock: the target socket to send
     :param msg: the protobuf message
+    :param raise_exception: if true: raise an exception which might occur during send, if false: log error
     :param timeout: waiting time (in seconds) for sending
     :param kwargs: keyword arguments
     :return: the size (in bytes) of the sent message
@@ -468,7 +489,10 @@ def send_message(
             'is the server still online? is the network broken? are "port" correct?'
         )
     except zmq.error.ZMQError as ex:
-        default_logger.critical(ex)
+        if raise_exception:
+            raise ex
+        else:
+            default_logger.critical(ex)
     finally:
         try:
             sock.setsockopt(zmq.SNDTIMEO, -1)

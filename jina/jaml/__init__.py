@@ -3,7 +3,7 @@ import re
 import tempfile
 import warnings
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TextIO, Optional, List
+from typing import Dict, Any, Union, TextIO, Optional, List, Tuple
 
 import yaml
 from yaml.constructor import FullConstructor
@@ -108,16 +108,24 @@ class JAML:
         return re.sub(r, r'jtype: \1', value)
 
     @staticmethod
-    def unescape(value: str, include_unknown_tags: bool = True) -> str:
+    def unescape(
+        value: str,
+        include_unknown_tags: bool = True,
+        jtype_whitelist: Tuple[str, ...] = None,
+    ) -> str:
         """
         Unescape the YAML content by replacing all ``jtype: `` to tags.
 
         :param value: the escaped YAML content
         :param include_unknown_tags: if to include unknown tags during unescaping
+        :param jtype_whitelist: the list of jtype to be unescaped
         :return: unescaped YAML
         """
         if include_unknown_tags:
             r = r'jtype: (\w+)\b'
+        elif jtype_whitelist:
+            r = '|'.join(jtype_whitelist)
+            r = rf'jtype: ({r})\b'
         else:
             r = '|'.join(JAML.registered_tags())
             r = rf'jtype: ({r})\b'
@@ -507,8 +515,17 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     no_tag_yml,
                     extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
                 )
-            # revert yaml's tag and load again, this time with substitution
-            tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
+            from ..flow import BaseFlow
+
+            if issubclass(cls, BaseFlow):
+                tag_yml = JAML.unescape(
+                    JAML.dump(no_tag_yml),
+                    include_unknown_tags=False,
+                    jtype_whitelist=('Flow', 'AsyncFlow'),
+                )
+            else:
+                # revert yaml's tag and load again, this time with substitution
+                tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
 
             # load into object, no more substitute
             return JAML.load(tag_yml, substitute=False)

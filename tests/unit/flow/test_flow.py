@@ -8,9 +8,9 @@ from jina.enums import SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
+from jina.peapods.pods import BasePod
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.request import Response
-from jina.peapods.pods import BasePod
 from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -402,16 +402,16 @@ def test_index_text_files(mocker, restful, datauri_workspace):
     def validate(req):
         assert len(req.docs) > 0
         for d in req.docs:
-            assert d.text
+            assert d.mime_type == 'text/plain'
 
     response_mock = mocker.Mock()
 
     f = Flow(restful=restful, read_only=True).add(
         uses=os.path.join(cur_dir, '../yaml/datauriindex.yml'), timeout_ready=-1
     )
-
+    files = os.path.join(cur_dir, 'yaml/*.yml')
     with f:
-        f.index_files('*.py', on_done=response_mock)
+        f.index_files(files, on_done=response_mock)
 
     validate_callback(response_mock, validate)
 
@@ -746,3 +746,28 @@ def test_flow_yaml_dump():
         assert 'jina pod' in f.getvalue()
 
     assert '!Flow' in f1.yaml_spec
+
+
+def test_flow_add_class():
+    class CustomizedExecutor(BaseExecutor):
+        pass
+
+    f = Flow().add(uses=BaseExecutor).add(uses=CustomizedExecutor)
+
+    with f:
+        pass
+
+
+def test_flow_allinone_yaml():
+    from jina import Encoder
+
+    class CustomizedEncoder(Encoder):
+        pass
+
+    f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-allinone.yml'))
+    with f:
+        pass
+
+    f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-allinone-oldstyle.yml'))
+    with f:
+        pass

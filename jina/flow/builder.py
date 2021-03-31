@@ -4,7 +4,7 @@ from typing import Dict, List, Callable
 
 from .. import __default_host__
 from ..enums import SocketType, FlowBuildLevel, PodRoleType
-from ..excepts import FlowBuildLevelError
+from ..excepts import FlowBuildLevelError, SocketTypeError
 from ..peapods.pods import _fill_in_host
 
 # noinspection PyUnreachableCode
@@ -127,7 +127,7 @@ def _connect(
     .. # noqa: DAR401
     :param first: the first BasePod
     :param second: the second BasePod
-    :param first_socket_type: socket type of the first BasePod, availables are PUSH_BIND, PUSH_CONNECT, PUB_BIND
+    :param first_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND
     """
     first.tail_args.socket_out = first_socket_type
     second.head_args.socket_in = first.tail_args.socket_out.paired
@@ -153,4 +153,4 @@ def _connect(
         )  # the hostname of s_pod
         second.head_args.port_in = first.tail_args.port_out
     else:
-        raise NotImplementedError(f'{first_socket_type!r} is not supported here')
+        raise SocketTypeError(f'{first_socket_type!r} is not supported here')

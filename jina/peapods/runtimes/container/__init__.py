@@ -7,8 +7,10 @@ from pathlib import Path
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
+from ....excepts import BadImageNameError
 from ....helper import ArgNamespace, is_valid_local_config_source, slugify
 from ....jaml.helper import complete_path
+from ....docker.hubio import HubIO
 
 
 class ContainerRuntime(ZMQRuntime):
@@ -80,7 +82,8 @@ class ContainerRuntime(ZMQRuntime):
 
         if self.args.uses.startswith('docker://'):
             uses_img = self.args.uses.replace('docker://', '')
-            self.logger.info(f'using image: {uses_img}')
+            uses_img = HubIO._alias_to_docker_image_name(uses_img)
+            self.logger.info(f'will use Docker image: {uses_img}')
         else:
             warnings.warn(
                 f'you are using legacy image format {self.args.uses}, this may create some ambiguity. '
@@ -106,13 +109,31 @@ class ContainerRuntime(ZMQRuntime):
             },
         )
 
-        if self.args.pull_latest:
+        img_not_found = False
+
+        try:
+            client.images.get(uses_img)
+        except docker.errors.ImageNotFound:
+            self.logger.error(f'can not find local image: {uses_img}')
+            img_not_found = True
+
+        if self.args.pull_latest or img_not_found:
             self.logger.warning(
                 f'pulling {uses_img}, this could take a while. if you encounter '
                 f'timeout error due to pulling takes to long, then please set '
                 f'"timeout-ready" to a larger value.'
             )
-            client.images.pull(uses_img)
+            try:
+                client.images.pull(uses_img)
+                img_not_found = False
+            except docker.errors.NotFound:
+                img_not_found = True
+                self.logger.error(f'can not find remote image: {uses_img}')
+
+        if img_not_found:
+            raise BadImageNameError(
+                f'image: {uses_img} can not be found local & remote.'
+            )
 
         _volumes = {}
         if self.args.uses_internal:

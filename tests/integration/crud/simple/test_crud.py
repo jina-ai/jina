@@ -37,6 +37,7 @@ def random_docs(start, end, embed_dim=10, jitter=1, has_content=True):
             d.text = ''.join(
                 random.choice(string.ascii_lowercase) for _ in range(10)
             ).encode('utf8')
+            assert d.embedding is None
             d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
         yield d
 
@@ -58,7 +59,7 @@ def validate_index_size(num_indexed_docs, compound=False):
         )
     else:
         path = Path(os.environ['JINA_TOPK_DIR'])
-    bin_files = list(path.glob('*.bin'))
+    bin_files = list(path.glob('**/*.bin'))
     assert len(bin_files) > 0
     for index_file in bin_files:
         index = BaseIndexer.load(str(index_file))

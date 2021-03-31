@@ -34,7 +34,7 @@ def test_standard(test_metas):
 def test_standard_query(tmpdir, test_standard):
     mem1 = used_memory(1)
     print(used_memory_readable())
-    with NumpyIndexer.load(os.path.join(tmpdir, 'a.bin')) as ni:
+    with NumpyIndexer.load(os.path.join(tmpdir, 'a-0/a.bin')) as ni:
         ni.batch_size = 256
         print(used_memory_readable())
         print(ni._raw_ndarray.shape)

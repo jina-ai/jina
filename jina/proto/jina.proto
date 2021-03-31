@@ -106,9 +106,6 @@ message DocumentProto {
     // the weight of this document
     float weight = 5;
 
-    // total number of siblings of this document (docs that are in the same granularity and parent_id)
-    uint32 length = 6;
-
     // the top-k matched Docs on the same level (recursive structure)
     repeated DocumentProto matches = 8;
 
@@ -320,6 +317,7 @@ message RequestProto {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
             IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
+            CANCEL = 4; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
         }
         Command command = 1; // the control command
 

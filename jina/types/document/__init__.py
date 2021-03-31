@@ -27,6 +27,7 @@ from ...importer import ImportExtensions
 from ...logging import default_logger
 from ...proto import jina_pb2
 
+
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
 
@@ -41,6 +42,37 @@ _document_fields = set(
 )
 
 _all_mime_types = set(mimetypes.types_map.values())
+
+scipy_installed = False
+tensorflow_installed = False
+pytorch_installed = False
+
+with ImportExtensions(
+    required=False,
+    pkg_name='scipy',
+    help_text=f'can not import scipy: pip install scipy ',
+):
+    import scipy
+
+    scipy_installed = True
+
+with ImportExtensions(
+    required=False,
+    pkg_name='tensorflow',
+    help_text=f'can not import tensorflow: pip install tensorflow ',
+):
+    import tensorflow
+
+    tensorflow_installed = True
+
+with ImportExtensions(
+    required=False,
+    pkg_name='torch',
+    help_text=f'can not import torch: pip install torch ',
+):
+    import torch
+
+    pytorch_installed = True
 
 
 class Document(ProtoTypeMixin, Traversable):
@@ -205,24 +237,6 @@ class Document(ProtoTypeMixin, Traversable):
         self._mermaid_id = random_identity()  #: for mermaid visualize id
 
     @property
-    def length(self) -> int:
-        """
-        The number of siblings of the :class:``Document``
-
-        .. # noqa: DAR201
-        :getter: number of siblings
-        :setter: number of siblings
-        :type: int
-        """
-        # TODO(Han): rename this to siblings as this shadows the built-in `length`
-
-        return self._pb_body.length
-
-    @length.setter
-    def length(self, value: int):
-        self._pb_body.length = value
-
-    @property
     def weight(self) -> float:
         """
         :return: the weight of the document
@@ -282,7 +296,7 @@ class Document(ProtoTypeMixin, Traversable):
 
         .. note::
             *. if neither ``exclude_fields`` nor ``include_fields`` is given,
-                then destination is overrided by the source completely.
+                then destination is overridden by the source completely.
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
 
@@ -450,7 +464,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> 'np.ndarray':
+    def blob(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
@@ -469,7 +483,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'np.ndarray':
+    def embedding(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
@@ -492,6 +506,34 @@ class Document(ProtoTypeMixin, Traversable):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
+        elif scipy_installed and scipy.sparse.issparse(v):
+            from ..ndarray.sparse.scipy import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            protbuff_updater.value = v
+        elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
+            from ..ndarray.sparse.tensorflow import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            protbuff_updater.value = v
+
+        elif pytorch_installed and isinstance(v, torch.Tensor) and v.is_sparse:
+            from ..ndarray.sparse.pytorch import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            protbuff_updater.value = v
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
@@ -739,7 +781,7 @@ class Document(ProtoTypeMixin, Traversable):
             if r:
                 self._pb_body.mime_type = r
             else:
-                raise ValueError(f'{value} is not a valid MIME type')
+                self._pb_body.mime_type = value
 
     def __enter__(self):
         return self

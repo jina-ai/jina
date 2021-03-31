@@ -11,7 +11,9 @@ def _get_event(obj) -> Event:
     elif isinstance(obj, multiprocessing.Process):
         return multiprocessing.Event()
     else:
-        raise NotImplementedError
+        raise TypeError(
+            f'{obj} is not an instance of "threading.Thread" nor "multiprocessing.Process"'
+        )
 
 
 def _make_or_event(obj, *events) -> Event:

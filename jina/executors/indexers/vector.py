@@ -4,15 +4,17 @@ __license__ = "Apache-2.0"
 import gzip
 import io
 import os
+import random
 from functools import lru_cache
 from os import path
-from typing import Optional, Iterable, Tuple, Dict
+from typing import Optional, Iterable, Tuple, Dict, Union
 
 import numpy as np
 
 from . import BaseVectorIndexer
 from ..decorators import batching
 from ...helper import cached_property
+from ...importer import ImportExtensions
 
 
 class BaseNumpyIndexer(BaseVectorIndexer):
@@ -72,8 +74,8 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'num_dim extracted from `ref_indexer` to {ref_indexer.num_dim} \n'
                 f'_size extracted from `ref_indexer` to {ref_indexer._size} \n'
                 f'dtype extracted from `ref_indexer` to {ref_indexer.dtype} \n'
-                f'compress_level overriden from `ref_indexer` to {ref_indexer.compress_level} \n'
-                f'index_filename overriden from `ref_indexer` to {ref_indexer.index_filename}'
+                f'compress_level overridden from `ref_indexer` to {ref_indexer.compress_level} \n'
+                f'index_filename overridden from `ref_indexer` to {ref_indexer.index_filename}'
             )
             self.ref_indexer_workspace_name = ref_indexer.workspace_name
             self.delete_on_dump = getattr(ref_indexer, 'delete_on_dump', delete_on_dump)
@@ -305,7 +307,7 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             )
 
     @cached_property
-    def _raw_ndarray(self) -> Optional['np.ndarray']:
+    def _raw_ndarray(self) -> Union['np.ndarray', 'np.memmap', None]:
         if not (path.exists(self.index_abspath) or self.num_dim or self.dtype):
             return
 
@@ -322,6 +324,17 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 mode='r',
                 shape=(self.size + deleted_keys, self.num_dim),
             )
+
+    def sample(self) -> Optional[bytes]:
+        """Return a random entry from the indexer for sanity check.
+
+        :return: A random entry from the indexer.
+        """
+        k = random.sample(list(self._ext2int_id.values()), k=1)[0]
+        return self._raw_ndarray[k]
+
+    def __iter__(self):
+        return self._raw_ndarray.__iter__()
 
     def query_by_key(
         self, keys: Iterable[str], *args, **kwargs
@@ -495,8 +508,6 @@ class NumpyIndexer(BaseNumpyIndexer):
         elif self.metric == 'cosine':
             _query_vectors = _ext_A(_norm(vectors))
             dist = self._cosine(_query_vectors, self.query_handler)
-        else:
-            raise NotImplementedError(f'{self.metric} is not implemented')
 
         idx, dist = self._get_sorted_top_k(dist, top_k)
         indices = self._int2ext_id[self.valid_indices][idx]
@@ -523,11 +534,10 @@ class NumpyIndexer(BaseNumpyIndexer):
 
     @batching(merge_over_axis=1, slice_on=2)
     def _cdist(self, *args, **kwargs):
-        try:
+        with ImportExtensions(required=True):
             from scipy.spatial.distance import cdist
+        return cdist(*args, **kwargs, metric=self.metric)
 
-            return cdist(*args, **kwargs, metric=self.metric)
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError(
-                f'your metric {self.metric} requires scipy, but scipy is not found'
-            )
+
+class VectorIndexer(NumpyIndexer):
+    """Alias to :class:`NumpyIndexer` """

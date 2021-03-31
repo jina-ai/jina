@@ -35,6 +35,13 @@
 
 
 
+
+
+
+
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -195,6 +202,13 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`1.0.8`)](#release-note-108)
 - [Release Note (`1.0.9`)](#release-note-109)
 - [Release Note (`1.0.10`)](#release-note-1010)
+- [Release Note (`1.0.11`)](#release-note-1011)
+- [Release Note (`1.0.12`)](#release-note-1012)
+- [Release Note (`1.0.13`)](#release-note-1013)
+- [Release Note (`1.0.14`)](#release-note-1014)
+- [Release Note (`1.0.15`)](#release-note-1015)
+- [Release Note (`1.0.16`)](#release-note-1016)
+- [Release Note (`1.1.0`)](#release-note-110)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -7931,4 +7945,213 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```fba4308c```](https://github.com/jina-ai/jina/commit/fba4308c58270270daa7e5bc90d3037f5424ce53)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```23b3b484```](https://github.com/jina-ai/jina/commit/23b3b48452e6fe1a9c2050baa51a9dd87d37be32)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```cb6607c5```](https://github.com/jina-ai/jina/commit/cb6607c52370682a5b3790a78acb70f2a7089624)] __-__ __version__: the next version will be 1.0.10 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-11></a>
+## Release Note (`1.0.11`)
+
+> Release time: 2021-03-18 03:20:12
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Florian Hönicke,  Jina Dev Bot,  Betim Sherifi,  Joan Fontanals,  Han Xiao,  Deepankar Mahapatro,  Yongxuan Zhang,  Robert Rodger,  cristian,  David Buchaca Prats,  Wang Bo,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```8c3f1e9b```](https://github.com/jina-ai/jina/commit/8c3f1e9bbbcfa5b0b19e611086b893f981800168)] __-__ linter ignore generated files (#2199) (*Florian Hönicke*)
+ - [[```3caf7df9```](https://github.com/jina-ai/jina/commit/3caf7df9a6aac27ac315fd8ec4723acfc6d3b262)] __-__ fix multimodal example (#2195) (*Joan Fontanals*)
+ - [[```b5f80102```](https://github.com/jina-ai/jina/commit/b5f8010218e5e026dcf96b732a629b8b61594396)] __-__ __jaml__: read raw yaml with jtype (#2180) (*Deepankar Mahapatro*)
+ - [[```1e74ce64```](https://github.com/jina-ai/jina/commit/1e74ce64a8382fdfa85425f360f6f7326913d418)] __-__ hub_build_level  test (#2189) (*Yongxuan Zhang*)
+ - [[```88492002```](https://github.com/jina-ai/jina/commit/884920026d0594397552e783eea3f352d365c325)] __-__ fix multimodal example (#2178) (*Joan Fontanals*)
+ - [[```fc0888e0```](https://github.com/jina-ai/jina/commit/fc0888e0cea3abd4babfb68c0d003b7b59d5fa4b)] __-__ optimize scores avoiding array creation (#2163) (*David Buchaca Prats*)
+
+### 🚧 Code Refactoring
+
+ - [[```1bb8f2b0```](https://github.com/jina-ai/jina/commit/1bb8f2b0838292aee62879a777d1d4e0e56efbf0)] __-__ incorrect exception usage (#2147) (*Betim Sherifi*)
+ - [[```0308fd7a```](https://github.com/jina-ai/jina/commit/0308fd7accc1931fda573952f770afb8f03a0144)] __-__ refactor signatures after batching adaptation (#2196) (*Joan Fontanals*)
+ - [[```abceba07```](https://github.com/jina-ai/jina/commit/abceba077e06d787ed2d3c0515f5dfc939db4784)] __-__ __helper__: merge single and single_multi_input into one (#2192) (*Han Xiao*)
+ - [[```ef155a32```](https://github.com/jina-ai/jina/commit/ef155a32b4f3c8e2b9f9e4a67fd3f5247f5eeb69)] __-__ remove unused variable (#2171) (*Florian Hönicke*)
+ - [[```e3403fbb```](https://github.com/jina-ai/jina/commit/e3403fbbff021b34b94d792411cc9923311d82d4)] __-__ remove useless if (#2177) (*David Buchaca Prats*)
+ - [[```8f9258b9```](https://github.com/jina-ai/jina/commit/8f9258b94639ed3c8b2a0a75dcbf2f7de74098d3)] __-__ try to remove reduce driver (#2107) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```c278ba15```](https://github.com/jina-ai/jina/commit/c278ba15b2253e44ae1bfa3471ed13c09760e468)] __-__ spelling correction (#2190) (*Florian Hönicke*)
+ - [[```f8ba303f```](https://github.com/jina-ai/jina/commit/f8ba303fa68911b35caab53c1df1e4d61bb8eff9)] __-__ fix fp1 typo in readme (#2188) (*Robert Rodger*)
+ - [[```3bf8c157```](https://github.com/jina-ai/jina/commit/3bf8c1578f4f1a39b1c154705a535c52e1490141)] __-__ fix typo (#2179) (*cristian*)
+ - [[```b3d2f77a```](https://github.com/jina-ai/jina/commit/b3d2f77a5aab40e4c1b17747d415f4e135c1542b)] __-__ fix docstring in search driver (#2174) (*Wang Bo*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```d184452c```](https://github.com/jina-ai/jina/commit/d184452c8dee9a2e22b3dafd16431b1f68b6d316)] __-__ ignore resources folder for pytest and codecov (#2166) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```17889ba3```](https://github.com/jina-ai/jina/commit/17889ba3d14cb935ff955d8ece26bc54f68fcb6d)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```44e6e91c```](https://github.com/jina-ai/jina/commit/44e6e91ca3bbc72d443d566174ae8cdd60d14d69)] __-__ Revert &#34;fix: fix multimodal example (#2178)&#34; (#2191) (*Han Xiao*)
+ - [[```4578fd65```](https://github.com/jina-ai/jina/commit/4578fd65c4b5477f1fd2ddf723aaa7a7e9cbc22d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```035e909f```](https://github.com/jina-ai/jina/commit/035e909f78a22d68457aa47ba726a681e0fd9e12)] __-__ __version__: the next version will be 1.0.11 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-12></a>
+## Release Note (`1.0.12`)
+
+> Release time: 2021-03-19 13:53:59
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Florian Hönicke,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```f7e3355b```](https://github.com/jina-ai/jina/commit/f7e3355bee107653d6be6dcc3cd9afecd23a2c40)] __-__ use import extensions (#2204) (*Joan Fontanals*)
+ - [[```52f97b38```](https://github.com/jina-ai/jina/commit/52f97b388a39fd1dfd890942911314bfbb208708)] __-__ black exclude reformat (#2211) (*Florian Hönicke*)
+
+### 🚧 Code Refactoring
+
+ - [[```091329b1```](https://github.com/jina-ai/jina/commit/091329b1c827757d4050e0d613ea4c80d4cc5ddb)] __-__ make some functions private (#2208) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```762f6196```](https://github.com/jina-ai/jina/commit/762f61963f1333ee66a7cbe8a04c47e590dc0b09)] __-__ ⚠️ Refactor rename length attribute to siblings - breaking change (#2198) (*Florian Hönicke*)
+ - [[```7b53b359```](https://github.com/jina-ai/jina/commit/7b53b3596ce139156fdf236bb93cb4420f86a07e)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d0ffc56c```](https://github.com/jina-ai/jina/commit/d0ffc56ce4d8f5034fb3cf89ad67dcf7711521a4)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```7e93b645```](https://github.com/jina-ai/jina/commit/7e93b64598220d023bcbe248e8bb399139a99a99)] __-__ __version__: the next version will be 1.0.12 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-13></a>
+## Release Note (`1.0.13`)
+
+> Release time: 2021-03-21 23:13:14
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Fionn Delahunty,  Han Xiao,  Wang Bo,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```5c5cfefa```](https://github.com/jina-ai/jina/commit/5c5cfefaa88c3ad5b90d8a6f83c07c327831505f)] __-__ __docs__: added link to CRUD docs (#2217) (*Fionn Delahunty*)
+ - [[```7c658a06```](https://github.com/jina-ai/jina/commit/7c658a06e8427eda8e62f76081bb9ca86f35c4a7)] __-__ __jaml__: allow loading from flatten Flow yaml (#2216) (*Han Xiao*)
+ - [[```3879045e```](https://github.com/jina-ai/jina/commit/3879045ed5ad8a997b79c0902aed3c0f5b9162d1)] __-__ __flow__: allow uses for Executor class (#2215) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```8fc7b7f4```](https://github.com/jina-ai/jina/commit/8fc7b7f4c9e47123bb0b37f2698f2d0d2fc7b184)] __-__ regression test for three examples (#2205) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```27d43199```](https://github.com/jina-ai/jina/commit/27d431995c84601238a6457d22aad0bac312fe68)] __-__ fix issue guide (*Han Xiao*)
+ - [[```25905ac2```](https://github.com/jina-ai/jina/commit/25905ac27f4b133ac8f5f6c2e8da5b43fdd3af57)] __-__ fix requirements (*Han Xiao*)
+ - [[```3514bf17```](https://github.com/jina-ai/jina/commit/3514bf173beb77a9b7f9bd717e96d30fb68500e8)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```9584302e```](https://github.com/jina-ai/jina/commit/9584302e9c63997fe82ec19b86035270201cab30)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```497a026f```](https://github.com/jina-ai/jina/commit/497a026fe4542e0362094510ffe4c518b1a89332)] __-__ __version__: the next version will be 1.0.13 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-14></a>
+## Release Note (`1.0.14`)
+
+> Release time: 2021-03-23 10:23:21
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Deepankar Mahapatro,  Rutuja Surve,  Han Xiao,  cristian,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```e4bda7a8```](https://github.com/jina-ai/jina/commit/e4bda7a872d2e24356e8aa2afc5f17df04dcd16e)] __-__ __hub__: jina hub build now recognizes class name (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```19da13c1```](https://github.com/jina-ai/jina/commit/19da13c16f686296e1a7f0e97cba0b3469cf129d)] __-__ __hub__: raise exception for all status except 200 (#2225) (*Deepankar Mahapatro*)
+ - [[```0f8981ec```](https://github.com/jina-ai/jina/commit/0f8981ec820fe44edd7d2e7872cb7263ad15ef18)] __-__ rename convert driver (#2226) (*Rutuja Surve*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```3ce26090```](https://github.com/jina-ai/jina/commit/3ce2609045cb3f4443272da854fb522c33125aed)] __-__ remove untested (#2222) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```9a837294```](https://github.com/jina-ai/jina/commit/9a83729457373074b4779a61da736c2e8ef73ce8)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```ba702b49```](https://github.com/jina-ai/jina/commit/ba702b49b080157ada804da14b01d07f70c93063)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```e76e888f```](https://github.com/jina-ai/jina/commit/e76e888f59f32e847691b4a6ddb3564e122273e4)] __-__ __version__: the next version will be 1.0.14 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-15></a>
+## Release Note (`1.0.15`)
+
+> Release time: 2021-03-23 15:21:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🏁 Unit Test and CICD
+
+ - [[```e0edf3bd```](https://github.com/jina-ai/jina/commit/e0edf3bdabb6a19fc681375648a21071edf5d58f)] __-__ fix broken tests (#2227) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```8be28cfe```](https://github.com/jina-ai/jina/commit/8be28cfef7880ed74d964c32c7c87c6c2f40a6cc)] __-__ __version__: the next version will be 1.0.15 (*Jina Dev Bot*)
+
+<a name=release-note-1-0-16></a>
+## Release Note (`1.0.16`)
+
+> Release time: 2021-03-28 23:03:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  David Buchaca Prats,  cristian,  Wang Bo,  CatStark,  🙇
+
+
+### 🆕 New Features
+
+ - [[```13ca1a80```](https://github.com/jina-ai/jina/commit/13ca1a80185f4d5f5a42296cc0ba05517ddef461)] __-__ support for sparse arrays in documents (#2207) (*David Buchaca Prats*)
+ - [[```2fe2fe82```](https://github.com/jina-ai/jina/commit/2fe2fe82a1528ae87c448cb40c97b3e8b3b59f72)] __-__ add pngtodisk driver (#2209) (*cristian*)
+
+### 🐞 Bug fixes
+
+ - [[```f2def8a4```](https://github.com/jina-ai/jina/commit/f2def8a464a6a6e38314892e894cceee12245e0e)] __-__ proper usage of importextensions (#2237) (*cristian*)
+ - [[```2be26c6d```](https://github.com/jina-ai/jina/commit/2be26c6dcc0cff897cb99d0eb29258338c5b86ca)] __-__ pytorch sparse ndarray constructor (#2233) (*Wang Bo*)
+ - [[```9b3ab472```](https://github.com/jina-ai/jina/commit/9b3ab472f18c0366aa7eda3be97ef9ed0ebbd4d2)] __-__ test expects files with contents (#2221) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1c9949ca```](https://github.com/jina-ai/jina/commit/1c9949ca64ddb289a7b12d34dca38797540ca972)] __-__ add zmq runtime test (#2230) (*Wang Bo*)
+ - [[```3d1b9548```](https://github.com/jina-ai/jina/commit/3d1b954867720a39732135b4e7852b5542be119f)] __-__ add regression for chatbot (#2218) (*Wang Bo*)
+ - [[```8b80cec6```](https://github.com/jina-ai/jina/commit/8b80cec692ebcd07ff1223ea7da4dc820f4fd03c)] __-__ assert there are no embeddings by default (#2229) (*CatStark*)
+
+### 🍹 Other Improvements
+
+ - [[```d0e4ae94```](https://github.com/jina-ai/jina/commit/d0e4ae94488ad4a77e9d3f87baaafa54e19ccc35)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```72e5c838```](https://github.com/jina-ai/jina/commit/72e5c8387663a5229eb1a0c5b077e49313d719f3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```576a3c86```](https://github.com/jina-ai/jina/commit/576a3c86fb75ce7666feeaec3860efb86764fd68)] __-__ __version__: the next version will be 1.0.16 (*Jina Dev Bot*)
+
+<a name=release-note-1-1-0></a>
+## Release Note (`1.1.0`)
+
+> Release time: 2021-03-29 12:54:26
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Nan Wang@Home.MBP,  Nan Wang,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```2ad1a5e0```](https://github.com/jina-ai/jina/commit/2ad1a5e0964ad6dff98f8cfc972be145b3884be2)] __-__ use list instead of dictionary for peas-hosts (#2242) (*Nan Wang*)
+ - [[```d1840701```](https://github.com/jina-ai/jina/commit/d184070145c8507b11e71d9aeedbbe372edd3cb3)] __-__ fix the bug in the default value (#2246) (*Nan Wang*)
+
+### 🍹 Other Improvements
+
+ - [[```e931e940```](https://github.com/jina-ai/jina/commit/e931e940992861679dc3446ad3137e54439bf999)] __-__ bump version to 1.1.0 (*Nan Wang@Home.MBP*)
+ - [[```b8f1c36b```](https://github.com/jina-ai/jina/commit/b8f1c36bb3c14786b6a9b4e1c67ec67c121b0d9c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5787b083```](https://github.com/jina-ai/jina/commit/5787b0833c3484be98e2feb233ac93163d419ebd)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```064c8757```](https://github.com/jina-ai/jina/commit/064c87571c7ca1c563fdd3e1ea5f1b86f69fbd92)] __-__ __version__: the next version will be 1.0.17 (*Jina Dev Bot*)
 

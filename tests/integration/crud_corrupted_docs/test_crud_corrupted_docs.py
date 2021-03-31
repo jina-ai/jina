@@ -21,7 +21,7 @@ def random_docs_only_tags(nr_docs, start=0):
 
 def validate_index_size(num_indexed_docs, expected_indices):
     path = Path(os.environ['JINA_CORRUPTED_DOCS_TEST_DIR'])
-    index_files = list(path.glob('*.bin'))
+    index_files = list(path.glob('**/*.bin'))
     assert len(index_files) == expected_indices
     for index_file in index_files:
         index = BaseIndexer.load(str(index_file))

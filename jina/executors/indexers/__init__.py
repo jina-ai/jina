@@ -176,15 +176,15 @@ class BaseIndexer(BaseExecutor):
             return r
 
     def get_query_handler(self):
-        """Get a *readable* index handler when the ``index_abspath`` already exist, need to be overrided"""
+        """Get a *readable* index handler when the ``index_abspath`` already exist, need to be overridden"""
         raise NotImplementedError
 
     def get_add_handler(self):
-        """Get a *writable* index handler when the ``index_abspath`` already exist, need to be overrided"""
+        """Get a *writable* index handler when the ``index_abspath`` already exist, need to be overridden"""
         raise NotImplementedError
 
     def get_create_handler(self):
-        """Get a *writable* index handler when the ``index_abspath`` does not exist, need to be overrided"""
+        """Get a *writable* index handler when the ``index_abspath`` does not exist, need to be overridden"""
         raise NotImplementedError
 
     @property
@@ -232,6 +232,14 @@ class BaseIndexer(BaseExecutor):
         self, keys: Iterable, existent_keys: Iterable
     ) -> Iterable:
         return [key for key in keys if key in set(existent_keys)]
+
+    def sample(self):
+        """Return a sample from this indexer, useful in sanity check """
+        raise NotImplementedError
+
+    def __iter__(self):
+        """Iterate over all entries in this indexer. """
+        raise NotImplementedError
 
 
 class BaseVectorIndexer(BaseIndexer):

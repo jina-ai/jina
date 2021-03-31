@@ -189,14 +189,6 @@ def set_hw_chatbot_parser(parser=None):
 
     mixin_hw_base_parser(parser)
     parser.add_argument(
-        '--uses',
-        type=str,
-        default=resource_filename(
-            'jina', '/'.join(('resources', 'chatbot', 'helloworld.flow.index.yml'))
-        ),
-        help='The yaml path of the index flow',
-    )
-    parser.add_argument(
         '--index-data-url',
         type=str,
         default='https://static.jina.ai/chatbot/dataset.csv',

@@ -204,7 +204,9 @@ def test_container_volume(docker_image_built, tmpdir):
     with f:
         f.index(random_docs(10))
 
-    assert os.path.exists(os.path.join(abc_path, 'ext-mwu-encoder.bin'))
+    assert os.path.exists(
+        os.path.join(abc_path, 'ext-mwu-encoder-0', 'ext-mwu-encoder.bin')
+    )
 
 
 def test_container_volume_arbitrary(docker_image_built, tmpdir):
@@ -221,7 +223,9 @@ def test_container_volume_arbitrary(docker_image_built, tmpdir):
     with f:
         f.index(random_docs(10))
 
-    assert os.path.exists(os.path.join(abc_path, 'ext-mwu-encoder.bin'))
+    assert os.path.exists(
+        os.path.join(abc_path, 'ext-mwu-encoder-0', 'ext-mwu-encoder.bin')
+    )
 
 
 def test_container_ping(docker_image_built):
@@ -302,6 +306,10 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         @property
         def containers(self):
             return MockContainers()
+
+        @property
+        def images(self):
+            return {}
 
     monkeypatch.setattr(docker, 'from_env', MockClient)
     args = set_pea_parser().parse_args(

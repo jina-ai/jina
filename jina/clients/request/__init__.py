@@ -48,7 +48,7 @@ def request_generator(
     :param kwargs: additional arguments
     :yield: request
     """
-    _kwargs = dict(mime_type=mime_type, length=request_size, weight=1.0)
+    _kwargs = dict(mime_type=mime_type, weight=1.0)
 
     try:
         if not isinstance(data, Iterable):

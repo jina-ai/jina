@@ -13,15 +13,15 @@ from typing import Dict, Any, List
 
 from .checker import *
 from .helper import credentials_file
-from .hubapi.local import _list_local
+from .hubapi.local import _list_local, _load_local_hub_manifest
 from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
 from .. import __version__ as jina_version
 from ..enums import BuildTestLevel
 from ..excepts import (
-    DockerLoginFailed,
     HubBuilderError,
     HubBuilderBuildError,
     HubBuilderTestError,
+    HubLoginRequired,
     ImageAlreadyExists,
 )
 from ..executors import BaseExecutor
@@ -166,7 +166,7 @@ class HubIO:
                     '3. Come back to this terminal\n'
                 )
                 # allowing sometime for the user to view the message
-                time.sleep(0.5)
+                time.sleep(1)
                 webbrowser.open(verification_uri, new=2)
             except:
                 pass  # intentional pass, browser support isn't cross-platform
@@ -193,13 +193,13 @@ class HubIO:
                     token = {'access_token': access_token_response['access_token']}
                     with open(credentials_file(), 'w') as cf:
                         JAML.dump(token, cf)
-                    self.logger.success(f'successfully logged in!')
+                    self.logger.success(f'✅ Successfully logged in!')
                     break
             else:
-                self.logger.error(f'max retries {login_max_retry} reached')
+                self.logger.error(f'❌ Max retries {login_max_retry} reached')
 
         except KeyError as exp:
-            self.logger.error(f'can not read the key in response: {exp}')
+            self.logger.error(f'❌ Can not read the key in response: {exp}')
 
     def list(self) -> Optional[List[Dict[str, Any]]]:
         """List all hub images given a filter specified by CLI.
@@ -279,7 +279,7 @@ class HubIO:
 
         except Exception as e:
             self.logger.error(f'Error when trying to push image {name}: {e!r}')
-            if isinstance(e, ImageAlreadyExists):
+            if isinstance(e, (ImageAlreadyExists, HubLoginRequired)):
                 raise e
 
     def _push_docker_hub(self, name: Optional[str] = None) -> None:
@@ -367,9 +367,11 @@ class HubIO:
                 password=self.args.password,
                 registry=self.args.registry,
             )
-            self.logger.debug(f'successfully logged in to docker hub')
+            self.logger.success(f'✅ Successfully logged in to docker hub')
         except APIError:
-            raise DockerLoginFailed(f'invalid credentials passed. docker login failed')
+            raise HubLoginRequired(
+                f'❌ Invalid docker credentials passed. docker login failed'
+            )
 
     def build(self) -> Dict:
         """
@@ -419,6 +421,7 @@ class HubIO:
                                 _logs.append(line)
                 except Exception as ex:
                     # if pytest fails it should end up here as well
+                    self.logger.error(ex)
                     is_build_success = False
                     ex = HubBuilderBuildError(ex)
                     _except_strs.append(repr(ex))
@@ -451,9 +454,7 @@ class HubIO:
                 )
 
             else:
-                self.logger.error(
-                    f'can not build the image, please double check the log'
-                )
+                self.logger.error(f'can not build the image due to {_except_strs}')
                 _details = {}
 
             if is_build_success:
@@ -697,7 +698,36 @@ class HubIO:
                 with open(requirements_path, 'w') as fp:
                     fp.write('\n'.join(new_requirements))
 
+    @staticmethod
+    def _alias_to_local_path(alias: str):
+        """
+        Convert user given alias to the actual local path of the image, if fails return the original
+
+        :param alias: the name of the hub image, given by user
+        :return: the local path of the hub image, if not matched then return the original input
+        """
+        all_local_images = _load_local_hub_manifest()
+        if alias in all_local_images:
+            return all_local_images[alias]['source_path']
+        else:
+            return alias
+
+    @staticmethod
+    def _alias_to_docker_image_name(alias: str):
+        """
+        Convert user given alias to the actual image tag, if fails return the original
+
+        :param alias: the name of the hub image, given by user
+        :return: the actual image tag, if not matched then return the original input
+        """
+        all_local_images = _load_local_hub_manifest()
+        if alias in all_local_images:
+            return all_local_images[alias]['image_tag']
+        else:
+            return alias
+
     def _check_completeness(self) -> Dict:
+        self.args.path = self._alias_to_local_path(self.args.path)
         dockerfile_path = get_exist_path(self.args.path, self.args.file)
         manifest_path = get_exist_path(self.args.path, 'manifest.yml')
         self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')

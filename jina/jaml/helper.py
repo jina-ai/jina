@@ -167,7 +167,7 @@ def parse_config_source(
         # possible YAML content
         path = path.replace('|', '\n    with: ')
         return io.StringIO(path), None
-    elif allow_raw_driver_yaml_content and path.lstrip().startswith(('- !', 'jtype')):
+    elif allow_raw_driver_yaml_content and path.lstrip().startswith(('- !', '- jtype')):
         # possible driver YAML content, right now it is only used for debugging
         with open(
             resource_filename(

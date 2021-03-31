@@ -360,12 +360,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        # TODO (Joan, Florian). We would prefer not to keep `pea_id` condition, but afraid many tests rely on this
-        return (
-            os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
-            if (isinstance(pea_id, int) and pea_id > 0)
-            else workspace_folder
-        )
+        return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
 
     @property
     def workspace_name(self):
@@ -445,7 +440,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def train(self, *args, **kwargs) -> None:
         """
-        Train this executor, need to be overrided
+        Train this executor, need to be overridden
 
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
@@ -554,7 +549,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def close(self) -> None:
         """
-        Release the resources as executor is destroyed, need to be overrided
+        Release the resources as executor is destroyed, need to be overridden
         """
         self.save()
         self.logger.close()
