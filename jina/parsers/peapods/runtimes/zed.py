@@ -89,10 +89,18 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
     )
 
     gp.add_argument(
+        '--load-interval',
+        type=int,
+        default=-1,
+        help='Reload the Executor in the Pod on every n seconds. '
+        '-1 or 0 means do not reload. ',
+    )
+
+    gp.add_argument(
         '--dump-interval',
         type=int,
         default=240,
-        help='Serialize the model in the pod every n seconds if model changes. '
+        help='Serialize the Executor in the Pod every n seconds if model changes. '
         '-1 means --read-only. ',
     )
     gp.add_argument(
