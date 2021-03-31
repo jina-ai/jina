@@ -61,5 +61,5 @@ def test_dump_load_interval(config, flow_with_dump_interval, flow_with_load_inte
     time.sleep(1)
     # run load interval flow
     search_flow_with_load_interval()
-    # verify num_
+    # verify num_matches has different values since we're querying while indexing
     assert len(num_matches) > 1
