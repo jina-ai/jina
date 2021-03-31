@@ -145,12 +145,12 @@ def test_pod_naming_with_parallel(runtime):
     with BasePod(args) as bp:
         assert bp.peas[0].name == 'pod/head'
         assert bp.peas[1].name == 'pod/tail'
-        assert bp.peas[2].name == 'pod/1'
-        assert bp.peas[3].name == 'pod/2'
+        assert bp.peas[2].name == 'pod/0'
+        assert bp.peas[3].name == 'pod/1'
         assert bp.peas[0].runtime.name == 'pod/head/ZEDRuntime'
         assert bp.peas[1].runtime.name == 'pod/tail/ZEDRuntime'
-        assert bp.peas[2].runtime.name == 'pod/1/ZEDRuntime'
-        assert bp.peas[3].runtime.name == 'pod/2/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod/0/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod/1/ZEDRuntime'
 
 
 def test_pod_args_remove_uses_ba():
@@ -173,7 +173,7 @@ def test_pod_args_remove_uses_ba():
 
 def test_pod_remote_pea_without_parallel():
     args = set_pod_parser().parse_args(
-        ['--peas-hosts', '1: 0.0.0.1', '--parallel', str(1)]
+        ['--peas-hosts', '0.0.0.1', '--parallel', str(1)]
     )
     with Pod(args) as pod:
         peas = pod.peas
@@ -196,7 +196,7 @@ def test_pod_remote_pea_parallel_pea_host_set_partially(
     expected_host_out,
 ):
     args = set_pod_parser().parse_args(
-        ['--peas-hosts', f'1: {pea1_host}', '--parallel', str(2), '--host', pod_host]
+        ['--peas-hosts', f'{pea1_host}', '--parallel', str(2), '--host', pod_host]
     )
     assert args.host == pod_host
     pod = Pod(args)
@@ -205,7 +205,7 @@ def test_pod_remote_pea_parallel_pea_host_set_partially(
             assert v.host == args.host
         else:
             for pea_arg in v:
-                if pea_arg.pea_id == 1:
+                if pea_arg.pea_id in (0, 1):
                     assert pea_arg.host == pea1_host
                     assert pea_arg.host_in == expected_host_in
                     assert pea_arg.host_out == expected_host_out
@@ -232,8 +232,8 @@ def test_pod_remote_pea_parallel_pea_host_set_completely(
     args = set_pod_parser().parse_args(
         [
             '--peas-hosts',
-            f'1: {peas_hosts[0]}',
-            f'2: {peas_hosts[1]}',
+            f'{peas_hosts[0]}',
+            f'{peas_hosts[1]}',
             '--parallel',
             str(2),
             '--host',

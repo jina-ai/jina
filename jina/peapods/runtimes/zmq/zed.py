@@ -35,6 +35,7 @@ class ZEDRuntime(ZMQRuntime):
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
         self._last_dump_time = time.perf_counter()
+        self._last_load_time = time.perf_counter()
 
         self._timer = TimeDict()
 
@@ -101,6 +102,11 @@ class ZEDRuntime(ZMQRuntime):
             self._executor.save()
             self._last_dump_time = time.perf_counter()
 
+    def _reload_executor(self):
+        if (time.perf_counter() - self._last_load_time) > self.args.load_interval > 0:
+            self._load_executor()
+            self._last_load_time = time.perf_counter()
+
     def _check_memory_watermark(self):
         """Check the memory watermark."""
         if used_memory() > self.args.memory_hwm > 0:
@@ -115,6 +121,7 @@ class ZEDRuntime(ZMQRuntime):
         :return: `ZEDRuntime`
         """
         msg.add_route(self.name, self._id)
+        self._reload_executor()
         self._request = msg.request
         self._message = msg
 

@@ -18,7 +18,7 @@ pods:
     polling: all
     host: $JINA_INDEXER_HOST
     peas_hosts:
-      1: $JINA_ENCODER_HOST
+      - $JINA_ENCODER_HOST
     port_expose: 8000
   - name: slice
     uses: slice.yml

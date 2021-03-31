@@ -1,6 +1,7 @@
 import copy
 from argparse import Namespace
 from typing import List, Optional
+from itertools import cycle
 
 from ... import __default_host__
 from ...enums import SchedulerType, SocketType, PeaRoleType
@@ -8,26 +9,32 @@ from ...helper import get_public_ip, get_internal_ip, random_identity
 from ... import helper
 
 
-def _set_replica_args(
+def _set_peas_args(
     args: Namespace, head_args: Optional[Namespace] = None, tail_args: Namespace = None
 ) -> List[Namespace]:
     result = []
+    _host_list = (
+        args.peas_hosts
+        if args.peas_hosts
+        else [
+            args.host,
+        ]
+    )
 
-    for idx in range(args.replicas):
+    for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
         _args = copy.deepcopy(args)
 
-        if args.replicas > 1:
-            _args.replica_id = idx + 1  #: if it is parallel, then replica_id is 1-indexed
-            _args.pea_role = PeaRoleType.REPLICA
+        _args.pea_id = idx
+        if args.parallel > 1:
+            _args.pea_role = PeaRoleType.PARALLEL
             _args.identity = random_identity()
             if _args.peas_hosts:
-                _args.host = _args.peas_hosts.get(str(_args.replica_id), args.host)
+                _args.host = pea_host
             if _args.name:
-                _args.name += f'/replica_{_args.replica_id}'
+                _args.name += f'/{_args.pea_id}'
             else:
-                _args.name = f'replica_{_args.replica_id}'
+                _args.name = f'{_args.pea_id}'
         else:
-            _args.replica_id = 0
             _args.pea_role = PeaRoleType.SINGLETON
 
         if head_args:
@@ -36,8 +43,16 @@ def _set_replica_args(
             _args.port_out = tail_args.port_in
         _args.port_ctrl = helper.random_port()
         _args.socket_out = SocketType.PUSH_CONNECT
-        if args.polling.is_push:  # means any -> TODO always set to is _push LOAD_BALANCE
-            _args.socket_in = SocketType.DEALER_CONNECT
+        if args.polling.is_push:
+            if args.scheduling == SchedulerType.ROUND_ROBIN:
+                _args.socket_in = SocketType.PULL_CONNECT
+            elif args.scheduling == SchedulerType.LOAD_BALANCE:
+                _args.socket_in = SocketType.DEALER_CONNECT
+            else:
+                raise ValueError(
+                    f'{args.scheduling} is not supported as a SchedulerType!'
+                )
+
         else:
             _args.socket_in = SocketType.SUB_CONNECT
         if head_args:
@@ -86,9 +101,9 @@ def _copy_to_head_args(
     if as_router:
         _head_args.pea_role = PeaRoleType.HEAD
         if args.name:
-            _head_args.name = f'{args.name}/pod_head'
+            _head_args.name = f'{args.name}/head'
         else:
-            _head_args.name = f'pod_head'
+            _head_args.name = f'head'
 
     # in any case, if header is present, it represent this Pod to consume `num_part`
     # the following peas inside the pod will have num_part=1
@@ -114,9 +129,9 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     if as_router:
         _tail_args.uses = args.uses_after or '_pass'
         if args.name:
-            _tail_args.name = f'{args.name}/pod_tail'
+            _tail_args.name = f'{args.name}/tail'
         else:
-            _tail_args.name = f'pod_tail'
+            _tail_args.name = f'tail'
         _tail_args.pea_role = PeaRoleType.TAIL
         _tail_args.num_part = 1 if args.polling.is_push else args.parallel
 
