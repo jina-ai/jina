@@ -310,6 +310,7 @@ def test_batching_memmap(tmpdir):
 
         @batching
         def f(self, data):
+            print(f'data: {data}')
             assert data.shape == (2, 10)
             return data
 
@@ -333,7 +334,7 @@ def test_batching_ordinal_idx_arg(tmpdir):
             self.ord_idx = []
 
         @batching(
-            ordinal_idx_arg=2
+            ordinal_idx_arg=2, slice_nargs=1, split_over_axis=0
         )  # f = batching(ordinal_idx_arg=2) f, args[ordinal_idx_arg] = slice_idx(new_args)
         def f(self, data, ord_idx):
             print(f'ord_idx : {ord_idx}')
