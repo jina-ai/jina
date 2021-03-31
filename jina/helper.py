@@ -1234,3 +1234,17 @@ def download_mermaid_url(mermaid_url, output) -> None:
         default_logger.error(
             'can not download image, please check your graph and the network connections'
         )
+
+
+def ding(req):
+    """Play a ding sound `on_done`, used in 2021 April fools day"""
+    os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
+    import pygame
+    from pkg_resources import resource_filename
+
+    pygame.mixer.init()
+    pygame.mixer.music.load(
+        resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
+    )
+    pygame.mixer.music.play()
+    time.sleep(1)

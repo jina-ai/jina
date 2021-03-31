@@ -1,14 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import os
 import time
 
 from google.protobuf.json_format import MessageToJson
 
 from . import BaseDriver
-from ..types.querylang.queryset.dunderkey import dunder_get
 from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
 from ..proto import jina_pb2
+from ..types.querylang.queryset.dunderkey import dunder_get
 
 
 class BaseControlDriver(BaseDriver):
@@ -158,3 +159,23 @@ class RouteDriver(ControlReqDriver):
 
 class ForwardDriver(RouteDriver):
     """Alias to :class:`RouteDriver`"""
+
+
+class WhooshDriver(BaseControlDriver):
+    """Play a whoosh! sound"""
+
+    def __call__(self, *args, **kwargs):
+        """Play a whoosh sound, used in 2021 April fools day
+
+
+        .. # noqa: DAR101
+        """
+        os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
+        import pygame
+        from pkg_resources import resource_filename
+
+        pygame.mixer.init()
+        pygame.mixer.music.load(
+            resource_filename('jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3')))
+        )
+        pygame.mixer.music.play()
