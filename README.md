@@ -177,63 +177,24 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 
 ## Examples ([View all](https://github.com/jina-ai/examples))
+ 
+#### [📄 NLP Semantic Wikipedia Search with Transformers and DistilBERT](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences)
+Brand new to neural search? See a simple text-search example to understand how Jina works 
 
-<table>
-  <tr>
-    <td>
-      <h2>📄</h2>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences">NLP Semantic Wikipedia Search with Transformers and DistilBERT</a></h4>
-      Brand new to neural search? See a simple text-search example to understand how Jina works
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h2>📄</h2>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental">Add Incremental Indexing to Wikipedia Search</a></h4>
-      Index more effectively by adding incremental indexing to your Wikipedia search
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h2>📄</h2>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/multires-lyrics-search">Search Lyrics with Transformers and PyTorch</a></h4>
-      Get a better understanding of chunks by searching a lyrics database. Now with shiny front-end!
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h2>🖼️</h2>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/pokedex-with-bit">Google's Big Transfer Model in (Poké-)Production</a></h4>
-      Use SOTA visual representation for searching Pokémon!
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h2>🎧</h2>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/audio-search">Search YouTube audio data with Vggish</a></h4>
-      A demo of neural search for audio data based Vggish model.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h2>🎞️ </h2>
-    </td>
-    <td>
-      <h4><a href="https://github.com/jina-ai/examples/tree/master/tumblr-gif-search">Search Tumblr GIFs with KerasEncoder</a></h4>
-      Use prefetching and sharding to improve the performance of your index and query Flow when searching animated GIFs.
-    </td>
-  </tr>
-</table>
+#### [📄 Add Incremental Indexing to Wikipedia Search](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental)
+Index more effectively by adding incremental indexing to your Wikipedia search 
+
+#### [📄 Search Lyrics with Transformers and PyTorch](https://github.com/jina-ai/examples/tree/master/multires-lyrics-search)
+Get a better understanding of chunks by searching a lyrics database. Now with shiny front-end! 
+
+#### [🖼️ Google's Big Transfer Model in (Poké-)Production](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit)
+Use SOTA visual representation for searching Pokémon!
+
+#### [🎧 Search YouTube audio data with Vggish](https://github.com/jina-ai/examples/tree/master/audio-search)
+A demo of neural search for audio data based Vggish model. 
+
+#### [🎞️ Search Tumblr GIFs with KerasEncoder](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search)
+Use prefetching and sharding to improve the performance of your index and query Flow when searching animated GIFs.
 
 Check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
 
