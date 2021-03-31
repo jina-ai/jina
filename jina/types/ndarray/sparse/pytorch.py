@@ -1,6 +1,7 @@
 from typing import List
 
 import torch
+import numpy as np
 from torch.sparse import FloatTensor
 
 from . import BaseSparseNdArray
@@ -69,8 +70,10 @@ class SparseNdArray(BaseSparseNdArray):
         indices = value._indices().numpy()
         if self.transpose_indices:
             indices = indices.T
+        values = value._values().numpy()
+        shape = list(value.size())
         return {
             'indices': indices,
-            'values': value._values().numpy(),
-            'shape': list(value.shape),
+            'values': values,
+            'shape': shape,
         }

@@ -72,9 +72,9 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
     validate_index(
         tmpdir,
         validation_data=[
-            ('docIndexer.bin', 3),
-            ('chunkidx.bin', 17),
-            ('vecidx.bin', 17),
+            ('docIndexer-0/docIndexer.bin', 3),
+            ('chunkidx-0/chunkidx.bin', 17),
+            ('vecidx-0/vecidx.bin', 17),
         ],
     )
 
@@ -99,7 +99,11 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
 
     validate_index(
         tmpdir,
-        validation_data=[('docIndexer.bin', 2), ('chunkidx.bin', 7), ('vecidx.bin', 7)],
+        validation_data=[
+            ('docIndexer-0/docIndexer.bin', 2),
+            ('chunkidx-0/chunkidx.bin', 7),
+            ('vecidx-0/vecidx.bin', 7),
+        ],
     )
 
     # generate a new document 0 as a replacement for the deleted one
@@ -116,9 +120,9 @@ def test_crud_advanced_example(tmpdir, config, mocker, monkeypatch):
     validate_index(
         tmpdir,
         validation_data=[
-            ('docIndexer.bin', 3),
-            ('chunkidx.bin', 10),
-            ('vecidx.bin', 10),
+            ('docIndexer-0/docIndexer.bin', 3),
+            ('chunkidx-0/chunkidx.bin', 10),
+            ('vecidx-0/vecidx.bin', 10),
         ],
     )
 

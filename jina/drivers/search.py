@@ -60,7 +60,7 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
     def __init__(
         self,
         is_update: bool = True,
-        traversal_paths: Tuple[str] = ('m'),
+        traversal_paths: Tuple[str] = ('m',),
         *args,
         **kwargs,
     ):

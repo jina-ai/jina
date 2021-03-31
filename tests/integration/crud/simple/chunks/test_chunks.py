@@ -50,7 +50,7 @@ def document_generator(start, num_docs, num_chunks):
 
 def validate_index_size(num_indexed_docs):
     path = Path(os.environ['JINA_CRUD_CHUNKS'])
-    index_files = list(path.glob('*.bin'))
+    index_files = list(path.glob('**/*.bin'))
     assert len(index_files) > 0
     for index_file in index_files:
         index = BaseIndexer.load(str(index_file))

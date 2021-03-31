@@ -59,7 +59,7 @@ def validate_index_size(num_indexed_docs, compound=False):
         )
     else:
         path = Path(os.environ['JINA_TOPK_DIR'])
-    bin_files = list(path.glob('*.bin'))
+    bin_files = list(path.glob('**/*.bin'))
     assert len(bin_files) > 0
     for index_file in bin_files:
         index = BaseIndexer.load(str(index_file))

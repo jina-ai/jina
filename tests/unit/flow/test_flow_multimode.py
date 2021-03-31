@@ -77,19 +77,21 @@ def test_flow_with_modalities(tmpdir, restful):
     with flow:
         flow.index(inputs=input_function)
 
-    with open(os.path.join(tmpdir, 'compound', 'vec1.gz'), 'rb') as fp:
+    with open(os.path.join(tmpdir, 'compound', 'vecidx1-0', 'vec1.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(
             result, np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
         )
 
-    with open(os.path.join(tmpdir, 'compound', 'vec2.gz'), 'rb') as fp:
+    with open(os.path.join(tmpdir, 'compound', 'vecidx2-0', 'vec2.gz'), 'rb') as fp:
         result = np.frombuffer(fp.read(), dtype='float').reshape([-1, 3])
         np.testing.assert_equal(
             result, np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
         )
 
-    chunkIndexer1 = BinaryPbIndexer.load(os.path.join(tmpdir, 'compound', 'kvidx1.bin'))
+    chunkIndexer1 = BinaryPbIndexer.load(
+        os.path.join(tmpdir, 'compound', 'kvidx1-0', 'kvidx1.bin')
+    )
     assert chunkIndexer1.size == 3
     d_id = list(chunkIndexer1.query_handler.header.keys())[0]
 
@@ -98,7 +100,9 @@ def test_flow_with_modalities(tmpdir, restful):
     assert query_doc.text == 'title: this is mode1 from doc1'
     assert query_doc.modality == 'mode1'
 
-    chunkIndexer2 = BinaryPbIndexer.load(os.path.join(tmpdir, 'compound', 'kvidx2.bin'))
+    chunkIndexer2 = BinaryPbIndexer.load(
+        os.path.join(tmpdir, 'compound', 'kvidx2-0', 'kvidx2.bin')
+    )
     assert chunkIndexer2.size == 3
     d_id = list(chunkIndexer2.query_handler.header.keys())[0]
 

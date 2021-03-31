@@ -38,13 +38,13 @@ def test_incremental_indexing_sequential_indexers(random_workspace, restful):
     print(f' random_workspace {random_workspace}')
 
     with BaseExecutor.load(
-        random_workspace / 'inc_vecindexer' / 'vec_idx.bin'
+        random_workspace / 'inc_vecindexer' / 'vec_idx-0' / 'vec_idx.bin'
     ) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
     with BaseExecutor.load(
-        random_workspace / 'inc_docindexer' / 'doc_idx.bin'
+        random_workspace / 'inc_docindexer' / 'doc_idx-0' / 'doc_idx.bin'
     ) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
@@ -75,13 +75,13 @@ def test_incremental_indexing_sequential_indexers_content_hash_same_content(
         f.index(duplicate_docs)
 
     with BaseExecutor.load(
-        random_workspace / 'inc_vecindexer' / 'vec_idx.bin'
+        random_workspace / 'inc_vecindexer' / 'vec_idx-0' / 'vec_idx.bin'
     ) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
     with BaseExecutor.load(
-        random_workspace / 'inc_docindexer' / 'doc_idx.bin'
+        random_workspace / 'inc_docindexer' / 'doc_idx-0' / 'doc_idx.bin'
     ) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
@@ -112,13 +112,13 @@ def test_incremental_indexing_sequential_indexers_content_hash(
         f.index(duplicate_docs)
 
     with BaseExecutor.load(
-        random_workspace / 'inc_vecindexer' / 'vec_idx.bin'
+        random_workspace / 'inc_vecindexer' / 'vec_idx-0' / 'vec_idx.bin'
     ) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
     with BaseExecutor.load(
-        random_workspace / 'inc_docindexer' / 'doc_idx.bin'
+        random_workspace / 'inc_docindexer' / 'doc_idx-0' / 'doc_idx.bin'
     ) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
@@ -147,13 +147,13 @@ def test_incremental_indexing_parallel_indexers(random_workspace, restful):
         f.index(duplicate_docs)
 
     with BaseExecutor.load(
-        (random_workspace / 'inc_vecindexer' / 'vec_idx.bin')
+        (random_workspace / 'inc_vecindexer' / 'vec_idx-0' / 'vec_idx.bin')
     ) as vector_indexer:
         assert isinstance(vector_indexer, NumpyIndexer)
         assert vector_indexer._size == num_uniq_docs
 
     with BaseExecutor.load(
-        (random_workspace / 'inc_docindexer' / 'doc_idx.bin')
+        (random_workspace / 'inc_docindexer' / 'doc_idx-0' / 'doc_idx.bin')
     ) as doc_indexer:
         assert isinstance(doc_indexer, BinaryPbIndexer)
         assert doc_indexer._size == num_uniq_docs
@@ -190,7 +190,7 @@ def test_incremental_indexing_sequential_indexers_with_shards(
 
     vect_idx_size = 0
     for shard_idx in range(num_shards):
-        save_abspath = random_workspace / f'vec_idx-{shard_idx + 1}' / 'vec_idx.bin'
+        save_abspath = random_workspace / f'vec_idx-{shard_idx}' / 'vec_idx.bin'
         with BaseExecutor.load(save_abspath) as vector_indexer:
             assert isinstance(vector_indexer, NumpyIndexer)
             vect_idx_size += vector_indexer._size
@@ -198,7 +198,7 @@ def test_incremental_indexing_sequential_indexers_with_shards(
 
     doc_idx_size = 0
     for shard_idx in range(num_shards):
-        save_abspath = random_workspace / f'doc_idx-{shard_idx + 1}' / 'doc_idx.bin'
+        save_abspath = random_workspace / f'doc_idx-{shard_idx}' / 'doc_idx.bin'
         with BaseExecutor.load(save_abspath) as doc_indexer:
             assert isinstance(doc_indexer, BinaryPbIndexer)
             doc_idx_size += doc_indexer._size
@@ -240,7 +240,7 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace, re
 
     vect_idx_size = 0
     for shard_idx in range(num_shards):
-        save_abspath = random_workspace / f'vec_idx-{shard_idx + 1}' / 'vec_idx.bin'
+        save_abspath = random_workspace / f'vec_idx-{shard_idx}' / 'vec_idx.bin'
         with BaseExecutor.load(save_abspath) as vector_indexer:
             assert isinstance(vector_indexer, NumpyIndexer)
             vect_idx_size += vector_indexer._size
@@ -248,7 +248,7 @@ def test_incremental_indexing_parallel_indexers_with_shards(random_workspace, re
 
     doc_idx_size = 0
     for shard_idx in range(num_shards):
-        save_abspath = random_workspace / f'doc_idx-{shard_idx + 1}' / 'doc_idx.bin'
+        save_abspath = random_workspace / f'doc_idx-{shard_idx}' / 'doc_idx.bin'
         with BaseExecutor.load(save_abspath) as doc_indexer:
             assert isinstance(doc_indexer, BinaryPbIndexer)
             doc_idx_size += doc_indexer._size

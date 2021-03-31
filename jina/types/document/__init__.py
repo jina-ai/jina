@@ -27,6 +27,7 @@ from ...importer import ImportExtensions
 from ...logging import default_logger
 from ...proto import jina_pb2
 
+
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
 
@@ -41,6 +42,37 @@ _document_fields = set(
 )
 
 _all_mime_types = set(mimetypes.types_map.values())
+
+scipy_installed = False
+tensorflow_installed = False
+pytorch_installed = False
+
+with ImportExtensions(
+    required=False,
+    pkg_name='scipy',
+    help_text=f'can not import scipy: pip install scipy ',
+):
+    import scipy
+
+    scipy_installed = True
+
+with ImportExtensions(
+    required=False,
+    pkg_name='tensorflow',
+    help_text=f'can not import tensorflow: pip install tensorflow ',
+):
+    import tensorflow
+
+    tensorflow_installed = True
+
+with ImportExtensions(
+    required=False,
+    pkg_name='torch',
+    help_text=f'can not import torch: pip install torch ',
+):
+    import torch
+
+    pytorch_installed = True
 
 
 class Document(ProtoTypeMixin, Traversable):
@@ -448,7 +480,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> 'np.ndarray':
+    def blob(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
@@ -467,7 +499,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'np.ndarray':
+    def embedding(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
@@ -490,6 +522,34 @@ class Document(ProtoTypeMixin, Traversable):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
+        elif scipy_installed and scipy.sparse.issparse(v):
+            from ..ndarray.sparse.scipy import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            protbuff_updater.value = v
+        elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
+            from ..ndarray.sparse.tensorflow import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            protbuff_updater.value = v
+
+        elif pytorch_installed and isinstance(v, torch.Tensor) and v.is_sparse:
+            from ..ndarray.sparse.pytorch import SparseNdArray
+
+            protbuff_updater = NdArray(
+                is_sparse=True,
+                sparse_cls=SparseNdArray,
+                proto=getattr(self._pb_body, k),
+            )
+            protbuff_updater.value = v
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
