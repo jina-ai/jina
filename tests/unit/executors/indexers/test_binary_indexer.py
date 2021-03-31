@@ -199,4 +199,3 @@ def test_kvindexer_iterate(test_metas):
 
     with BaseIndexer.load(save_abspath) as idxer:
         assert list(idxer) == [b'oldvalue', b'same', b'random']
-
