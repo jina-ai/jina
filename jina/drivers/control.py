@@ -80,6 +80,10 @@ class ControlReqDriver(BaseControlDriver):
         elif self.req.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
             self.req.args = vars(self.runtime.args)
+        elif self.req.command == 'IDLE':
+            pass
+        elif self.req.command == 'CANCEL':
+            pass
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
@@ -155,11 +159,9 @@ class RouteDriver(ControlReqDriver):
             if self.is_polling_paused:
                 self.runtime._zmqlet.resume_pollin()
                 self.is_polling_paused = False
-            raise NoExplicitMessage
         elif self.req.command == 'CANCEL':
             if self.envelope.receiver_id in self.idle_dealer_ids:
                 self.idle_dealer_ids.remove(self.envelope.receiver_id)
-            raise NoExplicitMessage
         else:
             super().__call__(*args, **kwargs)
 
