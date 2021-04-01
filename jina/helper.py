@@ -1070,7 +1070,7 @@ def get_public_ip():
     threads = []
 
     for idx, ip in enumerate(ip_server_list):
-        t = Thread(target=_get_ip, args=(ip, ))
+        t = Thread(target=_get_ip, args=(ip,))
         threads.append(t)
         t.start()
 
