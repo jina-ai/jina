@@ -133,9 +133,6 @@ JINA_GLOBAL.scipy_installed = None
 JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 
-
-# JINA_GLOBAL = _types.SimpleNamespace()
-
 import jina.importer as _ji
 
 # driver first, as executor may contain driver
