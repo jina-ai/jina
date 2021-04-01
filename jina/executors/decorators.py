@@ -351,7 +351,6 @@ def batching(
     else:
         return _batching
 
-
 def single(
     func: Optional[Callable[[Any], np.ndarray]] = None,
     merge_over_axis: int = 0,

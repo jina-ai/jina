@@ -131,7 +131,9 @@ class ContainerRuntime(ZMQRuntime):
                 self.logger.error(f'can not find remote image: {uses_img}')
 
         if img_not_found:
-            raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
+            raise BadImageNameError(
+                f'image: {uses_img} can not be found local & remote.'
+            )
 
         _volumes = {}
         if self.args.uses_internal:

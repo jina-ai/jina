@@ -1,13 +1,13 @@
 !CompoundIndexer
 components:
-  - !NumpyIndexer
+  - !VectorIndexer
     with:
       index_filename: vec.gz
       metric: euclidean
       delete_on_dump: true
     metas:
       name: vecidx  # a customized name
-  - !BinaryPbIndexer
+  - !KeyValueIndexer
     with:
       index_filename: chunk.gz
     metas:
