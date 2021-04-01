@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import os
 import time
 
 from google.protobuf.json_format import MessageToJson
@@ -167,15 +166,10 @@ class WhooshDriver(BaseControlDriver):
     def __call__(self, *args, **kwargs):
         """Play a whoosh sound, used in 2021 April fools day
 
-
         .. # noqa: DAR101
         """
-        os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
-        import pygame
+        import subprocess
         from pkg_resources import resource_filename
+        whoosh_mp3 = resource_filename('jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3')))
 
-        pygame.mixer.init()
-        pygame.mixer.music.load(
-            resource_filename('jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3')))
-        )
-        pygame.mixer.music.play()
+        subprocess.Popen(f'ffplay  -nodisp -autoexit {whoosh_mp3} >/dev/null 2>&1', shell=True)

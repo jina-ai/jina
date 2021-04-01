@@ -1238,13 +1238,8 @@ def download_mermaid_url(mermaid_url, output) -> None:
 
 def ding(req):
     """Play a ding sound `on_done`, used in 2021 April fools day"""
-    os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
-    import pygame
+    import subprocess
     from pkg_resources import resource_filename
+    soundfx = resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
 
-    pygame.mixer.init()
-    pygame.mixer.music.load(
-        resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
-    )
-    pygame.mixer.music.play()
-    time.sleep(1)
+    subprocess.call(f'ffplay  -nodisp -autoexit {soundfx} >/dev/null 2>&1', shell=True)
