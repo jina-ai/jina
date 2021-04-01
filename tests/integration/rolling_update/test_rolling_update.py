@@ -21,14 +21,10 @@ def test_simple_run():
         port_in=5100,
         port_out=5200,
     )
-    # TODO replica plot
-    # flow.plot(output=os.path.join('flow2.jpg'), copy_flow=True)
+
     with flow:
         flow.index('documents before rolling update')
         print('#### before update ')
-        # TODO test index request if it is sent only once or more often
-        # TODO check original implementation
-        # TODO check where ide request is sent
         flow.rolling_update('pod1')
         print('# index while roling update')
         flow.index('documents after rolling update')
@@ -48,7 +44,7 @@ def test_async_run():
             flow.index(Document(text='documents before rolling update'))
             time.sleep(1)
         print('#### before update ')
-        flow.rolling_update_async('pod1')
+        flow.rolling_update_thread('pod1')
         print('# index while roling update')
         for i in range(40):
             flow.index(Document(text='documents after rolling update'))
@@ -57,7 +53,6 @@ def test_async_run():
     print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
 
 
-# TODO tests are taking too much time to run
 def test_vector_indexer_async(config):
     with Flow().add(
         name='pod1',
@@ -71,7 +66,7 @@ def test_vector_indexer_async(config):
             flow.search(Document(text='documents before rolling update'))
             time.sleep(1)
         print('#### before update ')
-        flow.rolling_update_async('pod1')
+        flow.rolling_update_thread('pod1')
         print('# index while rolling update')
         for i in range(40):
             flow.search(Document(text='documents after rolling update'))
@@ -80,16 +75,12 @@ def test_vector_indexer_async(config):
     print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
 
 
-
-
 @pytest.mark.parametrize(
     'replicas_and_parallel',
     (
-        # ((1, 1),),
-        # ((1, 2),),
-        # ((2, 1),),
+        ((3, 1),),
         ((2, 3),),
-        # ((2, 1), (3, 4), (1, 2), (1, 1), (2, 2)),
+        ((2, 3), (3, 4), (2, 2), (2, 1)),
     ),
 )
 def test_port_configuration(replicas_and_parallel):
@@ -110,17 +101,12 @@ def test_port_configuration(replicas_and_parallel):
             if not 'parallel' in pod.args or int(pod.args.parallel) == 1:
                 assert tail_args is None
                 assert head_args is None
-                # assert len(pod.replica_list) == 1
-                # assert len(pod.peas) == 0
                 replica = middle_args[0]  # there is only one
                 return replica.port_in, replica.port_out
             else:
                 return pod.peas_args['head'].port_in, pod.peas_args['tail'].port_out
         else:
             assert pod.args.replicas == len(middle_args)
-            # assert pod.args.replicas == len(pod.replica_list)
-            # assert len(pod.peas) == 2
-            # assert pod.args.parallel == len(pod.replica_list[0].peas_args['peas'])
             return pod.replicas_args['head'].port_in, pod.replicas_args['tail'].port_out
 
     def validate_ports_pods(pods):
@@ -150,15 +136,11 @@ def test_port_configuration(replicas_and_parallel):
                 assert pea.port_out == shard_tail.port_in
 
     flow = Flow()
-    # flow.plot() # TODO crashes for some reason when copy_flow=False
-    # flow.plot(output=os.path.join('flow.svg'), copy_flow=True)
     for i, (replicas, parallel) in enumerate(replicas_and_parallel):
         flow.add(
             name=f'pod{i}',
             replicas=replicas,
             parallel=parallel,
-            # TODO create ticket for port_in port_out inconsistency. It is not possible to only set a custom port out
-            # instead of configuring port_in and port out we should just configure the communication ports once
             port_in=f'51{i}00',  # info: needs to be set in this test since the test is asserting pod args with pod tail args
             port_out=f'51{i+1}00',  # outside this test, it don't have to be set
             copy_flow=False,
