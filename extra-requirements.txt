@@ -75,4 +75,3 @@ bs4:                        test
 aiostream:                  devel, cicd
 click:                      cicd
 jsonschema:                 cicd
-pygame:                     easter
