@@ -1042,31 +1042,35 @@ def get_internal_ip():
     return ip
 
 
+@functools.lru_cache()
 def get_public_ip():
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
 
     :return: Public IP address.
     """
-    # 'https://api.ipify.org'
-    # https://ident.me
-    # ipinfo.io/ip
     import urllib.request
+    import concurrent.futures
 
     def _get_ip(url):
         try:
-            with urllib.request.urlopen(url, timeout=1) as fp:
+            print(url)
+            with urllib.request.urlopen(url, timeout=0.5) as fp:
                 return fp.read().decode('utf8')
         except:
             pass
 
-    ip = (
-        _get_ip('https://api.ipify.org')
-        or _get_ip('https://ident.me')
-        or _get_ip('https://ipinfo.io/ip')
-    )
+    ip_server_list = [
+        'https://api.ipify.org',
+        'https://ident.me',
+        'https://ipinfo.io/ip',
+    ]
 
-    return ip
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(_get_ip, ip) for ip in ip_server_list]
+        for f in futures:
+            if f.result():
+                return f.result()
 
 
 def convert_tuple_to_list(d: Dict):
