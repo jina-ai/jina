@@ -433,7 +433,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
+    def blob(self) -> 'np.ndarray':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
