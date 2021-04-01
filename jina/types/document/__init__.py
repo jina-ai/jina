@@ -507,18 +507,21 @@ class Document(ProtoTypeMixin, Traversable):
 
                     JINA_GLOBAL.torch_installed = True
 
-            if JINA_GLOBAL.scipy_installed and scipy.sparse.issparse(v):
-                from ..ndarray.sparse.scipy import SparseNdArray
-            elif JINA_GLOBAL.tensorflow_installed and isinstance(
-                v, tensorflow.SparseTensor
-            ):
-                from ..ndarray.sparse.tensorflow import SparseNdArray
-            elif (
-                JINA_GLOBAL.torch_installed
-                and isinstance(v, torch.Tensor)
-                and v.is_sparse
-            ):
-                from ..ndarray.sparse.pytorch import SparseNdArray
+            if JINA_GLOBAL.scipy_installed:
+                import scipy
+
+                if scipy.sparse.issparse(v):
+                    from ..ndarray.sparse.scipy import SparseNdArray
+            elif JINA_GLOBAL.tensorflow_installed:
+                import tensorflow
+
+                if isinstance(v, tensorflow.SparseTensor):
+                    from ..ndarray.sparse.tensorflow import SparseNdArray
+            elif JINA_GLOBAL.torch_installed:
+                import torch
+
+                if isinstance(v, torch.Tensor) and v.is_sparse:
+                    from ..ndarray.sparse.pytorch import SparseNdArray
             else:
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
