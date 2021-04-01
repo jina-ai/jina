@@ -1247,3 +1247,12 @@ def download_mermaid_url(mermaid_url, output) -> None:
         default_logger.error(
             'can not download image, please check your graph and the network connections'
         )
+
+
+def ding(req):
+    """Play a ding sound `on_done`, used in 2021 April fools day"""
+    import subprocess
+    from pkg_resources import resource_filename
+    soundfx = resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
+
+    subprocess.call(f'ffplay  -nodisp -autoexit {soundfx} >/dev/null 2>&1', shell=True)
