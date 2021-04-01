@@ -233,6 +233,14 @@ class BaseIndexer(BaseExecutor):
     ) -> Iterable:
         return [key for key in keys if key in set(existent_keys)]
 
+    def sample(self):
+        """Return a sample from this indexer, useful in sanity check """
+        raise NotImplementedError
+
+    def __iter__(self):
+        """Iterate over all entries in this indexer. """
+        raise NotImplementedError
+
 
 class BaseVectorIndexer(BaseIndexer):
     """An abstract class for vector indexer. It is equipped with drivers in ``requests.on``

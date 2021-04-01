@@ -43,6 +43,7 @@ def test_numpy_indexer(batch_size, compress_level, test_metas):
         idx, dist = indexer.query(query, top_k=4)
         assert idx.shape == dist.shape
         assert idx.shape == (num_query, 4)
+        assert indexer.sample().shape == (num_dim,)
 
 
 def test_numpy_indexer_long_ids(test_metas):
@@ -527,6 +528,7 @@ def test_numpy_indexer_with_ref_indexer(compress_level, test_metas):
     with NumpyIndexer(
         metric='euclidean', ref_indexer=indexer, metas=test_metas
     ) as new_indexer:
+        np.testing.assert_equal(np.array(list(new_indexer)), vectors)
         assert new_indexer.compress_level == compress_level
         assert new_indexer.index_filename == index_filename
         assert isinstance(indexer, NumpyIndexer)

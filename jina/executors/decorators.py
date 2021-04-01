@@ -297,7 +297,6 @@ def batching(
                         b_size,
                         split_over_axis,
                         yield_slice=yield_slice[i],
-                        # yield_dict=yield_dict[i],
                     )
                 )
 
@@ -322,9 +321,6 @@ def batching(
 
                     # TODO: figure out what is ordinal_idx_arg
                     if not isinstance(new_args[i], tuple):
-                        print(f'new_args {new_args}')
-                        print(f'slice_on {slice_on}')
-                        # args[slice_on] = _arg
                         if ordinal_idx_arg and slice_idx is not None:
                             copy_args[ordinal_idx_arg] = slice_idx
 
