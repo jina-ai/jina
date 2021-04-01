@@ -26,6 +26,11 @@ class EnumType(EnumMeta):
     """The metaclass for BetterEnum."""
 
     def __new__(cls, *args, **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
@@ -55,7 +60,12 @@ class BetterEnum(IntEnum, metaclass=EnumType):
 
     @classmethod
     def from_string(cls, s: str):
-        """Parse the enum from a string."""
+        """
+        Parse the enum from a string.
+
+        :param s: string representation of the enum value
+        :return: enum value
+        """
         try:
             return cls[s.upper()]
         except KeyError:
@@ -70,6 +80,9 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         .. note::
             In principle, this should inherit from :class:`JAMLCompatible` directly,
             however, this method is too simple and thus replaced the parent method.
+        :param representer: pyyaml representer
+        :param data: enum value
+        :return: yaml representation
         """
         return representer.represent_scalar(
             'tag:yaml.org,2002:str', str(data), style='"'
@@ -82,6 +95,9 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         .. note::
             In principle, this should inherit from :class:`JAMLCompatible` directly,
             however, this method is too simple and thus replaced the parent method.
+        :param constructor: unused
+        :param node: node to derive the enum value from
+        :return: enum value
         """
         return cls.from_string(node.value)
 
