@@ -43,40 +43,6 @@ _document_fields = set(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
-scipy_installed = False
-tensorflow_installed = False
-pytorch_installed = False
-
-with ImportExtensions(
-    required=False,
-    pkg_name='scipy',
-    help_text=f'can not import scipy: pip install scipy ',
-    verbose=False,
-):
-    import scipy
-
-    scipy_installed = True
-
-with ImportExtensions(
-    required=False,
-    pkg_name='tensorflow',
-    help_text=f'can not import tensorflow: pip install tensorflow ',
-    verbose=False,
-):
-    import tensorflow
-
-    tensorflow_installed = True
-
-with ImportExtensions(
-    required=False,
-    pkg_name='torch',
-    help_text=f'can not import torch: pip install torch ',
-    verbose=False,
-):
-    import torch
-
-    pytorch_installed = True
-
 
 class Document(ProtoTypeMixin, Traversable):
     """
@@ -508,6 +474,30 @@ class Document(ProtoTypeMixin, Traversable):
             proto=getattr(self._pb_body, k),
         ).value = v
 
+    def _check_sparse_arrays_installed(self):
+        from ... import JINA_GLOBAL
+
+        if JINA_GLOBAL.scipy_installed is None:
+            JINA_GLOBAL.scipy_installed = False
+            with ImportExtensions(required=False, pkg_name='scipy'):
+                import scipy
+
+                JINA_GLOBAL.scipy_installed = True
+
+        if JINA_GLOBAL.tensorflow_installed is None:
+            JINA_GLOBAL.tensorflow_installed = False
+            with ImportExtensions(required=False, pkg_name='tensorflow'):
+                import tensorflow
+
+                JINA_GLOBAL.tensorflow_installed = True
+
+        if JINA_GLOBAL.torch_installed is None:
+            JINA_GLOBAL.torch_installed = False
+            with ImportExtensions(required=False, pkg_name='torch'):
+                import torch
+
+                JINA_GLOBAL.torch_installed = True
+
     def _update_ndarray(self, k, v):
         if isinstance(v, jina_pb2.NdArrayProto):
             getattr(self._pb_body, k).CopyFrom(v)
@@ -516,20 +506,42 @@ class Document(ProtoTypeMixin, Traversable):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
-        elif scipy_installed and scipy.sparse.issparse(v):
-            from ..ndarray.sparse.scipy import SparseNdArray
 
-            self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-        elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
-            from ..ndarray.sparse.tensorflow import SparseNdArray
-
-            self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-        elif pytorch_installed and isinstance(v, torch.Tensor) and v.is_sparse:
-            from ..ndarray.sparse.pytorch import SparseNdArray
-
-            self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
         else:
-            raise TypeError(f'{k} is in unsupported type {typename(v)}')
+            from ... import JINA_GLOBAL
+
+            v_valid_sparse_type = False
+            self._check_sparse_arrays_installed()
+
+            if JINA_GLOBAL.scipy_installed:
+                import scipy
+
+                if scipy.sparse.issparse(v):
+                    from ..ndarray.sparse.scipy import SparseNdArray
+
+                    self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                    v_valid_sparse_type = True
+
+            if JINA_GLOBAL.tensorflow_installed:
+                import tensorflow
+
+                if isinstance(v, tensorflow.SparseTensor):
+                    from ..ndarray.sparse.tensorflow import SparseNdArray
+
+                    self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                    v_valid_sparse_type = True
+
+            if JINA_GLOBAL.torch_installed:
+                import torch
+
+                if isinstance(v, torch.Tensor) and v.is_sparse:
+                    from ..ndarray.sparse.pytorch import SparseNdArray
+
+                    self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                    v_valid_sparse_type = True
+
+            if v_valid_sparse_type == False:
+                raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
     def matches(self) -> 'MatchSet':
