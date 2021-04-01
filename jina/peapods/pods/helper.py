@@ -1,6 +1,7 @@
 import copy
 from argparse import Namespace
 from typing import List, Optional
+from itertools import cycle
 
 from ... import __default_host__
 from ...enums import SchedulerType, SocketType, PeaRoleType
@@ -12,22 +13,28 @@ def _set_peas_args(
     args: Namespace, head_args: Optional[Namespace] = None, tail_args: Namespace = None
 ) -> List[Namespace]:
     result = []
+    _host_list = (
+        args.peas_hosts
+        if args.peas_hosts
+        else [
+            args.host,
+        ]
+    )
 
-    for idx in range(args.parallel):
+    for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
         _args = copy.deepcopy(args)
 
+        _args.pea_id = idx
         if args.parallel > 1:
-            _args.pea_id = idx + 1  #: if it is parallel, then pea_id is 1-indexed
             _args.pea_role = PeaRoleType.PARALLEL
             _args.identity = random_identity()
             if _args.peas_hosts:
-                _args.host = _args.peas_hosts.get(str(_args.pea_id), args.host)
+                _args.host = pea_host
             if _args.name:
-                _args.name += f'/pea_{_args.pea_id}'
+                _args.name += f'/{_args.pea_id}'
             else:
-                _args.name = f'pea_{_args.pea_id}'
+                _args.name = f'{_args.pea_id}'
         else:
-            _args.pea_id = 0
             _args.pea_role = PeaRoleType.SINGLETON
 
         if head_args:
@@ -94,9 +101,9 @@ def _copy_to_head_args(
     if as_router:
         _head_args.pea_role = PeaRoleType.HEAD
         if args.name:
-            _head_args.name = f'{args.name}/replica_head'
+            _head_args.name = f'{args.name}/head'
         else:
-            _head_args.name = f'replica_head'
+            _head_args.name = f'head'
 
     # in any case, if header is present, it represent this Pod to consume `num_part`
     # the following peas inside the pod will have num_part=1
@@ -122,11 +129,10 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
     if as_router:
         _tail_args.uses = args.uses_after or '_pass'
         if args.name:
-            _tail_args.name = f'{args.name}/replica_tail'
+            _tail_args.name = f'{args.name}/tail'
         else:
-            _tail_args.name = f'replica_tail'
+            _tail_args.name = f'tail'
         _tail_args.pea_role = PeaRoleType.TAIL
-        # TODO parallel should not be used here
         _tail_args.num_part = 1 if args.polling.is_push else args.parallel
 
     return _tail_args
