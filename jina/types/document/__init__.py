@@ -452,7 +452,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
+    def embedding(self) -> 'np.ndarray':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
