@@ -129,7 +129,7 @@ from jina.types.sets import DocumentSet, QueryLangSet
 JINA_GLOBAL = _types.SimpleNamespace()
 JINA_GLOBAL.scipy_installed = None
 JINA_GLOBAL.tensorflow_installed = None
-JINA_GLOBAL.pytorch_installed = None
+JINA_GLOBAL.torch_installed = None
 
 import jina.importer as _ji
 
