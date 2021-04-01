@@ -51,7 +51,7 @@ with ImportExtensions(
     required=False,
     pkg_name='scipy',
     help_text=f'can not import scipy: pip install scipy ',
-    verbose=False
+    verbose=False,
 ):
     import scipy
 
@@ -61,7 +61,7 @@ with ImportExtensions(
     required=False,
     pkg_name='tensorflow',
     help_text=f'can not import tensorflow: pip install tensorflow ',
-    verbose=False
+    verbose=False,
 ):
     import tensorflow
 
@@ -71,7 +71,7 @@ with ImportExtensions(
     required=False,
     pkg_name='torch',
     help_text=f'can not import torch: pip install torch ',
-    verbose=False
+    verbose=False,
 ):
     import torch
 
@@ -501,12 +501,12 @@ class Document(ProtoTypeMixin, Traversable):
         """
         self._update_ndarray('embedding', value)
 
-    def _update_sparse_ndarray(self, k, v , sparse_cls):
+    def _update_sparse_ndarray(self, k, v, sparse_cls):
         protbuf_updater = NdArray(
-                is_sparse=True,
-                sparse_cls=sparse_cls,
-                proto=getattr(self._pb_body, k),
-            )
+            is_sparse=True,
+            sparse_cls=sparse_cls,
+            proto=getattr(self._pb_body, k),
+        )
         protbuf_updater.value = v
 
     def _update_ndarray(self, k, v):
@@ -519,13 +519,16 @@ class Document(ProtoTypeMixin, Traversable):
             NdArray(getattr(self._pb_body, k)).value = v.value
         elif scipy_installed and scipy.sparse.issparse(v):
             from ..ndarray.sparse.scipy import SparseNdArray
-            self._update_sparse_ndarray(k=k, v=v, sparse_cls = SparseNdArray)
+
+            self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
         elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
             from ..ndarray.sparse.tensorflow import SparseNdArray
-            self._update_sparse_ndarray(k=k, v=v, sparse_cls = SparseNdArray)
+
+            self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
         elif pytorch_installed and isinstance(v, torch.Tensor) and v.is_sparse:
             from ..ndarray.sparse.pytorch import SparseNdArray
-            self._update_sparse_ndarray(k=k, v=v, sparse_cls = SparseNdArray)
+
+            self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
         else:
             raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
