@@ -502,12 +502,11 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('embedding', value)
 
     def _update_sparse_ndarray(self, k, v, sparse_cls):
-        protbuf_updater = NdArray(
+        NdArray(
             is_sparse=True,
             sparse_cls=sparse_cls,
             proto=getattr(self._pb_body, k),
-        )
-        protbuf_updater.value = v
+        ).value = v
 
     def _update_ndarray(self, k, v):
         if isinstance(v, jina_pb2.NdArrayProto):
