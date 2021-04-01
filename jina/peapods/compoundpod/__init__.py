@@ -18,7 +18,7 @@ from ..replicas import BaseReplica
 from ...enums import *
 
 
-class BasePod(ExitStack):
+class CompoundPod(ExitStack):
     """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
