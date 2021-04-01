@@ -80,36 +80,53 @@ def test_vector_indexer_async(config):
     print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
 
 
+
+
 @pytest.mark.parametrize(
     'replicas_and_parallel',
     (
         # ((1, 1),),
         # ((1, 2),),
         # ((2, 1),),
-        # ((2, 3),),
-        ((2, 1), (3, 4), (1, 2), (1, 1), (2, 2)),
+        ((2, 3),),
+        # ((2, 1), (3, 4), (1, 2), (1, 1), (2, 2)),
     ),
 )
 def test_port_configuration(replicas_and_parallel):
-    def get_outer_ports(pod):
-        if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
-            assert pod.replicas_args['tail'] is None
-            assert pod.replicas_args['head'] is None
-            assert len(pod.replica_list) == 1
-            assert len(pod.peas) == 0
-            replica = pod.replicas_args['replicas'][0]  # there is only one
-            return replica.port_in, replica.port_out
+    def extract_pod_args(pod):
+        if 'replicas' not in pod.args or int(pod.args.replicas) == 1:
+            head_args = pod.peas_args['head']
+            tail_args = pod.peas_args['tail']
+            middle_args = pod.peas_args['peas']
         else:
-            assert pod.args.replicas == len(pod.replicas_args['replicas'])
-            assert pod.args.replicas == len(pod.replica_list)
-            assert len(pod.peas) == 2
-            assert pod.args.parallel == len(pod.replica_list[0].peas_args['peas'])
+            head_args = pod.replicas_args['head']
+            tail_args = pod.replicas_args['tail']
+            middle_args = pod.replicas_args['replicas']
+        return pod, head_args, tail_args, middle_args
+
+    def get_outer_ports(pod, head_args, tail_args, middle_args):
+
+        if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
+            if not 'parallel' in pod.args or int(pod.args.parallel) == 1:
+                assert tail_args is None
+                assert head_args is None
+                # assert len(pod.replica_list) == 1
+                # assert len(pod.peas) == 0
+                replica = middle_args[0]  # there is only one
+                return replica.port_in, replica.port_out
+            else:
+                return pod.peas_args['head'].port_in, pod.peas_args['tail'].port_out
+        else:
+            assert pod.args.replicas == len(middle_args)
+            # assert pod.args.replicas == len(pod.replica_list)
+            # assert len(pod.peas) == 2
+            # assert pod.args.parallel == len(pod.replica_list[0].peas_args['peas'])
             return pod.replicas_args['head'].port_in, pod.replicas_args['tail'].port_out
 
     def validate_ports_pods(pods):
         for i in range(len(pods) - 1):
-            _, port_out = get_outer_ports(pods[i])
-            port_in_next, _ = get_outer_ports(pods[i + 1])
+            _, port_out = get_outer_ports(*extract_pod_args(pods[i]))
+            port_in_next, _ = get_outer_ports(*extract_pod_args(pods[i + 1]))
             assert port_out == port_in_next
 
     def validate_ports_replica(replica, replica_port_in, replica_port_out, parallel):
@@ -159,7 +176,10 @@ def test_port_configuration(replicas_and_parallel):
             if pod_name == 'gateway':
                 continue
             if pod.args.replicas == 1:
-                assert len(pod.replica_list) == 1
+                if int(pod.args.parallel) == 1:
+                    assert len(pod.peas_args['peas']) == 1
+                else:
+                    assert len(pod.peas_args) == 3
                 replica_port_in = pod.args.port_in
                 replica_port_out = pod.args.port_out
             else:
@@ -175,14 +195,14 @@ def test_port_configuration(replicas_and_parallel):
                 if 'tail' in pea.name:
                     assert pea.args.port_in == replica_port_out
                     assert pea.args.port_out == pod.args.port_out
-            for replica in pod.replica_list:
-                validate_ports_replica(
-                    replica,
-                    replica_port_in,
-                    replica_port_out,
-                    getattr(pod.args, 'parallel', 1),
-                )
-
+            if pod.args.replicas > 1:
+                for replica in pod.replica_list:
+                    validate_ports_replica(
+                        replica,
+                        replica_port_in,
+                        replica_port_out,
+                        getattr(pod.args, 'parallel', 1),
+                    )
         assert pod
 
 

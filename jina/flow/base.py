@@ -34,6 +34,7 @@ from copy import deepcopy
 __all__ = ['BaseFlow']
 
 from ..peapods import BasePod
+from ..peapods.compoundpod import CompoundPod
 from ..peapods.zmq import send_ctrl_message
 
 
@@ -306,7 +307,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
 
-        op_flow._pod_nodes[pod_name] = BasePod(args, needs=needs)
+        if args.replicas == 1:
+            op_flow._pod_nodes[pod_name] = BasePod(args, needs=needs)
+        else:
+            op_flow._pod_nodes[pod_name] =  CompoundPod(args, needs=needs)
         op_flow.last_pod = pod_name
 
         return op_flow

@@ -7,14 +7,14 @@ from contextlib import ExitStack
 from typing import Optional, Dict, List, Union, Set
 
 from .helper import (
-    _set_replica_args,
+    _set_pod_args,
     _set_after_to_pass,
     _copy_to_head_args,
     _copy_to_tail_args,
     _fill_in_host,
 )
 from .. import BasePea
-from ..replicas import BaseReplica
+from .. import BasePod
 from ...enums import *
 
 
@@ -135,7 +135,7 @@ class CompoundPod(ExitStack):
             self.is_tail_router = True
             replicas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
             replicas_args['tail'] = _copy_to_tail_args(args)
-            replicas_args['replicas'] = _set_replica_args(
+            replicas_args['replicas'] = _set_pod_args(
                 args, replicas_args['head'], replicas_args['tail']
             )
 
@@ -150,7 +150,7 @@ class CompoundPod(ExitStack):
             if getattr(args, 'uses_after', None):
                 self.is_tail_router = True
                 replicas_args['tail'] = _copy_to_tail_args(args)
-            replicas_args['replicas'] = _set_replica_args(
+            replicas_args['replicas'] = _set_pod_args(
                 args, replicas_args.get('head', None), replicas_args.get('tail', None)
             )
         else:
@@ -270,7 +270,7 @@ class CompoundPod(ExitStack):
                 self._enter_pea(BasePea(_args))
             for _args in self.all_args['replicas']:
                 _args.noblock_on_start = True
-                self._enter_replica(BaseReplica(_args))
+                self._enter_replica(BasePod(_args))
 
             # now rely on higher level to call `wait_start_success`
             return self
@@ -279,7 +279,7 @@ class CompoundPod(ExitStack):
                 for _args in self.all_args['peas']:
                     self._enter_pea(BasePea(_args))
                 for _args in self.all_args['replicas']:
-                    self._enter_replica(BaseReplica(_args))
+                    self._enter_replica(BasePod(_args))
             except:
                 self.close()
                 raise

@@ -9,7 +9,7 @@ from ...helper import get_public_ip, get_internal_ip, random_identity
 from ... import helper
 
 
-def _set_peas_args(
+def _set_pod_args(
     args: Namespace, head_args: Optional[Namespace] = None, tail_args: Namespace = None
 ) -> List[Namespace]:
     result = []
@@ -21,7 +21,7 @@ def _set_peas_args(
         ]
     )
 
-    for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
+    for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
         _args = copy.deepcopy(args)
 
         _args.pea_id = idx
