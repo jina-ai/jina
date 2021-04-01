@@ -266,11 +266,10 @@ def batching(
             # priority: decorator > class_attribute
             # by default data is in args[1] (self needs to be taken into account)
             data = args[slice_on : slice_on + slice_nargs]
-            args = list(args)
-
             b_size = (
                 batch_size(data) if callable(batch_size) else batch_size
             ) or getattr(args[0], 'batch_size', None)
+
             # no batching if b_size is None
             if b_size is None or data is None:
                 return func(*args, **kwargs)
@@ -280,7 +279,7 @@ def batching(
                 f'num_batch={num_batch} axis={split_over_axis}'
             )
 
-            final_result = []
+            results = []
             data = (data, args[label_on]) if label_on else data
 
             yield_slice = [
@@ -289,54 +288,51 @@ def batching(
 
             slice_idx = None
 
-            data_iterators = []
-            for i in range(0, slice_nargs):
-                data_iterators.append(
-                    batch_iterator(
-                        data[i],
-                        b_size,
-                        split_over_axis,
-                        yield_slice=yield_slice[i],
-                        # yield_dict=yield_dict[i],
-                    )
+            # split the data into batches
+            data_iterators = [
+                batch_iterator(
+                    data[i],
+                    b_size,
+                    split_over_axis,
+                    yield_slice=yield_slice[i],
                 )
+                for i in range(0, slice_nargs)
+            ]
 
-            copy_args = copy.copy(args)
-            for new_args in zip(*data_iterators):
-                new_args = list(new_args)
-                for i, (_yield_slice, _arg) in enumerate(zip(yield_slice, new_args)):
+            batch_args = list(copy.copy(args))
+
+            # load the batches of data and feed into the function
+            for _data_args in zip(*data_iterators):
+                _data_args = list(_data_args)
+                for i, (_yield_slice, _arg) in enumerate(zip(yield_slice, _data_args)):
                     if _yield_slice:
-                        slice_idx = _arg
                         original_arg = args[slice_on + i]
-                        new_memmap = np.memmap(
+                        _memmap = np.memmap(
                             original_arg.filename,
                             dtype=original_arg.dtype,
                             mode='r',
                             shape=original_arg.shape,
                         )
-                        new_args[i] = new_memmap[slice_idx]
-                        slice_idx = slice_idx[split_over_axis]
+                        _data_args[i] = _memmap[_arg]
+                        slice_idx = _arg[split_over_axis]
                         if slice_idx.start is None or slice_idx.stop is None:
                             slice_idx = None
-                        del new_memmap
+                        del _memmap
 
                     # TODO: figure out what is ordinal_idx_arg
-                    if not isinstance(new_args[i], tuple):
-                        print(f'new_args {new_args}')
-                        print(f'slice_on {slice_on}')
-                        # args[slice_on] = _arg
+                    if not isinstance(_data_args[i], tuple):
                         if ordinal_idx_arg and slice_idx is not None:
-                            copy_args[ordinal_idx_arg] = slice_idx
+                            batch_args[ordinal_idx_arg] = slice_idx
 
-                copy_args[slice_on : slice_on + slice_nargs] = new_args
+                batch_args[slice_on : slice_on + slice_nargs] = _data_args
 
-                r = func(*copy_args, **kwargs)
+                r = func(*batch_args, **kwargs)
 
                 if r is not None:
-                    final_result.append(r)
+                    results.append(r)
 
             return _merge_results_after_batching(
-                final_result, merge_over_axis, flatten_output
+                results, merge_over_axis, flatten_output
             )
 
         return arg_wrapper
