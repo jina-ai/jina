@@ -310,7 +310,6 @@ def test_batching_memmap(tmpdir):
 
         @batching
         def f(self, data):
-            print(f'data: {data}')
             assert data.shape == (2, 10)
             return data
 
@@ -333,16 +332,12 @@ def test_batching_ordinal_idx_arg(tmpdir):
             self.batch_size = batch_size
             self.ord_idx = []
 
-        @batching(
-            ordinal_idx_arg=2, slice_nargs=1, split_over_axis=0
-        )  # f = batching(ordinal_idx_arg=2) f, args[ordinal_idx_arg] = slice_idx(new_args)
+        @batching(ordinal_idx_arg=2, slice_nargs=1, split_over_axis=0)
         def f(self, data, ord_idx):
-            print(f'ord_idx : {ord_idx}')
             self.ord_idx.append(ord_idx)
             return list(range(ord_idx.start, ord_idx.stop))
 
     instance = A(2)
-    print(f'vector shape 0: {vec.shape[0]}')
     result = instance.f(
         np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0]
     )
@@ -396,7 +391,6 @@ def test_batching_multi():
             assert d1.shape == (2, 4)
             assert d2.shape == (2, 6)
             concat = np.concatenate(datas, axis=1)
-            print(f'concat shape:{concat.shape}')
             self.batching.append(concat)
             return concat
 
@@ -408,7 +402,6 @@ def test_batching_multi():
     data2 = np.random.rand(num_docs, 6)
     data = [data0, data1, data2]
     result = instance.f(*data)
-    print(f'result:{result}')
     from math import ceil
 
     result_dim = sum([d.shape[1] for d in data])
@@ -443,40 +436,6 @@ def test_single_multi():
     instance = A()
     result = instance.f(0, 1, 2)
     assert result == 1
-
-
-'''
-def test_batching_multi_input_dictionary():
-    batch_size = 2
-
-    class MockRanker:
-        def __init__(self, batch_size):
-            self.batch_size = batch_size
-            self.batches = []
-
-        @batching(slice_on=2)
-        def score(self, query_meta, old_match_scores, match_meta):
-            self.batches.append([query_meta, old_match_scores, match_meta])
-            return np.array([(x, y) for x, y in old_match_scores.items()])
-
-    query_meta = {'text': 'cool stuff'}
-    old_match_scores = {1: 5, 2: 4, 3: 4, 4: 0}
-    match_meta = {
-        1: {'text': 'cool stuff'},
-        2: {'text': 'kewl stuff'},
-        3: {'text': 'kewl stuff'},
-        4: {'text': 'kewl stuff'},
-    }
-    instance = MockRanker(batch_size)
-    result = instance.score(query_meta, old_match_scores, match_meta)
-    np.testing.assert_almost_equal(
-        result, np.array([(x, y) for x, y in old_match_scores.items()])
-    )
-    for batch in instance.batches:
-        assert batch[0] == query_meta
-        assert len(batch[1]) == batch_size
-        assert len(batch[2]) == batch_size
-'''
 
 
 def test_batching_as_ndarray():
