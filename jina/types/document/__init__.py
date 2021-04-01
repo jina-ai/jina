@@ -432,7 +432,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> Union['np.ndarray']:
+    def blob(self) -> 'np.ndarray':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
@@ -451,7 +451,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> Union['np.ndarray']:
+    def embedding(self) -> 'np.ndarray':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
