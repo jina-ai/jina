@@ -1050,12 +1050,14 @@ def get_public_ip():
     :return: Public IP address.
     """
     import urllib.request
-    import concurrent.futures
+    from threading import Thread
+
+    results = []
 
     def _get_ip(url):
         try:
             with urllib.request.urlopen(url, timeout=0.5) as fp:
-                return fp.read().decode('utf8')
+                results.append(fp.read().decode('utf8'))
         except:
             pass
 
@@ -1065,11 +1067,19 @@ def get_public_ip():
         'https://ipinfo.io/ip',
     ]
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(_get_ip, ip) for ip in ip_server_list]
-        for f in futures:
-            if f.result():
-                return f.result()
+    threads = []
+
+    for idx, ip in enumerate(ip_server_list):
+        t = Thread(target=_get_ip, args=(ip,))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    for r in results:
+        if r:
+            return r
 
 
 def convert_tuple_to_list(d: Dict):
