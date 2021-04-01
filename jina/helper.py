@@ -1054,7 +1054,6 @@ def get_public_ip():
 
     def _get_ip(url):
         try:
-            print(url)
             with urllib.request.urlopen(url, timeout=0.5) as fp:
                 return fp.read().decode('utf8')
         except:
