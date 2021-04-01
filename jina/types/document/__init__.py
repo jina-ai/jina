@@ -509,7 +509,7 @@ class Document(ProtoTypeMixin, Traversable):
 
             if JINA_GLOBAL.scipy_installed and scipy.sparse.issparse(v):
                 from ..ndarray.sparse.scipy import SparseNdArray
-            if JINA_GLOBAL.tensorflow_installed and isinstance(
+            elif JINA_GLOBAL.tensorflow_installed and isinstance(
                 v, tensorflow.SparseTensor
             ):
                 from ..ndarray.sparse.tensorflow import SparseNdArray
