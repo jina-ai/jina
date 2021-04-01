@@ -474,7 +474,7 @@ class Document(ProtoTypeMixin, Traversable):
             proto=getattr(self._pb_body, k),
         ).value = v
 
-    def _check_sparse_arrays_installed(self):
+    def _check_installed_array_packages(self):
         from ... import JINA_GLOBAL
 
         if JINA_GLOBAL.scipy_installed is None:
@@ -498,6 +498,42 @@ class Document(ProtoTypeMixin, Traversable):
 
                 JINA_GLOBAL.torch_installed = True
 
+    def _update_if_sparse(self, k, v):
+
+        from ... import JINA_GLOBAL
+
+        v_valid_sparse_type = False
+        self._check_installed_array_packages()
+
+        if JINA_GLOBAL.scipy_installed:
+            import scipy
+
+            if scipy.sparse.issparse(v):
+                from ..ndarray.sparse.scipy import SparseNdArray
+
+                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                v_valid_sparse_type = True
+
+        if JINA_GLOBAL.tensorflow_installed:
+            import tensorflow
+
+            if isinstance(v, tensorflow.SparseTensor):
+                from ..ndarray.sparse.tensorflow import SparseNdArray
+
+                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                v_valid_sparse_type = True
+
+        if JINA_GLOBAL.torch_installed:
+            import torch
+
+            if isinstance(v, torch.Tensor) and v.is_sparse:
+                from ..ndarray.sparse.pytorch import SparseNdArray
+
+                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                v_valid_sparse_type = True
+
+        return v_valid_sparse_type
+
     def _update_ndarray(self, k, v):
         if isinstance(v, jina_pb2.NdArrayProto):
             getattr(self._pb_body, k).CopyFrom(v)
@@ -508,37 +544,7 @@ class Document(ProtoTypeMixin, Traversable):
             NdArray(getattr(self._pb_body, k)).value = v.value
 
         else:
-            from ... import JINA_GLOBAL
-
-            v_valid_sparse_type = False
-            self._check_sparse_arrays_installed()
-
-            if JINA_GLOBAL.scipy_installed:
-                import scipy
-
-                if scipy.sparse.issparse(v):
-                    from ..ndarray.sparse.scipy import SparseNdArray
-
-                    self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                    v_valid_sparse_type = True
-
-            if JINA_GLOBAL.tensorflow_installed:
-                import tensorflow
-
-                if isinstance(v, tensorflow.SparseTensor):
-                    from ..ndarray.sparse.tensorflow import SparseNdArray
-
-                    self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                    v_valid_sparse_type = True
-
-            if JINA_GLOBAL.torch_installed:
-                import torch
-
-                if isinstance(v, torch.Tensor) and v.is_sparse:
-                    from ..ndarray.sparse.pytorch import SparseNdArray
-
-                    self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
-                    v_valid_sparse_type = True
+            v_valid_sparse_type = self._update_if_sparse(k, v)
 
             if v_valid_sparse_type == False:
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
