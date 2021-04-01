@@ -4,7 +4,7 @@ from typing import List, Optional
 from itertools import cycle
 
 from ... import __default_host__
-from ...enums import SchedulerType, SocketType, PeaRoleType
+from ...enums import SchedulerType, SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
 from ... import helper
 
@@ -43,7 +43,7 @@ def _set_pod_args(
             _args.port_out = tail_args.port_in
         _args.port_ctrl = helper.random_port()
         _args.socket_out = SocketType.PUSH_CONNECT
-        if args.polling.is_push:
+        if PollingType.ANY.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:
                 _args.socket_in = SocketType.PULL_CONNECT
             elif args.scheduling == SchedulerType.LOAD_BALANCE:
@@ -65,9 +65,7 @@ def _set_pod_args(
 
 
 def _set_after_to_pass(args):
-    # TODO: I don't remember what is this for? once figure out, this function should be removed
-    # remark 1: i think it's related to route driver.
-    if hasattr(args, 'polling') and args.polling.is_push:
+    if PollingType.ANY.is_push:
         # ONLY reset when it is push
         args.uses_after = '_pass'
 
@@ -133,7 +131,7 @@ def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
         else:
             _tail_args.name = f'tail'
         _tail_args.pea_role = PeaRoleType.TAIL
-        _tail_args.num_part = 1 if args.polling.is_push else args.parallel
+        _tail_args.num_part = 1 if PollingType.ANY.is_push else args.parallel
 
     return _tail_args
 

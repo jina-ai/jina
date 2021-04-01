@@ -32,14 +32,13 @@ class CompoundPod(ExitStack):
         """
         super().__init__()
 
-        args.polling = PollingType.ANY
         self.args = args
         self._set_conditional_args(self.args)
         self.needs = (
             needs if needs else set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
-        self.replica_list = []  # type: List['BaseReplica']
+        self.replica_list = []  # type: List['Pod']
         self.peas = []  # type: List['BasePea']
         self.is_head_router = False
         self.is_tail_router = False
@@ -133,7 +132,7 @@ class CompoundPod(ExitStack):
             _set_after_to_pass(args)
             self.is_head_router = True
             self.is_tail_router = True
-            replicas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
+            replicas_args['head'] = _copy_to_head_args(args, PollingType.ANY.is_push)
             replicas_args['tail'] = _copy_to_tail_args(args)
             replicas_args['replicas'] = _set_pod_args(
                 args, replicas_args['head'], replicas_args['tail']
@@ -146,7 +145,9 @@ class CompoundPod(ExitStack):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
                 self.is_head_router = True
-                replicas_args['head'] = _copy_to_head_args(args, args.polling.is_push)
+                replicas_args['head'] = _copy_to_head_args(
+                    args, PollingType.ANY.is_push
+                )
             if getattr(args, 'uses_after', None):
                 self.is_tail_router = True
                 replicas_args['tail'] = _copy_to_tail_args(args)

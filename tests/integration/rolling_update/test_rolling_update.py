@@ -45,6 +45,7 @@ def test_async_run():
             time.sleep(1)
         print('#### before update ')
         flow.rolling_update_thread('pod1')
+        time.sleep(1)
         print('# index while roling update')
         for i in range(40):
             flow.index(Document(text='documents after rolling update'))
