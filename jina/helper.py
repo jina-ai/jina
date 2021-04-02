@@ -1042,7 +1042,25 @@ def get_internal_ip():
     return ip
 
 
-@functools.lru_cache(maxsize=1)
+# def get_public_ip():
+#     import urllib.request
+#
+#     def _get_ip(url):
+#         try:
+#             with urllib.request.urlopen(url, timeout=0.1) as fp:
+#                 return fp.read().decode('utf8')
+#         except Exception as ex:
+#             print(ex)
+#
+#     ip = (
+#             _get_ip('https://api.ipify.org')
+#             or _get_ip('https://ident.me')
+#             or _get_ip('https://ipinfo.io/ip')
+#     )
+#
+#     return ip
+
+
 def get_public_ip():
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
@@ -1050,7 +1068,6 @@ def get_public_ip():
     :return: Public IP address.
     """
     import urllib.request
-    import multiprocessing
 
     timeout = 0.5
 
@@ -1072,7 +1089,7 @@ def get_public_ip():
     threads = []
 
     for idx, ip in enumerate(ip_server_list):
-        t = multiprocessing.Process(target=_get_ip, args=(ip,))
+        t = threading.Thread(target=_get_ip, args=(ip,))
         threads.append(t)
         t.start()
 
