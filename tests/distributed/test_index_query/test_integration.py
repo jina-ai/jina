@@ -26,7 +26,7 @@ def test_index_query(docker_compose):
     print(f'\nIndexing: `hey, dude`')
     r = assert_request(
         method='post',
-        url='http://localhost:45678/api/index',
+        url='http://localhost:45678/index',
         payload={'top_k': 10, 'data': ['text:hey, dude']},
     )
     text_indexed = r['index']['docs'][0]['text']
@@ -49,7 +49,7 @@ def test_index_query(docker_compose):
     print(f'\nQuerying any text')
     r = assert_request(
         method='post',
-        url='http://0.0.0.0:45678/api/search',
+        url='http://0.0.0.0:45678/search',
         payload={'top_k': 10, 'data': ['text:anything will match the same']},
     )
     print(f'returned: {r}')

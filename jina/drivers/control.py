@@ -6,9 +6,9 @@ import time
 from google.protobuf.json_format import MessageToJson
 
 from . import BaseDriver
-from ..types.querylang.queryset.dunderkey import dunder_get
 from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
 from ..proto import jina_pb2
+from ..types.querylang.queryset.dunderkey import dunder_get
 
 
 class BaseControlDriver(BaseDriver):
@@ -168,3 +168,18 @@ class RouteDriver(ControlReqDriver):
 
 class ForwardDriver(RouteDriver):
     """Alias to :class:`RouteDriver`"""
+
+
+class WhooshDriver(BaseControlDriver):
+    """Play a whoosh! sound"""
+
+    def __call__(self, *args, **kwargs):
+        """Play a whoosh sound, used in 2021 April fools day
+
+        .. # noqa: DAR101
+        """
+        import subprocess
+        from pkg_resources import resource_filename
+        whoosh_mp3 = resource_filename('jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3')))
+
+        subprocess.Popen(f'ffplay  -nodisp -autoexit {whoosh_mp3} >/dev/null 2>&1', shell=True)

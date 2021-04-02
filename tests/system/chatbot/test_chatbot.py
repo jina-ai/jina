@@ -2,7 +2,6 @@ import pytest
 import requests
 from xprocess import ProcessStarter
 
-from jina.helloworld.chatbot import hello_world
 from jina.parsers.helloworld import set_hw_chatbot_parser
 
 
@@ -20,12 +19,12 @@ def payload():
 
 @pytest.fixture
 def post_uri():
-    return 'http://localhost:8080/api/search'
+    return 'http://localhost:8080/search'
 
 
 @pytest.fixture
 def expected_result():
-    return '''There’s no evidence from the outbreak that eating garlic, sipping water every 15 minutes or taking vitamin C will protect people from the new coronavirus.'''
+    return '''no evidence from the outbreak that eating garlic, sipping water every 15 minutes or taking vitamin C will protect people from the new coronavirus.'''
 
 
 @pytest.fixture(autouse=True)

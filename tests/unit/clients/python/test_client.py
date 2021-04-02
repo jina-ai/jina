@@ -69,7 +69,7 @@ def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
     with flow_with_rest_api_enabled:
         time.sleep(0.5)
         r = requests.post(
-            f'http://0.0.0.0:{flow_with_rest_api_enabled.port_expose}/api/index',
+            f'http://0.0.0.0:{flow_with_rest_api_enabled.port_expose}/index',
             json={'data': [test_img_1, test_img_2]},
         )
         assert r.status_code == 200
