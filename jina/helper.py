@@ -1052,7 +1052,7 @@ def get_public_ip():
     import urllib.request
     from threading import Thread
 
-    timeout = 1
+    timeout = 0.5
 
     results = []
 
