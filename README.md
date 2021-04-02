@@ -139,13 +139,13 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 ### Cookbook
 
-- [Code snippets that help you to use Jina better](./.github/pages/snippets.md)
+[Code snippets that help you to use Jina better](./.github/pages/snippets.md)
 
 ### Demo: Jina Hello World
 
-- [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
-- [🪆 Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
+#### [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
+#### [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
+#### [🪆 Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
 
 ### The Basics
 
