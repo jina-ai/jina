@@ -1042,7 +1042,6 @@ def get_internal_ip():
     return ip
 
 
-@functools.lru_cache(maxsize=1)
 def get_public_ip():
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
@@ -1050,7 +1049,6 @@ def get_public_ip():
     :return: Public IP address.
     """
     import urllib.request
-    from threading import Thread
 
     timeout = 0.5
 
@@ -1072,7 +1070,7 @@ def get_public_ip():
     threads = []
 
     for idx, ip in enumerate(ip_server_list):
-        t = Thread(target=_get_ip, args=(ip,))
+        t = threading.Thread(target=_get_ip, args=(ip,))
         threads.append(t)
         t.start()
 
