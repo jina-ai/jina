@@ -21,7 +21,7 @@ def test_simple_hub_pods(docker_compose):
     expected_text = 'text:hey, dude'
     response = assert_request(
         method='post',
-        url='http://0.0.0.0:45678/api/search',
+        url='http://0.0.0.0:45678/search',
         payload={'top_k': 10, 'data': [expected_text]},
     )
     print(f'Response is: {response}')
@@ -29,7 +29,7 @@ def test_simple_hub_pods(docker_compose):
     print(f'\nQuerying any text')
     r = assert_request(
         method='post',
-        url='http://0.0.0.0:45678/api/search',
+        url='http://0.0.0.0:45678/search',
         payload={'top_k': 10, 'data': ['text:anything will match the same']},
     )
     print(f'returned: {r}')

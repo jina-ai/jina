@@ -35,7 +35,7 @@ def test_flow(flow_yml, docker_compose):
         print(f'Indexing with text: {text}')
         r = assert_request(
             method='post',
-            url='http://0.0.0.0:45678/api/index',
+            url='http://0.0.0.0:45678/index',
             payload={'top_k': 10, 'data': [text]},
         )
         text_indexed = r['index']['docs'][0]['text']
@@ -57,7 +57,7 @@ def test_flow(flow_yml, docker_compose):
     print(f'\nQuerying any text')
     r = assert_request(
         method='post',
-        url='http://0.0.0.0:45678/api/search',
+        url='http://0.0.0.0:45678/search',
         payload={'top_k': 100, 'data': ['text:anything will match the same']},
     )
     print(f'returned: {r}')
