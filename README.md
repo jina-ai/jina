@@ -16,6 +16,8 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
+<details>
+<summary>👋🌎 Check out Jina hello-world!</summary>
 
 <table>
   <tr>
@@ -48,7 +50,7 @@
   </tr>
 </table>
 
-## Why Jina?
+</details>
 
 Jina lets you build a search engine for any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). With our modular framework we provide the right tool for building each part of your search system. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
 
@@ -66,22 +68,22 @@ Jina lets you build a search engine for any kind of data, whether that's [text](
 
 ## Installation
 
-#### With `pip`
+#### via `pip`
 
 ```sh
 pip install -U jina
 ```
 
-#### With Docker
+#### via Docker
 
 ```sh
 docker run jinaai/jina:latest
 ```
 
 <details>
-<summary>💡 Click here to see more installation options</summary>
+<summary>📦 More installation options</summary>
 
-| 📦<br><sub><sup>x86/64,arm/v6,v7,[v8 (Apple M1)](https://github.com/jina-ai/jina/issues/1781)</sup></sub> | On Linux/macOS & Python 3.7/3.8/[3.9](https://github.com/jina-ai/jina/issues/1801) | Docker Users|
+| <br><sub><sup>x86/64,arm/v6,v7,[v8 (Apple M1)](https://github.com/jina-ai/jina/issues/1781)</sup></sub> | On Linux/macOS & Python 3.7/3.8/[3.9](https://github.com/jina-ai/jina/issues/1801) | Docker Users|
 | --- | --- | --- |
 | Standard | `pip install -U jina` | `docker run jinaai/jina:latest` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install -U "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
