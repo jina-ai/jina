@@ -11,9 +11,7 @@ These code snippets provide a short introduction to Jina's functionality and des
 ## 🥚 Fundamentals
 
 ### CRUD Functions
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-basic-crud-functions.ipynb)
-
-
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-basic-crud-functions.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With Documents below as an example:
 ```python
@@ -104,7 +102,7 @@ For further details about CRUD functionality, checkout [docs.jina.ai.](https://d
 
 
 ### Document
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-construct-document.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-construct-document.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 `Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and be accompanied by rich meta information. To construct a Document, you can use:
 
@@ -203,7 +201,7 @@ Interested readers can refer to [`jina-ai/example`: how to build a multimodal se
 </details>
 
 ### Flow
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-create-flow.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-create-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 Jina provides a high-level Flow API to simplify building CRUD workflows. To create a new Flow:
 
@@ -214,7 +212,7 @@ f = Flow().add()
 
 This creates a simple Flow with one [Pod](https://101.jina.ai/#pod). You can chain multiple `.add()`s in a single Flow.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-visualize-a-flow.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-visualize-a-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be displayed inline *without* `plot`.
 
@@ -236,7 +234,7 @@ Get the vibe? Now we're talking! Let's learn more about the basic concepts and f
 ## 🐣 Basic
 
 ### Feed Data
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-feed-data.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-feed-data.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty Documents and index them:
 
@@ -348,7 +346,7 @@ Each file captured is constructed as a `Document`, and Document content (`text`,
 </table>
 
 ### Fetch Result
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-fetch-result.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-fetch-result.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface: You can add callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written to `output.txt`.
 
@@ -364,7 +362,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 ```
 
 ### Add Logic
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-add-logic.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-add-logic.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://101.jina.ai/#executor). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
 
@@ -381,7 +379,7 @@ f = (Flow().add(uses=MyBertEncoder)  # the class of a Jina Executor
 The power of Jina lies in its decentralized architecture: Each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
 
 ### Inter & Intra Parallelism
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 Chaining `.add()`s creates a sequential Flow. For parallelism, use the `needs` parameter:
 
@@ -406,7 +404,7 @@ f = (Flow().add(name='p1', needs='gateway')
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
 
 ### Decentralized Flow
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/decentralized-flow.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=decentralized-flow.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 A Flow does not have to be local-only: You can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod`, is put to a remote machine for parallelization, whereas other Pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
 
@@ -460,7 +458,7 @@ with Flow().add().add(host='cloud.jina.ai:8000') as f:
 ```
 
 ### Asynchronous Flow
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
+<a href="https://mybinder.org/v2/gh/jina-ai/jupyter-notebooks/main?filepath=basic-inter-intra-parallelism.ipynb"><img align="right" src="https://github.com/jina-ai/jina/blob/master/.github/badges/run-badge.svg?raw=true"/></a>
 
 While synchronous from outside, Jina runs asynchronously under the hood: it manages the eventloop(s) for scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
 
