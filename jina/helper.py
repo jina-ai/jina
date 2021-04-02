@@ -1043,69 +1043,69 @@ def get_internal_ip():
 
 
 # @functools.lru_cache()
-# def get_public_ip():
-#     """
-#     Return the public IP address of the gateway for connecting from other machine in the public network.
-#
-#     :return: Public IP address.
-#     """
-#     import urllib.request
-#     from threading import Thread
-#
-#     results = []
-#
-#     def _get_ip(url):
-#         try:
-#             with urllib.request.urlopen(url, timeout=0.5) as fp:
-#                 results.append(fp.read().decode('utf8'))
-#         except:
-#             pass
-#
-#     ip_server_list = [
-#         'https://api.ipify.org',
-#         'https://ident.me',
-#         'https://ipinfo.io/ip',
-#     ]
-#
-#     threads = []
-#
-#     for idx, ip in enumerate(ip_server_list):
-#         t = Thread(target=_get_ip, args=(ip,))
-#         threads.append(t)
-#         t.start()
-#
-#     for t in threads:
-#         t.join()
-#
-#     for r in results:
-#         if r:
-#             return r
-
 def get_public_ip():
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
 
     :return: Public IP address.
     """
-    # 'https://api.ipify.org'
-    # https://ident.me
-    # ipinfo.io/ip
     import urllib.request
+    from threading import Thread
+
+    results = []
 
     def _get_ip(url):
         try:
             with urllib.request.urlopen(url, timeout=1) as fp:
-                return fp.read().decode('utf8')
+                results.append(fp.read().decode('utf8'))
         except:
             pass
 
-    ip = (
-        _get_ip('https://api.ipify.org')
-        or _get_ip('https://ident.me')
-        or _get_ip('https://ipinfo.io/ip')
-    )
+    ip_server_list = [
+        'https://api.ipify.org',
+        'https://ident.me',
+        'https://ipinfo.io/ip',
+    ]
 
-    return ip
+    threads = []
+
+    for idx, ip in enumerate(ip_server_list):
+        t = Thread(target=_get_ip, args=(ip,))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    for r in results:
+        if r:
+            return r
+
+# def get_public_ip():
+#     """
+#     Return the public IP address of the gateway for connecting from other machine in the public network.
+#
+#     :return: Public IP address.
+#     """
+#     # 'https://api.ipify.org'
+#     # https://ident.me
+#     # ipinfo.io/ip
+#     import urllib.request
+#
+#     def _get_ip(url):
+#         try:
+#             with urllib.request.urlopen(url, timeout=1) as fp:
+#                 return fp.read().decode('utf8')
+#         except:
+#             pass
+#
+#     ip = (
+#         _get_ip('https://api.ipify.org')
+#         or _get_ip('https://ident.me')
+#         or _get_ip('https://ipinfo.io/ip')
+#     )
+#
+#     return ip
 
 def convert_tuple_to_list(d: Dict):
     """
