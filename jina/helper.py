@@ -1042,25 +1042,6 @@ def get_internal_ip():
     return ip
 
 
-# def get_public_ip():
-#     import urllib.request
-#
-#     def _get_ip(url):
-#         try:
-#             with urllib.request.urlopen(url, timeout=0.1) as fp:
-#                 return fp.read().decode('utf8')
-#         except Exception as ex:
-#             print(ex)
-#
-#     ip = (
-#             _get_ip('https://api.ipify.org')
-#             or _get_ip('https://ident.me')
-#             or _get_ip('https://ipinfo.io/ip')
-#     )
-#
-#     return ip
-
-
 def get_public_ip():
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
