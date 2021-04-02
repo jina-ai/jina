@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-<b>The Cloud-Native Neural Search Framework for <i>Any Kind</i> of Data</b>
+<b>Cloud-Native Neural Search Framework for <i>Any</i> Kind of Data</b>
 </p>
 
 
@@ -17,7 +17,7 @@
 </p>
 
 <details>
-<summary>👋🌎 Check out Jina hello-world!</summary>
+<summary>👋 Click here to see quick demo!</summary>
 
 <table>
   <tr>
@@ -52,7 +52,7 @@
 
 </details>
 
-Jina lets you build a search engine for any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). With the modular framework & multi-layer abstraction, you can leverage the efficient pattern for building each part of your search system, or assembling them into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
+Jina lets you build search engines for any kind of data, including [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search), [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search) and [many more](https://github.com/jina-ai/examples). With the modular design & multi-layer abstraction, you can leverage the efficient patterns to build the system by parts, or assembling them into an end-to-end [Flow](https://101.jina.ai/#Flow) for a full-stack experience. 
 
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
@@ -143,11 +143,11 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 [Code snippets that help you to use Jina better](./.github/pages/snippets.md)
 
-### Demo: Jina Hello World
+### Quick Demo
 
-#### [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
-#### [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
-#### [🪆 Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
+- [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
+- [🪆 Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
 
 ### The Basics
 
@@ -256,4 +256,4 @@ We welcome all kinds of contributions from the open-source community, individual
 
 ## Join Us
 
-Jina is an open-source project. [We are hiring](https://jobs.jina.ai) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
+Jina is backed by [Jina AI](https://jina.ai). [We are hiring](https://jobs.jina.ai) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.

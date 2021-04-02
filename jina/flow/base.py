@@ -24,6 +24,7 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
+    cached_property,
 )
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
@@ -836,7 +837,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR201"""
         return get_internal_ip()
 
-    @property
+    @cached_property
     @build_required(FlowBuildLevel.GRAPH)
     def address_public(self) -> str:
         """Return the public IP address of the gateway for connecting from other machine in the public network
