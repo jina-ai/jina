@@ -740,3 +740,26 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
     np.testing.assert_array_equal(
         d.blob.todense(), torch_sparse_matrix.to_dense().numpy()
     )
+
+
+def test_siblings_needs_to_be_set_manually():
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        for i in range(3):
+            chunk = Document()
+            chunk.text = 'text in chunk'
+            document.chunks.append(chunk)
+    for i in range(3):
+        assert document.chunks[i].siblings == 0
+
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        for i in range(3):
+            chunk = Document()
+            chunk.text = 'text in chunk'
+            chunk.siblings = 3
+            document.chunks.append(chunk)
+    for i in range(3):
+        assert document.chunks[i].siblings == 3
