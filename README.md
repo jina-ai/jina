@@ -136,6 +136,17 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 ## Get Started
 
+
+### Cookbook
+
+- [Code snippets that help you to use Jina better](./.github/pages/snippets.md)
+
+### Demo: Jina Hello World
+
+- [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
+- [🪆 Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
+
 ### The Basics
 
 - [What is neural search, and how is it different to symbolic search?](https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html)
@@ -143,17 +154,8 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 - [Jina 102: Learn how Jina's components fit together](https://docs.jina.ai/chapters/102/)
 - [My First Jina App: Build your first simple app](https://docs.jina.ai/chapters/my_first_jina_app/)
 
-### Run a Demo: Jina Hello World
 
-- [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
-- [🪆 Multi-media search](./.github/pages/hello-world.md#-multimodal-document-search)
-
-### Cookbook
-
-- [Code snippets that help you to use Jina better](./.github/pages/snippets.md)
-
-### Video tutorials
+### Video Tutorials
 
 <table>
   <tr>
@@ -176,7 +178,7 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 </table>
 
 
-## Examples ([View all](https://github.com/jina-ai/examples))
+### Examples ([View all](https://github.com/jina-ai/examples))
  
 #### [📄 NLP Semantic Wikipedia Search with Transformers and DistilBERT](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences)
 Brand new to neural search? See a simple text-search example to understand how Jina works 
