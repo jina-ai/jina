@@ -1042,7 +1042,6 @@ def get_internal_ip():
     return ip
 
 
-# @functools.lru_cache()
 def get_public_ip():
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
@@ -1056,7 +1055,7 @@ def get_public_ip():
 
     def _get_ip(url):
         try:
-            with urllib.request.urlopen(url, timeout=1) as fp:
+            with urllib.request.urlopen(url, timeout=0.4) as fp:
                 results.append(fp.read().decode('utf8'))
         except:
             pass
@@ -1080,6 +1079,7 @@ def get_public_ip():
     for r in results:
         if r:
             return r
+
 
 # def get_public_ip():
 #     """
@@ -1106,6 +1106,7 @@ def get_public_ip():
 #     )
 #
 #     return ip
+
 
 def convert_tuple_to_list(d: Dict):
     """
@@ -1275,9 +1276,13 @@ def download_mermaid_url(mermaid_url, output) -> None:
 
 
 def ding(req):
-    """Play a ding sound `on_done`, used in 2021 April fools day"""
+    """Play a ding sound `on_done`, used in 2021 April fools day
+
+    # noqa: DAR101
+    """
     import subprocess
     from pkg_resources import resource_filename
+
     soundfx = resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
 
     subprocess.call(f'ffplay  -nodisp -autoexit {soundfx} >/dev/null 2>&1', shell=True)
