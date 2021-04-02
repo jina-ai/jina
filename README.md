@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-<h3 align="center">Cloud-Native Neural Search Framework for <i>Any</i> Kind of Data</h3>
+The Cloud-Native Neural Search Framework for <i>Any Kind</i> of Data
 </p>
 
 
