@@ -52,7 +52,7 @@
 
 </details>
 
-Jina lets you build a search engine for any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). With our modular framework we provide the right tool for building each part of your search system. Alternatively, assemble them all into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
+Jina lets you build a search engine for any kind of data, whether that's [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search) or [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search). With the modular framework & multi-layer abstraction, you can leverage the efficient pattern for building each part of your search system, or assembling them into one [Flow](https://101.jina.ai/#Flow) for a unified end-to-end experience. 
 
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
@@ -63,7 +63,7 @@ Jina lets you build a search engine for any kind of data, whether that's [text](
 
 🧠 **First-class AI models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
 
-🌩️ **Scale up to the cloud** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
+🌩️ **Fast & cloud-ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 
 ## Installation
@@ -257,10 +257,3 @@ We welcome all kinds of contributions from the open-source community, individual
 ## Join Us
 
 Jina is an open-source project. [We are hiring](https://jobs.jina.ai) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.
-
-
-## License
-
-Copyright (c) 2020-2021 Jina AI Limited. All rights reserved.
-
-Jina is licensed under the Apache License, Version 2.0. [See LICENSE for the full license text.](LICENSE)
