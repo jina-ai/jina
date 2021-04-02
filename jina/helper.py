@@ -1050,7 +1050,7 @@ def get_public_ip():
     :return: Public IP address.
     """
     import urllib.request
-    from threading import Thread
+    import multiprocessing
 
     timeout = 0.5
 
@@ -1072,7 +1072,7 @@ def get_public_ip():
     threads = []
 
     for idx, ip in enumerate(ip_server_list):
-        t = Thread(target=_get_ip, args=(ip,))
+        t = multiprocessing.Process(target=_get_ip, args=(ip,))
         threads.append(t)
         t.start()
 
