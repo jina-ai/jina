@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-<b>The Cloud-Native Neural Search Framework for <i>Any Kind</i> of Data</b>
+<b>Cloud-Native Neural Search Framework for <i>Any</i> Kind of Data</b>
 </p>
 
 
@@ -17,7 +17,7 @@
 </p>
 
 <details>
-<summary>👋🌎 Check out Jina hello-world!</summary>
+<summary>👋 Click here to see quick demo!</summary>
 
 <table>
   <tr>
@@ -143,7 +143,7 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 [Code snippets that help you to use Jina better](./.github/pages/snippets.md)
 
-### Quick Demos
+### Quick Demo
 
 - [👗 Fashion-MNIST image search](./.github/pages/hello-world.md#-fashion-image-search)
 - [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
