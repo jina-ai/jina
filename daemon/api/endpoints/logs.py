@@ -15,6 +15,11 @@ from ...stores.helper import get_workspace_path
 router = APIRouter(tags=['logs'])
 
 
+def _log_is_ready(workspace_id: uuid.UUID, log_id: uuid.UUID):
+    filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
+    return Path(filepath).is_file()
+
+
 @router.get(path='/logs/{workspace_id}/{log_id}')
 async def _export_logs(workspace_id: uuid.UUID, log_id: uuid.UUID):
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
