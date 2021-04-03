@@ -52,7 +52,7 @@
 
 </details>
 
-Jina is geared towards building search engines for any kind of data, including [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search), [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search) and [many more](https://github.com/jina-ai/examples). With the modular design & multi-layer abstraction, you can leverage the efficient patterns to build the system by parts, or assembling them into an end-to-end [Flow](https://101.jina.ai/#Flow) for a full-stack experience. 
+Jina is geared towards building search systems for any kind of data, including [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search), [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search) and [many more](https://github.com/jina-ai/examples). With the modular design & multi-layer abstraction, you can leverage the efficient patterns to build the system by parts, or chaining them into a [Flow](https://101.jina.ai/#Flow) for an end-to-end experience.
 
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
