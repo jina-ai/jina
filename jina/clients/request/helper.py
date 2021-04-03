@@ -46,6 +46,8 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
             _add_docs_groundtruths(req, batch, data_type, _kwargs)
         elif mode == RequestType.DELETE:
             _add_ids(req, batch)
+        elif mode == RequestType.CONTROL:
+            _add_control_propagate(req, _kwargs)
         else:
             raise RequestTypeError(
                 f'generating request from {mode} is not yet supported'
@@ -81,3 +83,29 @@ def _add_docs_groundtruths(req, batch, data_type, _kwargs):
 def _add_ids(req, batch):
     string_ids = (str(doc_id) for doc_id in batch)
     req.ids.extend(string_ids)
+
+
+def _add_control_propagate(req, kwargs):
+    from ...proto import jina_pb2
+
+    _available_commands = dict(
+        jina_pb2.RequestProto.ControlRequestProto.DESCRIPTOR.enum_values_by_name
+    )
+
+    if 'command' in kwargs:
+        command = kwargs['command']
+    else:
+        raise BadRequestType(
+            'sending ControlRequest from Client must contain the field `command`'
+        )
+
+    if command in _available_commands:
+        req.control.command = getattr(
+            jina_pb2.RequestProto.ControlRequestProto, command
+        )
+    else:
+        raise ValueError(
+            f'command "{command}" is not supported, must be one of {_available_commands}'
+        )
+    req.args.update(kwargs)
+    req.control.propagate = True

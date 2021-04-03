@@ -126,7 +126,7 @@ class Message:
 
         :return: boolean which states if data is requested
         """
-        return self.envelope.request_type != 'ControlRequest'
+        return self.envelope.request_type != 'ControlRequest' or self.request.propagate
 
     def _add_envelope(
         self,
