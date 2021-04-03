@@ -1,9 +1,10 @@
 import json
+import os
 
 import numpy as np
 import pytest
-
 from google.protobuf.json_format import MessageToDict
+
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
@@ -432,7 +433,7 @@ def test_doc_field_resolver(from_str):
     assert 'music_id' not in d.tags
 
 
-def test_doc_plot():
+def test_doc_plot(tmpdir):
     docs = [
         Document(
             id='🐲',
@@ -461,6 +462,9 @@ def test_doc_plot():
     docs[0].matches.append(docs[3])
 
     assert docs[0]._mermaid_to_url('svg')
+    docs[0].plot(inline_display=True, output=os.path.join(tmpdir, 'doc.svg'))
+    assert os.path.exists(os.path.join(tmpdir, 'doc.svg'))
+    docs[0].plot()
 
 
 def get_test_doc():
@@ -736,3 +740,26 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
     np.testing.assert_array_equal(
         d.blob.todense(), torch_sparse_matrix.to_dense().numpy()
     )
+
+
+def test_siblings_needs_to_be_set_manually():
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        for i in range(3):
+            chunk = Document()
+            chunk.text = 'text in chunk'
+            document.chunks.append(chunk)
+    for i in range(3):
+        assert document.chunks[i].siblings == 0
+
+    document = Document()
+    with document:
+        document.text = 'this is text'
+        for i in range(3):
+            chunk = Document()
+            chunk.text = 'text in chunk'
+            chunk.siblings = 3
+            document.chunks.append(chunk)
+    for i in range(3):
+        assert document.chunks[i].siblings == 3

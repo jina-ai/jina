@@ -43,37 +43,6 @@ _document_fields = set(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
-scipy_installed = False
-tensorflow_installed = False
-pytorch_installed = False
-
-with ImportExtensions(
-    required=False,
-    pkg_name='scipy',
-    help_text=f'can not import scipy: pip install scipy ',
-):
-    import scipy
-
-    scipy_installed = True
-
-with ImportExtensions(
-    required=False,
-    pkg_name='tensorflow',
-    help_text=f'can not import tensorflow: pip install tensorflow ',
-):
-    import tensorflow
-
-    tensorflow_installed = True
-
-with ImportExtensions(
-    required=False,
-    pkg_name='torch',
-    help_text=f'can not import torch: pip install torch ',
-):
-    import torch
-
-    pytorch_installed = True
-
 
 class Document(ProtoTypeMixin, Traversable):
     """
@@ -235,6 +204,22 @@ class Document(ProtoTypeMixin, Traversable):
 
         self.set_attrs(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
+
+    @property
+    def siblings(self) -> int:
+        """
+        The number of siblings of the :class:``Document``
+
+        .. # noqa: DAR201
+        :getter: number of siblings
+        :setter: number of siblings
+        :type: int
+        """
+        return self._pb_body.siblings
+
+    @siblings.setter
+    def siblings(self, value: int):
+        self._pb_body.siblings = value
 
     @property
     def weight(self) -> float:
@@ -464,7 +449,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
+    def blob(self) -> 'np.ndarray':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
@@ -483,7 +468,7 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'Union[np.ndarray, scipy.coo_matrix]':
+    def embedding(self) -> 'np.ndarray':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
@@ -498,6 +483,73 @@ class Document(ProtoTypeMixin, Traversable):
         """
         self._update_ndarray('embedding', value)
 
+    def _update_sparse_ndarray(self, k, v, sparse_cls):
+        NdArray(
+            is_sparse=True,
+            sparse_cls=sparse_cls,
+            proto=getattr(self._pb_body, k),
+        ).value = v
+
+    def _check_installed_array_packages(self):
+        from ... import JINA_GLOBAL
+
+        if JINA_GLOBAL.scipy_installed is None:
+            JINA_GLOBAL.scipy_installed = False
+            with ImportExtensions(required=False, pkg_name='scipy'):
+                import scipy
+
+                JINA_GLOBAL.scipy_installed = True
+
+        if JINA_GLOBAL.tensorflow_installed is None:
+            JINA_GLOBAL.tensorflow_installed = False
+            with ImportExtensions(required=False, pkg_name='tensorflow'):
+                import tensorflow
+
+                JINA_GLOBAL.tensorflow_installed = True
+
+        if JINA_GLOBAL.torch_installed is None:
+            JINA_GLOBAL.torch_installed = False
+            with ImportExtensions(required=False, pkg_name='torch'):
+                import torch
+
+                JINA_GLOBAL.torch_installed = True
+
+    def _update_if_sparse(self, k, v):
+
+        from ... import JINA_GLOBAL
+
+        v_valid_sparse_type = False
+        self._check_installed_array_packages()
+
+        if JINA_GLOBAL.scipy_installed:
+            import scipy
+
+            if scipy.sparse.issparse(v):
+                from ..ndarray.sparse.scipy import SparseNdArray
+
+                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                v_valid_sparse_type = True
+
+        if JINA_GLOBAL.tensorflow_installed:
+            import tensorflow
+
+            if isinstance(v, tensorflow.SparseTensor):
+                from ..ndarray.sparse.tensorflow import SparseNdArray
+
+                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                v_valid_sparse_type = True
+
+        if JINA_GLOBAL.torch_installed:
+            import torch
+
+            if isinstance(v, torch.Tensor) and v.is_sparse:
+                from ..ndarray.sparse.pytorch import SparseNdArray
+
+                self._update_sparse_ndarray(k=k, v=v, sparse_cls=SparseNdArray)
+                v_valid_sparse_type = True
+
+        return v_valid_sparse_type
+
     def _update_ndarray(self, k, v):
         if isinstance(v, jina_pb2.NdArrayProto):
             getattr(self._pb_body, k).CopyFrom(v)
@@ -506,36 +558,12 @@ class Document(ProtoTypeMixin, Traversable):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
-        elif scipy_installed and scipy.sparse.issparse(v):
-            from ..ndarray.sparse.scipy import SparseNdArray
 
-            protbuff_updater = NdArray(
-                is_sparse=True,
-                sparse_cls=SparseNdArray,
-                proto=getattr(self._pb_body, k),
-            )
-            protbuff_updater.value = v
-        elif tensorflow_installed and isinstance(v, tensorflow.SparseTensor):
-            from ..ndarray.sparse.tensorflow import SparseNdArray
-
-            protbuff_updater = NdArray(
-                is_sparse=True,
-                sparse_cls=SparseNdArray,
-                proto=getattr(self._pb_body, k),
-            )
-            protbuff_updater.value = v
-
-        elif pytorch_installed and isinstance(v, torch.Tensor) and v.is_sparse:
-            from ..ndarray.sparse.pytorch import SparseNdArray
-
-            protbuff_updater = NdArray(
-                is_sparse=True,
-                sparse_cls=SparseNdArray,
-                proto=getattr(self._pb_body, k),
-            )
-            protbuff_updater.value = v
         else:
-            raise TypeError(f'{k} is in unsupported type {typename(v)}')
+            v_valid_sparse_type = self._update_if_sparse(k, v)
+
+            if v_valid_sparse_type == False:
+                raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
     def matches(self) -> 'MatchSet':

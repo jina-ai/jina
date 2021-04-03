@@ -22,7 +22,7 @@ def test_top_k_with_rest_api(query_dict):
         time.sleep(0.5)
         query = json.dumps(query_dict).encode('utf-8')
         req = request.Request(
-            f'http://0.0.0.0:{port}/api/search',
+            f'http://0.0.0.0:{port}/search',
             data=query,
             headers={'content-type': 'application/json'},
         )

@@ -71,6 +71,28 @@ def test_segment_driver():
     assert valid_doc.chunks[2].mime_type == 'image/png'
 
 
+def test_chunks_exist_already():
+    document = Document(
+        text='valid', chunks=[Document(text='test2'), Document(text='test3')]
+    )
+    # before segmentation
+    assert len(document.chunks) == 2
+    for chunk in document.chunks:
+        assert chunk.parent_id == document.id
+        assert chunk.siblings == 2
+
+    driver = SimpleSegmentDriver()
+    executor = MockSegmenter()
+    driver.attach(executor=executor, runtime=None)
+    driver._apply_all(DocumentSet([document]))
+
+    # after segmentation
+    assert len(document.chunks) == 5
+    for chunk in document.chunks:
+        assert chunk.parent_id == document.id
+        assert chunk.siblings == 5
+
+
 def test_broken_document():
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
