@@ -30,6 +30,7 @@ def _update_autocomplete():
 
 if __name__ == "__main__":
     _update_autocomplete()
+
 ac_table = {
     'commands': [
         '--help',

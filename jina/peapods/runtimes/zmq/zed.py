@@ -165,13 +165,6 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: the message received
         :return: ZEDRuntime procedure.
         """
-
-        if (
-            msg.request.request_type == 'IndexRequestProto'
-            or msg.request.request_type == 'SearchRequestProto'
-        ) and 'replica_head' in self.name:
-            print(f'### handle {self.name}, {list(msg.request.docs)[0].text}')
-
         if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
             # NOTE: reduce priority is higher than chain exception
             # otherwise a reducer will lose its function when eailier pods raise exception

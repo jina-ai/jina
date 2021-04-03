@@ -150,7 +150,6 @@ class Request(ProtoTypeMixin):
             self.__class__ = UpdateRequest
         elif rt.startswith(str(RequestType.CONTROL)):
             self.__class__ = ControlRequest
-
         else:
             raise TypeError(f'{request_type} is not recognized')
         return self
