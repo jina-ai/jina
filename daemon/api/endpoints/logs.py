@@ -84,7 +84,7 @@ async def _logstream(
 
         # on connection the fluentd file may not flushed (aka exist) yet
         n = 0
-        while not Path(filepath).is_file():
+        while not _log_is_ready(workspace_id, log_id):
             daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1
