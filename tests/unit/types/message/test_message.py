@@ -13,7 +13,8 @@ from tests import random_docs
 
 
 @pytest.mark.parametrize(
-    'field', _trigger_fields.difference({'command', 'args', 'flush', 'propagate'})
+    'field',
+    _trigger_fields.difference({'command', 'args', 'flush', 'propagate', 'targets'}),
 )
 def test_lazy_access(field):
     reqs = (
