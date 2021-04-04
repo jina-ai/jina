@@ -38,7 +38,9 @@ def _websocket_details(websocket: WebSocket):
     return f'{websocket.client.host}:{websocket.client.port}'
 
 
-# cf https://fastapi.tiangolo.com/advanced/websockets/
+# TODO for now contian a single connection. Ideally there must be one
+# manager per log with a thread checking for updates in log and broadcasting
+# to active connections
 class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
@@ -66,11 +68,9 @@ class ConnectionManager:
                 self.active_connections.remove(connection)
 
 
-manager = ConnectionManager()
-
-
 @router.websocket("/logstream/{workspace_id}/{log_id}")
 async def _logstream(websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid.UUID):
+    manager = ConnectionManager()
     await manager.connect(websocket)
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
     try:
@@ -78,7 +78,6 @@ async def _logstream(websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid
             daemon_logger.warning(
                 f'{self.client_details} asks for logstreaming but fluentd is not available'
             )
-            manager.disconnect(websocket)
             return
 
         # on connection the fluentd file may not flushed (aka exist) yet
@@ -105,4 +104,6 @@ async def _logstream(websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid
                 else:
                     await asyncio.sleep(0.1)
     except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    finally:
         manager.disconnect(websocket)
