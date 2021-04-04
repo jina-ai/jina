@@ -86,11 +86,8 @@ class ControlReqDriver(BaseControlDriver):
         elif self.req.command == 'CANCEL':
             pass
         elif self.req.command == 'RELOAD':
-            if (
-                'devices' in self.req.args
-                and self.runtime.__class__.__name__ == 'ZEDRuntime'
-            ):
-                patterns = self.req.args['devices']
+            if self.req.targets and self.runtime.__class__.__name__ == 'ZEDRuntime':
+                patterns = self.req.targets
                 if isinstance(patterns, str):
                     patterns = [patterns]
                 for p in patterns:
