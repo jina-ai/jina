@@ -83,9 +83,13 @@ async def _logstream(
             return
 
         # on connection the fluentd file may not flushed (aka exist) yet
+        n = 0
         while not Path(filepath).is_file():
             daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
+            n += 1
+            if timeout > 0 and n >= timeout:
+                return
 
         daemon_logger.success(f'{filepath} is ready for streaming')
 
