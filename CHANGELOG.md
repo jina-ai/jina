@@ -43,6 +43,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8208,4 +8209,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ed61f67a```](https://github.com/jina-ai/jina/commit/ed61f67aa2dc828201ff6c80ebfeeb73a60d19f3)] __-__ update readme (*Han Xiao*)
  - [[```971d8c1d```](https://github.com/jina-ai/jina/commit/971d8c1de282b5c077608f75e65696304f088d14)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```679d58b9```](https://github.com/jina-ai/jina/commit/679d58b968a51f4120664a99642b307452f46c8d)] __-__ __version__: the next version will be 1.1.1 (*Jina Dev Bot*)
+
+<a name=release-note-1-1-2></a>
+## Release Note (`1.1.2`)
+
+> Release time: 2021-04-04 23:04:22
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```9c9ad173```](https://github.com/jina-ai/jina/commit/9c9ad1737172eeaf62e99db185a349dab6dcec3c)] __-__ __flow__: add reload api to flow (#2278) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```1fa761f8```](https://github.com/jina-ai/jina/commit/1fa761f8279063112a7d7ba14a4e9dfce112a808)] __-__ __proto__: devices now explict rename as targets (#2280) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```88ac3a97```](https://github.com/jina-ai/jina/commit/88ac3a9776a7af47cfe0716be5a8d36dde90b5db)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```9097bc12```](https://github.com/jina-ai/jina/commit/9097bc12d7fbcb72da54c4586585901d3392ffe7)] __-__ fix readme (*Han Xiao*)
+ - [[```f4508315```](https://github.com/jina-ai/jina/commit/f450831540b037875acc02b4310e0453f6ea0215)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```8a03b013```](https://github.com/jina-ai/jina/commit/8a03b013700ed0f64bddbfa3a716b6226e28b4c5)] __-__ __version__: the next version will be 1.1.2 (*Jina Dev Bot*)
 
