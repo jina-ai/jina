@@ -471,12 +471,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow = _build_flow(op_flow, _outgoing_map)
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
-            self.logger.warning(
+            op_flow.logger.warning(
                 f'{hanging_pods} are hanging in this flow with no pod receiving from them, '
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
-        self._update_client()
+        op_flow._update_client()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -837,7 +837,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR201"""
         return get_internal_ip()
 
-    @cached_property
+    @property
     @build_required(FlowBuildLevel.GRAPH)
     def address_public(self) -> str:
         """Return the public IP address of the gateway for connecting from other machine in the public network

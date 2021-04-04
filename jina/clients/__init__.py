@@ -2,6 +2,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+from typing import Union, List
+
 from . import request
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
 from .helper import callback_exec
@@ -165,6 +167,39 @@ class Client(BaseClient):
         self.mode = RequestType.DELETE
         return run_async(
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
+        )
+
+    def reload(
+        self,
+        devices: Union[str, List[str]],
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ):
+        """Send 'reload' request to the Flow.
+
+        :param devices: the regex string or list of regex strings to match the pea/pod names.
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: additional parameters
+        :return: None
+        """
+
+        if isinstance(devices, str):
+            devices = [devices]
+        kwargs['devices'] = devices
+
+        self.mode = RequestType.CONTROL
+        return run_async(
+            self._get_results,
+            [],
+            on_done,
+            on_error,
+            on_always,
+            command='RELOAD',
+            **kwargs
         )
 
 

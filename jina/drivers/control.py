@@ -1,6 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import re
 import time
 
 from google.protobuf.json_format import MessageToJson
@@ -84,6 +85,21 @@ class ControlReqDriver(BaseControlDriver):
             pass
         elif self.req.command == 'CANCEL':
             pass
+        elif self.req.command == 'RELOAD':
+            if (
+                'devices' in self.req.args
+                and self.runtime.__class__.__name__ == 'ZEDRuntime'
+            ):
+                patterns = self.req.args['devices']
+                if isinstance(patterns, str):
+                    patterns = [patterns]
+                for p in patterns:
+                    if re.match(p, self.runtime.name):
+                        self.logger.info(
+                            f'reloading the Executor `{self.runtime._executor.name}` in `{self.runtime.name}`'
+                        )
+                        self.runtime._load_executor()
+                        break
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
@@ -180,6 +196,11 @@ class WhooshDriver(BaseControlDriver):
         """
         import subprocess
         from pkg_resources import resource_filename
-        whoosh_mp3 = resource_filename('jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3')))
 
-        subprocess.Popen(f'ffplay  -nodisp -autoexit {whoosh_mp3} >/dev/null 2>&1', shell=True)
+        whoosh_mp3 = resource_filename(
+            'jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3'))
+        )
+
+        subprocess.Popen(
+            f'ffplay  -nodisp -autoexit {whoosh_mp3} >/dev/null 2>&1', shell=True
+        )
