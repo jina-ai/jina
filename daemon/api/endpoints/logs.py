@@ -52,9 +52,9 @@ class ConnectionManager:
         )
         self.active_connections.append(websocket)
 
-    def disconnect(self, websocket: WebSocket):
+    async def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-        websocket.close()
+        await websocket.close()
         daemon_logger.info('%s is disconnected' % _websocket_details(websocket))
 
     async def broadcast(self, message: dict):
@@ -65,11 +65,13 @@ class ConnectionManager:
             except ConnectionClosedOK:
                 pass
             except ConnectionClosedError:
-                self.active_connections.remove(connection)
+                await self.disconnect(connection)
 
 
 @router.websocket("/logstream/{workspace_id}/{log_id}")
-async def _logstream(websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid.UUID):
+async def _logstream(
+    websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid.UUID, timeout: int = 0
+):
     manager = ConnectionManager()
     await manager.connect(websocket)
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
@@ -89,6 +91,8 @@ async def _logstream(websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid
 
         with open(filepath) as fp:
             fp.seek(0, 2)
+            delay = 0.1
+            n = 0
             while True:
                 line = fp.readline()  # also possible to read an empty line
                 if line:
@@ -101,9 +105,13 @@ async def _logstream(websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid
 
                     if payload:
                         await manager.broadcast(payload)
+                        n = 0
                 else:
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(delay)
+                    n += 1
+                    if timeout > 0 and n >= timeout / delay:
+                        return
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
     finally:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
