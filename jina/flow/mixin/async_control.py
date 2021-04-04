@@ -7,12 +7,12 @@ class AsyncControlFlowMixin:
     """The asynchronous version of the Mixin for controlling, scaling the Flow"""
 
     async def reload(
-            self,
-            devices: Union[str, Sequence[str]],
-            on_done: CallbackFnType = None,
-            on_error: CallbackFnType = None,
-            on_always: CallbackFnType = None,
-            **kwargs,
+        self,
+        devices: Union[str, Sequence[str]],
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs,
     ):
         """Reload the executor of certain peas/pods in the Flow
         It will start a :py:class:`CLIClient` and call :py:func:`reload`.
@@ -22,9 +22,9 @@ class AsyncControlFlowMixin:
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: accepts all keyword arguments of `jina client` CLI
-        :return: results
+        :yield: result
         """
         async for r in self._get_client(**kwargs).reload(
-                devices, on_done, on_error, on_always, **kwargs
+            devices, on_done, on_error, on_always, **kwargs
         ):
             yield r

@@ -7,12 +7,12 @@ class ControlFlowMixin:
     """The synchronous version of the Mixin for controlling, scaling the Flow"""
 
     def reload(
-            self,
-            devices: Union[str, Sequence[str]],
-            on_done: CallbackFnType = None,
-            on_error: CallbackFnType = None,
-            on_always: CallbackFnType = None,
-            **kwargs,
+        self,
+        devices: Union[str, Sequence[str]],
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs,
     ):
         """Reload the executor of certain peas/pods in the Flow
         It will start a :py:class:`CLIClient` and call :py:func:`reload`.
@@ -25,7 +25,5 @@ class ControlFlowMixin:
         :return: results
         """
         return self._get_client(**kwargs).reload(
-            devices,
-            on_done, on_error, on_always,
-            **kwargs
+            devices, on_done, on_error, on_always, **kwargs
         )

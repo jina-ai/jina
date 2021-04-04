@@ -23,7 +23,9 @@ def test_bad_control_command():
 
 
 def test_control_reload():
-    for r in request_generator(None, mode=RequestType.CONTROL, command='RELOAD', device='pod0'):
+    for r in request_generator(
+        None, mode=RequestType.CONTROL, command='RELOAD', devices='pod0'
+    ):
         assert isinstance(r, ControlRequest)
         assert r.command == 'RELOAD'
-        assert r.device == 'pod0'
+        assert r.args['devices'] == 'pod0'

@@ -212,7 +212,7 @@ class AsyncClient(BaseClient):
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param kwargs: additional parameters
-        :return: None
+        :yield: result
         """
 
         if isinstance(devices, str):

@@ -169,12 +169,14 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
-    def reload(self,
-               devices: Union[str, List[str]],
-               on_done: CallbackFnType = None,
-               on_error: CallbackFnType = None,
-               on_always: CallbackFnType = None,
-               **kwargs):
+    def reload(
+        self,
+        devices: Union[str, List[str]],
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ):
         """Send 'reload' request to the Flow.
 
         :param devices: the regex string or list of regex strings to match the pea/pod names.
@@ -191,10 +193,15 @@ class Client(BaseClient):
 
         self.mode = RequestType.CONTROL
         return run_async(
-            self._get_results, [], on_done, on_error, on_always,
+            self._get_results,
+            [],
+            on_done,
+            on_error,
+            on_always,
             command='RELOAD',
             **kwargs
         )
+
 
 class WebSocketClient(Client, WebSocketClientMixin):
     """A Python Client to stream requests from a Flow with a REST Gateway.

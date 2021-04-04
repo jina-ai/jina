@@ -96,7 +96,7 @@ class ControlReqDriver(BaseControlDriver):
                 for p in patterns:
                     if re.match(p, self.runtime.name):
                         self.logger.info(
-                            f'reloading {self.runtime._executor.name} in {self.runtime.name}'
+                            f'reloading the Executor `{self.runtime._executor.name}` in `{self.runtime.name}`'
                         )
                         self.runtime._load_executor()
                         break
