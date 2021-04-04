@@ -171,7 +171,7 @@ class Client(BaseClient):
 
     def reload(
         self,
-        devices: Union[str, List[str]],
+        targets: Union[str, List[str]],
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -179,7 +179,7 @@ class Client(BaseClient):
     ):
         """Send 'reload' request to the Flow.
 
-        :param devices: the regex string or list of regex strings to match the pea/pod names.
+        :param targets: the regex string or list of regex strings to match the pea/pod names.
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
@@ -187,9 +187,9 @@ class Client(BaseClient):
         :return: None
         """
 
-        if isinstance(devices, str):
-            devices = [devices]
-        kwargs['devices'] = devices
+        if isinstance(targets, str):
+            targets = [targets]
+        kwargs['targets'] = targets
 
         self.mode = RequestType.CONTROL
         return run_async(

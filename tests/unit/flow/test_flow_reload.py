@@ -19,7 +19,7 @@ def test_flow_simple_reload(mocker):
 
     mock.reset_mock()
     with f:
-        f.reload(devices='mypod')
+        f.reload(targets='mypod')
 
     assert mock.call_count == 2
 
@@ -56,12 +56,12 @@ def test_flow_topology_multi_reload(mocker):
     mock2.reset_mock()
 
     with f:
-        f.reload(devices='mypod')
+        f.reload(targets='mypod')
         assert mock1.call_count == 2
         assert mock2.call_count == 1
-        f.reload(devices='yourpod')
+        f.reload(targets='yourpod')
         assert mock1.call_count == 2
         assert mock2.call_count == 2
-        f.reload(devices='.*pod')
+        f.reload(targets='.*pod')
         assert mock1.call_count == 3
         assert mock2.call_count == 3

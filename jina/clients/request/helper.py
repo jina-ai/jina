@@ -112,5 +112,5 @@ def _add_control_propagate(req, kwargs):
         raise ValueError(
             f'command "{command}" is not supported, must be one of {_available_commands}'
         )
-    req.args.update(extra_kwargs)
+    req.targets.extend(extra_kwargs.get('targets', []))
     req.control.propagate = True
