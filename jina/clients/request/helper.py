@@ -43,7 +43,8 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
             or mode == RequestType.TRAIN
             or mode == RequestType.UPDATE
         ):
-            _kwargs.pop('extra_kwargs')  #: data request do not need extra kwargs
+            if 'extra_kwargs' in _kwargs:
+                _kwargs.pop('extra_kwargs')  #: data request do not need extra kwargs
             _add_docs_groundtruths(req, batch, data_type, _kwargs)
         elif mode == RequestType.DELETE:
             _add_ids(req, batch)
@@ -89,7 +90,9 @@ def _add_ids(req, batch):
 def _add_control_propagate(req, kwargs):
     from ...proto import jina_pb2
 
-    extra_kwargs = kwargs['extra_kwargs']
+    extra_kwargs = kwargs[
+        'extra_kwargs'
+    ]  #: control command and args are stored inside extra_kwargs
     _available_commands = dict(
         jina_pb2.RequestProto.ControlRequestProto.DESCRIPTOR.enum_values_by_name
     )
