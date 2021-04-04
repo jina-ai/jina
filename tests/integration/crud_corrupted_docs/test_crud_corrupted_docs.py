@@ -233,6 +233,7 @@ def test_wrong_mime_type(tmp_path, mocker):
     validate_callback(mock, validate_result_factory(TOPK))
 
     # this won't increase the index size as the ids are new
+    f_index = Flow.load_config(flow_file)
     with f_index:
         f_index.update(inputs=docs_update)
     validate_index_size(NR_DOCS_INDEX, expected_indices=2)
@@ -243,6 +244,7 @@ def test_wrong_mime_type(tmp_path, mocker):
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(TOPK))
 
+    f_index = Flow.load_config(flow_file)
     with f_index:
         f_index.delete(ids=[d.id for d in all_docs_indexed])
     validate_index_size(0, expected_indices=2)
