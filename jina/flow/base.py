@@ -33,7 +33,7 @@ from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 
 __all__ = ['BaseFlow']
 
-from ..peapods import Pod
+from ..peapods import Pod, BasePod
 from ..peapods.compoundpod import CompoundPod
 
 
@@ -78,7 +78,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._pod_nodes = OrderedDict()  # type: Dict[str, 'BasePod']
+        self._pod_nodes = OrderedDict()  # type: Dict[str, BasePod]
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = [
