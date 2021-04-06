@@ -17,11 +17,6 @@ from ...stores.helper import get_workspace_path
 router = APIRouter(tags=['logs'])
 
 
-def _log_is_ready(workspace_id: uuid.UUID, log_id: uuid.UUID):
-    filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
-    return Path(filepath).is_file()
-
-
 @router.get(path='/logs/{workspace_id}/{log_id}')
 async def _export_logs(workspace_id: uuid.UUID, log_id: uuid.UUID):
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
@@ -68,7 +63,7 @@ class ConnectionManager:
                 await self.disconnect(connection)
 
 
-@router.websocket("/logstream/{workspace_id}/{log_id}")
+@router.websocket('/logstream/{workspace_id}/{log_id}')
 async def _logstream(
     websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid.UUID, timeout: int = 0
 ):
@@ -84,7 +79,7 @@ async def _logstream(
 
         # on connection the fluentd file may not flushed (aka exist) yet
         n = 0
-        while not _log_is_ready(workspace_id, log_id):
+        while not Path(filepath).is_file():
             daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1

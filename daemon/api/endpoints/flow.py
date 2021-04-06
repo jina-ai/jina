@@ -9,7 +9,6 @@ from ... import Runtime400Exception
 from ...models import FlowModel
 from ...models.status import FlowStoreStatus, FlowItemStatus
 from ...stores import flow_store as store
-from .logs import _log_is_ready
 
 router = APIRouter(prefix='/flows', tags=['flows'])
 
@@ -36,16 +35,9 @@ async def _create(
     flow: UploadFile = File(...), workspace_id: Optional[uuid.UUID] = Body(None)
 ):
     try:
-        flow_id = store.add(flow.file, workspace_id)
+        return store.add(flow.file, workspace_id)
     except Exception as ex:
         raise Runtime400Exception from ex
-
-    for _ in range(60):
-        if _log_is_ready(store[flow_id]['workspace_id'], flow_id):
-            break
-        await asyncio.sleep(1)
-
-    return flow_id
 
 
 # order matters! this must be put in front of del {id}
