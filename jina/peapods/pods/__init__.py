@@ -18,7 +18,27 @@ from ...enums import *
 
 
 class BasePod(ExitStack):
-    """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
+    """A BasePod is an immutable set of peas. They share the same input and output socket.
+    Internally, the peas can run with the process/thread backend.
+    They can be also run in their own containers on remote machines.
+    """
+
+    def start(self) -> 'BasePod':
+        """Start to run all :class:`BasePea` in this BasePod.
+
+        .. note::
+            If one of the :class:`BasePea` fails to start, make sure that all of them
+            are properly closed.
+        """
+        raise NotImplemented()
+
+    def close(self):
+        """Stop all :class:`BasePea` in this BasePod."""
+        self.__exit__(None, None, None)
+
+
+class Pod(BasePod):
+    """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
 
@@ -185,9 +205,9 @@ class BasePod(ExitStack):
     def all_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod. """
         return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            ([self.peas_args['tail']] if self.peas_args['tail'] else [])
             + self.peas_args['peas']
+            + ([self.peas_args['head']] if self.peas_args['head'] else [])
         )
 
     @property

@@ -34,7 +34,7 @@ from copy import deepcopy
 
 __all__ = ['BaseFlow']
 
-from ..peapods import BasePod
+from ..peapods import BasePod, Pod
 from ..peapods.compoundpod import CompoundPod
 from ..peapods.zmq import send_ctrl_message
 
@@ -193,7 +193,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        self._pod_nodes[pod_name] = BasePod(args, needs)
+        self._pod_nodes[pod_name] = Pod(args, needs)
 
     def needs(
         self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
@@ -309,7 +309,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
 
         if args.replicas == 1:
-            op_flow._pod_nodes[pod_name] = BasePod(args, needs=needs)
+            op_flow._pod_nodes[pod_name] = Pod(args, needs=needs)
         else:
             op_flow._pod_nodes[pod_name] = CompoundPod(args, needs=needs)
         op_flow.last_pod = pod_name
@@ -981,10 +981,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param pod_name: pod to update
         """
-        print('start thread')
         x = threading.Thread(target=self.rolling_update, args=(pod_name,))
         x.start()
-        print('thread is running')
 
     def rolling_update(self, pod_name):
         """
@@ -993,11 +991,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param pod_name: pod to update
         """
         for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
-            print(f'### close replica {i + 1}')
             replica.close()
-            print(f'### replica closed {i + 1}')
-            time.sleep(1)
             replica.start()
-            print(f'### replica started {i + 1}')
-            time.sleep(1)
-        print('### rolling update done')
+            replica.wait_start_success()
+            time.sleep(replica.args.dealer_startup_wait_time)

@@ -13,6 +13,19 @@ def config(tmpdir):
     del os.environ['JINA_REPLICA_DIR']
 
 
+def test_normal():
+    flow = Flow().add(
+        name='pod1',
+        replicas=2,
+        parallel=3,
+        port_in=5100,
+        port_out=5200,
+    )
+
+    with flow:
+        flow.index(Document(text='documents before rolling update'))
+
+
 def test_simple_run():
     flow = Flow().add(
         name='pod1',
@@ -20,38 +33,30 @@ def test_simple_run():
         parallel=3,
         port_in=5100,
         port_out=5200,
+        dealer_startup_wait_time=0.5,
     )
 
     with flow:
-        flow.index('documents before rolling update')
-        print('#### before update ')
+        flow.index(Document(text='documents before rolling update'))
         flow.rolling_update('pod1')
-        print('# index while roling update')
-        flow.index('documents after rolling update')
-        print('# terminate flow')
+        flow.index(Document(text='documents after rolling update'))
+        time.sleep(5)
 
 
 def test_async_run():
     flow = Flow().add(
         name='pod1',
         replicas=2,
-        parallel=3,
+        parallel=2,
+        dealer_startup_wait_time=0.5,
         port_in=5100,
         port_out=5200,
     )
     with flow:
-        for i in range(5):
-            flow.index(Document(text='documents before rolling update'))
-            time.sleep(1)
-        print('#### before update ')
         flow.rolling_update_thread('pod1')
-        time.sleep(1)
-        print('# index while roling update')
-        for i in range(40):
+        for i in range(600):
             flow.index(Document(text='documents after rolling update'))
-            time.sleep(0.5)
-        print('# terminate flow')
-    print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
+        time.sleep(15)
 
 
 def test_vector_indexer_async(config):
@@ -60,20 +65,17 @@ def test_vector_indexer_async(config):
         used='yaml/index_vector.yml',
         replicas=2,
         parallel=3,
+        dealer_startup_wait_time=0.5,
         port_in=5100,
         port_out=5200,
     ) as flow:
         for i in range(5):
             flow.search(Document(text='documents before rolling update'))
             time.sleep(1)
-        print('#### before update ')
         flow.rolling_update_thread('pod1')
-        print('# index while rolling update')
         for i in range(40):
             flow.search(Document(text='documents after rolling update'))
             time.sleep(0.5)
-        print('# terminate flow')
-    print('remove regex from log: "^[^#].*$\\n"')  # ^[^#].*$\n
 
 
 @pytest.mark.parametrize(
@@ -146,7 +148,6 @@ def test_port_configuration(replicas_and_parallel):
             port_out=f'51{i+1}00',  # outside this test, it don't have to be set
             copy_flow=False,
         )
-    print('port assertion in configuration')
 
     with flow:
         pods = flow._pod_nodes

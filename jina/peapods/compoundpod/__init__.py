@@ -3,7 +3,6 @@ __license__ = "Apache-2.0"
 
 import argparse
 from argparse import Namespace
-from contextlib import ExitStack
 from typing import Optional, Dict, List, Union, Set
 
 from .helper import (
@@ -13,12 +12,13 @@ from .helper import (
     _copy_to_tail_args,
     _fill_in_host,
 )
-from .. import BasePea
+from .. import Pea
+from .. import Pod
 from .. import BasePod
 from ...enums import *
 
 
-class CompoundPod(ExitStack):
+class CompoundPod(BasePod):
     """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     """
@@ -39,7 +39,7 @@ class CompoundPod(ExitStack):
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         self.replica_list = []  # type: List['Pod']
-        self.peas = []  # type: List['BasePea']
+        self.peas = []  # type: List['Pea']
         self.is_head_router = False
         self.is_tail_router = False
         self.deducted_head = None
@@ -253,10 +253,10 @@ class CompoundPod(ExitStack):
         Get the number of running :class:`BaseReplica`"""
         return len(self.replica_list)
 
-    def __eq__(self, other: 'BasePod'):
+    def __eq__(self, other: 'Pod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def start(self) -> 'BasePod':
+    def start(self) -> 'Pod':
         """
         # noqa: DAR201
         Start to run all :class:`BaseReplica` in this BasePod.
@@ -268,19 +268,20 @@ class CompoundPod(ExitStack):
         if getattr(self.args, 'noblock_on_start', False):
             for _args in self.all_args['peas']:
                 _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args))
+                self._enter_pea(Pea(_args))
             for _args in self.all_args['replicas']:
                 _args.noblock_on_start = True
-                self._enter_replica(BasePod(_args))
+                _args.polling = PollingType.ALL
+                self._enter_replica(Pod(_args))
 
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
                 for _args in self.all_args['peas']:
-                    self._enter_pea(BasePea(_args))
+                    self._enter_pea(Pea(_args))
                 for _args in self.all_args['replicas']:
-                    self._enter_replica(BasePod(_args))
+                    self._enter_replica(Pod(_args))
             except:
                 self.close()
                 raise
@@ -308,15 +309,15 @@ class CompoundPod(ExitStack):
             self.close()
             raise
 
-    def _enter_replica(self, replica: 'BaseReplica') -> None:
+    def _enter_replica(self, replica: 'Pod') -> None:
         self.replica_list.append(replica)
         self.enter_context(replica)
 
-    def _enter_pea(self, pea: 'BasePea') -> None:
+    def _enter_pea(self, pea: 'Pea') -> None:
         self.peas.append(pea)
         self.enter_context(pea)
 
-    def __enter__(self) -> 'BasePod':
+    def __enter__(self) -> 'Pod':
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

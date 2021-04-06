@@ -78,3 +78,4 @@ The polling strategy of the Pod (when `parallel>1`)
         Peas will be evenly distributed among the hosts. By default,
         peas are running in the same host as the pod.''',
     )
+    gp.add_argument('--dealer-startup-wait-time', type=float, default=0)
