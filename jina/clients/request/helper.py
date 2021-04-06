@@ -3,7 +3,8 @@ from typing import Tuple, Sequence
 
 from ... import Document, Request
 from ...enums import DataInputType, RequestType
-from ...excepts import BadDocType, BadRequestType, RequestTypeError
+from ...excepts import BadDocType, BadRequestType
+from ...excepts import RequestTypeError
 
 
 def _new_doc_from_data(
@@ -31,7 +32,7 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
+def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset, **kwargs):
     req = Request()
     req.request_type = str(mode)
 
@@ -50,6 +51,11 @@ def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
             _add_ids(req, batch)
         elif mode == RequestType.CONTROL:
             _add_control_propagate(req, _kwargs)
+        # TODO make Dump a control request to be passed to the Pod directly
+        elif mode == RequestType.DUMP:
+            req.path = batch
+            req.shards = kwargs.get('shards')
+            req.formats = kwargs.get('formats')
         else:
             raise RequestTypeError(
                 f'generating request from {mode} is not yet supported'
