@@ -2,6 +2,15 @@
 with:
   index_filename: vec.gz
   metric: cosine
+  ref_indexer:
+    !NumpyIndexer
+    metas:
+      name: wrap-npidx
+      workspace: $JINA_REPLICA_DIR
+    with:
+      backend: numpy
+      index_filename: wrap-npidx
+      metric: euclidean
 metas:
   name: vecidx
   workspace: $JINA_REPLICA_DIR
@@ -13,6 +22,6 @@ requests:
       - !VectorSearchDriver
         with:
           executor: vecidx
-          top_k: $JINA_TOPK
+          top_k: 10
           fill_embedding: True
           traversal_paths: ['r']

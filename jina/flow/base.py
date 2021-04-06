@@ -14,9 +14,9 @@ from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
 
 from .builder import build_required, _build_flow, _hanging_pods
-from .. import __default_host__, helper, Document
+from .. import __default_host__
 from ..clients import Client, WebSocketClient
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, SocketType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
     colored,
@@ -30,13 +30,11 @@ from ..helper import (
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
-from copy import deepcopy
 
 __all__ = ['BaseFlow']
 
-from ..peapods import BasePod, Pod
+from ..peapods import Pod
 from ..peapods.compoundpod import CompoundPod
-from ..peapods.zmq import send_ctrl_message
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -975,15 +973,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def rolling_update_thread(self, pod_name):
-        """
-        Update pods one after another asynchronously - only used for compound pods.
-
-        :param pod_name: pod to update
-        """
-        x = threading.Thread(target=self.rolling_update, args=(pod_name,))
-        x.start()
-
     def rolling_update(self, pod_name):
         """
         Update pods one after another - only used for compound pods.
@@ -992,6 +981,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
             replica.close()
+            time.sleep(1)
             replica.start()
             replica.wait_start_success()
             time.sleep(replica.args.dealer_startup_wait_time)

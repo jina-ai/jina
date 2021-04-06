@@ -1,4 +1,5 @@
 import os
+import threading
 import time
 import pytest
 
@@ -43,7 +44,11 @@ def test_simple_run():
         time.sleep(5)
 
 
-def test_async_run():
+def test_thread_run():
+    def rolling_update_thread(flow, pod_name):
+        x = threading.Thread(target=flow.rolling_update, args=(pod_name,))
+        x.start()
+
     flow = Flow().add(
         name='pod1',
         replicas=2,
@@ -53,29 +58,30 @@ def test_async_run():
         port_out=5200,
     )
     with flow:
-        flow.rolling_update_thread('pod1')
+        rolling_update_thread(flow, 'pod1')
         for i in range(600):
-            flow.index(Document(text='documents after rolling update'))
+            flow.search(Document(text='documents after rolling update'))
         time.sleep(15)
 
 
-def test_vector_indexer_async(config):
+def test_vector_indexer_thread(config):
     with Flow().add(
         name='pod1',
-        used='yaml/index_vector.yml',
+        uses='tests/integration/rolling_update/yaml/index_vector.yml',
         replicas=2,
         parallel=3,
-        dealer_startup_wait_time=0.5,
+        dealer_startup_wait_time=4,
         port_in=5100,
         port_out=5200,
     ) as flow:
         for i in range(5):
-            flow.search(Document(text='documents before rolling update'))
-            time.sleep(1)
-        flow.rolling_update_thread('pod1')
+            flow.search(Document(text=f'documents before rolling update {i}'))
+        x = threading.Thread(target=flow.rolling_update, args=('pod1',))
+        x.start()
         for i in range(40):
             flow.search(Document(text='documents after rolling update'))
-            time.sleep(0.5)
+            time.sleep(0.3)
+        x.join()
 
 
 @pytest.mark.parametrize(
