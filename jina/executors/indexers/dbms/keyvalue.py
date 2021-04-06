@@ -26,12 +26,14 @@ class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
         del self.write_handler
         self.handler_mutex = False
         ids = self.query_handler.header.keys()
+        print(f'done with getting ids')
         DumpPersistor.export_dump_streaming(
             path,
             shards=shards,
             size=self.size,
             data=self._get_generator(ids),
         )
+        print(f'done with dump persistor')
         self.query_handler.close()
         self.handler_mutex = False
         # noinspection PyPropertyAccess

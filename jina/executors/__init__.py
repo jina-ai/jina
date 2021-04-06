@@ -574,9 +574,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
         """
-        for list_of_drivers in self._drivers.values():
-            for d in list_of_drivers:
-                d.attach(executor=self, runtime=runtime, *args, **kwargs)
+        for drivers in self._drivers.values():
+            for driver in drivers:
+                driver.attach(executor=self, runtime=runtime, *args, **kwargs)
 
         # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):

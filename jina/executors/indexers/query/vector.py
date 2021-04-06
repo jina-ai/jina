@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Iterable
 
 import numpy as np
 
@@ -78,3 +78,21 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
         )
         self.key_bytes += keys.tobytes()
         self._size += keys.shape[0]
+
+    def update(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
+        """Disabled
+
+
+        .. # noqa: DAR101
+        """
+        self.logger.warning(f'Index {self.index_abspath} is write-once')
+
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+        """Disabled
+
+
+        .. # noqa: DAR101
+        """
+        self.logger.warning(f'Index {self.index_abspath} is write-once')

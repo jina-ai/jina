@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from jina.executors.dump import DumpPersistor
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.query import BaseQueryIndexer
@@ -28,9 +30,28 @@ class QueryBinaryPbIndexer(BinaryPbIndexer, BaseQueryIndexer):
         del self.write_handler
         # warming up
         self.query('someid')
+        # the indexer is write-once
         self.add = lambda *args, **kwargs: self.logger.warning(
-            f'Index {self.index_abspath} is write once'
+            f'Index {self.index_abspath} is write-once'
         )
+
+    def update(
+        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+    ) -> None:
+        """Disabled
+
+
+        .. # noqa: DAR101
+        """
+        self.logger.warning(f'Index {self.index_abspath} is write-once')
+
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+        """Disabled
+
+
+        .. # noqa: DAR101
+        """
+        self.logger.warning(f'Index {self.index_abspath} is write-once')
 
 
 class QueryKeyValueIndexer(QueryBinaryPbIndexer):

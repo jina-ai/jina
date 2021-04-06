@@ -978,10 +978,4 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param pod_name: the name of the pod
         """
         pod = self._pod_nodes[pod_name]
-        for pea in pod.peas:
-            if 'head' not in pea.name and 'tail' not in pea.name:
-                self.logger.info(f'Sending dump request to pea {pea.name}')
-                send_ctrl_message(
-                    pea.runtime.ctrl_addr, DumpMessage(path=path, shards=shards), 30
-                )
-                print(f'done with ctrl message')
+        pod.dump(path, shards)
