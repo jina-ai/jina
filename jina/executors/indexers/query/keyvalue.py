@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from jina.executors.dump import DumpPersistor
+from jina.executors.dump import import_metas
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.executors.indexers.query import BaseQueryIndexer
 
@@ -21,7 +21,7 @@ class QueryBinaryPbIndexer(BinaryPbIndexer, BaseQueryIndexer):
         """Load the dump at the path
 
         :param path: the path of the dump"""
-        ids, metas = DumpPersistor.import_metas(path, str(self.pea_id))
+        ids, metas = import_metas(path, str(self.pea_id))
         self.add(list(ids), list(metas))
         self.write_handler.flush()
         self.write_handler.close()

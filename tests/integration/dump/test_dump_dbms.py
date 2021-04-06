@@ -3,9 +3,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+
 from jina import Flow, Document
 from jina.drivers.dbms import _doc_without_embedding
-from jina.executors.dump import DumpPersistor
+from jina.executors.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import QueryCompoundExecutor
 from jina.logging.profile import TimeContext
@@ -45,7 +46,7 @@ def basic_benchmark(tmpdir, docs, validate_results_nonempty, error_callback, nr_
 def assert_dump_data(dump_path, docs, shards, pea_id):
     size_shard = len(docs) // shards
     size_shard_modulus = len(docs) % shards
-    ids_dump, vectors_dump = DumpPersistor.import_vectors(
+    ids_dump, vectors_dump = import_vectors(
         dump_path,
         str(pea_id),
     )
@@ -62,7 +63,7 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     np.testing.assert_equal(ids_dump, [d.id for d in docs_expected])
     np.testing.assert_allclose(vectors_dump, [d.embedding for d in docs_expected])
 
-    _, metas_dump = DumpPersistor.import_metas(
+    _, metas_dump = import_metas(
         dump_path,
         str(pea_id),
     )
@@ -134,7 +135,6 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
         with TimeContext(f'### dumping {len(docs)} docs'):
             # TODO move to control request approach
             flow_dbms.dump('indexer_dbms', DUMP_PATH, shards=shards)
-            print(f'done with dump')
 
         dir_size = path_size(DUMP_PATH)
         print(f'### dump path size: {dir_size} MBs')

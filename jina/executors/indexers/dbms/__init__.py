@@ -43,7 +43,7 @@ class BaseDBMSIndexer(BaseIndexer):
         raise NotImplementedError
 
     def dump(self, path: str, shards: int):
-        """Dump the index with the DumpPersistor
+        """Dump the index
 
         :param path: the path to which to dump
         :param shards: the nr of shards to which to dump

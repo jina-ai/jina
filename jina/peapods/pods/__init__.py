@@ -358,4 +358,3 @@ class BasePod(ExitStack):
                 send_ctrl_message(
                     pea.runtime.ctrl_addr, DumpMessage(path=path, shards=shards), 120
                 )
-                print(f'done with ctrl message')

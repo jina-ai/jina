@@ -459,7 +459,6 @@ def send_ctrl_message(
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
         send_message(sock, msg, timeout)
-        print(f'done with send_message')
         r = None
         try:
             r = recv_message(sock, timeout)

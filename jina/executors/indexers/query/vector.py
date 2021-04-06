@@ -2,7 +2,7 @@ from typing import Generator, Iterable
 
 import numpy as np
 
-from jina.executors.dump import DumpPersistor
+from jina.executors.dump import import_vectors
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 
@@ -36,7 +36,7 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
         """Load the dump at the path
 
         :param path: the path of the dump"""
-        ids, vecs = DumpPersistor.import_vectors(path, str(self.pea_id))
+        ids, vecs = import_vectors(path, str(self.pea_id))
         self.add(ids, vecs)
         self.write_handler.flush()
         self.write_handler.close()

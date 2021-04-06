@@ -26,4 +26,3 @@ class DumpDriver(BaseExecutableDriver):
         :param kwargs: passed to the exec_fn
         """
         self.exec_fn(self.req.path, self.req.shards, *args, **kwargs)
-        print(f'done with self.exec_fn')
