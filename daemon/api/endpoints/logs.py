@@ -2,6 +2,7 @@ import asyncio
 import json
 import uuid
 from pathlib import Path
+from typing import List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.exceptions import HTTPException
@@ -69,11 +70,12 @@ async def _logstream(
 ):
     manager = ConnectionManager()
     await manager.connect(websocket)
+    client_details = _websocket_details(websocket)
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
     try:
         if jinad_args.no_fluentd:
             daemon_logger.warning(
-                f'{self.client_details} asks for logstreaming but fluentd is not available'
+                f'{client_details} asks for logstreaming but fluentd is not available'
             )
             return
 
