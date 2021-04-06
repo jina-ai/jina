@@ -981,7 +981,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
             replica.close()
-            time.sleep(1)
             replica.start()
             replica.wait_start_success()
             time.sleep(replica.args.dealer_startup_wait_time)
