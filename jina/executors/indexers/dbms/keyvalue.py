@@ -1,7 +1,7 @@
 import pickle
-from typing import List, Optional
+from typing import Optional
 
-from jina.executors.dump import DumpTypes, DumpPersistor
+from jina.executors.dump import DumpPersistor
 from jina.executors.indexers.dbms import BaseDBMSIndexer
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 
@@ -15,12 +15,11 @@ class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
             vec, meta = pickle.loads(vecs_metas_bytes)
             yield id_, vec, meta
 
-    def dump(self, path: str, shards: int, formats: List[DumpTypes]) -> None:
+    def dump(self, path: str, shards: int) -> None:
         """Dump the index with the DumpPersistor
 
         :param path: the path to which to dump
         :param shards: the nr of shards to which to dump
-        :param formats: the list of formats
         """
         self.write_handler.close()
         # noinspection PyPropertyAccess
@@ -32,7 +31,6 @@ class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
             shards=shards,
             size=self.size,
             data=self._get_generator(ids),
-            formats=formats,
         )
         self.query_handler.close()
         self.handler_mutex = False

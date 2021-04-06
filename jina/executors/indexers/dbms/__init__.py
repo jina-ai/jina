@@ -1,8 +1,6 @@
 from typing import Optional, List
 
 import numpy as np
-
-from jina.executors.dump import DumpTypes
 from jina.executors.indexers import BaseIndexer
 
 
@@ -44,12 +42,11 @@ class BaseDBMSIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def dump(self, path: str, shards: int, formats: List[DumpTypes]):
+    def dump(self, path: str, shards: int):
         """Dump the index with the DumpPersistor
 
         :param path: the path to which to dump
         :param shards: the nr of shards to which to dump
-        :param formats: the list of formats
         """
         raise NotImplementedError
 

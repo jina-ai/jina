@@ -1,18 +1,10 @@
 import os
 import sys
-from typing import Iterable, Tuple, List
+from typing import Iterable, Tuple
 
 import numpy as np
 
-from jina.enums import BetterEnum
-
 BYTE_PADDING = 4
-
-
-class DumpTypes(BetterEnum):
-    """The enum of dump formats"""
-
-    DEFAULT = 0
 
 
 class DumpPersistor:
@@ -28,7 +20,6 @@ class DumpPersistor:
         shards: int,
         size: int,
         data: Iterable[Tuple[str, np.array, bytes]],
-        formats: List[DumpTypes],
     ):
         """Export the data to a path, based on sharding,
 
@@ -36,13 +27,8 @@ class DumpPersistor:
         :param shards: the nr of shards this pea is part of
         :param size: total amount of entries
         :param data: the generator of the data (ids, vectors, metadata)
-        :param formats: the list of formats in which we dump
         """
-        for format in formats:
-            if format == DumpTypes.DEFAULT:
-                DumpPersistor._handle_dump(data, path, shards, size)
-            else:
-                raise NotImplementedError('Not other format types supported right now')
+        DumpPersistor._handle_dump(data, path, shards, size)
 
     @staticmethod
     def _handle_dump(data, path, shards, size):

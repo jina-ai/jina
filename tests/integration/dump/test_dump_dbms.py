@@ -3,10 +3,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 from jina import Flow, Document
 from jina.drivers.dbms import _doc_without_embedding
-from jina.executors.dump import DumpTypes, DumpPersistor
+from jina.executors.dump import DumpPersistor
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import QueryCompoundExecutor
 from jina.logging.profile import TimeContext
@@ -134,7 +133,8 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
 
         with TimeContext(f'### dumping {len(docs)} docs'):
             # TODO move to control request approach
-            flow_dbms.dump(DUMP_PATH, shards=shards, formats=[DumpTypes.DEFAULT])
+            flow_dbms.dump('indexer_dbms', DUMP_PATH, shards=shards)
+            print(f'done with dump')
 
         dir_size = path_size(DUMP_PATH)
         print(f'### dump path size: {dir_size} MBs')
@@ -149,7 +149,7 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
     'GITHUB_WORKFLOW' in os.environ, reason='skip the benchmark test on github workflow'
 )
 def test_benchmark(tmpdir):
-    nr_docs = 100000
+    nr_docs = 10000
     return test_dump_keyvalue(
         tmpdir, shards=1, nr_docs=nr_docs, emb_size=128, benchmark=True
     )

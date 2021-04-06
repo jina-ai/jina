@@ -317,13 +317,8 @@ message RequestProto {
      * Represents a dump request
      */
     message DumpRequestProto {
-        enum DumpTypes {
-            DEFAULT = 0;
-            NUMPY = 1;
-        }
         string path = 1; // path for the index
         int32 shards = 2; // nr of shards in the dump
-        repeated DumpTypes formats = 3; // the formats for which to optimize
     }
 
     /**

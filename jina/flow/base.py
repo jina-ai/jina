@@ -12,6 +12,9 @@ from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
 
+from jina.peapods.zmq import send_ctrl_message
+from jina.types.message.dump import DumpMessage
+
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client, WebSocketClient
@@ -24,7 +27,6 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
-    cached_property,
 )
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
@@ -967,3 +969,19 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     # for backward support
     join = needs
+
+    def dump(self, pod_name, path: str, shards: int):
+        """Emit a Dump request to a specific Pod
+
+        :param shards: the nr of shards in the dump
+        :param path: the path to which to dump
+        :param pod_name: the name of the pod
+        """
+        pod = self._pod_nodes[pod_name]
+        for pea in pod.peas:
+            if 'head' not in pea.name and 'tail' not in pea.name:
+                self.logger.info(f'Sending dump request to pea {pea.name}')
+                send_ctrl_message(
+                    pea.runtime.ctrl_addr, DumpMessage(path=path, shards=shards), 30
+                )
+                print(f'done with ctrl message')

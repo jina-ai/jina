@@ -17,6 +17,7 @@ _trigger_body_fields = set(
         jina_pb2.RequestProto.SearchRequestProto,
         jina_pb2.RequestProto.TrainRequestProto,
         jina_pb2.RequestProto.ControlRequestProto,
+        jina_pb2.RequestProto.DumpRequestProto,
     ]
     for kk in v.DESCRIPTOR.fields_by_name.keys()
 )

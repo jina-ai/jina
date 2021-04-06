@@ -2,8 +2,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import List
-
 from typing import Union, List
 
 from . import request
@@ -12,7 +10,6 @@ from .helper import callback_exec
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 from ..enums import RequestType
-from ..executors.dump import DumpTypes
 from ..helper import run_async, deprecated_alias
 
 
@@ -170,39 +167,6 @@ class Client(BaseClient):
         self.mode = RequestType.DELETE
         return run_async(
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
-        )
-
-    def dump(
-        self,
-        path: str,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        shards: int = None,
-        formats: List[DumpTypes] = None,
-        **kwargs,
-    ) -> None:
-        """Issue 'update' request to the Flow.
-        :param path: path to the dump
-        :param formats: the formats into which to dump
-        :param shards: nr of shards in the dump
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: additional parameters
-        :return: None
-        """
-        # TODO make Dump a control request to be passed to the Pod directly
-        self.mode = RequestType.DUMP
-        return run_async(
-            self._get_results,
-            path,
-            on_done,
-            on_error,
-            on_always,
-            shards=shards,
-            formats=formats,
-            **kwargs,
         )
 
     def reload(

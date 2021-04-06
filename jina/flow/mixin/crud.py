@@ -1,11 +1,10 @@
 import warnings
-from typing import Union, Iterable, TextIO, Dict, Optional, List
+from typing import Union, Iterable, TextIO, Dict, Optional
 
 import numpy as np
 
 from ...clients.base import InputType, InputDeleteType, CallbackFnType
 from ...enums import DataInputType
-from ...executors.dump import DumpTypes
 from ...helper import deprecated_alias
 
 
@@ -536,36 +535,6 @@ class CRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         """
         self._get_client(**kwargs).delete(ids, on_done, on_error, on_always, **kwargs)
-
-    # TODO make Dump a control request to be passed to the Pod directly
-    def dump(
-        self,
-        path: str,
-        shards: int = None,
-        formats: List[DumpTypes] = None,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs,
-    ):
-        """Do deletion on the current Flow
-        :param path: path to the dump
-        :param formats: the formats into which to dump
-        :param shards: nr of shards in the dump
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: accepts all keyword arguments of `jina client` CLI
-        """
-        self._get_client(**kwargs).dump(
-            path,
-            on_done,
-            on_error,
-            on_always,
-            shards=shards,
-            formats=formats,
-            **kwargs,
-        )
 
     @deprecated_alias(
         input_fn=('inputs', 0),
