@@ -25,10 +25,8 @@ class CompoundPod(BasePod):
 
     def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
         """
-
-        # noqa: DAR101
-
         :param args: arguments parsed from the CLI
+        :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
         """
         super().__init__()
 
@@ -54,71 +52,91 @@ class CompoundPod(BasePod):
     @property
     def role(self) -> 'PodRoleType':
         """
-        # noqa: DAR201
-        Return the role of this :class:`BasePod`."""
+        Return the role of this :class:`CompoundPod`.
+
+        :return: role type
+        """
         return self.args.pod_role
 
     @property
     def is_singleton(self) -> bool:
         """
-        # noqa: DAR201
-        Return if the Pod contains only a single Pea"""
+        Return if the Pod contains only a single Pea
+
+        :return: true if there is only one replica, else false
+        """
         return not (self.is_head_router or self.is_tail_router)
 
     @property
     def name(self) -> str:
         """
-        # noqa: DAR201
-        The name of this :class:`BasePod`."""
+        The name of this :class:`CompoundPod`.
+
+        :return: name of the pod
+        """
         return self.args.name
 
     @property
     def port_expose(self) -> int:
         """
-        # noqa: DAR201
-        Get the grpc port number"""
+        Get the grpc port number.
+
+        :return: exposed port
+        """
         return self.first_pea_args.port_expose
 
     @property
     def host(self) -> str:
         """
-        # noqa: DAR201
-        Get the host name of this Pod"""
+        Get the host name of this Pod.
+
+        :return: host name
+        """
         return self.first_pea_args.host
 
     @property
     def host_in(self) -> str:
         """
-        # noqa: DAR201
-        Get the host_in of this pod"""
+        Get the host_in of this pod.
+
+        :return: host name of incoming requests
+        """
         return self.head_args.host_in
 
     @property
     def host_out(self) -> str:
         """
-        # noqa: DAR201
-        Get the host_out of this pod"""
+        Get the host_out of this pod.
+
+        :return: host name of outgoing requests
+        """
         return self.tail_args.host_out
 
     @property
     def address_in(self) -> str:
         """
-        # noqa: DAR201
-        Get the full incoming address of this pod"""
+        Get the full incoming address of this pod.
+
+        :return: address for incoming requests
+        """
         return f'{self.head_args.host_in}:{self.head_args.port_in} ({self.head_args.socket_in!s})'
 
     @property
     def address_out(self) -> str:
         """
-        # noqa: DAR201
-        Get the full outgoing address of this pod"""
+        Get the full outgoing address of this pod.
+
+        :return: address for outgoing requests.
+        """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
     @property
     def first_pea_args(self) -> Namespace:
         """
-        # noqa: DAR201
-        Return the first non-head/tail pea's args"""
+        Return the first non-head/tail pea's args
+
+        :return: arguments of the first pea which is not a head pea or tail pea
+        """
         # note this will be never out of boundary
         return self.replicas_args['replicas'][0]
 
@@ -165,8 +183,10 @@ class CompoundPod(BasePod):
     @property
     def head_args(self):
         """
-        # noqa: DAR201
-        Get the arguments for the `head` of this BasePod."""
+        Get the arguments for the `head` of this BasePod.
+
+        :return: arguments of the head pea
+        """
         if self.is_head_router and self.replicas_args['head']:
             return self.replicas_args['head']
         elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
@@ -179,9 +199,10 @@ class CompoundPod(BasePod):
     @head_args.setter
     def head_args(self, args):
         """
-        # noqa: DAR201
-        # noqa: DAR101
-        Set the arguments for the `head` of this BasePod."""
+        Set the arguments for the `head` of this BasePod.
+
+        :param args: arguments of the head pea
+        """
         if self.is_head_router and self.replicas_args['head']:
             self.replicas_args['head'] = args
         elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
@@ -194,8 +215,10 @@ class CompoundPod(BasePod):
     @property
     def tail_args(self):
         """
-        # noqa: DAR201
-        Get the arguments for the `tail` of this BasePod."""
+        Get the arguments for the `tail` of this BasePod.
+
+        :return: arguments of the tail pea
+        """
         if self.is_tail_router and self.replicas_args['tail']:
             return self.replicas_args['tail']
         elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
@@ -208,11 +231,9 @@ class CompoundPod(BasePod):
     @tail_args.setter
     def tail_args(self, args):
         """
-
-        # noqa: DAR201
-        # noqa: DAR101
-
         Set the arguments for the `tail` of this BasePod.
+
+        :param args: arguments of the tail pea
         """
         if self.is_tail_router and self.replicas_args['tail']:
             self.replicas_args['tail'] = args
@@ -237,8 +258,10 @@ class CompoundPod(BasePod):
         ],
     ]:
         """
-        # noqa: DAR201
-        Get all arguments of all Peas in this BasePod."""
+        Get all arguments of all Peas and Pods (replicas) in this CompoundPod.
+
+        :return: arguments for all Peas and pods
+        """
         args = {
             'peas': ([self.replicas_args['head']] if self.replicas_args['head'] else [])
             + ([self.replicas_args['tail']] if self.replicas_args['tail'] else []),
@@ -249,20 +272,23 @@ class CompoundPod(BasePod):
     @property
     def num_peas(self) -> int:
         """
-        # noqa: DAR201
-        Get the number of running :class:`BaseReplica`"""
+        Get the number of running :class:`Pod`
+
+        :return: total number of peas including head and tail
+        """
         return len(self.replica_list)
 
-    def __eq__(self, other: 'Pod'):
+    def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def start(self) -> 'Pod':
+    def start(self) -> 'CompoundPod':
         """
-        # noqa: DAR201
-        Start to run all :class:`BaseReplica` in this BasePod.
+        Start to run all :class:`Pod` in this CompoundPod.
+
+        :return: started CompoundPod
 
         .. note::
-            If one of the :class:`BaseReplica` fails to start, make sure that all of them
+            If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
@@ -289,10 +315,8 @@ class CompoundPod(BasePod):
 
     def wait_start_success(self) -> None:
         """
-        # noqa: DAR201
         Block until all peas starts successfully.
-
-        If not success, it will raise an error hoping the outer function to catch it
+        If not successful, it will raise an error hoping the outer function to catch it
         """
 
         if not self.args.noblock_on_start:
@@ -317,7 +341,7 @@ class CompoundPod(BasePod):
         self.peas.append(pea)
         self.enter_context(pea)
 
-    def __enter__(self) -> 'Pod':
+    def __enter__(self) -> 'CompoundPod':
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -325,9 +349,7 @@ class CompoundPod(BasePod):
         self.join()
 
     def join(self):
-        """
-        # noqa: DAR201
-        Wait until all peas exit"""
+        """Wait until all peas exit."""
         try:
             for p in self.peas:
                 p.join()
@@ -350,8 +372,9 @@ class CompoundPod(BasePod):
     @property
     def is_ready(self) -> bool:
         """
-        # noqa: DAR201
         Checks if Pod is read.
+        :return: true if the peas and pods are ready to serve requests
+
         .. note::
             A Pod is ready when all the Peas it contains are ready
         """
