@@ -1,21 +1,19 @@
 from jina import Flow
 from jina import Document
-from jina.proto.jina_pb2 import DocumentProto
 
 from tests import validate_callback
 
 
 def input_function():
-    doc1 = DocumentProto()
-    doc2 = DocumentProto()
-    # doc1 and doc2 should have the same id
-    ev1 = doc1.evaluations.add()
-    ev1.value = 1
-    ev1.op_name = 'op1'
-    ev2 = doc2.evaluations.add()
-    ev2.value = 2
-    ev2.op_name = 'op2'
-    return [Document(doc1), Document(doc2)]
+    with Document() as doc1:
+        ev1 = doc1.evaluations.add()
+        ev1.value = 1
+        ev1.op_name = 'op1'
+    with Document() as doc2:
+        ev2 = doc2.evaluations.add()
+        ev2.value = 2
+        ev2.op_name = 'op2'
+    return [doc1, doc2]
 
 
 def test_collect_evals_driver(mocker):
