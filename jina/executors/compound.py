@@ -274,7 +274,6 @@ class CompoundExecutor(BaseExecutor):
 
         :param comps: a function returns a list of executors
         """
-        print(f'### called set components')
         if not callable(comps):
             raise TypeError(
                 'components must be a callable function that returns '

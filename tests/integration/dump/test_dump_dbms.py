@@ -145,7 +145,7 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
 
         with TimeContext(f'### dumping {len(docs)} docs'):
             # TODO move to control request approach
-            flow_dbms.dump('indexer_dbms', DUMP_PATH, shards=shards)
+            flow_dbms.dump('indexer_dbms', DUMP_PATH, shards=shards, timeout=120)
 
         dir_size = path_size(DUMP_PATH)
         print(f'### dump path size: {dir_size} MBs')

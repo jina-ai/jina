@@ -347,14 +347,17 @@ class BasePod(ExitStack):
         """
         return all(p.is_ready.is_set() for p in self.peas)
 
-    def dump(self, path, shards):
+    def dump(self, path, shards, timeout):
         """Emit a Dump request to its Peas
 
         :param shards: the nr of shards in the dump
         :param path: the path to which to dump
+        :param timeout: time to wait (seconds)
         """
         for pea in self.peas:
             if 'head' not in pea.name and 'tail' not in pea.name:
                 send_ctrl_message(
-                    pea.runtime.ctrl_addr, DumpMessage(path=path, shards=shards), 120
+                    pea.runtime.ctrl_addr,
+                    DumpMessage(path=path, shards=shards),
+                    timeout=timeout,
                 )
