@@ -23,7 +23,7 @@ def test_flow(flow_yml, docker_compose):
 
     r = assert_request(
         method='post',
-        url='http://0.0.0.0:45678/api/search',
+        url='http://0.0.0.0:45678/search',
         payload={'top_k': 10, 'data': ['text:cats rulessss']},
     )
     assert r is not None

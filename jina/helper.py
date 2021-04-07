@@ -1041,7 +1041,6 @@ def get_internal_ip():
     return ip
 
 
-@functools.lru_cache()
 def get_public_ip():
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
@@ -1049,12 +1048,15 @@ def get_public_ip():
     :return: Public IP address.
     """
     import urllib.request
-    import concurrent.futures
+
+    timeout = 0.5
+
+    results = []
 
     def _get_ip(url):
         try:
-            with urllib.request.urlopen(url, timeout=0.5) as fp:
-                return fp.read().decode('utf8')
+            with urllib.request.urlopen(url, timeout=timeout) as fp:
+                results.append(fp.read().decode('utf8'))
         except:
             pass
 
@@ -1064,11 +1066,19 @@ def get_public_ip():
         'https://ipinfo.io/ip',
     ]
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(_get_ip, ip) for ip in ip_server_list]
-        for f in futures:
-            if f.result():
-                return f.result()
+    threads = []
+
+    for idx, ip in enumerate(ip_server_list):
+        t = threading.Thread(target=_get_ip, args=(ip,))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join(timeout)
+
+    for r in results:
+        if r:
+            return r
 
 
 def convert_tuple_to_list(d: Dict):
@@ -1236,3 +1246,16 @@ def download_mermaid_url(mermaid_url, output) -> None:
         default_logger.error(
             'can not download image, please check your graph and the network connections'
         )
+
+
+def ding(req):
+    """Play a ding sound `on_done`, used in 2021 April fools day
+
+    # noqa: DAR101
+    """
+    import subprocess
+    from pkg_resources import resource_filename
+
+    soundfx = resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
+
+    subprocess.call(f'ffplay  -nodisp -autoexit {soundfx} >/dev/null 2>&1', shell=True)

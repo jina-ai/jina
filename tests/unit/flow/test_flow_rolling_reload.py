@@ -1,10 +1,9 @@
 import multiprocessing
 import os
 import time
-import threading
 
-import pytest
 import numpy as np
+import pytest
 
 from jina import Document, Flow
 
@@ -17,16 +16,16 @@ def config(tmpdir):
 
 
 @pytest.fixture(scope='function')
-def flow_with_dump_interval():
-    return Flow().add(uses='_index', dump_interval=1)
+def index_flow():
+    return Flow().add(uses='_index', shards=3)
 
 
 @pytest.fixture(scope='function')
-def flow_with_load_interval():
-    return Flow().add(uses='_index', load_interval=1)
+def search_flow():
+    return Flow().add(uses='_index', shards=3, polling='all')
 
 
-def test_dump_load_interval(config, flow_with_dump_interval, flow_with_load_interval):
+def test_rolling_reload(config, index_flow, search_flow):
     """Run index and search in parallel, we should observe number of documents while searching
     keep increasing.
     We expect while indexing and quering, we should get a new `num_matches` for each run.
@@ -42,13 +41,14 @@ def test_dump_load_interval(config, flow_with_dump_interval, flow_with_load_inte
         print(f'{j}-time got {len(req.docs[0].matches)} results')
         num_matches.add(len(req.docs[0].matches))
 
-    def index_flow_with_dump_interval():
-        with flow_with_dump_interval as f:
+    def index_flow_with_shards():
+        with index_flow as f:
             f.index(input_fn, request_size=1)
 
-    def search_flow_with_load_interval():
-        with flow_with_load_interval as f:
+    def search_flow_rolling_reload():
+        with search_flow as f:
             for j in range(10):
+                f.reload(targets=f'pod0/{j % 3}')
                 f.search(
                     Document(embedding=np.array([1, 2, 3])),
                     request_size=1,
@@ -58,10 +58,10 @@ def test_dump_load_interval(config, flow_with_dump_interval, flow_with_load_inte
                 time.sleep(1)
 
     # run dump interval flow
-    t = multiprocessing.Process(target=index_flow_with_dump_interval)
+    t = multiprocessing.Process(target=index_flow_with_shards)
     t.start()
     time.sleep(1)
     # run load interval flow
-    search_flow_with_load_interval()
+    search_flow_rolling_reload()
     # verify num_matches has different values since we're querying while indexing
     assert len(num_matches) > 1

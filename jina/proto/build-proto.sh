@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# Do not use this directly, use jinaai/protgen image
+# Do NOT use this directly, use jinaai/protogen image
 #
 # current dir: jina root (the one with README.md)
 # run the following in bash:

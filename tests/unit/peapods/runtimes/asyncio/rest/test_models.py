@@ -1,6 +1,9 @@
 from tests import random_docs
 from jina.types.document import Document
-from jina.peapods.runtimes.asyncio.rest.models import PROTO_TO_PYDANTIC_MODELS
+from jina.peapods.runtimes.asyncio.rest.models import (
+    PROTO_TO_PYDANTIC_MODELS,
+    JinaRequestModel,
+)
 
 import pytest
 import pydantic
@@ -43,7 +46,7 @@ def test_enum_definitions():
     command_enum_definition = PROTO_TO_PYDANTIC_MODELS.RequestProto().schema()[
         'definitions'
     ]['Command']
-    assert command_enum_definition['enum'] == [0, 1, 3, 4]
+    assert command_enum_definition['enum'] == [0, 1, 3, 4, 5, 6]
 
 
 def test_all_fields_in_document_proto():
@@ -232,3 +235,24 @@ def test_pydatic_document_to_jina_document():
     jina_doc = Document(document_proto_model(text='abc').dict())
     assert jina_doc.text == 'abc'
     assert jina_doc.content == 'abc'
+
+
+@pytest.mark.parametrize('top_k', [5, 10])
+def test_model_with_top_k(top_k):
+    m = JinaRequestModel(data=['abc'], top_k=top_k)
+    assert m.queryset[0].name == 'SliceQL'
+    assert m.queryset[0].parameters['end'] == top_k
+    assert m.queryset[1].name == 'VectorSearchDriver'
+    assert m.queryset[1].parameters['top_k'] == top_k
+
+
+def test_model_with_queryset():
+    m = JinaRequestModel(
+        data=['abc'],
+        queryset=[
+            {'name': 'CustomQuerySet', 'parameters': {'top_k': 10}, 'priority': 1}
+        ],
+    )
+    assert m.queryset[0].name == 'CustomQuerySet'
+    assert m.queryset[0].parameters['top_k'] == 10
+    assert m.queryset[0].priority == 1
