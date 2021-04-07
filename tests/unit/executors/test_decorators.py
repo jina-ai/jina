@@ -332,14 +332,15 @@ def test_batching_ordinal_idx_arg(tmpdir):
             self.batch_size = batch_size
             self.ord_idx = []
 
-        @batching(ordinal_idx_arg=2, slice_nargs=1, split_over_axis=0)
+        @batching(ordinal_idx_arg=2)
         def f(self, data, ord_idx):
             self.ord_idx.append(ord_idx)
             return list(range(ord_idx.start, ord_idx.stop))
 
     instance = A(2)
     result = instance.f(
-        np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0]
+        np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape),
+        slice(0, vec.shape[0]),
     )
     assert len(instance.ord_idx) == 5
     assert instance.ord_idx[0].start == 0
