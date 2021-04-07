@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Optional, Dict
 
 from jina.executors.dump import import_metas
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
@@ -7,6 +7,17 @@ from jina.executors.indexers.query import BaseQueryIndexer
 
 class QueryBinaryPbIndexer(BinaryPbIndexer, BaseQueryIndexer):
     """A write-once Key-value indexer."""
+
+    def _post_init_wrapper(
+        self,
+        _metas: Optional[Dict] = None,
+        _requests: Optional[Dict] = None,
+        fill_in_metas: bool = True,
+    ) -> None:
+        super()._post_init_wrapper(_metas, _requests, fill_in_metas)
+        dump_path = _metas.get('dump_path')
+        if dump_path:
+            self.load_dump(dump_path)
 
     def load_dump(self, dump_path):
         """Load the dump at the path
@@ -22,6 +33,7 @@ class QueryBinaryPbIndexer(BinaryPbIndexer, BaseQueryIndexer):
         # warming up
         self.query('someid')
         # the indexer is write-once
+        # TODO refactor
         self.add = lambda *args, **kwargs: self.logger.warning(
             f'Index {self.index_abspath} is write-once'
         )

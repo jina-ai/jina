@@ -20,7 +20,6 @@ class QueryCompoundExecutor(CompoundExecutor, BaseQueryIndexer):
         self.dump_path = _metas.get('dump_path')
 
     def _post_components(self):
-        print(f'### {self=} would call load dump. {self.components=}')
         self.load_dump(self.dump_path)
 
     def load_dump(self, dump_path, *args, **kwargs):

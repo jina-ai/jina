@@ -1,4 +1,4 @@
-from typing import Generator, Iterable
+from typing import Generator, Iterable, Optional, Dict
 
 import numpy as np
 
@@ -22,6 +22,17 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
     :param compress_level: compression level to use
     """
 
+    def _post_init_wrapper(
+        self,
+        _metas: Optional[Dict] = None,
+        _requests: Optional[Dict] = None,
+        fill_in_metas: bool = True,
+    ) -> None:
+        super()._post_init_wrapper(_metas, _requests, fill_in_metas)
+        dump_path = _metas.get('dump_path')
+        if dump_path:
+            self.load_dump(dump_path)
+
     def load_dump(self, dump_path):
         """Load the dump at the path
 
@@ -34,7 +45,9 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
         self.is_handler_loaded = False
         test_vecs = np.array([np.random.random(self.num_dim)], dtype=self.dtype)
         assert self.query(test_vecs, 1) is not None
-        self.initialized = True
+        self.add = lambda *args, **kwargs: self.logger.warning(
+            f'Index {self.index_abspath} is write-once'
+        )
 
     def add(self, keys: Generator, vectors: Generator, *args, **kwargs) -> None:
         """Add the embeddings and document ids to the index.
@@ -44,10 +57,6 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
         :param args: not used
         :param kwargs: not used
         """
-        if self.initialized:
-            self.logger.warning(f'Index {self.index_abspath} is write-once')
-            return
-
         keys = np.array(list(keys), (np.str_, self.key_length))
         vectors_nr = 0
         for vector in vectors:

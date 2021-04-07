@@ -75,12 +75,12 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
 
     # assert with Indexers
     # noinspection PyTypeChecker
+    # TODO currently metas are only passed to the parent Compound, not to the inner components
     cp: QueryCompoundExecutor = BaseQueryIndexer.load_config(
         'indexer_query.yml',
         pea_id=pea_id,
         metas={'workspace': os.path.join(dump_path, 'new_ws'), 'dump_path': dump_path},
     )
-    # TODO dump path needs to be passed with the initialization
     for c in cp.components:
         assert c.size == len(docs_expected)
 
