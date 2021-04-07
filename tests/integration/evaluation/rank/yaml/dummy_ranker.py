@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from jina.executors.rankers import Match2DocRanker
-from jina.executors.decorators import batching_multi_input
+from jina.executors.decorators import batching
 
 
 class DummyRanker(Match2DocRanker):
@@ -15,7 +15,7 @@ class DummyRanker(Match2DocRanker):
         super().__init__(*args, **kwargs)
         self.match_required_keys = ['tags__dummy_score']
 
-    @batching_multi_input(slice_nargs=3)
+    @batching(slice_nargs=3)
     def score(
         self,
         old_match_scores: List[Dict],

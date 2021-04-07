@@ -9,7 +9,6 @@ from jina.executors.decorators import (
     batching,
     require_train,
     store_init_kwargs,
-    batching_multi_input,
     single,
 )
 
@@ -299,6 +298,29 @@ def test_batching_slice_on():
     assert instance.batch_sizes[0] == 4
 
 
+def test_batching_memmap(tmpdir):
+    path = os.path.join(str(tmpdir), 'vec.gz')
+    vec = np.random.random([10, 10])
+    with open(path, 'wb') as f:
+        f.write(vec.tobytes())
+
+    class A:
+        def __init__(self, batch_size):
+            self.batch_size = batch_size
+
+        @batching
+        def f(self, data):
+            assert data.shape == (2, 10)
+            return data
+
+    instance = A(2)
+    result = instance.f(
+        np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape)
+    )
+    assert result.shape == (10, 10)
+    assert isinstance(result, np.ndarray)
+
+
 def test_batching_ordinal_idx_arg(tmpdir):
     path = os.path.join(str(tmpdir), 'vec.gz')
     vec = np.random.random([10, 10])
@@ -317,7 +339,8 @@ def test_batching_ordinal_idx_arg(tmpdir):
 
     instance = A(2)
     result = instance.f(
-        np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape), vec.shape[0]
+        np.memmap(path, dtype=vec.dtype.name, mode='r', shape=vec.shape),
+        slice(0, vec.shape[0]),
     )
     assert len(instance.ord_idx) == 5
     assert instance.ord_idx[0].start == 0
@@ -354,16 +377,20 @@ def test_batching_with_label():
 
 
 def test_batching_multi():
-    num_data = 3
+    slice_nargs = 3
 
     class A:
         def __init__(self, batch_size):
             self.batch_size = batch_size
             self.batching = []
 
-        @batching_multi_input(slice_nargs=num_data)
+        @batching(slice_nargs=slice_nargs)
         def f(self, *datas):
-            assert len(datas) == num_data
+            assert len(datas) == slice_nargs
+            d0, d1, d2 = datas
+            assert d0.shape == (2, 2)
+            assert d1.shape == (2, 4)
+            assert d2.shape == (2, 6)
             concat = np.concatenate(datas, axis=1)
             self.batching.append(concat)
             return concat
@@ -410,38 +437,6 @@ def test_single_multi():
     instance = A()
     result = instance.f(0, 1, 2)
     assert result == 1
-
-
-def test_batching_multi_input_dictionary():
-    batch_size = 2
-
-    class MockRanker:
-        def __init__(self, batch_size):
-            self.batch_size = batch_size
-            self.batches = []
-
-        @batching_multi_input(slice_on=2, slice_nargs=2)
-        def score(self, query_meta, old_match_scores, match_meta):
-            self.batches.append([query_meta, old_match_scores, match_meta])
-            return np.array([(x, y) for x, y in old_match_scores.items()])
-
-    query_meta = {'text': 'cool stuff'}
-    old_match_scores = {1: 5, 2: 4, 3: 4, 4: 0}
-    match_meta = {
-        1: {'text': 'cool stuff'},
-        2: {'text': 'kewl stuff'},
-        3: {'text': 'kewl stuff'},
-        4: {'text': 'kewl stuff'},
-    }
-    instance = MockRanker(batch_size)
-    result = instance.score(query_meta, old_match_scores, match_meta)
-    np.testing.assert_almost_equal(
-        result, np.array([(x, y) for x, y in old_match_scores.items()])
-    )
-    for batch in instance.batches:
-        assert batch[0] == query_meta
-        assert len(batch[1]) == batch_size
-        assert len(batch[2]) == batch_size
 
 
 def test_batching_as_ndarray():
