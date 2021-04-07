@@ -152,7 +152,6 @@ class Request(ProtoTypeMixin):
             self.__class__ = UpdateRequest
         elif rt.startswith(str(RequestType.CONTROL)):
             self.__class__ = ControlRequest
-        # TODO make Dump a control request to be passed to the Pod directly
         elif rt.startswith(str(RequestType.DUMP)):
             self.__class__ = DumpRequest
         else:
