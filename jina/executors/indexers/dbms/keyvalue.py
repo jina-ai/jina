@@ -3,15 +3,15 @@ from typing import Optional
 
 from jina.executors.dump import export_dump_streaming
 from jina.executors.indexers.dbms import BaseDBMSIndexer
-from jina.executors.indexers.keyvalue import BinaryPbIndexer
+from jina.executors.indexers.keyvalue import BinaryPbWriterMixin, BinaryPbIndexer
 
 
-class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
+class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
     """A DBMS Indexer (no query method)"""
 
     def _get_generator(self, ids):
         for id_ in ids:
-            vecs_metas_bytes = super().query(id_)
+            vecs_metas_bytes = super()._query(id_)
             vec, meta = pickle.loads(vecs_metas_bytes)
             yield id_, vec, meta
 
@@ -50,7 +50,7 @@ class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
         :param kwargs: not used
         """
         vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
-        BinaryPbIndexer.add(self, ids, vecs_metas)
+        self._add(ids, vecs_metas)
 
     # noinspection PyMethodOverriding
     def update(self, ids, vecs, metas, *args, **kwargs):
@@ -62,16 +62,16 @@ class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
         :param args: not used
         :param kwargs: not used
         """
-        values = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
-        keys, values = self._filter_nonexistent_keys_values(
-            ids, values, self.query_handler.header.keys()
+        vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
+        keys, vecs_metas = self._filter_nonexistent_keys_values(
+            ids, vecs_metas, self.query_handler.header.keys()
         )
         del self.query_handler
         self.handler_mutex = False
         if keys:
             self._delete(keys)
             # TODO refactor requires _filter_nonexistent_keys_values to accept *args for lists
-            BinaryPbIndexer.add(self, keys, values)
+            self._add(keys, vecs_metas)
 
     def delete(self, ids, *args, **kwargs):
         """Delete from the indexer by ids
@@ -80,7 +80,11 @@ class DBMSBinaryPbIndexer(BinaryPbIndexer, BaseDBMSIndexer):
         :param args: not used
         :param kwargs: not used
         """
-        super().delete(ids)
+        ids = self._filter_nonexistent_keys(ids, self.query_handler.header.keys())
+        del self.query_handler
+        self.handler_mutex = False
+        if ids:
+            self._delete(ids)
 
     def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """DBMSIndexers do NOT support querying
