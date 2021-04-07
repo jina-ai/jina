@@ -1,11 +1,11 @@
 from typing import Iterable, Optional, Dict
 
 from jina.executors.dump import import_metas
-from jina.executors.indexers.keyvalue import BinaryPbIndexer
+from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 from jina.executors.indexers.query import BaseQueryIndexer
 
 
-class QueryBinaryPbIndexer(BinaryPbIndexer, BaseQueryIndexer):
+class QueryBinaryPbIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
     """A write-once Key-value indexer."""
 
     def _post_init_wrapper(
@@ -24,19 +24,29 @@ class QueryBinaryPbIndexer(BinaryPbIndexer, BaseQueryIndexer):
 
         :param dump_path: the path of the dump"""
         ids, metas = import_metas(dump_path, str(self.pea_id))
-        self.add(list(ids), list(metas))
+        self._add(list(ids), list(metas))
         self.write_handler.flush()
         self.write_handler.close()
         self.handler_mutex = False
         self.is_handler_loaded = False
         del self.write_handler
         # warming up
-        self.query('someid')
+        self._query('someid')
         # the indexer is write-once
         # TODO refactor
         self.add = lambda *args, **kwargs: self.logger.warning(
             f'Index {self.index_abspath} is write-once'
         )
+
+    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+        """Get a document by its id
+
+        :param key: the id
+        :param args: not used
+        :param kwargs: not used
+        :return: the bytes of the Document
+        """
+        return self._query(key)
 
     def update(
         self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs

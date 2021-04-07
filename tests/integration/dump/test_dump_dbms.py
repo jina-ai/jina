@@ -84,6 +84,18 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     for c in cp.components:
         assert c.size == len(docs_expected)
 
+    # test with the inner indexers separate from the Compound
+    for i, indexer_file in enumerate(['basic/query_np.yml', 'basic/query_kv.yml']):
+        indexer = BaseQueryIndexer.load_config(
+            indexer_file,
+            pea_id=pea_id,
+            metas={
+                'workspace': os.path.realpath(os.path.join(dump_path, f'new_ws-{i}')),
+                'dump_path': dump_path,
+            },
+        )
+        assert indexer.size == len(docs_expected)
+
 
 def path_size(dump_path):
     dir_size = (
