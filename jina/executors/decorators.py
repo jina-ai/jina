@@ -315,6 +315,7 @@ def batching(
                         )
                         new_args[i] = new_memmap[slice_idx]
                         slice_idx = slice_idx[split_over_axis]
+                        print(f'slice_idx: {slice_idx}')
                         if slice_idx.start is None or slice_idx.stop is None:
                             slice_idx = None
                         del new_memmap
@@ -324,7 +325,11 @@ def batching(
                         if ordinal_idx_arg and slice_idx is not None:
                             copy_args[ordinal_idx_arg] = slice_idx
 
+                # tmp = copy_args[ordinal_idx_arg]
                 copy_args[slice_on : slice_on + slice_nargs] = new_args
+                print(f'ordinal_idx_arg: {ordinal_idx_arg}')
+                # if ordinal_idx_arg:
+                #    copy_args[ordinal_idx_arg] = tmp
 
                 r = func(*copy_args, **kwargs)
 

@@ -5,14 +5,15 @@ import numpy as np
 from jina.executors.crafters import BaseCrafter
 from jina.executors.decorators import (
     batching,
-    batching_multi_input,
+    # batching_multi_input,
     single,
 )
 from jina import Document
 from jina.flow import Flow
 from jina.types.ndarray.generic import NdArray
 from jina.types.sets import DocumentSet
-from tests import validate_callback
+
+# from tests import validate_callback
 
 
 class DummyCrafterTextBatching(BaseCrafter):
@@ -73,7 +74,7 @@ class DummyCrafterTextIdBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(batch_size=3, slice_nargs=2)
+    @batching(batch_size=3, slice_nargs=2)
     def craft(self, text, id, *args, **kwargs):
         assert len(text) == 3
         assert len(id) == 3
@@ -195,7 +196,7 @@ class DummyCrafterBlobEmbeddingBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(batch_size=3, slice_nargs=2)
+    @batching(batch_size=3, slice_nargs=2)
     def craft(self, blob, embedding, *args, **kwargs):
         assert len(blob) == 3
         assert len(embedding) == 3
@@ -274,7 +275,7 @@ class DummyCrafterTextEmbeddingBatching(BaseCrafter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(batch_size=3, slice_nargs=2)
+    @batching(batch_size=3, slice_nargs=2)
     def craft(self, text, embedding, *args, **kwargs):
         assert len(text) == 3
         assert len(embedding) == 3
