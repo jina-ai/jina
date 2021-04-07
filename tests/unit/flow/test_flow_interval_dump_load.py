@@ -1,10 +1,9 @@
 import multiprocessing
 import os
 import time
-import threading
 
-import pytest
 import numpy as np
+import pytest
 
 from jina import Document, Flow
 
