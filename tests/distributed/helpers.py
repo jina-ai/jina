@@ -21,7 +21,7 @@ def assert_request(
 
 def get_results(
     query: str,
-    url: str = 'http://0.0.0.0:45678/api/search',
+    url: str = 'http://0.0.0.0:45678/search',
     method: str = 'post',
     top_k: int = 10,
 ):
