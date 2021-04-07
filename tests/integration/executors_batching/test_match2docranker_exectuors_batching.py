@@ -2,7 +2,7 @@ import pytest
 
 from typing import List, Dict
 from jina.executors.rankers import Match2DocRanker
-from jina.executors.decorators import batching_multi_input, single
+from jina.executors.decorators import batching, single
 from jina import Document
 from jina.types.sets import DocumentSet
 from jina.types.score import NamedScore
@@ -15,7 +15,7 @@ class DummyRankerBatching(Match2DocRanker):
         super().__init__(*args, **kwargs)
         self.match_required_keys = ['tags__dummy_score']
 
-    @batching_multi_input(batch_size=3, slice_nargs=3)
+    @batching(batch_size=3, slice_nargs=3)
     def score(
         self,
         old_match_scores: List[Dict],
