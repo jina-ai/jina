@@ -57,7 +57,7 @@ def test_dump_load_interval(config, flow_with_dump_interval, flow_with_load_inte
                 time.sleep(1)
 
     # run dump interval flow
-    t = multiprocessing.Process(target=index_flow_with_dump_interval, daemon=True)
+    t = multiprocessing.Process(target=index_flow_with_dump_interval)
     t.start()
     time.sleep(1)
     # run load interval flow
