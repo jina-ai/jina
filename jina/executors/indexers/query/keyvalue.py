@@ -8,20 +8,11 @@ from jina.executors.indexers.query import BaseQueryIndexer
 class QueryBinaryPbIndexer(BinaryPbIndexer, BaseQueryIndexer):
     """A write-once Key-value indexer."""
 
-    def __init__(self, dump_path=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if dump_path:
-            self.load_dump(dump_path)
-        else:
-            self.logger.error(
-                f'Dump path for {self.__class__} was None. No data to load for {self.__class__}'
-            )
-
-    def load_dump(self, path):
+    def load_dump(self, dump_path):
         """Load the dump at the path
 
-        :param path: the path of the dump"""
-        ids, metas = import_metas(path, str(self.pea_id))
+        :param dump_path: the path of the dump"""
+        ids, metas = import_metas(dump_path, str(self.pea_id))
         self.add(list(ids), list(metas))
         self.write_handler.flush()
         self.write_handler.close()

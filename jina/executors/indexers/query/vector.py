@@ -22,27 +22,16 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
     :param compress_level: compression level to use
     """
 
-    def __init__(self, dump_path=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initialized = False
-        if dump_path:
-            self.load_dump(dump_path)
-        else:
-            self.logger.error(
-                f'Dump path for {self.__class__} was None. No data to load for {self.__class__}'
-            )
-
-    def load_dump(self, path):
+    def load_dump(self, dump_path):
         """Load the dump at the path
 
-        :param path: the path of the dump"""
-        ids, vecs = import_vectors(path, str(self.pea_id))
+        :param dump_path: the path of the dump"""
+        ids, vecs = import_vectors(dump_path, str(self.pea_id))
         self.add(ids, vecs)
         self.write_handler.flush()
         self.write_handler.close()
         self.handler_mutex = False
         self.is_handler_loaded = False
-        # TODO warm up here in a cleaner way
         test_vecs = np.array([np.random.random(self.num_dim)], dtype=self.dtype)
         assert self.query(test_vecs, 1) is not None
         self.initialized = True

@@ -274,6 +274,7 @@ class CompoundExecutor(BaseExecutor):
 
         :param comps: a function returns a list of executors
         """
+        print(f'### called set components')
         if not callable(comps):
             raise TypeError(
                 'components must be a callable function that returns '
@@ -290,6 +291,7 @@ class CompoundExecutor(BaseExecutor):
             self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
+            self._post_components()
         else:
             self.logger.debug(
                 'components is omitted from construction, as it is initialized from yaml config'
@@ -426,3 +428,6 @@ class CompoundExecutor(BaseExecutor):
 
     def __iter__(self):
         return self.components.__iter__()
+
+    def _post_components(self):
+        pass

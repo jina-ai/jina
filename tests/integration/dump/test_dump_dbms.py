@@ -78,10 +78,9 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     cp: QueryCompoundExecutor = BaseQueryIndexer.load_config(
         'indexer_query.yml',
         pea_id=pea_id,
-        metas={'workspace': os.path.join(dump_path, 'new_ws')},
+        metas={'workspace': os.path.join(dump_path, 'new_ws'), 'dump_path': dump_path},
     )
     # TODO dump path needs to be passed with the initialization
-    cp.load_dump(dump_path)
     for c in cp.components:
         assert c.size == len(docs_expected)
 
