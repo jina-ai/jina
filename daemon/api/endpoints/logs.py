@@ -42,6 +42,7 @@ class ConnectionManager:
         self.active_connections: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
+        """Register a new websocket"""
         await websocket.accept()
         daemon_logger.info(
             '%s is connected to stream logs!' % _websocket_details(websocket)
@@ -49,11 +50,13 @@ class ConnectionManager:
         self.active_connections.append(websocket)
 
     async def disconnect(self, websocket: WebSocket):
+        """Disconnect a websocket"""
         self.active_connections.remove(websocket)
         await websocket.close()
         daemon_logger.info('%s is disconnected' % _websocket_details(websocket))
 
     async def broadcast(self, message: dict):
+        """Send a json message to all registered websockets"""
         daemon_logger.debug('connections: %r', self.active_connections)
         for connection in self.active_connections:
             try:
