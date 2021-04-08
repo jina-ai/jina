@@ -34,18 +34,24 @@ def _websocket_details(websocket: WebSocket):
     return f'{websocket.client.host}:{websocket.client.port}'
 
 
-# TODO for now contian a single connection. Ideally there must be one
-# manager per log with a thread checking for updates in log and broadcasting
-# to active connections
 class ConnectionManager:
+    """
+    Manager of websockets listening for a log stream.
+
+    TODO for now contian a single connection. Ideally there must be one
+    manager per log with a thread checking for updates in log and broadcasting
+    to active connections
+    """
+
     def __init__(self):
+        """Instantiate a ConnectionManager."""
         self.active_connections: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         """
-        Register a new websocket
+        Register a new websocket.
 
-        :param websocket:
+        :param websocket: websocket to register
         """
         await websocket.accept()
         daemon_logger.info(
@@ -55,9 +61,9 @@ class ConnectionManager:
 
     async def disconnect(self, websocket: WebSocket):
         """
-        Disconnect a websocket
+        Disconnect a websocket.
 
-        :param websocket:
+        :param websocket: websocket to disconnect
         """
         self.active_connections.remove(websocket)
         await websocket.close()
@@ -65,8 +71,7 @@ class ConnectionManager:
 
     async def broadcast(self, message: dict):
         """
-        Send a json message to all registered websockets
-
+        Send a json message to all registered websockets.
 
         :param message: JSON-serializable message to be broadcast
         """
