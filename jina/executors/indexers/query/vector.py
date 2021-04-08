@@ -38,19 +38,21 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
 
         :param dump_path: the path of the dump"""
         ids, vecs = import_vectors(dump_path, str(self.pea_id))
-        self.add(ids, vecs)
+        self._add(ids, vecs)
         self.write_handler.flush()
         self.write_handler.close()
         self.handler_mutex = False
         self.is_handler_loaded = False
         test_vecs = np.array([np.random.random(self.num_dim)], dtype=self.dtype)
         assert self.query(test_vecs, 1) is not None
-        self.add = lambda *args, **kwargs: self.logger.warning(
-            f'Index {self.index_abspath} is write-once'
-        )
 
-    def add(self, keys: Generator, vectors: Generator, *args, **kwargs) -> None:
+    def _add(self, keys: Generator, vectors: Generator, *args, **kwargs) -> None:
         """Add the embeddings and document ids to the index.
+
+        NOTE::
+
+            This replaces the parent class' `_add` since we
+            need to adapt to use Generators from the dump loading
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: embeddings
@@ -76,21 +78,3 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
         )
         self.key_bytes += keys.tobytes()
         self._size += keys.shape[0]
-
-    def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
-    ) -> None:
-        """Disabled
-
-
-        .. # noqa: DAR101
-        """
-        self.logger.warning(f'Index {self.index_abspath} is write-once')
-
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
-        """Disabled
-
-
-        .. # noqa: DAR101
-        """
-        self.logger.warning(f'Index {self.index_abspath} is write-once')

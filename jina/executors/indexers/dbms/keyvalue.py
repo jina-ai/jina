@@ -1,9 +1,8 @@
 import pickle
-from typing import Optional
 
 from jina.executors.dump import export_dump_streaming
 from jina.executors.indexers.dbms import BaseDBMSIndexer
-from jina.executors.indexers.keyvalue import BinaryPbWriterMixin, BinaryPbIndexer
+from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 
 
 class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
@@ -37,9 +36,6 @@ class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         # noinspection PyPropertyAccess
         del self.query_handler
 
-    # noinspection PyMethodOverriding
-    # we subclass from BinaryPb to get the add/delete/update methods.
-    # this class just wraps around those
     def add(self, ids, vecs, metas, *args, **kwargs):
         """Add to the DBMS Indexer, both vectors and metadata
 
@@ -49,10 +45,12 @@ class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         :param args: not used
         :param kwargs: not used
         """
+        if not any(ids):
+            return
+
         vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
         self._add(ids, vecs_metas)
 
-    # noinspection PyMethodOverriding
     def update(self, ids, vecs, metas, *args, **kwargs):
         """Update the DBMS Indexer, both vectors and metadata
 
@@ -70,7 +68,6 @@ class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         self.handler_mutex = False
         if keys:
             self._delete(keys)
-            # TODO refactor requires _filter_nonexistent_keys_values to accept *args for lists
             self._add(keys, vecs_metas)
 
     def delete(self, ids, *args, **kwargs):
@@ -85,15 +82,6 @@ class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         self.handler_mutex = False
         if ids:
             self._delete(ids)
-
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
-        """DBMSIndexers do NOT support querying
-
-        :param key: the key by which to query
-        :param args: not used
-        :param kwargs: not used
-        """
-        raise NotImplementedError('DBMSIndexers do not support querying')
 
 
 class DBMSKeyValueIndexer(DBMSBinaryPbIndexer):

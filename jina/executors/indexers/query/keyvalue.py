@@ -32,11 +32,6 @@ class QueryBinaryPbIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
         del self.write_handler
         # warming up
         self._query('someid')
-        # the indexer is write-once
-        # TODO refactor
-        self.add = lambda *args, **kwargs: self.logger.warning(
-            f'Index {self.index_abspath} is write-once'
-        )
 
     def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
         """Get a document by its id
@@ -47,24 +42,6 @@ class QueryBinaryPbIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
         :return: the bytes of the Document
         """
         return self._query(key)
-
-    def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
-    ) -> None:
-        """Disabled
-
-
-        .. # noqa: DAR101
-        """
-        self.logger.warning(f'Index {self.index_abspath} is write-once')
-
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
-        """Disabled
-
-
-        .. # noqa: DAR101
-        """
-        self.logger.warning(f'Index {self.index_abspath} is write-once')
 
 
 class QueryKeyValueIndexer(QueryBinaryPbIndexer):
