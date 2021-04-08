@@ -1,9 +1,10 @@
 from .base import BaseFlow
 from .mixin.async_crud import AsyncCRUDFlowMixin
+from .mixin.async_control import AsyncControlFlowMixin
 from ..clients.asyncio import AsyncClient, AsyncWebSocketClient
 
 
-class AsyncFlow(AsyncCRUDFlowMixin, BaseFlow):
+class AsyncFlow(AsyncCRUDFlowMixin, AsyncControlFlowMixin, BaseFlow):
     """
     :class:`AsyncFlow` is the asynchronous version of the :class:`Flow`. They share the same interface, except
     in :class:`AsyncFlow` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines

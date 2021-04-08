@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 import numpy as np
 
-from jina.executors.decorators import batching_multi_input, as_ndarray
+from jina.executors.decorators import batching, as_ndarray
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 
 
@@ -13,7 +13,7 @@ class AllTypesConcatenateMultiModalEncoder(BaseMultiModalEncoder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @batching_multi_input(slice_nargs=4)
+    @batching(slice_nargs=4)
     @as_ndarray
     def encode(self, *data: 'np.ndarray', **kwargs):
         assert len(data) == 4

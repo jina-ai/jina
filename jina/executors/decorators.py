@@ -7,6 +7,7 @@ import inspect
 from functools import wraps
 from itertools import islice, chain
 from typing import Callable, Any, Union, Iterator, List, Optional, Dict, Iterable
+import copy
 
 import numpy as np
 
@@ -221,6 +222,7 @@ def batching(
     split_over_axis: int = 0,
     merge_over_axis: int = 0,
     slice_on: int = 1,
+    slice_nargs: int = 1,
     label_on: Optional[int] = None,
     ordinal_idx_arg: Optional[int] = None,
     flatten_output: bool = True,
@@ -235,6 +237,7 @@ def batching(
     :param merge_over_axis: merge over which axis into a single result
     :param slice_on: the location of the data. When using inside a class,
             ``slice_on`` should take ``self`` into consideration.
+    :param slice_nargs: the number of arguments
     :param label_on: the location of the labels. Useful for data with any kind of accompanying labels
     :param ordinal_idx_arg: the location of the ordinal indexes argument. Needed for classes
             where function decorated needs to know the ordinal indexes of the data in the batch
@@ -262,12 +265,11 @@ def batching(
         def arg_wrapper(*args, **kwargs):
             # priority: decorator > class_attribute
             # by default data is in args[1] (self needs to be taken into account)
-            data = args[slice_on]
-            args = list(args)
-
+            data = args[slice_on : slice_on + slice_nargs]
             b_size = (
                 batch_size(data) if callable(batch_size) else batch_size
             ) or getattr(args[0], 'batch_size', None)
+
             # no batching if b_size is None
             if b_size is None or data is None:
                 return func(*args, **kwargs)
@@ -277,153 +279,61 @@ def batching(
                 f'num_batch={num_batch} axis={split_over_axis}'
             )
 
-            full_data_size = _get_size(data, split_over_axis)
-            total_size = _get_total_size(full_data_size, batch_size, num_batch)
-
-            final_result = []
-
+            results = []
             data = (data, args[label_on]) if label_on else data
 
-            yield_slice = isinstance(data, np.memmap)
-            slice_idx = None
-
-            for b in batch_iterator(
-                data[:total_size], b_size, split_over_axis, yield_slice=yield_slice
-            ):
-                if yield_slice:
-                    slice_idx = b
-                    new_memmap = np.memmap(
-                        data.filename, dtype=data.dtype, mode='r', shape=data.shape
-                    )
-                    b = new_memmap[slice_idx]
-                    slice_idx = slice_idx[split_over_axis]
-                    if slice_idx.start is None or slice_idx.stop is None:
-                        slice_idx = None
-
-                if not isinstance(b, tuple):
-                    # for now, keeping ordered_idx is only supported if no labels
-                    args[slice_on] = b
-                    if ordinal_idx_arg and slice_idx is not None:
-                        args[ordinal_idx_arg] = slice_idx
-                else:
-                    args[slice_on] = b[0]
-                    args[label_on] = b[1]
-
-                r = func(*args, **kwargs)
-
-                if yield_slice:
-                    del new_memmap
-
-                if r is not None:
-                    final_result.append(r)
-
-            return _merge_results_after_batching(
-                final_result, merge_over_axis, flatten_output
-            )
-
-        return arg_wrapper
-
-    if func:
-        return _batching(func)
-    else:
-        return _batching
-
-
-def batching_multi_input(
-    func: Optional[Callable[[Any], np.ndarray]] = None,
-    batch_size: Optional[Union[int, Callable]] = None,
-    num_batch: Optional[int] = None,
-    split_over_axis: int = 0,
-    merge_over_axis: int = 0,
-    slice_on: int = 1,
-    slice_nargs: int = 1,
-) -> Any:
-    """Split the input of a function into small batches and call :func:`func` on each batch
-    , collect the merged result and return. This is useful when the input is too big to fit into memory
-
-    :param func: function to decorate
-    :param batch_size: size of each batch
-    :param num_batch: number of batches to take, the rest will be ignored
-    :param split_over_axis: split over which axis into batches
-    :param merge_over_axis: merge over which axis into a single result
-    :param slice_on: the location of the data. When using inside a class,
-            ``slice_on`` should take ``self`` into consideration.
-    :param slice_nargs: the number of data inside the arguments
-    :return: the merged result as if run :func:`func` once on the input.
-
-    ..warning:
-        data arguments will be taken starting from ``slice_on` to ``slice_on + num_data``
-
-    Example:
-        .. highlight:: python
-        .. code-block:: python
-
-            class MultiModalExecutor:
-
-                @batching_multi_input(batch_size = 64, num_data=2)
-                def encode(self, *batches, **kwargs):
-                    batch_modality0 = batches[0]
-                    embed0 = _encode_modality(batch_modality0)
-                    batch_modality1 = batches[1]
-                    embed1 = _encode_modality(batch_modality0)
-
-            class MemoryHungryRanker:
-
-                @batching_multi_input(batch_size = 64, slice_on = 2 , num_data=2)
-                def score(
-                    self, query_meta: Dict, old_match_scores: Dict, match_meta: Dict
-                ) -> 'np.ndarray':
-                ...
-    """
-
-    def _batching(func):
-        @wraps(func)
-        def arg_wrapper(*args, **kwargs):
-            data = args[slice_on]
-            # priority: decorator > class_attribute
-            # by default data is in args[1:] (self needs to be taken into account)
-            b_size = batch_size or getattr(args[0], 'batch_size', None)
-            # no batching if b_size is None
-            if b_size is None or data is None:
-                return func(*args, **kwargs)
-
-            args = list(args)
-            default_logger.debug(
-                f'batching enabled for {func.__qualname__} batch_size={b_size} '
-                f'num_batch={num_batch} axis={split_over_axis}'
-            )
-
-            # assume all datas have the same length
-            full_data_size = _get_size(args[slice_on], split_over_axis)
-            total_size = _get_total_size(full_data_size, b_size, num_batch)
-            final_result = []
-
-            yield_dict = [
-                isinstance(args[slice_on + i], Dict) for i in range(0, slice_nargs)
-            ]
             yield_slice = [
                 isinstance(args[slice_on + i], np.memmap) for i in range(0, slice_nargs)
             ]
 
+            slice_idx = None
+
+            # split the data into batches
             data_iterators = [
                 batch_iterator(
-                    _get_slice(args[slice_on + i], total_size),
+                    data[i],
                     b_size,
                     split_over_axis,
                     yield_slice=yield_slice[i],
-                    yield_dict=yield_dict[i],
                 )
                 for i in range(0, slice_nargs)
             ]
 
-            for new_args in zip(*data_iterators):
-                args[slice_on : slice_on + slice_nargs] = new_args
-                r = func(*args, **kwargs)
+            batch_args = list(copy.copy(args))
+
+            # load the batches of data and feed into the function
+            for _data_args in zip(*data_iterators):
+                _data_args = list(_data_args)
+                for i, (_yield_slice, _arg) in enumerate(zip(yield_slice, _data_args)):
+                    if _yield_slice:
+                        original_arg = args[slice_on + i]
+                        _memmap = np.memmap(
+                            original_arg.filename,
+                            dtype=original_arg.dtype,
+                            mode='r',
+                            shape=original_arg.shape,
+                        )
+                        _data_args[i] = _memmap[_arg]
+                        slice_idx = _arg[split_over_axis]
+                        if slice_idx.start is None or slice_idx.stop is None:
+                            slice_idx = None
+                        del _memmap
+
+                    # TODO: figure out what is ordinal_idx_arg
+                    if not isinstance(_data_args[i], tuple):
+                        if ordinal_idx_arg and slice_idx is not None:
+                            batch_args[ordinal_idx_arg] = slice_idx
+
+                batch_args[slice_on : slice_on + slice_nargs] = _data_args
+
+                r = func(*batch_args, **kwargs)
 
                 if r is not None:
-                    final_result.append(r)
+                    results.append(r)
 
-            return _merge_results_after_batching(final_result, merge_over_axis)
+            return _merge_results_after_batching(
+                results, merge_over_axis, flatten_output
+            )
 
         return arg_wrapper
 
