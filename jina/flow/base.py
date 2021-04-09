@@ -12,9 +12,6 @@ from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
 
-from jina.peapods.zmq import send_ctrl_message
-from jina.types.message.dump import DumpMessage
-
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client, WebSocketClient

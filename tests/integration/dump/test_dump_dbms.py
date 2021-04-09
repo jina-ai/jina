@@ -137,7 +137,7 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
             tmpdir, docs, _validate_results_nonempty, error_callback, nr_search
         )
 
-    DUMP_PATH = os.path.join(str(tmpdir), 'dump_dir')
+    dump_path = os.path.join(str(tmpdir), 'dump_dir')
     os.environ['DBMS_WORKSPACE'] = os.path.join(str(tmpdir), 'index_ws')
     with Flow.load_config('flow_dbms.yml') as flow_dbms:
         with TimeContext(f'### indexing {len(docs)} docs'):
@@ -145,14 +145,14 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
 
         with TimeContext(f'### dumping {len(docs)} docs'):
             # TODO move to control request approach
-            flow_dbms.dump('indexer_dbms', DUMP_PATH, shards=shards, timeout=120)
+            flow_dbms.dump('indexer_dbms', dump_path, shards=shards, timeout=120)
 
-        dir_size = path_size(DUMP_PATH)
+        dir_size = path_size(dump_path)
         print(f'### dump path size: {dir_size} MBs')
 
     # assert data dumped is correct
     for pea_id in range(shards):
-        assert_dump_data(DUMP_PATH, docs, shards, pea_id)
+        assert_dump_data(dump_path, docs, shards, pea_id)
 
 
 # benchmark only

@@ -1,4 +1,4 @@
-from typing import Generator, Iterable, Optional, Dict
+from typing import Generator
 
 import numpy as np
 
@@ -22,18 +22,7 @@ class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
     :param compress_level: compression level to use
     """
 
-    def _post_init_wrapper(
-        self,
-        _metas: Optional[Dict] = None,
-        _requests: Optional[Dict] = None,
-        fill_in_metas: bool = True,
-    ) -> None:
-        super()._post_init_wrapper(_metas, _requests, fill_in_metas)
-        dump_path = _metas.get('dump_path')
-        if dump_path:
-            self.load_dump(dump_path)
-
-    def load_dump(self, dump_path):
+    def _load_dump(self, dump_path):
         """Load the dump at the path
 
         :param dump_path: the path of the dump"""

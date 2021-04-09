@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, Dict
+from typing import Optional
 
 from jina.executors.dump import import_metas
 from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
@@ -8,18 +8,7 @@ from jina.executors.indexers.query import BaseQueryIndexer
 class QueryBinaryPbIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
     """A write-once Key-value indexer."""
 
-    def _post_init_wrapper(
-        self,
-        _metas: Optional[Dict] = None,
-        _requests: Optional[Dict] = None,
-        fill_in_metas: bool = True,
-    ) -> None:
-        super()._post_init_wrapper(_metas, _requests, fill_in_metas)
-        dump_path = _metas.get('dump_path')
-        if dump_path:
-            self.load_dump(dump_path)
-
-    def load_dump(self, dump_path):
+    def _load_dump(self, dump_path):
         """Load the dump at the path
 
         :param dump_path: the path of the dump"""
