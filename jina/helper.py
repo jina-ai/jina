@@ -137,6 +137,7 @@ def deprecated_class(dep_class=None, new_classname=""):
         .. code-block:: python
             @deprecated_class(new_classname="NewClassname")
 
+    :param dep_class: deprecated class
     :param new_classname: new name of the class
     :return: wrapper
     """

@@ -179,21 +179,21 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 
 ### Examples ([View all](https://github.com/jina-ai/examples))
- 
+
 #### [📄 NLP Semantic Wikipedia Search with Transformers and DistilBERT](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences)
-&nbsp;&nbsp;&nbsp;&nbsp;Brand new to neural search? See a simple text-search example to understand how Jina works 
+&nbsp;&nbsp;&nbsp;&nbsp;Brand new to neural search? See a simple text-search example to understand how Jina works
 
 #### [📄 Add Incremental Indexing to Wikipedia Search](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental)
-&nbsp;&nbsp;&nbsp;&nbsp;Index more effectively by adding incremental indexing to your Wikipedia search 
+&nbsp;&nbsp;&nbsp;&nbsp;Index more effectively by adding incremental indexing to your Wikipedia search
 
 #### [📄 Search Lyrics with Transformers and PyTorch](https://github.com/jina-ai/examples/tree/master/multires-lyrics-search)
-&nbsp;&nbsp;&nbsp;&nbsp;Get a better understanding of chunks by searching a lyrics database. Now with shiny front-end! 
+&nbsp;&nbsp;&nbsp;&nbsp;Get a better understanding of chunks by searching a lyrics database. Now with shiny front-end!
 
 #### [🖼️ Google's Big Transfer Model in (Poké-)Production](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit)
 &nbsp;&nbsp;&nbsp;&nbsp;Use SOTA visual representation for searching Pokémon!
 
 #### [🎧 Search YouTube audio data with Vggish](https://github.com/jina-ai/examples/tree/master/audio-search)
-&nbsp;&nbsp;&nbsp;&nbsp;A demo of neural search for audio data based Vggish model. 
+&nbsp;&nbsp;&nbsp;&nbsp;A demo of neural search for audio data based Vggish model.
 
 #### [🎞️ Search Tumblr GIFs with KerasEncoder](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search)
 &nbsp;&nbsp;&nbsp;&nbsp;Use prefetching and sharding to improve the performance of your index and query Flow when searching animated GIFs.
