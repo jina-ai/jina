@@ -562,7 +562,7 @@ class Document(ProtoTypeMixin, Traversable):
         else:
             v_valid_sparse_type = self._update_if_sparse(k, v)
 
-            if v_valid_sparse_type == False:
+            if not v_valid_sparse_type:
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
