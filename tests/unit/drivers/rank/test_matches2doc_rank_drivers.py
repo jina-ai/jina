@@ -4,7 +4,7 @@ from jina import Document
 from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker
 from jina.types.score import NamedScore
-from jina.executors.decorators import batching_multi_input
+from jina.executors.decorators import batching
 from jina.types.sets import DocumentSet
 
 
@@ -31,7 +31,7 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
             **kwargs
         )
 
-    @batching_multi_input(slice_nargs=3)
+    @batching(slice_nargs=3)
     def score(
         self,
         old_match_scores: List[Dict],

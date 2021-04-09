@@ -106,6 +106,9 @@ message DocumentProto {
     // the weight of this document
     float weight = 5;
 
+    // total number of siblings of this document (docs that are in the same granularity and have the same parent_id)
+    uint32 siblings = 25;
+
     // the top-k matched Docs on the same level (recursive structure)
     repeated DocumentProto matches = 8;
 
@@ -318,10 +321,16 @@ message RequestProto {
             STATUS = 1; // check the status of the BasePod
             IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
             CANCEL = 4; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
+            RELOAD = 5; // triggers a Pod/Pea to (re)load the executor
+            SCALE = 6; // scale up/down a Pod
         }
         Command command = 1; // the control command
 
         google.protobuf.Struct args = 2; // the pea arguments, useful in STATUS
+
+        bool propagate = 3; // if set, then this request is propagate over the Flow topology just like a data request
+
+        repeated string targets = 4; // if set, the control request is targeted to certain peas/pods, regex strings
     }
 
     StatusProto status = 6; // status info
@@ -347,4 +356,3 @@ service JinaRPC {
     rpc Call (stream RequestProto) returns (stream RequestProto) {
     }
 }
-

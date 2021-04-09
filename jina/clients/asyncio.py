@@ -1,4 +1,5 @@
 """Module wrapping AsyncIO ops for clients."""
+from typing import Union, List
 
 from .base import InputType, InputDeleteType, BaseClient, CallbackFnType
 from .websocket import WebSocketClientMixin
@@ -194,6 +195,32 @@ class AsyncClient(BaseClient):
         async for r in self._get_results(
             inputs, on_done, on_error, on_always, **kwargs
         ):
+            yield r
+
+    async def reload(
+        self,
+        targets: Union[str, List[str]],
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs
+    ):
+        """Send 'reload' request to the Flow.
+
+        :param targets: the regex string or list of regex strings to match the pea/pod names.
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: additional parameters
+        :yield: result
+        """
+
+        if isinstance(targets, str):
+            targets = [targets]
+        kwargs['targets'] = targets
+
+        self.mode = RequestType.CONTROL
+        async for r in self._get_results([], on_done, on_error, on_always, **kwargs):
             yield r
 
 

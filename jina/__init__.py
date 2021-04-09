@@ -56,11 +56,11 @@ __license__ = "Apache-2.0"
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '1.1.1'
+__version__ = '1.1.3'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.80'
+__proto_version__ = '0.0.81'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
@@ -128,8 +128,10 @@ from jina.types.document.multimodal import MultimodalDocument
 from jina.types.sets import DocumentSet, QueryLangSet
 
 # ADD GLOBAL NAMESPACE VARIABLES
-
 JINA_GLOBAL = _types.SimpleNamespace()
+JINA_GLOBAL.scipy_installed = None
+JINA_GLOBAL.tensorflow_installed = None
+JINA_GLOBAL.torch_installed = None
 
 import jina.importer as _ji
 

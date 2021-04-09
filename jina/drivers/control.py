@@ -1,14 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import re
 import time
 
 from google.protobuf.json_format import MessageToJson
 
 from . import BaseDriver
-from ..types.querylang.queryset.dunderkey import dunder_get
 from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
 from ..proto import jina_pb2
+from ..types.querylang.queryset.dunderkey import dunder_get
 
 
 class BaseControlDriver(BaseDriver):
@@ -84,6 +85,18 @@ class ControlReqDriver(BaseControlDriver):
             pass
         elif self.req.command == 'CANCEL':
             pass
+        elif self.req.command == 'RELOAD':
+            if self.req.targets and self.runtime.__class__.__name__ == 'ZEDRuntime':
+                patterns = self.req.targets
+                if isinstance(patterns, str):
+                    patterns = [patterns]
+                for p in patterns:
+                    if re.match(p, self.runtime.name):
+                        self.logger.info(
+                            f'reloading the Executor `{self.runtime._executor.name}` in `{self.runtime.name}`'
+                        )
+                        self.runtime._load_executor()
+                        break
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
@@ -168,3 +181,23 @@ class RouteDriver(ControlReqDriver):
 
 class ForwardDriver(RouteDriver):
     """Alias to :class:`RouteDriver`"""
+
+
+class WhooshDriver(BaseControlDriver):
+    """Play a whoosh! sound"""
+
+    def __call__(self, *args, **kwargs):
+        """Play a whoosh sound, used in 2021 April fools day
+
+        .. # noqa: DAR101
+        """
+        import subprocess
+        from pkg_resources import resource_filename
+
+        whoosh_mp3 = resource_filename(
+            'jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3'))
+        )
+
+        subprocess.Popen(
+            f'ffplay  -nodisp -autoexit {whoosh_mp3} >/dev/null 2>&1', shell=True
+        )

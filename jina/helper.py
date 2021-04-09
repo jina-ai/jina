@@ -220,7 +220,6 @@ def batch_iterator(
         for _ in range(0, len(data), batch_size):
             yield data[_ : _ + batch_size]
     elif isinstance(data, Iterable):
-        data = iter(data)
         # as iterator, there is no way to know the length of it
         while True:
             if yield_dict:
@@ -1048,25 +1047,38 @@ def get_public_ip():
 
     :return: Public IP address.
     """
-    # 'https://api.ipify.org'
-    # https://ident.me
-    # ipinfo.io/ip
     import urllib.request
+
+    timeout = 0.5
+
+    results = []
 
     def _get_ip(url):
         try:
-            with urllib.request.urlopen(url, timeout=1) as fp:
-                return fp.read().decode('utf8')
+            with urllib.request.urlopen(url, timeout=timeout) as fp:
+                results.append(fp.read().decode('utf8'))
         except:
             pass
 
-    ip = (
-        _get_ip('https://api.ipify.org')
-        or _get_ip('https://ident.me')
-        or _get_ip('https://ipinfo.io/ip')
-    )
+    ip_server_list = [
+        'https://api.ipify.org',
+        'https://ident.me',
+        'https://ipinfo.io/ip',
+    ]
 
-    return ip
+    threads = []
+
+    for idx, ip in enumerate(ip_server_list):
+        t = threading.Thread(target=_get_ip, args=(ip,))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join(timeout)
+
+    for r in results:
+        if r:
+            return r
 
 
 def convert_tuple_to_list(d: Dict):
@@ -1234,3 +1246,16 @@ def download_mermaid_url(mermaid_url, output) -> None:
         default_logger.error(
             'can not download image, please check your graph and the network connections'
         )
+
+
+def ding(req):
+    """Play a ding sound `on_done`, used in 2021 April fools day
+
+    # noqa: DAR101
+    """
+    import subprocess
+    from pkg_resources import resource_filename
+
+    soundfx = resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
+
+    subprocess.call(f'ffplay  -nodisp -autoexit {soundfx} >/dev/null 2>&1', shell=True)

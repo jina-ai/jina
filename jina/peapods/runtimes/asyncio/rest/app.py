@@ -147,7 +147,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         bd = body.dict()
         bd['mode'] = RequestType.INDEX
-        BaseClient.add_default_kwargs(bd)
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -164,7 +163,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         bd = body.dict()
         bd['mode'] = RequestType.SEARCH
-        BaseClient.add_default_kwargs(bd)
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -181,7 +179,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         bd = body.dict()
         bd['mode'] = RequestType.UPDATE
-        BaseClient.add_default_kwargs(bd)
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -198,7 +195,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         bd = body.dict()
         bd['mode'] = RequestType.DELETE
-        BaseClient.add_default_kwargs(bd)
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
