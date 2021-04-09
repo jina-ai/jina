@@ -62,3 +62,16 @@ def test_encode_driver(batch_size, docs_to_encode, num_docs):
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
         assert doc.embedding == doc.blob
+
+
+def get_sparse_encoder(sparse_type):
+    class MockEncoder(BaseEncoder):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+        def encode(self, data: Any, *args, **kwargs) -> Any:
+            # return a sparse vector of the same number of rows as `data` of different types
+            embed = f(data.shape[0])
+            return embed
+
+    return MockEncoder()
