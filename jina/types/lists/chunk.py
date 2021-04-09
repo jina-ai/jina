@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from .document import DocumentList
 
 if False:
@@ -16,7 +18,12 @@ class ChunkList(DocumentList):
     """
 
     def __init__(self, docs_proto, reference_doc: 'Document'):
-        """List constructor method."""
+        """
+        List constructor method.
+
+        :param docs_proto: protobuf representation of the chunks
+        :param reference_doc: parent document
+        """
         super().__init__(docs_proto)
         self._ref_doc = reference_doc
 
@@ -25,6 +32,7 @@ class ChunkList(DocumentList):
 
         :param document: Sub-document to be appended
         :type document: :class:`Document`
+        :param kwargs: additional keyword arguments
         :return: the newly added sub-document in :class:`Document` view
         :rtype: :class:`Document`
 
@@ -48,17 +56,41 @@ class ChunkList(DocumentList):
         chunk.update_content_hash()
         return chunk
 
+    def extend(self, iterable: Iterable['Document']) -> None:
+        """
+        Extend the :class:`DocumentList` by appending all the items from the iterable.
+
+        :param iterable: the iterable of Documents to extend this list with
+        """
+        for doc in iterable:
+            self.append(doc)
+        num_siblings = len(self)
+        for doc in self:
+            doc.siblings = num_siblings
+
     @property
     def reference_doc(self) -> 'Document':
-        """Get the document that :class:`ChunkList` belongs to."""
+        """
+        Get the document that :class:`ChunkList` belongs to.
+
+        :return: reference doc
+        """
         return self._ref_doc
 
     @property
     def granularity(self) -> int:
-        """Get granularity of all document in this list."""
+        """
+        Get granularity of all document in this list.
+
+        :return: granularity
+        """
         return self._ref_doc.granularity + 1
 
     @property
     def adjacency(self) -> int:
-        """Get adjacency of all document in this list."""
+        """
+        Get adjacency of all document in this list.
+
+        :return: adjacency
+        """
         return self._ref_doc.adjacency
