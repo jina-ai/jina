@@ -1,4 +1,4 @@
-jtype: QueryNumpyIndexer
+jtype: NumpyQueryIndexer
 with:
   index_filename: vec.bin
   metric: euclidean

@@ -1,12 +1,12 @@
-jtype: QueryCompoundExecutor
+jtype: CompoundQueryExecutor
 components:
-  - jtype: QueryNumpyIndexer
+  - jtype: NumpyQueryIndexer
     with:
       index_filename: vec.bin
       metric: euclidean
     metas:
       name: vecidx
-  - jtype: QueryBinaryPbIndexer
+  - jtype: BinaryPbQueryIndexer
     with:
       index_filename: kv.bin
     metas:

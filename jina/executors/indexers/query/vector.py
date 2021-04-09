@@ -7,7 +7,7 @@ from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 
 
-class QueryNumpyIndexer(NumpyIndexer, BaseQueryIndexer):
+class NumpyQueryIndexer(NumpyIndexer, BaseQueryIndexer):
     """An exhaustive vector indexers implemented with numpy and scipy.
 
     .. note::

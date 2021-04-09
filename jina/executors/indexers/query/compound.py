@@ -2,7 +2,7 @@ from jina.executors.compound import CompoundExecutor
 from jina.executors.indexers.query import BaseQueryIndexer
 
 
-class QueryCompoundExecutor(CompoundExecutor, BaseQueryIndexer):
+class CompoundQueryExecutor(CompoundExecutor, BaseQueryIndexer):
     """A Compound Executor that wraps several QueryIndexers
 
     :param dump_path: the path to initialize from
@@ -24,3 +24,7 @@ class QueryCompoundExecutor(CompoundExecutor, BaseQueryIndexer):
         """
         for c in self.components:
             c._load_dump(dump_path)
+
+
+class CompoundQueryIndexer(CompoundQueryExecutor):
+    """Alias"""

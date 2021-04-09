@@ -1,6 +1,6 @@
 from jina.drivers.dbms import _doc_without_embedding
 from jina.executors.indexers.dbms import BaseDBMSIndexer
-from jina.executors.indexers.dbms.keyvalue import DBMSKeyValueIndexer
+from jina.executors.indexers.dbms.keyvalue import KeyValueDBMSIndexer
 from tests import get_documents
 
 
@@ -13,7 +13,7 @@ def test_dbms_keyvalue(tmpdir, test_metas):
         ]
     )
     save_path = None
-    with DBMSKeyValueIndexer(index_filename='dbms', metas=test_metas) as indexer:
+    with KeyValueDBMSIndexer(index_filename='dbms', metas=test_metas) as indexer:
         indexer.add(ids, vecs, meta)
         assert indexer.size == len(docs)
         save_path = indexer.save_abspath

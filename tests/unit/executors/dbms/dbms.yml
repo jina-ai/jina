@@ -1,4 +1,4 @@
-jtype: DBMSKeyValueIndexer
+jtype: KeyValueDBMSIndexer
 with:
   index_filename: dbms.bin
 metas:

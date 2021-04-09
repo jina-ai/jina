@@ -8,7 +8,7 @@ from jina import Flow, Document
 from jina.drivers.dbms import _doc_without_embedding
 from jina.executors.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
-from jina.executors.indexers.query.compound import QueryCompoundExecutor
+from jina.executors.indexers.query.compound import CompoundQueryExecutor
 from jina.logging.profile import TimeContext
 
 
@@ -76,7 +76,7 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     # assert with Indexers
     # noinspection PyTypeChecker
     # TODO currently metas are only passed to the parent Compound, not to the inner components
-    cp: QueryCompoundExecutor = BaseQueryIndexer.load_config(
+    cp: CompoundQueryExecutor = BaseQueryIndexer.load_config(
         'indexer_query.yml',
         pea_id=pea_id,
         metas={'workspace': os.path.join(dump_path, 'new_ws'), 'dump_path': dump_path},

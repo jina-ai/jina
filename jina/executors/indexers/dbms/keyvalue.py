@@ -5,7 +5,7 @@ from jina.executors.indexers.dbms import BaseDBMSIndexer
 from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 
 
-class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
+class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
     """A DBMS Indexer (no query method)"""
 
     def _get_generator(self, ids):
@@ -84,5 +84,5 @@ class DBMSBinaryPbIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
             self._delete(ids)
 
 
-class DBMSKeyValueIndexer(DBMSBinaryPbIndexer):
+class KeyValueDBMSIndexer(BinaryPbDBMSIndexer):
     """An alias"""

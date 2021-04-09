@@ -1,4 +1,4 @@
-jtype: QueryBinaryPbIndexer
+jtype: BinaryPbQueryIndexer
 with:
   index_filename: kv.bin
 metas:

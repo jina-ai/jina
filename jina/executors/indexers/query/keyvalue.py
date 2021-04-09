@@ -5,7 +5,7 @@ from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 from jina.executors.indexers.query import BaseQueryIndexer
 
 
-class QueryBinaryPbIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
+class BinaryPbQueryIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
     """A write-once Key-value indexer."""
 
     def _load_dump(self, dump_path):
@@ -33,5 +33,5 @@ class QueryBinaryPbIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
         return self._query(key)
 
 
-class QueryKeyValueIndexer(QueryBinaryPbIndexer):
+class KeyValueQueryIndexer(BinaryPbQueryIndexer):
     """An alias"""
