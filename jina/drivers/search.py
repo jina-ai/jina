@@ -108,7 +108,7 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
 
 
 class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
-    """Extract embeddings from the request for the executor to query.
+    """Extract dense embeddings from the request for the executor to query.
 
     :param top_k: top-k document ids to retrieve
     :param fill_embedding: fill in the embedding of the corresponding doc,
@@ -121,8 +121,12 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
+    @staticmethod
+    def _get_documents_embeddings(docs: 'DocumentSet'):
+        return docs.all_embeddings
+
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, doc_pts = docs.all_embeddings
+        embed_vecs, doc_pts = self._get_documents_embeddings(docs)
 
         if not doc_pts:
             return
@@ -149,3 +153,11 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
                 r = doc.matches.append(m)
                 if vec is not None:
                     r.embedding = vec
+
+
+class SparseVectorSearchDriver(VectorSearchDriver):
+    """Extract sparse embeddings from the request for the executor to query."""
+
+    @staticmethod
+    def _get_documents_embeddings(docs: 'DocumentSet'):
+        return docs.all_sparse_embeddings

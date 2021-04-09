@@ -47,6 +47,10 @@ class VectorIndexDriver(BaseIndexDriver):
             self.exec_fn(keys, np.stack(embed_vecs))
 
 
+class SparseVectorIndexDriver(VectorIndexDriver):
+    """An alias to have coherent naming with the required SparseVectorSearchDriver """
+
+
 class KVIndexDriver(BaseIndexDriver):
     """Forwards pairs of serialized documents and ids to the executor."""
 
