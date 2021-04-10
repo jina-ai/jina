@@ -131,12 +131,12 @@ def deprecated_alias(**aliases):
 
 def deprecated_class(dep_class=None, new_class=None):
     """
-    Usage, new_class is a new name of the deprecated class.
+    Usage, new_class is a new class.
 
     For example:
         .. highlight:: python
         .. code-block:: python
-            @deprecated_class(new_class="NewClass")
+            @deprecated_class(new_class=NewClass)
 
     :param dep_class: deprecated class
     :param new_class: new class
