@@ -5,6 +5,7 @@ import numpy as np
 
 from ...helper import typename
 from ...logging import default_logger
+from ...enums import EmbeddingClsType
 
 try:
     # when protobuf using Cpp backend
@@ -20,10 +21,38 @@ except:
 from ...proto.jina_pb2 import DocumentProto
 from .traversable import TraversableSequence
 
+__all__ = ['DocumentList']
+
 if False:
     from ..document import Document
 
-__all__ = ['DocumentList']
+    # fix type-hint complain for sphinx and flake
+    from typing import TypeVar
+    import scipy
+    import tensorflow as tf
+    import torch
+
+    EmbeddingType = TypeVar(
+        'EncodingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
+
+    SparseEmbeddingType = TypeVar(
+        'SparseEmbeddingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
 
 
 class DocumentList(TraversableSequence, MutableSequence):
@@ -64,7 +93,7 @@ class DocumentList(TraversableSequence, MutableSequence):
     def __len__(self):
         return len(self._docs_proto)
 
-    def __iter__(self):
+    def __iter__(self) -> 'Document':
         from ..document import Document
 
         for d in self._docs_proto:
@@ -147,7 +176,7 @@ class DocumentList(TraversableSequence, MutableSequence):
         """
         Sort the items of the :class:`DocumentList` in place.
 
-        :param args: variable list of arguments to pass to the sorting underlying function
+        :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
         self._docs_proto.sort(*args, **kwargs)
@@ -162,6 +191,77 @@ class DocumentList(TraversableSequence, MutableSequence):
         """
         return self.extract_docs('embedding', stack_contents=True)
 
+    def get_all_sparse_embeddings(
+        self, embedding_cls_type: EmbeddingClsType
+    ) -> Tuple['SparseEmbeddingType', 'DocumentList']:
+        """Return all embeddings from every document in this list as a sparse array
+
+        :param embedding_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
+
+        :return: The corresponding documents in a :class:`DocumentList`,
+            and the documents have no embedding in a :class:`DocumentList`.
+        :rtype: A tuple of embedding and DocumentList as sparse arrays
+        """
+
+        def stack_embeddings(embeddings):
+            if embedding_cls_type.is_scipy:
+                import scipy
+
+                return scipy.sparse.vstack(embeddings)
+            elif embedding_cls_type.is_torch:
+                import torch
+
+                return torch.vstack(embeddings)
+            elif embedding_cls_type.is_tf:
+                return embeddings
+            else:
+                raise ValueError(
+                    f'Trying to stack sparse embeddings with embedding_cls_type {embedding_cls_type} failed'
+                )
+
+        def get_sparse_ndarray_type_kwargs():
+            if embedding_cls_type.is_scipy:
+                from jina.types.ndarray.sparse.scipy import SparseNdArray
+
+                if not embedding_cls_type.is_scipy_stackable not in ['coo', 'csr']:
+                    default_logger.warning(
+                        f'found `{embedding_cls_type.name}` matrix, recommend to use `coo` or `csr` type.'
+                    )
+                return SparseNdArray, {'sp_format': embedding_cls_type.scipy_cls_type}
+            elif embedding_cls_type.is_torch:
+                from jina.types.ndarray.sparse.pytorch import SparseNdArray
+
+                return SparseNdArray, {}
+            elif embedding_cls_type.is_tf:
+                from jina.types.ndarray.sparse.tensorflow import SparseNdArray
+
+                return SparseNdArray, {}
+            else:
+                raise ValueError(
+                    f'Trying to get sparse embeddings with embedding_cls_type {embedding_cls_type} failed'
+                )
+
+        embeddings = []
+        docs_pts = []
+        bad_docs = []
+        sparse_ndarray_type, sparse_kwargs = get_sparse_ndarray_type_kwargs()
+        for doc in self:
+            embedding = doc.get_sparse_embedding(
+                sparse_ndarray_cls_type=sparse_ndarray_type, **sparse_kwargs
+            )
+            if embedding is None:
+                bad_docs.append(doc)
+                continue
+            embeddings.append(embedding)
+            docs_pts.append(doc)
+
+        if bad_docs:
+            default_logger.warning(
+                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing sparse_embedding'
+            )
+
+        return stack_embeddings(embeddings), docs_pts
+
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentList']:
         """Return all embeddings from every document in this list as a ndarray
@@ -174,7 +274,7 @@ class DocumentList(TraversableSequence, MutableSequence):
         return self.extract_docs('content', stack_contents=True)
 
     def extract_docs(
-        self, *fields: str, stack_contents: bool = False
+        self, *fields: str, stack_contents: Union[bool, List[bool]] = False
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentList']:
         """Return in batches all the values of the fields
 
@@ -184,7 +284,7 @@ class DocumentList(TraversableSequence, MutableSequence):
         """
 
         list_of_contents_output = len(fields) > 1
-        contents = [[] for _ in fields if len(fields) > 1]
+        contents = [[] for _ in fields if list_of_contents_output]
         docs_pts = []
         bad_docs = []
 
@@ -200,7 +300,15 @@ class DocumentList(TraversableSequence, MutableSequence):
             for idx, c in enumerate(contents):
                 if not c:
                     continue
-                if stack_contents and not isinstance(c[0], bytes):
+                if (
+                    isinstance(stack_contents, bool)
+                    and stack_contents
+                    and not isinstance(c[0], bytes)
+                ) or (
+                    isinstance(stack_contents, list)
+                    and stack_contents[idx]
+                    and not isinstance(c[0], bytes)
+                ):
                     contents[idx] = np.stack(c)
         else:
             for doc in self:
@@ -213,7 +321,15 @@ class DocumentList(TraversableSequence, MutableSequence):
 
             if not contents:
                 contents = None
-            elif stack_contents and not isinstance(contents[0], bytes):
+            elif (
+                isinstance(stack_contents, bool)
+                and stack_contents
+                and not isinstance(contents[0], bytes)
+            ) or (
+                isinstance(stack_contents, list)
+                and stack_contents[0]
+                and not isinstance(contents[0], bytes)
+            ):
                 contents = np.stack(contents)
 
         if bad_docs:
@@ -221,6 +337,9 @@ class DocumentList(TraversableSequence, MutableSequence):
                 f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
                 f'following fields: {fields} '
             )
+
+        if not docs_pts:
+            default_logger.warning('no documents are extracted')
 
         return contents, DocumentList(docs_pts)
 
