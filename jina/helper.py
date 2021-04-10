@@ -52,6 +52,7 @@ __all__ = [
     'convert_tuple_to_list',
     'run_async',
     'deprecated_alias',
+    'deprecated_class',
 ]
 
 from jina.excepts import NotSupportedError
@@ -128,24 +129,24 @@ def deprecated_alias(**aliases):
     return deco
 
 
-def deprecated_class(dep_class=None, new_classname=""):
+def deprecated_class(dep_class=None, new_class=None):
     """
-    Usage, new_classname is a new name of the deprecated class.
+    Usage, new_class is a new name of the deprecated class.
 
     For example:
         .. highlight:: python
         .. code-block:: python
-            @deprecated_class(new_classname="NewClassname")
+            @deprecated_class(new_class="NewClass")
 
     :param dep_class: deprecated class
-    :param new_classname: new name of the class
+    :param new_class: new class
     :return: wrapper
     """
 
     if not dep_class:
-        return functools.partial(deprecated_class, new_classname=new_classname)
+        return functools.partial(deprecated_class, new_class=new_class)
 
-    old_init = dep_class.__init__
+    new_init = new_class.__init__
 
     @functools.wraps(dep_class)
     def wrapper(*args, **kwargs):
@@ -158,16 +159,16 @@ def deprecated_class(dep_class=None, new_classname=""):
         """
 
         warnings_msg = f'{dep_class.__name__} class is deprecated and will be removed in the next version. '
-        if new_classname:
-            warnings_msg += f'A new name of the class is {new_classname}.'
+        if new_class:
+            warnings_msg += f'A new name of the class is {new_class.__name__}.'
         warnings.warn(
             warnings_msg,
             DeprecationWarning,
         )
-        return old_init(*args, **kwargs)
+        return new_init(*args, **kwargs)
 
-    dep_class.__init__ = wrapper
-    return dep_class
+    new_class.__init__ = wrapper
+    return new_class
 
 
 def get_readable_size(num_bytes: Union[int, float]) -> str:
