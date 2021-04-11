@@ -44,6 +44,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8236,4 +8237,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```9097bc12```](https://github.com/jina-ai/jina/commit/9097bc12d7fbcb72da54c4586585901d3392ffe7)] __-__ fix readme (*Han Xiao*)
  - [[```f4508315```](https://github.com/jina-ai/jina/commit/f450831540b037875acc02b4310e0453f6ea0215)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```8a03b013```](https://github.com/jina-ai/jina/commit/8a03b013700ed0f64bddbfa3a716b6226e28b4c5)] __-__ __version__: the next version will be 1.1.2 (*Jina Dev Bot*)
+
+<a name=release-note-1-1-3></a>
+## Release Note (`1.1.3`)
+
+> Release time: 2021-04-11 08:51:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Kelton Zhang,  Fionn Delahunty,  Wang Bo,  Florian Hönicke,  🙇
+
+
+### 🆕 New Features
+
+ - [[```5fbc30aa```](https://github.com/jina-ai/jina/commit/5fbc30aa00b73ac8ed22acc621731d5b5720442f)] __-__ add link to run in colab (#2270) (*Fionn Delahunty*)
+
+### 🐞 Bug fixes
+
+ - [[```103bf2f5```](https://github.com/jina-ai/jina/commit/103bf2f55acbd74c3f3eab11013e69b8566d8d68)] __-__ __client__: remove sibling setting in client (#2300) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```c8fb6b67```](https://github.com/jina-ai/jina/commit/c8fb6b6703fc04c7e14927bf33f38ec275173031)] __-__ merge batching decorators (#2269) (*Kelton Zhang*)
+
+### 📗 Documentation
+
+ - [[```e537a928```](https://github.com/jina-ai/jina/commit/e537a9283984dd642905eecb74d9c33f20aa5a0b)] __-__ pod (#2282) (*Florian Hönicke*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```e5737589```](https://github.com/jina-ai/jina/commit/e57375893069d5362f4db5d36b6ec5a6aa4683e3)] __-__ fix hanging tests (#2285) (*Han Xiao*)
+ - [[```e5f647f2```](https://github.com/jina-ai/jina/commit/e5f647f25e4ac57a64696bc707d6c3040e417bf6)] __-__ fix slow tests in ci (#2276) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```605c090d```](https://github.com/jina-ai/jina/commit/605c090d43cc0f44e6b8791e051171029b8f2abb)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```387939b9```](https://github.com/jina-ai/jina/commit/387939b973aca74c9bc6d9d5c800032dbc21b803)] __-__ fix code snippet (*Han Xiao*)
+ - [[```5dcaf9b0```](https://github.com/jina-ai/jina/commit/5dcaf9b024f0e902f02b572cb4882f2252bcf916)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d24d97ca```](https://github.com/jina-ai/jina/commit/d24d97ca4c69dd4daf070c7dd1bccf40ec666491)] __-__ __version__: the next version will be 1.1.3 (*Jina Dev Bot*)
 
