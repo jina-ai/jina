@@ -1,9 +1,20 @@
 import os
 
 import pytest
+import requests
 
 from jina import Flow
 from jina.executors import BaseExecutor
+
+
+def test_flow_rest_reload():
+    f = Flow().add()
+    f.use_rest_gateway()
+    with f:
+        r = requests.post(
+            f'http://0.0.0.0:{f.port_expose}/reload', json={'targets': ['pod0']}
+        )
+        assert r.status_code == 200
 
 
 @pytest.mark.skipif(
