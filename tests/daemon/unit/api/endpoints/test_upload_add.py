@@ -146,6 +146,14 @@ def test_post_and_delete_workspace(fastapi_client):
 
 @pytest.mark.parametrize('api', ['/peas', '/pods'])
 def test_upload_peapod_and_check_workspace(api, fastapi_client):
+    # Delete all Pea/Pod
+    response = fastapi_client.delete(api)
+    assert response.status_code == 200
+
+    # Delete the Workspaces
+    response = fastapi_client.delete('/workspaces')
+    assert response.status_code == 200
+
     # Create a Pea/Pod
     response = fastapi_client.post(
         api, json={'name': 'my_pod'}
@@ -173,6 +181,14 @@ def test_upload_peapod_and_check_workspace(api, fastapi_client):
 
 
 def test_upload_flow_and_check_workspace(fastapi_client):
+    # Delete the Flows
+    response = fastapi_client.delete('/flows')
+    assert response.status_code == 200
+
+    # Delete the Workspaces
+    response = fastapi_client.delete('/workspaces')
+    assert response.status_code == 200
+
     # Create a Flow
     response = fastapi_client.post(
         '/flows',
@@ -200,3 +216,4 @@ def test_upload_flow_and_check_workspace(fastapi_client):
     response = fastapi_client.get('/workspaces')
     assert response.status_code == 200
     assert response.json()['size'] == 0
+
