@@ -5,6 +5,7 @@ from typing import Union
 from jina.helper import colored
 from .base import BaseStore
 
+
 class WorkunitStore(BaseStore):
     def __init__(self):
         super().__init__()
@@ -21,6 +22,7 @@ class WorkunitStore(BaseStore):
         workspace: bool = False,
         **kwargs,
     ):
+        """Deletes an element from the store. Deletes associated workspace from workspace store as well"""
         if isinstance(id, str):
             id = uuid.UUID(id)
 
