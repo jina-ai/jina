@@ -1,0 +1,31 @@
+name: Update JSON schema 
+
+on:
+  push:
+		paths:
+		- 'schema.json'
+
+jobs:
+  update-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/checkout@v2
+        with:
+          repository: jina-ai/api
+          path: schema
+          token: ${{ secrets.JINA_DEV_BOT }}
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: copy-schema-to-api-repo
+        run: |
+          cp schema.json ../../api/schemas/schema.json
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
