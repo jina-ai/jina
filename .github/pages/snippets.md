@@ -6,7 +6,7 @@ These code snippets provide a short introduction to Jina's functionality and des
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#optimization) • [REST Interface](#rest-interface) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 ## 🥚 Fundamentals
 
@@ -678,26 +678,17 @@ f.search(query_iterator, ...)
 #### Flow Optimization
 
 Flow Optimization gets the most out of your data.
-Often choosing a middle layer of a model brings superior semantic embeddings.
-You can easily choose the best layer via:
+It allows hyper parameter optimization on a complete search Flow, including indexing and querying.
+For example, choosing a middle layer of a model often results in superior semantic embeddings.
+Let's test through all layers of a model
 
-<table>
-<tr>
-  <td>
+Before starting, we need the optimization requirements installed:
 
 ```bash
 pip install jina[optimizer]
 ```
-  </td>
-  <td>
 
-**Environment Setup**
-
-</td>
-</tr>
-<tr>
-  <td>
-    <sup>
+First, let's get all needed imports and Flow definition:
 
 ```python
 import numpy as np
@@ -705,46 +696,24 @@ from jina import Document
 from jina.executors.encoders import BaseEncoder
 from jina.optimizers import FlowOptimizer, MeanEvaluationCallback
 from jina.optimizers.flow_runner import SingleFlowRunner
-```
-</sup>
-  </td>
-  <td>
 
-**Imports**
-
-  </td>
-</tr>
-
-<tr>
-  <td>
-    <sup>
-
-```python
 flow = '''jtype: Flow
 version: '1'
 pods:
   - uses:
       jtype: SimpleEncoder
       with:
-        layer: ${{ENCODER_LAYER}}
+        layer: ${{JINA_ENCODER_LAYER}}
   - uses: EuclideanEvaluator
 '''
 ```
-</sup>
-  </td>
-  <td>
-
-**Flow definition**
 
 `ENCODER_LAYER` allows the optimizer to change the Encoder configuration with each iteration.
 The `EuclideanEvaluator` scores the Documents according to a given groundtruth.
-The Pod definition is done via the inline syntax of Jina.
-  </td>
-</tr>
+Beware, that the Pod definition is done via the inline syntax of Jina.
 
-<tr>
-  <td>
-    <sup>
+Now we will fake a model with three layers.
+For simplicity each layer only consists of a single integer which is taken as the embedding.
 
 ```python
 class SimpleEncoder(BaseEncoder):
@@ -762,20 +731,8 @@ class SimpleEncoder(BaseEncoder):
     def encode(self, data, *args, **kwargs) -> 'np.ndarray':
         return np.array([[self.ENCODE_LOOKUP[data[0]][self._layer]]])
 ```
-</sup>
-  </td>
-  <td>
 
-**Encoder python code**
-
-For simplicity the encoding are single integers.
-The faked model has three layers.
-
-  </td>
-</tr>
-<tr>
-  <td>
-    <sup>
+Now we define what should be the optimization parameters in `parameter.yml`.
 
 ```yaml
 - !IntegerParameter
@@ -784,20 +741,9 @@ The faked model has three layers.
   low: 0
   step_size: 1
 ```
-</sup>
-  </td>
-  <td>
 
-**parameter.yml**
-
-All needed variables for the `FlowOptimizer` are defined here.
-The chosen layer should be from `[0, 1, 2]`.
-
-  </td>
-</tr>
-<tr>
-  <td>
-    <sup>
+For optimization, we need to run almost equal Flows again and again with the same data.
+This is realized with a `SingleFlowRunner`.
 
 ```python
 documents = [
@@ -810,21 +756,12 @@ runner = SingleFlowRunner(
     flow, documents, 1, 'search', overwrite_workspace=True
 )
 ```
-</sup>
-  </td>
-  <td>
-
-**Repeadable Flow definition**
 
 The same Documents are used for each Flow Optimization step.
 `documents` consists of `document, groundtruth` pairs.
 The given embedding represents the perfect semantic embedding.
 
-  </td>
-</tr>
-<tr>
-  <td>
-    <sup>
+Now we are ready to start the optimization:
 
 ```python
 optimizer = FlowOptimizer(
@@ -838,22 +775,11 @@ optimizer = FlowOptimizer(
 
 optimizer.optimize_flow()
 ```
-</sup>
-  </td>
-  <td>
 
-**Flow optimization run**
-
-Here you glue the previous defined parts together.
 The `MeanEvaluationCallback` gathers the evaluations from all three sended Documents per run.
 After each run, it returns the mean of the single evaluations.
 
-  </td>
-</tr>
-
-<tr>
-  <td>
-    <sup>
+Finally...
 
 ```text
 ...
@@ -865,23 +791,8 @@ JINA@15892[I]:Best trial: {'JINA_ENCODER_LAYER': 1}
 JINA@15892[I]:Time to finish: 0:00:02.081710
 
 ```
-</sup>
-  </td>
-  <td>
-
-**Output**
 
 Tada! The layer 1 is the best one.
-
-  </td>
-</tr>
-</table>
-
-
-
-```bash
-pip install jina[optimizer]
-```
 
 
 ### REST Interface
