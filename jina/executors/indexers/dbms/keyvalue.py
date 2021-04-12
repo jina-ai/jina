@@ -71,17 +71,12 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
             self._add(keys, vecs_metas)
 
     def delete(self, ids, *args, **kwargs):
-        """Delete from the indexer by ids
+        """Delete the serialized documents from the index via document ids.
 
-        :param ids: the ids of the Documents to delete
+        :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
-        :param kwargs: not used
-        """
-        ids = self._filter_nonexistent_keys(ids, self.query_handler.header.keys())
-        del self.query_handler
-        self.handler_mutex = False
-        if ids:
-            self._delete(ids)
+        :param kwargs: not used"""
+        super(BinaryPbDBMSIndexer, self).delete(ids)
 
 
 class KeyValueDBMSIndexer(BinaryPbDBMSIndexer):

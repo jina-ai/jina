@@ -145,6 +145,19 @@ class BinaryPbWriterMixin:
             self._size += 1
         writer.flush()
 
+    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+        """Delete the serialized documents from the index via document ids.
+
+        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param args: not used
+        :param kwargs: not used
+        """
+        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
+        del self.query_handler
+        self.handler_mutex = False
+        if keys:
+            self._delete(keys)
+
     def _delete(self, keys: Iterable[str]) -> None:
         for key in keys:
             self.write_handler.header.write(
@@ -281,14 +294,9 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args: extra arguments
-        :param kwargs: keyword arguments
-        """
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
-        del self.query_handler
-        self.handler_mutex = False
-        if keys:
-            self._delete(keys)
+        :param args: not used
+        :param kwargs: not used"""
+        super(BinaryPbIndexer, self).delete(keys)
 
 
 class KeyValueIndexer(BinaryPbIndexer):
