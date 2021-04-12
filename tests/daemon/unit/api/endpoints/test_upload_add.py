@@ -142,3 +142,61 @@ def test_post_and_delete_workspace(fastapi_client):
     response = fastapi_client.delete(f'/workspaces/{workspace_id}')
     assert response.status_code == 200
     assert not os.path.exists(get_workspace_path(workspace_id))
+
+
+@pytest.mark.parametrize('api', ['/peas', '/pods'])
+def test_upload_peapod_and_check_workspace(api, fastapi_client):
+    # Create a Pea/Pod
+    response = fastapi_client.post(
+        api, json={'name': 'my_pod'}
+    )
+    assert response.status_code == 201
+
+    # Fetch all Peas/Pods
+    response = fastapi_client.get(api)
+    assert response.status_code == 200
+    assert response.json()['size'] == 1
+
+    # Fetch the Workspace
+    response = fastapi_client.get('/workspaces')
+    assert response.status_code == 200
+    assert response.json()['size'] == 1
+
+    # Delete the Workspaces
+    response = fastapi_client.delete('/workspaces')
+    assert response.status_code == 200
+
+    # Fetch the Workspace
+    response = fastapi_client.get('/workspaces')
+    assert response.status_code == 200
+    assert response.json()['size'] == 0
+
+
+def test_upload_flow_and_check_workspace(fastapi_client):
+    # Create a Flow
+    response = fastapi_client.post(
+        '/flows',
+        files={'flow':
+                   ('good_flow.yml', open(str(cur_dir / 'good_flow.yml'), 'rb'))
+               }
+    )
+    assert response.status_code == 201
+
+    # Fetch all Flows
+    response = fastapi_client.get('/flows')
+    assert response.status_code == 200
+    assert response.json()['size'] == 1
+
+    # Fetch the Workspace
+    response = fastapi_client.get('/workspaces')
+    assert response.status_code == 200
+    assert response.json()['size'] == 1
+
+    # Delete the Workspaces
+    response = fastapi_client.delete('/workspaces')
+    assert response.status_code == 200
+
+    # Fetch the Workspace
+    response = fastapi_client.get('/workspaces')
+    assert response.status_code == 200
+    assert response.json()['size'] == 0
