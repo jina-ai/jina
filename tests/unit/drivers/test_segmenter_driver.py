@@ -84,7 +84,7 @@ def test_chunks_exist_already():
     driver = SimpleSegmentDriver()
     executor = MockSegmenter()
     driver.attach(executor=executor, runtime=None)
-    driver._apply_all(DocumentSet([document]))
+    driver._apply_all(DocumentList([document]))
 
     # after segmentation
     assert len(document.chunks) == 5
