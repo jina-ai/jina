@@ -144,8 +144,8 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 ### Run Quick Demo
 
 - [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `jina hello chatbot`
-- [📰 Multimedia search](./.github/pages/hello-world.md#-multimodal-document-search): `jina hello multimodal`
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
+- [📰 Multimedia search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 
 ### The Basics
 
