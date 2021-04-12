@@ -6,7 +6,7 @@ import pytest
 
 from jina import Flow, Document
 from jina.drivers.dbms import _doc_without_embedding
-from jina.executors.dump import import_vectors, import_metas
+from jina.executors.indexers.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import CompoundQueryExecutor
 from jina.logging.profile import TimeContext

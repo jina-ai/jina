@@ -8,8 +8,8 @@ class CompoundQueryExecutor(CompoundExecutor, BaseQueryIndexer):
     :param dump_path: the path to initialize from
     """
 
-    # TODO fix this
-    # don't do this for Compounds, as the _components
+    # TODO this shouldn't be required
+    # we don't do this for Compounds, as the _components
     # are not yet set at this stage.
     # for Compound we use a `_post_components`
     def _post_components(self):

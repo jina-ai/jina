@@ -14,8 +14,8 @@ class BaseQueryIndexer(BaseIndexer):
     ) -> None:
         super()._post_init_wrapper(_metas, _requests, fill_in_metas)
         self.dump_path = _metas.get('dump_path')
-        # TODO fix this
-        # don't do this for Compounds, as the _components
+        # TODO this shouldn't be required
+        # we don't do this for Compounds, as the _components
         # are not yet set at this stage.
         # for Compound we use a `_post_components`
         if self.dump_path and not hasattr(self, 'components'):

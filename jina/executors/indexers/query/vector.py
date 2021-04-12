@@ -2,7 +2,7 @@ from typing import Generator
 
 import numpy as np
 
-from jina.executors.dump import import_vectors
+from jina.executors.indexers.dump import import_vectors
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.vector import NumpyIndexer
 

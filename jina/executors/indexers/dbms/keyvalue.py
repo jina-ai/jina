@@ -1,6 +1,8 @@
 import pickle
+from typing import List
+import numpy as np
 
-from jina.executors.dump import export_dump_streaming
+from jina.executors.indexers.dump import export_dump_streaming
 from jina.executors.indexers.dbms import BaseDBMSIndexer
 from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 
@@ -8,7 +10,7 @@ from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
     """A DBMS Indexer (no query method)"""
 
-    def _get_generator(self, ids):
+    def _get_generator(self, ids: List[str]):
         for id_ in ids:
             vecs_metas_bytes = super()._query(id_)
             vec, meta = pickle.loads(vecs_metas_bytes)
@@ -36,7 +38,9 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         # noinspection PyPropertyAccess
         del self.query_handler
 
-    def add(self, ids, vecs, metas, *args, **kwargs):
+    def add(
+        self, ids: List[str], vecs: List[np.array], metas: List[bytes], *args, **kwargs
+    ):
         """Add to the DBMS Indexer, both vectors and metadata
 
         :param ids: the ids of the documents
@@ -51,7 +55,9 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
         self._add(ids, vecs_metas)
 
-    def update(self, ids, vecs, metas, *args, **kwargs):
+    def update(
+        self, ids: List[str], vecs: List[np.array], metas: List[bytes], *args, **kwargs
+    ):
         """Update the DBMS Indexer, both vectors and metadata
 
         :param ids: the ids of the documents
@@ -70,7 +76,7 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
             self._delete(keys)
             self._add(keys, vecs_metas)
 
-    def delete(self, ids, *args, **kwargs):
+    def delete(self, ids: List[str], *args, **kwargs):
         """Delete the serialized documents from the index via document ids.
 
         :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf

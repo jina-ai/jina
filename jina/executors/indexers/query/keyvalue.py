@@ -1,6 +1,6 @@
 from typing import Optional
 
-from jina.executors.dump import import_metas
+from jina.executors.indexers.dump import import_metas
 from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 from jina.executors.indexers.query import BaseQueryIndexer
 
