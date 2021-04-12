@@ -3,11 +3,11 @@ from argparse import Namespace
 
 from jina.helper import random_uuid, colored
 from jina.peapods import Pea
-from .base import BaseStore
+from .workunit import WorkunitStore
 from .helper import jina_workspace
 
 
-class PeaStore(BaseStore):
+class PeaStore(WorkunitStore):
     peapod_cls = Pea
 
     def add(self, args: Namespace, **kwargs):
@@ -15,6 +15,8 @@ class PeaStore(BaseStore):
             workspace_id = args.workspace_id
             if not workspace_id:
                 workspace_id = random_uuid()
+            else:
+                workspace_id = uuid.UUID(workspace_id)
 
             with jina_workspace(workspace_id) as _workdir:
                 p = self.peapod_cls(args).start()
@@ -27,6 +29,11 @@ class PeaStore(BaseStore):
             self[_id] = {
                 'object': p,
                 'arguments': vars(args),
+                'workdir': _workdir,
+                'workspace_id': workspace_id,
+            }
+            self._workspace_store[workspace_id] = {
+                'arguments': [],
                 'workdir': _workdir,
                 'workspace_id': workspace_id,
             }

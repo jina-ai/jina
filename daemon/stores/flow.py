@@ -3,11 +3,11 @@ from typing import Optional, BinaryIO
 
 from jina.flow import Flow
 from jina.helper import colored, random_uuid
-from .base import BaseStore
+from .workunit import WorkunitStore
 from .helper import jina_workspace
 
 
-class FlowStore(BaseStore):
+class FlowStore(WorkunitStore):
     def add(self, config: BinaryIO, workspace_id: Optional[uuid.UUID] = None, **kwargs):
         try:
             if not workspace_id:
@@ -29,6 +29,11 @@ class FlowStore(BaseStore):
                 'object': f,
                 'arguments': vars(f.args),
                 'yaml_source': y_spec,
+                'workdir': _workdir,
+                'workspace_id': workspace_id,
+            }
+            self._workspace_store[workspace_id] = {
+                'arguments': [],
                 'workdir': _workdir,
                 'workspace_id': workspace_id,
             }
