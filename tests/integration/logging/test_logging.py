@@ -2,7 +2,7 @@ import os
 import pytest
 
 from jina.flow import Flow
-from jina.peapods.pods import BasePod
+from jina.peapods.pods import Pod
 from jina.parsers import set_pod_parser
 
 NUM_DOCS = 100
@@ -43,5 +43,5 @@ def test_logging_pod(monkeypatch):
     monkeypatch.setattr(fluentasynchandler.FluentHandler, "emit", mock_emit)
 
     args = set_pod_parser().parse_args(['--identity', 'logging_id'])
-    with BasePod(args):
+    with Pod(args):
         pass
