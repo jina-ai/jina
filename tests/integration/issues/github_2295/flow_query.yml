@@ -1,0 +1,4 @@
+!Flow
+pods:
+  doc_indexer:
+    uses: search.yml # documents cannot be found
