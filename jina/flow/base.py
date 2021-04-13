@@ -989,7 +989,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param pod_name: pod to update
         """
-        for i, replica in enumerate(self._pod_nodes[pod_name].replica_list):
-            replica.close()
-            replica.start()
-            replica.wait_start_success()
+
+        compound_pod = self._pod_nodes[pod_name]
+        if type(compound_pod) == CompoundPod:
+            compound_pod.rolling_update()
+        else:
+            raise ValueError(
+                f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
+            )

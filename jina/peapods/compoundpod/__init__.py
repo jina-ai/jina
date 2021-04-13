@@ -382,3 +382,17 @@ class CompoundPod(BasePod):
             [p.is_ready.is_set() for p in self.peas]
             + [p.is_ready.is_set() for p in self.replica_list]
         )
+
+    def rolling_update(self):
+        """
+        Update all replicas of this compound pod.
+        """
+        for i in range(len(self.replica_list)):
+            replica = self.replica_list[i]
+            replica.close()
+            del replica
+            _args = self.all_args['replicas'][i]
+            _args.noblock_on_start = False
+            new_replica = Pod(_args)
+            self.enter_context(new_replica)
+            self.replica_list[i] = new_replica

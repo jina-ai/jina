@@ -43,13 +43,6 @@ def test_simple_run():
 
 
 def test_thread_run():
-    def rolling_update_thread(flow, pod_name):
-        x = threading.Thread(target=flow.rolling_update, args=(pod_name,))
-        x.start()
-        # TODO remove the join to make it asynchronous again
-        x.join()
-        # TODO there is a problem with the gateway even after request times out - open issue
-
     flow = Flow().add(
         name='pod1',
         replicas=2,
@@ -58,7 +51,11 @@ def test_thread_run():
         port_out=5200,
     )
     with flow:
-        rolling_update_thread(flow, 'pod1')
+        x = threading.Thread(target=flow.rolling_update, args=('pod1',))
+        x.start()
+        # TODO remove the join to make it asynchronous again
+        x.join()
+        # TODO there is a problem with the gateway even after request times out - open issue
         for i in range(600):
             flow.search(Document(text='documents after rolling update'))
 
