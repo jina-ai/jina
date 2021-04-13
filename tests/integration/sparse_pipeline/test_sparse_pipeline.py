@@ -34,23 +34,23 @@ class DummySparseEncoder(BaseEncoder):
 
 
 class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.keys = []
 
-    def add(self, keys: Iterable[str], vectors: 'scipy.sparse.coo_matrix', *args, **kwargs) -> None:
+    def add(
+        self, keys: Iterable[str], vectors: 'scipy.sparse.coo_matrix', *args, **kwargs
+    ) -> None:
         print(type(vectors))
         assert isinstance(vectors, sparse.coo_matrix)
         self.keys.extend(keys)
 
-
-    def query(
-        self, vectors: 'scipy.sparse.coo_matrix', top_k: int, *args, **kwargs
-    ):
+    def query(self, vectors: 'scipy.sparse.coo_matrix', top_k: int, *args, **kwargs):
         assert isinstance(vectors, sparse.coo_matrix)
         distances = [item for item in range(0, min(top_k, len(self.keys)))]
-        return np.array(self.keys[:top_k]), np.array(distances)
+        return np.array(self.keys[:top_k]), np.array(
+            [np.array(distances) for x in range(top_k)]
+        )
 
     def get_create_handler(self):
         pass
@@ -66,7 +66,6 @@ class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
 
 
 def test_sparse_pipeline(mocker, docs_to_index):
-
     def validate(response):
         print(response)
 
