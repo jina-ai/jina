@@ -1,10 +1,11 @@
 from typing import Any
 
-import numpy as np
 import pytest
+import numpy as np
+from scipy import sparse
 
 from jina import Document, DocumentSet
-from jina.drivers.encode import EncodeDriver
+from jina.drivers.encode import EncodeDriver, ScipySparseEncodeDriver
 from jina.executors.encoders import BaseEncoder
 from jina.executors.decorators import batching
 
@@ -17,7 +18,7 @@ def num_docs():
 @pytest.fixture(scope='function')
 def docs_to_encode(num_docs):
     docs = []
-    for idx in range(num_docs):
+    for idx in range(1, num_docs + 1):
         doc = Document(content=np.array([idx]))
         docs.append(doc)
     return DocumentSet(docs)
@@ -61,4 +62,47 @@ def test_encode_driver(batch_size, docs_to_encode, num_docs):
     driver._apply_all(docs_to_encode)
     assert len(docs_to_encode) == num_docs
     for doc in docs_to_encode:
+        assert doc.embedding == doc.blob
+
+
+def get_sparse_encoder(sparse_type):
+    class MockEncoder(BaseEncoder):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+        def encode(self, data: Any, *args, **kwargs) -> Any:
+            # return a sparse vector of the same number of rows as `data` of different types
+            embed = sparse_type(data)
+            return embed
+
+    return MockEncoder()
+
+
+class SimpleScipySparseEncoderDriver(ScipySparseEncodeDriver):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @property
+    def exec_fn(self):
+        return self._exec_fn
+
+
+@pytest.fixture(
+    params=[sparse.csr_matrix, sparse.coo_matrix, sparse.bsr_matrix, sparse.csc_matrix]
+)
+def sparse_type(request):
+    return request.param
+
+
+def test_sparse_encode_driver(sparse_type, docs_to_encode, num_docs):
+    driver = SimpleScipySparseEncoderDriver()
+    encoder = get_sparse_encoder(sparse_type)
+    driver.attach(executor=encoder, runtime=None)
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
+        assert doc.embedding is None
+    driver._apply_all(docs_to_encode)
+    assert len(docs_to_encode) == num_docs
+    for doc in docs_to_encode:
+        assert isinstance(doc.embedding, sparse.coo_matrix)
         assert doc.embedding == doc.blob
