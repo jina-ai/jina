@@ -230,7 +230,7 @@ Get the vibe? Now we're talking! Let's learn more about the basic concepts and f
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 
 ## 🐣 Basic
@@ -509,7 +509,7 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 ## 🐥 Breakdown of `hello-world`
 
@@ -796,6 +796,7 @@ JINA@15892[I]:Time to finish: 0:00:02.081710
 
 Tada! The layer 1 is the best one.
 
+For a more detailed guide please read [our docs](https://docs.jina.ai/chapters/optimization/?highlight=optimization).
 
 ### REST Interface
 
