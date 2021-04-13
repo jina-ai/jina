@@ -21,5 +21,6 @@ repos:
   hooks:
   - id: black
     types: [python]
+    exclude: jina/proto/jina_pb2.py
     args:
       - -S

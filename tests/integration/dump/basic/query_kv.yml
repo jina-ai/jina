@@ -1,0 +1,13 @@
+jtype: BinaryPbQueryIndexer
+with:
+  index_filename: kv.bin
+metas:
+  name: kvidx
+requests:
+  on:
+    SearchRequest:
+      - jtype: KVSearchDriver
+        with:
+          executor: kvidx
+          is_update: True
+          traversal_paths: ['r']

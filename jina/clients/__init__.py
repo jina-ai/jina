@@ -40,7 +40,7 @@ class Client(BaseClient):
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Issue 'train' request to the Flow.
 
@@ -68,7 +68,7 @@ class Client(BaseClient):
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Issue 'search' request to the Flow.
 
@@ -97,7 +97,7 @@ class Client(BaseClient):
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Issue 'index' request to the Flow.
 
@@ -125,7 +125,7 @@ class Client(BaseClient):
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Issue 'update' request to the Flow.
 
@@ -153,7 +153,7 @@ class Client(BaseClient):
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Issue 'update' request to the Flow.
 
@@ -175,7 +175,7 @@ class Client(BaseClient):
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
-        **kwargs
+        **kwargs,
     ):
         """Send 'reload' request to the Flow.
 
@@ -199,7 +199,7 @@ class Client(BaseClient):
             on_error,
             on_always,
             command='RELOAD',
-            **kwargs
+            **kwargs,
         )
 
 
