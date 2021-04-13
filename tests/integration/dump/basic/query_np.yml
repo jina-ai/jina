@@ -1,0 +1,13 @@
+jtype: NumpyQueryIndexer
+with:
+  index_filename: vec.bin
+  metric: euclidean
+metas:
+  name: vecidx
+requests:
+  on:
+    SearchRequest:
+      - jtype: VectorSearchDriver
+        with:
+          executor: vecidx
+          fill_embedding: True

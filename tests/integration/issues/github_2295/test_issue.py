@@ -19,6 +19,8 @@ class SearchDocIndexer(BinaryPbIndexer):
 
     def post_init(self):
         super().post_init()
+        # key to have user workaround https://github.com/jina-ai/jina/issues/2295.
+        # Underlying problem in https://github.com/jina-ai/jina/issues/2299
         self.name = 'doc_idx_file'
 
 
@@ -41,6 +43,8 @@ def test_workspace(tmpdir):
 
 
 def test_issue_2295(test_workspace, mocker):
+    # This tests the proposed workaround to user in 2295, once https://github.com/jina-ai/jina/issues/2299 this test
+    # can be removed
     def validate_response(resp):
         assert resp.search.docs[0].id == 'id'
         assert resp.search.docs[0].text == 'text'

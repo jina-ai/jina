@@ -1,0 +1,5 @@
+jtype: Flow
+version: '1'
+pods:
+  - name: indexer_dbms
+    uses: indexer_dbms.yml

@@ -26,10 +26,11 @@ class EnumType(EnumMeta):
     """The metaclass for BetterEnum."""
 
     def __new__(cls, *args, **kwargs):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR201
+        """Register a new EnumType
+
+        :param args: args passed to super()
+        :param kwargs: kwargs passed to super()
+        :return: the registry class
         """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
@@ -268,6 +269,8 @@ class RequestType(BetterEnum):
     UPDATE = 3
     CONTROL = 4
     TRAIN = 5
+    # TODO make Dump a control request to be passed to the Pod directly
+    DUMP = 6
 
 
 class CompressAlgo(BetterEnum):

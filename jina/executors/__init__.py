@@ -160,6 +160,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         'query_by_key',
         'delete',
         'update',
+        # TODO make Dump a control request to be passed to the Pod directly
+        'dump',
     ]
 
     def __init__(self, *args, **kwargs):
@@ -527,7 +529,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         tmp = fill_metas_with_defaults(raw_config)
         tmp['metas']['pea_id'] = pea_id
         tmp['metas']['read_only'] = read_only
-
+        if kwargs.get('metas'):
+            tmp['metas'].update(kwargs['metas'])
+            del kwargs['metas']
+        tmp.update(kwargs)
         return tmp
 
     @staticmethod
@@ -569,9 +574,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
         """
-        for v in self._drivers.values():
-            for d in v:
-                d.attach(executor=self, runtime=runtime, *args, **kwargs)
+        for drivers in self._drivers.values():
+            for driver in drivers:
+                driver.attach(executor=self, runtime=runtime, *args, **kwargs)
 
         # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):

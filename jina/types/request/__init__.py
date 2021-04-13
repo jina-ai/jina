@@ -136,6 +136,7 @@ class Request(ProtoTypeMixin):
         from .index import IndexRequest
         from .delete import DeleteRequest
         from .update import UpdateRequest
+        from .dump import DumpRequest
 
         rt = request_type.upper()
         if rt.startswith(str(RequestType.TRAIN)):
@@ -150,6 +151,8 @@ class Request(ProtoTypeMixin):
             self.__class__ = UpdateRequest
         elif rt.startswith(str(RequestType.CONTROL)):
             self.__class__ = ControlRequest
+        elif rt.startswith(str(RequestType.DUMP)):
+            self.__class__ = DumpRequest
         else:
             raise TypeError(f'{request_type} is not recognized')
         return self

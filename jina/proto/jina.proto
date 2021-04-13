@@ -269,6 +269,7 @@ message RequestProto {
         ControlRequestProto control = 5; // a control request
         DeleteRequestProto delete = 9; // a delete request
         UpdateRequestProto update = 10; // an update request
+        DumpRequestProto dump = 11; // an dump request
     }
 
     /**
@@ -310,6 +311,14 @@ message RequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to query
 
         repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
+    }
+
+   /**
+     * Represents a dump request
+     */
+    message DumpRequestProto {
+        string path = 1; // path for the index
+        int32 shards = 2; // nr of shards in the dump
     }
 
     /**
