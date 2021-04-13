@@ -676,19 +676,21 @@ f.search(query_iterator, ...)
 
 
 #### Flow Optimization
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-optimizer/basic-optimizer.ipynb)
+
 
 Flow Optimization gets the most out of your data.
 It allows hyper parameter optimization on a complete search Flow, including indexing and querying.
-For example, choosing a middle layer of a model often results in superior semantic embeddings.
-Let's test through all layers of a model
+For example, choosing a middle layer of a model often results in richer semantic embeddings.
+Let's test through all layers of a model.
 
-Before starting, we need the optimization requirements installed:
+Before starting, we need the optimizer requirements installed:
 
 ```bash
 pip install jina[optimizer]
 ```
 
-First, let's get all needed imports and Flow definition:
+First, let's get all needed imports and the Flow definition:
 
 ```python
 import numpy as np
@@ -732,7 +734,7 @@ class SimpleEncoder(BaseEncoder):
         return np.array([[self.ENCODE_LOOKUP[data[0]][self._layer]]])
 ```
 
-Now we define what should be the optimization parameters in `parameter.yml`.
+Futhermore, we define what should be the optimization parameters in `parameter.yml`.
 
 ```yaml
 - !IntegerParameter
