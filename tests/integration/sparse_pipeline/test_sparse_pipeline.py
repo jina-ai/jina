@@ -48,9 +48,8 @@ class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
     def query(self, vectors: 'scipy.sparse.coo_matrix', top_k: int, *args, **kwargs):
         assert isinstance(vectors, sparse.coo_matrix)
         distances = [item for item in range(0, min(top_k, len(self.keys)))]
-        return np.array(self.keys[:top_k]), np.array(
-            [np.array(distances) for x in range(top_k)]
-        )
+
+        return np.array(self.keys[:top_k]), np.array([distances])
 
     def get_create_handler(self):
         pass
