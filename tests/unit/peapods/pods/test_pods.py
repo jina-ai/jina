@@ -142,7 +142,7 @@ def test_pod_naming_with_parallel(runtime):
     args = set_pod_parser().parse_args(
         ['--name', 'pod', '--parallel', '2', '--runtime-backend', runtime]
     )
-    with BasePod(args) as bp:
+    with Pod(args) as bp:
         assert bp.peas[0].name == 'pod/head'
         assert bp.peas[1].name == 'pod/tail'
         assert bp.peas[2].name == 'pod/0'
