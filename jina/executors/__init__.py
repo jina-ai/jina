@@ -35,6 +35,7 @@ AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 _ref_desolve_map = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'] = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
+_ref_desolve_map.__dict__['metas'].__dict__['replica_id'] = None
 
 
 class ExecutorType(type(JAMLCompatible), type):
