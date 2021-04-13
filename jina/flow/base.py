@@ -983,4 +983,3 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             replica.close()
             replica.start()
             replica.wait_start_success()
-            time.sleep(replica.args.dealer_startup_wait_time)

@@ -24,16 +24,16 @@ def _set_pod_args(
     for idx, pea_host in zip(range(args.replicas), cycle(_host_list)):
         _args = copy.deepcopy(args)
 
-        _args.pea_id = idx
+        _args.replica_id = idx
         if args.parallel > 1:
             _args.pea_role = PeaRoleType.PARALLEL
             _args.identity = random_identity()
             if _args.peas_hosts:
                 _args.host = pea_host
             if _args.name:
-                _args.name += f'/{_args.pea_id}'
+                _args.name += f'/{_args.replica_id}'
             else:
-                _args.name = f'{_args.pea_id}'
+                _args.name = f'{_args.replica_id}'
         else:
             _args.pea_role = PeaRoleType.SINGLETON
 

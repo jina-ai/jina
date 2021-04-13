@@ -263,9 +263,9 @@ class Pod(BasePod):
         :return: arguments for all peas
         """
         return (
-            ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
             + self.peas_args['peas']
-            + ([self.peas_args['head']] if self.peas_args['head'] else [])
         )
 
     @property

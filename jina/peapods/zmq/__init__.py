@@ -66,8 +66,6 @@ class Zmqlet:
 
         self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
         if self.in_sock_type == zmq.DEALER:
-            if self.args.dealer_startup_wait_time > 0:
-                time.sleep(self.args.dealer_startup_wait_time)
             self._send_idle_to_router()
 
     def _register_pollin(self):

@@ -349,18 +349,28 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @staticmethod
     def get_shard_workspace(
-        workspace_folder: str, workspace_name: str, pea_id: int
+        workspace_folder: str,
+        workspace_name: str,
+        pea_id: int,
+        replica_id: Optional[int] = None,
     ) -> str:
         """
         Get the path of the current shard.
 
-        :param workspace_folder: Folder of the workspace.
-        :param workspace_name: Name of the workspace.
-        :param pea_id: Id of the pea,
+        :param workspace_folder: folder of the workspace.
+        :param workspace_name: name of the workspace.
+        :param pea_id: id of the pea
+        :param replica_id: id of the replica
 
         :return: returns the workspace of the shard of this Executor.
         """
-        return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
+        print('# get_shard_workspace ', replica_id)
+        if replica_id is None:
+            return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
+        else:
+            return os.path.join(
+                workspace_folder, f'{workspace_name}-{replica_id}-{pea_id}'
+            )
 
     @property
     def workspace_name(self):
@@ -392,7 +402,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: returns the workspace of the shard of this Executor
         """
         return BaseExecutor.get_shard_workspace(
-            self._workspace, self.workspace_name, self.pea_id
+            self._workspace, self.workspace_name, self.pea_id, self.replica_id
         )
 
     def get_file_from_workspace(self, name: str) -> str:
@@ -508,6 +518,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         cls: Type[AnyExecutor],
         raw_config: Dict,
         pea_id: int = 0,
+        replica_id: int = None,
         read_only: bool = False,
         *args,
         **kwargs,
@@ -516,6 +527,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :param raw_config: raw config to work on
         :param pea_id: the id of the storage of this parallel pea
+        :param replica_id: the id of the replica the pea is contained in
         :param read_only: if the executor should be readonly
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
@@ -526,6 +538,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             raw_config['metas'] = {}
         tmp = fill_metas_with_defaults(raw_config)
         tmp['metas']['pea_id'] = pea_id
+        tmp['metas']['replica_id'] = replica_id
         tmp['metas']['read_only'] = read_only
 
         return tmp
