@@ -1,0 +1,12 @@
+jtype: BinaryPbIndexer
+with:
+  index_filename: binarypb.bin
+metas:
+  workspace: $BASIC_INDEX_WS
+  name: binarypb
+requests:
+  on:
+    IndexRequest:
+      - jtype: KVIndexDriver
+        with:
+          executor: binarypb
