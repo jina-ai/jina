@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToDict
+from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
 
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
@@ -13,8 +14,6 @@ from tests import random_docs
 
 
 def scipy_sparse_list():
-    from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
-
     return [coo_matrix, bsr_matrix, csr_matrix, csc_matrix]
 
 
@@ -740,6 +739,13 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
     np.testing.assert_array_equal(
         d.blob.todense(), torch_sparse_matrix.to_dense().numpy()
     )
+
+
+def test_document_sparse_embedding(scipy_sparse_matrix):
+    d = Document()
+    d.embedding = scipy_sparse_matrix
+    assert d.sparse_embedding is not None
+    assert isinstance(d.sparse_embedding, coo_matrix)
 
 
 def test_siblings_needs_to_be_set_manually():
