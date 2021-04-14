@@ -1,4 +1,5 @@
 from typing import Any, Iterable
+import os
 
 import pytest
 import numpy as np
@@ -8,7 +9,10 @@ from jina import Flow, Document
 from jina.types.sets import DocumentSet
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers import BaseSparseVectorIndexer
+
 from tests import validate_callback
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope='function')
@@ -20,7 +24,7 @@ def num_docs():
 def docs_to_index(num_docs):
     docs = []
     for idx in range(1, num_docs + 1):
-        doc = Document(content=np.array([idx]))
+        doc = Document(id=str(idx), content=np.array([idx * 5]))
         docs.append(doc)
     return DocumentSet(docs)
 
@@ -38,18 +42,37 @@ class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.keys = []
+        self.vectors = {}
 
     def add(
         self, keys: Iterable[str], vectors: 'scipy.sparse.coo_matrix', *args, **kwargs
     ) -> None:
         assert isinstance(vectors, sparse.coo_matrix)
         self.keys.extend(keys)
+        for i, key in enumerate(keys):
+            self.vectors[key] = vectors.getrow(i)
 
     def query(self, vectors: 'scipy.sparse.coo_matrix', top_k: int, *args, **kwargs):
         assert isinstance(vectors, sparse.coo_matrix)
         distances = [item for item in range(0, min(top_k, len(self.keys)))]
+        return [self.keys[:top_k]], np.array([distances])
 
-        return np.array(self.keys[:top_k]), np.array([distances])
+    def query_by_key(self, keys: Iterable[str], *args, **kwargs):
+        from scipy.sparse import coo_matrix, vstack
+
+        vectors = []
+        for key in keys:
+            vectors.append(self.vectors[key])
+
+        return vstack(vectors)
+
+    def save(self):
+        # avoid creating dump, do not polute workspace
+        pass
+
+    def close(self):
+        # avoid creating dump, do not polute workspace
+        pass
 
     def get_create_handler(self):
         pass
@@ -69,10 +92,15 @@ def test_sparse_pipeline(mocker, docs_to_index):
         assert len(response.docs) == 1
         assert len(response.docs[0].matches) == 10
         for doc in response.docs:
-            for match in doc.matches:
-                print(match.embedding)
+            for i, match in enumerate(doc.matches):
+                assert match.id == docs_to_index[i].id
+                assert isinstance(match.embedding, sparse.coo_matrix)
 
-    f = Flow().add(uses=DummySparseEncoder).add(uses=DummyCSRSparseIndexer)
+    f = (
+        Flow()
+        .add(uses=DummySparseEncoder)
+        .add(uses=os.path.join(cur_dir, 'indexer.yml'))
+    )
 
     mock = mocker.Mock()
     error_mock = mocker.Mock()
