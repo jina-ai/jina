@@ -8,6 +8,7 @@ from jina import Flow, Document
 from jina.types.sets import DocumentSet
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers import BaseSparseVectorIndexer
+from tests import validate_callback
 
 
 @pytest.fixture(scope='function')
@@ -65,14 +66,21 @@ class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
 
 def test_sparse_pipeline(mocker, docs_to_index):
     def validate(response):
-        assert len(response.docs) == 10
+        assert len(response.docs) == 1
+        assert len(response.docs[0].matches) == 10
+        for doc in response.docs:
+            for match in doc.matches:
+                print(match.embedding)
 
     f = Flow().add(uses=DummySparseEncoder).add(uses=DummyCSRSparseIndexer)
 
+    mock = mocker.Mock()
     error_mock = mocker.Mock()
 
     with f:
         f.index(inputs=docs_to_index)
-        f.search(inputs=docs_to_index, on_done=validate, on_error=error_mock)
+        f.search(inputs=docs_to_index[0], on_done=mock, on_error=error_mock)
 
+    mock.assert_called_once()
+    validate_callback(mock, validate)
     error_mock.assert_not_called()
