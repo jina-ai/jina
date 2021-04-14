@@ -41,7 +41,6 @@ class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
     def add(
         self, keys: Iterable[str], vectors: 'scipy.sparse.coo_matrix', *args, **kwargs
     ) -> None:
-        print(type(vectors))
         assert isinstance(vectors, sparse.coo_matrix)
         self.keys.extend(keys)
 
@@ -66,10 +65,14 @@ class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
 
 def test_sparse_pipeline(mocker, docs_to_index):
     def validate(response):
-        print(response)
+        assert len(response.docs) == 10
 
     f = Flow().add(uses=DummySparseEncoder).add(uses=DummyCSRSparseIndexer)
 
+    error_mock = mocker.Mock()
+
     with f:
         f.index(inputs=docs_to_index)
-        f.search(inputs=docs_to_index, on_done=validate)
+        f.search(inputs=docs_to_index, on_done=validate, on_error=error_mock)
+
+    error_mock.assert_not_called()
