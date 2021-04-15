@@ -40,6 +40,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             JinaDeleteRequestModel,
             JinaUpdateRequestModel,
             JinaSearchRequestModel,
+            JinaReloadRequestModel,
         )
 
     app = FastAPI(
@@ -197,6 +198,26 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         bd['mode'] = RequestType.DELETE
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
+
+    @app.post(
+        path='/reload', summary='Reload the executor of certain Peas/Pods in the Flow'
+    )
+    async def reload_api(body: JinaReloadRequestModel):
+        """
+        Reload the executor of certain peas/pods in the Flow
+
+        :param body: reload request.
+        :return: Response of the results.
+        """
+        from .....clients import BaseClient
+
+        bd = body.dict()
+        bd['mode'] = RequestType.CONTROL
+        bd['command'] = 'RELOAD'
+        return StreamingResponse(
+            result_in_stream(request_generator(data=[], **bd)),
+            media_type='application/json',
         )
 
     async def result_in_stream(req_iter):

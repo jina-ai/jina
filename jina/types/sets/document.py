@@ -22,6 +22,7 @@ from .traversable import TraversableSequence
 
 if False:
     from ..document import Document
+    from scipy.sparse import coo_matrix
 
 __all__ = ['DocumentSet']
 
@@ -161,6 +162,34 @@ class DocumentSet(TraversableSequence, MutableSequence):
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         return self.extract_docs('embedding', stack_contents=True)
+
+    @property
+    def all_sparse_embeddings(self) -> Tuple['coo_matrix', 'DocumentSet']:
+        """Return all embeddings from every document in this set as a ndarray
+
+        :return: The corresponding documents in a :class:`DocumentSet`,
+                and the documents have no embedding in a :class:`DocumentSet`.
+        :rtype: A tuple of embedding in :class:`np.ndarray`
+        """
+        import scipy
+
+        embeddings = []
+        docs_pts = []
+        bad_docs = []
+        for doc in self:
+            embedding = doc.sparse_embedding
+            if embedding is None:
+                bad_docs.append(doc)
+                continue
+            embeddings.append(embedding)
+            docs_pts.append(doc)
+
+        if bad_docs:
+            default_logger.warning(
+                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing sparse_embedding'
+            )
+
+        return scipy.sparse.vstack(embeddings), docs_pts
 
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:

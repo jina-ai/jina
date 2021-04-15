@@ -6,6 +6,9 @@ from argparse import Namespace
 from contextlib import ExitStack
 from typing import Optional, Dict, List, Union, Set
 
+from jina.peapods.zmq import send_ctrl_message
+from jina.types.message.dump import DumpMessage
+
 from .helper import (
     _set_peas_args,
     _set_after_to_pass,
@@ -46,91 +49,91 @@ class BasePod(ExitStack):
 
     @property
     def role(self) -> 'PodRoleType':
-        """
-        Return the role of this :class:`BasePod`.
+        """Return the role of this :class:`BasePod`.
 
-        :return: role type
+
+        .. # noqa: DAR201
         """
         return self.args.pod_role
 
     @property
     def is_singleton(self) -> bool:
-        """
-        Return if the Pod contains only a single Pea.
+        """Return if the Pod contains only a single Pea
 
-        :return: true if there is only one pea, else false
+
+        .. # noqa: DAR201
         """
         return not (self.is_head_router or self.is_tail_router)
 
     @property
     def name(self) -> str:
-        """
-        The name of this :class:`BasePod`.
+        """The name of this :class:`BasePod`.
 
-        :return: name of the pod
+
+        .. # noqa: DAR201
         """
         return self.args.name
 
     @property
     def port_expose(self) -> int:
-        """
-        Get the grpc port number.
+        """Get the grpc port number
 
-        :return: exposed port
+
+        .. # noqa: DAR201
         """
         return self.first_pea_args.port_expose
 
     @property
     def host(self) -> str:
-        """
-        Get the host name of this Pod.
+        """Get the host name of this Pod
 
-        :return: host name
+
+        .. # noqa: DAR201
         """
         return self.first_pea_args.host
 
     @property
     def host_in(self) -> str:
-        """
-        Get the host_in of this pod.
+        """Get the host_in of this pod
 
-        :return: host name of incoming requests
+
+        .. # noqa: DAR201
         """
         return self.head_args.host_in
 
     @property
     def host_out(self) -> str:
-        """
-        Get the host_out of this pod.
+        """Get the host_out of this pod
 
-        :return: host name of outgoing requests
+
+        .. # noqa: DAR201
         """
         return self.tail_args.host_out
 
     @property
     def address_in(self) -> str:
-        """
-        Get the full incoming address of this pod.
+        """Get the full incoming address of this pod
 
-        :return: address for incoming requests
+
+        .. # noqa: DAR201
         """
         return f'{self.head_args.host_in}:{self.head_args.port_in} ({self.head_args.socket_in!s})'
 
     @property
     def address_out(self) -> str:
-        """
-        Get the full outgoing address of this pod.
+        """Get the full outgoing address of this pod
 
-        :return: address for outgoing requests.
+
+        .. # noqa: DAR201
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
     @property
     def first_pea_args(self) -> Namespace:
-        """
-        Return the first non-head/tail pea's args.
+        """Return the first non-head/tail pea's args
 
-        :return: arguments of the first pea which is not a head pea or tail pea
+
+        .. # noqa: DAR201
         """
         # note this will be never out of boundary
         return self.peas_args['peas'][0]
@@ -173,10 +176,10 @@ class BasePod(ExitStack):
 
     @property
     def head_args(self):
-        """
-        Get the arguments for the `head` of this BasePod.
+        """Get the arguments for the `head` of this BasePod.
 
-        :return: arguments of the head pea
+
+        .. # noqa: DAR201
         """
         if self.is_head_router and self.peas_args['head']:
             return self.peas_args['head']
@@ -189,10 +192,10 @@ class BasePod(ExitStack):
 
     @head_args.setter
     def head_args(self, args):
-        """
-        Set the arguments for the `head` of this BasePod.
+        """Set the arguments for the `head` of this BasePod.
 
-        :param args: arguments of the head pea
+
+        .. # noqa: DAR101
         """
         if self.is_head_router and self.peas_args['head']:
             self.peas_args['head'] = args
@@ -205,10 +208,10 @@ class BasePod(ExitStack):
 
     @property
     def tail_args(self):
-        """
-        Get the arguments for the `tail` of this BasePod.
+        """Get the arguments for the `tail` of this BasePod.
 
-        :return: arguments of the tail pea
+
+        .. # noqa: DAR201
         """
         if self.is_tail_router and self.peas_args['tail']:
             return self.peas_args['tail']
@@ -221,10 +224,10 @@ class BasePod(ExitStack):
 
     @tail_args.setter
     def tail_args(self, args):
-        """
-        Set the arguments for the `tail` of this BasePod.
+        """Set the arguments for the `tail` of this BasePod.
 
-        :param args: arguments of the tail pea
+
+        .. # noqa: DAR101
         """
         if self.is_tail_router and self.peas_args['tail']:
             self.peas_args['tail'] = args
@@ -237,10 +240,10 @@ class BasePod(ExitStack):
 
     @property
     def all_args(self) -> List[Namespace]:
-        """
-        Get all arguments of all Peas in this BasePod.
+        """Get all arguments of all Peas in this BasePod.
 
-        :return: arguments for all peas
+
+        .. # noqa: DAR201
         """
         return (
             ([self.peas_args['head']] if self.peas_args['head'] else [])
@@ -250,10 +253,10 @@ class BasePod(ExitStack):
 
     @property
     def num_peas(self) -> int:
-        """
-        Get the number of running :class:`BasePea`.
+        """Get the number of running :class:`BasePea`
 
-        :return: total number of peas including head and tail
+
+        .. # noqa: DAR201
         """
         return len(self.peas)
 
@@ -286,8 +289,8 @@ class BasePod(ExitStack):
             return self
 
     def wait_start_success(self) -> None:
-        """
-        Block until all peas starts successfully.
+        """Block until all peas starts successfully.
+
         If not successful, it will raise an error hoping the outer function to catch it
         """
 
@@ -334,12 +337,27 @@ class BasePod(ExitStack):
 
     @property
     def is_ready(self) -> bool:
-        """
-        Checks if Pod is read.
-
-        :return: true if the pea is ready to serve requests
+        """Checks if Pod is ready
 
         .. note::
             A Pod is ready when all the Peas it contains are ready
+
+
+        .. # noqa: DAR201
         """
         return all(p.is_ready.is_set() for p in self.peas)
+
+    def dump(self, path, shards, timeout):
+        """Emit a Dump request to its Peas
+
+        :param shards: the nr of shards in the dump
+        :param path: the path to which to dump
+        :param timeout: time to wait (seconds)
+        """
+        for pea in self.peas:
+            if 'head' not in pea.name and 'tail' not in pea.name:
+                send_ctrl_message(
+                    pea.runtime.ctrl_addr,
+                    DumpMessage(path=path, shards=shards),
+                    timeout=timeout,
+                )

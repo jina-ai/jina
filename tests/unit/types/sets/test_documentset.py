@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import pytest
 import numpy as np
+from scipy.sparse import coo_matrix
 
 from jina import Document
 from jina.types.sets import DocumentSet
@@ -32,6 +33,20 @@ def docs(document_factory):
 
 @pytest.fixture
 def docset(docs):
+    return DocumentSet(docs)
+
+
+@pytest.fixture
+def docset_with_scipy_sparse_embedding(docs):
+    embedding = coo_matrix(
+        (
+            np.array([1, 2, 3, 4, 5, 6]),
+            (np.array([0, 0, 1, 2, 2, 2]), np.array([0, 2, 2, 0, 1, 2])),
+        ),
+        shape=(4, 10),
+    )
+    for doc in docs:
+        doc.embedding = embedding
     return DocumentSet(docs)
 
 
@@ -390,3 +405,11 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
         assert len(contents[1]) == batch_size
         for c in contents[0]:
             assert c.shape == (num_rows, embed_size)
+
+
+def test_all_embeddings(docset_with_scipy_sparse_embedding):
+    all_embeddings, doc_pts = docset_with_scipy_sparse_embedding.all_sparse_embeddings
+    assert all_embeddings is not None
+    assert doc_pts is not None
+    assert len(doc_pts) == 3
+    assert isinstance(all_embeddings, coo_matrix)

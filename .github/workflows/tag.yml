@@ -122,6 +122,8 @@ jobs:
         tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true  # this job build devel image, devel image includes hub submodule
       - name: Set envs and versions
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV

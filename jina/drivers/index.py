@@ -39,12 +39,24 @@ class VectorIndexDriver(BaseIndexDriver):
     If `method` is not 'delete', documents without content are filtered out.
     """
 
+    @staticmethod
+    def _get_documents_embeddings(docs: 'DocumentSet'):
+        return docs.all_embeddings
+
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, docs_pts = docs.all_embeddings
+        embed_vecs, docs_pts = self._get_documents_embeddings(docs)
         if docs_pts:
             keys = [doc.id for doc in docs_pts]
             self.check_key_length(keys)
-            self.exec_fn(keys, np.stack(embed_vecs))
+            self.exec_fn(keys, embed_vecs)
+
+
+class SparseVectorIndexDriver(VectorIndexDriver):
+    """An alias to have coherent naming with the required SparseVectorSearchDriver """
+
+    @staticmethod
+    def _get_documents_embeddings(docs: 'DocumentSet'):
+        return docs.all_sparse_embeddings
 
 
 class KVIndexDriver(BaseIndexDriver):

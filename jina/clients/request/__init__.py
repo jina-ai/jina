@@ -49,15 +49,15 @@ def request_generator(
     :yield: request
     """
 
-    _kwargs = dict(
-        mime_type=mime_type, siblings=request_size, weight=1.0, extra_kwargs=kwargs
-    )
+    _kwargs = dict(mime_type=mime_type, weight=1.0, extra_kwargs=kwargs)
 
     try:
         if not isinstance(data, Iterable):
             data = [data]
         for batch in batch_iterator(data, request_size):
-            yield _new_request_from_batch(_kwargs, batch, data_type, mode, queryset)
+            yield _new_request_from_batch(
+                _kwargs, batch, data_type, mode, queryset, **kwargs
+            )
 
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception

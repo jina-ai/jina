@@ -108,7 +108,7 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
 
 
 class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
-    """Extract embeddings from the request for the executor to query.
+    """Extract dense embeddings from the request for the executor to query.
 
     :param top_k: top-k document ids to retrieve
     :param fill_embedding: fill in the embedding of the corresponding doc,
@@ -121,8 +121,21 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
+    @staticmethod
+    def _get_documents_embeddings(docs: 'DocumentSet'):
+        return docs.all_embeddings
+
+    @staticmethod
+    def _fill_matches(doc, op_name, topks, scores, topk_embed):
+        for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
+            m = Document(id=numpy_match_id)
+            m.score = NamedScore(op_name=op_name, value=score)
+            r = doc.matches.append(m)
+            if vec is not None:
+                r.embedding = vec
+
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, doc_pts = docs.all_embeddings
+        embed_vecs, doc_pts = self._get_documents_embeddings(docs)
 
         if not doc_pts:
             return
@@ -134,18 +147,31 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
             )
 
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
-
         op_name = self.exec.__class__.__name__
         for doc, topks, scores in zip(doc_pts, idx, dist):
-
             topk_embed = (
                 fill_fn(topks)
                 if (self._fill_embedding and fill_fn)
                 else [None] * len(topks)
             )
-            for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
-                m = Document(id=numpy_match_id)
-                m.score = NamedScore(op_name=op_name, value=score)
-                r = doc.matches.append(m)
-                if vec is not None:
-                    r.embedding = vec
+            self._fill_matches(doc, op_name, topks, scores, topk_embed)
+
+
+class SparseVectorSearchDriver(VectorSearchDriver):
+    """
+    Extract sparse embeddings from the request for the executor to query.
+    """
+
+    @staticmethod
+    def _get_documents_embeddings(docs: 'DocumentSet'):
+        return docs.all_sparse_embeddings
+
+    @staticmethod
+    def _fill_matches(doc, op_name, topks, scores, topk_embed):
+        for id, (numpy_match_id, score) in enumerate(zip(topks, scores)):
+            vec = topk_embed.getrow(id)
+            m = Document(id=numpy_match_id)
+            m.score = NamedScore(op_name=op_name, value=score)
+            r = doc.matches.append(m)
+            if vec is not None:
+                r.embedding = vec
