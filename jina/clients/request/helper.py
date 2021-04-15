@@ -3,7 +3,8 @@ from typing import Tuple, Sequence
 
 from ... import Document, Request
 from ...enums import DataInputType, RequestType
-from ...excepts import BadDocType, BadRequestType, RequestTypeError
+from ...excepts import BadDocType, BadRequestType
+from ...excepts import RequestTypeError
 
 
 def _new_doc_from_data(
@@ -31,7 +32,7 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset):
+def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset, **kwargs):
     req = Request()
     req.request_type = str(mode)
 

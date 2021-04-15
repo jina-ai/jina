@@ -42,7 +42,7 @@ f = Flow().add(uses='_index')
     <td>
 
 ```python
- save four docs (both embedding and structured info) into storage
+# save four docs (both embedding and structured info) into storage
 with f:
     f.index(docs, on_done=print)
 ```
@@ -56,7 +56,7 @@ with f:
     <td>
 
 ```python
- retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively
+# retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively
 with f:
     f.search(docs[0], top_k=3, on_done=lambda x: print(x.docs[0].matches))
 ```
@@ -78,7 +78,7 @@ with f:
     <td>
 
 ```python
- update 🐲 embedding in the storage
+# update 🐲 embedding in the storage
 docs[0].embedding = np.array([1, 1])
 with f:
     f.update(docs[0])
@@ -92,7 +92,7 @@ with f:
     <td>
 
 ```python
- remove 🐦🐲 Documents from the storage
+# remove 🐦🐲 Documents from the storage
 with f:
     f.delete(['🐦', '🐲'])
 ```
@@ -416,7 +416,7 @@ A Flow does not have to be local-only: You can put any Pod to remote(s). In the 
     <td>
 
 ```bash
- have docker installed
+# have docker installed
 docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
  to stop it
 docker rm -f jinad

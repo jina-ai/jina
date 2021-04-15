@@ -1,0 +1,28 @@
+jtype: CompoundQueryExecutor
+components:
+  - jtype: NumpyQueryIndexer
+    with:
+      index_filename: vec.bin
+      metric: euclidean
+    metas:
+      name: vecidx
+  - jtype: BinaryPbQueryIndexer
+    with:
+      index_filename: kv.bin
+    metas:
+      name: kvidx
+metas:
+  name: compound_indexer
+  workspace: $QUERY_WORKSPACE
+requests:
+  on:
+    SearchRequest:
+      - jtype: VectorSearchDriver
+        with:
+          executor: vecidx
+          fill_embedding: True  # to test embeddings
+      - jtype: KVSearchDriver
+        with:
+          executor: kvidx
+          is_update: True
+          traversal_paths: ['r']

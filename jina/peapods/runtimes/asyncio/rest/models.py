@@ -1,15 +1,12 @@
-from enum import Enum
-from datetime import datetime
-from types import SimpleNamespace
 from collections import defaultdict
+from datetime import datetime
+from enum import Enum
+from types import SimpleNamespace
 from typing import Callable, Dict, Any, Optional, List, Union
 
-from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
-
 from jina.enums import DataInputType
-from jina.types.document import Document
 from jina.parsers import set_client_cli_parser
 from jina.proto.jina_pb2 import (
     DenseNdArrayProto,
@@ -24,6 +21,8 @@ from jina.proto.jina_pb2 import (
     RequestProto,
     QueryLangProto,
 )
+from jina.types.document import Document
+from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
 DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
@@ -236,6 +235,14 @@ class JinaStatusModel(BaseModel):
     jina: Dict
     envs: Dict
     used_memory: str
+
+
+class JinaReloadRequestModel(BaseModel):
+    """
+    Jina control request model.
+    """
+
+    targets: Union[str, List[str]]
 
 
 class JinaRequestModel(BaseModel):
