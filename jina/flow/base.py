@@ -24,7 +24,6 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
-    cached_property,
 )
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
@@ -967,3 +966,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     # for backward support
     join = needs
+
+    def dump(self, pod_name, path: str, shards: int, timeout=-1):
+        """Emit a Dump request to a specific Pod
+
+        :param shards: the nr of shards in the dump
+        :param path: the path to which to dump
+        :param pod_name: the name of the pod
+        :param timeout: time to wait (seconds)
+        """
+        pod = self._pod_nodes[pod_name]
+        pod.dump(path, shards, timeout)
