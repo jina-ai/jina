@@ -1,5 +1,5 @@
 import pickle
-from typing import List
+from typing import List, Tuple, Generator
 import numpy as np
 
 from jina.executors.indexers.dump import export_dump_streaming
@@ -10,7 +10,9 @@ from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
     """A DBMS Indexer (no query method)"""
 
-    def _get_generator(self, ids: List[str]):
+    def _get_generator(
+        self, ids: List[str]
+    ) -> Generator[Tuple[str, np.array, bytes], None, None]:
         for id_ in ids:
             vecs_metas_bytes = super()._query(id_)
             vec, meta = pickle.loads(vecs_metas_bytes)
