@@ -15,7 +15,7 @@ class BaseIndexDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`add` by default """
 
     def __init__(
-        self, executor: Optional[str] = None, method: str = 'add', *args, **kwargs
+            self, executor: Optional[str] = None, method: str = 'add', *args, **kwargs
     ):
         super().__init__(executor, method, *args, **kwargs)
 
@@ -39,8 +39,7 @@ class VectorIndexDriver(BaseIndexDriver):
     If `method` is not 'delete', documents without content are filtered out.
     """
 
-    @staticmethod
-    def _get_documents_embeddings(docs: 'DocumentSet'):
+    def _get_documents_embeddings(self, docs: 'DocumentSet'):
         return docs.all_embeddings
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
@@ -54,9 +53,18 @@ class VectorIndexDriver(BaseIndexDriver):
 class SparseVectorIndexDriver(VectorIndexDriver):
     """An alias to have coherent naming with the required SparseVectorSearchDriver """
 
-    @staticmethod
-    def _get_documents_embeddings(docs: 'DocumentSet'):
-        return docs.all_sparse_embeddings
+    @property
+    def exec_sparse_cls_type(self) -> str:
+        return self.exec.sparse_cls_type
+
+    def _get_documents_embeddings(self, docs: 'DocumentSet'):
+        sparse_cls_type = self.exec_sparse_cls_type
+        scipy_cls_type = None
+        if sparse_cls_type.startswith('scipy'):
+            scipy_cls_type = sparse_cls_type.split('_')[1]
+            sparse_cls_type = 'scipy'
+
+        return docs.get_all_sparse_embeddings(sparse_cls_type=sparse_cls_type, scipy_cls_type=scipy_cls_type)
 
 
 class KVIndexDriver(BaseIndexDriver):

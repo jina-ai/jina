@@ -7,6 +7,7 @@ from jina import Document, QueryLang
 from jina.drivers.search import VectorSearchDriver
 from jina.executors.indexers import BaseVectorIndexer
 
+# TODO: Add tests for sparse vectors search driver.
 
 class MockVectorSearchDriver(VectorSearchDriver):
     @property

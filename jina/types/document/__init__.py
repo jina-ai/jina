@@ -7,7 +7,7 @@ import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
-from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List
+from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List, Type
 
 import numpy as np
 from google.protobuf import json_format
@@ -29,6 +29,35 @@ from ...proto import jina_pb2
 
 if False:
     from scipy.sparse import coo_matrix
+
+    # fix type-hint complain for sphinx and flake
+    from typing import TypeVar
+    import numpy as np
+    import scipy
+    import tensorflow as tf
+    import torch
+
+    EmbeddingType = TypeVar(
+        'EncodingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
+
+    SparseEmbeddingType = TypeVar(
+        'SparseEmbeddingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -470,20 +499,26 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'np.ndarray':
+    def embedding(self) -> 'EmbeddingType':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
         """
         return NdArray(self._pb_body.embedding).value
 
-    @property
-    def sparse_embedding(self) -> 'coo_matrix':
+    def get_sparse_embedding(
+        self, sparse_ndarray_cls_type: Type['BaseSparseNdArray'], **kwargs
+    ) -> 'SparseEmbeddingType':
         """Return ``embedding`` of the content of a Document as an sparse array.
 
         :return: the embedding from the proto as an sparse array
         """
-        return NdArray(self._pb_body.embedding, is_sparse=True).value
+        return NdArray(
+            self._pb_body.embedding,
+            sparse_cls=sparse_ndarray_cls_type,
+            is_sparse=True,
+            **kwargs,
+        ).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):

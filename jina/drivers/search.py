@@ -20,12 +20,12 @@ class BaseSearchDriver(BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`query` by default """
 
     def __init__(
-        self,
-        executor: Optional[str] = None,
-        method: str = 'query',
-        traversal_paths: Tuple[str] = ('r', 'c'),
-        *args,
-        **kwargs,
+            self,
+            executor: Optional[str] = None,
+            method: str = 'query',
+            traversal_paths: Tuple[str] = ('r', 'c'),
+            *args,
+            **kwargs,
     ):
         super().__init__(
             executor, method, traversal_paths=traversal_paths, *args, **kwargs
@@ -58,17 +58,17 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
     """
 
     def __init__(
-        self,
-        is_update: bool = True,
-        traversal_paths: Tuple[str] = ('m',),
-        *args,
-        **kwargs,
+            self,
+            is_update: bool = True,
+            traversal_paths: Tuple[str] = ('m',),
+            *args,
+            **kwargs,
     ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self._is_update = is_update
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+            self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             miss_idx = (
@@ -93,11 +93,11 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     """Fill in the embedding by their document id."""
 
     def __init__(
-        self,
-        executor: Optional[str] = None,
-        method: str = 'query_by_key',
-        *args,
-        **kwargs,
+            self,
+            executor: Optional[str] = None,
+            method: str = 'query_by_key',
+            *args,
+            **kwargs,
     ):
         super().__init__(executor, method, *args, **kwargs)
 
@@ -121,8 +121,7 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
-    @staticmethod
-    def _get_documents_embeddings(docs: 'DocumentSet'):
+    def _get_documents_embeddings(self, docs: 'DocumentSet'):
         return docs.all_embeddings
 
     @staticmethod
@@ -162,9 +161,19 @@ class SparseVectorSearchDriver(VectorSearchDriver):
     Extract sparse embeddings from the request for the executor to query.
     """
 
-    @staticmethod
-    def _get_documents_embeddings(docs: 'DocumentSet'):
-        return docs.all_sparse_embeddings
+    @property
+    def exec_sparse_cls_type(self) -> str:
+        return self.exec.sparse_cls_type
+
+    def _get_documents_embeddings(self, docs: 'DocumentSet'):
+        sparse_cls_type = self.exec_sparse_cls_type
+        scipy_cls_type = None
+        print(f' sparse_cls_type {sparse_cls_type}')
+        if sparse_cls_type.startswith('scipy'):
+            scipy_cls_type = sparse_cls_type.split('_')[1]
+            sparse_cls_type = 'scipy'
+
+        return docs.get_all_sparse_embeddings(sparse_cls_type=sparse_cls_type, scipy_cls_type=scipy_cls_type)
 
     @staticmethod
     def _fill_matches(doc, op_name, topks, scores, topk_embed):

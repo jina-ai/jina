@@ -323,7 +323,11 @@ class BaseVectorIndexer(BaseIndexer):
 
 
 class BaseSparseVectorIndexer(BaseVectorIndexer):
-    """ Alias to provide proper default drivers in resources"""
+    """ Alias to provide proper default drivers in resources.
+    TODO: Add documentation about the need to override sparse_cls_type property
+    """
+
+    sparse_cls_type = 'scipy_coo'
 
 
 class BaseKVIndexer(BaseIndexer):
