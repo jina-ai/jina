@@ -1,0 +1,11 @@
+!DummyCSRSparseIndexer
+requests:
+  on:
+    ControlRequest:
+      - !ControlReqDriver {}
+    SearchRequest:
+      - !SparseVectorSearchDriver
+        with:
+          fill_embedding: True
+    IndexRequest:
+    - !SparseVectorIndexDriver {}

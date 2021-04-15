@@ -303,6 +303,10 @@ class BaseVectorIndexer(BaseIndexer):
         raise NotImplementedError
 
 
+class BaseSparseVectorIndexer(BaseVectorIndexer):
+    """ Alias to provide proper default drivers in resources"""
+
+
 class BaseKVIndexer(BaseIndexer):
     """An abstract class for key-value indexer.
 

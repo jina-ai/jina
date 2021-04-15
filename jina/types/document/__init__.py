@@ -27,6 +27,8 @@ from ...importer import ImportExtensions
 from ...logging import default_logger
 from ...proto import jina_pb2
 
+if False:
+    from scipy.sparse import coo_matrix
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -474,6 +476,14 @@ class Document(ProtoTypeMixin, Traversable):
         :return: the embedding from the proto
         """
         return NdArray(self._pb_body.embedding).value
+
+    @property
+    def sparse_embedding(self) -> 'coo_matrix':
+        """Return ``embedding`` of the content of a Document as an sparse array.
+
+        :return: the embedding from the proto as an sparse array
+        """
+        return NdArray(self._pb_body.embedding, is_sparse=True).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
