@@ -163,6 +163,10 @@ class SparseVectorSearchDriver(VectorSearchDriver):
 
     @property
     def exec_sparse_cls_type(self) -> str:
+        """Get the sparse type from executor.
+
+        :return: Sparse matrix type, default value is `scipy_coo`.
+        """
         return self.exec.sparse_cls_type
 
     def _get_documents_embeddings(self, docs: 'DocumentSet'):
@@ -178,10 +182,10 @@ class SparseVectorSearchDriver(VectorSearchDriver):
 
     @staticmethod
     def _fill_matches(doc, op_name, topks, scores, topk_embed):
-        for id, (numpy_match_id, score) in enumerate(zip(topks, scores)):
-            vec = topk_embed.getrow(id)
+        for idx, (numpy_match_id, score) in enumerate(zip(topks, scores)):
+            vector = topk_embed.getrow(idx)
             m = Document(id=numpy_match_id)
             m.score = NamedScore(op_name=op_name, value=score)
-            r = doc.matches.append(m)
-            if vec is not None:
-                r.embedding = vec
+            match = doc.matches.append(m)
+            if vector:
+                match.embedding = vector
