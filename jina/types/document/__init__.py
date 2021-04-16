@@ -507,7 +507,7 @@ class Document(ProtoTypeMixin, Traversable):
         return NdArray(self._pb_body.embedding).value
 
     def get_sparse_embedding(
-        self, sparse_ndarray_cls_type: Type['BaseSparseNdArray'], **kwargs
+        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
     ) -> 'SparseEmbeddingType':
         """Return ``embedding`` of the content of a Document as an sparse array.
 
