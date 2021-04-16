@@ -335,7 +335,10 @@ class BaseSparseVectorIndexer(BaseVectorIndexer):
 
     @sparse_cls_type.setter
     def sparse_cls_type(self, sparse_type: 'str') -> None:
-        """Set the associated `sparse_cls_type` for :class:`BaseSparseVectorIndexer`."""
+        """Set the associated `sparse_cls_type` for :class:`BaseSparseVectorIndexer`.
+
+        :param sparse_type: The sparse class type to be set, default value is `scipy_coo`.
+        """
         self.sparse_cls_type = sparse_type
 
 

@@ -205,7 +205,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
           is `scipy`.
 
         :return: The corresponding documents in a :class:`DocumentSet`,
-                and the documents have no embedding in a :class:`DocumentSet`.
+          and the documents have no embedding in a :class:`DocumentSet`.
         :rtype: A tuple of embedding and DocumentSet as sparse arrays
         """
 
