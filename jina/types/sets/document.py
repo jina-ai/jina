@@ -202,10 +202,10 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
         :param sparse_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
         :param scipy_cls_type: Type of scipy sparse vector type, e.g. `coo` or `csr`, needed with `sparse_cls_type`
-          is `scipy`.
+            is `scipy`.
 
         :return: The corresponding documents in a :class:`DocumentSet`,
-          and the documents have no embedding in a :class:`DocumentSet`.
+            and the documents have no embedding in a :class:`DocumentSet`.
         :rtype: A tuple of embedding and DocumentSet as sparse arrays
         """
 

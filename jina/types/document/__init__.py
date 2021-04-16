@@ -513,8 +513,8 @@ class Document(ProtoTypeMixin, Traversable):
 
         :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
         :param kwargs: Additional key value argument, for `scipy` backend, we need to set
-          the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
-          or `csr`.
+            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
+            or `csr`.
         :return: the embedding from the proto as an sparse array
         """
         return NdArray(
