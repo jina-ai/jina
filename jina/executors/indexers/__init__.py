@@ -323,11 +323,20 @@ class BaseVectorIndexer(BaseIndexer):
 
 
 class BaseSparseVectorIndexer(BaseVectorIndexer):
-    """ Alias to provide proper default drivers in resources.
-    TODO: Add documentation about the need to override sparse_cls_type property
-    """
+    """ Alias to provide proper default drivers in resources."""
 
-    sparse_cls_type = 'scipy_coo'
+    @property
+    def sparse_cls_type(self) -> str:
+        """Get the associated `sparse_cls_type` for :class:`BaseSparseVectorIndexer`.
+
+        :return: Sparse matrix class type, by default `scipy_coo` matrix.
+        """
+        return 'scipy_coo'
+
+    @sparse_cls_type.setter
+    def sparse_cls_type(self, sparse_type: 'str') -> None:
+        """Set the associated `sparse_cls_type` for :class:`BaseSparseVectorIndexer`."""
+        self.sparse_cls_type = sparse_type
 
 
 class BaseKVIndexer(BaseIndexer):
