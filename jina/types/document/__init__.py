@@ -16,7 +16,7 @@ from google.protobuf.field_mask_pb2 import FieldMask
 from .traversable import Traversable
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import NdArray
+from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..querylang.queryset.dunderkey import dunder_get
 from ..score import NamedScore
 from ..sets.chunk import ChunkSet
