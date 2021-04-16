@@ -4,10 +4,8 @@ import numpy as np
 import pytest
 from jina.executors.decorators import (
     as_update_method,
-    as_train_method,
     as_ndarray,
     batching,
-    require_train,
     store_init_kwargs,
     single,
 )
@@ -28,21 +26,6 @@ def test_as_update_method():
     assert a.is_updated
 
 
-def test_as_train_method():
-    class A:
-        def __init__(self):
-            self.is_trained = False
-
-        @as_train_method
-        def f(self):
-            pass
-
-    a = A()
-    assert not a.is_trained
-    a.f()
-    assert a.is_trained
-
-
 def test_as_ndarray():
     class A:
         @as_ndarray
@@ -58,23 +41,6 @@ def test_as_ndarray():
     assert isinstance(a.f_list(), np.ndarray)
     with pytest.raises(TypeError):
         a.f_int()
-
-
-def test_require_train():
-    class A:
-        def __init__(self):
-            self.is_trained = False
-
-        @require_train
-        def f(self):
-            pass
-
-    a = A()
-    a.is_trained = False
-    with pytest.raises(RuntimeError):
-        a.f()
-    a.is_trained = True
-    a.f()
 
 
 def test_store_init_kwargs():

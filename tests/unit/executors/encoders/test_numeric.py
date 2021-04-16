@@ -1,8 +1,6 @@
 import numpy as np
-import pytest
 import pickle
 
-from jina.excepts import UndefinedModel
 from jina.executors.encoders.numeric import TransformEncoder
 
 input_dim = 5
@@ -19,19 +17,6 @@ class SimpleModel:
 
 simple_model = SimpleModel()
 encoder = TransformEncoder(output_dim=target_output_dim)
-
-
-def test_transform_encoder_train(caplog):
-    train_data = np.random.rand(2, input_dim)
-    with pytest.raises(UndefinedModel):
-        encoder.train(train_data)
-
-    encoder.logger.logger.propagate = True
-    encoder.model = simple_model
-    encoder.train(train_data)
-    assert encoder.is_trained
-    assert 'batch size' in caplog.text
-    encoder.logger.logger.propagate = False
 
 
 def test_transform_encoder_test():
