@@ -55,6 +55,10 @@ class SparseVectorIndexDriver(VectorIndexDriver):
 
     @property
     def exec_sparse_cls_type(self) -> str:
+        """Get the sparse class type of the attached executor.
+
+        :return: Sparse class type of the attached executor, default value is `scipy_coo`.
+        """
         return self.exec.sparse_cls_type
 
     def _get_documents_embeddings(self, docs: 'DocumentSet'):
