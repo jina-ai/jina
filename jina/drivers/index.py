@@ -15,7 +15,7 @@ class BaseIndexDriver(FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`add` by default """
 
     def __init__(
-            self, executor: Optional[str] = None, method: str = 'add', *args, **kwargs
+        self, executor: Optional[str] = None, method: str = 'add', *args, **kwargs
     ):
         super().__init__(executor, method, *args, **kwargs)
 
@@ -64,7 +64,9 @@ class SparseVectorIndexDriver(VectorIndexDriver):
             scipy_cls_type = sparse_cls_type.split('_')[1]
             sparse_cls_type = 'scipy'
 
-        return docs.get_all_sparse_embeddings(sparse_cls_type=sparse_cls_type, scipy_cls_type=scipy_cls_type)
+        return docs.get_all_sparse_embeddings(
+            sparse_cls_type=sparse_cls_type, scipy_cls_type=scipy_cls_type
+        )
 
 
 class KVIndexDriver(BaseIndexDriver):

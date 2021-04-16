@@ -9,6 +9,7 @@ from jina.executors.indexers import BaseVectorIndexer
 
 # TODO: Add tests for sparse vectors search driver.
 
+
 class MockVectorSearchDriver(VectorSearchDriver):
     @property
     def exec_fn(self):

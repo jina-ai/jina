@@ -418,8 +418,19 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
         ('tf', None, tf.SparseTensor),
     ],
 )
-def test_all_sparse_embeddings(docset_with_scipy_sparse_embedding, return_sparse_ndarray_cls_type, return_scipy_class_type, return_expected_type):
-    all_embeddings, doc_pts = docset_with_scipy_sparse_embedding.get_all_sparse_embeddings(sparse_cls_type=return_sparse_ndarray_cls_type, scipy_cls_type=return_scipy_class_type)
+def test_all_sparse_embeddings(
+    docset_with_scipy_sparse_embedding,
+    return_sparse_ndarray_cls_type,
+    return_scipy_class_type,
+    return_expected_type,
+):
+    (
+        all_embeddings,
+        doc_pts,
+    ) = docset_with_scipy_sparse_embedding.get_all_sparse_embeddings(
+        sparse_cls_type=return_sparse_ndarray_cls_type,
+        scipy_cls_type=return_scipy_class_type,
+    )
     assert all_embeddings is not None
     assert doc_pts is not None
     assert len(doc_pts) == 3
