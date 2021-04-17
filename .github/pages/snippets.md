@@ -6,7 +6,7 @@ These code snippets provide a short introduction to Jina's functionality and des
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 ## 🥚 Fundamentals
 
@@ -100,7 +100,7 @@ with f:
 </tr>
 </table>
 
-For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)  
+For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)
 
 
 ### Document
@@ -230,7 +230,7 @@ Get the vibe? Now we're talking! Let's learn more about the basic concepts and f
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 
 ## 🐣 Basic
@@ -509,7 +509,7 @@ That's all you need to know for understanding the magic behind `hello-world`. No
 | --- |---|
 | 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [REST Interface](#rest-interface) |
+| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 ## 🐥 Breakdown of `hello-world`
 
@@ -674,6 +674,129 @@ def query_generator():
 f.search(query_iterator, ...)
 ```
 
+
+#### Flow Optimization
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-optimizer/basic-optimizer.ipynb)
+
+
+Flow Optimization gets the most out of your data.
+It allows hyper parameter optimization on a complete search Flow, including indexing and querying.
+For example, choosing a middle layer of a model often results in richer semantic embeddings.
+Let's test through all layers of a model.
+
+Before starting, we need the optimizer requirements installed:
+
+```bash
+pip install jina[optimizer]
+```
+
+First, let's get all needed imports and the Flow definition:
+
+```python
+import numpy as np
+from jina import Document
+from jina.executors.encoders import BaseEncoder
+from jina.optimizers import FlowOptimizer, MeanEvaluationCallback
+from jina.optimizers.flow_runner import SingleFlowRunner
+
+flow = '''jtype: Flow
+version: '1'
+pods:
+  - uses:
+      jtype: SimpleEncoder
+      with:
+        layer: ${{JINA_ENCODER_LAYER}}
+  - uses: EuclideanEvaluator
+'''
+```
+
+`ENCODER_LAYER` allows the optimizer to change the Encoder configuration with each iteration.
+The `EuclideanEvaluator` scores the Documents according to a given groundtruth.
+Beware, that the Pod definition is done via the inline syntax of Jina.
+
+Now we will fake a model with three layers.
+For simplicity each layer only consists of a single integer which is taken as the embedding.
+
+```python
+class SimpleEncoder(BaseEncoder):
+
+    ENCODE_LOOKUP = {
+        '🐲': [1, 3, 5],
+        '🐦': [2, 4, 7],
+        '🐢': [0, 2, 5],
+    }
+
+    def __init__(self, layer=0, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._layer = layer
+
+    def encode(self, data, *args, **kwargs) -> 'np.ndarray':
+        return np.array([[self.ENCODE_LOOKUP[data[0]][self._layer]]])
+```
+
+Futhermore, we define what should be the optimization parameters in `parameter.yml`.
+
+```yaml
+- !IntegerParameter
+  jaml_variable: JINA_ENCODER_LAYER
+  high: 2
+  low: 0
+  step_size: 1
+```
+
+For optimization, we need to run almost equal Flows again and again with the same data.
+This is realized with a `SingleFlowRunner`.
+
+```python
+documents = [
+    (Document(content='🐲'), Document(embedding=np.array([2]))),
+    (Document(content='🐦'), Document(embedding=np.array([3]))),
+    (Document(content='🐢'), Document(embedding=np.array([3])))
+]
+
+runner = SingleFlowRunner(
+    flow, documents, 1, 'search', overwrite_workspace=True
+)
+```
+
+The same Documents are used for each Flow Optimization step.
+`documents` consists of `document, groundtruth` pairs.
+The given embedding represents the perfect semantic embedding.
+
+Now we are ready to start the optimization:
+
+```python
+optimizer = FlowOptimizer(
+    flow_runner=runner,
+    parameter_yaml='parameter.yml',
+    evaluation_callback=MeanEvaluationCallback(),
+    n_trials=3,
+    direction='minimize',
+    seed=1
+)
+
+optimizer.optimize_flow()
+```
+
+The `MeanEvaluationCallback` gathers the evaluations from all three sended Documents per run.
+After each run, it returns the mean of the single evaluations.
+
+Finally...
+
+```text
+...
+JINA@15892[I] Trial 2 finished with value: 1.6666666666666667
+and parameters: {'JINA_ENCODER_LAYER': 0}.
+Best is trial 0 with value: 1.0.
+JINA@15892[I]:Number of finished trials: 3
+JINA@15892[I]:Best trial: {'JINA_ENCODER_LAYER': 1}
+JINA@15892[I]:Time to finish: 0:00:02.081710
+
+```
+
+Tada! The layer 1 is the best one.
+
+For a more detailed guide please read [our docs](https://docs.jina.ai/chapters/optimization/?highlight=optimization).
 
 ### REST Interface
 
