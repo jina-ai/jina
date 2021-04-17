@@ -15,8 +15,7 @@ class BaseIndexer(BaseExecutor):
     """Base class for storing and searching any kind of data structure.
 
     The key functions here are :func:`add` and :func:`query`.
-    One can decorate them with :func:`jina.decorator.require_train`,
-    :func:`jina.helper.batching` and :func:`jina.logging.profile.profiling`.
+    One can decorate them with :func:`jina.helper.batching` and :func:`jina.logging.profile.profiling`.
 
     One should always inherit from either :class:`BaseVectorIndexer` or :class:`BaseKVIndexer`.
 

@@ -10,7 +10,6 @@ from types import SimpleNamespace
 from typing import Dict, TypeVar, Type, List, Optional
 
 from .decorators import (
-    as_train_method,
     as_update_method,
     store_init_kwargs,
     as_aggregate_method,
@@ -90,8 +89,7 @@ class ExecutorType(type(JAMLCompatible), type):
         :param cls: The class.
         :return: The class, after being registered.
         """
-        update_funcs = ['train', 'add', 'delete', 'update']
-        train_funcs = ['train']
+        update_funcs = ['add', 'delete', 'update']
         aggregate_funcs = ['evaluate']
 
         reg_cls_set = getattr(cls, '_registered_class', set())
@@ -99,7 +97,6 @@ class ExecutorType(type(JAMLCompatible), type):
         cls_id = f'{cls.__module__}.{cls.__name__}'
         if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
             wrap_func(cls, ['__init__'], store_init_kwargs)
-            wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
             wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
@@ -439,15 +436,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 f'which often can be solved by "pip install" relevant package: {ex!r}',
                 exc_info=True,
             )
-
-    def train(self, *args, **kwargs) -> None:
-        """
-        Train this executor, need to be overridden
-
-        :param args: Additional arguments.
-        :param kwargs: Additional key word arguments.
-        """
-        pass
 
     def touch(self) -> None:
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """

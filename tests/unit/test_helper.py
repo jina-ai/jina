@@ -87,7 +87,7 @@ def test_wrap_func():
     from jina.executors.encoders import BaseEncoder
 
     class DummyEncoder(BaseEncoder):
-        def train(self):
+        def encode(self):
             pass
 
     class MockEnc(DummyEncoder):
@@ -97,7 +97,7 @@ def test_wrap_func():
         pass
 
     class MockMockMockEnc(MockEnc):
-        def train(self):
+        def encode(self):
             pass
 
     def check_override(cls, method):
@@ -108,14 +108,11 @@ def test_wrap_func():
         is_override = not is_inherit and is_parent_method
         return is_override
 
-    # newly created
-    assert not check_override(BaseExecutor, 'train')
-
-    assert not check_override(BaseEncoder, 'train')
-    assert check_override(DummyEncoder, 'train')
-    assert not check_override(MockEnc, 'train')
-    assert not check_override(MockMockEnc, 'train')
-    assert check_override(MockMockMockEnc, 'train')
+    assert not check_override(BaseEncoder, 'encode')
+    assert check_override(DummyEncoder, 'encode')
+    assert not check_override(MockEnc, 'encode')
+    assert not check_override(MockMockEnc, 'encode')
+    assert check_override(MockMockMockEnc, 'encode')
 
 
 def test_pprint_routes(capfd):
