@@ -114,7 +114,7 @@ class NdArray(BaseNdArray):
         if stype == 'dense':
             return self.dense_cls(self._pb_body.dense).value
         elif stype == 'sparse':
-            return self.sparse_cls(self._pb_body.sparse).value
+            return self.sparse_cls(self._pb_body.sparse, **self._kwargs).value
 
     @value.setter
     def value(self, value):
