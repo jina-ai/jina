@@ -13,23 +13,15 @@ from ....excepts import UndefinedModel
 class TransformEncoder(BaseNumericEncoder):
     """
     :class:`TransformEncoder` encodes data from an ndarray in size `B x T` into an ndarray in size `B x D`
+
+    :param model_path: path from where to pickle the sklearn model.
+    :param args: Extra positional arguments to be set
+    :param kwargs: Extra keyword arguments to be set
     """
 
-    def __init__(
-        self,
-        output_dim: int = 64,
-        model_path: Optional[str] = None,
-        random_state: int = 2020,
-        *args,
-        **kwargs
-    ):
-        """
-        :param model_path: path from where to pickle the sklearn model.
-        """
+    def __init__(self, model_path: Optional[str] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_path = model_path
-        self.output_dim = output_dim
-        self.random_state = random_state
 
     def post_init(self) -> None:
         """Load the model from path if :param:`model_path` is set."""
@@ -41,29 +33,11 @@ class TransformEncoder(BaseNumericEncoder):
                 self.model = pickle.load(model_file)
 
     @batching
-    def train(self, data: 'np.ndarray', *args, **kwargs) -> None:
-        """Train the :param:`data` with model."""
-        if not self.model:
-            raise UndefinedModel(
-                'Model is not defined: Provide a loadable pickled model, or defined any specific TransformEncoder'
-            )
-        num_samples, num_features = data.shape
-        if not getattr(self, 'num_features', None):
-            self.num_features = num_features
-        if num_samples < 5 * num_features:
-            self.logger.warning(
-                'the batch size (={}) is suggested to be 5 * num_features(={}) to provide a balance between '
-                'approximation accuracy and memory consumption.'.format(
-                    num_samples, num_features
-                )
-            )
-        self.model.fit(data)
-        self.is_trained = True
-
-    @batching
     def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
+        :param args: Extra positional arguments to be set
+        :param kwargs: Extra keyword arguments to be set
         """
         return self.model.transform(data)

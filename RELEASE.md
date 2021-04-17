@@ -5,18 +5,32 @@ Jina is shipped from two package management systems, PyPi and Docker Hub. This a
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+- [Release cycle and versioning](#release-cycle-and-versioning)
 - [PyPi package versioning](#pypi-package-versioning)
 - [Docker image versioning](#docker-image-versioning)
 - [Manual Release Entrypoint](#manual-release-entrypoint)
+- [Breaking changes](#breaking-changes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## PyPi package versioning 
+## Release cycle and versioning
+Jina products are developed continuously by the community and core team. Updates are grouped and released at regular intervals to align with software development best practices.
+
+Jina Core, Box, and Dashboard all follow a staged release cycle. Jina Hub images are constantly released as Jina core is updated.
+
+Jina Core, Box, and Dashboard all follow a form of numbered versioning. The version number of the product is a three-part value X.Y.Z where X, Y, and Z are the major, minor, and patch components respectively.
+
+-   Patch release (X.Y.Z -> X.Y.(Z+1)): Contain bug fixes, new features and breaking changes. Released weekly on a Wednesday morning CET.
+-   Minor release (X.Y.Z -> X.Y.(Z+1)): Contain bug fixes, new features and breaking changes. Released monthly on the first Wednesday of the month CET. This release is more QA tested and considered more stable than a patch release.
+-   Major release (X.Y.Z -> (X+1).0.0): Are released based on the development cycle of the Jina company. There is no set scheduled for when these will occur.
+
+
+## PyPi package versioning
 
 We follow the [semantic versioning](https://semver.org/) and [PEP-440](https://www.python.org/dev/peps/pep-0440/). Jina's version is identified by `x.y.z` (i.e. "major.minor.patch").
- 
+
 To install the latest final release:
- 
+
 ```bash
 pip install -U jina
 ```
@@ -65,7 +79,7 @@ jinaai/jina:{version}{python_version}{extra}
     - `master`: the master branch of `jina-ai/jina` repository;
     - `x.y.z`: the release of a particular version;
     - `x.y`: the alias to the last `x.y.z` patch release, i.e. `x.y` = `x.y.max(z)`;
-- `{python_version}`: The Python version of the image. Possible values: 
+- `{python_version}`: The Python version of the image. Possible values:
     - ` `, `-py37`: Python 3.7;
     - `-py38` for Python 3.8;
     - `-py39` for Python 3.9;
@@ -98,7 +112,7 @@ Use `-devel` image, if you want to:
 | On Master Merge | `jinaai/jina:master{python_version}{extra}` | |
 | On `x.y.z` release | `jinaai/jina:x.y.z{python_version}{extra}` | `jinaai/jina:latest{python_version}{extra}`, `jinaai/jina:x.y{python_version}{extra}` |
 
-Six images are built, i.e. taking the combination of: 
+Six images are built, i.e. taking the combination of:
   - `{python_version} = ["-py37", "-py38"]`
   - `{extra} = ["", "-devel", "-daemon"]`
 
@@ -128,7 +142,7 @@ Six images are built, i.e. taking the combination of:
 
 ## Manual Release Entrypoint
 
-Manual release entrypoint is designed for authroized core developers of Jina. 
+Manual release entrypoint is designed for authroized core developers of Jina.
 
 ### Trigger weekly release manually
 
@@ -147,3 +161,54 @@ One can release a hotfix immediately without waiting for the weekly release. Her
 ![Rebuild all Docker images](.github/images/manual-docker-build.png)
 
 Note, the manual rebuild on Docker images will *NOT* update `:latest-*` and `:x.y-*` aliases.
+
+## Breaking changes
+
+### Definition of breaking changes
+
+Breaking changes are non-backward compatible changes to the contracts of methods we expose to our users through our public API interfaces.
+
+We define our public API are being the public functions and Classes in the following modules:
+-   YAML Syntax interface
+-   Python interface
+	-   `jina/flow`  
+	-  `jina/peapods/pods`
+    -   `jina/executors`
+    -   `jina/drivers`
+    -   `jina/types` (doc/doc sets)
+    -   `jina/resources`
+    -   `jina/clients`
+    -   `jina/optimizers`
+-   REST API    
+-   Command line Interface API
+-   Jina Deamon (JinaD) API
+-   Jina.proto
+-   Jina Hub API
+
+Examples of breaking changes are:
+
+- Changing the name of a field.
+- Deleting a field
+- Changing the shape or type of a response
+- Changing the method used to get a response (Example: GET to POST).
+- Adding new required parameters to a response.
+
+Examples of non-breaking changes are:
+- Deleting/changing the arguments in a public function/class with a deprecation warning.
+- Deleting unused fields from jina.proto
+- Adding fields to jina.proto with unused positions
+- Experimental APIs claimed in the previous release notes
+- Fixing bugs if the implementation is clearly broken, if it contradicts documentation or if a well-known and well-defined intended behavior is not properly implemented.
+- Deleting unused APIs for which we find no documented uses. We use the following tools to perform checks,
+   - https://Github.com
+   - Searchcode.com
+   - https://sourcegraph.com/search
+   - https://github.com/Quansight-Labs/python-api-inspect
+   - https://github.com/data-apis/python-record-api
+- Replacing error behaviors with non-error behaviors. Changes to low-level APIs such as drivers are not considered breaking changes.
+
+### Documenting a breaking change
+
+1.  Breaking changes should be highlighted in the pull request checklist.
+2.  At the start of a month, a GitHub breaking change issue is opened. If a developer's pull request contains breaking changes, it is their reasonability to record it there.  This is the inital source of truth for recent breaking changes.
+3.  The contents of this GitHub issue are then merged into the release notes.
