@@ -121,17 +121,47 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
-    def _get_documents_embeddings(self, docs: 'DocumentSet'):
-        return docs.all_embeddings
+    @property
+    def exec_embedding_cls_type(self) -> str:
+        """Get the sparse class type of the attached executor.
 
-    @staticmethod
-    def _fill_matches(doc, op_name, topks, scores, topk_embed):
-        for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
-            m = Document(id=numpy_match_id)
-            m.score = NamedScore(op_name=op_name, value=score)
-            r = doc.matches.append(m)
-            if vec is not None:
-                r.embedding = vec
+        :return: Embedding class type of the attached executor, default value is `dense`.
+        """
+        return self.exec.embedding_cls_type
+
+    def _get_documents_embeddings(self, docs: 'DocumentSet'):
+        embedding_cls_type = self.exec_embedding_cls_type
+        if embedding_cls_type == 'dense':
+            return docs.all_embeddings
+        else:
+            scipy_cls_type = None
+            if embedding_cls_type.startswith('scipy'):
+                scipy_cls_type = embedding_cls_type.split('_')[1]
+                embedding_cls_type = 'scipy'
+
+            return docs.get_all_sparse_embeddings(
+                sparse_cls_type=embedding_cls_type, scipy_cls_type=scipy_cls_type
+            )
+
+    def _fill_matches(self, doc, op_name, topks, scores, topk_embed):
+        embedding_cls_type = self.exec_embedding_cls_type
+        if embedding_cls_type == 'dense':
+            for numpy_match_id, score, vector in zip(topks, scores, topk_embed):
+                m = Document(id=numpy_match_id)
+                m.score = NamedScore(op_name=op_name, value=score)
+                r = doc.matches.append(m)
+                if vector is not None:
+                    r.embedding = vector
+        else:
+            for idx, (numpy_match_id, score) in enumerate(zip(topks, scores)):
+                vector = None
+                if topk_embed is not None:
+                    vector = topk_embed.getrow(idx)
+                m = Document(id=numpy_match_id)
+                m.score = NamedScore(op_name=op_name, value=score)
+                match = doc.matches.append(m)
+                if vector:
+                    match.embedding = vector
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         embed_vecs, doc_pts = self._get_documents_embeddings(docs)
@@ -154,38 +184,3 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
                 else [None] * len(topks)
             )
             self._fill_matches(doc, op_name, topks, scores, topk_embed)
-
-
-class SparseVectorSearchDriver(VectorSearchDriver):
-    """
-    Extract sparse embeddings from the request for the executor to query.
-    """
-
-    @property
-    def exec_sparse_cls_type(self) -> str:
-        """Get the sparse type from executor.
-
-        :return: Sparse matrix type, default value is `scipy_coo`.
-        """
-        return self.exec.sparse_cls_type
-
-    def _get_documents_embeddings(self, docs: 'DocumentSet'):
-        sparse_cls_type = self.exec_sparse_cls_type
-        scipy_cls_type = None
-        if sparse_cls_type.startswith('scipy'):
-            scipy_cls_type = sparse_cls_type.split('_')[1]
-            sparse_cls_type = 'scipy'
-
-        return docs.get_all_sparse_embeddings(
-            sparse_cls_type=sparse_cls_type, scipy_cls_type=scipy_cls_type
-        )
-
-    @staticmethod
-    def _fill_matches(doc, op_name, topks, scores, topk_embed):
-        for idx, (numpy_match_id, score) in enumerate(zip(topks, scores)):
-            vector = topk_embed.getrow(idx)
-            m = Document(id=numpy_match_id)
-            m.score = NamedScore(op_name=op_name, value=score)
-            match = doc.matches.append(m)
-            if vector:
-                match.embedding = vector

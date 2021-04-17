@@ -4,8 +4,8 @@ requests:
     ControlRequest:
       - !ControlReqDriver {}
     SearchRequest:
-      - !SparseVectorSearchDriver
+      - !VectorSearchDriver
         with:
           fill_embedding: True
     IndexRequest:
-    - !SparseVectorIndexDriver {}
+    - !VectorIndexDriver {}

@@ -267,6 +267,8 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
+    embedding_cls_type = 'dense'
+
     def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
         """Get the vectors by id, return a subset of indexed vectors
 
@@ -320,26 +322,6 @@ class BaseVectorIndexer(BaseIndexer):
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
-
-
-class BaseSparseVectorIndexer(BaseVectorIndexer):
-    """ Alias to provide proper default drivers in resources."""
-
-    @property
-    def sparse_cls_type(self) -> str:
-        """Get the associated `sparse_cls_type` for :class:`BaseSparseVectorIndexer`.
-
-        :return: Sparse matrix class type, by default `scipy_coo` matrix.
-        """
-        return 'scipy_coo'
-
-    @sparse_cls_type.setter
-    def sparse_cls_type(self, sparse_type: 'str') -> None:
-        """Set the associated `sparse_cls_type` for :class:`BaseSparseVectorIndexer`.
-
-        :param sparse_type: The sparse class type to be set, default value is `scipy_coo`.
-        """
-        self.sparse_cls_type = sparse_type
 
 
 class BaseKVIndexer(BaseIndexer):

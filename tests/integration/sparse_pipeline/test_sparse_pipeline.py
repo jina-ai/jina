@@ -8,7 +8,7 @@ from scipy import sparse
 from jina import Flow, Document
 from jina.types.sets import DocumentSet
 from jina.executors.encoders import BaseEncoder
-from jina.executors.indexers import BaseSparseVectorIndexer
+from jina.executors.indexers import BaseVectorIndexer
 
 from tests import validate_callback
 
@@ -38,8 +38,8 @@ class DummySparseEncoder(BaseEncoder):
         return embed
 
 
-class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
-    sparse_cls_type = 'scipy_csr'
+class DummyCSRSparseIndexer(BaseVectorIndexer):
+    embedding_cls_type = 'scipy_csr'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
