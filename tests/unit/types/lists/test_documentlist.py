@@ -2,9 +2,13 @@ from copy import deepcopy
 
 import pytest
 import numpy as np
+from scipy.sparse import coo_matrix, csr_matrix
+import torch
+import tensorflow as tf
 
 from jina import Document
 from jina.types.lists import DocumentList
+from jina.enums import EmbeddingClsType
 
 DOCUMENTS_PER_LEVEL = 1
 
@@ -32,6 +36,20 @@ def docs(document_factory):
 
 @pytest.fixture
 def doclist(docs):
+    return DocumentList(docs)
+
+
+@pytest.fixture
+def docset_with_scipy_sparse_embedding(docs):
+    embedding = coo_matrix(
+        (
+            np.array([1, 2, 3, 4, 5, 6]),
+            (np.array([0, 0, 0, 0, 0, 0]), np.array([0, 2, 2, 0, 1, 2])),
+        ),
+        shape=(1, 10),
+    )
+    for doc in docs:
+        doc.embedding = embedding
     return DocumentList(docs)
 
 
@@ -390,3 +408,43 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
         assert len(contents[1]) == batch_size
         for c in contents[0]:
             assert c.shape == (num_rows, embed_size)
+
+
+@pytest.mark.parametrize(
+    'embedding_cls_type, return_expected_type',
+    [
+        (EmbeddingClsType.SCIPY_COO, coo_matrix),
+        (EmbeddingClsType.SCIPY_CSR, csr_matrix),
+        (EmbeddingClsType.TORCH, torch.Tensor),
+        (EmbeddingClsType.TF, tf.SparseTensor),
+    ],
+)
+def test_all_sparse_embeddings(
+    docset_with_scipy_sparse_embedding,
+    embedding_cls_type,
+    return_expected_type,
+):
+    (
+        all_embeddings,
+        doc_pts,
+    ) = docset_with_scipy_sparse_embedding.get_all_sparse_embeddings(
+        embedding_cls_type=embedding_cls_type,
+    )
+    assert all_embeddings is not None
+    assert doc_pts is not None
+    assert len(doc_pts) == 3
+
+    if embedding_cls_type.is_scipy:
+        assert isinstance(all_embeddings, return_expected_type)
+        assert all_embeddings.shape == (3, 10)
+    if embedding_cls_type.is_torch:
+        assert isinstance(all_embeddings, return_expected_type)
+        assert all_embeddings.is_sparse
+        assert all_embeddings.shape[0] == 3
+        assert all_embeddings.shape[1] == 10
+    if embedding_cls_type.is_tf:
+        assert isinstance(all_embeddings, list)
+        assert isinstance(all_embeddings[0], return_expected_type)
+        assert len(all_embeddings) == 3
+        assert all_embeddings[0].shape[0] == 1
+        assert all_embeddings[0].shape[1] == 10
