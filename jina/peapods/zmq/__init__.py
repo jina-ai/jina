@@ -59,7 +59,6 @@ class Zmqlet:
         self.msg_recv = 0
         self.msg_sent = 0
         self.is_closed = False
-        self.is_closing = False
         self.opened_socks = []  # this must be here for `close()`
         self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self._init_sockets()
         self._register_pollin()
@@ -216,7 +215,6 @@ class Zmqlet:
             This method is idempotent.
 
         """
-        self.is_closing = True
         if not self.is_closed:
             self.is_closed = True
             self._close_sockets()
@@ -256,11 +254,7 @@ class Zmqlet:
         self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
-        if (
-            o_sock == self.out_sock
-            and self.in_sock_type == zmq.DEALER
-            and not self.is_closing
-        ):
+        if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
@@ -382,7 +376,6 @@ class ZmqStreamlet(Zmqlet):
             This method is idempotent.
         """
         if not self.is_closed and self.in_sock_type == zmq.DEALER:
-            self.is_closing = True
             try:
                 self._send_cancel_to_router(raise_exception=True)
             except zmq.error.ZMQError as e:
