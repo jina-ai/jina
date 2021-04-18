@@ -2,6 +2,9 @@ from copy import deepcopy
 
 import pytest
 import numpy as np
+from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
+import torch
+import tensorflow as tf
 
 from jina import Document
 from jina.types.lists import DocumentList
@@ -32,6 +35,20 @@ def docs(document_factory):
 
 @pytest.fixture
 def doclist(docs):
+    return DocumentList(docs)
+
+
+@pytest.fixture
+def doclist_with_scipy_sparse_embedding(docs):
+    embedding = coo_matrix(
+        (
+            np.array([1, 2, 3, 4, 5, 6]),
+            (np.array([0, 0, 0, 0, 0, 0]), np.array([0, 2, 2, 0, 1, 2])),
+        ),
+        shape=(1, 10),
+    )
+    for doc in docs:
+        doc.embedding = embedding
     return DocumentList(docs)
 
 
@@ -390,3 +407,40 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
         assert len(contents[1]) == batch_size
         for c in contents[0]:
             assert c.shape == (num_rows, embed_size)
+
+
+@pytest.mark.parametrize(
+    'return_sparse_ndarray_cls_type, return_scipy_class_type, return_expected_type',
+    [
+        ('scipy', 'coo', coo_matrix),
+        ('scipy', 'csr', csr_matrix),
+        ('torch', None, torch.Tensor),
+        ('tf', None, tf.SparseTensor),
+    ],
+)
+def test_all_sparse_embeddings(
+    doclist_with_scipy_sparse_embedding,
+    return_sparse_ndarray_cls_type,
+    return_scipy_class_type,
+    return_expected_type,
+):
+    (
+        all_embeddings,
+        doc_pts,
+    ) = doclist_with_scipy_sparse_embedding.get_all_sparse_embeddings(
+        sparse_cls_type=return_sparse_ndarray_cls_type,
+        scipy_cls_type=return_scipy_class_type,
+    )
+    assert all_embeddings is not None
+    assert doc_pts is not None
+    assert len(doc_pts) == 3
+    assert isinstance(all_embeddings, return_expected_type)
+    if return_scipy_class_type == 'scipy':
+        assert all_embeddings.shape == (3, 10)
+    if return_sparse_ndarray_cls_type == 'torch':
+        assert all_embeddings.is_sparse
+        assert all_embeddings.shape[0] == 3
+        assert all_embeddings.shape[1] == 10
+    if return_sparse_ndarray_cls_type == 'tf':
+        assert all_embeddings.shape[0] == 3
+        assert all_embeddings.shape[1] == 10
