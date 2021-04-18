@@ -177,17 +177,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         _requests: Optional[Dict] = None,
         fill_in_metas: bool = True,
     ) -> None:
-        with TimeContext('post_init may take some time', self.logger):
-            if fill_in_metas:
-                if not _metas:
-                    _metas = get_default_metas()
+        if fill_in_metas:
+            if not _metas:
+                _metas = get_default_metas()
 
-                self._fill_metas(_metas)
-                self.fill_in_drivers(_requests)
+            self._fill_metas(_metas)
+            self.fill_in_drivers(_requests)
 
-            _before = set(list(vars(self).keys()))
-            self.post_init()
-            self._post_init_vars = {k for k in vars(self) if k not in _before}
+        _before = set(list(vars(self).keys()))
+        self.post_init()
+        self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def fill_in_drivers(self, _requests: Optional[Dict]):
         """
