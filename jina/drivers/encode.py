@@ -39,7 +39,7 @@ class EncodeDriver(FlatRecursiveMixin, BaseEncodeDriver):
 class ScipySparseEncodeDriver(FlatRecursiveMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding"""
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentList', *args, **kwargs) -> None:
         contents, docs_pts = docs.all_contents
 
         if docs_pts:

@@ -22,8 +22,41 @@ from .traversable import TraversableSequence
 
 if False:
     from ..document import Document
+    from scipy.sparse import coo_matrix
 
 __all__ = ['DocumentList']
+
+if False:
+    from scipy.sparse import coo_matrix
+
+    # fix type-hint complain for sphinx and flake
+    from typing import TypeVar
+    import numpy as np
+    import scipy
+    import tensorflow as tf
+    import torch
+
+    EmbeddingType = TypeVar(
+        'EncodingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
+
+    SparseEmbeddingType = TypeVar(
+        'SparseEmbeddingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
 
 
 class DocumentList(TraversableSequence, MutableSequence):
@@ -31,7 +64,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     :class:`DocumentList` is a mutable sequence of :class:`Document`.
     It gives an efficient view of a list of Document. One can iterate over it like
     a generator but ALSO modify it, count it, get item, or union two 'DocumentList's using the '+' and '+=' operators.
-
     :param docs_proto: A list of :class:`Document`
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
@@ -44,7 +76,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     def insert(self, index: int, doc: 'Document') -> None:
         """
         Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentList` .
-
         :param index: Position of the insertion.
         :param doc: The doc needs to be inserted.
         """
@@ -98,7 +129,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     def append(self, doc: 'Document') -> 'Document':
         """
         Append :param:`doc` in :class:`DocumentList`.
-
         :param doc: The doc needs to be appended.
         :return: Appended list.
         """
@@ -106,7 +136,6 @@ class DocumentList(TraversableSequence, MutableSequence):
 
     def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method.
-
         :param doc: the document to add to the list
         :return: Appended list.
         """
@@ -115,7 +144,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     def extend(self, iterable: Iterable['Document']) -> None:
         """
         Extend the :class:`DocumentList` by appending all the items from the iterable.
-
         :param iterable: the iterable of Documents to extend this list with
         """
         for doc in iterable:
@@ -146,7 +174,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     def sort(self, *args, **kwargs):
         """
         Sort the items of the :class:`DocumentList` in place.
-
         :param args: variable list of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
@@ -155,17 +182,80 @@ class DocumentList(TraversableSequence, MutableSequence):
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentList']:
         """Return all embeddings from every document in this list as a ndarray
-
         :return: The corresponding documents in a :class:`DocumentList`,
                 and the documents have no embedding in a :class:`DocumentList`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         return self.extract_docs('embedding', stack_contents=True)
 
+    def get_all_sparse_embeddings(
+        self, sparse_cls_type: str, scipy_cls_type: Optional[str]
+    ) -> Tuple['SparseEmbeddingType', 'DocumentList']:
+        """Return all embeddings from every document in this list as a sparse array
+        :param sparse_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
+        :param scipy_cls_type: Type of scipy sparse vector type, e.g. `coo` or `csr`, needed with `sparse_cls_type`
+            is `scipy`.
+        :return: The corresponding documents in a :class:`DocumentList`,
+            and the documents have no embedding in a :class:`DocumentList`.
+        :rtype: A tuple of embedding and DocumentList as sparse arrays
+        """
+
+        def stack_embeddings(embeddings):
+            if sparse_cls_type == 'scipy':
+                import scipy
+
+                return scipy.sparse.vstack(embeddings)
+            elif sparse_cls_type == 'torch':
+                import torch
+
+                return torch.vstack(embeddings)
+            elif sparse_cls_type == 'tf':
+                import tensorflow as tf
+
+                return tf.sparse.concat(axis=0, sp_inputs=embeddings)
+
+        def get_sparse_ndarray_type_kwargs():
+            if sparse_cls_type == 'scipy':
+                from jina.types.ndarray.sparse.scipy import SparseNdArray
+
+                if scipy_cls_type not in ['coo', 'csr']:
+                    default_logger.warning(
+                        f'found `{scipy_cls_type}` matrix, recommend to use `coo` or `csr` type.'
+                    )
+                return SparseNdArray, {'sp_format': scipy_cls_type}
+            elif sparse_cls_type == 'torch':
+                from jina.types.ndarray.sparse.pytorch import SparseNdArray
+
+                return SparseNdArray, {}
+            elif sparse_cls_type == 'tf':
+                from jina.types.ndarray.sparse.tensorflow import SparseNdArray
+
+                return SparseNdArray, {}
+
+        embeddings = []
+        docs_pts = []
+        bad_docs = []
+        sparse_ndarray_type, sparse_kwargs = get_sparse_ndarray_type_kwargs()
+        for doc in self:
+            embedding = doc.get_sparse_embedding(
+                sparse_ndarray_cls_type=sparse_ndarray_type, **sparse_kwargs
+            )
+            if embedding is None:
+                bad_docs.append(doc)
+                continue
+            embeddings.append(embedding)
+            docs_pts.append(doc)
+
+        if bad_docs:
+            default_logger.warning(
+                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing sparse_embedding'
+            )
+
+        return stack_embeddings(embeddings), docs_pts
+
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentList']:
         """Return all embeddings from every document in this list as a ndarray
-
         :return: The corresponding documents in a :class:`DocumentList`,
                 and the documents have no contents in a :class:`DocumentList`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
@@ -177,7 +267,6 @@ class DocumentList(TraversableSequence, MutableSequence):
         self, *fields: str, stack_contents: bool = False
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentList']:
         """Return in batches all the values of the fields
-
         :param fields: Variable length argument with the name of the fields to extract
         :param stack_contents: boolean flag indicating if output lists should be stacked with `np.stack`
         :return: Returns an :class:`np.ndarray` or a list of :class:`np.ndarray` with the batches for these fields
@@ -226,14 +315,12 @@ class DocumentList(TraversableSequence, MutableSequence):
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
-
         :return: returns true if the length of the list is larger than 0
         """
         return len(self) > 0
 
     def new(self) -> 'Document':
         """Create a new empty document appended to the end of the list.
-
         :return: a new Document appended to the list
         """
         from ..document import Document
