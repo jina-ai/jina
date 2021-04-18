@@ -5,7 +5,7 @@ from typing import Dict, List, Callable
 from .. import __default_host__
 from ..enums import SocketType, FlowBuildLevel, PodRoleType
 from ..excepts import FlowBuildLevelError, SocketTypeError
-from ..peapods.pods import _fill_in_host
+from ..peapods.pods import BasePod
 
 # noinspection PyUnreachableCode
 if False:
@@ -134,12 +134,12 @@ def _connect(
 
     if first_socket_type == SocketType.PUSH_BIND:
         first.tail_args.host_out = __default_host__
-        second.head_args.host_in = _fill_in_host(
+        second.head_args.host_in = BasePod._fill_in_host(
             bind_args=first.tail_args, connect_args=second.head_args
         )
         second.head_args.port_in = first.tail_args.port_out
     elif first_socket_type == SocketType.PUSH_CONNECT:
-        first.tail_args.host_out = _fill_in_host(
+        first.tail_args.host_out = BasePod._fill_in_host(
             connect_args=first.tail_args, bind_args=second.head_args
         )
         # (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)
@@ -148,7 +148,7 @@ def _connect(
         first.tail_args.port_out = second.head_args.port_in
     elif first_socket_type == SocketType.PUB_BIND:
         first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
-        second.head_args.host_in = _fill_in_host(
+        second.head_args.host_in = BasePod._fill_in_host(
             bind_args=first.tail_args, connect_args=second.head_args
         )  # the hostname of s_pod
         second.head_args.port_in = first.tail_args.port_out

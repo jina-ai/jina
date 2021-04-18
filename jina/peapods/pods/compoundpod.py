@@ -5,121 +5,27 @@ import argparse
 from argparse import Namespace
 from typing import Optional, Dict, List, Union, Set
 
-from .helper import (
-    _set_pod_args,
-    _set_after_to_pass,
-    _copy_to_head_args,
-    _copy_to_tail_args,
-    _fill_in_host,
-)
 from .. import Pea
 from .. import Pod
 from .. import BasePod
-from ...enums import PollingType, SchedulerType, PodRoleType
+from ...enums import PollingType, SchedulerType, PodRoleType, PeaRoleType
 
 
 class CompoundPod(BasePod):
-    """A BasePod is a immutable set of peas, which run in parallel. They share the same input and output socket.
-    Internally, the peas can run with the process/thread backend. They can be also run in their own containers
+    """A CompoundPod is a immutable set of pods, which run in parallel. They share the same input and output socket.
+    Internally, the peas of the pods can run with the process/thread backend. They can be also run in their own containers.
+    :param args: arguments parsed from the CLI
+    :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
     def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
-        """
-        :param args: arguments parsed from the CLI
-        :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
-        """
-        super().__init__()
-
-        self.args = args
-        self._set_conditional_args(self.args)
-        self.needs = (
-            needs if needs else set()
-        )  #: used in the :class:`jina.flow.Flow` to build the graph
-
+        super().__init__(args, needs)
         self.replica_list = []  # type: List['Pod']
-        self.peas = []  # type: List['Pea']
-        self.is_head_router = False
-        self.is_tail_router = False
-        self.deducted_head = None
-        self.deducted_tail = None
-
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
             self.replicas_args = args
         else:
             self.replicas_args = self._parse_args(args)
-
-    @property
-    def role(self) -> 'PodRoleType':
-        """
-        Return the role of this :class:`CompoundPod`.
-
-        :return: role type
-        """
-        return self.args.pod_role
-
-    @property
-    def name(self) -> str:
-        """
-        The name of this :class:`CompoundPod`.
-
-        :return: name of the pod
-        """
-        return self.args.name
-
-    @property
-    def port_expose(self) -> int:
-        """
-        Get the grpc port number.
-
-        :return: exposed port
-        """
-        return self.first_pea_args.port_expose
-
-    @property
-    def host(self) -> str:
-        """
-        Get the host name of this Pod.
-
-        :return: host name
-        """
-        return self.first_pea_args.host
-
-    @property
-    def host_in(self) -> str:
-        """
-        Get the host_in of this pod.
-
-        :return: host name of incoming requests
-        """
-        return self.head_args.host_in
-
-    @property
-    def host_out(self) -> str:
-        """
-        Get the host_out of this pod.
-
-        :return: host name of outgoing requests
-        """
-        return self.tail_args.host_out
-
-    @property
-    def address_in(self) -> str:
-        """
-        Get the full incoming address of this pod.
-
-        :return: address for incoming requests
-        """
-        return f'{self.head_args.host_in}:{self.head_args.port_in} ({self.head_args.socket_in!s})'
-
-    @property
-    def address_out(self) -> str:
-        """
-        Get the full outgoing address of this pod.
-
-        :return: address for outgoing requests.
-        """
-        return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
     @property
     def first_pea_args(self) -> Namespace:
@@ -134,41 +40,14 @@ class CompoundPod(BasePod):
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        replicas_args = {'head': None, 'tail': None, 'replicas': []}
-        if getattr(args, 'replicas', 1) > 1:
-            # reasons to separate head and tail from peas is that they
-            # can be deducted based on the previous and next pods
-            _set_after_to_pass(args)
-            self.is_head_router = True
-            self.is_tail_router = True
-            replicas_args['head'] = _copy_to_head_args(args, PollingType.ANY.is_push)
-            replicas_args['tail'] = _copy_to_tail_args(args)
-            replicas_args['replicas'] = _set_pod_args(
-                args, replicas_args['head'], replicas_args['tail']
-            )
-
-        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
-        ):
-            args.scheduling = SchedulerType.ROUND_ROBIN
-            if getattr(args, 'uses_before', None):
-                self.is_head_router = True
-                replicas_args['head'] = _copy_to_head_args(
-                    args, PollingType.ANY.is_push
-                )
-            if getattr(args, 'uses_after', None):
-                self.is_tail_router = True
-                replicas_args['tail'] = _copy_to_tail_args(args)
-            replicas_args['replicas'] = _set_pod_args(
-                args, replicas_args.get('head', None), replicas_args.get('tail', None)
-            )
-        else:
-            self.is_head_router = False
-            self.is_tail_router = False
-            replicas_args['replicas'] = [args]
-
-        # note that replicas_args['replicas'][0] exist either way and carries the original property
-        return replicas_args
+        return self._parse_base_pod_args(
+            args,
+            attribute='replicas',
+            id_attribute_name='replica_id',
+            role_type=PeaRoleType.REPLICA,
+            repetition_attribute='replicas',
+            polling_type=PollingType.ANY,
+        )
 
     @property
     def head_args(self):
@@ -266,7 +145,7 @@ class CompoundPod(BasePod):
 
         :return: total number of peas including head and tail
         """
-        return len(self.replica_list)
+        return sum([replica.num_peas for replica in self.replica_list]) + len(self.peas)
 
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -327,17 +206,6 @@ class CompoundPod(BasePod):
         self.replica_list.append(replica)
         self.enter_context(replica)
 
-    def _enter_pea(self, pea: 'Pea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
-
-    def __enter__(self) -> 'CompoundPod':
-        return self.start()
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        super().__exit__(exc_type, exc_val, exc_tb)
-        self.join()
-
     def join(self):
         """Wait until all peas exit."""
         try:
@@ -350,14 +218,6 @@ class CompoundPod(BasePod):
         finally:
             self.peas.clear()
             self.replica_list.clear()
-
-    @staticmethod
-    def _set_conditional_args(args):
-        if args.pod_role == PodRoleType.GATEWAY:
-            if args.restful:
-                args.runtime_cls = 'RESTRuntime'
-            else:
-                args.runtime_cls = 'GRPCRuntime'
 
     @property
     def is_ready(self) -> bool:
@@ -372,6 +232,11 @@ class CompoundPod(BasePod):
             [p.is_ready.is_set() for p in self.peas]
             + [p.is_ready.is_set() for p in self.replica_list]
         )
+
+    def _set_after_to_pass(self, args):
+        if PollingType.ANY.is_push:
+            # ONLY reset when it is push
+            args.uses_after = '_pass'
 
     def rolling_update(self):
         """

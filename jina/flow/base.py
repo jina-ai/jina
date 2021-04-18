@@ -32,7 +32,7 @@ from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 __all__ = ['BaseFlow']
 
 from ..peapods import Pod
-from ..peapods.compoundpod import CompoundPod
+from ..peapods.pods.compoundpod import CompoundPod
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
