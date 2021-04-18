@@ -33,8 +33,8 @@ class DummySparseEncoder(BaseEncoder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def encode(self, data: Any, *args, **kwargs) -> Any:
-        embed = sparse.csr_matrix(data)
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
+        embed = sparse.csr_matrix(content)
         return embed
 
 

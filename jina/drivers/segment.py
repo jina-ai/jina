@@ -1,17 +1,13 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any, Dict, List
 
-from . import BaseExecutableDriver, FlatRecursiveMixin
-from ..excepts import LengthMismatchException
+from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 from ..types.document import Document
 
-if False:
-    from .. import DocumentSet
 
-
-class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
+class SegmentDriver(DocsExtractUpdateMixin, FlatRecursiveMixin, BaseExecutableDriver):
     """Drivers inherited from this Driver will bind :meth:`segment` by default """
 
     def __init__(
@@ -26,36 +22,14 @@ class SegmentDriver(FlatRecursiveMixin, BaseExecutableDriver):
             executor, method, traversal_paths=traversal_paths, *args, **kwargs
         )
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
-        if not docs:
-            self.logger.warning(f'an empty DocumentSet {docs}')
-            return
+    def update_single_doc(self, doc: 'Document', exec_result: List[Dict]) -> None:
+        """Update the document's chunks field with executor's returns.
 
-        contents, docs_pts = docs.extract_docs(*self.exec.required_keys)
-
-        if not docs_pts:
-            self.logger.warning(f'no Document is extracted {docs}')
-            return
-
-        if len(self.exec.required_keys) > 1:
-            docs_chunks = self.exec_fn(*contents)
-        else:
-            docs_chunks = self.exec_fn(contents)
-
-        if len(docs_pts) != len(docs_chunks):
-            msg = (
-                f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
-                f'and length of returned crafted documents: {len(docs_chunks)}, the length must be the same'
-            )
-            raise LengthMismatchException(msg)
-
-        for doc, chunks in zip(docs_pts, docs_chunks):
-            self._add_chunks(doc, chunks)
-
-    @staticmethod
-    def _add_chunks(doc, chunks):
+        :param doc: the Document object
+        :param exec_result: the single result from :meth:`exec_fn`
+        """
         new_chunks = []
-        for chunk in chunks:
+        for chunk in exec_result:
             with Document(**chunk) as c:
                 if not c.mime_type:
                     c.mime_type = doc.mime_type

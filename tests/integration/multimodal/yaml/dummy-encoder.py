@@ -10,5 +10,5 @@ class DummyEncoder(BaseEncoder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
-        return data
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+        return content

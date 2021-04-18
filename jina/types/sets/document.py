@@ -97,7 +97,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
     def __len__(self):
         return len(self._docs_proto)
 
-    def __iter__(self):
+    def __iter__(self) -> 'Document':
         from ..document import Document
 
         for d in self._docs_proto:
@@ -274,7 +274,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
         return self.extract_docs('content', stack_contents=True)
 
     def extract_docs(
-        self, *fields: str, stack_contents: bool = False
+        self, *fields: str, stack_contents: Union[bool, List[bool]] = False
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
         """Return in batches all the values of the fields
 
@@ -284,7 +284,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
         """
 
         list_of_contents_output = len(fields) > 1
-        contents = [[] for _ in fields if len(fields) > 1]
+        contents = [[] for _ in fields if list_of_contents_output]
         docs_pts = []
         bad_docs = []
 
@@ -300,7 +300,15 @@ class DocumentSet(TraversableSequence, MutableSequence):
             for idx, c in enumerate(contents):
                 if not c:
                     continue
-                if stack_contents and not isinstance(c[0], bytes):
+                if (
+                    isinstance(stack_contents, bool)
+                    and stack_contents
+                    and not isinstance(c[0], bytes)
+                ) or (
+                    isinstance(stack_contents, list)
+                    and stack_contents[idx]
+                    and not isinstance(c[0], bytes)
+                ):
                     contents[idx] = np.stack(c)
         else:
             for doc in self:
@@ -313,7 +321,15 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
             if not contents:
                 contents = None
-            elif stack_contents and not isinstance(contents[0], bytes):
+            elif (
+                isinstance(stack_contents, bool)
+                and stack_contents
+                and not isinstance(contents[0], bytes)
+            ) or (
+                isinstance(stack_contents, list)
+                and stack_contents[0]
+                and not isinstance(contents[0], bytes)
+            ):
                 contents = np.stack(contents)
 
         if bad_docs:
@@ -321,6 +337,9 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
                 f'following fields: {fields} '
             )
+
+        if not docs_pts:
+            default_logger.warning('no documents are extracted')
 
         return contents, DocumentSet(docs_pts)
 

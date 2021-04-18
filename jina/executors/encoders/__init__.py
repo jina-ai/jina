@@ -34,9 +34,9 @@ class BaseEncoder(BaseExecutor):
         :mod:`jina.drivers.encode`
     """
 
-    def encode(self, data: Any, *args, **kwargs) -> 'EncodingType':
+    def encode(self, content: Any, *args, **kwargs) -> 'EncodingType':
         """Encode the data, needs to be implemented in subclass.
-        :param data: the data to be encoded
+        :param content: the data to be encoded
         :param args: additional positional arguments
         :param kwargs: additional key-value arguments
         """
@@ -47,9 +47,9 @@ class BaseEncoder(BaseExecutor):
 class BaseNumericEncoder(BaseEncoder):
     """BaseNumericEncoder encodes data from a ndarray, potentially B x ([T] x D) into a ndarray of B x D"""
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'EncodingType':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'EncodingType':
         """
-        :param data: a `B x ([T] x D)` numpy ``ndarray``, `B` is the size of the batch
+        :param content: a `B x ([T] x D)` numpy ``ndarray``, `B` is the size of the batch
         :param args: additional positional arguments
         :param kwargs: additional key-value arguments
         """
@@ -79,10 +79,10 @@ class BaseTextEncoder(BaseEncoder):
     BaseTextEncoder encodes data from an array of string type (data.dtype.kind == 'U') of size B into a ndarray of B x D.
     """
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'EncodingType':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'EncodingType':
         """
 
-        :param data: an 1d array of string type (data.dtype.kind == 'U') in size B
+        :param content: an 1d array of string type (data.dtype.kind == 'U') in size B
         :param args: additional positional arguments
         :param kwargs: additional key-value arguments
         """

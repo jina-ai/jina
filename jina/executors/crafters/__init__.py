@@ -20,22 +20,6 @@ class BaseCrafter(BaseExecutor):
     :param kwargs: Additional keyword arguments which are just used for the parent initialization
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.required_keys = [
-            k for k in inspect.getfullargspec(self.craft).args if k != 'self'
-        ]
-        if not self.required_keys:
-            self.required_keys = [
-                k
-                for k in inspect.getfullargspec(inspect.unwrap(self.craft)).args
-                if k != 'self'
-            ]
-        if not self.required_keys:
-            self.logger.warning(
-                f'{typename(self)} works on keys, but no keys are specified'
-            )
-
     def craft(self, *args, **kwargs) -> Union[List[Dict], Dict]:
         """
         Apply function of this executor.

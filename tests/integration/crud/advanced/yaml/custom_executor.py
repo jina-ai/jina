@@ -81,14 +81,14 @@ class DummyOneHotTextEncoder(BaseTextEncoder):
 
     @batching
     @as_ndarray
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
-        :param data: each row is one character, an 1d array of string type (data.dtype.kind == 'U') in size B
+        :param content: each row is one character, an 1d array of string type (data.dtype.kind == 'U') in size B
         :return: an ndarray of `B x D`
         """
         output = []
-        for r in data:
+        for r in content:
             r_emb = [
                 ord(c) - self.offset if self.offset <= ord(c) <= 127 else self.unk
                 for c in r

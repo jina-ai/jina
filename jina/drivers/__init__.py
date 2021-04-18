@@ -11,15 +11,17 @@ from typing import (
     Optional,
     Sequence,
     Iterable,
+    List,
+    Union,
 )
 
 from google.protobuf.struct_pb2 import Struct
 
 from ..enums import OnErrorStrategy
-from ..executors import BaseExecutor
+from ..excepts import LengthMismatchException
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
-from ..helper import convert_tuple_to_list
+from ..helper import convert_tuple_to_list, cached_property
 from ..jaml import JAMLCompatible
 from ..types.querylang import QueryLang
 from ..types.sets import DocumentSet
@@ -397,6 +399,160 @@ class FlatRecursiveMixin:
         """
 
 
+class DocsExtractUpdateMixin:
+    """
+    A Driver pattern for extracting attributes from Documents, feeding to an executor and updating the Documents with
+    the results.
+
+    Drivers equipped with this mixin will have :method:`_apply_all` inherited.
+
+    The :method:`_apply_all` implements the following logics:
+        - From ``docs``, it extracts the attributes defined :method:`exec_fn`'s arguments.
+        - It feeds the attributes to the bind executor's :method:`exec_fn`.
+        - It updates ``docs`` with results returned from :method:`exec_fn`
+
+    The following shortcut logics are implemented:
+        - while extracting: attributes defined :method:`exec_fn`'s arguments are extracted from ``docs``;
+        - while extracting: attributes annotated with ``ndarray`` are stacked into Numpy NdArray objects;
+        - while updating: if ``exec_fn`` returns a List of Dict, then ``doc.set_attrs(**exec_result)`` is called;
+        - while updating: if ``exec_fn`` returns a Document, then ``doc.update(exec_result)` is called.
+        - while updating: if none of above applies, then calling :meth:`update_single_doc`
+
+    To override the update behavior, you can choose to override:
+        - :meth:`update_docs` if you want to modify the behavior of updating docs in bulk
+        - :meth:`update_single_doc` if you want to modify the behavior of updating a single doc
+    """
+
+    def _apply_all(self, docs: 'DocumentSet') -> None:
+        """Apply function works on a list of docs, modify the docs in-place.
+
+        The list refers to all reachable leaves of a single ``traversal_path``.
+
+        :param docs: the Documents that should be handled
+        """
+
+        contents, docs_pts = docs.extract_docs(
+            *self._exec_fn_required_keys,
+            stack_contents=self._exec_fn_required_keys_is_ndarray,
+        )
+
+        if docs_pts:
+            if len(self._exec_fn_required_keys) > 1:
+                exec_results = self.exec_fn(*contents)
+            else:
+                exec_results = self.exec_fn(contents)
+
+            if exec_results is not None:
+                # if exec_fn returns None then exec_fn is assumed to be immutable wrt. doc, hence skipped
+
+                try:
+                    len_results = len(exec_results)
+                except:
+                    try:
+                        len_results = exec_results.shape[0]
+                    except:
+                        len_results = None
+
+                if len(docs_pts) != len_results:
+                    msg = (
+                        f'mismatched {len(docs_pts)} docs from level {docs_pts[0].granularity} '
+                        f'and length of returned: {len_results}, their length must be the same'
+                    )
+                    raise LengthMismatchException(msg)
+
+                self.update_docs(docs_pts, exec_results)
+
+    def update_docs(
+        self, docs_pts: 'DocumentSet', exec_results: Union[List[Dict, 'Document'], Any]
+    ) -> None:
+        """
+        Update Documents with the Executor returned results.
+
+        :param: docs_pts: the set of document to be updated
+        :param: exec_results: the results from :meth:`exec_fn`
+        """
+        from ..types.document import Document
+
+        for doc, exec_result in zip(docs_pts, exec_results):
+            if isinstance(exec_result, dict):
+                doc.set_attrs(**exec_result)
+            elif isinstance(exec_result, Document):
+                doc.update(exec_result)
+            else:
+                self.update_single_doc(doc, exec_result)
+
+    def update_single_doc(self, doc: 'Document', exec_result: Any) -> None:
+        """Update a single Document with the Executor returned result.
+
+        :param doc: the Document object
+        :param exec_result: the single result from :meth:`exec_fn`
+        """
+        raise NotImplementedError
+
+    @cached_property
+    def _exec_fn_required_keys(self) -> List[str]:
+        """Get the arguments of :attr:`exec_fn`.
+
+        If ``strict_method_args`` set, then all arguments of :attr:`exec_fn` must be valid :class:`Document` attribute.
+
+        :return: a list of supported arguments
+        """
+
+        if not self.exec_fn:
+            raise ValueError(
+                f'`exec_fn` is None, maybe {self} is not attached? call `self.attach`.'
+            )
+
+        required_keys = [
+            k
+            for k in inspect.getfullargspec(inspect.unwrap(self.exec_fn)).args
+            if k != 'self'
+        ]
+        if not required_keys:
+            raise AttributeError(f'{self.exec_fn} takes no argument.')
+
+        if self._strict_method_args:
+            from ..proto import jina_pb2
+            from .. import Document
+
+            support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+            support_keys += [
+                name
+                for (name, value) in inspect.getmembers(
+                    Document, lambda x: isinstance(x, property)
+                )
+            ]
+            support_keys = set(support_keys)
+
+            unrecognized_keys = set(required_keys).difference(support_keys)
+            if unrecognized_keys:
+                camel_keys = set(
+                    jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name
+                )
+                unrecognized_camel_keys = unrecognized_keys.intersection(camel_keys)
+                if unrecognized_camel_keys:
+                    raise AttributeError(
+                        f'{unrecognized_camel_keys} are supported but you give them in CamelCase, '
+                        f'please rewrite them in canonical form.'
+                    )
+                else:
+                    raise AttributeError(
+                        f'{unrecognized_keys} are invalid Document attributes, must come from {support_keys}'
+                    )
+
+        return required_keys
+
+    @cached_property
+    def _exec_fn_required_keys_is_ndarray(self) -> List[bool]:
+        """Return a list of boolean indicators for showing if a key is annotated as ndarray
+
+        :return: a list of boolean idicator, True if the corresponding key is annotated as ndarray
+        """
+
+        anno = inspect.getfullargspec(inspect.unwrap(self.exec_fn)).annotations
+        return ['ndarray' in str(anno.get(k, '')) for k in self._exec_fn_required_keys]
+
+
 class BaseRecursiveDriver(BaseDriver):
     """A :class:`BaseRecursiveDriver` is an abstract Driver class containing information about the `traversal_paths`
     that a `Driver` must apply its logic.
@@ -427,6 +583,7 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         self,
         executor: Optional[str] = None,
         method: Optional[str] = None,
+        strict_method_args: bool = True,
         *args,
         **kwargs,
     ):
@@ -434,12 +591,14 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
         :param executor: the name of the sub-executor, only necessary when :class:`jina.executors.compound.CompoundExecutor` is used
         :param method: the function name of the executor that the driver feeds to
+        :param strict_method_args: if set, then the input args of ``executor.method`` must be valid :class:`Document` attributes
         :param args: additional positional arguments which are just used for the parent initialization
         :param kwargs: additional key value arguments which are just used for the parent initialization
         """
         super().__init__(*args, **kwargs)
         self._executor_name = executor
         self._method_name = method
+        self._strict_method_args = strict_method_args
         self._exec = None
         self._exec_fn = None
 
@@ -458,7 +617,9 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
         :return: the Callable to execute in the driver
         """
-        if (
+        if not self.runtime:
+            return self._exec_fn
+        elif (
             not self.msg.is_error
             or self.runtime.args.on_error_strategy < OnErrorStrategy.SKIP_EXECUTOR
         ):
@@ -493,12 +654,6 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             self._exec = executor
 
         if self._method_name:
-            if self._method_name not in BaseExecutor.exec_methods:
-                self.logger.warning(
-                    f'Using method {self._method_name} as driver execution function which is not registered'
-                    f'as a potential `exec_method` of an Executor. It won\'t work if used inside a CompoundExecutor'
-                )
-
             self._exec_fn = getattr(self.exec, self._method_name)
 
     def __getstate__(self) -> Dict[str, Any]:
