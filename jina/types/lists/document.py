@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple, Sequence, List
+from typing import Union, Iterable, Tuple, Sequence, List, Optional
 
 import numpy as np
 
