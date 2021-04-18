@@ -8,7 +8,7 @@ from scipy import sparse
 from jina import Flow, Document
 from jina.types.sets import DocumentSet
 from jina.executors.encoders import BaseEncoder
-from jina.executors.indexers import BaseSparseVectorIndexer
+from jina.executors.indexers import BaseVectorIndexer
 
 from tests import validate_callback
 
@@ -38,27 +38,29 @@ class DummySparseEncoder(BaseEncoder):
         return embed
 
 
-class DummyCSRSparseIndexer(BaseSparseVectorIndexer):
+class DummyCSRSparseIndexer(BaseVectorIndexer):
+    embedding_cls_type = 'scipy_csr'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.keys = []
         self.vectors = {}
 
     def add(
-        self, keys: Iterable[str], vectors: 'scipy.sparse.coo_matrix', *args, **kwargs
+        self, keys: Iterable[str], vectors: 'scipy.sparse.csr_matrix', *args, **kwargs
     ) -> None:
-        assert isinstance(vectors, sparse.coo_matrix)
+        assert isinstance(vectors, sparse.csr_matrix)
         self.keys.extend(keys)
         for i, key in enumerate(keys):
             self.vectors[key] = vectors.getrow(i)
 
-    def query(self, vectors: 'scipy.sparse.coo_matrix', top_k: int, *args, **kwargs):
-        assert isinstance(vectors, sparse.coo_matrix)
+    def query(self, vectors: 'scipy.sparse.csr_matrix', top_k: int, *args, **kwargs):
+        assert isinstance(vectors, sparse.csr_matrix)
         distances = [item for item in range(0, min(top_k, len(self.keys)))]
         return [self.keys[:top_k]], np.array([distances])
 
     def query_by_key(self, keys: Iterable[str], *args, **kwargs):
-        from scipy.sparse import coo_matrix, vstack
+        from scipy.sparse import vstack
 
         vectors = []
         for key in keys:

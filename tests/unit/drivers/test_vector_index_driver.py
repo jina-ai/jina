@@ -11,6 +11,9 @@ from jina.executors.indexers import BaseVectorIndexer
 from jina.types.document import Document
 
 
+# TODO: Add tests for sparse vectors index driver.
+
+
 class MockGroundTruthVectorIndexer(BaseVectorIndexer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

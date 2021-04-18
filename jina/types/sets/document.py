@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple, Sequence, List
+from typing import Union, Iterable, Tuple, Sequence, List, Optional
 
 import numpy as np
 
@@ -25,6 +25,38 @@ if False:
     from scipy.sparse import coo_matrix
 
 __all__ = ['DocumentSet']
+
+if False:
+    from scipy.sparse import coo_matrix
+
+    # fix type-hint complain for sphinx and flake
+    from typing import TypeVar
+    import numpy as np
+    import scipy
+    import tensorflow as tf
+    import torch
+
+    EmbeddingType = TypeVar(
+        'EncodingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
+
+    SparseEmbeddingType = TypeVar(
+        'SparseEmbeddingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
 
 
 class DocumentSet(TraversableSequence, MutableSequence):
@@ -163,21 +195,60 @@ class DocumentSet(TraversableSequence, MutableSequence):
         """
         return self.extract_docs('embedding', stack_contents=True)
 
-    @property
-    def all_sparse_embeddings(self) -> Tuple['coo_matrix', 'DocumentSet']:
-        """Return all embeddings from every document in this set as a ndarray
+    def get_all_sparse_embeddings(
+        self, sparse_cls_type: str, scipy_cls_type: Optional[str]
+    ) -> Tuple['SparseEmbeddingType', 'DocumentSet']:
+        """Return all embeddings from every document in this set as a sparse array
+
+        :param sparse_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
+        :param scipy_cls_type: Type of scipy sparse vector type, e.g. `coo` or `csr`, needed with `sparse_cls_type`
+            is `scipy`.
 
         :return: The corresponding documents in a :class:`DocumentSet`,
-                and the documents have no embedding in a :class:`DocumentSet`.
-        :rtype: A tuple of embedding in :class:`np.ndarray`
+            and the documents have no embedding in a :class:`DocumentSet`.
+        :rtype: A tuple of embedding and DocumentSet as sparse arrays
         """
-        import scipy
+
+        def stack_embeddings(embeddings):
+            if sparse_cls_type == 'scipy':
+                import scipy
+
+                return scipy.sparse.vstack(embeddings)
+            elif sparse_cls_type == 'torch':
+                import torch
+
+                return torch.vstack(embeddings)
+            elif sparse_cls_type == 'tf':
+                import tensorflow as tf
+
+                return tf.sparse.concat(axis=0, sp_inputs=embeddings)
+
+        def get_sparse_ndarray_type_kwargs():
+            if sparse_cls_type == 'scipy':
+                from jina.types.ndarray.sparse.scipy import SparseNdArray
+
+                if scipy_cls_type not in ['coo', 'csr']:
+                    default_logger.warning(
+                        f'found `{scipy_cls_type}` matrix, recommend to use `coo` or `csr` type.'
+                    )
+                return SparseNdArray, {'sp_format': scipy_cls_type}
+            elif sparse_cls_type == 'torch':
+                from jina.types.ndarray.sparse.pytorch import SparseNdArray
+
+                return SparseNdArray, {}
+            elif sparse_cls_type == 'tf':
+                from jina.types.ndarray.sparse.tensorflow import SparseNdArray
+
+                return SparseNdArray, {}
 
         embeddings = []
         docs_pts = []
         bad_docs = []
+        sparse_ndarray_type, sparse_kwargs = get_sparse_ndarray_type_kwargs()
         for doc in self:
-            embedding = doc.sparse_embedding
+            embedding = doc.get_sparse_embedding(
+                sparse_ndarray_cls_type=sparse_ndarray_type, **sparse_kwargs
+            )
             if embedding is None:
                 bad_docs.append(doc)
                 continue
@@ -189,7 +260,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
                 f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing sparse_embedding'
             )
 
-        return scipy.sparse.vstack(embeddings), docs_pts
+        return stack_embeddings(embeddings), docs_pts
 
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
