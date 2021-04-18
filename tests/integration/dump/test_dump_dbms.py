@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document
-from jina.drivers.dbms import _doc_without_embedding
+from jina.drivers.index import DBMSIndexDriver
 from jina.executors.indexers.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import CompoundQueryExecutor
@@ -70,7 +70,10 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     metas_dump = list(metas_dump)
     np.testing.assert_equal(
         metas_dump,
-        [_doc_without_embedding(d).SerializeToString() for d in docs_expected],
+        [
+            DBMSIndexDriver._doc_without_embedding(d).SerializeToString()
+            for d in docs_expected
+        ],
     )
 
     # assert with Indexers
@@ -129,7 +132,10 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, run_basic=False):
                 assert len(d.matches) > 0
             for m in d.matches:
                 assert m.embedding.shape[0] == emb_size
-                assert _doc_without_embedding(m).SerializeToString() is not None
+                assert (
+                    DBMSIndexDriver._doc_without_embedding(m).SerializeToString()
+                    is not None
+                )
                 assert 'hello world' in m.text
                 assert f'tag data' in m.tags['tag_field']
 
