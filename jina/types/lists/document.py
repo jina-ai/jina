@@ -25,6 +25,7 @@ __all__ = ['DocumentList']
 
 if False:
     from ..document import Document
+    from scipy.sparse import coo_matrix
 
     # fix type-hint complain for sphinx and flake
     from typing import TypeVar
@@ -60,7 +61,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     :class:`DocumentList` is a mutable sequence of :class:`Document`.
     It gives an efficient view of a list of Document. One can iterate over it like
     a generator but ALSO modify it, count it, get item, or union two 'DocumentList's using the '+' and '+=' operators.
-
     :param docs_proto: A list of :class:`Document`
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
@@ -73,7 +73,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     def insert(self, index: int, doc: 'Document') -> None:
         """
         Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentList` .
-
         :param index: Position of the insertion.
         :param doc: The doc needs to be inserted.
         """
@@ -127,7 +126,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     def append(self, doc: 'Document') -> 'Document':
         """
         Append :param:`doc` in :class:`DocumentList`.
-
         :param doc: The doc needs to be appended.
         :return: Appended list.
         """
@@ -135,7 +133,6 @@ class DocumentList(TraversableSequence, MutableSequence):
 
     def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method.
-
         :param doc: the document to add to the list
         :return: Appended list.
         """
@@ -144,7 +141,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     def extend(self, iterable: Iterable['Document']) -> None:
         """
         Extend the :class:`DocumentList` by appending all the items from the iterable.
-
         :param iterable: the iterable of Documents to extend this list with
         """
         for doc in iterable:
@@ -176,7 +172,8 @@ class DocumentList(TraversableSequence, MutableSequence):
         """
         Sort the items of the :class:`DocumentList` in place.
 
-        :param args: variable set of arguments to pass to the sorting underlying function
+
+        :param args: variable list of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
         self._docs_proto.sort(*args, **kwargs)
@@ -184,7 +181,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     @property
     def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentList']:
         """Return all embeddings from every document in this list as a ndarray
-
         :return: The corresponding documents in a :class:`DocumentList`,
                 and the documents have no embedding in a :class:`DocumentList`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
@@ -197,7 +193,6 @@ class DocumentList(TraversableSequence, MutableSequence):
         """Return all embeddings from every document in this list as a sparse array
 
         :param embedding_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
-
         :return: The corresponding documents in a :class:`DocumentList`,
             and the documents have no embedding in a :class:`DocumentList`.
         :rtype: A tuple of embedding and DocumentList as sparse arrays
@@ -265,7 +260,6 @@ class DocumentList(TraversableSequence, MutableSequence):
     @property
     def all_contents(self) -> Tuple['np.ndarray', 'DocumentList']:
         """Return all embeddings from every document in this list as a ndarray
-
         :return: The corresponding documents in a :class:`DocumentList`,
                 and the documents have no contents in a :class:`DocumentList`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
@@ -277,7 +271,6 @@ class DocumentList(TraversableSequence, MutableSequence):
         self, *fields: str, stack_contents: Union[bool, List[bool]] = False
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentList']:
         """Return in batches all the values of the fields
-
         :param fields: Variable length argument with the name of the fields to extract
         :param stack_contents: boolean flag indicating if output lists should be stacked with `np.stack`
         :return: Returns an :class:`np.ndarray` or a list of :class:`np.ndarray` with the batches for these fields
@@ -345,14 +338,12 @@ class DocumentList(TraversableSequence, MutableSequence):
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
-
         :return: returns true if the length of the list is larger than 0
         """
         return len(self) > 0
 
     def new(self) -> 'Document':
         """Create a new empty document appended to the end of the list.
-
         :return: a new Document appended to the list
         """
         from ..document import Document
