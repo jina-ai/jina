@@ -261,14 +261,6 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         for k in self.query_handler.header.keys():
             yield self[k]
 
-    def sample(self) -> Optional[bytes]:
-        """Return a random entry from the indexer for sanity check.
-
-        :return: A random entry from the indexer.
-        """
-        k = random.sample(self.query_handler.header.keys(), k=1)[0]
-        return self[k]
-
     def __iter__(self):
         for k in self.query_handler.header.keys():
             yield self[k]
@@ -309,10 +301,6 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         :param args: not used
         :param kwargs: not used"""
         super(BinaryPbIndexer, self).delete(keys)
-
-
-class KeyValueIndexer(BinaryPbIndexer):
-    """Alias for :class:`BinaryPbIndexer` """
 
 
 class KeyValueIndexer(BinaryPbIndexer):

@@ -24,7 +24,6 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
-    cached_property,
 )
 from ..jaml import JAML, JAMLCompatible
 from ..logging import JinaLogger
