@@ -463,7 +463,9 @@ class DocsExtractUpdateMixin:
                 self.update_docs(docs_pts, exec_results)
 
     def update_docs(
-        self, docs_pts: 'DocumentSet', exec_results: Union[List[Dict, 'Document'], Any]
+        self,
+        docs_pts: 'DocumentSet',
+        exec_results: Union[List[Dict], List['Document'], Any],
     ) -> None:
         """
         Update Documents with the Executor returned results.
