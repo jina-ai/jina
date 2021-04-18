@@ -152,7 +152,7 @@ class BasePod(ExitStack):
             self.is_head_router = True
             self.is_tail_router = True
             parsed_args['head'] = BasePod._copy_to_head_args(args, polling_type.is_push)
-            parsed_args['tail'] = BasePod._copy_to_tail_args(args)
+            parsed_args['tail'] = BasePod._copy_to_tail_args(args, polling_type.is_push)
             parsed_args[attribute] = BasePod._set_peas_args(
                 args,
                 role_type=role_type,
@@ -168,10 +168,14 @@ class BasePod(ExitStack):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
                 self.is_head_router = True
-                parsed_args['head'] = self._copy_to_head_args(args, polling_type)
+                parsed_args['head'] = self._copy_to_head_args(
+                    args, polling_type.is_push
+                )
             if getattr(args, 'uses_after', None):
                 self.is_tail_router = True
-                parsed_args['tail'] = self._copy_to_tail_args(args)
+                parsed_args['tail'] = self._copy_to_tail_args(
+                    args, polling_type.is_push
+                )
             parsed_args[attribute] = self._set_peas_args(
                 args,
                 role_type=role_type,
@@ -313,11 +317,14 @@ class BasePod(ExitStack):
         return _head_args
 
     @staticmethod
-    def _copy_to_tail_args(args: Namespace, as_router: bool = True) -> Namespace:
+    def _copy_to_tail_args(
+        args: Namespace, is_push: bool, as_router: bool = True
+    ) -> Namespace:
         """
         Set the incoming args of the tail router
 
         :param args: configuration for the connection
+        :param is_push: if true, set socket_out based on the SchedulerType
         :param as_router: if true, add router configuration
         :return: enriched arguments
         """
@@ -334,7 +341,7 @@ class BasePod(ExitStack):
             else:
                 _tail_args.name = f'tail'
             _tail_args.pea_role = PeaRoleType.TAIL
-            _tail_args.num_part = 1 if PollingType.ANY.is_push else args.parallel
+            _tail_args.num_part = 1 if is_push else args.parallel
 
         return _tail_args
 

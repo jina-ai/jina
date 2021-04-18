@@ -25,7 +25,7 @@ from ..logging.profile import TimeContext
 
 if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
-    from ..drivers import BaseDriver
+
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
@@ -367,7 +367,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        if replica_id is None or replica_id == 'None':
+        if replica_id is None:
             return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
         else:
             return os.path.join(
