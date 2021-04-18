@@ -156,7 +156,6 @@ class CompoundPod(BasePod):
                 args, replicas_args['head'], replicas_args['tail']
             )
 
-        # TODO this case does properly not exist anymore
         elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
             getattr(args, 'uses_after', None) and args.uses_after != '_pass'
         ):
