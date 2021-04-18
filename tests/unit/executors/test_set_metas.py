@@ -17,10 +17,3 @@ def test_set_dummy_meta():
     metas['dummy'] = dummy
     executor = BaseExecutor(metas=metas)
     assert executor.dummy == dummy
-
-
-def test_set_is_trained_meta():
-    metas = get_default_metas()
-    metas['is_trained'] = True
-    executor = BaseExecutor(metas=metas)
-    assert executor.is_trained

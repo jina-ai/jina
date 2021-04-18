@@ -7,7 +7,7 @@ import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
-from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List
+from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List, Type
 
 import numpy as np
 from google.protobuf import json_format
@@ -16,7 +16,7 @@ from google.protobuf.field_mask_pb2 import FieldMask
 from .traversable import Traversable
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import NdArray
+from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..querylang.queryset.dunderkey import dunder_get
 from ..score import NamedScore
 from ..sets.chunk import ChunkSet
@@ -27,6 +27,37 @@ from ...importer import ImportExtensions
 from ...logging import default_logger
 from ...proto import jina_pb2
 
+if False:
+    from scipy.sparse import coo_matrix
+
+    # fix type-hint complain for sphinx and flake
+    from typing import TypeVar
+    import numpy as np
+    import scipy
+    import tensorflow as tf
+    import torch
+
+    EmbeddingType = TypeVar(
+        'EncodingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
+
+    SparseEmbeddingType = TypeVar(
+        'SparseEmbeddingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -468,12 +499,30 @@ class Document(ProtoTypeMixin, Traversable):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'np.ndarray':
+    def embedding(self) -> 'EmbeddingType':
         """Return ``embedding`` of the content of a Document.
 
         :return: the embedding from the proto
         """
         return NdArray(self._pb_body.embedding).value
+
+    def get_sparse_embedding(
+        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
+    ) -> 'SparseEmbeddingType':
+        """Return ``embedding`` of the content of a Document as an sparse array.
+
+        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
+        :param kwargs: Additional key value argument, for `scipy` backend, we need to set
+            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
+            or `csr`.
+        :return: the embedding from the proto as an sparse array
+        """
+        return NdArray(
+            self._pb_body.embedding,
+            sparse_cls=sparse_ndarray_cls_type,
+            is_sparse=True,
+            **kwargs,
+        ).value
 
     @embedding.setter
     def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
@@ -562,7 +611,7 @@ class Document(ProtoTypeMixin, Traversable):
         else:
             v_valid_sparse_type = self._update_if_sparse(k, v)
 
-            if v_valid_sparse_type == False:
+            if not v_valid_sparse_type:
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property

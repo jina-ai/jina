@@ -108,7 +108,7 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
 
 
 class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
-    """Extract embeddings from the request for the executor to query.
+    """Extract dense embeddings from the request for the executor to query.
 
     :param top_k: top-k document ids to retrieve
     :param fill_embedding: fill in the embedding of the corresponding doc,
@@ -121,8 +121,50 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         self._top_k = top_k
         self._fill_embedding = fill_embedding
 
+    @property
+    def exec_embedding_cls_type(self) -> str:
+        """Get the sparse class type of the attached executor.
+
+        :return: Embedding class type of the attached executor, default value is `dense`.
+        """
+        return self.exec.embedding_cls_type
+
+    def _get_documents_embeddings(self, docs: 'DocumentSet'):
+        embedding_cls_type = self.exec_embedding_cls_type
+        if embedding_cls_type == 'dense':
+            return docs.all_embeddings
+        else:
+            scipy_cls_type = None
+            if embedding_cls_type.startswith('scipy'):
+                scipy_cls_type = embedding_cls_type.split('_')[1]
+                embedding_cls_type = 'scipy'
+
+            return docs.get_all_sparse_embeddings(
+                sparse_cls_type=embedding_cls_type, scipy_cls_type=scipy_cls_type
+            )
+
+    def _fill_matches(self, doc, op_name, topks, scores, topk_embed):
+        embedding_cls_type = self.exec_embedding_cls_type
+        if embedding_cls_type == 'dense':
+            for numpy_match_id, score, vector in zip(topks, scores, topk_embed):
+                m = Document(id=numpy_match_id)
+                m.score = NamedScore(op_name=op_name, value=score)
+                r = doc.matches.append(m)
+                if vector is not None:
+                    r.embedding = vector
+        else:
+            for idx, (numpy_match_id, score) in enumerate(zip(topks, scores)):
+                vector = None
+                if topk_embed is not None:
+                    vector = topk_embed.getrow(idx)
+                m = Document(id=numpy_match_id)
+                m.score = NamedScore(op_name=op_name, value=score)
+                match = doc.matches.append(m)
+                if vector:
+                    match.embedding = vector
+
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, doc_pts = docs.all_embeddings
+        embed_vecs, doc_pts = self._get_documents_embeddings(docs)
 
         if not doc_pts:
             return
@@ -134,18 +176,11 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
             )
 
         idx, dist = self.exec_fn(embed_vecs, top_k=int(self.top_k))
-
         op_name = self.exec.__class__.__name__
         for doc, topks, scores in zip(doc_pts, idx, dist):
-
             topk_embed = (
                 fill_fn(topks)
                 if (self._fill_embedding and fill_fn)
                 else [None] * len(topks)
             )
-            for numpy_match_id, score, vec in zip(topks, scores, topk_embed):
-                m = Document(id=numpy_match_id)
-                m.score = NamedScore(op_name=op_name, value=score)
-                r = doc.matches.append(m)
-                if vec is not None:
-                    r.embedding = vec
+            self._fill_matches(doc, op_name, topks, scores, topk_embed)

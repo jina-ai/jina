@@ -4,6 +4,9 @@ import os
 import numpy as np
 import pytest
 from google.protobuf.json_format import MessageToDict
+from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
+import torch
+import tensorflow as tf
 
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
@@ -13,8 +16,6 @@ from tests import random_docs
 
 
 def scipy_sparse_list():
-    from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
-
     return [coo_matrix, bsr_matrix, csr_matrix, csc_matrix]
 
 
@@ -41,16 +42,12 @@ def scipy_sparse_matrix(request, row, column, data):
 
 @pytest.fixture
 def tf_sparse_matrix(row, column, data):
-    import tensorflow as tf
-
     indices = [(x, y) for x, y in zip(row, column)]
     return tf.SparseTensor(indices=indices, values=data, dense_shape=[4, 10])
 
 
 @pytest.fixture
 def torch_sparse_matrix(row, column, data):
-    import torch
-
     shape = [4, 10]
     indices = [list(row), list(column)]
     return torch.sparse_coo_tensor(indices, data, shape)
@@ -740,6 +737,50 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
     np.testing.assert_array_equal(
         d.blob.todense(), torch_sparse_matrix.to_dense().numpy()
     )
+
+
+@pytest.mark.parametrize(
+    'return_sparse_ndarray_cls_type, return_scipy_class_type, return_expected_type',
+    [
+        ('scipy', 'coo', coo_matrix),
+        ('scipy', 'csr', csr_matrix),
+        ('scipy', 'csc', csc_matrix),
+        ('scipy', 'bsr', bsr_matrix),
+        ('torch', None, torch.Tensor),
+        ('tf', None, tf.SparseTensor),
+    ],
+)
+def test_document_sparse_embedding(
+    scipy_sparse_matrix,
+    return_sparse_ndarray_cls_type,
+    return_scipy_class_type,
+    return_expected_type,
+):
+    d = Document()
+    d.embedding = scipy_sparse_matrix
+    cls_type = None
+    sparse_kwargs = {}
+    if return_sparse_ndarray_cls_type == 'scipy':
+        from jina.types.ndarray.sparse.scipy import SparseNdArray
+
+        cls_type = SparseNdArray
+        sparse_kwargs['sp_format'] = return_scipy_class_type
+    elif return_sparse_ndarray_cls_type == 'torch':
+        from jina.types.ndarray.sparse.pytorch import SparseNdArray
+
+        cls_type = SparseNdArray
+    elif return_sparse_ndarray_cls_type == 'tf':
+        from jina.types.ndarray.sparse.tensorflow import SparseNdArray
+
+        cls_type = SparseNdArray
+
+    embedding = d.get_sparse_embedding(
+        sparse_ndarray_cls_type=cls_type, **sparse_kwargs
+    )
+    assert embedding is not None
+    assert isinstance(embedding, return_expected_type)
+    if return_sparse_ndarray_cls_type == 'torch':
+        assert embedding.is_sparse
 
 
 def test_siblings_needs_to_be_set_manually():

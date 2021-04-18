@@ -207,15 +207,6 @@ class CompoundExecutor(BaseExecutor):
         self.resolve_all = resolve_all
 
     @property
-    def is_trained(self) -> bool:
-        """
-        Return ``True`` only if all components are trained (i.e. ``is_trained=True``)
-
-        :return: only true if all components are trained or if the compound is trained
-        """
-        return self.components and all(c.is_trained for c in self.components)
-
-    @property
     def is_updated(self) -> bool:
         """
         Return ``True``  if any components is updated.
@@ -234,16 +225,6 @@ class CompoundExecutor(BaseExecutor):
         :param val: new value of :attr:`is_updated`
         """
         self._is_updated = val
-
-    @is_trained.setter
-    def is_trained(self, val: bool) -> None:
-        """
-        Set :attr:`is_trained` for all components of this :class:`CompoundExecutor`
-
-        :param val: value to set for the :attr:`is_trained` property of all components.
-        """
-        for c in self.components:
-            c.is_trained = val
 
     def save(self, filename: Optional[str] = None):
         """
@@ -290,6 +271,7 @@ class CompoundExecutor(BaseExecutor):
             self._set_comp_workspace()
             self._set_routes()
             self._resolve_routes()
+            self._post_components()
         else:
             self.logger.debug(
                 'components is omitted from construction, as it is initialized from yaml config'
@@ -426,3 +408,6 @@ class CompoundExecutor(BaseExecutor):
 
     def __iter__(self):
         return self.components.__iter__()
+
+    def _post_components(self):
+        pass
