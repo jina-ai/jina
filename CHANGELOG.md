@@ -47,6 +47,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8319,4 +8320,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```4a2fbae5```](https://github.com/jina-ai/jina/commit/4a2fbae5bc1d8613f4cd441812293af69cb0bf5a)] __-__ __version__: the next version will be 1.1.5 (*Jina Dev Bot*)
+
+<a name=release-note-1-1-6></a>
+## Release Note (`1.1.6`)
+
+> Release time: 2021-04-18 23:03:49
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  Fionn Delahunty,  Maximilian Werk,  Mia Altieri,  David Buchaca Prats,  cristian,  Mohamed Abdel Maksoud,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1825529d```](https://github.com/jina-ai/jina/commit/1825529da61c2596b9eef0bfd3fdb5bd5d1ee132)] __-__ add info for release cycle and breaking changes (#2303) (*Fionn Delahunty*)
+ - [[```84034403```](https://github.com/jina-ai/jina/commit/84034403e64cca68c40b33cb3a275f33f82082c3)] __-__ add driver and changes in document needed for sparse pipeline (#2297) (*Joan Fontanals*)
+ - [[```82d12e15```](https://github.com/jina-ai/jina/commit/82d12e15759dd244b658044f1456c297a80fccd6)] __-__ dump and split indexers (#2260) (*cristian*)
+
+### 🐞 Bug fixes
+
+ - [[```a8a78a75```](https://github.com/jina-ai/jina/commit/a8a78a7523758a5eb2a52b6d393f992df67ad846)] __-__ scipy version (#2293) (*David Buchaca Prats*)
+ - [[```03b6f218```](https://github.com/jina-ai/jina/commit/03b6f218e575ff630fe3ad7cedac9ed01e139622)] __-__ benchmark dump test (#2307) (*cristian*)
+ - [[```2df2af58```](https://github.com/jina-ai/jina/commit/2df2af58052ae472ae7d9d05ea5ce62524c71814)] __-__ __jinad__: ensure log is ready on creating flow (#2279) (*Mohamed Abdel Maksoud*)
+
+### 🚧 Code Refactoring
+
+ - [[```4375be58```](https://github.com/jina-ai/jina/commit/4375be58641b828d0091e7d99dc657f482d25b4e)] __-__ __driver__: move dbms to index module (#2312) (*Han Xiao*)
+ - [[```399728fd```](https://github.com/jina-ai/jina/commit/399728fd683f9cb1f895571ba9d4734ea01328e4)] __-__ clarify annotation types to support sparse (#2296) (*Joan Fontanals*)
+ - [[```b840862b```](https://github.com/jina-ai/jina/commit/b840862bb4973e1640565c4d3544358aa5781e88)] __-__ remove train as it will be redesigned (#2311) (*Joan Fontanals*)
+ - [[```523747e1```](https://github.com/jina-ai/jina/commit/523747e12e82f4c6e8f81f14fd6e353f21339816)] __-__ __dump__: type annotations and refactor (#2310) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```dbe5a59c```](https://github.com/jina-ai/jina/commit/dbe5a59c49e73b797a86666fffb5626515be838d)] __-__ __flow__: moved test_segmenter.py into a flow unittest (#2287) (*Mia Altieri*)
+ - [[```cad40303```](https://github.com/jina-ai/jina/commit/cad40303ac3445f9db61859f6b91288f08afd82c)] __-__ add tests for issue 2295 (#2306) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```d858a66f```](https://github.com/jina-ai/jina/commit/d858a66ffba4f6ed0782a0c5e368f19bd0a6efa3)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```05bd0f18```](https://github.com/jina-ai/jina/commit/05bd0f183b7f522837058e2b2aa479912ae367ce)] __-__ Docs snippets optimizer (#2308) (*Maximilian Werk*)
+ - [[```2309da45```](https://github.com/jina-ai/jina/commit/2309da45276bce950f7ee1d38459abc118ef15b6)] __-__ fix pip install in readme (*Han Xiao*)
+ - [[```c74944c2```](https://github.com/jina-ai/jina/commit/c74944c28b40fc21f810e74ebf4e210faa5fe90a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b422116f```](https://github.com/jina-ai/jina/commit/b422116f1f21f0f2d072cfd518e20fd4cac2c5af)] __-__ __version__: the next version will be 1.1.6 (*Jina Dev Bot*)
 
