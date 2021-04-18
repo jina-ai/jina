@@ -57,7 +57,7 @@ def test_extract_bad_fields(mocker):
     encode_mock = mocker.Mock()
 
     class MyExecutor(BaseEncoder):
-        def encode(self, hello):
+        def encode(self, data):
             encode_mock()
 
     exec = MyExecutor()
@@ -68,7 +68,31 @@ def test_extract_bad_fields(mocker):
 
     ds = DocumentSet(docs)
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, match='`data` is now deprecated'):
+        bd._apply_all(ds)
+    encode_mock.assert_not_called()
+
+    class MyExecutor(BaseEncoder):
+        def encode(self, hello):
+            encode_mock()
+
+    exec = MyExecutor()
+    bd = EncodeDriver()
+    bd.attach(exec, runtime=None)
+
+    with pytest.raises(AttributeError, match='are invalid Document attributes'):
+        bd._apply_all(ds)
+    encode_mock.assert_not_called()
+
+    class MyExecutor(BaseEncoder):
+        def encode(self, mimeType):
+            encode_mock()
+
+    exec = MyExecutor()
+    bd = EncodeDriver()
+    bd.attach(exec, runtime=None)
+
+    with pytest.raises(AttributeError, match='you give them in CamelCase'):
         bd._apply_all(ds)
     encode_mock.assert_not_called()
 

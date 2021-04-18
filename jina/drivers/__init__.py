@@ -537,6 +537,12 @@ class DocsExtractUpdateMixin:
                         f'{unrecognized_camel_keys} are supported but you give them in CamelCase, '
                         f'please rewrite them in canonical form.'
                     )
+                elif 'data' in unrecognized_keys:
+                    raise AttributeError(
+                        '`data` is now deprecated and not a valid argument of the executor function, '
+                        'please change `data` to `content: \'np.ndarray\'` in your executor function. '
+                        'details: https://github.com/jina-ai/jina/pull/2313/'
+                    )
                 else:
                     raise AttributeError(
                         f'{unrecognized_keys} are invalid Document attributes, must come from {support_keys}'
