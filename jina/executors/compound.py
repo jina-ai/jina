@@ -269,7 +269,6 @@ class CompoundExecutor(BaseExecutor):
                     f'components expect a list of executors, receiving {type(self._components)!r}'
                 )
             self._set_comp_workspace()
-            self._set_routes()
             self._resolve_routes()
             self._post_components()
         else:
@@ -345,40 +344,6 @@ class CompoundExecutor(BaseExecutor):
                 return
         else:
             raise AttributeError(f'bad names: {comp_name} and {comp_fn_name}')
-
-    def _set_routes(self) -> None:
-        # add all existing routes
-        r = defaultdict(list)
-
-        for c in self.components:
-            for method in BaseExecutor.exec_methods:
-                if hasattr(c, method):
-                    r[method].append((c.name, getattr(c, method)))
-
-        new_routes = []
-        bad_routes = []
-        for k, v in r.items():
-            if len(v) == 1:
-                setattr(self, k, v[0][1])
-            elif len(v) > 1:
-                if self.resolve_all:
-                    new_r = f'{k}_all'
-                    fns = self._FnWrapper([vv[1] for vv in v])
-                    setattr(self, new_r, fns)
-                    self.logger.debug(f'function "{k}" appears multiple times in {v}')
-                    self.logger.debug(
-                        f'a new function "{new_r}" is added to {self!r} by iterating over all'
-                    )
-                    new_routes.append(new_r)
-                else:
-                    self.logger.warning(
-                        f'function "{k}" appears multiple times in {v}, it needs to be resolved manually before using.'
-                    )
-                    bad_routes.append(k)
-        if new_routes:
-            self.logger.debug(f'new functions added: {new_routes!r}')
-        if bad_routes:
-            self.logger.warning(f'unresolvable functions: {bad_routes!r}')
 
     def close(self) -> None:
         """Close all components and release the resources"""
