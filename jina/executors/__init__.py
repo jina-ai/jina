@@ -368,7 +368,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        if replica_id == -1:
+        if replica_id == -1 or replica_id is None:
             return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
         else:
             return os.path.join(
