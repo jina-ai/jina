@@ -32,7 +32,7 @@ from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 
 __all__ = ['BaseFlow']
 
-from ..peapods import Pod, BasePod
+from ..peapods import Pod
 from ..peapods.compoundpod import CompoundPod
 
 
@@ -43,6 +43,9 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
+
+if False:
+    from ..peapods import BasePod
 
 
 class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -991,7 +994,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """
 
         compound_pod = self._pod_nodes[pod_name]
-        if type(compound_pod) == CompoundPod:
+        if isinstance(compound_pod, CompoundPod):
             compound_pod.rolling_update()
         else:
             raise ValueError(
