@@ -173,7 +173,13 @@ class BasePod(ExitStack):
                 self.is_tail_router = True
                 parsed_args['tail'] = self._copy_to_tail_args(args)
             parsed_args[attribute] = self._set_peas_args(
-                args, parsed_args.get('head', None), parsed_args.get('tail', None)
+                args,
+                role_type=role_type,
+                repetition_attribute=repetition_attribute,
+                id_attribute_name=id_attribute_name,
+                polling_type=polling_type,
+                head_args=parsed_args.get('head', None),
+                tail_args=parsed_args.get('tail', None),
             )
         else:
             self.is_head_router = False

@@ -2,11 +2,10 @@ import os
 
 import pytest
 
+from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
-from jina.peapods.pods import BasePod
-from jina.peapods.pods.helper import get_internal_ip
 
 
 @pytest.fixture(scope='function')
