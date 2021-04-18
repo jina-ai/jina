@@ -25,6 +25,7 @@ from ..logging.profile import TimeContext
 
 if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
+    from ..drivers import BaseDriver
 
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
