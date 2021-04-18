@@ -36,7 +36,7 @@ AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 _ref_desolve_map = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'] = SimpleNamespace()
 _ref_desolve_map.__dict__['metas'].__dict__['pea_id'] = 0
-_ref_desolve_map.__dict__['metas'].__dict__['replica_id'] = None
+_ref_desolve_map.__dict__['metas'].__dict__['replica_id'] = -1
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -356,7 +356,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         workspace_folder: str,
         workspace_name: str,
         pea_id: int,
-        replica_id: Optional[int] = None,
+        replica_id: Optional[int] = -1,
     ) -> str:
         """
         Get the path of the current shard.
@@ -368,7 +368,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        if replica_id is None:
+        if replica_id == -1:
             return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
         else:
             return os.path.join(
@@ -521,7 +521,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         cls: Type[AnyExecutor],
         raw_config: Dict,
         pea_id: int = 0,
-        replica_id: int = None,
+        replica_id: int = -1,
         read_only: bool = False,
         *args,
         **kwargs,
