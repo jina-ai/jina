@@ -17,7 +17,7 @@ from .helper import (
     _fill_in_host,
 )
 from ..peas import BasePea
-from ...enums import *
+from ...enums import SchedulerType, PodRoleType
 
 
 class BasePod(ExitStack):

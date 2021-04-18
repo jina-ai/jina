@@ -15,7 +15,7 @@ from .helper import (
 from .. import Pea
 from .. import Pod
 from .. import BasePod
-from ...enums import *
+from ...enums import PollingType, SchedulerType, PodRoleType
 
 
 class CompoundPod(BasePod):
@@ -57,15 +57,6 @@ class CompoundPod(BasePod):
         :return: role type
         """
         return self.args.pod_role
-
-    @property
-    def is_singleton(self) -> bool:
-        """
-        Return if the Pod contains only a single Pea
-
-        :return: true if there is only one replica, else false
-        """
-        return not (self.is_head_router or self.is_tail_router)
 
     @property
     def name(self) -> str:
