@@ -40,7 +40,7 @@ def doclist(docs):
 
 
 @pytest.fixture
-def docset_with_scipy_sparse_embedding(docs):
+def doclist_with_scipy_sparse_embedding(docs):
     embedding = coo_matrix(
         (
             np.array([1, 2, 3, 4, 5, 6]),
@@ -420,14 +420,14 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
     ],
 )
 def test_all_sparse_embeddings(
-    docset_with_scipy_sparse_embedding,
+    doclist_with_scipy_sparse_embedding,
     embedding_cls_type,
     return_expected_type,
 ):
     (
         all_embeddings,
         doc_pts,
-    ) = docset_with_scipy_sparse_embedding.get_all_sparse_embeddings(
+    ) = doclist_with_scipy_sparse_embedding.get_all_sparse_embeddings(
         embedding_cls_type=embedding_cls_type,
     )
     assert all_embeddings is not None
