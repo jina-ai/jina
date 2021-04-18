@@ -20,6 +20,6 @@ class MWUUpdater(BaseEncoder):
         super().__init__(*args, **kwargs)
         self._greetings = greetings
 
-    def encode(self, content: Any, *args, **kwargs) -> Any:
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
         self.is_updated = True
         return np.random.random([content.shape[0], 3])

@@ -34,7 +34,7 @@ class BaseEncoder(BaseExecutor):
         :mod:`jina.drivers.encode`
     """
 
-    def encode(self, content: Any, *args, **kwargs) -> 'EncodingType':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'EncodingType':
         """Encode the data, needs to be implemented in subclass.
         :param content: the data to be encoded
         :param args: additional positional arguments

@@ -70,7 +70,7 @@ def get_sparse_encoder(sparse_type):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
 
-        def encode(self, content: Any, *args, **kwargs) -> Any:
+        def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
             # return a sparse vector of the same number of rows as `data` of different types
             embed = sparse_type(content)
             return embed
