@@ -484,7 +484,8 @@ class DocsExtractUpdateMixin:
             if isinstance(exec_result, dict):
                 doc.set_attrs(**exec_result)
             elif isinstance(exec_result, Document):
-                doc.update(exec_result)
+                # doc id should not be override with this method
+                doc.update(exec_result, exclude_fields=('id',))
             else:
                 self.update_single_doc(doc, exec_result)
 

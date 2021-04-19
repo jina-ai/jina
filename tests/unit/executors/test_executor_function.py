@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from jina import DocumentSet
+from jina import DocumentSet, Document
 from jina.drivers.encode import EncodeDriver
 from jina.executors.encoders import BaseEncoder
 from tests import random_docs
@@ -160,3 +160,26 @@ def test_exec_fn_return_dict(mocker):
 
     for d in ds:
         assert d.id == 'hello'
+
+
+def test_exec_fn_return_doc(mocker):
+    encode_mock = mocker.Mock()
+
+    class MyExecutor(BaseEncoder):
+        def encode(self, id):
+            encode_mock()
+            return [Document(mime_type='image/png')] * len(id)
+
+    exec = MyExecutor()
+    bd = EncodeDriver()
+
+    bd.attach(exec, runtime=None)
+    docs = list(random_docs(10))
+
+    ds = DocumentSet(docs)
+
+    bd._apply_all(ds)
+    encode_mock.assert_called()
+
+    for d in ds:
+        assert d.mime_type == 'image/png'
