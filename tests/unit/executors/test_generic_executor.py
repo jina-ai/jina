@@ -19,7 +19,7 @@ class MyExecutor(GenericExecutor):
         return [{'embedding': np.array([10, 11, 12])}] * len(id)
 
 
-def test_generic_executor_with_routing(mocker):
+def test_generic_executor_with_routing_default(mocker):
     index_resp_mock = mocker.Mock()
     search_resp_mock = mocker.Mock()
     update_resp_mock = mocker.Mock()
@@ -50,3 +50,33 @@ def test_generic_executor_with_routing(mocker):
     index_resp_mock.assert_called()
     search_resp_mock.assert_called()
     update_resp_mock.assert_called()
+
+
+def test_generic_executor_with_routing_update(mocker):
+    update_resp_mock = mocker.Mock()
+
+    def validate_index_resp(req):
+        update_resp_mock()
+        np.testing.assert_equal(req.docs[0].embedding, np.array([10, 11, 12]))
+
+    f = Flow().add(uses=MyExecutor)
+
+    with f:
+        f.update(Document(), on_done=validate_index_resp)
+
+    update_resp_mock.assert_called()
+
+
+def test_generic_executor_with_routing_search(mocker):
+    search_resp_mock = mocker.Mock()
+
+    def validate_search_resp(req):
+        search_resp_mock()
+        np.testing.assert_equal(req.docs[0].embedding, np.array([4, 5, 6]))
+
+    f = Flow().add(uses=MyExecutor)
+
+    with f:
+        f.search(Document(), on_done=validate_search_resp)
+
+    search_resp_mock.assert_called()
