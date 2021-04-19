@@ -14,7 +14,7 @@ from tests import random_docs
 
 
 class DummyEncoder(BaseEncoder):
-    def encode(self, data, *args, **kwargs):
+    def encode(self, content, *args, **kwargs):
         pass
 
 

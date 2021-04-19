@@ -427,8 +427,8 @@ def test_flow_with_publish_driver(mocker, restful):
 
     f = (
         Flow(restful=restful)
-        .add(name='r2', uses='!OneHotTextEncoder')
-        .add(name='r3', uses='!OneHotTextEncoder', needs='gateway')
+        .add(name='r2', uses='!DummyOneHotTextEncoder')
+        .add(name='r3', uses='!DummyOneHotTextEncoder', needs='gateway')
         .join(needs=['r2', 'r3'])
     )
 

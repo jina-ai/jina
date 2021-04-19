@@ -24,7 +24,7 @@ class SlowSaveExecutor(BaseEncoder):
     This is similar to the case seen by the user where the `index` files are not properly flushed and closed.
     """
 
-    def encode(self, data: Any, *args, **kwargs) -> Any:
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
         self.touch()
 
     def __init__(self, *args, **kwargs):

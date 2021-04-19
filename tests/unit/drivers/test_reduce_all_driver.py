@@ -39,9 +39,9 @@ class MockSegmenterReduce(BaseSegmenter):
 
 
 class MockEncoderReduce(BaseEncoder):
-    def encode(self, data: str, *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: str, *args, **kwargs) -> 'np.ndarray':
         output = []
-        for r in data:
+        for r in content:
             if 'mode1' in r:
                 output.append([0.0, 0.0, 0.0])
             elif 'mode2' in r:

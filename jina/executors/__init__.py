@@ -20,13 +20,13 @@ from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
-from ..logging.profile import TimeContext
 
+# noinspection PyUnreachableCode
 if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..drivers import BaseDriver
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
+__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType', 'GenericExecutor']
 
 AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 
@@ -145,21 +145,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = [
-        'encode',
-        'add',
-        'query',
-        'craft',
-        'segment',
-        'score',
-        'evaluate',
-        'predict',
-        'query_by_key',
-        'delete',
-        'update',
-        # TODO make Dump a control request to be passed to the Pod directly
-        'dump',
-    ]
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -256,7 +241,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
                     if not _drivers[r]:
                         _drivers.pop(r)
-
         return _drivers
 
     def _fill_metas(self, _metas):
@@ -561,9 +545,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
         """
-        for drivers in self._drivers.values():
+        for req_type, drivers in self._drivers.items():
             for driver in drivers:
-                driver.attach(executor=self, runtime=runtime, *args, **kwargs)
+                driver.attach(
+                    executor=self, runtime=runtime, req_type=req_type, *args, **kwargs
+                )
 
         # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
@@ -592,3 +578,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def __str__(self):
         return self.__class__.__name__
+
+
+class GenericExecutor(BaseExecutor):
+    """Alias to BaseExecutor, but bind with GenericDriver by default. """

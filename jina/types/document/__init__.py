@@ -13,8 +13,8 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .traversable import Traversable
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
+from .traversable import Traversable
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..querylang.queryset.dunderkey import dunder_get
@@ -22,7 +22,12 @@ from ..score import NamedScore
 from ..sets.chunk import ChunkSet
 from ..sets.match import MatchSet
 from ...excepts import BadDocType
-from ...helper import is_url, typename, random_identity, download_mermaid_url
+from ...helper import (
+    is_url,
+    typename,
+    random_identity,
+    download_mermaid_url,
+)
 from ...importer import ImportExtensions
 from ...logging import default_logger
 from ...proto import jina_pb2
@@ -1168,10 +1173,10 @@ class Document(ProtoTypeMixin, Traversable):
 
         mermaid_str = (
             """
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-classDiagram
-
-        """
+    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+    classDiagram
+    
+            """
             + self.__mermaid_str__()
         )
 
@@ -1223,3 +1228,29 @@ classDiagram
         :return: the tuple of non-empty fields
         """
         return tuple(field[0].name for field in self.ListFields())
+
+    @property
+    def raw(self) -> 'Document':
+        """Return self as a document object.
+
+        :return: this Document
+        """
+        return self
+
+    @staticmethod
+    def get_all_attributes() -> List[str]:
+        """Return all attributes supported by the Document, which can be accessed by ``doc.attribute``
+
+        :return: a list of attributes in string.
+        """
+        import inspect
+
+        support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+
+        support_keys += [
+            name
+            for (name, value) in inspect.getmembers(
+                Document, lambda x: isinstance(x, property)
+            )
+        ]
+        return list(set(support_keys))

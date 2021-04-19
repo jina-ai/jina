@@ -33,11 +33,11 @@ class TransformEncoder(BaseNumericEncoder):
                 self.model = pickle.load(model_file)
 
     @batching
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
-        :param data: a `B x T` numpy ``ndarray``, `B` is the size of the batch
+        :param content: a `B x T` numpy ``ndarray``, `B` is the size of the batch
         :return: a `B x D` numpy ``ndarray``
         :param args: Extra positional arguments to be set
         :param kwargs: Extra keyword arguments to be set
         """
-        return self.model.transform(data)
+        return self.model.transform(content)

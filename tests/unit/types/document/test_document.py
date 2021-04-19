@@ -3,10 +3,10 @@ import os
 
 import numpy as np
 import pytest
+import tensorflow as tf
+import torch
 from google.protobuf.json_format import MessageToDict
 from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
-import torch
-import tensorflow as tf
 
 from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
@@ -525,6 +525,17 @@ def test_update_on_no_empty_doc():
     # this will not update anything as d and s are in the same structure
     d.update(s)
     assert d.dict() == d0
+
+
+def test_update_on_no_empty_doc_with_exclude():
+    s, d = get_test_doc()
+    d0 = s.dict()
+    d0.pop('id')
+    # this will not update anything as d and s are in the same structure
+    d.update(s, exclude_fields=('id',))
+    d1 = d.dict()
+    d1.pop('id')
+    assert d1 == d0
 
 
 def test_update_chunks():

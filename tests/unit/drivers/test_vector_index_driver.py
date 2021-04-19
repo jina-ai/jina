@@ -24,11 +24,8 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
         self.embedding_cls_type = embedding_cls_type
 
     def add(self, keys, vectors, *args, **kwargs):
-        print(f' embedding_cls {self.embedding_cls_type} vs vectors {type(vectors)}')
         if self.embedding_cls_type in ['dense', 'torch', 'tf']:
             for key, value in zip(keys, vectors):
-                if self.embedding_cls_type == 'torch':
-                    print(f' value {value}')
                 self.docs[key] = value
         elif self.embedding_cls_type.startswith('scipy'):
             for i, key in enumerate(keys):
@@ -85,7 +82,6 @@ def mock_groundtruth_indexer_factory():
 @pytest.fixture(scope='function')
 def documents_factory():
     def documents(embedding_cls_type, text_prefix='', num_docs=5):
-        print(f' HEY JOAN {embedding_cls_type}')
         docs = []
         for idx in range(num_docs):
             with Document(text=f'{text_prefix}{idx}') as d:
@@ -147,10 +143,13 @@ def assert_embedding(embedding_cls_type, obtained, expected):
     elif embedding_cls_type.startswith('scipy'):
         np.testing.assert_equal(obtained.todense(), expected.embedding.todense())
     elif embedding_cls_type == 'torch':
-        print(f'expected {expected.embedding.todense()}')
-        print(f'obtained {obtained.to_dense()}')
+        from jina.types.ndarray.sparse.pytorch import SparseNdArray
+
         np.testing.assert_array_equal(
-            expected.embedding.todense(), obtained.to_dense().numpy()
+            expected.get_sparse_embedding(sparse_ndarray_cls_type=SparseNdArray)[0]
+            .to_dense()
+            .numpy(),
+            obtained.to_dense().numpy(),
         )
 
 

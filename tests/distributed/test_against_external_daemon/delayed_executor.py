@@ -10,5 +10,5 @@ class DelayedExecutor(BaseEncoder):
         time.sleep(8)
 
     @as_ndarray
-    def encode(self, data, *args, **kwargs):
-        return [[1, 2]] * len(data)
+    def encode(self, content: 'np.ndarray', *args, **kwargs):
+        return [[1, 2]] * len(content)
