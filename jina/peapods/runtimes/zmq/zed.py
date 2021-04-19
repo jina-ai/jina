@@ -73,7 +73,7 @@ class ZEDRuntime(ZMQRuntime):
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
                 pea_id=self.args.pea_id,
-                replica_id=getattr(self.args, 'replica_id', None),
+                replica_id=getattr(self.args, 'replica_id', -1),
                 read_only=self.args.read_only,
             )
             self._executor.attach(runtime=self)
