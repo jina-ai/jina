@@ -40,7 +40,11 @@ def test_generic_executor_with_routing(mocker):
 
     with f:
         f.index(Document(), on_done=validate_index_resp)
+
+    with f:
         f.search(Document(), on_done=validate_search_resp)
+
+    with f:
         f.update(Document(), on_done=validate_update_resp)
 
     index_resp_mock.assert_called()
