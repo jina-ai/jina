@@ -217,9 +217,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
                 return torch.vstack(embeddings)
             elif sparse_cls_type == 'tf':
-                import tensorflow as tf
-
-                return tf.sparse.concat(axis=0, sp_inputs=embeddings)
+                return embeddings
 
         def get_sparse_ndarray_type_kwargs():
             if sparse_cls_type == 'scipy':

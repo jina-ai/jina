@@ -105,11 +105,14 @@ def documents_factory():
                 elif embedding_cls_type == 'tf':
                     sparse_embedding = scipy.sparse.coo_matrix(dense_embedding)
                     values = sparse_embedding.data
-                    indices = np.vstack((sparse_embedding.row, sparse_embedding.col))
+                    indices = [
+                        (x, y)
+                        for x, y in zip(sparse_embedding.row, sparse_embedding.col)
+                    ]
                     d.embedding = tf.SparseTensor(
-                        indices,
-                        values,
-                        sparse_embedding.shape,
+                        indices=indices,
+                        values=values,
+                        dense_shape=[1, 10],
                     )
             docs.append(d)
         return DocumentSet(docs)
@@ -150,6 +153,15 @@ def assert_embedding(embedding_cls_type, obtained, expected):
             .to_dense()
             .numpy(),
             obtained.to_dense().numpy(),
+        )
+    elif embedding_cls_type == 'tf':
+        from jina.types.ndarray.sparse.tensorflow import SparseNdArray
+
+        np.testing.assert_array_equal(
+            tf.sparse.to_dense(
+                expected.get_sparse_embedding(sparse_ndarray_cls_type=SparseNdArray)
+            ).numpy(),
+            tf.sparse.to_dense(obtained).numpy(),
         )
 
 
