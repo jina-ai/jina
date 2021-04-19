@@ -8,13 +8,13 @@ from typing import Optional, Dict, List, Union, Set
 from .. import Pea
 from .. import Pod
 from .. import BasePod
-from ...enums import PollingType, SchedulerType, PodRoleType, PeaRoleType
+from ...enums import PollingType, PeaRoleType
 
 
 class CompoundPod(BasePod):
     """A CompoundPod is a immutable set of pods, which run in parallel. They share the same input and output socket.
     Internally, the peas of the pods can run with the process/thread backend. They can be also run in their own containers.
-    :param args: arguments parsed from the CLI
+    :param args: pod arguments parsed from the CLI
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
@@ -36,6 +36,24 @@ class CompoundPod(BasePod):
         """
         # note this will be never out of boundary
         return self.replicas_args['replicas'][0]
+
+    @property
+    def port_expose(self) -> int:
+        """Get the grpc port number
+
+
+        .. # noqa: DAR201
+        """
+        return self.first_pod_args.port_expose
+
+    @property
+    def host(self) -> str:
+        """Get the host name of this Pod
+
+
+        .. # noqa: DAR201
+        """
+        return self.first_pod_args.host
 
     def _parse_args(
         self, args: Namespace

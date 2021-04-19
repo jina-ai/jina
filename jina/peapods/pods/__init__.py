@@ -82,24 +82,6 @@ class BasePod(ExitStack):
         return self.args.name
 
     @property
-    def port_expose(self) -> int:
-        """Get the grpc port number
-
-
-        .. # noqa: DAR201
-        """
-        return self.first_pea_args.port_expose
-
-    @property
-    def host(self) -> str:
-        """Get the host name of this Pod
-
-
-        .. # noqa: DAR201
-        """
-        return self.first_pea_args.host
-
-    @property
     def host_in(self) -> str:
         """Get the host_in of this pod
 
@@ -429,6 +411,24 @@ class Pod(BasePod):
         """
         # note this will be never out of boundary
         return self.peas_args['peas'][0]
+
+    @property
+    def port_expose(self) -> int:
+        """Get the grpc port number
+
+
+        .. # noqa: DAR201
+        """
+        return self.first_pea_args.port_expose
+
+    @property
+    def host(self) -> str:
+        """Get the host name of this Pod
+
+
+        .. # noqa: DAR201
+        """
+        return self.first_pea_args.host
 
     def _parse_args(
         self, args: Namespace
