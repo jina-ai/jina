@@ -434,13 +434,18 @@ def test_all_sparse_embeddings(
     assert all_embeddings is not None
     assert doc_pts is not None
     assert len(doc_pts) == 3
-    assert isinstance(all_embeddings, return_expected_type)
+
     if return_scipy_class_type == 'scipy':
+        assert isinstance(all_embeddings, return_expected_type)
         assert all_embeddings.shape == (3, 10)
     if return_sparse_ndarray_cls_type == 'torch':
+        assert isinstance(all_embeddings, return_expected_type)
         assert all_embeddings.is_sparse
         assert all_embeddings.shape[0] == 3
         assert all_embeddings.shape[1] == 10
     if return_sparse_ndarray_cls_type == 'tf':
-        assert all_embeddings.shape[0] == 3
-        assert all_embeddings.shape[1] == 10
+        assert isinstance(all_embeddings, list)
+        assert isinstance(all_embeddings[0], return_expected_type)
+        assert len(all_embeddings) == 3
+        assert all_embeddings[0].shape[0] == 1
+        assert all_embeddings[0].shape[1] == 10

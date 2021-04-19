@@ -155,12 +155,12 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         else:
             for idx, (numpy_match_id, score) in enumerate(zip(topks, scores)):
                 vector = None
-                if topk_embed is not None:
+                if topk_embed[idx] is not None:
                     vector = topk_embed.getrow(idx)
                 m = Document(id=numpy_match_id)
                 m.score = NamedScore(op_name=op_name, value=score)
                 match = doc.matches.append(m)
-                if vector:
+                if vector is not None:
                     match.embedding = vector
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
