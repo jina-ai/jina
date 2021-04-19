@@ -635,10 +635,13 @@ class BaseExecutableDriver(BaseRecursiveDriver):
         else:
             return lambda *args, **kwargs: None
 
-    def attach(self, executor: 'AnyExecutor', *args, **kwargs) -> None:
+    def attach(
+        self, executor: 'AnyExecutor', req_type: Optional[str] = None, *args, **kwargs
+    ) -> None:
         """Attach the driver to a :class:`jina.executors.BaseExecutor`
 
         :param executor: the executor to which we attach
+        :param req_type: the request type to attach to
         :param args: additional positional arguments for the call of super().attach()
         :param kwargs: additional key value arguments for the call of super().attach()
         """
@@ -663,7 +666,9 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
         if not self._method_name:
             decor_bindings = find_request_binding(self.exec.__class__)
-            if 'default' in decor_bindings:
+            if req_type and req_type in decor_bindings:
+                self._method_name = decor_bindings[req_type]
+            elif 'default' in decor_bindings:
                 self._method_name = decor_bindings['default']
 
         if self._method_name:

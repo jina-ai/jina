@@ -240,7 +240,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
                     if not _drivers[r]:
                         _drivers.pop(r)
-
         return _drivers
 
     def _fill_metas(self, _metas):
@@ -545,9 +544,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
         """
-        for drivers in self._drivers.values():
+        for req_type, drivers in self._drivers.items():
             for driver in drivers:
-                driver.attach(executor=self, runtime=runtime, *args, **kwargs)
+                driver.attach(
+                    executor=self, runtime=runtime, req_type=req_type, *args, **kwargs
+                )
 
         # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):

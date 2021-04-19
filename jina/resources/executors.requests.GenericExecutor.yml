@@ -1,5 +1,15 @@
 on:
-  [ SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest ]:
-    - !GenericExecutorDriver {}
+  SearchRequest:
+    - !GenericExecutorDriver { }
+  IndexRequest:
+    - !GenericExecutorDriver { }
+  UpdateRequest:
+    - !GenericExecutorDriver { }
+  DeleteRequest:
+    - !GenericExecutorDriver { }
+  DumpRequest:
+    - !GenericExecutorDriver { }
+  TrainRequest:
+    - !GenericExecutorDriver { }
   ControlRequest:
-    - !ControlReqDriver {}
+    - !ControlReqDriver { }
