@@ -16,7 +16,7 @@ Jina is shipped from two package management systems, PyPi and Docker Hub. This a
 ## Release cycle and versioning
 Jina products are developed continuously by the community and core team. Updates are grouped and released at regular intervals to align with software development best practices.
 
-Jina Core, Box, and Dashboard all follow a staged release cycle. Jina Hub images are constantly released as Jina core is updated.
+Jina Core, Box, and Dashboard all follow a staged release cycle. Jina Hub images are constantly released as Jina Core is updated.
 
 Jina Core, Box, and Dashboard all follow a form of numbered versioning. The version number of the product is a three-part value X.Y.Z where X, Y, and Z are the major, minor, and patch components respectively.
 
@@ -26,8 +26,7 @@ Jina Core, Box, and Dashboard all follow a form of numbered versioning. The vers
 
 
 ## PyPi package versioning
-
-We follow the [semantic versioning](https://semver.org/) and [PEP-440](https://www.python.org/dev/peps/pep-0440/). Jina's version is identified by `x.y.z` (i.e. "major.minor.patch").
+We follow [PEP-440](https://www.python.org/dev/peps/pep-0440/), and a form of [semantic versioning](https://semver.org/) as explained above.
 
 To install the latest final release:
 
