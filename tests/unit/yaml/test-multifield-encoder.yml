@@ -1,4 +1,4 @@
-!OneHotTextEncoder
+!DummyOneHotTextEncoder
 requests:
   on:
     [SearchRequest, IndexRequest]:

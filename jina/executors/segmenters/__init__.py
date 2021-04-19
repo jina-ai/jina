@@ -12,22 +12,6 @@ class BaseSegmenter(BaseExecutor):
     :param kwargs: Variable length keyword arguments
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.required_keys = [
-            k for k in inspect.getfullargspec(self.segment).args if k != 'self'
-        ]
-        if not self.required_keys:
-            self.required_keys = [
-                k
-                for k in inspect.getfullargspec(inspect.unwrap(self.segment)).args
-                if k != 'self'
-            ]
-        if not self.required_keys:
-            self.logger.warning(
-                f'{typename(self)} works on keys, but no keys are specified'
-            )
-
     def segment(self, *args, **kwargs) -> Union[List[List[Dict]], List[Dict]]:
         """
         :param args: Variable length arguments

@@ -1259,3 +1259,45 @@ def ding(req):
     soundfx = resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
 
     subprocess.call(f'ffplay  -nodisp -autoexit {soundfx} >/dev/null 2>&1', shell=True)
+
+
+def find_request_binding(target):
+    """Find `@request` decorated methods in a class.
+
+    :param target: the target class to check
+    :return: a dictionary with key as request type and value as method name
+    """
+    import ast, inspect
+
+    res = {}
+
+    def visit_function_def(node):
+
+        for e in node.decorator_list:
+            req_name = ''
+            if isinstance(e, ast.Call) and e.func.id == 'requests':
+                req_name = e.keywords[0].value.s
+            elif isinstance(e, ast.Name) and e.id == 'requests':
+                req_name = 'default'
+            if req_name:
+                req_name = _canonical_request_name(req_name)
+                if req_name in res:
+                    raise ValueError(
+                        f'you already bind `{res[req_name]}` with `{req_name}` request'
+                    )
+                else:
+                    res[req_name] = node.name
+
+    V = ast.NodeVisitor()
+    V.visit_FunctionDef = visit_function_def
+    V.visit(compile(inspect.getsource(target), '?', 'exec', ast.PyCF_ONLY_AST))
+    return res
+
+
+def _canonical_request_name(req_name: str):
+    """Return the canonical name of a request
+
+    :param req_name: the orginal request name
+    :return: canonical form of the request
+    """
+    return req_name.lower().replace('request', '')

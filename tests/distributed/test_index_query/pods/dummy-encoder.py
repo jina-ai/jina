@@ -12,5 +12,5 @@ class DummyEncoder(BaseEncoder):
         super().__init__(*args, **kwargs)
 
     @batching(batch_size=1)
-    def encode(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         return np.random.random((1, 3))

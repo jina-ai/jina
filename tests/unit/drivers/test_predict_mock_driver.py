@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from google.protobuf.struct_pb2 import ListValue
+
 from jina import Document
 from jina.drivers.predict import (
     BinaryPredictDriver,
@@ -29,29 +30,29 @@ def docs_to_encode(num_docs):
 
 
 class MockBinaryPredictDriver(BinaryPredictDriver):
-    def exec_fn(self, embed):
-        random_label = np.random.randint(0, 2, [embed.shape[0]])
+    def exec_fn(self, embedding: 'np.ndarray'):
+        random_label = np.random.randint(0, 2, [embedding.shape[0]])
         return random_label.astype(np.int64)
 
 
 class MockOneHotPredictDriver(OneHotPredictDriver):
-    def exec_fn(self, embed):
-        return np.eye(3)[np.random.choice(3, embed.shape[0])]
+    def exec_fn(self, embedding: 'np.ndarray'):
+        return np.eye(3)[np.random.choice(3, embedding.shape[0])]
 
 
 class MockMultiLabelPredictDriver(MultiLabelPredictDriver):
-    def exec_fn(self, embed):
-        return np.eye(3)[np.random.choice(3, embed.shape[0])]
+    def exec_fn(self, embedding: 'np.ndarray'):
+        return np.eye(3)[np.random.choice(3, embedding.shape[0])]
 
 
 class MockAllLabelPredictDriver(MultiLabelPredictDriver):
-    def exec_fn(self, embed):
-        return np.ones([embed.shape[0], 3])
+    def exec_fn(self, embedding: 'np.ndarray'):
+        return np.ones([embedding.shape[0], 3])
 
 
 class MockPrediction2DocBlobDriver(Prediction2DocBlobDriver):
-    def exec_fn(self, embed):
-        return np.eye(3)[np.random.choice(3, embed.shape[0])]
+    def exec_fn(self, embedding: 'np.ndarray'):
+        return np.eye(3)[np.random.choice(3, embedding.shape[0])]
 
 
 class MockClassifierDriver(BinaryPredictDriver):
@@ -67,9 +68,9 @@ class MockClassifier(BaseClassifier):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def predict(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         # predict 0 or 1 based on divisiblity by 2
-        return (data % 2 == 0).astype(int)
+        return (content % 2 == 0).astype(int)
 
 
 def test_binary_predict_driver():

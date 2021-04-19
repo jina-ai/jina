@@ -1,15 +1,18 @@
-from typing import List, Any, Union, Tuple, Optional
+from typing import List, Any, Union, Optional
 
 import numpy as np
 
-from . import BaseExecutableDriver, FlatRecursiveMixin
+from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 from ..helper import typename
 
 if False:
     from ..types.sets import DocumentSet
+    from ..types.document import Document
 
 
-class BasePredictDriver(FlatRecursiveMixin, BaseExecutableDriver):
+class BasePredictDriver(
+    DocsExtractUpdateMixin, FlatRecursiveMixin, BaseExecutableDriver
+):
     """Drivers inherited from :class:`BasePredictDriver` will bind :meth:`predict` by default
 
     :param fields: name of fields to be used to predict tags, default "embeddings"
@@ -21,11 +24,9 @@ class BasePredictDriver(FlatRecursiveMixin, BaseExecutableDriver):
         self,
         executor: Optional[str] = None,
         method: str = 'predict',
-        fields: Union[Tuple, str] = 'embedding',
         *args,
         **kwargs,
     ):
-        self.fields = fields
         super().__init__(executor, method, *args, **kwargs)
 
 
@@ -41,28 +42,17 @@ class BaseLabelPredictDriver(BasePredictDriver):
         super().__init__(*args, **kwargs)
         self.output_tag = output_tag
 
-    def _apply_all(
-        self,
-        docs: 'DocumentSet',
-        *args,
-        **kwargs,
-    ) -> None:
-        if self.fields == 'embedding':
-            predict_input, docs_pts = docs.all_embeddings
-        elif self.fields == 'content':
-            predict_input, docs_pts = docs.all_contents
-        else:
-            raise ValueError(
-                f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents'
-            )
+    def update_docs(self, docs_pts: 'DocumentSet', exec_results: Any):
+        """Update doc tags attribute with executor's return
 
-        if docs_pts:
-            prediction = self.exec_fn(predict_input)
-            labels = self.prediction2label(
-                prediction
-            )  # type: List[Union[str, List[str]]]
-            for doc, label in zip(docs_pts, labels):
-                doc.tags[self.output_tag] = label
+        :param: docs_pts: the set of document to be updated
+        :param: exec_results: the results from :meth:`exec_fn`
+        """
+        labels = self.prediction2label(
+            exec_results
+        )  # type: List[Union[str, List[str]]]
+        for doc, label in zip(docs_pts, labels):
+            doc.tags[self.output_tag] = label
 
     def prediction2label(self, prediction: 'np.ndarray') -> List[Any]:
         """Converting ndarray prediction into list of readable labels
@@ -183,22 +173,10 @@ class Prediction2DocBlobDriver(BasePredictDriver):
         This will erase the content in ``document.text`` and ``document.buffer``.
     """
 
-    def _apply_all(
-        self,
-        docs: 'DocumentSet',
-        *args,
-        **kwargs,
-    ) -> None:
-        if self.fields == 'embedding':
-            predict_input, docs_pts = docs.all_embeddings
-        elif self.fields == 'content':
-            predict_input, docs_pts = docs.all_contents
-        else:
-            raise ValueError(
-                f'{self.fields} is not a valid field name for {self!r}, must be one of embeddings, contents'
-            )
+    def update_single_doc(self, doc: 'Document', exec_result: Any) -> None:
+        """Update doc blob with executor's return.
 
-        if docs_pts:
-            prediction = self.exec_fn(predict_input)
-            for doc, pred in zip(docs_pts, prediction):
-                doc.blob = pred
+        :param doc: the Document object
+        :param exec_result: the single result from :meth:`exec_fn`
+        """
+        doc.blob = exec_result
