@@ -21,11 +21,12 @@ from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 
+# noinspection PyUnreachableCode
 if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..drivers import BaseDriver
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
+__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType', 'GenericExecutor']
 
 AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 
