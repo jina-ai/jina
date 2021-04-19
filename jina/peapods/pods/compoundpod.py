@@ -28,11 +28,11 @@ class CompoundPod(BasePod):
             self.replicas_args = self._parse_args(args)
 
     @property
-    def first_pea_args(self) -> Namespace:
+    def first_pod_args(self) -> Namespace:
         """
-        Return the first non-head/tail pea's args
+        Return the first non-head/tail pod args
 
-        :return: arguments of the first pea which is not a head pea or tail pea
+        :return: arguments of the first pod
         """
         # note this will be never out of boundary
         return self.replicas_args['replicas'][0]
@@ -59,7 +59,7 @@ class CompoundPod(BasePod):
         if self.is_head_router and self.replicas_args['head']:
             return self.replicas_args['head']
         elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
-            return self.first_pea_args
+            return self.first_pod_args
         elif self.deducted_head:
             return self.deducted_head
         else:
@@ -91,7 +91,7 @@ class CompoundPod(BasePod):
         if self.is_tail_router and self.replicas_args['tail']:
             return self.replicas_args['tail']
         elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
-            return self.first_pea_args
+            return self.first_pod_args
         elif self.deducted_tail:
             return self.deducted_tail
         else:
@@ -152,7 +152,7 @@ class CompoundPod(BasePod):
 
     def start(self) -> 'CompoundPod':
         """
-        Start to run all :class:`Pod` in this CompoundPod.
+        Start to run all :class:`Pod` and :class:`Pea` in this CompoundPod.
 
         :return: started CompoundPod
 
@@ -184,7 +184,7 @@ class CompoundPod(BasePod):
 
     def wait_start_success(self) -> None:
         """
-        Block until all peas starts successfully.
+        Block until all pods and peas start successfully.
         If not successful, it will raise an error hoping the outer function to catch it
         """
 
@@ -207,7 +207,7 @@ class CompoundPod(BasePod):
         self.enter_context(replica)
 
     def join(self):
-        """Wait until all peas exit."""
+        """Wait until all pods and peas exit."""
         try:
             for p in self.peas:
                 p.join()
@@ -240,7 +240,7 @@ class CompoundPod(BasePod):
 
     def rolling_update(self):
         """
-        Update all replicas of this compound pod.
+        Update all pods of this compound pod.
         """
         for i in range(len(self.replica_list)):
             replica = self.replica_list[i]
