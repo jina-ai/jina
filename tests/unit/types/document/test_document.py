@@ -793,6 +793,15 @@ def test_document_sparse_embedding(
     if return_sparse_ndarray_cls_type == 'torch':
         assert embedding.is_sparse
 
+    if return_sparse_ndarray_cls_type == 'scipy':
+        from jina.types.ndarray.sparse.scipy import SparseNdArray
+
+        np.testing.assert_equal(embedding.todense(), scipy_sparse_matrix.todense())
+    elif return_sparse_ndarray_cls_type == 'torch':
+        np.testing.assert_equal(
+            embedding.to_dense().numpy(), scipy_sparse_matrix.todense()
+        )
+
 
 def test_siblings_needs_to_be_set_manually():
     document = Document()
