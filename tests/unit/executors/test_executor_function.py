@@ -68,7 +68,9 @@ def test_extract_bad_fields(mocker):
 
     ds = DocumentSet(docs)
 
-    with pytest.raises(AttributeError, match='`data` is now deprecated'):
+    with pytest.raises(
+        AttributeError, match='is now deprecated and not a valid argument'
+    ):
         bd._apply_all(ds)
     encode_mock.assert_not_called()
 

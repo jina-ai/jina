@@ -21,7 +21,12 @@ from ..enums import OnErrorStrategy
 from ..excepts import LengthMismatchException
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
-from ..helper import convert_tuple_to_list, cached_property, find_request_binding
+from ..helper import (
+    convert_tuple_to_list,
+    cached_property,
+    find_request_binding,
+    _canonical_request_name,
+)
 from ..jaml import JAMLCompatible
 from ..types.querylang import QueryLang
 from ..types.sets import DocumentSet
@@ -531,15 +536,17 @@ class DocsExtractUpdateMixin:
                 camel_keys = set(
                     jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name
                 )
+                legacy_keys = {'data'}
                 unrecognized_camel_keys = unrecognized_keys.intersection(camel_keys)
                 if unrecognized_camel_keys:
                     raise AttributeError(
                         f'{unrecognized_camel_keys} are supported but you give them in CamelCase, '
                         f'please rewrite them in canonical form.'
                     )
-                elif 'data' in unrecognized_keys:
+                elif unrecognized_keys.intersection(legacy_keys):
                     raise AttributeError(
-                        '`data` is now deprecated and not a valid argument of the executor function, '
+                        f'{unrecognized_keys.intersection(legacy_keys)} is now deprecated and not a valid argument of '
+                        'the executor function, '
                         'please change `data` to `content: \'np.ndarray\'` in your executor function. '
                         'details: https://github.com/jina-ai/jina/pull/2313/'
                     )
@@ -666,8 +673,10 @@ class BaseExecutableDriver(BaseRecursiveDriver):
 
         if not self._method_name:
             decor_bindings = find_request_binding(self.exec.__class__)
-            if req_type and req_type in decor_bindings:
-                self._method_name = decor_bindings[req_type]
+            if req_type:
+                canonic_name = _canonical_request_name(req_type)
+            if req_type and canonic_name in decor_bindings:
+                self._method_name = decor_bindings[canonic_name]
             elif 'default' in decor_bindings:
                 self._method_name = decor_bindings['default']
 

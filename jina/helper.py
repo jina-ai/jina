@@ -1280,6 +1280,7 @@ def find_request_binding(target):
             elif isinstance(e, ast.Name) and e.id == 'requests':
                 req_name = 'default'
             if req_name:
+                req_name = _canonical_request_name(req_name)
                 if req_name in res:
                     raise ValueError(
                         f'you already bind `{res[req_name]}` with `{req_name}` request'
@@ -1291,3 +1292,12 @@ def find_request_binding(target):
     V.visit_FunctionDef = visit_function_def
     V.visit(compile(inspect.getsource(target), '?', 'exec', ast.PyCF_ONLY_AST))
     return res
+
+
+def _canonical_request_name(req_name: str):
+    """Return the canonical name of a request
+
+    :param req_name: the orginal request name
+    :return: canonical form of the request
+    """
+    return req_name.lower().replace('request', '')
