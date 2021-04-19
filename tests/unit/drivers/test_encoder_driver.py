@@ -30,12 +30,12 @@ def get_encoder(batch_size):
             super().__init__(*args, **kwargs)
 
         @batching(batch_size=batch_size)
-        def encode(self, data: Any, *args, **kwargs) -> Any:
+        def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
             if batch_size is not None and batch_size > 0:
-                assert len(data) <= batch_size
+                assert len(content) <= batch_size
             if batch_size == 5:
-                assert len(data) == 5
-            return data
+                assert len(content) == 5
+            return content
 
     return MockEncoder()
 
@@ -70,9 +70,9 @@ def get_sparse_encoder(sparse_type):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
 
-        def encode(self, data: Any, *args, **kwargs) -> Any:
+        def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
             # return a sparse vector of the same number of rows as `data` of different types
-            embed = sparse_type(data)
+            embed = sparse_type(content)
             return embed
 
     return MockEncoder()

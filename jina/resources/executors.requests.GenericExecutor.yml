@@ -1,0 +1,15 @@
+on:
+  SearchRequest:
+    - !GenericExecutorDriver { }
+  IndexRequest:
+    - !GenericExecutorDriver { }
+  UpdateRequest:
+    - !GenericExecutorDriver { }
+  DeleteRequest:
+    - !GenericExecutorDriver { }
+  DumpRequest:
+    - !GenericExecutorDriver { }
+  TrainRequest:
+    - !GenericExecutorDriver { }
+  ControlRequest:
+    - !ControlReqDriver { }
