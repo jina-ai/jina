@@ -135,3 +135,26 @@ def test_exec_fn_arbitrary_name(mocker):
 
     bd._apply_all(ds)
     encode_mock.assert_called()
+
+
+def test_exec_fn_return_dict(mocker):
+    encode_mock = mocker.Mock()
+
+    class MyExecutor(BaseEncoder):
+        def encode(self, id):
+            encode_mock()
+            return [{'id': 'hello'}] * len(id)
+
+    exec = MyExecutor()
+    bd = EncodeDriver()
+
+    bd.attach(exec, runtime=None)
+    docs = list(random_docs(10))
+
+    ds = DocumentSet(docs)
+
+    bd._apply_all(ds)
+    encode_mock.assert_called()
+
+    for d in ds:
+        assert d.id == 'hello'

@@ -3,16 +3,16 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import copy
 import inspect
 from functools import wraps
 from itertools import islice, chain
 from typing import Callable, Any, Union, Iterator, List, Optional, Dict, Iterable
-import copy
 
 import numpy as np
 
 from .metas import get_default_metas
-from ..helper import batch_iterator, typename, convert_tuple_to_list
+from ..helper import batch_iterator, convert_tuple_to_list
 from ..logging import default_logger
 
 
@@ -404,3 +404,24 @@ def single(
         return _single_multi_input(func)
     else:
         return _single_multi_input
+
+
+def requests(func: Callable = None, on: str = 'default') -> Callable:
+    """Decorator for binding an Executor function to requests
+
+    :param func: the function to decorate
+    :param on: the request type to bind
+    :return: the wrapped function
+    """
+
+    def _requests(func):
+        @wraps(func)
+        def arg_wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        return arg_wrapper
+
+    if func:
+        return _requests(func)
+    else:
+        return _requests

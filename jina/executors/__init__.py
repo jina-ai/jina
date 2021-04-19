@@ -20,7 +20,6 @@ from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
-from ..logging.profile import TimeContext
 
 if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
@@ -577,3 +576,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def __str__(self):
         return self.__class__.__name__
+
+
+class GenericExecutor(BaseExecutor):
+    """Alias to BaseExecutor, but bind with GenericDriver by default. """

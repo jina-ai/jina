@@ -21,7 +21,7 @@ from ..enums import OnErrorStrategy
 from ..excepts import LengthMismatchException
 from ..executors.compound import CompoundExecutor
 from ..executors.decorators import wrap_func
-from ..helper import convert_tuple_to_list, cached_property
+from ..helper import convert_tuple_to_list, cached_property, find_request_binding
 from ..jaml import JAMLCompatible
 from ..types.querylang import QueryLang
 from ..types.sets import DocumentSet
@@ -660,6 +660,11 @@ class BaseExecutableDriver(BaseRecursiveDriver):
                 )
         else:
             self._exec = executor
+
+        if not self._method_name:
+            decor_bindings = find_request_binding(self.exec.__class__)
+            if 'default' in decor_bindings:
+                self._method_name = decor_bindings['default']
 
         if self._method_name:
             self._exec_fn = getattr(self.exec, self._method_name)
