@@ -523,15 +523,7 @@ class DocsExtractUpdateMixin:
             from ..proto import jina_pb2
             from .. import Document
 
-            support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
-            support_keys += [
-                name
-                for (name, value) in inspect.getmembers(
-                    Document, lambda x: isinstance(x, property)
-                )
-            ]
-            support_keys = set(support_keys)
-
+            support_keys = Document.get_all_attributes()
             unrecognized_keys = set(required_keys).difference(support_keys)
             if unrecognized_keys:
                 camel_keys = set(

@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from jina import Flow, Document
 from jina.executors import GenericExecutor
@@ -19,64 +20,20 @@ class MyExecutor(GenericExecutor):
         return [{'embedding': np.array([10, 11, 12])}] * len(id)
 
 
-def test_generic_executor_with_routing_default(mocker):
-    index_resp_mock = mocker.Mock()
-    search_resp_mock = mocker.Mock()
-    update_resp_mock = mocker.Mock()
+@pytest.mark.parametrize(
+    'api, result',
+    [['index', [1, 2, 3]], ['search', [4, 5, 6]], ['update', [10, 11, 12]]],
+)
+def test_generic_executor_with_routing_default(api, result, mocker):
+    resp_mock = mocker.Mock()
 
-    def validate_index_resp(req):
-        index_resp_mock()
-        np.testing.assert_equal(req.docs[0].embedding, np.array([1, 2, 3]))
-
-    def validate_search_resp(req):
-        search_resp_mock()
-        np.testing.assert_equal(req.docs[0].embedding, np.array([4, 5, 6]))
-
-    def validate_update_resp(req):
-        update_resp_mock()
-        np.testing.assert_equal(req.docs[0].embedding, np.array([10, 11, 12]))
+    def validate(req):
+        resp_mock()
+        np.testing.assert_equal(req.docs[0].embedding, np.array(result))
 
     f = Flow().add(uses=MyExecutor)
 
     with f:
-        f.index(Document(), on_done=validate_index_resp)
+        getattr(f, api)(Document(), on_done=validate)
 
-    with f:
-        f.search(Document(), on_done=validate_search_resp)
-
-    with f:
-        f.update(Document(), on_done=validate_update_resp)
-
-    index_resp_mock.assert_called()
-    search_resp_mock.assert_called()
-    update_resp_mock.assert_called()
-
-
-def test_generic_executor_with_routing_update(mocker):
-    update_resp_mock = mocker.Mock()
-
-    def validate_index_resp(req):
-        update_resp_mock()
-        np.testing.assert_equal(req.docs[0].embedding, np.array([10, 11, 12]))
-
-    f = Flow().add(uses=MyExecutor)
-
-    with f:
-        f.update(Document(), on_done=validate_index_resp)
-
-    update_resp_mock.assert_called()
-
-
-def test_generic_executor_with_routing_search(mocker):
-    search_resp_mock = mocker.Mock()
-
-    def validate_search_resp(req):
-        search_resp_mock()
-        np.testing.assert_equal(req.docs[0].embedding, np.array([4, 5, 6]))
-
-    f = Flow().add(uses=MyExecutor)
-
-    with f:
-        f.search(Document(), on_done=validate_search_resp)
-
-    search_resp_mock.assert_called()
+    resp_mock.assert_called()

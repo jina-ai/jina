@@ -20,13 +20,11 @@ except:
 from ...proto.jina_pb2 import DocumentProto
 from .traversable import TraversableSequence
 
-if False:
-    from ..document import Document
-    from scipy.sparse import coo_matrix
-
 __all__ = ['DocumentSet']
 
 if False:
+    from ..document import Document
+    from scipy.sparse import coo_matrix
     from scipy.sparse import coo_matrix
 
     # fix type-hint complain for sphinx and flake
