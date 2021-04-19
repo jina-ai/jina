@@ -1,7 +1,9 @@
 from copy import deepcopy
-from typing import Iterable
 
 import numpy as np
+import scipy
+import torch
+import tensorflow as tf
 import pytest
 
 from jina import DocumentSet
@@ -11,23 +13,36 @@ from jina.executors.indexers import BaseVectorIndexer
 from jina.types.document import Document
 
 
-# TODO: Add tests for sparse vectors index driver.
+def embedding_cls_type_supported():
+    return ['dense', 'scipy_csr', 'scipy_coo', 'torch', 'tf']
 
 
 class MockGroundTruthVectorIndexer(BaseVectorIndexer):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, embedding_cls_type, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.docs = {}
+        self.embedding_cls_type = embedding_cls_type
 
-    def add(self, keys: np.ndarray, vectors: np.ndarray, *args, **kwargs):
-        for key, value in zip(keys, vectors):
-            self.docs[key] = value
+    def add(self, keys, vectors, *args, **kwargs):
+        print(f' embedding_cls {self.embedding_cls_type} vs vectors {type(vectors)}')
+        if self.embedding_cls_type in ['dense', 'torch', 'tf']:
+            for key, value in zip(keys, vectors):
+                if self.embedding_cls_type == 'torch':
+                    print(f' value {value}')
+                self.docs[key] = value
+        elif self.embedding_cls_type.startswith('scipy'):
+            for i, key in enumerate(keys):
+                self.docs[key] = vectors.getrow(i)
 
-    def update(self, keys: Iterable[str], vectors: np.ndarray, *args, **kwargs) -> None:
-        for key, value in zip(keys, vectors):
-            self.docs[key] = value
+    def update(self, keys, vectors, *args, **kwargs) -> None:
+        if self.embedding_cls_type in ['dense', 'torch', 'tf']:
+            for key, value in zip(keys, vectors):
+                self.docs[key] = value
+        elif self.embedding_cls_type.startswith('scipy'):
+            for i, key in enumerate(keys):
+                self.docs[key] = vectors.getrow(i)
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    def delete(self, keys, *args, **kwargs) -> None:
         for key in keys:
             del self.docs[key]
 
@@ -60,30 +75,50 @@ def simple_vector_indexer_driver_delete():
 
 
 @pytest.fixture(scope='function')
-def mock_groundtruth_indexer():
-    return MockGroundTruthVectorIndexer()
+def mock_groundtruth_indexer_factory():
+    def indexer(embedding_cls_type):
+        return MockGroundTruthVectorIndexer(embedding_cls_type)
+
+    return indexer
 
 
 @pytest.fixture(scope='function')
-def documents():
-    docs = []
-    for idx in range(5):
-        with Document(text=f'{idx}') as d:
-            d.id = f'{idx:0>16}'
-            d.embedding = np.random.random([10])
+def documents_factory():
+    def documents(embedding_cls_type, text_prefix='', num_docs=5):
+        print(f' HEY JOAN {embedding_cls_type}')
+        docs = []
+        for idx in range(num_docs):
+            with Document(text=f'{text_prefix}{idx}') as d:
+                d.id = f'{idx:0>16}'
+                dense_embedding = np.random.random([10])
+                if embedding_cls_type == 'dense':
+                    d.embedding = dense_embedding
+                elif embedding_cls_type == 'scipy_csr':
+                    d.embedding = scipy.sparse.csr_matrix(dense_embedding)
+                elif embedding_cls_type == 'scipy_coo':
+                    d.embedding = scipy.sparse.coo_matrix(dense_embedding)
+                elif embedding_cls_type == 'torch':
+                    sparse_embedding = scipy.sparse.coo_matrix(dense_embedding)
+                    values = sparse_embedding.data
+                    indices = np.vstack((sparse_embedding.row, sparse_embedding.col))
+                    d.embedding = torch.sparse_coo_tensor(
+                        indices,
+                        values,
+                        sparse_embedding.shape,
+                    )
+                elif embedding_cls_type == 'tf':
+                    sparse_embedding = scipy.sparse.coo_matrix(dense_embedding)
+                    values = sparse_embedding.data
+                    indices = np.vstack((sparse_embedding.row, sparse_embedding.col))
+                    d.embedding = tf.SparseTensor(
+                        indices,
+                        values,
+                        sparse_embedding.shape,
+                    )
             docs.append(d)
-    return DocumentSet(docs)
+        return DocumentSet(docs)
 
-
-@pytest.fixture(scope='function')
-def updated_documents():
-    docs = []
-    for idx in range(3):
-        with Document(text='updated_' + f'{idx}') as d:
-            d.id = f'{idx:0>16}'
-            d.embedding = np.random.random([10])
-            docs.append(d)
-    return DocumentSet(docs)
+    return documents
 
 
 @pytest.fixture(scope='function')
@@ -106,28 +141,47 @@ def empty_documents():
     return DocumentSet(docs)
 
 
+def assert_embedding(embedding_cls_type, obtained, expected):
+    if embedding_cls_type == 'dense':
+        np.testing.assert_equal(obtained, expected.embedding)
+    elif embedding_cls_type.startswith('scipy'):
+        np.testing.assert_equal(obtained.todense(), expected.embedding.todense())
+    elif embedding_cls_type == 'torch':
+        print(f'expected {expected.embedding.todense()}')
+        print(f'obtained {obtained.to_dense()}')
+        np.testing.assert_array_equal(
+            expected.embedding.todense(), obtained.to_dense().numpy()
+        )
+
+
+@pytest.mark.parametrize('embedding_cls_type', embedding_cls_type_supported())
 def test_vector_index_driver_add(
-    mock_groundtruth_indexer, simple_vector_indexer_driver_add, documents
+    simple_vector_indexer_driver_add,
+    mock_groundtruth_indexer_factory,
+    documents_factory,
+    embedding_cls_type,
 ):
-    simple_vector_indexer_driver_add.attach(
-        executor=mock_groundtruth_indexer, runtime=None
-    )
+    indexer = mock_groundtruth_indexer_factory(embedding_cls_type)
+    documents = documents_factory(embedding_cls_type)
+    simple_vector_indexer_driver_add.attach(executor=indexer, runtime=None)
     simple_vector_indexer_driver_add._apply_all(documents)
-    assert len(mock_groundtruth_indexer.docs) == 5
+    assert len(indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
+        assert_embedding(embedding_cls_type, indexer.docs[doc.id], doc)
 
 
+@pytest.mark.parametrize('embedding_cls_type', embedding_cls_type_supported())
 def test_vector_index_driver_add_bad_docs(
     mocker,
-    mock_groundtruth_indexer,
+    mock_groundtruth_indexer_factory,
     simple_vector_indexer_driver_add,
-    documents,
+    documents_factory,
     empty_documents,
+    embedding_cls_type,
 ):
-    simple_vector_indexer_driver_add.attach(
-        executor=mock_groundtruth_indexer, runtime=None
-    )
+    indexer = mock_groundtruth_indexer_factory(embedding_cls_type)
+    documents = documents_factory(embedding_cls_type)
+    simple_vector_indexer_driver_add.attach(executor=indexer, runtime=None)
     logger_mock = mocker.Mock()
     pea_mock = mocker.Mock()
     pea_mock.logger = logger_mock
@@ -139,64 +193,64 @@ def test_vector_index_driver_add_bad_docs(
     simple_vector_indexer_driver_add._apply_all(union)
 
     # make sure the warning for bad docs is triggered
-    assert len(mock_groundtruth_indexer.docs) == 5
+    assert len(indexer.docs) == 5
     for idx, doc in enumerate(documents):
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
+        assert_embedding(embedding_cls_type, indexer.docs[doc.id], doc)
     for idx, doc in enumerate(empty_documents):
-        assert doc.id not in mock_groundtruth_indexer.docs
+        assert doc.id not in indexer.docs
 
 
+@pytest.mark.parametrize('embedding_cls_type', embedding_cls_type_supported())
 def test_vector_index_driver_update(
-    mock_groundtruth_indexer,
+    mock_groundtruth_indexer_factory,
     simple_vector_indexer_driver_add,
     simple_vector_indexer_driver_update,
-    documents,
-    updated_documents,
+    documents_factory,
+    embedding_cls_type,
 ):
-    simple_vector_indexer_driver_add.attach(
-        executor=mock_groundtruth_indexer, runtime=None
-    )
+    indexer = mock_groundtruth_indexer_factory(embedding_cls_type)
+    documents = documents_factory(embedding_cls_type)
+    updated_documents = documents_factory(embedding_cls_type, 'update', 3)
+    simple_vector_indexer_driver_add.attach(executor=indexer, runtime=None)
     simple_vector_indexer_driver_add._apply_all(documents)
 
-    simple_vector_indexer_driver_update.attach(
-        executor=mock_groundtruth_indexer, runtime=None
-    )
+    simple_vector_indexer_driver_update.attach(executor=indexer, runtime=None)
     simple_vector_indexer_driver_update._apply_all(updated_documents)
 
-    assert len(mock_groundtruth_indexer.docs) == 5
+    assert len(indexer.docs) == 5
     for idx, doc in enumerate(updated_documents):
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
+        assert_embedding(embedding_cls_type, indexer.docs[doc.id], doc)
     for idx in range(3, 5):
         doc = documents[idx]
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
+        assert_embedding(embedding_cls_type, indexer.docs[doc.id], doc)
 
 
+@pytest.mark.parametrize('embedding_cls_type', embedding_cls_type_supported())
 def test_vector_index_driver_delete(
-    mock_groundtruth_indexer,
+    mock_groundtruth_indexer_factory,
     simple_vector_indexer_driver_add,
     simple_vector_indexer_driver_delete,
-    documents,
+    documents_factory,
     deleted_documents,
     mocker,
+    embedding_cls_type,
 ):
-    simple_vector_indexer_driver_add.attach(
-        executor=mock_groundtruth_indexer, runtime=None
-    )
+    indexer = mock_groundtruth_indexer_factory(embedding_cls_type)
+    documents = documents_factory(embedding_cls_type)
+    simple_vector_indexer_driver_add.attach(executor=indexer, runtime=None)
     simple_vector_indexer_driver_add._apply_all(documents)
 
-    simple_vector_indexer_driver_delete.attach(
-        executor=mock_groundtruth_indexer, runtime=None
-    )
+    simple_vector_indexer_driver_delete.attach(executor=indexer, runtime=None)
     mock_load = mocker.patch.object(
         simple_vector_indexer_driver_delete, 'runtime', autospec=True
     )
     mock_load.request.ids = [d.id for d in deleted_documents]
     simple_vector_indexer_driver_delete()
 
-    assert len(mock_groundtruth_indexer.docs) == 2
+    assert len(indexer.docs) == 2
     for idx in range(3, 5):
         doc = documents[idx]
-        np.testing.assert_equal(mock_groundtruth_indexer.docs[doc.id], doc.embedding)
+        assert_embedding(embedding_cls_type, indexer.docs[doc.id], doc)
 
     for idx, doc in enumerate(deleted_documents):
-        assert doc.id not in mock_groundtruth_indexer.docs
+        assert doc.id not in indexer.docs
