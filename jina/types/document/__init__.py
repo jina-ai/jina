@@ -13,8 +13,8 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from .traversable import Traversable
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
+from .traversable import Traversable
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..querylang.queryset.dunderkey import dunder_get
@@ -27,7 +27,6 @@ from ...helper import (
     typename,
     random_identity,
     download_mermaid_url,
-    cached_property,
 )
 from ...importer import ImportExtensions
 from ...logging import default_logger
@@ -1174,10 +1173,10 @@ class Document(ProtoTypeMixin, Traversable):
 
         mermaid_str = (
             """
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-classDiagram
-
-        """
+    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+    classDiagram
+    
+            """
             + self.__mermaid_str__()
         )
 
