@@ -149,8 +149,6 @@ f = Flow().add(uses=MyExecutor)
 
 This creates a simple Flow with `MyExecutor` defined above. You can chain multiple `.add()`s in a Flow.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-visualize-a-flow.ipynb)
-
 To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be displayed inline *without* `plot`.
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
