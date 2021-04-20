@@ -32,10 +32,11 @@ class ProtoTypeMixin:
         """
         return self._pb_body
 
-    def str(self) -> str:
+    @property
+    def binary_str(self) -> bytes:
         """Return the serialized the message to a string.
 
-        :return: string representation of the object
+        :return: binary string representation of the object
         """
         return self._pb_body.SerializeToString()
 
