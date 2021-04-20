@@ -309,7 +309,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 ### Add Logic
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-add-logic.ipynb)
 
-To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://101.jina.ai/#executor). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
+To add logic to the Flow, use the `uses` parameter to add an [Executor](https://101.jina.ai/#executor). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
 
 
 ```python
@@ -321,7 +321,7 @@ f = (Flow().add(uses=MyBertEncoder)  # the class of a Jina Executor
            .add(uses={'__cls': 'MyBertEncoder', 'with': {'param': 1.23}}))  # dict config object with __cls keyword
 ```
 
-The power of Jina lies in its decentralized architecture: Each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
+The power of Jina lies in its decentralized architecture: Each `add` creates a new Executor, and these Executors can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
 
 ### Inter & Intra Parallelism
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
@@ -337,7 +337,7 @@ f = (Flow().add(name='p1', needs='gateway')
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot3.svg?raw=true"/>
 
-`p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Pods until they finish their work. Note: parallelism can also be performed inside a Pod using `parallel`:
+`p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Executors until they finish their work. Note: parallelism can also be performed inside a Executor using `parallel`:
 
 ```python
 f = (Flow().add(name='p1', needs='gateway')
@@ -351,7 +351,7 @@ f = (Flow().add(name='p1', needs='gateway')
 ### Decentralized Flow
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/decentralized-flow.ipynb)
 
-A Flow does not have to be local-only: You can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod`, is put to a remote machine for parallelization, whereas other Pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
+A Flow does not have to be local-only: You can put any Executor to remote(s). In the example below, with the `host` keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
 
 <table>
     <tr>
@@ -379,7 +379,7 @@ from jina import Flow
 
 f = (Flow()
      .add()
-     .add(name='gpu_pod',
+     .add(name='gpu_exec',
           uses='mwu_encoder.yml',
           host='123.456.78.9:8000',
           parallel=2,
