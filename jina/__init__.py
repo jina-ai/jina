@@ -208,6 +208,7 @@ from jina.executors.evaluators import BaseEvaluator as Evaluator
 from jina.executors.indexers import BaseIndexer as Indexer
 from jina.executors.rankers import BaseRanker as Ranker
 from jina.executors.segmenters import BaseSegmenter as Segmenter
+from jina.executors.decorators import requests
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])
