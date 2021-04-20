@@ -16,11 +16,11 @@ class DummyEncoderTextBatching(BaseEncoder):
 
     @as_ndarray
     @batching(batch_size=3)
-    def encode(self, data, *args, **kwargs):
-        assert isinstance(data, np.ndarray)
-        assert isinstance(data[0], str)
-        assert data.shape[0] == 3
-        return np.random.random((data.shape[0], EMBED_SIZE))
+    def encode(self, content: 'np.ndarray', *args, **kwargs):
+        assert isinstance(content, np.ndarray)
+        assert isinstance(content[0], str)
+        assert content.shape[0] == 3
+        return np.random.random((content.shape[0], EMBED_SIZE))
 
 
 class DummyEncoderTextSingle(BaseEncoder):
@@ -29,8 +29,8 @@ class DummyEncoderTextSingle(BaseEncoder):
 
     @as_ndarray
     @single
-    def encode(self, data, *args, **kwargs):
-        assert isinstance(data, str)
+    def encode(self, content, *args, **kwargs):
+        assert isinstance(content, str)
         return np.random.random(EMBED_SIZE)
 
 
@@ -52,11 +52,11 @@ class DummyEncoderBlobBatching(BaseEncoder):
 
     @as_ndarray
     @batching(batch_size=3)
-    def encode(self, data, *args, **kwargs):
-        assert isinstance(data, np.ndarray)
-        assert isinstance(data[0], np.ndarray)
-        assert data.shape[0] == 3
-        return np.random.random((data.shape[0], EMBED_SIZE))
+    def encode(self, content, *args, **kwargs):
+        assert isinstance(content, np.ndarray)
+        assert isinstance(content[0], np.ndarray)
+        assert content.shape[0] == 3
+        return np.random.random((content.shape[0], EMBED_SIZE))
 
 
 class DummyEncoderBlobSingle(BaseEncoder):
@@ -65,8 +65,8 @@ class DummyEncoderBlobSingle(BaseEncoder):
 
     @as_ndarray
     @single
-    def encode(self, data, *args, **kwargs):
-        assert isinstance(data, np.ndarray)
+    def encode(self, content, *args, **kwargs):
+        assert isinstance(content, np.ndarray)
         return np.random.random(EMBED_SIZE)
 
 

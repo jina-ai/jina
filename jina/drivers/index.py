@@ -3,9 +3,8 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable, Optional
 
-import numpy as np
-
 from . import BaseExecutableDriver, FlatRecursiveMixin
+from ..enums import EmbeddingClsType
 
 if False:
     from ..types.sets import DocumentSet
@@ -39,12 +38,27 @@ class VectorIndexDriver(BaseIndexDriver):
     If `method` is not 'delete', documents without content are filtered out.
     """
 
+    @property
+    def exec_embedding_cls_type(self) -> EmbeddingClsType:
+        """Get the sparse class type of the attached executor.
+
+        :return: Embedding class type of the attached executor, default value is `dense`
+        """
+        return EmbeddingClsType.from_string(self.exec.embedding_cls_type)
+
+    def _get_documents_embeddings(self, docs: 'DocumentSet'):
+        embedding_cls_type = self.exec_embedding_cls_type
+        if embedding_cls_type.is_dense:
+            return docs.all_embeddings
+        else:
+            return docs.get_all_sparse_embeddings(embedding_cls_type=embedding_cls_type)
+
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embed_vecs, docs_pts = docs.all_embeddings
+        embed_vecs, docs_pts = self._get_documents_embeddings(docs)
         if docs_pts:
             keys = [doc.id for doc in docs_pts]
             self.check_key_length(keys)
-            self.exec_fn(keys, np.stack(embed_vecs))
+            self.exec_fn(keys, embed_vecs)
 
 
 class KVIndexDriver(BaseIndexDriver):
@@ -56,3 +70,29 @@ class KVIndexDriver(BaseIndexDriver):
             keys, values = zip(*info)
             self.check_key_length(keys)
             self.exec_fn(keys, values)
+
+
+class DBMSIndexDriver(BaseIndexDriver):
+    """Forwards ids, vectors, serialized Document to a BaseDBMSIndexer"""
+
+    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+        info = [
+            (
+                doc.id,
+                doc.embedding,
+                self._doc_without_embedding(doc).SerializeToString(),
+            )
+            for doc in docs
+        ]
+        if info:
+            ids, vecs, metas = zip(*info)
+            self.check_key_length(ids)
+            self.exec_fn(ids, vecs, metas)
+
+    @staticmethod
+    def _doc_without_embedding(d):
+        from .. import Document
+
+        new_doc = Document(d, copy=True)
+        new_doc.ClearField('embedding')
+        return new_doc

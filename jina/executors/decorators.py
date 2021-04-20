@@ -3,16 +3,16 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import copy
 import inspect
 from functools import wraps
 from itertools import islice, chain
 from typing import Callable, Any, Union, Iterator, List, Optional, Dict, Iterable
-import copy
 
 import numpy as np
 
 from .metas import get_default_metas
-from ..helper import batch_iterator, typename, convert_tuple_to_list
+from ..helper import batch_iterator, convert_tuple_to_list
 from ..logging import default_logger
 
 
@@ -49,27 +49,6 @@ def as_update_method(func: Callable) -> Callable:
     return arg_wrapper
 
 
-def as_train_method(func: Callable) -> Callable:
-    """Mark a function as the training function of this executor.
-    Will set the is_trained property after function is called.
-    :param func: the function to decorate
-    :return: the wrapped function
-    """
-
-    @wraps(func)
-    def arg_wrapper(self, *args, **kwargs):
-        if self.is_trained:
-            self.logger.warning(
-                f'"{typename(self)}" has been trained already, '
-                'training it again will override the previous training'
-            )
-        f = func(self, *args, **kwargs)
-        self.is_trained = True
-        return f
-
-    return arg_wrapper
-
-
 def wrap_func(cls, func_lst, wrapper):
     """Wrapping a class method only once, inherited but not overridden method will not be wrapped again
 
@@ -101,28 +80,6 @@ def as_ndarray(func: Callable, dtype=np.float32) -> Callable:
             return np.array(r, dtype)
         else:
             raise TypeError(f'unrecognized type {r_type}: {type(r)}')
-
-    return arg_wrapper
-
-
-def require_train(func: Callable) -> Callable:
-    """Mark an :class:`BaseExecutor` function as training required, so it can only be called
-    after the function decorated by ``@as_train_method``.
-     :param func: the function to decorate
-     :return: the wrapped function
-    """
-
-    @wraps(func)
-    def arg_wrapper(self, *args, **kwargs):
-        if hasattr(self, 'is_trained'):
-            if self.is_trained:
-                return func(self, *args, **kwargs)
-            else:
-                raise RuntimeError(
-                    f'training is required before calling "{func.__name__}"'
-                )
-        else:
-            raise AttributeError(f'{self!r} has no attribute "is_trained"')
 
     return arg_wrapper
 
@@ -447,3 +404,25 @@ def single(
         return _single_multi_input(func)
     else:
         return _single_multi_input
+
+
+def requests(func: Callable = None, on: str = 'default') -> Callable:
+    """Decorator for binding an Executor function to requests
+
+    :param func: the Executor function to decorate
+    :param on: the request type to bind, e.g. IndexRequest, SearchRequest, UpdateRequest, DeleteRequest, etc.
+            you may also use `index`, `search`, `update`, `delete` as shortcut.
+    :return: the wrapped function
+    """
+
+    def _requests(func):
+        @wraps(func)
+        def arg_wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        return arg_wrapper
+
+    if func:
+        return _requests(func)
+    else:
+        return _requests

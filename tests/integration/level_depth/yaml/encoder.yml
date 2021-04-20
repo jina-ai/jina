@@ -1,4 +1,4 @@
-!OneHotTextEncoder
+!DummyOneHotTextEncoder
 metas:
   name: encoder
 requests:

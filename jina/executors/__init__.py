@@ -10,7 +10,6 @@ from types import SimpleNamespace
 from typing import Dict, TypeVar, Type, List, Optional
 
 from .decorators import (
-    as_train_method,
     as_update_method,
     store_init_kwargs,
     as_aggregate_method,
@@ -21,14 +20,13 @@ from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
 from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
-from ..logging.profile import TimeContext
 
+# noinspection PyUnreachableCode
 if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
     from ..drivers import BaseDriver
 
-
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
+__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType', 'GenericExecutor']
 
 AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 
@@ -92,8 +90,7 @@ class ExecutorType(type(JAMLCompatible), type):
         :param cls: The class.
         :return: The class, after being registered.
         """
-        update_funcs = ['train', 'add', 'delete', 'update']
-        train_funcs = ['train']
+        update_funcs = ['add', 'delete', 'update']
         aggregate_funcs = ['evaluate']
 
         reg_cls_set = getattr(cls, '_registered_class', set())
@@ -101,7 +98,6 @@ class ExecutorType(type(JAMLCompatible), type):
         cls_id = f'{cls.__module__}.{cls.__name__}'
         if cls_id not in reg_cls_set or getattr(cls, 'force_register', False):
             wrap_func(cls, ['__init__'], store_init_kwargs)
-            wrap_func(cls, train_funcs, as_train_method)
             wrap_func(cls, update_funcs, as_update_method)
             wrap_func(cls, aggregate_funcs, as_aggregate_method)
 
@@ -150,21 +146,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
 
     store_args_kwargs = False  #: set this to ``True`` to save ``args`` (in a list) and ``kwargs`` (in a map) in YAML config
-    exec_methods = [
-        'encode',
-        'add',
-        'query',
-        'craft',
-        'segment',
-        'score',
-        'evaluate',
-        'predict',
-        'query_by_key',
-        'delete',
-        'update',
-        # TODO make Dump a control request to be passed to the Pod directly
-        'dump',
-    ]
 
     def __init__(self, *args, **kwargs):
         if isinstance(args, tuple) and len(args) > 0:
@@ -182,17 +163,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         _requests: Optional[Dict] = None,
         fill_in_metas: bool = True,
     ) -> None:
-        with TimeContext('post_init may take some time', self.logger):
-            if fill_in_metas:
-                if not _metas:
-                    _metas = get_default_metas()
+        if fill_in_metas:
+            if not _metas:
+                _metas = get_default_metas()
 
-                self._fill_metas(_metas)
-                self.fill_in_drivers(_requests)
+            self._fill_metas(_metas)
+            self.fill_in_drivers(_requests)
 
-            _before = set(list(vars(self).keys()))
-            self.post_init()
-            self._post_init_vars = {k for k in vars(self) if k not in _before}
+        _before = set(list(vars(self).keys()))
+        self.post_init()
+        self._post_init_vars = {k for k in vars(self) if k not in _before}
 
     def fill_in_drivers(self, _requests: Optional[Dict]):
         """
@@ -262,7 +242,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
                     if not _drivers[r]:
                         _drivers.pop(r)
-
         return _drivers
 
     def _fill_metas(self, _metas):
@@ -451,15 +430,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 exc_info=True,
             )
 
-    def train(self, *args, **kwargs) -> None:
-        """
-        Train this executor, need to be overridden
-
-        :param args: Additional arguments.
-        :param kwargs: Additional key word arguments.
-        """
-        pass
-
     def touch(self) -> None:
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
@@ -588,9 +558,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param args: Additional arguments.
         :param kwargs: Additional key word arguments.
         """
-        for drivers in self._drivers.values():
+        for req_type, drivers in self._drivers.items():
             for driver in drivers:
-                driver.attach(executor=self, runtime=runtime, *args, **kwargs)
+                driver.attach(
+                    executor=self, runtime=runtime, req_type=req_type, *args, **kwargs
+                )
 
         # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
@@ -619,3 +591,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def __str__(self):
         return self.__class__.__name__
+
+
+class GenericExecutor(BaseExecutor):
+    """Alias to BaseExecutor, but bind with GenericDriver by default. """

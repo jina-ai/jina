@@ -5,12 +5,6 @@ schema_metas = {
         'required': [],
         'additionalProperties': False,
         'properties': {
-            'is_trained': {
-                'description': 'Indicates if the executor is trained or not. '
-                'If not, then methods decorated by `@required_train` can not be executed.',
-                'type': 'boolean',
-                'default': False,
-            },
             'is_updated': {
                 'description': 'Indicates if the executor is updated or changed since last save. '
                 'If not, then save() will do nothing. A forced save is possible to use `touch()` before `save()`',

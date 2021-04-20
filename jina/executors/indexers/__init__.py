@@ -10,13 +10,29 @@ from .. import BaseExecutor
 from ..compound import CompoundExecutor
 from ...helper import call_obj_fn, cached_property, get_readable_size
 
+if False:
+    from typing import TypeVar
+    import scipy
+    import tensorflow as tf
+    import torch
+
+    EncodingType = TypeVar(
+        'EncodingType',
+        np.ndarray,
+        scipy.sparse.csr_matrix,
+        scipy.sparse.coo_matrix,
+        scipy.sparse.bsr_matrix,
+        scipy.sparse.csc_matrix,
+        torch.sparse_coo_tensor,
+        tf.SparseTensor,
+    )
+
 
 class BaseIndexer(BaseExecutor):
     """Base class for storing and searching any kind of data structure.
 
     The key functions here are :func:`add` and :func:`query`.
-    One can decorate them with :func:`jina.decorator.require_train`,
-    :func:`jina.helper.batching` and :func:`jina.logging.profile.profiling`.
+    One can decorate them with :func:`jina.helper.batching` and :func:`jina.logging.profile.profiling`.
 
     One should always inherit from either :class:`BaseVectorIndexer` or :class:`BaseKVIndexer`.
 
@@ -250,6 +266,8 @@ class BaseVectorIndexer(BaseIndexer):
     It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
     """
 
+    embedding_cls_type = 'dense'
+
     def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
         """Get the vectors by id, return a subset of indexed vectors
 
@@ -259,7 +277,9 @@ class BaseVectorIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
+    def add(
+        self, keys: Iterable[str], vectors: 'EncodingType', *args, **kwargs
+    ) -> None:
         """Add new chunks and their vector representations
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
@@ -270,7 +290,7 @@ class BaseVectorIndexer(BaseIndexer):
         raise NotImplementedError
 
     def query(
-        self, vectors: 'np.ndarray', top_k: int, *args, **kwargs
+        self, vectors: 'EncodingType', top_k: int, *args, **kwargs
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
 
@@ -282,7 +302,7 @@ class BaseVectorIndexer(BaseIndexer):
         raise NotImplementedError
 
     def update(
-        self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs
+        self, keys: Iterable[str], vectors: 'EncodingType', *args, **kwargs
     ) -> None:
         """Update vectors on the index.
 

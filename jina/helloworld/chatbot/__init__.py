@@ -43,9 +43,20 @@ def hello_world(args):
     # now comes the real work
     # load index flow from a YAML file
 
+    # TODO: remove this patch after https://github.com/jina-ai/jina/pull/2313 is merged
+    # BEGIN PATCH
+    from jina.hub.encoders.nlp.TransformerTorchEncoder import TransformerTorchEncoder
+    import numpy as np
+
+    class MyTransformer(TransformerTorchEncoder):
+        def encode(self, content: 'np.ndarray', *args, **kwargs):
+            return super(MyTransformer, self).encode(content, *args, **kwargs)
+
+    # END PATCH
+
     f = (
         Flow()
-        .add(uses='TransformerTorchEncoder', parallel=args.parallel)
+        .add(uses='MyTransformer', parallel=args.parallel)
         .add(
             uses=f'{resource_filename("jina", "resources")}/chatbot/helloworld.indexer.yml'
         )

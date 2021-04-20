@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document
-from jina.drivers.dbms import _doc_without_embedding
+from jina.drivers.index import DBMSIndexDriver
 from jina.executors.indexers.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import CompoundQueryExecutor
@@ -70,17 +70,24 @@ def assert_dump_data(dump_path, docs, shards, pea_id):
     metas_dump = list(metas_dump)
     np.testing.assert_equal(
         metas_dump,
-        [_doc_without_embedding(d).SerializeToString() for d in docs_expected],
+        [
+            DBMSIndexDriver._doc_without_embedding(d).SerializeToString()
+            for d in docs_expected
+        ],
     )
 
     # assert with Indexers
-    # noinspection PyTypeChecker
     # TODO currently metas are only passed to the parent Compound, not to the inner components
-    cp: CompoundQueryExecutor = BaseQueryIndexer.load_config(
-        'indexer_query.yml',
-        pea_id=pea_id,
-        metas={'workspace': os.path.join(dump_path, 'new_ws'), 'dump_path': dump_path},
-    )
+    with TimeContext(f'### reloading {len(docs_expected)}'):
+        # noinspection PyTypeChecker
+        cp: CompoundQueryExecutor = BaseQueryIndexer.load_config(
+            'indexer_query.yml',
+            pea_id=pea_id,
+            metas={
+                'workspace': os.path.join(dump_path, 'new_ws'),
+                'dump_path': dump_path,
+            },
+        )
     for c in cp.components:
         assert c.size == len(docs_expected)
 
@@ -107,7 +114,7 @@ def path_size(dump_path):
 @pytest.mark.parametrize('shards', [6, 3, 1])
 @pytest.mark.parametrize('nr_docs', [7])
 @pytest.mark.parametrize('emb_size', [10])
-def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
+def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, run_basic=False):
     docs = list(get_documents(nr=nr_docs, index_start=0, emb_size=emb_size))
     assert len(docs) == nr_docs
     nr_search = 1
@@ -125,14 +132,17 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
                 assert len(d.matches) > 0
             for m in d.matches:
                 assert m.embedding.shape[0] == emb_size
-                assert _doc_without_embedding(m).SerializeToString() is not None
+                assert (
+                    DBMSIndexDriver._doc_without_embedding(m).SerializeToString()
+                    is not None
+                )
                 assert 'hello world' in m.text
                 assert f'tag data' in m.tags['tag_field']
 
     def error_callback(resp):
         raise Exception('error callback called')
 
-    if benchmark:
+    if run_basic:
         basic_benchmark(
             tmpdir, docs, _validate_results_nonempty, error_callback, nr_search
         )
@@ -144,8 +154,7 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
             flow_dbms.index(docs)
 
         with TimeContext(f'### dumping {len(docs)} docs'):
-            # TODO move to control request approach
-            flow_dbms.dump('indexer_dbms', dump_path, shards=shards, timeout=120)
+            flow_dbms.dump('indexer_dbms', dump_path, shards=shards, timeout=-1)
 
         dir_size = path_size(dump_path)
         print(f'### dump path size: {dir_size} MBs')
@@ -160,8 +169,7 @@ def test_dump_keyvalue(tmpdir, shards, nr_docs, emb_size, benchmark=False):
     'GITHUB_WORKFLOW' in os.environ, reason='skip the benchmark test on github workflow'
 )
 def test_benchmark(tmpdir):
-    # TODO 10000 seems to break the test
-    nr_docs = 8000
+    nr_docs = 100000
     return test_dump_keyvalue(
-        tmpdir, shards=1, nr_docs=nr_docs, emb_size=128, benchmark=True
+        tmpdir, shards=1, nr_docs=nr_docs, emb_size=128, run_basic=True
     )
