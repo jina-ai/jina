@@ -16,18 +16,40 @@ def config(tmpdir):
     del os.environ['JINA_REPLICA_DIR']
 
 
-def test_normal():
+def get_doc(i):
+    return Document(text=f'doc {i}', embedding=np.array([i] * 5))
+
+
+def test_normal(config):
+    # this test is a bit hacky.
+    # It uses the score field to pass the information of the used replica during search.
+    # Please don't use it that way in application code
+    used_replicas = []
+
+    def handle_search_result(resp):
+        used_replicas.append(list(resp.search.docs)[0].matches[0].score.value)
+
     flow = Flow().add(
         name='pod1',
-        replicas=2,
-        parallel=3,
+        uses=os.path.join(cur_dir, 'yaml/mock_index_vector.yml'),
+        replicas=3,
+        parallel=2,
         port_in=5100,
         port_out=5200,
     )
     with flow:
-        flow.index(Document(text='documents before rolling update'))
+        for i in range(20):
+            # test rolling update does not hang
+            flow.search(get_doc(0), on_done=handle_search_result)
+
+    # 20 time one of the replicas is called
+    assert len(used_replicas) == 20
+
+    # there are three replicas in total
+    assert set(used_replicas) == {0.0, 1.0, 2.0}
 
 
+@pytest.mark.timeout(5)
 def test_simple_run():
     flow = Flow().add(
         name='pod1',
@@ -37,9 +59,10 @@ def test_simple_run():
         port_out=5200,
     )
     with flow:
-        flow.index(Document(text='documents before rolling update'))
+        # test rolling update does not hang
+        flow.search(get_doc(0))
         flow.rolling_update('pod1')
-        flow.index(Document(text='documents after rolling update'))
+        flow.search(get_doc(1))
 
 
 def test_thread_run():
@@ -57,27 +80,27 @@ def test_thread_run():
         x.join()
         # TODO there is a problem with the gateway even after request times out - open issue
         for i in range(600):
-            flow.search(Document(text='documents after rolling update'))
+            flow.search(get_doc(i))
 
 
 def test_vector_indexer_thread(config):
     with Flow().add(
         name='pod1',
-        uses=os.path.join(cur_dir, 'yaml/index_vector.yml'),
+        uses=os.path.join(cur_dir, 'yaml/mock_index_vector.yml'),
         replicas=2,
         parallel=3,
         port_in=5100,
         port_out=5200,
     ) as flow:
         for i in range(5):
-            flow.search(Document(text=f'documents before rolling update {i}'))
+            flow.search(get_doc(i))
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
         x.start()
         # TODO there is a problem with the gateway even after request times out - open issue
         # TODO remove the join to make it asynchronous again
         x.join()
         for i in range(40):
-            flow.search(Document(text='documents after rolling update'))
+            flow.search(get_doc(i))
 
 
 def test_workspace(config, tmpdir):
@@ -91,7 +114,7 @@ def test_workspace(config, tmpdir):
     ) as flow:
         # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
         for i in range(10):
-            flow.index(Document(text=f'indexed doc {i}', embedding=np.array([i] * 5)))
+            flow.index(get_doc(i))
 
         # validate created workspaces
         dirs = set(os.listdir(tmpdir))
@@ -216,19 +239,3 @@ def test_port_configuration(replicas_and_parallel):
                         getattr(pod.args, 'parallel', 1),
                     )
         assert pod
-
-
-def test_use_before_use_after():
-    pass
-
-
-def test_gateway():
-    pass
-
-
-def test_flow_plot():
-    pass
-
-
-def test_workspace_configuration():
-    pass
