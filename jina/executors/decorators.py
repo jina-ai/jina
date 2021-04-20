@@ -409,8 +409,9 @@ def single(
 def requests(func: Callable = None, on: str = 'default') -> Callable:
     """Decorator for binding an Executor function to requests
 
-    :param func: the function to decorate
-    :param on: the request type to bind
+    :param func: the Executor function to decorate
+    :param on: the request type to bind, e.g. IndexRequest, SearchRequest, UpdateRequest, DeleteRequest, etc.
+            you may also use `index`, `search`, `update`, `delete` as shortcut.
     :return: the wrapped function
     """
 
