@@ -1,3 +1,5 @@
+# Jina Cookbook
+
 |     |   |
 | --- |---|
 | 🥚  | [Document](#document) • [Executor](#executor) • [Flow](#flow) • [Wrap-up](#wrap-up)  |
@@ -5,7 +7,6 @@
 | 🐤 | [CRUD Functions](#crud-functions) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
-# Jina Cookbook
 
 These code snippets provide a short introduction to Jina's functionality and design framework. To run a snippet, just click the "run" button next to the snippet.
 
@@ -174,13 +175,6 @@ with Flow().add(uses=MyExecutor) as f:
 Get the vibe? Now we're talking! Let's learn more about the basic concepts and features of Jina:
 
 ---
-
-|     |   |
-| --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
-| 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
-
 
 ## 🐣 Basic
 
@@ -450,6 +444,7 @@ if __name__ == '__main__':
 
 `AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. As Jupyter/ipython already manages an eventloop and thanks to [`autoawait`](https://ipython.readthedocs.io/en/stable/interactive/autoawait.html), `AsyncFlow` can run out-of-the-box in Jupyter.
 
+---
 
 ### CRUD Functions
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-basic-crud-functions.ipynb)
