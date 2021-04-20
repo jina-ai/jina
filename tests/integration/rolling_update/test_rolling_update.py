@@ -1,11 +1,12 @@
 import os
 import threading
-import time
 import pytest
 import numpy as np
 
 from jina import Document
 from jina.flow import Flow
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture
@@ -23,7 +24,6 @@ def test_normal():
         port_in=5100,
         port_out=5200,
     )
-
     with flow:
         flow.index(Document(text='documents before rolling update'))
 
@@ -36,7 +36,6 @@ def test_simple_run():
         port_in=5100,
         port_out=5200,
     )
-
     with flow:
         flow.index(Document(text='documents before rolling update'))
         flow.rolling_update('pod1')
@@ -64,7 +63,7 @@ def test_thread_run():
 def test_vector_indexer_thread(config):
     with Flow().add(
         name='pod1',
-        uses='tests/integration/rolling_update/yaml/index_vector.yml',
+        uses=os.path.join(cur_dir, 'yaml/index_vector.yml'),
         replicas=2,
         parallel=3,
         port_in=5100,
@@ -84,7 +83,7 @@ def test_vector_indexer_thread(config):
 def test_workspace(config, tmpdir):
     with Flow().add(
         name='pod1',
-        uses='tests/integration/rolling_update/yaml/simple_index_vector.yml',
+        uses=os.path.join(cur_dir, 'yaml/simple_index_vector.yml'),
         replicas=2,
         parallel=3,
         port_in=5100,
