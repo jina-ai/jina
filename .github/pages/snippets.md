@@ -1,107 +1,21 @@
-# Jina Code Snippets
-
-These code snippets provide a short introduction to Jina's functionality and design framework. To run a snippet in a Jupyter Notebook, just click the "run" button next to the snippet.
-
 |     |   |
 | --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
+| 🥚  | [Document](#document) • [Executor](#executor) • [Flow](#flow) • [Wrap-up](#wrap-up)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🐤 | [CRUD Functions](#crud-functions) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
+
+# Jina Cookbook
+
+These code snippets provide a short introduction to Jina's functionality and design framework. To run a snippet, just click the "run" button next to the snippet.
 
 ## 🥚 Fundamentals
 
-### CRUD Functions
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-basic-crud-functions.ipynb)
+Document, Executor, Flow are the three fundamental concepts in Jina.
 
-
-
-First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With Documents below as an example:
-```python
-import numpy as np
-from jina import Document
-docs = [Document(id='🐲', embedding=np.array([0, 0]), tags={'guardian': 'Azure Dragon', 'position': 'East'}),
-        Document(id='🐦', embedding=np.array([1, 0]), tags={'guardian': 'Vermilion Bird', 'position': 'South'}),
-        Document(id='🐢', embedding=np.array([0, 1]), tags={'guardian': 'Black Tortoise', 'position': 'North'}),
-        Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
-```
-
-Let's build a Flow with a simple indexer:
-
-```python
-from jina import Flow
-f = Flow().add(uses='_index')
-```
-
-`Document` and `Flow` are basic concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured storage that you can use out of the box.
-
-<table>
-  <tr>
-    <td>
-    <b>Index</b>
-    </td>
-    <td>
-
-```python
-# save four docs (both embedding and structured info) into storage
-with f:
-    f.index(docs, on_done=print)
-```
-
-</td>
-</tr>
-  <tr>
-    <td>
-    <b>Search</b>
-    </td>
-    <td>
-
-```python
-# retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively
-with f:
-    f.search(docs[0], top_k=3, on_done=lambda x: print(x.docs[0].matches))
-```
-
-<sup>
-
-```json
-{"id": "🐲", "tags": {"guardian": "Azure Dragon", "position": "East"}, "embedding": {"dense": {"buffer": "AAAAAAAAAAAAAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
-{"id": "🐦", "tags": {"position": "South", "guardian": "Vermilion Bird"}, "embedding": {"dense": {"buffer": "AQAAAAAAAAAAAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"value": 1.0, "opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
-{"id": "🐢", "tags": {"guardian": "Black Tortoise", "position": "North"}, "embedding": {"dense": {"buffer": "AAAAAAAAAAABAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"value": 1.0, "opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
-```
-</sup>
-</td>
-</tr>
-  <tr>
-    <td>
-    <b>Update</b>
-    </td>
-    <td>
-
-```python
-# update 🐲 embedding in the storage
-docs[0].embedding = np.array([1, 1])
-with f:
-    f.update(docs[0])
-```
-</td>
-</tr>
-  <tr>
-    <td>
-    <b>Delete</b>
-    </td>
-    <td>
-
-```python
-# remove 🐦🐲 Documents from the storage
-with f:
-    f.delete(['🐦', '🐲'])
-```
-</td>
-</tr>
-</table>
-
-For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)
-
+- **Document** is the basic data type in Jina;
+- **Executor** is how Jina processes Documents;
+- **Flow** is how Jina streamlines and scales Executors.
 
 ### Document
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-construct-document.ipynb)
@@ -113,7 +27,7 @@ import numpy
 from jina import Document
 
 doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
-doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
+doc2 = Document(embedding=numpy.random.random([10, 10]))  # a ndarray document
 ```
 
 A Document can be recursed both vertically and horizontally to have nested Documents and matched Documents. To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
@@ -123,7 +37,7 @@ A Document can be recursed both vertically and horizontally to have nested Docum
     <td>
 
 ```python
-import numpy
+import numpy as np
 from jina import Document
 
 d0 = Document(id='🐲', embedding=np.array([0, 0]))
@@ -202,17 +116,37 @@ Interested readers can refer to [`jina-ai/example`: how to build a multimodal se
 
 </details>
 
+### Executor
+
+Executor is the algorithmic component in Jina, it defines how Jina processing a Document.
+
+Here is a simple executor that returns `[1,2]` or `[4,5]` depends on `text` attributes in the Document.
+
+```python
+import numpy as np
+from jina import Executor, requests
+
+class MyExecutor(Executor):
+    
+    @requests
+    def foo(self, text):
+        return [{'embedding': np.ndarray([1, 2]) if t == 'hello' else 
+                np.ndarray([3, 4])} for t in text]
+```
+
+`text`, `embedding` are `Document` attributes. Using `text` as the argument automatically tell Jina to fetch the same name attribute from the Document objects. Using `embedding` in the return tells Jina to write results into `Document.embedding`. You can look up all available attributes by `Document.get_all_attributes()`. Of course, you can have multiple arguments defined in `foo()`.
+
 ### Flow
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-create-flow.ipynb)
 
-Jina provides a high-level Flow API to simplify building CRUD workflows. To create a new Flow:
+Flow connects Executors from different machines and scale them up. To create a new Flow:
 
 ```python
 from jina import Flow
-f = Flow().add()
+f = Flow().add(uses=MyExecutor)
 ```
 
-This creates a simple Flow with one [Pod](https://101.jina.ai/#pod). You can chain multiple `.add()`s in a single Flow.
+This creates a simple Flow with `MyExecutor` defined above. You can chain multiple `.add()`s in a Flow.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-visualize-a-flow.ipynb)
 
@@ -220,7 +154,22 @@ To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are u
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
 
-`Gateway` is the entrypoint of the Flow.
+### Wrap-up
+
+Now let's combine the three concepts together.
+
+```python
+import numpy as np
+from jina import Document, Executor, Flow, requests
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, text):
+        return [{'embedding': np.ndarray([1, 2]) if t == 'hello' else np.ndarray([3, 4])} for t in text]
+
+with Flow().add(uses=MyExecutor) as f:
+    f.index([Document(text='hello'), Document(text='world')], on_done=print)
+```
 
 Get the vibe? Now we're talking! Let's learn more about the basic concepts and features of Jina:
 
@@ -501,15 +450,99 @@ if __name__ == '__main__':
 
 `AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. As Jupyter/ipython already manages an eventloop and thanks to [`autoawait`](https://ipython.readthedocs.io/en/stable/interactive/autoawait.html), `AsyncFlow` can run out-of-the-box in Jupyter.
 
+
+### CRUD Functions
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-basic-crud-functions.ipynb)
+
+In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With Documents below as an example:
+```python
+import numpy as np
+from jina import Document
+docs = [Document(id='🐲', embedding=np.array([0, 0]), tags={'guardian': 'Azure Dragon', 'position': 'East'}),
+        Document(id='🐦', embedding=np.array([1, 0]), tags={'guardian': 'Vermilion Bird', 'position': 'South'}),
+        Document(id='🐢', embedding=np.array([0, 1]), tags={'guardian': 'Black Tortoise', 'position': 'North'}),
+        Document(id='🐯', embedding=np.array([1, 1]), tags={'guardian': 'White Tiger', 'position': 'West'})]
+```
+
+Let's build a Flow with a simple indexer:
+
+```python
+from jina import Flow
+f = Flow().add(uses='_index')
+```
+
+`Document` and `Flow` are basic concepts in Jina, which will be explained later. `_index` is a built-in embedding + structured storage that you can use out of the box.
+
+<table>
+  <tr>
+    <td>
+    <b>Index</b>
+    </td>
+    <td>
+
+```python
+# save four docs (both embedding and structured info) into storage
+with f:
+    f.index(docs, on_done=print)
+```
+
+</td>
+</tr>
+  <tr>
+    <td>
+    <b>Search</b>
+    </td>
+    <td>
+
+```python
+# retrieve top-3 neighbours of 🐲, this print 🐲🐦🐢 with score 0, 1, 1 respectively
+with f:
+    f.search(docs[0], top_k=3, on_done=lambda x: print(x.docs[0].matches))
+```
+
+<sup>
+
+```json
+{"id": "🐲", "tags": {"guardian": "Azure Dragon", "position": "East"}, "embedding": {"dense": {"buffer": "AAAAAAAAAAAAAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
+{"id": "🐦", "tags": {"position": "South", "guardian": "Vermilion Bird"}, "embedding": {"dense": {"buffer": "AQAAAAAAAAAAAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"value": 1.0, "opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
+{"id": "🐢", "tags": {"guardian": "Black Tortoise", "position": "North"}, "embedding": {"dense": {"buffer": "AAAAAAAAAAABAAAAAAAAAA==", "shape": [2], "dtype": "<i8"}}, "score": {"value": 1.0, "opName": "NumpyIndexer", "refId": "🐲"}, "adjacency": 1}
+```
+</sup>
+</td>
+</tr>
+  <tr>
+    <td>
+    <b>Update</b>
+    </td>
+    <td>
+
+```python
+# update 🐲 embedding in the storage
+docs[0].embedding = np.array([1, 1])
+with f:
+    f.update(docs[0])
+```
+</td>
+</tr>
+  <tr>
+    <td>
+    <b>Delete</b>
+    </td>
+    <td>
+
+```python
+# remove 🐦🐲 Documents from the storage
+with f:
+    f.delete(['🐦', '🐲'])
+```
+</td>
+</tr>
+</table>
+
+For further details about CRUD functionality, checkout [docs.jina.ai](https://docs.jina.ai/chapters/crud/)
+
+
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive deeper into it!
-
----
-
-|     |   |
-| --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
-| 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 ## 🐥 Breakdown of `hello-world`
 
@@ -520,9 +553,9 @@ Let's first build a naive image encoder that embeds images into vectors using an
 
 ```python
 import numpy as np
-from jina.executors.encoders import BaseImageEncoder
+from jina import Encoder
 
-class MyEncoder(BaseImageEncoder):
+class MyEncoder(Encoder):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -531,8 +564,8 @@ class MyEncoder(BaseImageEncoder):
         u, s, vh = np.linalg.svd(H, full_matrices=False)
         self.oth_mat = u @ vh
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs):
-        return (data.reshape([-1, 784]) / 255) @ self.oth_mat
+    def encode(self, content: 'np.ndarray', *args, **kwargs):
+        return (content.reshape([-1, 784]) / 255) @ self.oth_mat
 ```
 
 Jina provides [a family of `Executor` classes](https://101.jina.ai/#executor), which summarize frequently-used algorithmic components in neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers, each with a well-designed interface. You can find the list of [all 107 built-in executors here](https://docs.jina.ai/chapters/all_exec.html). If they don't meet your needs, inheriting from one of them is the easiest way to bootstrap your own Executor. Simply use our Jina Hub CLI:
