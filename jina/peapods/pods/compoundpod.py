@@ -263,7 +263,6 @@ class CompoundPod(BasePod):
         for i in range(len(self.replica_list)):
             replica = self.replica_list[i]
             replica.close()
-            del replica
             _args = self.all_args['replicas'][i]
             _args.noblock_on_start = False
             new_replica = Pod(_args)
