@@ -47,23 +47,23 @@ class DummyCSRSparseIndexer(BaseVectorIndexer):
         self.vectors = {}
 
     def add(
-        self, keys: Iterable[str], vectors: 'scipy.sparse.csr_matrix', *args, **kwargs
+        self, id: Iterable[str], vectors: 'scipy.sparse.csr_matrix', *args, **kwargs
     ) -> None:
         assert isinstance(vectors, sparse.csr_matrix)
-        self.keys.extend(keys)
-        for i, key in enumerate(keys):
+        self.keys.extend(id)
+        for i, key in enumerate(id):
             self.vectors[key] = vectors.getrow(i)
 
-    def query(self, vectors: 'scipy.sparse.csr_matrix', top_k: int, *args, **kwargs):
-        assert isinstance(vectors, sparse.csr_matrix)
+    def query(self, embedding: 'scipy.sparse.csr_matrix', top_k: int, *args, **kwargs):
+        assert isinstance(embedding, sparse.csr_matrix)
         distances = [item for item in range(0, min(top_k, len(self.keys)))]
         return [self.keys[:top_k]], np.array([distances])
 
-    def query_by_key(self, keys: Iterable[str], *args, **kwargs):
+    def query_by_key(self, id: Iterable[str], *args, **kwargs):
         from scipy.sparse import vstack
 
         vectors = []
-        for key in keys:
+        for key in id:
             vectors.append(self.vectors[key])
 
         return vstack(vectors)

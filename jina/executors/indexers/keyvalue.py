@@ -145,18 +145,18 @@ class BinaryPbWriterMixin:
             self._size += 1
         writer.flush()
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    def delete(self, id: Iterable[str], *args, **kwargs) -> None:
         """Delete the serialized documents from the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
         :param kwargs: not used
         """
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
+        id = self._filter_nonexistent_keys(id, self.query_handler.header.keys())
         del self.query_handler
         self.handler_mutex = False
-        if keys:
-            self._delete(keys)
+        if id:
+            self._delete(id)
 
     def _delete(self, keys: Iterable[str]) -> None:
         for key in keys:
@@ -235,19 +235,19 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         self.delete_on_dump = delete_on_dump
 
     def add(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Add the serialized documents to the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: serialized documents
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param binary_str: serialized documents
         :param args: extra arguments
         :param kwargs: keyword arguments
         """
-        if not any(keys):
+        if not any(id):
             return
 
-        self._add(keys, values)
+        self._add(id, binary_str)
 
     def sample(self) -> Optional[bytes]:
         """Return a random entry from the indexer for sanity check.
@@ -261,42 +261,42 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         for k in self.query_handler.header.keys():
             yield self[k]
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, id: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
-        :param key: document id
+        :param id: document id
         :param args: extra arguments
         :param kwargs: keyword arguments
         :return: serialized documents
         """
-        return self._query(key)
+        return self._query(id)
 
     def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Update the serialized documents on the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: serialized documents
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param binary_str: serialized documents
         :param args: extra arguments
         :param kwargs: keyword arguments
         """
-        keys, values = self._filter_nonexistent_keys_values(
-            keys, values, self.query_handler.header.keys()
+        id, binary_str = self._filter_nonexistent_keys_values(
+            id, binary_str, self.query_handler.header.keys()
         )
         del self.query_handler
         self.handler_mutex = False
-        if keys:
-            self._delete(keys)
-            self.add(keys, values)
+        if id:
+            self._delete(id)
+            self.add(id, binary_str)
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    def delete(self, id: Iterable[str], *args, **kwargs) -> None:
         """Delete the serialized documents from the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
         :param kwargs: not used"""
-        super(BinaryPbIndexer, self).delete(keys)
+        super(BinaryPbIndexer, self).delete(id)
 
 
 class KeyValueIndexer(BinaryPbIndexer):

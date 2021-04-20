@@ -41,36 +41,50 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         del self.query_handler
 
     def add(
-        self, ids: List[str], vecs: List[np.array], metas: List[bytes], *args, **kwargs
+        self,
+        id: List[str],
+        embedding: List[np.array],
+        binary_str: List[bytes],
+        *args,
+        **kwargs
     ):
         """Add to the DBMS Indexer, both vectors and metadata
 
-        :param ids: the ids of the documents
-        :param vecs: the vectors
-        :param metas: the metadata, in binary format
+        :param id: the ids of the documents
+        :param embedding: the vectors
+        :param binary_str: the metadata, in binary format
         :param args: not used
         :param kwargs: not used
         """
-        if not any(ids):
+        if not any(id):
             return
 
-        vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
-        self._add(ids, vecs_metas)
+        vecs_metas = [
+            pickle.dumps((vec, meta)) for vec, meta in zip(embedding, binary_str)
+        ]
+        self._add(id, vecs_metas)
 
     def update(
-        self, ids: List[str], vecs: List[np.array], metas: List[bytes], *args, **kwargs
+        self,
+        id: List[str],
+        embedding: List[np.array],
+        binary_str: List[bytes],
+        *args,
+        **kwargs
     ):
         """Update the DBMS Indexer, both vectors and metadata
 
-        :param ids: the ids of the documents
-        :param vecs: the vectors
-        :param metas: the metadata, in binary format
+        :param id: the ids of the documents
+        :param embedding: the vectors
+        :param binary_str: the metadata, in binary format
         :param args: not used
         :param kwargs: not used
         """
-        vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
+        vecs_metas = [
+            pickle.dumps((vec, meta)) for vec, meta in zip(embedding, binary_str)
+        ]
         keys, vecs_metas = self._filter_nonexistent_keys_values(
-            ids, vecs_metas, self.query_handler.header.keys()
+            id, vecs_metas, self.query_handler.header.keys()
         )
         del self.query_handler
         self.handler_mutex = False
@@ -78,13 +92,13 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
             self._delete(keys)
             self._add(keys, vecs_metas)
 
-    def delete(self, ids: List[str], *args, **kwargs):
+    def delete(self, id: List[str], *args, **kwargs):
         """Delete the serialized documents from the index via document ids.
 
-        :param ids: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
         :param kwargs: not used"""
-        super(BinaryPbDBMSIndexer, self).delete(ids)
+        super(BinaryPbDBMSIndexer, self).delete(id)
 
 
 class KeyValueDBMSIndexer(BinaryPbDBMSIndexer):

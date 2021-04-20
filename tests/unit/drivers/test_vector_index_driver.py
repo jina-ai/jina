@@ -23,24 +23,24 @@ class MockGroundTruthVectorIndexer(BaseVectorIndexer):
         self.docs = {}
         self.embedding_cls_type = embedding_cls_type
 
-    def add(self, keys, vectors, *args, **kwargs):
+    def add(self, id, vectors, *args, **kwargs):
         if self.embedding_cls_type in ['dense', 'torch', 'tf']:
-            for key, value in zip(keys, vectors):
+            for key, value in zip(id, vectors):
                 self.docs[key] = value
         elif self.embedding_cls_type.startswith('scipy'):
-            for i, key in enumerate(keys):
+            for i, key in enumerate(id):
                 self.docs[key] = vectors.getrow(i)
 
-    def update(self, keys, vectors, *args, **kwargs) -> None:
+    def update(self, id, embedding, *args, **kwargs) -> None:
         if self.embedding_cls_type in ['dense', 'torch', 'tf']:
-            for key, value in zip(keys, vectors):
+            for key, value in zip(id, embedding):
                 self.docs[key] = value
         elif self.embedding_cls_type.startswith('scipy'):
-            for i, key in enumerate(keys):
-                self.docs[key] = vectors.getrow(i)
+            for i, key in enumerate(id):
+                self.docs[key] = embedding.getrow(i)
 
-    def delete(self, keys, *args, **kwargs) -> None:
-        for key in keys:
+    def delete(self, id, *args, **kwargs) -> None:
+        for key in id:
             del self.docs[key]
 
 

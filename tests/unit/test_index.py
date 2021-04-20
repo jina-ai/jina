@@ -46,7 +46,7 @@ class DummyIndexer(NumpyIndexer):
 
 class DummyIndexer2(NumpyIndexer):
     # the add() function is simply copied from NumpyIndexer
-    def add(self, keys: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
+    def add(self, id: 'np.ndarray', vectors: 'np.ndarray', *args, **kwargs):
         if len(vectors.shape) != 2:
             raise ValueError(
                 f'vectors shape {vectors.shape} is not valid, expecting "vectors" to have rank of 2'
@@ -64,20 +64,20 @@ class DummyIndexer2(NumpyIndexer):
             raise TypeError(
                 f"vectors' dtype {vectors.dtype.name} does not match with indexers's dtype: {self.dtype}"
             )
-        elif keys.shape[0] != vectors.shape[0]:
+        elif id.shape[0] != vectors.shape[0]:
             raise ValueError(
                 'number of key %d not equal to number of vectors %d'
-                % (keys.shape[0], vectors.shape[0])
+                % (id.shape[0], vectors.shape[0])
             )
-        elif self.key_dtype != keys.dtype.name:
+        elif self.key_dtype != id.dtype.name:
             raise TypeError(
-                f"keys' dtype {keys.dtype.name} does not match with indexers keys's dtype: {self.key_dtype}"
+                f"keys' dtype {id.dtype.name} does not match with indexers keys's dtype: {self.key_dtype}"
             )
 
         self.write_handler.write(vectors.tobytes())
-        self.key_bytes += keys.tobytes()
-        self.key_dtype = keys.dtype.name
-        self._size += keys.shape[0]
+        self.key_bytes += id.tobytes()
+        self.key_dtype = id.dtype.name
+        self._size += id.shape[0]
 
 
 def test_doc_iters():

@@ -3,7 +3,7 @@ __license__ = "Apache-2.0"
 
 from typing import Iterable, Optional
 
-from . import BaseExecutableDriver, FlatRecursiveMixin
+from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 
 if False:
     from ..types.sets import DocumentSet
@@ -67,15 +67,8 @@ class VectorIndexDriver(BaseIndexDriver):
             self.exec_fn(keys, embed_vecs)
 
 
-class KVIndexDriver(BaseIndexDriver):
+class KVIndexDriver(DocsExtractUpdateMixin, BaseIndexDriver):
     """Forwards pairs of serialized documents and ids to the executor."""
-
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        info = [(doc.id, doc.SerializeToString()) for doc in docs]
-        if info:
-            keys, values = zip(*info)
-            self.check_key_length(keys)
-            self.exec_fn(keys, values)
 
 
 class DBMSIndexDriver(BaseIndexDriver):

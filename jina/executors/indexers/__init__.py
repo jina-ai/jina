@@ -268,21 +268,19 @@ class BaseVectorIndexer(BaseIndexer):
 
     embedding_cls_type = 'dense'
 
-    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, id: Iterable[str], *args, **kwargs) -> 'np.ndarray':
         """Get the vectors by id, return a subset of indexed vectors
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
-    def add(
-        self, keys: Iterable[str], vectors: 'EncodingType', *args, **kwargs
-    ) -> None:
+    def add(self, id: Iterable[str], vectors: 'EncodingType', *args, **kwargs) -> None:
         """Add new chunks and their vector representations
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: vector representations in B x D
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
@@ -290,11 +288,11 @@ class BaseVectorIndexer(BaseIndexer):
         raise NotImplementedError
 
     def query(
-        self, vectors: 'EncodingType', top_k: int, *args, **kwargs
+        self, embedding: 'EncodingType', top_k: int, *args, **kwargs
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find k-NN using query vectors, return chunk ids and chunk scores
 
-        :param vectors: query vectors in ndarray, shape B x D
+        :param embedding: query vectors in ndarray, shape B x D
         :param top_k: int, the number of nearest neighbour to return
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
@@ -302,21 +300,21 @@ class BaseVectorIndexer(BaseIndexer):
         raise NotImplementedError
 
     def update(
-        self, keys: Iterable[str], vectors: 'EncodingType', *args, **kwargs
+        self, id: Iterable[str], embedding: 'EncodingType', *args, **kwargs
     ) -> None:
         """Update vectors on the index.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param vectors: vector representations in B x D
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param embedding: vector representations in B x D
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    def delete(self, id: Iterable[str], *args, **kwargs) -> None:
         """Delete vectors from the index.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
@@ -332,7 +330,7 @@ class BaseKVIndexer(BaseIndexer):
     """
 
     def add(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Add the serialized documents to the index via document ids.
 
@@ -343,31 +341,31 @@ class BaseKVIndexer(BaseIndexer):
         """
         raise NotImplementedError
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, id: str, *args, **kwargs) -> Optional[bytes]:
         """Find the serialized document to the index via document id.
 
-        :param key: document id
+        :param id: document id
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
     def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Update the serialized documents on the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: serialized documents
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param binary_str: serialized documents
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """
         raise NotImplementedError
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    def delete(self, id: Iterable[str], *args, **kwargs) -> None:
         """Delete the serialized documents from the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: Additional positional arguments
         :param kwargs: Additional keyword arguments
         """

@@ -22,15 +22,15 @@ class BinaryPbQueryIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
         # warming up
         self._query('someid')
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, id: str, *args, **kwargs) -> Optional[bytes]:
         """Get a document by its id
 
-        :param key: the id
+        :param id: the id
         :param args: not used
         :param kwargs: not used
         :return: the bytes of the Document
         """
-        return self._query(key)
+        return self._query(id)
 
 
 class KeyValueQueryIndexer(BinaryPbQueryIndexer):

@@ -8,6 +8,7 @@ from . import (
     QuerySetReader,
     FlatRecursiveMixin,
     ContextAwareRecursiveMixin,
+    DocsExtractUpdateMixin,
 )
 from ..types.document import Document
 from ..types.score import NamedScore
@@ -89,7 +90,9 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
                 del docs[j]
 
 
-class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
+class VectorFillDriver(
+    DocsExtractUpdateMixin, FlatRecursiveMixin, QuerySetReader, BaseSearchDriver
+):
     """Fill in the embedding by their document id."""
 
     def __init__(
@@ -101,10 +104,8 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     ):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
-        embeds = self.exec_fn([d.id for d in docs])
-        for doc, embedding in zip(docs, embeds):
-            doc.embedding = embedding
+    def update_single_doc(self, doc: 'Document', exec_result) -> None:
+        doc.embedding = exec_result
 
 
 class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):

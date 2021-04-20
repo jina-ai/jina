@@ -19,13 +19,13 @@ class MockGroundTruthIndexer(BaseKVIndexer):
             self.docs[key] = value
 
     def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
-        for key, value in zip(keys, values):
+        for key, value in zip(id, binary_str):
             self.docs[key] = value
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
-        for key in keys:
+    def delete(self, id: Iterable[str], *args, **kwargs) -> None:
+        for key in id:
             del self.docs[key]
 
 

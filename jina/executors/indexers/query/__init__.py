@@ -1,6 +1,6 @@
 from typing import Iterable, Optional, Dict
 
-from jina.executors.indexers import BaseIndexer
+from .. import BaseIndexer
 
 
 class BaseQueryIndexer(BaseIndexer):
@@ -31,7 +31,7 @@ class BaseQueryIndexer(BaseIndexer):
         self.logger.error(f'Index {self.__class__} is write-once')
 
     def add(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Disabled. QueryIndexers are write-once (at instantiation time)
 
@@ -41,7 +41,7 @@ class BaseQueryIndexer(BaseIndexer):
         self._log_warn()
 
     def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Disabled. QueryIndexers are write-once (at instantiation time)
 

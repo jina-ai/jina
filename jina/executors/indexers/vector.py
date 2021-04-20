@@ -205,15 +205,15 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}'
             )
 
-    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
+    def add(self, id: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
         """Add the embeddings and document ids to the index.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: embeddings
         :param args: not used
         :param kwargs: not used
         """
-        np_keys = np.array(keys, (np.str_, self.key_length))
+        np_keys = np.array(id, (np.str_, self.key_length))
         self._add(np_keys, vectors)
 
     def _add(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
@@ -227,22 +227,22 @@ class BaseNumpyIndexer(BaseVectorIndexer):
             self._size += keys.shape[0]
 
     def update(
-        self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs
+        self, id: Iterable[str], embedding: 'np.ndarray', *args, **kwargs
     ) -> None:
         """Update the embeddings on the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param vectors: embeddings
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param embedding: embeddings
         :param args: not used
         :param kwargs: not used
         """
         # noinspection PyTypeChecker
         if self.size:
-            keys, values = self._filter_nonexistent_keys_values(
-                keys, vectors, self._ext2int_id.keys()
+            id, values = self._filter_nonexistent_keys_values(
+                id, embedding, self._ext2int_id.keys()
             )
-            if keys:
-                np_keys = np.array(keys, (np.str_, self.key_length))
+            if id:
+                np_keys = np.array(id, (np.str_, self.key_length))
                 self._delete(np_keys)
                 self._add(np_keys, np.array(values))
         else:
@@ -255,17 +255,17 @@ class BaseNumpyIndexer(BaseVectorIndexer):
                 self.valid_indices[self._ext2int_id[key]] = False
                 self._size -= 1
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    def delete(self, id: Iterable[str], *args, **kwargs) -> None:
         """Delete the embeddings from the index via document ids.
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
         :param kwargs: not used
         """
         if self.size:
-            keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
-            if keys:
-                np_keys = np.array(keys, (np.str_, self.key_length))
+            id = self._filter_nonexistent_keys(id, self._ext2int_id.keys())
+            if id:
+                np_keys = np.array(id, (np.str_, self.key_length))
                 self._delete(np_keys)
         else:
             self.logger.error(f'{self!r} is empty, deletion is aborted')
@@ -336,19 +336,19 @@ class BaseNumpyIndexer(BaseVectorIndexer):
         return self._raw_ndarray.__iter__()
 
     def query_by_key(
-        self, keys: Iterable[str], *args, **kwargs
+        self, id: Iterable[str], *args, **kwargs
     ) -> Optional['np.ndarray']:
         """
         Search the index by the external key (passed during `.add(`).
 
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
+        :param id: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
         :param kwargs: not used
         :return: ndarray of vectors
         """
-        keys = self._filter_nonexistent_keys(keys, self._ext2int_id.keys())
-        if keys:
-            indices = [self._ext2int_id[key] for key in keys]
+        id = self._filter_nonexistent_keys(id, self._ext2int_id.keys())
+        if id:
+            indices = [self._ext2int_id[key] for key in id]
             return self._raw_ndarray[indices]
         else:
             return None
@@ -479,7 +479,7 @@ class NumpyIndexer(BaseNumpyIndexer):
         return idx, dist
 
     def query(
-        self, vectors: 'np.ndarray', top_k: int, *args, **kwargs
+        self, embedding: 'np.ndarray', top_k: int, *args, **kwargs
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
 
@@ -491,7 +491,7 @@ class NumpyIndexer(BaseNumpyIndexer):
 
             Distance (the smaller the better) is returned, not the score.
 
-        :param vectors: the vectors with which to search
+        :param embedding: the vectors with which to search
         :param args: not used
         :param kwargs: not used
         :param top_k: nr of results to return
@@ -500,12 +500,12 @@ class NumpyIndexer(BaseNumpyIndexer):
         if self.size == 0:
             return np.array([]), np.array([])
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
-            dist = self._cdist(vectors, self.query_handler)
+            dist = self._cdist(embedding, self.query_handler)
         elif self.metric == 'euclidean':
-            _query_vectors = _ext_A(vectors)
+            _query_vectors = _ext_A(embedding)
             dist = self._euclidean(_query_vectors, self.query_handler)
         elif self.metric == 'cosine':
-            _query_vectors = _ext_A(_norm(vectors))
+            _query_vectors = _ext_A(_norm(embedding))
             dist = self._cosine(_query_vectors, self.query_handler)
 
         idx, dist = self._get_sorted_top_k(dist, top_k)

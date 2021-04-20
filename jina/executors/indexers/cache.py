@@ -91,37 +91,37 @@ class DocCache(BaseCache):
         self.fields = sorted(fields or self.default_fields)
 
     def add(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Add a document to the cache depending.
 
-        :param keys: document ids to be added
-        :param values: document cache values to be added
+        :param id: document ids to be added
+        :param binary_str: document cache values to be added
         :param args: not used
         :param kwargs: not used
         """
-        for key, value in zip(keys, values):
+        for key, value in zip(id, binary_str):
             self.query_handler.id_to_cache_val[key] = value
             self.query_handler.cache_val_to_id[value] = key
             self._size += 1
 
-    def query(self, key: str, *args, **kwargs) -> bool:
+    def query(self, id: str, *args, **kwargs) -> bool:
         """Check whether the data exists in the cache.
 
-        :param key: the value that we cached by (combination of the Document fields)
+        :param id: the value that we cached by (combination of the Document fields)
         :param args: not used
         :param kwargs: not used
         :return: status
         """
-        return key in self.query_handler.cache_val_to_id
+        return id in self.query_handler.cache_val_to_id
 
     def update(
-        self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
+        self, id: Iterable[str], binary_str: Iterable[bytes], *args, **kwargs
     ) -> None:
         """Update cached documents.
 
-        :param keys: list of Document.id
-        :param values: list of values (combination of the Document fields)
+        :param id: list of Document.id
+        :param binary_str: list of values (combination of the Document fields)
         :param args: not used
         :param kwargs: not used
         """
@@ -130,7 +130,7 @@ class DocCache(BaseCache):
             # if we don't cache anything else, no need
             return
 
-        for key, value in zip(keys, values):
+        for key, value in zip(id, binary_str):
             if key not in self.query_handler.id_to_cache_val:
                 continue
             old_value = self.query_handler.id_to_cache_val[key]
@@ -138,14 +138,14 @@ class DocCache(BaseCache):
             del self.query_handler.cache_val_to_id[old_value]
             self.query_handler.cache_val_to_id[value] = key
 
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    def delete(self, id: Iterable[str], *args, **kwargs) -> None:
         """Delete documents from the cache.
 
-        :param keys: list of Document.id
+        :param id: list of Document.id
         :param args: not used
         :param kwargs: not used
         """
-        for key in keys:
+        for key in id:
             if key not in self.query_handler.id_to_cache_val:
                 continue
             value = self.query_handler.id_to_cache_val[key]

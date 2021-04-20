@@ -3,7 +3,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentSet
 from jina.drivers.search import VectorFillDriver
 from jina.executors.indexers import BaseIndexer
 
@@ -19,13 +19,13 @@ def docs_to_encode(num_docs):
     for idx in range(num_docs):
         doc = Document(content=np.array([idx]))
         docs.append(doc)
-    return docs
+    return DocumentSet(docs)
 
 
 class MockIndexer(BaseIndexer):
-    def query_by_key(self, keys: Any, *args, **kwargs) -> 'np.ndarray':
+    def query_by_key(self, id: Any, *args, **kwargs) -> 'np.ndarray':
         # encodes 10 * keys into the encoder, so return keys
-        return np.random.random([len(keys), 5])
+        return np.random.random([len(id), 5])
 
 
 class SimpleFillDriver(VectorFillDriver):
