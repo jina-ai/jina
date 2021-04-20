@@ -2,6 +2,7 @@ import os
 import threading
 import time
 import pytest
+import numpy as np
 
 from jina import Document
 from jina.flow import Flow
@@ -78,6 +79,32 @@ def test_vector_indexer_thread(config):
         x.join()
         for i in range(40):
             flow.search(Document(text='documents after rolling update'))
+
+
+def test_workspace(config, tmpdir):
+    with Flow().add(
+        name='pod1',
+        uses='tests/integration/rolling_update/yaml/simple_index_vector.yml',
+        replicas=2,
+        parallel=3,
+        port_in=5100,
+        port_out=5200,
+    ) as flow:
+        # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
+        for i in range(10):
+            flow.index(Document(text=f'indexed doc {i}', embedding=np.array([i] * 5)))
+
+        # validate created workspaces
+        dirs = set(os.listdir(tmpdir))
+        expected_dirs = {
+            'vecidx-0-0',
+            'vecidx-0-1',
+            'vecidx-0-2',
+            'vecidx-1-0',
+            'vecidx-1-1',
+            'vecidx-1-2',
+        }
+        assert dirs == expected_dirs
 
 
 @pytest.mark.parametrize(
