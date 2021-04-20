@@ -5,6 +5,7 @@ import numpy as np
 
 from ...helper import typename
 from ...logging import default_logger
+from ...enums import EmbeddingClsType
 
 try:
     # when protobuf using Cpp backend
@@ -194,13 +195,11 @@ class DocumentSet(TraversableSequence, MutableSequence):
         return self.extract_docs('embedding', stack_contents=True)
 
     def get_all_sparse_embeddings(
-        self, sparse_cls_type: str, scipy_cls_type: Optional[str]
+        self, embedding_cls_type: EmbeddingClsType
     ) -> Tuple['SparseEmbeddingType', 'DocumentSet']:
         """Return all embeddings from every document in this set as a sparse array
 
-        :param sparse_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
-        :param scipy_cls_type: Type of scipy sparse vector type, e.g. `coo` or `csr`, needed with `sparse_cls_type`
-            is `scipy`.
+        :param embedding_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
 
         :return: The corresponding documents in a :class:`DocumentSet`,
             and the documents have no embedding in a :class:`DocumentSet`.
@@ -208,34 +207,42 @@ class DocumentSet(TraversableSequence, MutableSequence):
         """
 
         def stack_embeddings(embeddings):
-            if sparse_cls_type == 'scipy':
+            if embedding_cls_type.is_scipy:
                 import scipy
 
                 return scipy.sparse.vstack(embeddings)
-            elif sparse_cls_type == 'torch':
+            elif embedding_cls_type.is_torch:
                 import torch
 
                 return torch.vstack(embeddings)
-            elif sparse_cls_type == 'tf':
+            elif embedding_cls_type.is_tf:
                 return embeddings
+            else:
+                raise ValueError(
+                    f'Trying to stack sparse embeddings with embedding_cls_type {embedding_cls_type} failed'
+                )
 
         def get_sparse_ndarray_type_kwargs():
-            if sparse_cls_type == 'scipy':
+            if embedding_cls_type.is_scipy:
                 from jina.types.ndarray.sparse.scipy import SparseNdArray
 
-                if scipy_cls_type not in ['coo', 'csr']:
+                if not embedding_cls_type.is_scipy_stackable not in ['coo', 'csr']:
                     default_logger.warning(
-                        f'found `{scipy_cls_type}` matrix, recommend to use `coo` or `csr` type.'
+                        f'found `{embedding_cls_type.name}` matrix, recommend to use `coo` or `csr` type.'
                     )
-                return SparseNdArray, {'sp_format': scipy_cls_type}
-            elif sparse_cls_type == 'torch':
+                return SparseNdArray, {'sp_format': embedding_cls_type.scipy_cls_type}
+            elif embedding_cls_type.is_torch:
                 from jina.types.ndarray.sparse.pytorch import SparseNdArray
 
                 return SparseNdArray, {}
-            elif sparse_cls_type == 'tf':
+            elif embedding_cls_type.is_tf:
                 from jina.types.ndarray.sparse.tensorflow import SparseNdArray
 
                 return SparseNdArray, {}
+            else:
+                raise ValueError(
+                    f'Trying to get sparse embeddings with embedding_cls_type {embedding_cls_type} failed'
+                )
 
         embeddings = []
         docs_pts = []

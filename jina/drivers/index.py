@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable, Optional
 
 from . import BaseExecutableDriver, FlatRecursiveMixin
+from ..enums import EmbeddingClsType
 
 if False:
     from ..types.sets import DocumentSet
@@ -38,26 +39,19 @@ class VectorIndexDriver(BaseIndexDriver):
     """
 
     @property
-    def exec_embedding_cls_type(self) -> str:
+    def exec_embedding_cls_type(self) -> EmbeddingClsType:
         """Get the sparse class type of the attached executor.
 
         :return: Embedding class type of the attached executor, default value is `dense`
         """
-        return self.exec.embedding_cls_type
+        return EmbeddingClsType.from_string(self.exec.embedding_cls_type)
 
     def _get_documents_embeddings(self, docs: 'DocumentSet'):
         embedding_cls_type = self.exec_embedding_cls_type
-        if embedding_cls_type == 'dense':
+        if embedding_cls_type.is_dense:
             return docs.all_embeddings
         else:
-            scipy_cls_type = None
-            if embedding_cls_type.startswith('scipy'):
-                scipy_cls_type = embedding_cls_type.split('_')[1]
-                embedding_cls_type = 'scipy'
-
-            return docs.get_all_sparse_embeddings(
-                sparse_cls_type=embedding_cls_type, scipy_cls_type=scipy_cls_type
-            )
+            return docs.get_all_sparse_embeddings(embedding_cls_type=embedding_cls_type)
 
     def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
         embed_vecs, docs_pts = self._get_documents_embeddings(docs)
