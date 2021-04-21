@@ -210,66 +210,66 @@ def test_cache_crud(tmp_path, mocker, indexers, field, shards, chunks, same_cont
     # QUERY
     mock = mocker.Mock()
     with flow_query as f:
-        f.search(search_docs, on_done=mock)
+        f.search(search_docs[0:], on_done=mock)
 
     print(f' QUERYING ENDS', flush=True)
     time.sleep(2)
     mock.assert_called_once()
     validate_callback(mock, validate_result_factory(TOP_K))
 
-    # UPDATE
-    docs.extend(new_docs)
-    del new_docs
-
-    # id stays the same, we change the content
-    for d in docs:
-        d_content_hash_before = d.content_hash
-        d.content = f'this is some new content for doc {d.id}'
-        d.update_content_hash()
-        assert d.content_hash != d_content_hash_before
-        for chunk in d.chunks:
-            c_content_hash_before = chunk.content_hash
-            chunk.content = f'this is some new content for chunk {chunk.id}'
-            chunk.update_content_hash()
-            assert chunk.content_hash != c_content_hash_before
-
-    with flow_index as f:
-        print(f' START UPDATING', flush=True)
-        f.update(docs)
-
-    print(f' UPDATING ENDS', flush=True)
-    time.sleep(2)
-
-    check_indexers_size(
-        chunks, len(docs) / 2, field, tmp_path, same_content, shards, 'index2'
-    )
-
-    # QUERY
-    mock = mocker.Mock()
-    with flow_query as f:
-        f.search(search_docs, on_done=mock)
-    mock.assert_called_once()
-    validate_callback(mock, validate_result_factory(TOP_K))
-
-    # DELETE
-    delete_ids = []
-    for d in docs:
-        delete_ids.append(d.id)
-        for c in d.chunks:
-            delete_ids.append(c.id)
-    with flow_delete as f:
-        print(f' START DELETING', flush=True)
-        f.delete(delete_ids)
-    print(f' DELETING ENDS', flush=True)
-    time.sleep(2)
-
-    check_indexers_size(chunks, 0, field, tmp_path, same_content, shards, 'delete')
-
-    # QUERY
-    mock = mocker.Mock()
-    with flow_query as f:
-        f.search(search_docs, on_done=mock)
-    print(f' LAST SEARCH ENDS', flush=True)
-    time.sleep(2)
-    mock.assert_called_once()
-    validate_callback(mock, validate_result_factory(0))
+    # # UPDATE
+    # docs.extend(new_docs)
+    # del new_docs
+    #
+    # # id stays the same, we change the content
+    # for d in docs:
+    #     d_content_hash_before = d.content_hash
+    #     d.content = f'this is some new content for doc {d.id}'
+    #     d.update_content_hash()
+    #     assert d.content_hash != d_content_hash_before
+    #     for chunk in d.chunks:
+    #         c_content_hash_before = chunk.content_hash
+    #         chunk.content = f'this is some new content for chunk {chunk.id}'
+    #         chunk.update_content_hash()
+    #         assert chunk.content_hash != c_content_hash_before
+    #
+    # with flow_index as f:
+    #     print(f' START UPDATING', flush=True)
+    #     f.update(docs)
+    #
+    # print(f' UPDATING ENDS', flush=True)
+    # time.sleep(2)
+    #
+    # check_indexers_size(
+    #     chunks, len(docs) / 2, field, tmp_path, same_content, shards, 'index2'
+    # )
+    #
+    # # QUERY
+    # mock = mocker.Mock()
+    # with flow_query as f:
+    #     f.search(search_docs, on_done=mock)
+    # mock.assert_called_once()
+    # validate_callback(mock, validate_result_factory(TOP_K))
+    #
+    # # DELETE
+    # delete_ids = []
+    # for d in docs:
+    #     delete_ids.append(d.id)
+    #     for c in d.chunks:
+    #         delete_ids.append(c.id)
+    # with flow_delete as f:
+    #     print(f' START DELETING', flush=True)
+    #     f.delete(delete_ids)
+    # print(f' DELETING ENDS', flush=True)
+    # time.sleep(2)
+    #
+    # check_indexers_size(chunks, 0, field, tmp_path, same_content, shards, 'delete')
+    #
+    # # QUERY
+    # mock = mocker.Mock()
+    # with flow_query as f:
+    #     f.search(search_docs, on_done=mock)
+    # print(f' LAST SEARCH ENDS', flush=True)
+    # time.sleep(2)
+    # mock.assert_called_once()
+    # validate_callback(mock, validate_result_factory(0))
