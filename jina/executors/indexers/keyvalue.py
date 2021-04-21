@@ -64,12 +64,11 @@ class _ReadHandler:
 
     def __init__(self, path, key_length):
         self.path = path
-        self.key_length = key_length
         with open(self.path + '.head', 'rb') as fp:
             tmp = np.frombuffer(
                 fp.read(),
                 dtype=[
-                    ('', (np.str_, self.key_length)),
+                    ('', (np.str_, key_length)),
                     ('', np.int64),
                     ('', np.int64),
                     ('', np.int64),
@@ -189,9 +188,8 @@ class BinaryPbWriterMixin:
 
     def _query(self, key):
         pos_info = self.query_handler.header.get(key, None)
-
-        with self.query_handler as query_handler:
-            if pos_info is not None:
+        if pos_info is not None:
+            with self.query_handler as query_handler:
                 p, r, l = pos_info
                 with mmap.mmap(query_handler.body, offset=p, length=l) as m:
                     return m[r:]
@@ -262,8 +260,8 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         if need_to_remove_handler:
             # very hacky way to ensure write_handler will use add_handler at next computation, this must be solved
             # by touching file at __init__ time
-            self.is_handler_loaded = False
             del self.write_handler
+            self.is_handler_loaded = False
 
     def sample(self) -> Optional[bytes]:
         """Return a random entry from the indexer for sanity check.
