@@ -10,7 +10,6 @@ import numpy as np
 
 from . import BaseKVIndexer
 from ..compound import CompoundExecutor
-from ...logging import JinaLogger
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 
@@ -23,15 +22,11 @@ class _WriteHandler:
     :param mode: Writing mode. (e.g. 'ab', 'wb')
     """
 
-    def __init__(self, path, mode, logger):
-
-        self.logger = logger
+    def __init__(self, path, mode):
         self.path = path
         self.mode = mode
-        self.logger.warning(f'WRITEHANDLER CREATE {self.path} with mode {self.mode}')
 
     def __enter__(self):
-        self.logger.warning(f'WRITEHANDLER ENTER {self.path} with mode {self.mode}')
         self.body = open(self.path, self.mode)
         self.header = open(self.path + '.head', self.mode)
         return self
@@ -42,11 +37,7 @@ class _WriteHandler:
 
     def close(self):
         """Close the file."""
-        self.logger.warning(f'WRITEHANDLER CLOSHHHHHHHHHHHHH {self.path}')
-
         if hasattr(self, 'body'):
-            self.logger.warning(f'WRITEHANDLER CLOSE {self.body}')
-
             if not self.body.closed:
                 self.body.close()
         if hasattr(self, 'header'):
@@ -55,17 +46,12 @@ class _WriteHandler:
 
     def flush(self):
         """Clear the body and header."""
-        self.logger.warning(f'WRITEHANDLER FLUSHHHHHHHHHHHHH {self.path}')
-        self.logger.warning(f' before size {os.path.getsize(self.path)}')
-
         if hasattr(self, 'body'):
-            self.logger.warning(f' WRITEHANDLER FLUSH {self.body}')
             if not self.body.closed:
                 self.body.flush()
         if hasattr(self, 'header'):
             if not self.header.closed:
                 self.header.flush()
-        self.logger.warning(f' size {os.path.getsize(self.path)}')
 
 
 class _ReadHandler:
@@ -76,8 +62,7 @@ class _ReadHandler:
     :param key_length: Length of key.
     """
 
-    def __init__(self, path, key_length, logger):
-        self.logger = logger
+    def __init__(self, path, key_length):
         self.path = path
         self.key_length = key_length
         with open(self.path + '.head', 'rb') as fp:
@@ -100,7 +85,6 @@ class _ReadHandler:
     def __enter__(self):
         self._body = open(self.path, 'r+b')
         self.body = self._body.fileno()
-        self.logger.warning(f' READHANDLER self.path {self.path} => {self.body}')
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -128,8 +112,7 @@ class BinaryPbWriterMixin:
         :return: write handler
         """
         # keep _start position as in pickle serialization
-        self.logger.warning(f' get_add_handler self start to keep {self._start}')
-        return _WriteHandler(self.index_abspath, 'ab', self.logger)
+        return _WriteHandler(self.index_abspath, 'ab')
 
     def get_create_handler(self) -> '_WriteHandler':
         """
@@ -138,7 +121,7 @@ class BinaryPbWriterMixin:
         :return: write handler.
         """
         self._start = 0  # override _start position
-        return _WriteHandler(self.index_abspath, 'wb', self.logger)
+        return _WriteHandler(self.index_abspath, 'wb')
 
     def get_query_handler(self) -> '_ReadHandler':
         """
@@ -146,7 +129,7 @@ class BinaryPbWriterMixin:
 
         :return: read handler.
         """
-        return _ReadHandler(self.index_abspath, self.key_length, self.logger)
+        return _ReadHandler(self.index_abspath, self.key_length)
 
     def _add(
         self, keys: Iterable[str], values: Iterable[bytes], write_handler: _WriteHandler
@@ -205,19 +188,11 @@ class BinaryPbWriterMixin:
                 self._size -= 1
 
     def _query(self, key):
-        self.logger.warning(f' key {key}')
         pos_info = self.query_handler.header.get(key, None)
 
         with self.query_handler as query_handler:
-
             if pos_info is not None:
                 p, r, l = pos_info
-                self.logger.warning(f' p, r, l {p}, {r}, {l}')
-                self.logger.warning(f' start {self._start}')
-                self.logger.warning(f' query_handler.body {query_handler.body}')
-                self.logger.warning(f' type(body) {type(query_handler.body)}')
-                self.logger.warning(f' size {os.path.getsize(query_handler.path)}')
-
                 with mmap.mmap(query_handler.body, offset=p, length=l) as m:
                     return m[r:]
 
@@ -234,7 +209,6 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         if self.delete_on_dump:
             self._delete_invalid_indices()
         d = super().__getstate__()
-        self.logger.warning(f' start {d["_start"]}')
         return d
 
     def _delete_invalid_indices(self):
@@ -282,8 +256,14 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         if not any(keys):
             return
 
+        need_to_remove_handler = not self.is_exist
         with self.write_handler as writer_handler:
             self._add(keys, values, write_handler=writer_handler)
+        if need_to_remove_handler:
+            # very hacky way to ensure write_handler will use add_handler at next computation, this must be solved
+            # by touching file at __init__ time
+            self.is_handler_loaded = False
+            del self.write_handler
 
     def sample(self) -> Optional[bytes]:
         """Return a random entry from the indexer for sanity check.
