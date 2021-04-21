@@ -375,10 +375,10 @@ class ZmqStreamlet(Zmqlet):
         .. note::
             This method is idempotent.
         """
-        if self.in_sock_type == zmq.DEALER:
+        if not self.is_closed and self.in_sock_type == zmq.DEALER:
             try:
                 self._send_cancel_to_router(raise_exception=True)
-            except zmq.error.ZMQError:
+            except zmq.error.ZMQError as e:
                 self.logger.info(
                     f'The dealer {self.name} can not unsubscribe from the router. '
                     f'In case the router is down this is expected.'

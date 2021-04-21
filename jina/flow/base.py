@@ -31,7 +31,8 @@ from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 
 __all__ = ['BaseFlow']
 
-from ..peapods import BasePod
+from ..peapods import Pod
+from ..peapods.pods.compoundpod import CompoundPod
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -41,6 +42,9 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
+
+if False:
+    from ..peapods import BasePod
 
 
 class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -75,7 +79,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._pod_nodes = OrderedDict()  # type: Dict[str, 'BasePod']
+        self._pod_nodes = OrderedDict()  # type: Dict[str, BasePod]
         self._inspect_pods = {}  # type: Dict[str, str]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = [
@@ -188,7 +192,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        self._pod_nodes[pod_name] = BasePod(args, needs)
+        self._pod_nodes[pod_name] = Pod(args, needs)
 
     def needs(
         self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
@@ -303,7 +307,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
 
-        op_flow._pod_nodes[pod_name] = BasePod(args, needs=needs)
+        if args.replicas == 1:
+            op_flow._pod_nodes[pod_name] = Pod(args, needs=needs)
+        else:
+            op_flow._pod_nodes[pod_name] = CompoundPod(args, needs=needs)
         op_flow.last_pod = pod_name
 
         return op_flow
@@ -977,3 +984,18 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         pod = self._pod_nodes[pod_name]
         pod.dump(path, shards, timeout)
+
+    def rolling_update(self, pod_name):
+        """
+        Update pods one after another - only used for compound pods.
+
+        :param pod_name: pod to update
+        """
+
+        compound_pod = self._pod_nodes[pod_name]
+        if isinstance(compound_pod, CompoundPod):
+            compound_pod.rolling_update()
+        else:
+            raise ValueError(
+                f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
+            )

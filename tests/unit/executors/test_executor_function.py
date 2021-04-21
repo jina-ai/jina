@@ -183,3 +183,19 @@ def test_exec_fn_return_doc(mocker):
 
     for d in ds:
         assert d.mime_type == 'image/png'
+
+
+def test_exec_fn_annotation():
+    class MyExecutor(BaseEncoder):
+        def foo(
+            self, a: 'np.ndarray', b: np.ndarray, c: np.float, *args, **kwargs
+        ) -> 'np.ndarray':
+            pass
+
+    exec = MyExecutor()
+    bd = EncodeDriver(method='foo', strict_method_args=False)
+
+    bd.attach(exec, runtime=None)
+
+    assert bd._exec_fn_return_is_ndarray
+    assert bd._exec_fn_required_keys_is_ndarray == [True, True, False]
