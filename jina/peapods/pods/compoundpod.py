@@ -220,7 +220,7 @@ class CompoundPod(BasePod):
         """
         return all(
             [p.is_ready.is_set() for p in self.peas]
-            + [p.is_ready.is_set() for p in self.replica_list]
+            + [p.is_ready for p in self.replica_list]
         )
 
     def _set_after_to_pass(self, args):
