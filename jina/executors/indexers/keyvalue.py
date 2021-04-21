@@ -64,22 +64,24 @@ class _ReadHandler:
 
     def __init__(self, path, key_length):
         self.path = path
-        with open(self.path + '.head', 'rb') as fp:
-            tmp = np.frombuffer(
-                fp.read(),
-                dtype=[
-                    ('', (np.str_, key_length)),
-                    ('', np.int64),
-                    ('', np.int64),
-                    ('', np.int64),
-                ],
-            )
-            self.header = {
-                r[0]: None
-                if np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY)
-                else (r[1], r[2], r[3])
-                for r in tmp
-            }
+        self.header = {}
+        if os.path.exists(self.path + '.head'):
+            with open(self.path + '.head', 'rb') as fp:
+                tmp = np.frombuffer(
+                    fp.read(),
+                    dtype=[
+                        ('', (np.str_, key_length)),
+                        ('', np.int64),
+                        ('', np.int64),
+                        ('', np.int64),
+                    ],
+                )
+                self.header = {
+                    r[0]: None
+                    if np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY)
+                    else (r[1], r[2], r[3])
+                    for r in tmp
+                }
 
     def __enter__(self):
         self._body = open(self.path, 'r+b')
