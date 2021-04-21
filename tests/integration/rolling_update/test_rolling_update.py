@@ -49,7 +49,7 @@ def test_normal(config):
     assert set(used_replicas) == {0.0, 1.0, 2.0}
 
 
-@pytest.mark.timeout(5)
+@pytest.mark.timeout(30)
 def test_simple_run():
     flow = Flow().add(
         name='pod1',
