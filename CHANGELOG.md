@@ -50,6 +50,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8418,4 +8419,40 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f6f44e87```](https://github.com/jina-ai/jina/commit/f6f44e87faefa696632bb59319ec6ff21f1dc16d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1faaa57c```](https://github.com/jina-ai/jina/commit/1faaa57ceadf470ed61f5cbbc424c5c650d6b835)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```0642568d```](https://github.com/jina-ai/jina/commit/0642568d62c8c6259997cc1b0f7aca5f798480b2)] __-__ __version__: the next version will be 1.1.8 (*Jina Dev Bot*)
+
+<a name=release-note-1-1-9></a>
+## Release Note (`1.1.9`)
+
+> Release time: 2021-04-21 11:24:43
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Deepankar Mahapatro,  cristian,  Jina Dev Bot,  Joan Fontanals,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f10709d5```](https://github.com/jina-ai/jina/commit/f10709d5c553a71c12800c6ca99e90d242ef2487)] __-__ add enums to control embedding types (#2318) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```2fa264de```](https://github.com/jina-ai/jina/commit/2fa264de0b29251018254cace106f4dc36378394)] __-__ __driver__: replace annotation check with typing module (#2327) (*Han Xiao*)
+ - [[```ddedd442```](https://github.com/jina-ai/jina/commit/ddedd44209bae70dc818a3efb5aed93c29f8468a)] __-__ __types__: fix binary str property in type (#2319) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```83a0e284```](https://github.com/jina-ai/jina/commit/83a0e284322202991ed9c5a0528f98139dea78fc)] __-__ snippets cleanup (#2325) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```f592fb01```](https://github.com/jina-ai/jina/commit/f592fb0150ce5350fd4a124428bca118fb25d91c)] __-__ __terraform__: pass correct param set (#2328) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```1e67393d```](https://github.com/jina-ai/jina/commit/1e67393db04b047eda256459ebc3bbc7ebd2a56f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```10431ede```](https://github.com/jina-ai/jina/commit/10431edec9d911e123560c21d5c7eec4fd1aff0a)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```cd70b5a4```](https://github.com/jina-ai/jina/commit/cd70b5a4408a675961fc92b94fc640e5320837ed)] __-__ update snippet (*Han Xiao*)
+ - [[```3fd7ed3f```](https://github.com/jina-ai/jina/commit/3fd7ed3fad87088bf275141cd6af927c8452880f)] __-__ update cookbook (*Han Xiao*)
+ - [[```43f382f8```](https://github.com/jina-ai/jina/commit/43f382f805c1c40af722350dee2a4006e0c10971)] __-__ __version__: the next version will be 1.1.9 (*Jina Dev Bot*)
 
