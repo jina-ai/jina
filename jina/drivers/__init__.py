@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import inspect
+import typing
 from functools import wraps
 from typing import (
     Any,
@@ -15,6 +16,7 @@ from typing import (
     Union,
 )
 
+import numpy as np
 from google.protobuf.struct_pb2 import Struct
 
 from ..enums import OnErrorStrategy
@@ -480,6 +482,13 @@ class DocsExtractUpdateMixin:
         """
         from ..types.document import Document
 
+        if self._exec_fn_return_is_ndarray and not isinstance(exec_results, np.ndarray):
+            r_type = type(exec_results).__name__
+            if r_type in {'EagerTensor', 'Tensor', 'list'}:
+                exec_results = np.array(exec_results, dtype=np.float32)
+            else:
+                raise TypeError(f'unrecognized type {exec_results!r}')
+
         for doc, exec_result in zip(docs_pts, exec_results):
             if isinstance(exec_result, dict):
                 doc.set_attrs(**exec_result)
@@ -557,8 +566,19 @@ class DocsExtractUpdateMixin:
         :return: a list of boolean idicator, True if the corresponding key is annotated as ndarray
         """
 
-        anno = inspect.getfullargspec(inspect.unwrap(self.exec_fn)).annotations
-        return ['ndarray' in str(anno.get(k, '')) for k in self._exec_fn_required_keys]
+        anno = typing.get_type_hints((inspect.unwrap(self.exec_fn)))
+        return [anno.get(k, None) == np.ndarray for k in self._exec_fn_required_keys]
+
+    @cached_property
+    def _exec_fn_return_is_ndarray(self) -> bool:
+        """Return a boolean value for showing if the return of :meth:`exec_fn` is annotated as `ndarray`
+
+        :return: a bool indicator
+        """
+        return (
+            typing.get_type_hints((inspect.unwrap(self.exec_fn)))['return']
+            == np.ndarray
+        )
 
 
 class BaseRecursiveDriver(BaseDriver):

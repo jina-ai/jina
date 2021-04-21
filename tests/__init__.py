@@ -179,7 +179,6 @@ class DummyOneHotTextEncoder(BaseTextEncoder):
         )
 
     @batching
-    @as_ndarray
     def encode(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
 
@@ -193,4 +192,4 @@ class DummyOneHotTextEncoder(BaseTextEncoder):
                 for c in r
             ]
             output.append(self.embeddings[r_emb, :].sum(axis=0))
-        return np.array(output)
+        return output
