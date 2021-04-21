@@ -576,7 +576,7 @@ class DocsExtractUpdateMixin:
         :return: a bool indicator
         """
         return (
-            typing.get_type_hints((inspect.unwrap(self.exec_fn)))['return']
+            typing.get_type_hints((inspect.unwrap(self.exec_fn))).get('return', None)
             == np.ndarray
         )
 
