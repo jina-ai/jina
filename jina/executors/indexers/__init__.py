@@ -179,8 +179,12 @@ class BaseIndexer(BaseExecutor):
         # ! a || ( a && b )
         # =
         # ! a || b
+        self.logger.warning(
+            f'HEY getting write_handler {self.handler_mutex} and {self.is_handler_loaded}'
+        )
         if not self.handler_mutex or not self.is_handler_loaded:
             r = self.get_add_handler() if self.is_exist else self.get_create_handler()
+            self.logger.warning(f'r {r}')
 
             if r is None:
                 self.logger.warning(
@@ -231,6 +235,7 @@ class BaseIndexer(BaseExecutor):
         """Flush all buffered data to ``index_abspath`` """
         try:
             # It may have already been closed by the Pea using context manager
+            self.logger.warning('call flush ??')
             call_obj_fn(self.write_handler, 'flush')
         except:
             pass

@@ -10,6 +10,7 @@ import numpy as np
 
 from . import BaseKVIndexer
 from ..compound import CompoundExecutor
+from ...logging import JinaLogger
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 
@@ -22,11 +23,15 @@ class _WriteHandler:
     :param mode: Writing mode. (e.g. 'ab', 'wb')
     """
 
-    def __init__(self, path, mode):
+    def __init__(self, path, mode, logger):
+
+        self.logger = logger
         self.path = path
         self.mode = mode
+        self.logger.warning(f'WRITEHANDLER CREATE {self.path} with mode {self.mode}')
 
     def __enter__(self):
+        self.logger.warning(f'WRITEHANDLER ENTER {self.path} with mode {self.mode}')
         self.body = open(self.path, self.mode)
         self.header = open(self.path + '.head', self.mode)
         return self
@@ -37,7 +42,11 @@ class _WriteHandler:
 
     def close(self):
         """Close the file."""
+        self.logger.warning(f'WRITEHANDLER CLOSHHHHHHHHHHHHH {self.path}')
+
         if hasattr(self, 'body'):
+            self.logger.warning(f'WRITEHANDLER CLOSE {self.body}')
+
             if not self.body.closed:
                 self.body.close()
         if hasattr(self, 'header'):
@@ -46,12 +55,17 @@ class _WriteHandler:
 
     def flush(self):
         """Clear the body and header."""
+        self.logger.warning(f'WRITEHANDLER FLUSHHHHHHHHHHHHH {self.path}')
+        self.logger.warning(f' before size {os.path.getsize(self.path)}')
+
         if hasattr(self, 'body'):
+            self.logger.warning(f' WRITEHANDLER FLUSH {self.body}')
             if not self.body.closed:
                 self.body.flush()
         if hasattr(self, 'header'):
             if not self.header.closed:
                 self.header.flush()
+        self.logger.warning(f' size {os.path.getsize(self.path)}')
 
 
 class _ReadHandler:
@@ -62,13 +76,15 @@ class _ReadHandler:
     :param key_length: Length of key.
     """
 
-    def __init__(self, path, key_length):
+    def __init__(self, path, key_length, logger):
+        self.logger = logger
         self.path = path
-        with open(path + '.head', 'rb') as fp:
+        self.key_length = key_length
+        with open(self.path + '.head', 'rb') as fp:
             tmp = np.frombuffer(
                 fp.read(),
                 dtype=[
-                    ('', (np.str_, key_length)),
+                    ('', (np.str_, self.key_length)),
                     ('', np.int64),
                     ('', np.int64),
                     ('', np.int64),
@@ -84,6 +100,7 @@ class _ReadHandler:
     def __enter__(self):
         self._body = open(self.path, 'r+b')
         self.body = self._body.fileno()
+        self.logger.warning(f' READHANDLER self.path {self.path} => {self.body}')
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -111,7 +128,8 @@ class BinaryPbWriterMixin:
         :return: write handler
         """
         # keep _start position as in pickle serialization
-        return _WriteHandler(self.index_abspath, 'ab')
+        self.logger.warning(f' get_add_handler self start to keep {self._start}')
+        return _WriteHandler(self.index_abspath, 'ab', self.logger)
 
     def get_create_handler(self) -> '_WriteHandler':
         """
@@ -120,7 +138,7 @@ class BinaryPbWriterMixin:
         :return: write handler.
         """
         self._start = 0  # override _start position
-        return _WriteHandler(self.index_abspath, 'wb')
+        return _WriteHandler(self.index_abspath, 'wb', self.logger)
 
     def get_query_handler(self) -> '_ReadHandler':
         """
@@ -128,7 +146,7 @@ class BinaryPbWriterMixin:
 
         :return: read handler.
         """
-        return _ReadHandler(self.index_abspath, self.key_length)
+        return _ReadHandler(self.index_abspath, self.key_length, self.logger)
 
     def _add(
         self, keys: Iterable[str], values: Iterable[bytes], write_handler: _WriteHandler
@@ -187,10 +205,19 @@ class BinaryPbWriterMixin:
                 self._size -= 1
 
     def _query(self, key):
+        self.logger.warning(f' key {key}')
+        pos_info = self.query_handler.header.get(key, None)
+
         with self.query_handler as query_handler:
-            pos_info = query_handler.header.get(key, None)
+
             if pos_info is not None:
                 p, r, l = pos_info
+                self.logger.warning(f' p, r, l {p}, {r}, {l}')
+                self.logger.warning(f' start {self._start}')
+                self.logger.warning(f' query_handler.body {query_handler.body}')
+                self.logger.warning(f' type(body) {type(query_handler.body)}')
+                self.logger.warning(f' size {os.path.getsize(query_handler.path)}')
+
                 with mmap.mmap(query_handler.body, offset=p, length=l) as m:
                     return m[r:]
 
@@ -198,19 +225,23 @@ class BinaryPbWriterMixin:
 class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
     """Simple Key-value indexer."""
 
+    def __init__(self, delete_on_dump: bool = False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.delete_on_dump = delete_on_dump
+
     def __getstate__(self):
         # called on pickle save
         if self.delete_on_dump:
             self._delete_invalid_indices()
         d = super().__getstate__()
+        self.logger.warning(f' start {d["_start"]}')
         return d
 
     def _delete_invalid_indices(self):
         keys = []
         vals = []
         # we read the valid values and write them to the intermediary file
-        read_handler = _ReadHandler(self.index_abspath, self.key_length)
-        with read_handler:
+        with _ReadHandler(self.index_abspath, self.key_length) as read_handler:
             for key in read_handler.header.keys():
                 pos_info = read_handler.header.get(key, None)
                 if pos_info:
@@ -237,10 +268,6 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         os.remove(head_path)
         os.rename(tmp_file, self.index_abspath)
         os.rename(tmp_file + '.head', head_path)
-
-    def __init__(self, delete_on_dump: bool = False, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.delete_on_dump = delete_on_dump
 
     def add(
         self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
