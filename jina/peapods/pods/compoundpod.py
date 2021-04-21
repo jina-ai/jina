@@ -74,14 +74,7 @@ class CompoundPod(BasePod):
 
         :return: arguments of the head pea
         """
-        if self.is_head_router and self.replicas_args['head']:
-            return self.replicas_args['head']
-        elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
-            return self.first_pod_args
-        elif self.deducted_head:
-            return self.deducted_head
-        else:
-            raise ValueError('ambiguous head node, maybe it is deducted already?')
+        return self.replicas_args['head']
 
     @head_args.setter
     def head_args(self, args):
@@ -90,14 +83,7 @@ class CompoundPod(BasePod):
 
         :param args: arguments of the head pea
         """
-        if self.is_head_router and self.replicas_args['head']:
-            self.replicas_args['head'] = args
-        elif not self.is_head_router and len(self.replicas_args['replicas']) == 1:
-            self.replicas_args['replicas'][0] = args  # weak reference
-        elif self.deducted_head:
-            self.deducted_head = args
-        else:
-            raise ValueError('ambiguous head node, maybe it is deducted already?')
+        self.replicas_args['head'] = args
 
     @property
     def tail_args(self):
@@ -106,14 +92,7 @@ class CompoundPod(BasePod):
 
         :return: arguments of the tail pea
         """
-        if self.is_tail_router and self.replicas_args['tail']:
-            return self.replicas_args['tail']
-        elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
-            return self.first_pod_args
-        elif self.deducted_tail:
-            return self.deducted_tail
-        else:
-            raise ValueError('ambiguous tail node, maybe it is deducted already?')
+        return self.replicas_args['tail']
 
     @tail_args.setter
     def tail_args(self, args):
@@ -122,14 +101,7 @@ class CompoundPod(BasePod):
 
         :param args: arguments of the tail pea
         """
-        if self.is_tail_router and self.replicas_args['tail']:
-            self.replicas_args['tail'] = args
-        elif not self.is_tail_router and len(self.replicas_args['replicas']) == 1:
-            self.replicas_args['replicas'][0] = args  # weak reference
-        elif self.deducted_tail:
-            self.deducted_tail = args
-        else:
-            raise ValueError('ambiguous tail node, maybe it is deducted already?')
+        self.replicas_args['tail'] = args
 
     @property
     def all_args(
