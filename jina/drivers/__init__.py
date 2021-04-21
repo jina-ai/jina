@@ -566,8 +566,13 @@ class DocsExtractUpdateMixin:
         :return: a list of boolean idicator, True if the corresponding key is annotated as ndarray
         """
 
-        anno = typing.get_type_hints((inspect.unwrap(self.exec_fn)))
-        return [anno.get(k, None) == np.ndarray for k in self._exec_fn_required_keys]
+        try:
+            anno = typing.get_type_hints((inspect.unwrap(self.exec_fn)))
+            return [
+                anno.get(k, None) == np.ndarray for k in self._exec_fn_required_keys
+            ]
+        except NameError:
+            return [False] * len(self._exec_fn_required_keys_is_ndarray)
 
     @cached_property
     def _exec_fn_return_is_ndarray(self) -> bool:
@@ -575,10 +580,15 @@ class DocsExtractUpdateMixin:
 
         :return: a bool indicator
         """
-        return (
-            typing.get_type_hints((inspect.unwrap(self.exec_fn))).get('return', None)
-            == np.ndarray
-        )
+        try:
+            return (
+                typing.get_type_hints((inspect.unwrap(self.exec_fn))).get(
+                    'return', None
+                )
+                == np.ndarray
+            )
+        except NameError:
+            return False
 
 
 class BaseRecursiveDriver(BaseDriver):
