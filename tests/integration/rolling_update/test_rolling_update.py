@@ -239,3 +239,18 @@ def test_port_configuration(replicas_and_parallel):
                         getattr(pod.args, 'parallel', 1),
                     )
         assert pod
+
+
+def test_num_peas(config):
+    with Flow().add(
+        name='pod1',
+        uses=os.path.join(cur_dir, 'yaml/simple_index_vector.yml'),
+        replicas=3,
+        parallel=4,
+    ) as flow:
+        assert flow.num_peas == (
+            3 * (4 + 1 + 1)  # replicas 3  # parallel 4  # pod head  # pod tail
+            + 1  # compound pod head
+            + 1  # compound pod tail
+            + 1  # gateway
+        )
