@@ -572,7 +572,7 @@ class DocsExtractUpdateMixin:
                 anno.get(k, None) == np.ndarray for k in self._exec_fn_required_keys
             ]
         except NameError:
-            return [False] * len(self._exec_fn_required_keys_is_ndarray)
+            return [False] * len(self._exec_fn_required_keys)
 
     @cached_property
     def _exec_fn_return_is_ndarray(self) -> bool:
