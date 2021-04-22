@@ -2,13 +2,17 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import copy
 from argparse import Namespace
+from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
 
 from .. import Pea
 from .. import Pod
 from .. import BasePod
-from ...enums import PollingType, PeaRoleType
+from ... import helper
+from ...enums import PollingType, PeaRoleType, SocketType, SchedulerType
+from ...helper import random_identity
 
 
 class CompoundPod(BasePod):
@@ -51,8 +55,6 @@ class CompoundPod(BasePod):
         return self._parse_base_pod_args(
             args,
             attribute='replicas',
-            id_attribute_name='replica_id',
-            role_type=PeaRoleType.REPLICA,
             repetition_attribute='replicas',
             polling_type=PollingType.ANY,
         )
@@ -217,6 +219,63 @@ class CompoundPod(BasePod):
         if PollingType.ANY.is_push:
             # ONLY reset when it is push
             args.uses_after = '_pass'
+
+    @staticmethod
+    def _set_middle_args(
+        args: Namespace,
+        head_args: Optional[Namespace] = None,
+        tail_args: Namespace = None,
+    ) -> List[Namespace]:
+        result = []
+        _host_list = (
+            args.peas_hosts
+            if args.peas_hosts
+            else [
+                args.host,
+            ]
+        )
+
+        host_generator = cycle(_host_list)
+        for idx in range(args.replicas):
+            _args = copy.deepcopy(args)
+            pod_host_list = [
+                host for _, host in zip(range(args.parallel), host_generator)
+            ]
+            _args.peas_hosts = pod_host_list
+
+            _args.replica_id = idx
+            _args.identity = random_identity()
+
+            if _args.name:
+                _args.name += f'/{idx}'
+            else:
+                _args.name = f'{idx}'
+
+            if head_args:
+                _args.port_in = head_args.port_out
+            if tail_args:
+                _args.port_out = tail_args.port_in
+
+            _args.port_ctrl = helper.random_port()
+            _args.socket_out = SocketType.PUSH_CONNECT
+
+            if args.scheduling == SchedulerType.ROUND_ROBIN:
+                _args.socket_in = SocketType.PULL_CONNECT
+            elif args.scheduling == SchedulerType.LOAD_BALANCE:
+                _args.socket_in = SocketType.DEALER_CONNECT
+            else:
+                raise ValueError(
+                    f'{args.scheduling} is not supported as a SchedulerType!'
+                )
+
+            _args.host_in = BasePod._fill_in_host(
+                bind_args=head_args, connect_args=_args
+            )
+            _args.host_out = BasePod._fill_in_host(
+                bind_args=tail_args, connect_args=_args
+            )
+            result.append(_args)
+        return result
 
     def rolling_update(self):
         """
