@@ -1,21 +1,453 @@
-# Jina Code Snippets
-
-These code snippets provide a short introduction to Jina's functionality and design framework. To run a snippet in a Jupyter Notebook, just click the "run" button next to the snippet.
+# Jina Cookbook
 
 |     |   |
 | --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
+| 🥚  | [Document](#document) • [Executor](#executor) • [Flow](#flow) • [Wrap-up](#wrap-up)  |
 | 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
+| 🐤 | [CRUD Functions](#crud-functions) |
 | 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
+
+These code snippets provide a short introduction to Jina's functionality and design framework. To run a snippet, just click the "run" button next to the snippet.
+
 ## 🥚 Fundamentals
+
+Document, Executor, Flow are the three fundamental concepts in Jina.
+
+- **Document** is the basic data type in Jina;
+- **Executor** is how Jina processes Documents;
+- **Flow** is how Jina streamlines and scales Executors.
+
+### Document
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-construct-document.ipynb)
+
+`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and be accompanied by rich meta information. To construct a Document, you can use:
+
+```python
+import numpy
+from jina import Document
+
+doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
+doc2 = Document(embedding=numpy.random.random([10, 10]))  # a ndarray document
+```
+
+A Document can be recursed both vertically and horizontally to have nested Documents and matched Documents. To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
+
+<table>
+  <tr>
+    <td>
+
+```python
+import numpy as np
+from jina import Document
+
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
+
+d0.chunks.append(d1)
+d0.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
+
+d0.plot()  # simply `d0` on JupyterLab
+```
+
+</td>
+<td>
+<img src="https://github.com/jina-ai/jina/blob/master/.github/images/four-symbol-docs.svg?raw=true"/>
+</td>
+</tr>
+</table>
+
+<details>
+  <summary>Click here to see more about MultimodalDocument</summary>
+
+
+### MultimodalDocument
+
+A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
+
+Jina provides multiple ways to build a multimodal Document. For example, you can provide the modality names and the content in a `dict`:
+
+```python
+from jina import MultimodalDocument
+document = MultimodalDocument(modality_content_map={
+    'title': 'my holiday picture',
+    'description': 'the family having fun on the beach',
+    'image': PIL.Image.open('path/to/image.jpg')
+})
+```
+
+One can also compose a `MultimodalDocument` from multiple `Document` directly:
+
+```python
+from jina.types import Document, MultimodalDocument
+
+doc_title = Document(content='my holiday picture', modality='title')
+doc_desc = Document(content='the family having fun on the beach', modality='description')
+doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='image')
+doc_img.tags['date'] = '10/08/2019'
+
+document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
+```
+
+#### Fusion Embeddings from Different Modalities
+
+To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unique `encode` interface.
+
+```python
+def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
+    ...
+```
+
+`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the encoder as the first argument, and `text` as the second.
+
+```yaml
+jtype: MyMultimodalEncoder
+with:
+  positional_modality: ['image', 'text']
+requests:
+  on:
+    [IndexRequest, SearchRequest]:
+      - jtype: MultiModalDriver {}
+```
+
+Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
+
+</details>
+
+### Executor
+
+Executor is the algorithmic component in Jina: it defines how Jina processes a Document.
+
+Here is a simple executor that returns `[1,2]` or `[4,5]` depending on the `text` attribute of the Document.
+
+```python
+import numpy as np
+from jina import Executor, requests
+
+class MyExecutor(Executor):
+    
+    @requests
+    def foo(self, text):
+        return [{'embedding': np.ndarray([1, 2]) if t == 'hello' else 
+                np.ndarray([3, 4])} for t in text]
+```
+
+`text`, `embedding` are `Document` attributes. Using `text` as the argument automatically tells Jina to fetch the same name attribute from the Document objects. Using `embedding` in the return tells Jina to write results into `Document.embedding`. You can look up all available attributes by `Document.get_all_attributes()`. Of course, you can have multiple arguments defined in `foo()`.
+
+### Flow
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-create-flow.ipynb)
+
+Flow connects Executors from different machines and scales them up. To create a new Flow:
+
+```python
+from jina import Flow
+f = Flow().add(uses=MyExecutor)
+```
+
+This creates a simple Flow with `MyExecutor` defined above. You can chain multiple `.add()`s in a Flow.
+
+To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be displayed inline *without* `plot`.
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
+
+### Wrap-up
+
+Now let's combine the three concepts together.
+
+```python
+import numpy as np
+from jina import Document, Executor, Flow, requests
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, text):
+        return [{'embedding': np.ndarray([1, 2]) if t == 'hello' else np.ndarray([3, 4])} for t in text]
+
+with Flow().add(uses=MyExecutor) as f:
+    f.index([Document(text='hello'), Document(text='world')], on_done=print)
+```
+
+Get the vibe? Now we're talking! Let's learn more about the basic concepts and features of Jina:
+
+---
+
+## 🐣 Basic
+
+### Feed Data
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-feed-data.ipynb)
+
+To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty Documents and index them:
+
+```python
+from jina import Document
+
+with Flow().add() as f:
+    f.index((Document() for _ in range(10)))
+```
+
+Flow supports CRUD operations: `index`, `search`, `update`, `delete`. In addition, it also provides sugary syntax on `ndarray`, `csv`, `ndjson` and arbitrary files.
+
+
+<table>
+<tr>
+    <td>
+    Input
+    </td>
+    <td>
+     Example of <code>index</code>/<code>search</code>
+    </td>
+<td>
+Explain
+</td>
+</tr>
+  <tr>
+    <td>
+    <code>numpy.ndarray</code>
+    </td>
+    <td>
+      <sup>
+
+```python
+with f:
+  f.index_ndarray(numpy.random.random([4,2])) # search_ndarray()
+```
+
+</sup>
+  </td>
+<td>
+
+Input four `Document`s, each `document.blob` is an `ndarray([2])`
+
+</td>
+</tr>
+<tr>
+    <td>
+    CSV
+    </td>
+    <td>
+      <sup>
+
+```python
+with f, open('index.csv') as fp:
+  f.index_csv(fp, field_resolver={'pic_url': 'uri'}) # search_csv()
+```
+
+</sup>
+  </td>
+
+<td>
+
+Each line in `index.csv` is constructed as a `Document`, CSV field `pic_url` mapped to `document.uri`.
+
+</td>
+</tr>
+
+<tr>
+    <td>
+    JSON Lines/<code>ndjson</code>/LDJSON
+    </td>
+    <td>
+<sup>
+
+```python
+with f, open('index.ndjson') as fp:
+  f.index_ndjson(fp, field_resolver={'question_id': 'id'}) # search_ndjson()
+```
+
+</sup>
+  </td>
+<td>
+
+Each line in `index.ndjson` is constructed as a `Document`, JSON field `question_id` mapped to `document.id`.
+
+</td>
+</tr>
+<tr>
+    <td>
+    Files with wildcards
+    </td>
+    <td>
+      <sup>
+
+```python
+with f:
+  f.index_files(['/tmp/*.mp4', '/tmp/*.pdf']) # search_files()
+```
+
+</sup>
+  </td>
+<td>
+
+Each file captured is constructed as a `Document`, and Document content (`text`, `blob`, `buffer`) is auto-guessed & filled.
+
+</td>
+</tr>
+
+</table>
+
+### Fetch Result
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-fetch-result.ipynb)
+
+Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface: You can add callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written to `output.txt`.
+
+```python
+def beep(*args):
+    # make a beep sound
+    import os
+    os.system('echo -n "\a";')
+
+with Flow().add() as f, open('output.txt', 'w') as fp:
+    f.index(numpy.random.random([4, 5, 2]),
+            on_done=print, on_error=beep, on_always=lambda x: fp.write(x.json()))
+```
+
+### Add Logic
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-add-logic.ipynb)
+
+To add logic to the Flow, use the `uses` parameter to add an [Executor](https://101.jina.ai/#executor). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
+
+
+```python
+f = (Flow().add(uses=MyBertEncoder)  # the class of a Jina Executor
+           .add(uses='docker://jinahub/pod.encoder.dummy_mwu_encoder:0.0.6-0.9.3')  # the image name
+           .add(uses='myencoder.yml')  # YAML serialization of a Jina Executor
+           .add(uses='!WaveletTransformer | {freq: 20}')  # inline YAML config
+           .add(uses='_pass')  # built-in shortcut executor
+           .add(uses={'__cls': 'MyBertEncoder', 'with': {'param': 1.23}}))  # dict config object with __cls keyword
+```
+
+The power of Jina lies in its decentralized architecture: Each `add` creates a new Executor, and these Executors can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
+
+### Inter & Intra Parallelism
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
+
+Chaining `.add()`s creates a sequential Flow. For parallelism, use the `needs` parameter:
+
+```python
+f = (Flow().add(name='p1', needs='gateway')
+           .add(name='p2', needs='gateway')
+           .add(name='p3', needs='gateway')
+           .needs(['p1','p2', 'p3'], name='r1').plot())
+```
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot3.svg?raw=true"/>
+
+`p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Executors until they finish their work. Note: parallelism can also be performed inside a Executor using `parallel`:
+
+```python
+f = (Flow().add(name='p1', needs='gateway')
+           .add(name='p2', needs='gateway')
+           .add(name='p3', parallel=3)
+           .needs(['p1','p3'], name='r1').plot())
+```
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
+
+### Decentralized Flow
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/decentralized-flow.ipynb)
+
+A Flow does not have to be local-only: You can put any Executor to remote(s). In the example below, with the `host` keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
+
+<table>
+    <tr>
+    <td>123.456.78.9</td>
+    <td>
+
+```bash
+# have docker installed
+docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
+ to stop it
+docker rm -f jinad
+```
+
+</td>
+</tr>
+  <tr>
+    <td>
+    Local
+    </td>
+    <td>
+
+```python
+import numpy as np
+from jina import Flow
+
+f = (Flow()
+     .add()
+     .add(name='gpu_exec',
+          uses='mwu_encoder.yml',
+          host='123.456.78.9:8000',
+          parallel=2,
+          upload_files=['mwu_encoder.py'])
+     .add())
+
+with f:
+    f.index_ndarray(np.random.random([10, 100]), output=print)
+```
+</tr>
+
+</table>
+
+We provide a demo server on `cloud.jina.ai:8000`, give the following snippet a try!
+
+```python
+from jina import Flow
+
+with Flow().add().add(host='cloud.jina.ai:8000') as f:
+    f.index(['hello', 'world'])
+```
+
+### Asynchronous Flow
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
+
+While synchronous from outside, Jina runs asynchronously under the hood: it manages the eventloop(s) for scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
+
+Unlike `Flow`, the CRUD of `AsyncFlow` accepts input and output functions as [async generators](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other asynchronous libraries (e.g. motor for MongoDB):
+
+```python
+from jina import AsyncFlow
+
+async def input_function():
+    for _ in range(10):
+        yield Document()
+        await asyncio.sleep(0.1)
+
+with AsyncFlow().add() as f:
+    async for resp in f.index(input_function):
+        print(resp)
+```
+
+`AsyncFlow` is particularly useful when Jina and another heavy-lifting job are running concurrently:
+
+```python
+async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
+    with AsyncFlow().add(uses='- !WaitDriver {}') as f:
+        async for resp in f.index_ndarray(numpy.random.random([5, 4])):
+            print(resp)
+
+async def heavylifting():  # total roundtrip takes ~5s
+    print('heavylifting other io-bound jobs, e.g. download, upload, file io')
+    await asyncio.sleep(5)
+    print('heavylifting done after 5s')
+
+async def concurrent_main():  # about 5s; but some dispatch cost, can't be just 5s, usually at <7s
+    await asyncio.gather(run_async_flow_5s(), heavylifting())
+
+if __name__ == '__main__':
+    asyncio.run(concurrent_main())
+```
+
+`AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. where it can run out-of-the-box.
+
+---
 
 ### CRUD Functions
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-basic-crud-functions.ipynb)
 
-
-
-First we look at basic CRUD operations. In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. With Documents below as an example:
+In Jina, CRUD corresponds to four functions: `index` (create), `search` (read), `update`, and `delete`. See below as an example:
 ```python
 import numpy as np
 from jina import Document
@@ -100,429 +532,22 @@ with f:
 </tr>
 </table>
 
-For further details about CRUD functionality, checkout [docs.jina.ai.](https://docs.jina.ai/chapters/crud/)
-
-
-### Document
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-construct-document.ipynb)
-
-`Document` is [Jina's primitive data type](https://hanxiao.io/2020/11/22/Primitive-Data-Types-in-Neural-Search-System/#primitive-types). It can contain text, image, array, embedding, URI, and be accompanied by rich meta information. To construct a Document, you can use:
-
-```python
-import numpy
-from jina import Document
-
-doc1 = Document(content=text_from_file, mime_type='text/x-python')  # a text document contains python code
-doc2 = Document(content=numpy.random.random([10, 10]))  # a ndarray document
-```
-
-A Document can be recursed both vertically and horizontally to have nested Documents and matched Documents. To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook, all Document objects will be auto-rendered.
-
-<table>
-  <tr>
-    <td>
-
-```python
-import numpy
-from jina import Document
-
-d0 = Document(id='🐲', embedding=np.array([0, 0]))
-d1 = Document(id='🐦', embedding=np.array([1, 0]))
-d2 = Document(id='🐢', embedding=np.array([0, 1]))
-d3 = Document(id='🐯', embedding=np.array([1, 1]))
-
-d0.chunks.append(d1)
-d0.chunks[0].chunks.append(d2)
-d0.matches.append(d3)
-
-d0.plot()  # simply `d0` on JupyterLab
-```
-
-</td>
-<td>
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/four-symbol-docs.svg?raw=true"/>
-</td>
-</tr>
-</table>
-
-<details>
-  <summary>Click here to see more about MultimodalDocument</summary>
-
-
-### MultimodalDocument
-
-A `MultimodalDocument` is a document composed of multiple `Document` from different modalities (e.g. text, image, audio).
-
-Jina provides multiple ways to build a multimodal Document. For example, you can provide the modality names and the content in a `dict`:
-
-```python
-from jina import MultimodalDocument
-document = MultimodalDocument(modality_content_map={
-    'title': 'my holiday picture',
-    'description': 'the family having fun on the beach',
-    'image': PIL.Image.open('path/to/image.jpg')
-})
-```
-
-One can also compose a `MultimodalDocument` from multiple `Document` directly:
-
-```python
-from jina.types import Document, MultimodalDocument
-
-doc_title = Document(content='my holiday picture', modality='title')
-doc_desc = Document(content='the family having fun on the beach', modality='description')
-doc_img = Document(content=PIL.Image.open('path/to/image.jpg'), modality='image')
-doc_img.tags['date'] = '10/08/2019'
-
-document = MultimodalDocument(chunks=[doc_title, doc_description, doc_img])
-```
-
-#### Fusion Embeddings from Different Modalities
-
-To extract fusion embeddings from different modalities Jina provides `BaseMultiModalEncoder` abstract class, which has a unique `encode` interface.
-
-```python
-def encode(self, *data: 'numpy.ndarray', **kwargs) -> 'numpy.ndarray':
-    ...
-```
-
-`MultimodalDriver` provides `data` to the `MultimodalDocument` in the correct expected order. In this example below, `image` embedding is passed to the encoder as the first argument, and `text` as the second.
-
-```yaml
-jtype: MyMultimodalEncoder
-with:
-  positional_modality: ['image', 'text']
-requests:
-  on:
-    [IndexRequest, SearchRequest]:
-      - jtype: MultiModalDriver {}
-```
-
-Interested readers can refer to [`jina-ai/example`: how to build a multimodal search engine for image retrieval using TIRG (Composing Text and Image for Image Retrieval)](https://github.com/jina-ai/examples/tree/master/multimodal-search-tirg) for the usage of `MultimodalDriver` and `BaseMultiModalEncoder` in practice.
-
-</details>
-
-### Flow
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-create-flow.ipynb)
-
-Jina provides a high-level Flow API to simplify building CRUD workflows. To create a new Flow:
-
-```python
-from jina import Flow
-f = Flow().add()
-```
-
-This creates a simple Flow with one [Pod](https://101.jina.ai/#pod). You can chain multiple `.add()`s in a single Flow.
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-visualize-a-flow.ipynb)
-
-To visualize the Flow, simply chain it with `.plot('my-flow.svg')`. If you are using a Jupyter notebook, the Flow object will be displayed inline *without* `plot`.
-
-<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-flow0.svg?raw=true"/>
-
-`Gateway` is the entrypoint of the Flow.
-
-Get the vibe? Now we're talking! Let's learn more about the basic concepts and features of Jina:
-
----
-
-|     |   |
-| --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
-| 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
-
-
-## 🐣 Basic
-
-### Feed Data
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-feed-data.ipynb)
-
-To use a Flow, open it via `with` context manager, like you would open a file in Python. Now let's create some empty Documents and index them:
-
-```python
-from jina import Document
-
-with Flow().add() as f:
-    f.index((Document() for _ in range(10)))
-```
-
-Flow supports CRUD operations: `index`, `search`, `update`, `delete`. In addition, it also provides sugary syntax on `ndarray`, `csv`, `ndjson` and arbitrary files.
-
-
-<table>
-<tr>
-    <td>
-    Input
-    </td>
-    <td>
-     Example of <code>index</code>/<code>search</code>
-    </td>
-<td>
-Explain
-</td>
-</tr>
-  <tr>
-    <td>
-    <code>numpy.ndarray</code>
-    </td>
-    <td>
-      <sup>
-
-```python
-with f:
-  f.index_ndarray(numpy.random.random([4,2]))
-```
-
-</sup>
-  </td>
-<td>
-
-Input four `Document`s, each `document.blob` is an `ndarray([2])`
-
-</td>
-</tr>
-<tr>
-    <td>
-    CSV
-    </td>
-    <td>
-      <sup>
-
-```python
-with f, open('index.csv') as fp:
-  f.index_csv(fp, field_resolver={'pic_url': 'uri'})
-```
-
-</sup>
-  </td>
-
-<td>
-
-Each line in `index.csv` is constructed as a `Document`, CSV field `pic_url` mapped to `document.uri`.
-
-</td>
-</tr>
-
-<tr>
-    <td>
-    JSON Lines/<code>ndjson</code>/LDJSON
-    </td>
-    <td>
-<sup>
-
-```python
-with f, open('index.ndjson') as fp:
-  f.index_ndjson(fp, field_resolver={'question_id': 'id'})
-```
-
-</sup>
-  </td>
-<td>
-
-Each line in `index.ndjson` is constructed as a `Document`, JSON field `question_id` mapped to `document.id`.
-
-</td>
-</tr>
-<tr>
-    <td>
-    Files with wildcards
-    </td>
-    <td>
-      <sup>
-
-```python
-with f:
-  f.index_files(['/tmp/*.mp4', '/tmp/*.pdf'])
-```
-
-</sup>
-  </td>
-<td>
-
-Each file captured is constructed as a `Document`, and Document content (`text`, `blob`, `buffer`) is auto-guessed & filled.
-
-</td>
-</tr>
-
-</table>
-
-### Fetch Result
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-fetch-result.ipynb)
-
-Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface: You can add callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written to `output.txt`.
-
-```python
-def beep(*args):
-    # make a beep sound
-    import os
-    os.system('echo -n "\a";')
-
-with Flow().add() as f, open('output.txt', 'w') as fp:
-    f.index(numpy.random.random([4, 5, 2]),
-            on_done=print, on_error=beep, on_always=lambda x: fp.write(x.json()))
-```
-
-### Add Logic
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-add-logic.ipynb)
-
-To add logic to the Flow, use the `uses` parameter to attach a Pod with an [Executor](https://101.jina.ai/#executor). `uses` accepts multiple value types including class name, Docker image, (inline) YAML or built-in shortcut.
-
-
-```python
-f = (Flow().add(uses=MyBertEncoder)  # the class of a Jina Executor
-           .add(uses='docker://jinahub/pod.encoder.dummy_mwu_encoder:0.0.6-0.9.3')  # the image name
-           .add(uses='myencoder.yml')  # YAML serialization of a Jina Executor
-           .add(uses='!WaveletTransformer | {freq: 20}')  # inline YAML config
-           .add(uses='_pass')  # built-in shortcut executor
-           .add(uses={'__cls': 'MyBertEncoder', 'with': {'param': 1.23}}))  # dict config object with __cls keyword
-```
-
-The power of Jina lies in its decentralized architecture: Each `add` creates a new Pod, and these Pods can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
-
-### Inter & Intra Parallelism
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
-
-Chaining `.add()`s creates a sequential Flow. For parallelism, use the `needs` parameter:
-
-```python
-f = (Flow().add(name='p1', needs='gateway')
-           .add(name='p2', needs='gateway')
-           .add(name='p3', needs='gateway')
-           .needs(['p1','p2', 'p3'], name='r1').plot())
-```
-
-<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot3.svg?raw=true"/>
-
-`p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Pods until they finish their work. Note: parallelism can also be performed inside a Pod using `parallel`:
-
-```python
-f = (Flow().add(name='p1', needs='gateway')
-           .add(name='p2', needs='gateway')
-           .add(name='p3', parallel=3)
-           .needs(['p1','p3'], name='r1').plot())
-```
-
-<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
-
-### Decentralized Flow
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/decentralized-flow.ipynb)
-
-A Flow does not have to be local-only: You can put any Pod to remote(s). In the example below, with the `host` keyword `gpu-pod`, is put to a remote machine for parallelization, whereas other Pods stay local. Extra file dependencies that need to be uploaded are specified via the `upload_files` keyword.
-
-<table>
-    <tr>
-    <td>123.456.78.9</td>
-    <td>
-
-```bash
-# have docker installed
-docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
- to stop it
-docker rm -f jinad
-```
-
-</td>
-</tr>
-  <tr>
-    <td>
-    Local
-    </td>
-    <td>
-
-```python
-import numpy as np
-from jina import Flow
-
-f = (Flow()
-     .add()
-     .add(name='gpu_pod',
-          uses='mwu_encoder.yml',
-          host='123.456.78.9:8000',
-          parallel=2,
-          upload_files=['mwu_encoder.py'])
-     .add())
-
-with f:
-    f.index_ndarray(np.random.random([10, 100]), output=print)
-```
-</tr>
-
-</table>
-
-We provide a demo server on `cloud.jina.ai:8000`, give the following snippet a try!
-
-```python
-from jina import Flow
-
-with Flow().add().add(host='cloud.jina.ai:8000') as f:
-    f.index(['hello', 'world'])
-```
-
-### Asynchronous Flow
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
-
-While synchronous from outside, Jina runs asynchronously under the hood: it manages the eventloop(s) for scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
-
-Unlike `Flow`, the CRUD of `AsyncFlow` accepts input and output functions as [async generators](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other asynchronous libraries (e.g. motor for MongoDB):
-
-```python
-from jina import AsyncFlow
-
-async def input_function():
-    for _ in range(10):
-        yield Document()
-        await asyncio.sleep(0.1)
-
-with AsyncFlow().add() as f:
-    async for resp in f.index(input_function):
-        print(resp)
-```
-
-`AsyncFlow` is particularly useful when Jina is using as part of integration, where another heavy-lifting job is running concurrently:
-
-```python
-async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
-    with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-        async for resp in f.index_ndarray(numpy.random.random([5, 4])):
-            print(resp)
-
-async def heavylifting():  # total roundtrip takes ~5s
-    print('heavylifting other io-bound jobs, e.g. download, upload, file io')
-    await asyncio.sleep(5)
-    print('heavylifting done after 5s')
-
-async def concurrent_main():  # about 5s; but some dispatch cost, can't be just 5s, usually at <7s
-    await asyncio.gather(run_async_flow_5s(), heavylifting())
-
-if __name__ == '__main__':
-    asyncio.run(concurrent_main())
-```
-
-`AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. As Jupyter/ipython already manages an eventloop and thanks to [`autoawait`](https://ipython.readthedocs.io/en/stable/interactive/autoawait.html), `AsyncFlow` can run out-of-the-box in Jupyter.
+For further details about CRUD functionality, check out [docs.jina.ai](https://docs.jina.ai/chapters/crud/)
 
 That's all you need to know for understanding the magic behind `hello-world`. Now let's dive deeper into it!
-
----
-
-|     |   |
-| --- |---|
-| 🥚  | [CRUD Functions](#crud-functions) • [Document](#document) • [Flow](#flow)  |
-| 🐣  | [Feed Data](#feed-data) • [Fetch Result](#fetch-result) • [Add Logic](#add-logic) • [Inter & Intra Parallelism](#inter--intra-parallelism) • [Decentralize](#decentralized-flow) • [Asynchronous](#asynchronous-flow) |
-| 🐥 | [Customize Encoder](#customize-encoder) • [Test Encoder](#test-encoder-in-flow) • [Parallelism & Batching](#parallelism--batching) • [Add Data Indexer](#add-data-indexer) • [Compose Flow from YAML](#compose-flow-from-yaml) • [Search](#search) • [Evaluation](#evaluation) • [Flow Optimization](#flow-optimization) • [REST Interface](#rest-interface) |
 
 ## 🐥 Breakdown of `hello-world`
 
 ### Customize Encoder
 
-Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do this, we simply inherit from `BaseImageEncoder`: a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
+Let's first build a naive image encoder that embeds images into vectors using an orthogonal projection. To do this, we simply inherit from `BaseImageEncoder`, a base class from the `jina.executors.encoders` module. We then override its `__init__()` and `encode()` methods.
 
 
 ```python
 import numpy as np
-from jina.executors.encoders import BaseImageEncoder
+from jina import Encoder
 
-class MyEncoder(BaseImageEncoder):
+class MyEncoder(Encoder):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -531,11 +556,11 @@ class MyEncoder(BaseImageEncoder):
         u, s, vh = np.linalg.svd(H, full_matrices=False)
         self.oth_mat = u @ vh
 
-    def encode(self, data: 'np.ndarray', *args, **kwargs):
-        return (data.reshape([-1, 784]) / 255) @ self.oth_mat
+    def encode(self, content: 'np.ndarray', *args, **kwargs):
+        return (content.reshape([-1, 784]) / 255) @ self.oth_mat
 ```
 
-Jina provides [a family of `Executor` classes](https://101.jina.ai/#executor), which summarize frequently-used algorithmic components in neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers, each with a well-designed interface. You can find the list of [all 107 built-in executors here](https://docs.jina.ai/chapters/all_exec.html). If they don't meet your needs, inheriting from one of them is the easiest way to bootstrap your own Executor. Simply use our Jina Hub CLI:
+Jina provides [a family of `Executor` classes](https://101.jina.ai/#executor), which summarize frequently-used algorithmic components in neural search. This family consists of encoders, indexers, crafters, evaluators, and classifiers, each with a well-designed interface. You can find the list of [all built-in executors here](https://docs.jina.ai/chapters/all_exec.html). If they don't meet your needs, inheriting from one of them is the easiest way to bootstrap your own Executor. Simply use our Jina Hub CLI:
 
 
 ```bash
@@ -559,23 +584,23 @@ with f:
 ```
 
 
-All good! Now our `validate` function confirms that all one hundred 28x28 synthetic images have been embedded into 100x64 vectors.
+All good! Now our `validate` function confirms that all 100 28x28 synthetic images have been embedded into 100x64 vectors.
 
 ### Parallelism & Batching
 
-By setting a larger input, you can play with `batch_size` and `parallel`:
+By setting a larger input, you can play with `request_size` and `parallel`:
 
 
 ```python
 f = Flow().add(uses='MyEncoder', parallel=10)
 
 with f:
-    f.index_ndarray(numpy.random.random([60000, 28, 28]), batch_size=1024)
+    f.index_ndarray(numpy.random.random([60000, 28, 28]), request_size=1024)
 ```
 
 ### Add Data Indexer
 
-Now we need to add an indexer to store all the embeddings and the image for later retrieval. Jina provides a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combine them in a single YAML file:
+Now we need to add an indexer to store all the embeddings and the images for later retrieval. Jina provides a simple `numpy`-powered vector indexer `NumpyIndexer`, and a key-value indexer `BinaryPbIndexer`. We can combine them in a single YAML file:
 
 ```yaml
 jtype: CompoundIndexer
@@ -658,7 +683,7 @@ f = (Flow().add(...)
            .add(uses='_eval_pr'))
 ```
 
-You can construct an iterator of query and groundtruth pairs and feed to the flow `f`, via:
+You can construct an iterator of query and ground-truth pairs and feed to the flow `f`, via:
 
 ```python
 from jina import Document
@@ -666,7 +691,7 @@ from jina import Document
 def query_generator():
     for _ in range(10):
         q = Document()
-        # now construct expect matches as groundtruth
+        # now construct expect matches as ground-truth
         gt = Document(q, copy=True)  # make sure 'gt' is identical to 'q'
         gt.matches.append(...)
         yield q, gt
@@ -734,7 +759,7 @@ class SimpleEncoder(BaseEncoder):
         return np.array([[self.ENCODE_LOOKUP[data[0]][self._layer]]])
 ```
 
-Futhermore, we define what should be the optimization parameters in `parameter.yml`.
+Futhermore, we define the optimization parameters in `parameter.yml`.
 
 ```yaml
 - !IntegerParameter
@@ -744,7 +769,7 @@ Futhermore, we define what should be the optimization parameters in `parameter.y
   step_size: 1
 ```
 
-For optimization, we need to run almost equal Flows again and again with the same data.
+For optimization, we need to run slight variations of the same Flow repeatedly, with the same data.
 This is realized with a `SingleFlowRunner`.
 
 ```python
@@ -796,7 +821,7 @@ JINA@15892[I]:Time to finish: 0:00:02.081710
 
 Tada! The layer 1 is the best one.
 
-For a more detailed guide please read [our docs](https://docs.jina.ai/chapters/optimization/?highlight=optimization).
+For a more detailed guide please read [our docs](https://docs.jina.ai/chapters/optimization/).
 
 ### REST Interface
 

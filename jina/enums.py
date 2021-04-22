@@ -238,6 +238,7 @@ class PeaRoleType(BetterEnum):
     HEAD = 1
     TAIL = 2
     PARALLEL = 3
+    REPLICA = 4
 
 
 class PodRoleType(BetterEnum):
@@ -359,6 +360,82 @@ class RuntimeBackendType(BetterEnum):
 
     THREAD = 0
     PROCESS = 1
+
+
+class EmbeddingClsType(BetterEnum):
+    """Enums for representing the type of embeddings supported."""
+
+    DENSE = 0
+    SCIPY_COO = 1
+    SCIPY_CSR = 2
+    SCIPY_BSR = 3
+    SCIPY_CSC = 4
+    TORCH = 5
+    TF = 6
+
+    @property
+    def is_sparse(self) -> bool:
+        """
+        Check if is of sparse type
+
+        :return: True if the type is sparse
+        """
+        return self.value != 0
+
+    @property
+    def is_dense(self) -> bool:
+        """
+        Check if is of dense type
+
+        :return: True if the type is dense
+        """
+        return self.value == 0
+
+    @property
+    def is_scipy(self) -> bool:
+        """
+        Check if is of scipy sparse type
+
+        :return: True is of scipy sparse type
+        """
+        return self.value in [1, 2, 3, 4]
+
+    @property
+    def is_torch(self) -> bool:
+        """
+        Check if is of torch sparse type
+
+        :return: True is of torch sparse type
+        """
+        return self.value == 5
+
+    @property
+    def is_tf(self) -> bool:
+        """
+        Check if is of tf sparse type
+
+        :return: True is of tf sparse type
+        """
+        return self.value == 6
+
+    @property
+    def scipy_cls_type(self) -> str:
+        """
+        Return the specific scipy class type (coo, csr, csc, bsr)
+
+        :return: True is of scipy sparse type
+        """
+        if self.is_scipy:
+            return self.name.split('_')[1].lower()
+
+    @property
+    def is_scipy_stackable(self) -> bool:
+        """
+        Return if the specific scipy class is stackable. (BSR and CSC when stacked are converted into COO)
+
+        :return: True is class is stackable
+        """
+        return self.value in [1, 2]
 
 
 def replace_enum_to_str(obj):

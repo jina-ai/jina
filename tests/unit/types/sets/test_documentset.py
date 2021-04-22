@@ -2,12 +2,13 @@ from copy import deepcopy
 
 import pytest
 import numpy as np
-from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
+from scipy.sparse import coo_matrix, csr_matrix
 import torch
 import tensorflow as tf
 
 from jina import Document
 from jina.types.sets import DocumentSet
+from jina.enums import EmbeddingClsType
 
 DOCUMENTS_PER_LEVEL = 1
 
@@ -410,40 +411,38 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
 
 
 @pytest.mark.parametrize(
-    'return_sparse_ndarray_cls_type, return_scipy_class_type, return_expected_type',
+    'embedding_cls_type, return_expected_type',
     [
-        ('scipy', 'coo', coo_matrix),
-        ('scipy', 'csr', csr_matrix),
-        ('torch', None, torch.Tensor),
-        ('tf', None, tf.SparseTensor),
+        (EmbeddingClsType.SCIPY_COO, coo_matrix),
+        (EmbeddingClsType.SCIPY_CSR, csr_matrix),
+        (EmbeddingClsType.TORCH, torch.Tensor),
+        (EmbeddingClsType.TF, tf.SparseTensor),
     ],
 )
 def test_all_sparse_embeddings(
     docset_with_scipy_sparse_embedding,
-    return_sparse_ndarray_cls_type,
-    return_scipy_class_type,
+    embedding_cls_type,
     return_expected_type,
 ):
     (
         all_embeddings,
         doc_pts,
     ) = docset_with_scipy_sparse_embedding.get_all_sparse_embeddings(
-        sparse_cls_type=return_sparse_ndarray_cls_type,
-        scipy_cls_type=return_scipy_class_type,
+        embedding_cls_type=embedding_cls_type,
     )
     assert all_embeddings is not None
     assert doc_pts is not None
     assert len(doc_pts) == 3
 
-    if return_scipy_class_type == 'scipy':
+    if embedding_cls_type.is_scipy:
         assert isinstance(all_embeddings, return_expected_type)
         assert all_embeddings.shape == (3, 10)
-    if return_sparse_ndarray_cls_type == 'torch':
+    if embedding_cls_type.is_torch:
         assert isinstance(all_embeddings, return_expected_type)
         assert all_embeddings.is_sparse
         assert all_embeddings.shape[0] == 3
         assert all_embeddings.shape[1] == 10
-    if return_sparse_ndarray_cls_type == 'tf':
+    if embedding_cls_type.is_tf:
         assert isinstance(all_embeddings, list)
         assert isinstance(all_embeddings[0], return_expected_type)
         assert len(all_embeddings) == 3
