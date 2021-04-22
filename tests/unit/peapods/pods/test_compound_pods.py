@@ -83,8 +83,8 @@ def test_tail_args_get_set(pod_args):
         assert pod.tail_args == pod.replicas_args['tail']
 
 
-@pytest.mark.parametrize('parallel', [1, 2, 4])
-@pytest.mark.parametrize('replicas', [3, 4])
+@pytest.mark.parametrize('parallel', [1, 4])
+@pytest.mark.parametrize('replicas', [3])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_pod_context_parallel(runtime, parallel, replicas):
     args = set_pod_parser().parse_args(
@@ -104,7 +104,8 @@ def test_pod_context_parallel(runtime, parallel, replicas):
             # count head and tail
             assert bp.num_peas == (parallel + 2) * replicas + 2
 
-    CompoundPod(args).start().close()
+    with CompoundPod(args) as pod:
+        pass
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
