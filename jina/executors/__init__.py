@@ -446,10 +446,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             - (pre)trained models
 
         .. warning::
-            All class members created here will NOT be serialized when calling :func:`save`. Therefore if you
-            want to store them, please implement the :func:`__getstate__`.
 
-        It uses ``pickle`` for dumping. For members/attributes that are not valid or not efficient for ``pickle``, you
+            Class members created in `post_init` will NOT be serialized when calling :func:`save`. Therefore if you
+            want to store them, please override the :func:`__getstate__`.
+
+        It uses ``pickle`` for dumping. For members/attributes that are invalid or inefficient for ``pickle``, you
         need to implement their own persistence strategy in the :func:`__getstate__`.
 
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
