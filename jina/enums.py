@@ -238,6 +238,7 @@ class PeaRoleType(BetterEnum):
     HEAD = 1
     TAIL = 2
     PARALLEL = 3
+    # this is confusing, a PEA is not a REPLICA, it would make more sense to have this as Pod type
     REPLICA = 4
 
 

@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import copy
 from argparse import Namespace
 from typing import Optional, Dict, List, Union, Set
 
@@ -12,8 +13,13 @@ from ...enums import PollingType, PeaRoleType
 
 
 class CompoundPod(BasePod):
-    """A CompoundPod is a immutable set of pods, which run in parallel. They share the same input and output socket.
-    Internally, the peas of the pods can run with the process/thread backend. They can be also run in their own containers.
+    """A CompoundPod is a set of `Pods`. Every `Pod` is considered to be a replica.
+
+    This `CompoundPod` is to be used when `replicas` argument is more than `one`.
+
+    `CompoundPod` will add a `head` and `tail` pea in front and after the `replica` Pods to handle the distribution
+    of requests between different `replica` Pods.
+
     :param args: pod arguments parsed from the CLI
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
@@ -21,11 +27,12 @@ class CompoundPod(BasePod):
     def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
         super().__init__(args, needs)
         self.replica_list = []  # type: List['Pod']
-        if isinstance(args, Dict):
-            # This is used when a Pod is created in a remote context, where peas & their connections are already given.
-            self.replicas_args = args
-        else:
-            self.replicas_args = self._parse_args(args)
+        # we will see how to have `CompoundPods` in remote later when we add tests for it
+        self.head_args = self._parse_head_args(args)
+        self.tail_args = self._parse_tail_args(args)
+        self.replicas_args = [
+            self._parse_pod_args(copy(args)) for _ in range(args.replicas)
+        ]
 
     @property
     def port_expose(self) -> int:
@@ -45,16 +52,16 @@ class CompoundPod(BasePod):
         """
         return self.head_args.host
 
-    def _parse_args(
+    def _parse_pod_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_base_pod_args(
             args,
-            attribute='replicas',
-            id_attribute_name='replica_id',
-            role_type=PeaRoleType.REPLICA,
-            repetition_attribute='replicas',
-            polling_type=PollingType.ANY,
+            attribute='peas',
+            id_attribute_name='pea_id',
+            role_type=PeaRoleType.PARALLEL,
+            repetition_attribute='parallel',
+            polling_type=getattr(args, 'polling', None),
         )
 
     @property
@@ -112,9 +119,8 @@ class CompoundPod(BasePod):
         :return: arguments for all Peas and pods
         """
         args = {
-            'peas': ([self.replicas_args['head']] if self.replicas_args['head'] else [])
-            + ([self.replicas_args['tail']] if self.replicas_args['tail'] else []),
-            'replicas': self.replicas_args['replicas'],
+            'peas': [self.head_args, self.tail_args],
+            'replicas': self.replicas_args,
         }
         return args
 
