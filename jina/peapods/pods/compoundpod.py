@@ -28,23 +28,13 @@ class CompoundPod(BasePod):
             self.replicas_args = self._parse_args(args)
 
     @property
-    def first_pod_args(self) -> Namespace:
-        """
-        Return the first non-head/tail pod args
-
-        :return: arguments of the first pod
-        """
-        # note this will be never out of boundary
-        return self.replicas_args['replicas'][0]
-
-    @property
     def port_expose(self) -> int:
         """Get the grpc port number
 
 
         .. # noqa: DAR201
         """
-        return self.first_pod_args.port_expose
+        return self.head_args.port_expose
 
     @property
     def host(self) -> str:
@@ -53,7 +43,7 @@ class CompoundPod(BasePod):
 
         .. # noqa: DAR201
         """
-        return self.first_pod_args.host
+        return self.head_args.host
 
     def _parse_args(
         self, args: Namespace
