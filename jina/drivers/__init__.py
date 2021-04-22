@@ -15,6 +15,7 @@ from typing import (
     List,
     Union,
 )
+import abc
 
 import numpy as np
 from google.protobuf.struct_pb2 import Struct
@@ -87,7 +88,7 @@ def store_init_kwargs(func: Callable) -> Callable:
     return _arg_wrapper
 
 
-class QuerySetReader:
+class QuerySetReader(metaclass=abc.ABCMeta):
     """
     :class:`QuerySetReader` allows a driver to read arguments from the protobuf message. This allows a
     driver to override its behavior based on the message it receives. Extremely useful in production, for example,
@@ -151,6 +152,21 @@ class QuerySetReader:
         if name in self._init_kwargs_dict:
             return self._get_parameter(name, default=self._init_kwargs_dict[name])
         raise AttributeError
+
+    @property
+    @abc.abstractmethod
+    def queryset(self):
+        ...
+
+    @property
+    @abc.abstractmethod
+    def _init_kwargs_dict(self):
+        ...
+
+    @property
+    @abc.abstractmethod
+    def _priority(self):
+        ...
 
 
 class DriverType(type(JAMLCompatible), type):
