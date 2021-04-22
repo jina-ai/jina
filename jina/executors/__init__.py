@@ -434,7 +434,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """Touch the executor and change ``is_updated`` to ``True`` so that one can call :func:`save`. """
         self.is_updated = True
 
-    def save(self, filename: str = None):
+    def save(self, filename: Optional[str] = None, teardown: bool = False):
         """
         Persist data of this executor to the :attr:`shard_workspace`. The data could be
         a file or collection of files produced/used during an executor run.
@@ -453,6 +453,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         need to implement their own persistence strategy in the :func:`__getstate__`.
 
         :param filename: file path of the serialized file, if not given then :attr:`save_abspath` is used
+        :param teardown: flag indicating if the executor is closed at the end of a runtime lifetime
         """
         if not self.read_only and self.is_updated:
             f = filename or self.save_abspath
@@ -472,9 +473,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     d_f = self._snapshot_files.pop(0)
                     if os.path.exists(d_f):
                         os.remove(d_f)
+
+            delete_on_dump_before = getattr(self, 'delete_on_dump', None)
+            if teardown and delete_on_dump_before:
+                self.delete_on_dump = False
             with open(f, 'wb') as fp:
                 pickle.dump(self, fp)
                 self._last_snapshot_ts = datetime.now()
+
+            if delete_on_dump_before:
+                self.delete_on_dump = delete_on_dump_before
+
             self.is_updated = False
             self.logger.success(
                 f'artifacts of this executor ({self.name}) is persisted to {f}'
@@ -536,11 +545,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         except EOFError:
             raise BadPersistantFile(f'broken file {filename} can not be loaded')
 
-    def close(self) -> None:
+    def close(self, teardown: bool = False) -> None:
         """
         Release the resources as executor is destroyed, need to be overridden
+        :param teardown: flag indicating if the executor is closed at the end of a runtime lifetime
         """
-        self.save()
+        self.save(teardown=teardown)
         self.logger.close()
 
     def __enter__(self):
