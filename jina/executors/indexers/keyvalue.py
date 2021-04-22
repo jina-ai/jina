@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import mmap
 import os
 import random
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 
 import numpy as np
 
@@ -25,33 +25,32 @@ class _WriteHandler:
     def __init__(self, path, mode):
         self.path = path
         self.mode = mode
-
-    def __enter__(self):
         self.body = open(self.path, self.mode)
         self.header = open(self.path + '.head', self.mode)
+
+    def __enter__(self):
+        if self.body.closed:
+            self.body = open(self.path, self.mode)
+        if self.header.closed:
+            self.header = open(self.path + '.head', self.mode)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.flush()
-        self.close()
 
     def close(self):
         """Close the file."""
-        if hasattr(self, 'body'):
-            if not self.body.closed:
-                self.body.close()
-        if hasattr(self, 'header'):
-            if not self.header.closed:
-                self.header.close()
+        if not self.body.closed:
+            self.body.close()
+        if not self.header.closed:
+            self.header.close()
 
     def flush(self):
         """Clear the body and header."""
-        if hasattr(self, 'body'):
-            if not self.body.closed:
-                self.body.flush()
-        if hasattr(self, 'header'):
-            if not self.header.closed:
-                self.header.flush()
+        if not self.body.closed:
+            self.body.flush()
+        if not self.header.closed:
+            self.header.flush()
 
 
 class _ReadHandler:
@@ -82,20 +81,26 @@ class _ReadHandler:
                     else (r[1], r[2], r[3])
                     for r in tmp
                 }
-
-    def __enter__(self):
-        self._body = open(self.path, 'r+b')
-        self.body = self._body.fileno()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+            self._body = open(self.path, 'r+b')
+            self.body = self._body.fileno()
 
     def close(self):
         """Close the file."""
         if hasattr(self, '_body'):
             if not self._body.closed:
                 self._body.close()
+
+
+class _CloseHandler:
+    def __init__(self, handler: Union['_WriteHandler', '_ReadHandler']):
+        self.handler = handler
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.handler is not None:
+            self.handler.close()
 
 
 class BinaryPbWriterMixin:
@@ -190,11 +195,13 @@ class BinaryPbWriterMixin:
 
     def _query(self, key):
         pos_info = self.query_handler.header.get(key, None)
-        if pos_info is not None:
-            with self.query_handler as query_handler:
-                p, r, l = pos_info
-                with mmap.mmap(query_handler.body, offset=p, length=l) as m:
-                    return m[r:]
+        if (
+            pos_info is not None
+            and getattr(self.query_handler, 'body', None) is not None
+        ):
+            p, r, l = pos_info
+            with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
+                return m[r:]
 
 
 class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
@@ -212,15 +219,21 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         return d
 
     def _delete_invalid_indices(self):
+        # make sure the file is closed before querying.
+        with _CloseHandler(handler=self.write_handler):
+            pass
+
         keys = []
         vals = []
         # we read the valid values and write them to the intermediary file
-        with _ReadHandler(self.index_abspath, self.key_length) as read_handler:
-            for key in read_handler.header.keys():
-                pos_info = read_handler.header.get(key, None)
+        with _CloseHandler(
+            handler=_ReadHandler(self.index_abspath, self.key_length)
+        ) as close_handler:
+            for key in close_handler.handler.header.keys():
+                pos_info = close_handler.handler.header.get(key, None)
                 if pos_info:
                     p, r, l = pos_info
-                    with mmap.mmap(read_handler.body, offset=p, length=l) as m:
+                    with mmap.mmap(close_handler.handler.body, offset=p, length=l) as m:
                         keys.append(key)
                         vals.append(m[r:])
         if len(keys) == 0:
@@ -229,11 +242,10 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         # intermediary file
         tmp_file = self.index_abspath + '-tmp'
         self._start = 0
-        filtered_data_writer = _WriteHandler(tmp_file, 'ab')
-        with filtered_data_writer:
+        with _CloseHandler(handler=_WriteHandler(tmp_file, 'ab')) as close_handler:
             # reset size
             self._size = 0
-            self._add(keys, vals, write_handler=filtered_data_writer)
+            self._add(keys, vals, write_handler=close_handler.handler)
 
         # replace orig. file
         # and .head file
