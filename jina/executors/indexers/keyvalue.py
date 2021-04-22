@@ -269,8 +269,14 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         if not any(keys):
             return
 
+        need_to_remove_handler = not self.is_exist
         with self.write_handler as writer_handler:
             self._add(keys, values, write_handler=writer_handler)
+        if need_to_remove_handler:
+            # very hacky way to ensure write_handler will use add_handler at next computation, this must be solved
+            # by touching file at __init__ time
+            del self.write_handler
+            self.is_handler_loaded = False
 
     def sample(self) -> Optional[bytes]:
         """Return a random entry from the indexer for sanity check.
