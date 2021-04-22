@@ -1297,7 +1297,7 @@ def find_request_binding(target):
 def _canonical_request_name(req_name: str):
     """Return the canonical name of a request
 
-    :param req_name: the orginal request name
+    :param req_name: the original request name
     :return: canonical form of the request
     """
     return req_name.lower().replace('request', '')
