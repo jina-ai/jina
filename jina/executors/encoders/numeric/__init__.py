@@ -7,7 +7,6 @@ import numpy as np
 
 from .. import BaseNumericEncoder
 from ...decorators import batching
-from ....excepts import UndefinedModel
 
 
 class TransformEncoder(BaseNumericEncoder):
