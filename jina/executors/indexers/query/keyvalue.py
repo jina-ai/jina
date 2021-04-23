@@ -13,12 +13,11 @@ class BinaryPbQueryIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
 
         :param dump_path: the path of the dump"""
         ids, metas = import_metas(dump_path, str(self.pea_id))
-        self._add(list(ids), list(metas))
-        self.write_handler.flush()
-        self.write_handler.close()
+        with self.write_handler as write_handler:
+            self._add(list(ids), list(metas), write_handler)
+        del self.write_handler
         self.handler_mutex = False
         self.is_handler_loaded = False
-        del self.write_handler
         # warming up
         self._query('someid')
 
