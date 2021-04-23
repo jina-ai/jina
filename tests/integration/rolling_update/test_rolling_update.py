@@ -1,9 +1,12 @@
 import os
 import threading
 import pytest
+
 import numpy as np
+import collections
 
 from jina import Document
+from jina.executors.encoders import BaseEncoder
 from jina.flow import Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,62 +19,74 @@ def config(tmpdir):
     del os.environ['JINA_REPLICA_DIR']
 
 
-def get_doc(i):
-    return Document(text=f'doc {i}', embedding=np.array([i] * 5))
+@pytest.fixture
+def docs():
+    return [
+        Document(id=str(i), text=f'doc {i}', embedding=np.array([i] * 5))
+        for i in range(20)
+    ]
 
 
-def test_normal(config):
+class DummyMarkExecutor(BaseEncoder):
+    def get_docs(self, req_type):
+        if req_type == 'ControlRequest':
+            return []
+        driver = self._drivers[req_type][0]
+        return driver.docs
+
+    def __call__(self, req_type, *args, **kwargs):
+        if req_type == 'ControlRequest':
+            for d in self._drivers[req_type]:
+                d()
+        else:
+            for doc in self.get_docs(req_type):
+                doc.tags['replica'] = self.replica_id
+                doc.tags['shard'] = self.pea_id
+
+
+def test_normal(docs):
     # this test is a bit hacky.
     # It uses the score field to pass the information of the used replica during search.
     # Please don't use it that way in application code
-    used_replicas = []
+    doc_id_path = collections.OrderedDict()
 
     def handle_search_result(resp):
-        used_replicas.append(list(resp.search.docs)[0].matches[0].score.value)
+        for doc in resp.search.docs:
+            doc_id_path[int(doc.id)] = (doc.tags['replica'], doc.tags['shard'])
 
     flow = Flow().add(
         name='pod1',
-        uses=os.path.join(cur_dir, 'yaml/mock_index_vector.yml'),
+        uses='!DummyMarkExecutor',
         replicas=3,
         parallel=2,
-        port_in=5100,
-        port_out=5200,
     )
     with flow:
-        for i in range(20):
-            # test rolling update does not hang
-            flow.search(get_doc(0), on_done=handle_search_result)
+        flow.search(inputs=docs, request_size=1, on_done=handle_search_result)
 
     # 20 time one of the replicas is called
-    assert len(used_replicas) == 20
-
-    # there are three replicas in total
-    assert set(used_replicas) == {0.0, 1.0, 2.0}
+    assert len(doc_id_path.keys()) == 20
+    print(f' doc_id_path {doc_id_path}')
 
 
 @pytest.mark.timeout(30)
-def test_simple_run():
+def test_simple_run(docs):
     flow = Flow().add(
         name='pod1',
         replicas=2,
         parallel=3,
-        port_in=5100,
-        port_out=5200,
     )
     with flow:
         # test rolling update does not hang
-        flow.search(get_doc(0))
+        flow.search(docs)
         flow.rolling_update('pod1')
-        flow.search(get_doc(1))
+        flow.search(docs)
 
 
-def test_thread_run():
+def test_thread_run(docs):
     flow = Flow().add(
         name='pod1',
         replicas=2,
         parallel=2,
-        port_in=5100,
-        port_out=5200,
     )
     with flow:
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
@@ -80,30 +95,28 @@ def test_thread_run():
         x.join()
         # TODO there is a problem with the gateway even after request times out - open issue
         for i in range(600):
-            flow.search(get_doc(i))
+            flow.search(docs)
 
 
-def test_vector_indexer_thread(config):
+def test_vector_indexer_thread(config, docs):
     with Flow().add(
         name='pod1',
         uses=os.path.join(cur_dir, 'yaml/mock_index_vector.yml'),
         replicas=2,
         parallel=3,
-        port_in=5100,
-        port_out=5200,
     ) as flow:
         for i in range(5):
-            flow.search(get_doc(i))
+            flow.search(docs)
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
         x.start()
         # TODO there is a problem with the gateway even after request times out - open issue
         # TODO remove the join to make it asynchronous again
         x.join()
         for i in range(40):
-            flow.search(get_doc(i))
+            flow.search(docs)
 
 
-def test_workspace(config, tmpdir):
+def test_workspace(config, tmpdir, docs):
     with Flow().add(
         name='pod1',
         uses=os.path.join(cur_dir, 'yaml/simple_index_vector.yml'),
@@ -114,7 +127,7 @@ def test_workspace(config, tmpdir):
     ) as flow:
         # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
         for i in range(10):
-            flow.index(get_doc(i))
+            flow.index(docs)
 
         # validate created workspaces
         dirs = set(os.listdir(tmpdir))
@@ -195,8 +208,9 @@ def test_port_configuration(replicas_and_parallel):
             name=f'pod{i}',
             replicas=replicas,
             parallel=parallel,
-            port_in=f'51{i}00',  # info: needs to be set in this test since the test is asserting pod args with pod tail args
-            port_out=f'51{i+1}00',  # outside this test, it don't have to be set
+            port_in=f'51{i}00',
+            # info: needs to be set in this test since the test is asserting pod args with pod tail args
+            port_out=f'51{i + 1}00',  # outside this test, it don't have to be set
             copy_flow=False,
         )
 
