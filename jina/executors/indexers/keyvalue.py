@@ -81,8 +81,17 @@ class _ReadHandler:
                     else (r[1], r[2], r[3])
                     for r in tmp
                 }
-            self._body = open(self.path, 'r+b')
-            self.body = self._body.fileno()
+            if os.path.exists(self.path):
+                self._body = open(self.path, 'r+b')
+                self.body = self._body.fileno()
+            else:
+                raise FileNotFoundError(
+                    f'Path not found {self.path}. Querying will not work'
+                )
+        else:
+            raise FileNotFoundError(
+                f'Path not found {self.path + ".head"}. Querying will not work'
+            )
 
     def close(self):
         """Close the file."""
@@ -196,10 +205,7 @@ class BinaryPbWriterMixin:
 
     def _query(self, key):
         pos_info = self.query_handler.header.get(key, None)
-        if (
-            pos_info is not None
-            and getattr(self.query_handler, 'body', None) is not None
-        ):
+        if pos_info is not None:
             p, r, l = pos_info
             with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
                 return m[r:]
