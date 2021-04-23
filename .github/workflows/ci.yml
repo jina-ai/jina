@@ -57,10 +57,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.7
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - name: Lint with flake8
         run: |
           pip install flake8
@@ -75,10 +75,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.9
       - id: file_changes
         uses: jitterbit/get-changed-files@v1
       - name: docstring check with darglint and pydocstyle
@@ -92,10 +92,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - id: file_changes
         uses: jitterbit/get-changed-files@v1
       - name: check black
@@ -133,7 +133,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
@@ -189,7 +189,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.9'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov

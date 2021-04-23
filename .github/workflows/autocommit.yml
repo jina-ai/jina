@@ -21,7 +21,7 @@ jobs:
           git config --local user.name "Jina Dev Bot"
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - name: Install and run black --check .
         run: |
           pip install black

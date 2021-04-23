@@ -47,7 +47,7 @@ jobs:
           elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
             echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
-            echo "PY_VERSION=3.7" >> $GITHUB_ENV
+            echo "PY_VERSION=3.9" >> $GITHUB_ENV
             echo "TAG_ALIAS=jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 

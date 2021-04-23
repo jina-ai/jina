@@ -19,7 +19,7 @@ jobs:
           path: latency
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - name: Run current latency vs. last 3 versions
         run: |
           sudo apt-get install jq

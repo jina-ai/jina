@@ -30,7 +30,7 @@ jobs:
           submodules: true
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
         # https://github.com/actions/checkout#fetch-all-tags
       - run: |
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*

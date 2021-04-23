@@ -20,7 +20,7 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
@@ -99,7 +99,7 @@ jobs:
           submodules: true
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - id: get_version
         run: |
           echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
@@ -139,7 +139,7 @@ jobs:
           elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
             echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
-            echo "PY_VERSION=3.7" >> $GITHUB_ENV
+            echo "PY_VERSION=3.9" >> $GITHUB_ENV
             echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
@@ -183,7 +183,7 @@ jobs:
           ref: 'master'
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - run: |
           python scripts/get-last-release-note.py
       - name: Create Release

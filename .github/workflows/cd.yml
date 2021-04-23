@@ -38,7 +38,7 @@ jobs:
           token: ${{ secrets.JINA_DEV_BOT }}
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
@@ -120,7 +120,7 @@ jobs:
           elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
             echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
-            echo "PY_VERSION=3.7" >> $GITHUB_ENV
+            echo "PY_VERSION=3.9" >> $GITHUB_ENV
             echo "TAG_ALIAS=jinaai/jina:master${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
@@ -187,7 +187,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
@@ -245,7 +245,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.9'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
