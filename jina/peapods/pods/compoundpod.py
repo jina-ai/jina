@@ -223,9 +223,18 @@ class CompoundPod(BasePod):
     @staticmethod
     def _set_middle_args(
         args: Namespace,
-        head_args: Optional[Namespace] = None,
-        tail_args: Namespace = None,
+        head_args: Namespace,
+        tail_args: Namespace,
     ) -> List[Namespace]:
+        """
+        Sets the arguments of the replicas in the compound pod.
+
+        :param args: arguments configured by the user for the replicas
+        :param head_args: head args from the compound pod
+        :param tail_args: tail args from the compound pod
+
+        :return: list of arguments for the replicas
+        """
         result = []
         _host_list = (
             args.peas_hosts
@@ -234,7 +243,6 @@ class CompoundPod(BasePod):
                 args.host,
             ]
         )
-
         host_generator = cycle(_host_list)
         for idx in range(args.replicas):
             _args = copy.deepcopy(args)
@@ -242,31 +250,18 @@ class CompoundPod(BasePod):
                 host for _, host in zip(range(args.parallel), host_generator)
             ]
             _args.peas_hosts = pod_host_list
-
             _args.replica_id = idx
             _args.identity = random_identity()
-
             if _args.name:
                 _args.name += f'/{idx}'
             else:
                 _args.name = f'{idx}'
 
-            if head_args:
-                _args.port_in = head_args.port_out
-            if tail_args:
-                _args.port_out = tail_args.port_in
-
+            _args.port_in = head_args.port_out
+            _args.port_out = tail_args.port_in
             _args.port_ctrl = helper.random_port()
             _args.socket_out = SocketType.PUSH_CONNECT
-
-            if args.scheduling == SchedulerType.ROUND_ROBIN:
-                _args.socket_in = SocketType.PULL_CONNECT
-            elif args.scheduling == SchedulerType.LOAD_BALANCE:
-                _args.socket_in = SocketType.DEALER_CONNECT
-            else:
-                raise ValueError(
-                    f'{args.scheduling} is not supported as a SchedulerType!'
-                )
+            _args.socket_in = SocketType.DEALER_CONNECT
 
             _args.host_in = BasePod._fill_in_host(
                 bind_args=head_args, connect_args=_args
