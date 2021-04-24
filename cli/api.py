@@ -8,7 +8,8 @@ if False:
 def pod(args: 'Namespace'):
     """
     Start a Pod
-    :param args: pod arguments parsed from the CLI.
+
+    :param args: arguments coming from the CLI.
     """
     from jina.peapods.pods.factory import PodFactory
 
@@ -20,7 +21,11 @@ def pod(args: 'Namespace'):
 
 
 def pea(args: 'Namespace'):
-    """Start a Pea"""
+    """
+    Start a Pea
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.peapods import Pea
 
     try:
@@ -31,31 +36,53 @@ def pea(args: 'Namespace'):
 
 
 def gateway(args: 'Namespace'):
-    """Start a Gateway Pod"""
+    """
+    Start a Gateway Pod
+
+    :param args: arguments coming from the CLI.
+    """
     pod(args)
 
 
 def check(args: 'Namespace'):
-    """Check jina config, settings, imports, network etc"""
+    """
+    Check jina config, settings, imports, network etc
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.checker import ImportChecker
 
     ImportChecker(args)
 
 
 def ping(args: 'Namespace'):
+    """
+    Check the connectivity of a Pea
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.checker import NetworkChecker
 
     NetworkChecker(args)
 
 
 def client(args: 'Namespace'):
-    """Start a client connects to the gateway"""
+    """
+    Start a client connects to the gateway
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.clients import Client
 
     Client(args)
 
 
 def export_api(args: 'Namespace'):
+    """
+    Export the API
+
+    :param args: arguments coming from the CLI.
+    """
     import json
     from .export import api_to_dict
     from jina.jaml import JAML
@@ -89,12 +116,22 @@ def export_api(args: 'Namespace'):
 
 
 def hello_world(args: 'Namespace'):
+    """
+    Run the fashion hello world example
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.helloworld.fashion import hello_world
 
     hello_world(args)
 
 
 def hello(args: 'Namespace'):
+    """
+    Run any of the hello world examples
+
+    :param args: arguments coming from the CLI.
+    """
     if args.hello == 'fashion':
         from jina.helloworld.fashion import hello_world
     elif args.hello == 'chatbot':
@@ -108,7 +145,11 @@ def hello(args: 'Namespace'):
 
 
 def flow(args: 'Namespace'):
-    """Start a Flow from a YAML file or a docker image"""
+    """
+    Start a Flow from a YAML file or a docker image
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.flow import Flow
 
     if args.uses:
@@ -122,14 +163,22 @@ def flow(args: 'Namespace'):
 
 
 def optimizer(args: 'Namespace'):
-    """Start an optimization from a YAML file"""
+    """
+    Start an optimization from a YAML file
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.optimizers import run_optimizer_cli
 
     run_optimizer_cli(args)
 
 
 def hub(args: 'Namespace'):
-    """Start a hub builder for build, push, pull"""
+    """
+    Start a hub builder for build, push, pull
+
+    :param args: arguments coming from the CLI.
+    """
     from jina.docker.hubio import HubIO
 
     getattr(HubIO(args), args.hub)()
