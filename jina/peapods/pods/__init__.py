@@ -2,25 +2,22 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import copy
+from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
-from typing import Optional, Dict, List, Union, Set
+from itertools import cycle
+from typing import Dict, Union, Set
+from typing import List, Optional
 
 from jina.peapods.zmq import send_ctrl_message
 from jina.types.message.dump import DumpMessage
-
-import copy
-from argparse import Namespace
-from typing import List, Optional
-from itertools import cycle
-
-from ... import __default_host__
-from ...enums import SchedulerType, SocketType, PeaRoleType, PollingType
-from ...helper import get_public_ip, get_internal_ip, random_identity
-from ... import helper
-
 from ..peas import BasePea
+from ... import __default_host__
+from ... import helper
 from ...enums import SchedulerType, PodRoleType
+from ...enums import SocketType, PeaRoleType, PollingType
+from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
 class BasePod(ExitStack):
@@ -297,6 +294,24 @@ class BasePod(ExitStack):
             # in this case we (at local) need to know about remote the BIND address
             return bind_args.host
 
+    @abstractmethod
+    def _set_middle_args(self, args, head_args, tail_args):
+        pass
+
+    @abstractmethod
+    def head_args(self):
+        """Get the arguments for the `head` of this BasePod.
+
+        .. # noqa: DAR201
+        """
+
+    @abstractmethod
+    def tail_args(self):
+        """Get the arguments for the `tail` of this BasePod.
+
+        .. # noqa: DAR201
+        """
+
 
 class Pod(BasePod):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
@@ -362,7 +377,7 @@ class Pod(BasePod):
 
     @property
     def head_args(self):
-        """Get the arguments for the `head` of this BasePod.
+        """Get the arguments for the `head` of this Pod.
 
 
         .. # noqa: DAR201
@@ -378,7 +393,7 @@ class Pod(BasePod):
 
     @head_args.setter
     def head_args(self, args):
-        """Set the arguments for the `head` of this BasePod.
+        """Set the arguments for the `head` of this Pod.
 
 
         .. # noqa: DAR101

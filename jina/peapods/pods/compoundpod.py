@@ -7,11 +7,11 @@ from argparse import Namespace
 from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
 
+from .. import BasePod
 from .. import Pea
 from .. import Pod
-from .. import BasePod
 from ... import helper
-from ...enums import PollingType, PeaRoleType, SocketType, SchedulerType
+from ...enums import PollingType, SocketType
 from ...helper import random_identity
 
 
