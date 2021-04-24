@@ -704,7 +704,9 @@ class BaseExecutableDriver(BaseRecursiveDriver):
                 canonic_name = _canonical_request_name(req_type)
                 if canonic_name in decor_bindings:
                     self._method_name = decor_bindings[canonic_name]
-            if 'default' in decor_bindings:
+                elif 'default' in decor_bindings:
+                    self._method_name = decor_bindings['default']
+            elif 'default' in decor_bindings:
                 self._method_name = decor_bindings['default']
 
         if self._method_name:
