@@ -1,23 +1,19 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import argparse
-from argparse import Namespace
 from contextlib import ExitStack
-from typing import Optional, Dict, List, Union, Set
+from typing import Dict, Union, Set, Optional, List
 
-from jina.peapods.zmq import send_ctrl_message
-from jina.types.message.dump import DumpMessage
 
 import copy
 from argparse import Namespace
-from typing import List, Optional
 from itertools import cycle
 
+from ..zmq import send_ctrl_message
+from ...types.message.dump import DumpMessage
 from ... import __default_host__
-from ...enums import SchedulerType, SocketType, PeaRoleType, PollingType
-from ...helper import get_public_ip, get_internal_ip, random_identity
-from ... import helper
+from ...enums import SocketType, PeaRoleType, PollingType
+from ...helper import get_public_ip, get_internal_ip, random_identity, random_port
 
 from ..peas import BasePea
 from ...enums import SchedulerType, PodRoleType
@@ -29,7 +25,9 @@ class BasePod(ExitStack):
     They can be also run in their own containers on remote machines.
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
+    def __init__(
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+    ):
         super().__init__()
         self.peas = []  # type: List['BasePea']
         self.args = args
@@ -228,7 +226,7 @@ class BasePod(ExitStack):
                 _args.port_in = head_args.port_out
             if tail_args:
                 _args.port_out = tail_args.port_in
-            _args.port_ctrl = helper.random_port()
+            _args.port_ctrl = random_port()
             _args.socket_out = SocketType.PUSH_CONNECT
             if polling_type.is_push:
                 if args.scheduling == SchedulerType.ROUND_ROBIN:
@@ -272,8 +270,8 @@ class BasePod(ExitStack):
         """
 
         _head_args = copy.deepcopy(args)
-        _head_args.port_ctrl = helper.random_port()
-        _head_args.port_out = helper.random_port()
+        _head_args.port_ctrl = random_port()
+        _head_args.port_out = random_port()
         _head_args.uses = None
         if is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:
@@ -311,8 +309,8 @@ class BasePod(ExitStack):
         :return: enriched arguments
         """
         _tail_args = copy.deepcopy(args)
-        _tail_args.port_in = helper.random_port()
-        _tail_args.port_ctrl = helper.random_port()
+        _tail_args.port_in = random_port()
+        _tail_args.port_ctrl = random_port()
         _tail_args.socket_in = SocketType.PULL_BIND
         _tail_args.uses = None
 
@@ -385,7 +383,9 @@ class Pod(BasePod):
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
+    def __init__(
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+    ):
         super().__init__(args, needs)
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.

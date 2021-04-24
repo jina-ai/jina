@@ -6,11 +6,14 @@ if False:
 
 
 def pod(args: 'Namespace'):
-    """Start a Pod"""
-    from jina.peapods import Pod
+    """
+    Start a Pod
+    :param args: pod arguments parsed from the CLI.
+    """
+    from jina.peapods.pods.factory import PodFactory
 
     try:
-        with Pod(args) as p:
+        with PodFactory.build_pod(args) as p:
             p.join()
     except KeyboardInterrupt:
         pass
