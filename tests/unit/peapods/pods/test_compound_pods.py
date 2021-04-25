@@ -1,7 +1,8 @@
 import pytest
 
+from jina.enums import SchedulerType, SocketType, PollingType
 from jina.parsers import set_pod_parser
-from jina.peapods import CompoundPod
+from jina.peapods import CompoundPod, Pod
 
 
 @pytest.fixture(scope='function')
@@ -162,3 +163,65 @@ def test_pod_naming_with_parallel(runtime):
         assert bp.replica_list[2].peas[1].runtime.name == 'pod/2/tail/ZEDRuntime'
         assert bp.replica_list[2].peas[2].runtime.name == 'pod/2/0/ZEDRuntime'
         assert bp.replica_list[2].peas[3].runtime.name == 'pod/2/1/ZEDRuntime'
+
+
+@pytest.mark.parametrize(
+    'polling, parallel, pea_scheduling, pea_socket_in, pea_socket_out',
+    (
+        (
+            'all',
+            1,
+            SchedulerType.LOAD_BALANCE,
+            SocketType.SUB_CONNECT,
+            SocketType.PUSH_CONNECT,
+        ),
+        (
+            'all',
+            2,
+            SchedulerType.LOAD_BALANCE,
+            SocketType.SUB_CONNECT,
+            SocketType.PUSH_CONNECT,
+        ),
+        (
+            'any',
+            2,
+            SchedulerType.LOAD_BALANCE,
+            SocketType.DEALER_CONNECT,
+            SocketType.PUSH_CONNECT,
+        ),
+    ),
+)
+def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_out):
+    polling_type = PollingType.ALL if polling == 'all' else PollingType.ANY
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            'pod',
+            '--parallel',
+            f'{parallel}',
+            '--polling',
+            f'{polling}',
+            '--replicas',
+            '3',
+        ]
+    )
+    compound_pod = CompoundPod(args)
+    replica_args = compound_pod.replicas_args
+    head = replica_args['head']
+    assert head.socket_in == SocketType.PULL_BIND
+    assert head.socket_out == SocketType.ROUTER_BIND
+    assert head.scheduling == SchedulerType.LOAD_BALANCE
+    tail = replica_args['tail']
+    assert tail.socket_in == SocketType.PULL_BIND
+    assert tail.socket_out == SocketType.PUSH_BIND
+    assert tail.scheduling == SchedulerType.LOAD_BALANCE
+    replicas = replica_args['replicas']
+    for pod_args in replicas:
+        pod = Pod(pod_args)
+        if parallel > 1:
+            assert pod_args.polling == polling_type
+            for pea in pod.peas_args['peas']:
+                assert pea.polling == polling_type
+                assert pea.socket_in == pea_socket_in
+                assert pea.socket_out == pea_socket_out
+                assert pea.scheduling == pea_scheduling
