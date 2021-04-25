@@ -11,7 +11,7 @@ from .. import BasePod
 from .. import Pea
 from .. import Pod
 from ... import helper
-from ...enums import PollingType, SocketType
+from ...enums import PollingType, SocketType, SchedulerType
 from ...helper import random_identity
 
 
@@ -35,7 +35,6 @@ class CompoundPod(BasePod):
     def port_expose(self) -> int:
         """Get the grpc port number
 
-
         .. # noqa: DAR201
         """
         return self.head_args.port_expose
@@ -44,7 +43,6 @@ class CompoundPod(BasePod):
     def host(self) -> str:
         """Get the host name of this Pod
 
-
         .. # noqa: DAR201
         """
         return self.head_args.host
@@ -52,12 +50,20 @@ class CompoundPod(BasePod):
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        return self._parse_base_pod_args(
+        parsed_args = {'head': None, 'tail': None, 'replicas': []}
+        # reasons to separate head and tail from peas is that they
+        # can be deducted based on the previous and next pods
+        self._set_after_to_pass(args)
+        self.is_head_router = True
+        self.is_tail_router = True
+        parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
+        parsed_args['tail'] = BasePod._copy_to_tail_args(args, PollingType.ANY)
+        parsed_args['replicas'] = self._set_replica_args(
             args,
-            attribute='replicas',
-            repetition_attribute='replicas',
-            polling_type=PollingType.ANY,
+            head_args=parsed_args['head'],
+            tail_args=parsed_args['tail'],
         )
+        return parsed_args
 
     @property
     def head_args(self):
@@ -221,7 +227,7 @@ class CompoundPod(BasePod):
             args.uses_after = '_pass'
 
     @staticmethod
-    def _set_middle_args(
+    def _set_replica_args(
         args: Namespace,
         head_args: Namespace,
         tail_args: Namespace,

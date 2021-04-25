@@ -114,50 +114,6 @@ class BasePod(ExitStack):
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
-    def _parse_base_pod_args(
-        self,
-        args,
-        attribute,
-        repetition_attribute,
-        polling_type,
-    ):
-        parsed_args = {'head': None, 'tail': None, attribute: []}
-        if getattr(args, repetition_attribute, 1) > 1:
-            # reasons to separate head and tail from peas is that they
-            # can be deducted based on the previous and next pods
-            self._set_after_to_pass(args)
-            self.is_head_router = True
-            self.is_tail_router = True
-            parsed_args['head'] = BasePod._copy_to_head_args(args, polling_type)
-            parsed_args['tail'] = BasePod._copy_to_tail_args(args, polling_type)
-            parsed_args[attribute] = self._set_middle_args(
-                args,
-                head_args=parsed_args['head'],
-                tail_args=parsed_args['tail'],
-            )
-        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
-        ):
-            args.scheduling = SchedulerType.ROUND_ROBIN
-            if getattr(args, 'uses_before', None):
-                self.is_head_router = True
-                parsed_args['head'] = self._copy_to_head_args(args, polling_type)
-            if getattr(args, 'uses_after', None):
-                self.is_tail_router = True
-                parsed_args['tail'] = self._copy_to_tail_args(args, polling_type)
-            parsed_args[attribute] = self._set_middle_args(
-                args,
-                head_args=parsed_args.get('head', None),
-                tail_args=parsed_args.get('tail', None),
-            )
-        else:
-            self.is_head_router = False
-            self.is_tail_router = False
-            parsed_args[attribute] = [args]
-
-        # note that peas_args['peas'][0] exist either way and carries the original property
-        return parsed_args
-
     def _enter_pea(self, pea: 'BasePea') -> None:
         self.peas.append(pea)
         self.enter_context(pea)
@@ -295,10 +251,6 @@ class BasePod(ExitStack):
             return bind_args.host
 
     @abstractmethod
-    def _set_middle_args(self, args, head_args, tail_args):
-        pass
-
-    @abstractmethod
     def head_args(self):
         """Get the arguments for the `head` of this BasePod.
 
@@ -368,12 +320,7 @@ class Pod(BasePod):
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        return self._parse_base_pod_args(
-            args,
-            attribute='peas',
-            repetition_attribute='parallel',
-            polling_type=getattr(args, 'polling', None),
-        )
+        return self._parse_base_pod_args(args)
 
     @property
     def head_args(self):
@@ -548,7 +495,7 @@ class Pod(BasePod):
                 )
 
     @staticmethod
-    def _set_middle_args(
+    def _set_peas_args(
         args: Namespace,
         head_args: Optional[Namespace] = None,
         tail_args: Namespace = None,
@@ -607,3 +554,41 @@ class Pod(BasePod):
 
             result.append(_args)
         return result
+
+    def _parse_base_pod_args(self, args):
+        parsed_args = {'head': None, 'tail': None, 'peas': []}
+        if getattr(args, 'parallel', 1) > 1:
+            # reasons to separate head and tail from peas is that they
+            # can be deducted based on the previous and next pods
+            self._set_after_to_pass(args)
+            self.is_head_router = True
+            self.is_tail_router = True
+            parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
+            parsed_args['tail'] = BasePod._copy_to_tail_args(args, args.polling)
+            parsed_args['peas'] = self._set_peas_args(
+                args,
+                head_args=parsed_args['head'],
+                tail_args=parsed_args['tail'],
+            )
+        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
+            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+        ):
+            args.scheduling = SchedulerType.ROUND_ROBIN
+            if getattr(args, 'uses_before', None):
+                self.is_head_router = True
+                parsed_args['head'] = self._copy_to_head_args(args, args.polling)
+            if getattr(args, 'uses_after', None):
+                self.is_tail_router = True
+                parsed_args['tail'] = self._copy_to_tail_args(args, args.polling)
+            parsed_args['peas'] = self._set_peas_args(
+                args,
+                head_args=parsed_args.get('head', None),
+                tail_args=parsed_args.get('tail', None),
+            )
+        else:
+            self.is_head_router = False
+            self.is_tail_router = False
+            parsed_args['peas'] = [args]
+
+        # note that peas_args['peas'][0] exist either way and carries the original property
+        return parsed_args
