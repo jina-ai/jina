@@ -166,6 +166,57 @@ def test_pod_naming_with_parallel(runtime):
 
 
 @pytest.mark.parametrize(
+    'num_hosts, used_hosts',
+    (
+        (
+            6,
+            (
+                ['0.0.0.1', '0.0.0.2'],
+                ['0.0.0.3', '0.0.0.4'],
+                ['0.0.0.5', '0.0.0.6'],
+            ),
+        ),
+        (
+            8,
+            (
+                ['0.0.0.1', '0.0.0.2'],
+                ['0.0.0.3', '0.0.0.4'],
+                ['0.0.0.5', '0.0.0.6'],
+            ),
+        ),
+        (
+            3,
+            (
+                ['0.0.0.1', '0.0.0.2'],
+                ['0.0.0.3', '0.0.0.1'],
+                ['0.0.0.2', '0.0.0.3'],
+            ),
+        ),
+    ),
+)
+def test_host_list_matching(num_hosts, used_hosts):
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            'pod',
+            '--parallel',
+            '2',
+            '--replicas',
+            '3',
+            '--peas-hosts',
+            *[f'0.0.0.{i+1}' for i in range(num_hosts)],
+            '--runtime-backend',
+            'process',
+        ]
+    )
+    compound_pod = CompoundPod(args)
+    replica_args = compound_pod.replicas_args['replicas']
+    assert replica_args[0].peas_hosts == used_hosts[0]
+    assert replica_args[1].peas_hosts == used_hosts[1]
+    assert replica_args[2].peas_hosts == used_hosts[2]
+
+
+@pytest.mark.parametrize(
     'polling, parallel, pea_scheduling, pea_socket_in, pea_socket_out',
     (
         (
