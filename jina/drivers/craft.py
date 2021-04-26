@@ -13,3 +13,7 @@ class CraftDriver(DocsExtractUpdateMixin, FlatRecursiveMixin, BaseExecutableDriv
         self, executor: Optional[str] = None, method: str = 'craft', *args, **kwargs
     ):
         super().__init__(executor, method, *args, **kwargs)
+
+    @property
+    def _stack_document_content(self):
+        return False
