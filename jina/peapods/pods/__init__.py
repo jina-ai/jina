@@ -2,25 +2,22 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import argparse
+import copy
+from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
-from typing import Optional, Dict, List, Union, Set
+from itertools import cycle
+from typing import Dict, Union, Set
+from typing import List, Optional
 
 from jina.peapods.zmq import send_ctrl_message
 from jina.types.message.dump import DumpMessage
-
-import copy
-from argparse import Namespace
-from typing import List, Optional
-from itertools import cycle
-
-from ... import __default_host__
-from ...enums import SchedulerType, SocketType, PeaRoleType, PollingType
-from ...helper import get_public_ip, get_internal_ip, random_identity
-from ... import helper
-
 from ..peas import BasePea
+from ... import __default_host__
+from ... import helper
 from ...enums import SchedulerType, PodRoleType
+from ...enums import SocketType, PeaRoleType, PollingType
+from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
 class BasePod(ExitStack):
@@ -117,64 +114,6 @@ class BasePod(ExitStack):
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
-    def _parse_base_pod_args(
-        self,
-        args,
-        attribute,
-        id_attribute_name,
-        role_type,
-        repetition_attribute,
-        polling_type,
-    ):
-        parsed_args = {'head': None, 'tail': None, attribute: []}
-        if getattr(args, repetition_attribute, 1) > 1:
-            # reasons to separate head and tail from peas is that they
-            # can be deducted based on the previous and next pods
-            self._set_after_to_pass(args)
-            self.is_head_router = True
-            self.is_tail_router = True
-            parsed_args['head'] = BasePod._copy_to_head_args(args, polling_type.is_push)
-            parsed_args['tail'] = BasePod._copy_to_tail_args(args, polling_type.is_push)
-            parsed_args[attribute] = BasePod._set_peas_args(
-                args,
-                role_type=role_type,
-                repetition_attribute=repetition_attribute,
-                id_attribute_name=id_attribute_name,
-                polling_type=polling_type,
-                head_args=parsed_args['head'],
-                tail_args=parsed_args['tail'],
-            )
-        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
-        ):
-            args.scheduling = SchedulerType.ROUND_ROBIN
-            if getattr(args, 'uses_before', None):
-                self.is_head_router = True
-                parsed_args['head'] = self._copy_to_head_args(
-                    args, polling_type.is_push
-                )
-            if getattr(args, 'uses_after', None):
-                self.is_tail_router = True
-                parsed_args['tail'] = self._copy_to_tail_args(
-                    args, polling_type.is_push
-                )
-            parsed_args[attribute] = self._set_peas_args(
-                args,
-                role_type=role_type,
-                repetition_attribute=repetition_attribute,
-                id_attribute_name=id_attribute_name,
-                polling_type=polling_type,
-                head_args=parsed_args.get('head', None),
-                tail_args=parsed_args.get('tail', None),
-            )
-        else:
-            self.is_head_router = False
-            self.is_tail_router = False
-            parsed_args[attribute] = [args]
-
-        # note that peas_args['peas'][0] exist either way and carries the original property
-        return parsed_args
-
     def _enter_pea(self, pea: 'BasePea') -> None:
         self.peas.append(pea)
         self.enter_context(pea)
@@ -187,95 +126,28 @@ class BasePod(ExitStack):
         self.join()
 
     @staticmethod
-    def _set_peas_args(
-        args: Namespace,
-        role_type: PeaRoleType,
-        repetition_attribute: str,
-        id_attribute_name: str,
-        polling_type: PollingType,
-        head_args: Optional[Namespace] = None,
-        tail_args: Namespace = None,
-    ) -> List[Namespace]:
-        result = []
-        _host_list = (
-            args.peas_hosts
-            if args.peas_hosts
-            else [
-                args.host,
-            ]
-        )
-
-        for idx, pea_host in zip(
-            range(getattr(args, repetition_attribute)), cycle(_host_list)
-        ):
-            _args = copy.deepcopy(args)
-
-            setattr(_args, id_attribute_name, idx)
-
-            if getattr(args, repetition_attribute) > 1:
-                _args.pea_role = role_type
-                _args.identity = random_identity()
-                if _args.peas_hosts:
-                    _args.host = pea_host
-                if _args.name:
-                    _args.name += f'/{idx}'
-                else:
-                    _args.name = f'{idx}'
-            else:
-                _args.pea_role = PeaRoleType.SINGLETON
-
-            if head_args:
-                _args.port_in = head_args.port_out
-            if tail_args:
-                _args.port_out = tail_args.port_in
-            _args.port_ctrl = helper.random_port()
-            _args.socket_out = SocketType.PUSH_CONNECT
-            if polling_type.is_push:
-                if args.scheduling == SchedulerType.ROUND_ROBIN:
-                    _args.socket_in = SocketType.PULL_CONNECT
-                elif args.scheduling == SchedulerType.LOAD_BALANCE:
-                    _args.socket_in = SocketType.DEALER_CONNECT
-                else:
-                    raise ValueError(
-                        f'{args.scheduling} is not supported as a SchedulerType!'
-                    )
-
-            else:
-                _args.socket_in = SocketType.SUB_CONNECT
-            if head_args:
-                _args.host_in = BasePod._fill_in_host(
-                    bind_args=head_args, connect_args=_args
-                )
-            if tail_args:
-                _args.host_out = BasePod._fill_in_host(
-                    bind_args=tail_args, connect_args=_args
-                )
-
-            result.append(_args)
-        return result
-
-    @staticmethod
     def _set_after_to_pass(args):
         raise NotImplemented
 
     @staticmethod
     def _copy_to_head_args(
-        args: Namespace, is_push: bool, as_router: bool = True
+        args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the outgoing args of the head router
 
         :param args: basic arguments
-        :param is_push: if true, set socket_out based on the SchedulerType
+        :param polling_type: polling_type can be all or any
         :param as_router: if true, router configuration is applied
         :return: enriched head arguments
         """
 
         _head_args = copy.deepcopy(args)
+        _head_args.polling = polling_type
         _head_args.port_ctrl = helper.random_port()
         _head_args.port_out = helper.random_port()
         _head_args.uses = None
-        if is_push:
+        if polling_type.is_push:
             if args.scheduling == SchedulerType.ROUND_ROBIN:
                 _head_args.socket_out = SocketType.PUSH_BIND
             elif args.scheduling == SchedulerType.LOAD_BALANCE:
@@ -300,17 +172,18 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _copy_to_tail_args(
-        args: Namespace, is_push: bool, as_router: bool = True
+        args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the incoming args of the tail router
 
         :param args: configuration for the connection
-        :param is_push: if true, set socket_out based on the SchedulerType
+        :param polling_type: polling type can be any or all
         :param as_router: if true, add router configuration
         :return: enriched arguments
         """
         _tail_args = copy.deepcopy(args)
+        _tail_args.polling_type = polling_type
         _tail_args.port_in = helper.random_port()
         _tail_args.port_ctrl = helper.random_port()
         _tail_args.socket_in = SocketType.PULL_BIND
@@ -323,7 +196,7 @@ class BasePod(ExitStack):
             else:
                 _tail_args.name = f'tail'
             _tail_args.pea_role = PeaRoleType.TAIL
-            _tail_args.num_part = 1 if is_push else args.parallel
+            _tail_args.num_part = 1 if polling_type.is_push else args.parallel
 
         return _tail_args
 
@@ -376,6 +249,20 @@ class BasePod(ExitStack):
         else:
             # in this case we (at local) need to know about remote the BIND address
             return bind_args.host
+
+    @abstractmethod
+    def head_args(self):
+        """Get the arguments for the `head` of this BasePod.
+
+        .. # noqa: DAR201
+        """
+
+    @abstractmethod
+    def tail_args(self):
+        """Get the arguments for the `tail` of this BasePod.
+
+        .. # noqa: DAR201
+        """
 
 
 class Pod(BasePod):
@@ -433,18 +320,11 @@ class Pod(BasePod):
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        return self._parse_base_pod_args(
-            args,
-            attribute='peas',
-            id_attribute_name='pea_id',
-            role_type=PeaRoleType.PARALLEL,
-            repetition_attribute='parallel',
-            polling_type=getattr(args, 'polling', None),
-        )
+        return self._parse_base_pod_args(args)
 
     @property
     def head_args(self):
-        """Get the arguments for the `head` of this BasePod.
+        """Get the arguments for the `head` of this Pod.
 
 
         .. # noqa: DAR201
@@ -460,7 +340,7 @@ class Pod(BasePod):
 
     @head_args.setter
     def head_args(self, args):
-        """Set the arguments for the `head` of this BasePod.
+        """Set the arguments for the `head` of this Pod.
 
 
         .. # noqa: DAR101
@@ -613,3 +493,102 @@ class Pod(BasePod):
                     DumpMessage(path=path, shards=shards),
                     timeout=timeout,
                 )
+
+    @staticmethod
+    def _set_peas_args(
+        args: Namespace,
+        head_args: Optional[Namespace] = None,
+        tail_args: Namespace = None,
+    ) -> List[Namespace]:
+        result = []
+        _host_list = (
+            args.peas_hosts
+            if args.peas_hosts
+            else [
+                args.host,
+            ]
+        )
+
+        for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
+            _args = copy.deepcopy(args)
+            _args.pea_id = idx
+
+            if args.parallel > 1:
+                _args.pea_role = PeaRoleType.PARALLEL
+                _args.identity = random_identity()
+                if _args.peas_hosts:
+                    _args.host = pea_host
+                if _args.name:
+                    _args.name += f'/{idx}'
+                else:
+                    _args.name = f'{idx}'
+            else:
+                _args.pea_role = PeaRoleType.SINGLETON
+
+            if head_args:
+                _args.port_in = head_args.port_out
+            if tail_args:
+                _args.port_out = tail_args.port_in
+            _args.port_ctrl = helper.random_port()
+            _args.socket_out = SocketType.PUSH_CONNECT
+            if args.polling.is_push:
+                if args.scheduling == SchedulerType.ROUND_ROBIN:
+                    _args.socket_in = SocketType.PULL_CONNECT
+                elif args.scheduling == SchedulerType.LOAD_BALANCE:
+                    _args.socket_in = SocketType.DEALER_CONNECT
+                else:
+                    raise ValueError(
+                        f'{args.scheduling} is not supported as a SchedulerType!'
+                    )
+
+            else:
+                _args.socket_in = SocketType.SUB_CONNECT
+            if head_args:
+                _args.host_in = BasePod._fill_in_host(
+                    bind_args=head_args, connect_args=_args
+                )
+            if tail_args:
+                _args.host_out = BasePod._fill_in_host(
+                    bind_args=tail_args, connect_args=_args
+                )
+
+            result.append(_args)
+        return result
+
+    def _parse_base_pod_args(self, args):
+        parsed_args = {'head': None, 'tail': None, 'peas': []}
+        if getattr(args, 'parallel', 1) > 1:
+            # reasons to separate head and tail from peas is that they
+            # can be deducted based on the previous and next pods
+            self._set_after_to_pass(args)
+            self.is_head_router = True
+            self.is_tail_router = True
+            parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
+            parsed_args['tail'] = BasePod._copy_to_tail_args(args, args.polling)
+            parsed_args['peas'] = self._set_peas_args(
+                args,
+                head_args=parsed_args['head'],
+                tail_args=parsed_args['tail'],
+            )
+        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
+            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+        ):
+            args.scheduling = SchedulerType.ROUND_ROBIN
+            if getattr(args, 'uses_before', None):
+                self.is_head_router = True
+                parsed_args['head'] = self._copy_to_head_args(args, args.polling)
+            if getattr(args, 'uses_after', None):
+                self.is_tail_router = True
+                parsed_args['tail'] = self._copy_to_tail_args(args, args.polling)
+            parsed_args['peas'] = self._set_peas_args(
+                args,
+                head_args=parsed_args.get('head', None),
+                tail_args=parsed_args.get('tail', None),
+            )
+        else:
+            self.is_head_router = False
+            self.is_tail_router = False
+            parsed_args['peas'] = [args]
+
+        # note that peas_args['peas'][0] exist either way and carries the original property
+        return parsed_args
