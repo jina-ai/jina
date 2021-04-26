@@ -22,6 +22,10 @@ class SegmentDriver(DocsExtractUpdateMixin, FlatRecursiveMixin, BaseExecutableDr
             executor, method, traversal_paths=traversal_paths, *args, **kwargs
         )
 
+    @property
+    def _stack_document_content(self):
+        return False
+
     def update_single_doc(self, doc: 'Document', exec_result: List[Dict]) -> None:
         """Update the document's chunks field with executor's returns.
 
