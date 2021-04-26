@@ -2,7 +2,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Union, List
+from typing import Union, List, Awaitable
 
 from . import request
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
@@ -69,7 +69,7 @@ class Client(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> asyncio.Future:
         """Issue 'search' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
