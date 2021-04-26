@@ -41,7 +41,7 @@ class Client(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> Awaitable:
         """Issue 'train' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -69,7 +69,7 @@ class Client(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> asyncio.Future:
+    ) -> Awaitable:
         """Issue 'search' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -98,7 +98,7 @@ class Client(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> Awaitable:
         """Issue 'index' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -126,7 +126,7 @@ class Client(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> Awaitable:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -154,7 +154,7 @@ class Client(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> Awaitable:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
