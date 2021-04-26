@@ -33,6 +33,7 @@ __all__ = ['BaseFlow']
 
 from ..peapods import Pod
 from ..peapods.pods.compoundpod import CompoundPod
+from ..peapods.pods.factory import PodFactory
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -306,11 +307,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             parser = set_gateway_parser()
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
-
-        if args.replicas == 1:
-            op_flow._pod_nodes[pod_name] = Pod(args, needs=needs)
-        else:
-            op_flow._pod_nodes[pod_name] = CompoundPod(args, needs=needs)
+        op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
         op_flow.last_pod = pod_name
 
         return op_flow
