@@ -202,6 +202,46 @@ class Client(BaseClient):
             **kwargs,
         )
 
+    def dump(
+        self,
+        targets: Union[str, List[str]],
+        dump_path: str,
+        shards: int,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        **kwargs,
+    ):
+        """Send 'reload' request to the Flow.
+
+        :param shards: nr of shards to dump for
+        :param dump_path: the path to which to dump
+        :param targets: the regex string or list of regex strings to match the pea/pod names.
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: additional parameters
+        :return: None
+        """
+        if isinstance(targets, str):
+            targets = [targets]
+        kwargs['targets'] = targets
+        # required in order for jina.clients.request.helper._add_control_propagate
+        kwargs['args'] = {}
+        kwargs['args']['dump_path'] = dump_path
+        kwargs['args']['shards'] = shards
+
+        self.mode = RequestType.CONTROL
+        return run_async(
+            self._get_results,
+            [],
+            on_done,
+            on_error,
+            on_always,
+            command='DUMP',
+            **kwargs,
+        )
+
 
 class WebSocketClient(Client, WebSocketClientMixin):
     """A Python Client to stream requests from a Flow with a REST Gateway.

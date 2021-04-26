@@ -75,6 +75,8 @@ class ZEDRuntime(ZMQRuntime):
                 pea_id=self.args.pea_id,
                 replica_id=getattr(self.args, 'replica_id', -1),
                 read_only=self.args.read_only,
+                # only used by QueryIndexers
+                metas={'dump_path': getattr(self.args, 'dump_path', None)},
             )
             self._executor.attach(runtime=self)
         except BadConfigSource as ex:

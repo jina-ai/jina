@@ -10,6 +10,7 @@ router = APIRouter(tags=['daemon'])
 
 @router.on_event('startup')
 async def startup():
+    """Start the process"""
     from ... import daemon_logger, jinad_args
 
     daemon_logger.info(
@@ -31,6 +32,9 @@ Welcome to Jina daemon - the manager of distributed Jina
 async def _home():
     """
     The instruction HTML when user visits `/` directly
+
+
+    .. #noqa: DAR201
     """
     return {}
 

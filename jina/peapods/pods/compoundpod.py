@@ -10,7 +10,7 @@ from .. import BasePod
 from .. import Pea
 from .. import Pod
 from ... import helper
-from ...enums import PollingType, SocketType, SchedulerType
+from ...enums import PollingType, SocketType
 from ...helper import random_identity
 
 
@@ -57,7 +57,6 @@ class CompoundPod(BasePod):
         parsed_args = {'head': None, 'tail': None, 'replicas': []}
         # reasons to separate head and tail from peas is that they
         # can be deducted based on the previous and next pods
-        self._set_after_to_pass(args)
         self.is_head_router = True
         self.is_tail_router = True
         parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
@@ -225,11 +224,6 @@ class CompoundPod(BasePod):
             + [p.is_ready for p in self.replica_list]
         )
 
-    def _set_after_to_pass(self, args):
-        if PollingType.ANY.is_push:
-            # ONLY reset when it is push
-            args.uses_after = '_pass'
-
     @staticmethod
     def _set_replica_args(
         args: Namespace,
@@ -282,15 +276,18 @@ class CompoundPod(BasePod):
             result.append(_args)
         return result
 
-    def rolling_update(self):
-        """
-        Update all pods of this compound pod.
+    def rolling_update(self, dump_path):
+        """Reload all Pods of this Compound Pod.
+
+        :param dump_path: the dump from which to read the data
         """
         for i in range(len(self.replica_list)):
             replica = self.replica_list[i]
             replica.close()
             _args = self.all_args['replicas'][i]
             _args.noblock_on_start = False
+            # TODO better way?
+            _args.dump_path = dump_path
             new_replica = Pod(_args)
             self.enter_context(new_replica)
             self.replica_list[i] = new_replica

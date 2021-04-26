@@ -3,9 +3,10 @@ from typing import Optional
 
 from fastapi import APIRouter, File, UploadFile, Body
 from fastapi.exceptions import HTTPException
+from starlette.requests import Request
 
 from ... import Runtime400Exception
-from ...models import FlowModel
+from ...models import FlowModel, UpdateOperationEnum
 from ...models.status import FlowStoreStatus, FlowItemStatus
 from ...stores import flow_store as store
 
@@ -78,3 +79,18 @@ async def _status(
 @router.on_event('shutdown')
 def _shutdown():
     store.reset()
+
+
+@router.put(
+    path='/{id}',
+    summary='Run an update operation on the Flow object',
+    description='Types supported: "rolling_update" and "dump"',
+)
+async def _update(
+    id: 'uuid.UUID',
+    kind: UpdateOperationEnum,
+    dump_path: str,
+    pod_name: str,
+    shards: int = None,
+):
+    store.update(id, kind, dump_path, pod_name, shards)

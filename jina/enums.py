@@ -269,8 +269,6 @@ class RequestType(BetterEnum):
     UPDATE = 3
     CONTROL = 4
     TRAIN = 5
-    # TODO make Dump a control request to be passed to the Pod directly
-    DUMP = 6
 
 
 class CompressAlgo(BetterEnum):

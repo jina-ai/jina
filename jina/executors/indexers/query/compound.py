@@ -13,7 +13,8 @@ class CompoundQueryExecutor(CompoundExecutor, BaseQueryIndexer):
     # are not yet set at this stage.
     # for Compound we use a `_post_components`
     def _post_components(self):
-        self._load_dump(self.dump_path)
+        if self.dump_path:
+            self._load_dump(self.dump_path)
 
     def _load_dump(self, dump_path, *args, **kwargs):
         """Loads the data in the indexer
@@ -24,6 +25,27 @@ class CompoundQueryExecutor(CompoundExecutor, BaseQueryIndexer):
         """
         for c in self.components:
             c._load_dump(dump_path)
+
+    def get_add_handler(self):
+        """required to silence NotImplementedErrors
+
+
+        .. #noqa: DAR201"""
+        return None
+
+    def get_create_handler(self):
+        """required to silence NotImplementedErrors
+
+
+        .. #noqa: DAR201"""
+        return None
+
+    def get_query_handler(self):
+        """required to silence NotImplementedErrors
+
+
+        .. #noqa: DAR201"""
+        return None
 
 
 class CompoundQueryIndexer(CompoundQueryExecutor):
