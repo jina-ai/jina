@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import argparse
 import copy
 from argparse import Namespace
 from itertools import cycle
@@ -16,13 +15,18 @@ from ...helper import random_identity
 
 
 class CompoundPod(BasePod):
-    """A CompoundPod is a immutable set of pods, which run in parallel. They share the same input and output socket.
-    Internally, the peas of the pods can run with the process/thread backend. They can be also run in their own containers.
-    :param args: pod arguments parsed from the CLI
+    """A CompoundPod is a immutable set of pods, which run in parallel.
+    A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as replicas.
+
+    CompoundPod will make sure to add a `HeadPea` and a `TailPea` to serve as routing/merging pattern for the different Pod replicas
+
+    :param args: pod arguments parsed from the CLI. These arguments will be used for each of the replicas
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
+    def __init__(
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+    ):
         super().__init__(args, needs)
         self.replica_list = []  # type: List['Pod']
         if isinstance(args, Dict):
