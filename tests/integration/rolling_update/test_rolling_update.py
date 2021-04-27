@@ -122,8 +122,6 @@ def test_workspace(config, tmpdir, docs):
         uses=os.path.join(cur_dir, 'yaml/simple_index_vector.yml'),
         replicas=2,
         parallel=3,
-        port_in=5100,
-        port_out=5200,
     ) as flow:
         # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
         for i in range(10):

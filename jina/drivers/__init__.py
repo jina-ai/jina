@@ -430,6 +430,10 @@ class DocsExtractUpdateMixin:
         - :meth:`update_single_doc` if you want to modify the behavior of updating a single doc
     """
 
+    @property
+    def _stack_document_content(self):
+        return self._exec_fn_required_keys_is_ndarray
+
     def _apply_all(self, docs: 'DocumentSet') -> None:
         """Apply function works on a list of docs, modify the docs in-place.
 
@@ -440,7 +444,7 @@ class DocsExtractUpdateMixin:
 
         contents, docs_pts = docs.extract_docs(
             *self._exec_fn_required_keys,
-            stack_contents=self._exec_fn_required_keys_is_ndarray,
+            stack_contents=self._stack_document_content,
         )
 
         if docs_pts:
