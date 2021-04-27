@@ -105,7 +105,6 @@ def test_chunks_exist_already(segment_driver, text_segmenter_executor):
     for chunk in document.chunks:
         assert chunk.parent_id == document.id
         assert chunk.siblings == 2
-
     segment_driver.attach(executor=text_segmenter_executor, runtime=None)
     segment_driver._apply_all(DocumentArray([document]))
 

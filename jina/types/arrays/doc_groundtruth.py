@@ -6,6 +6,13 @@ if False:
 
 
 class DocumentGroundtruthSequence(TraversableSequence):
+    """
+    :class:`DocumentGroundtruthSequence` holds a list of `DocGrundtruthPair` objects.
+    It is mostly intented to be used with Evaluators.
+
+    :param pairs: a sequence of `DocGrundtruthPair` objects.
+    """
+
     def __init__(self, pairs: Sequence['DocGroundtruthPair']):
         self._pairs = pairs
 

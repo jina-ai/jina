@@ -6,17 +6,17 @@ from ...helper import deprecated_class
 from ..querylang import QueryLang
 from ...proto.jina_pb2 import QueryLangProto
 
-from ..lists.querylang import QueryLangList
+from ..arrays.querylang import QueryLangArray
 
 AcceptQueryLangType = Union[QueryLang, QueryLangProto, Dict]
 
 __all__ = ['QueryLangSet', 'AcceptQueryLangType']
 
 
-@deprecated_class(new_class=QueryLangList)
+@deprecated_class(new_class=QueryLangArray)
 class QueryLangSet(MutableSequence):
     """
-    :class:`QueryLangSet` is deprecated. A new class name is QueryLangList.
+    :class:`QueryLangSet` is deprecated. A new class name is QueryLangArray.
     """
 
     pass

@@ -2,7 +2,7 @@ import pytest
 
 from jina import Request
 from jina.types.document import Document
-from jina.types.lists.chunk import ChunkList
+from jina.types.arrays.chunk import ChunkArray
 
 
 @pytest.fixture(scope='function')
@@ -38,15 +38,15 @@ def chunks(document_factory):
 
 
 @pytest.fixture
-def chunklist(chunks, reference_doc):
-    return ChunkList(docs_proto=chunks, reference_doc=reference_doc)
+def chunkarray(chunks, reference_doc):
+    return ChunkArray(docs_proto=chunks, reference_doc=reference_doc)
 
 
-def test_append_from_documents(chunklist, document_factory, reference_doc):
+def test_append_from_documents(chunkarray, document_factory, reference_doc):
     chunk = document_factory.create(4, 'test 4')
-    rv = chunklist.append(chunk)
-    assert len(chunklist) == 4
-    assert chunklist[-1].text == 'test 4'
+    rv = chunkarray.append(chunk)
+    assert len(chunkarray) == 4
+    assert chunkarray[-1].text == 'test 4'
     assert rv.text == chunk.text
     assert rv.parent_id == reference_doc.id
     assert rv.granularity == reference_doc.granularity + 1

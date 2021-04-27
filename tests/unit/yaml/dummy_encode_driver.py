@@ -1,4 +1,4 @@
-from jina import DocumentList
+from jina import DocumentArray
 from jina.drivers import FlatRecursiveMixin
 from jina.drivers.encode import BaseEncodeDriver
 
@@ -6,7 +6,7 @@ from jina.drivers.encode import BaseEncodeDriver
 class DummyEncodeDriver(FlatRecursiveMixin, BaseEncodeDriver):
     def _apply_all(
         self,
-        docs: 'DocumentList',
+        docs: 'DocumentArray',
         *args,
         **kwargs,
     ) -> None:

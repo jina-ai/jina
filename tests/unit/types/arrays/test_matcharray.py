@@ -2,7 +2,7 @@ import pytest
 from jina import Request
 
 from jina.types.document import Document
-from jina.types.lists.match import MatchList
+from jina.types.arrays.match import MatchArray
 
 
 @pytest.fixture(scope='function')
@@ -38,15 +38,15 @@ def matches(document_factory):
 
 
 @pytest.fixture
-def matchlist(matches, reference_doc):
-    return MatchList(docs_proto=matches, reference_doc=reference_doc)
+def matcharray(matches, reference_doc):
+    return MatchArray(docs_proto=matches, reference_doc=reference_doc)
 
 
-def test_append_from_documents(matchlist, document_factory, reference_doc):
+def test_append_from_documents(matcharray, document_factory, reference_doc):
     match = document_factory.create(4, 'test 4')
-    rv = matchlist.append(match)
-    assert len(matchlist) == 4
-    assert matchlist[-1].text == 'test 4'
+    rv = matcharray.append(match)
+    assert len(matcharray) == 4
+    assert matcharray[-1].text == 'test 4'
     assert rv.text == match.text
     assert rv.granularity == reference_doc.granularity
     assert rv.adjacency == reference_doc.adjacency + 1

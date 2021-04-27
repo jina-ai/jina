@@ -14,7 +14,7 @@ from ..types.score import NamedScore
 from ..enums import EmbeddingClsType
 
 if False:
-    from ..types.lists import DocumentList
+    from ..types.arrays import DocumentArray
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -69,7 +69,7 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
         self._is_update = is_update
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentList'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentArray'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             miss_idx = (
@@ -102,7 +102,7 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     ):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentList', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         embeds = self.exec_fn([d.id for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding = embedding
@@ -130,7 +130,7 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         """
         return EmbeddingClsType.from_string(self.exec.embedding_cls_type)
 
-    def _get_documents_embeddings(self, docs: 'DocumentList'):
+    def _get_documents_embeddings(self, docs: 'DocumentArray'):
         embedding_cls_type = self.exec_embedding_cls_type
         if embedding_cls_type.is_dense:
             return docs.all_embeddings
@@ -157,7 +157,7 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
                 if vector is not None:
                     match.embedding = vector
 
-    def _apply_all(self, docs: 'DocumentList', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         embed_vecs, doc_pts = self._get_documents_embeddings(docs)
 
         if not doc_pts:

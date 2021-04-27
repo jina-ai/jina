@@ -20,13 +20,13 @@ from ...proto.jina_pb2 import QueryLangProto
 
 AcceptQueryLangType = Union[QueryLang, QueryLangProto, Dict]
 
-__all__ = ['QueryLangList', 'AcceptQueryLangType']
+__all__ = ['QueryLangArray', 'AcceptQueryLangType']
 
 
-class QueryLangList(MutableSequence):
+class QueryLangArray(MutableSequence):
     """
-    :class:`QueryLangList` is a mutable sequence of :class:`QueryLang`.
-    It gives an efficient view of a list of Document. One can iterate over it like
+    :class:`QueryLangArray` is a mutable sequence of :class:`QueryLang`.
+    It gives an efficient view of an array of Documents. One can iterate over it like
     a generator but ALSO modify it, count it, get item.
 
     :param querylang_protos: A list of :class:`QueryLangProto`
@@ -34,14 +34,15 @@ class QueryLangList(MutableSequence):
     """
 
     def __init__(self, querylang_protos: 'RepeatedContainer'):
-        """List constructor method."""
         super().__init__()
         self._querylangs_proto = querylang_protos
         self._querylangs_map = {}
 
     def insert(self, index: int, ql: 'QueryLang') -> None:
-        """Insert :param:`ql` at :param:`index` into `_querylangs_proto`."""
-        self._querylangs_proto.insert(index, ql.proto)
+        """Insert :param:`ql` at :param:`index` into `_querylangs_proto`.
+        :param index: Position of the insertion.
+        :param ql: The querylang to be inserted.
+        """
 
     def __setitem__(self, key, value: 'QueryLang'):
         if isinstance(key, int):
@@ -70,7 +71,9 @@ class QueryLangList(MutableSequence):
             raise IndexError(f'do not support this index {item}')
 
     def append(self, value: 'AcceptQueryLangType'):
-        """Append :param:`value` in `_querylangs_proto`."""
+        """Append :param:`value` in `_querylangs_proto`.
+        :param value: The value to be appended.
+        """
         q_pb = self._querylangs_proto.add()
         if isinstance(value, Dict):
             q_pb.CopyFrom(QueryLang(value).proto)
@@ -82,7 +85,9 @@ class QueryLangList(MutableSequence):
             raise TypeError(f'unknown type {typename(value)}')
 
     def extend(self, iterable: Iterable[AcceptQueryLangType]) -> None:
-        """Extend an iterable to :class:QueryLangList."""
+        """Extend an iterable to :class:QueryLangArray.
+        :param iterable: the iterable of AcceptQueryLangType to extend this array with
+        """
         for q in iterable:
             self.append(q)
 

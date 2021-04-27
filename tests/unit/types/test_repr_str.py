@@ -3,8 +3,8 @@ import pytest
 
 from jina import Document, Request, QueryLang, NdArray
 from jina.types.score import NamedScore
-from jina.types.lists import ChunkList
-from jina.types.lists.match import MatchList
+from jina.types.arrays import ChunkArray
+from jina.types.arrays.match import MatchArray
 
 
 @pytest.mark.parametrize(
@@ -15,8 +15,8 @@ from jina.types.lists.match import MatchList
         QueryLang(),
         NamedScore(),
         NdArray(),
-        MatchList([Document()], Document()),
-        ChunkList([Document()], Document()),
+        MatchArray([Document()], Document()),
+        ChunkArray([Document()], Document()),
     ],
 )
 def test_builtin_str_repr_no_content(obj):

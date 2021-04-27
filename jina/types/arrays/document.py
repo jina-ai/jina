@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple, Sequence, List, Optional
+from typing import Union, Iterable, Tuple, Sequence, List
 
 import numpy as np
 
@@ -21,7 +21,7 @@ except:
 from ...proto.jina_pb2 import DocumentProto
 from .traversable import TraversableSequence
 
-__all__ = ['DocumentList']
+__all__ = ['DocumentArray']
 
 if False:
     from ..document import Document
@@ -56,11 +56,13 @@ if False:
     )
 
 
-class DocumentList(TraversableSequence, MutableSequence):
+class DocumentArray(TraversableSequence, MutableSequence):
     """
-    :class:`DocumentList` is a mutable sequence of :class:`Document`.
-    It gives an efficient view of a list of Document. One can iterate over it like
-    a generator but ALSO modify it, count it, get item, or union two 'DocumentList's using the '+' and '+=' operators.
+    :class:`DocumentArray` is a mutable sequence of :class:`Document`.
+    It gives an efficient view of an array of Documents.
+    One can iterate over it like a generator but ALSO modify it, count it,
+    get item, or union two 'DocumentArray's using the '+' and '+=' operators.
+
     :param docs_proto: A list of :class:`Document`
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
@@ -72,9 +74,9 @@ class DocumentList(TraversableSequence, MutableSequence):
 
     def insert(self, index: int, doc: 'Document') -> None:
         """
-        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentList` .
+        Insert :param:`doc.proto` at :param:`index` into the array of `:class:`DocumentArray` .
         :param index: Position of the insertion.
-        :param doc: The doc needs to be inserted.
+        :param doc: The doc to be inserted.
         """
         self._docs_proto.insert(index, doc.proto)
 
@@ -106,48 +108,48 @@ class DocumentList(TraversableSequence, MutableSequence):
         elif isinstance(item, str):
             return Document(self._docs_map[item])
         elif isinstance(item, slice):
-            return DocumentList(self._docs_proto[item])
+            return DocumentArray(self._docs_proto[item])
         else:
             raise IndexError(f'do not support this index {item}')
 
-    def __add__(self, other: 'DocumentList'):
-        v = DocumentList([])
+    def __add__(self, other: 'DocumentArray'):
+        v = DocumentArray([])
         for doc in self:
             v.add(doc)
         for doc in other:
             v.add(doc)
         return v
 
-    def __iadd__(self, other: 'DocumentList'):
+    def __iadd__(self, other: 'DocumentArray'):
         for doc in other:
             self.add(doc)
         return self
 
     def append(self, doc: 'Document') -> 'Document':
         """
-        Append :param:`doc` in :class:`DocumentList`.
+        Append :param:`doc` in :class:`DocumentArray`.
         :param doc: The doc needs to be appended.
-        :return: Appended list.
+        :return: Appended internal list.
         """
         return self._docs_proto.append(doc.proto)
 
     def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method.
-        :param doc: the document to add to the list
-        :return: Appended list.
+        :param doc: the document to add to the array
+        :return: Appended internal list.
         """
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
         """
-        Extend the :class:`DocumentList` by appending all the items from the iterable.
-        :param iterable: the iterable of Documents to extend this list with
+        Extend the :class:`DocumentArray` by appending all the items from the iterable.
+        :param iterable: the iterable of Documents to extend this array with
         """
         for doc in iterable:
             self.append(doc)
 
     def clear(self):
-        """Clear the data of :class:`DocumentList`"""
+        """Clear the data of :class:`DocumentArray`"""
         del self._docs_proto[:]
 
     def reverse(self):
@@ -170,7 +172,7 @@ class DocumentList(TraversableSequence, MutableSequence):
 
     def sort(self, *args, **kwargs):
         """
-        Sort the items of the :class:`DocumentList` in place.
+        Sort the items of the :class:`DocumentArray` in place.
 
 
         :param args: variable list of arguments to pass to the sorting underlying function
@@ -179,23 +181,23 @@ class DocumentList(TraversableSequence, MutableSequence):
         self._docs_proto.sort(*args, **kwargs)
 
     @property
-    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentList']:
-        """Return all embeddings from every document in this list as a ndarray
-        :return: The corresponding documents in a :class:`DocumentList`,
-                and the documents have no embedding in a :class:`DocumentList`.
+    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentArray']:
+        """Return all embeddings from every document in this array as a ndarray
+        :return: The corresponding documents in a :class:`DocumentArray`,
+                and the documents have no embedding in a :class:`DocumentArray`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         return self.extract_docs('embedding', stack_contents=True)
 
     def get_all_sparse_embeddings(
         self, embedding_cls_type: EmbeddingClsType
-    ) -> Tuple['SparseEmbeddingType', 'DocumentList']:
-        """Return all embeddings from every document in this list as a sparse array
+    ) -> Tuple['SparseEmbeddingType', 'DocumentArray']:
+        """Return all embeddings from every document in this array as a sparse array
 
         :param embedding_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
-        :return: The corresponding documents in a :class:`DocumentList`,
-            and the documents have no embedding in a :class:`DocumentList`.
-        :rtype: A tuple of embedding and DocumentList as sparse arrays
+        :return: The corresponding documents in a :class:`DocumentArray`,
+            and the documents have no embedding in a :class:`DocumentArray`.
+        :rtype: A tuple of embedding and DocumentArray as sparse arrays
         """
 
         def stack_embeddings(embeddings):
@@ -258,10 +260,10 @@ class DocumentList(TraversableSequence, MutableSequence):
         return stack_embeddings(embeddings), docs_pts
 
     @property
-    def all_contents(self) -> Tuple['np.ndarray', 'DocumentList']:
-        """Return all embeddings from every document in this list as a ndarray
-        :return: The corresponding documents in a :class:`DocumentList`,
-                and the documents have no contents in a :class:`DocumentList`.
+    def all_contents(self) -> Tuple['np.ndarray', 'DocumentArray']:
+        """Return all embeddings from every document in this array as a ndarray
+        :return: The corresponding documents in a :class:`DocumentArray`,
+                and the documents have no contents in a :class:`DocumentArray`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         # stack true for backward compatibility, but will not work if content is blob of different shapes
@@ -269,11 +271,11 @@ class DocumentList(TraversableSequence, MutableSequence):
 
     def extract_docs(
         self, *fields: str, stack_contents: Union[bool, List[bool]] = False
-    ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentList']:
+    ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentArray']:
         """Return in batches all the values of the fields
         :param fields: Variable length argument with the name of the fields to extract
-        :param stack_contents: boolean flag indicating if output lists should be stacked with `np.stack`
-        :return: Returns an :class:`np.ndarray` or a list of :class:`np.ndarray` with the batches for these fields
+        :param stack_contents: boolean flag indicating if output arrays should be stacked with `np.stack`
+        :return: Returns an :class:`np.ndarray` or an array of :class:`np.ndarray` with the batches for these fields
         """
 
         list_of_contents_output = len(fields) > 1
@@ -334,17 +336,17 @@ class DocumentList(TraversableSequence, MutableSequence):
         if not docs_pts:
             default_logger.warning('no documents are extracted')
 
-        return contents, DocumentList(docs_pts)
+        return contents, DocumentArray(docs_pts)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
-        :return: returns true if the length of the list is larger than 0
+        :return: returns true if the length of the array is larger than 0
         """
         return len(self) > 0
 
     def new(self) -> 'Document':
-        """Create a new empty document appended to the end of the list.
-        :return: a new Document appended to the list
+        """Create a new empty document appended to the end of the array.
+        :return: a new Document appended to the internal list
         """
         from ..document import Document
 

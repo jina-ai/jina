@@ -10,7 +10,7 @@ from ... import Request
 from ...enums import RequestType, DataInputType
 from ...importer import ImportExtensions
 from ...logging import default_logger
-from ...types.lists.querylang import AcceptQueryLangType
+from ...types.arrays.querylang import AcceptQueryLangType
 
 
 async def request_generator(
@@ -36,7 +36,7 @@ async def request_generator(
     :param kwargs: additional key word arguments
     :yield: request
     """
-    _kwargs = dict(mime_type=mime_type, siblings=request_size, weight=1.0)
+    _kwargs = dict(mime_type=mime_type, weight=1.0)
 
     try:
         with ImportExtensions(required=True):

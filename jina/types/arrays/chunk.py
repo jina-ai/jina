@@ -1,14 +1,14 @@
 from typing import Iterable
 
-from .document import DocumentList
+from .document import DocumentArray
 
 if False:
     from ..document import Document
 
 
-class ChunkList(DocumentList):
+class ChunkArray(DocumentArray):
     """
-    :class:`ChunkList` inherits from :class:`DocumentList`.
+    :class:`ChunkArray` inherits from :class:`DocumentArray`.
     It's a subset of Documents.
 
     :param docs_proto: List of sub-documents (i.e chunks) of `reference_doc`
@@ -18,12 +18,6 @@ class ChunkList(DocumentList):
     """
 
     def __init__(self, docs_proto, reference_doc: 'Document'):
-        """
-        List constructor method.
-
-        :param docs_proto: protobuf representation of the chunks
-        :param reference_doc: parent document
-        """
         super().__init__(docs_proto)
         self._ref_doc = reference_doc
 
@@ -37,7 +31,7 @@ class ChunkList(DocumentList):
         :rtype: :class:`Document`
 
         .. note::
-            Comparing to :attr:`DocumentList.append()`, this method adds more safeguard to
+            Comparing to :attr:`DocumentArray.append()`, this method adds more safeguard to
             make sure the added chunk is legit.
         """
 
@@ -58,9 +52,9 @@ class ChunkList(DocumentList):
 
     def extend(self, iterable: Iterable['Document']) -> None:
         """
-        Extend the :class:`DocumentList` by appending all the items from the iterable.
+        Extend the :class:`DocumentArray` by appending all the items from the iterable.
 
-        :param iterable: the iterable of Documents to extend this list with
+        :param iterable: the iterable of Documents to extend this array with
         """
         for doc in iterable:
             self.append(doc)
@@ -71,7 +65,7 @@ class ChunkList(DocumentList):
     @property
     def reference_doc(self) -> 'Document':
         """
-        Get the document that :class:`ChunkList` belongs to.
+        Get the document that :class:`ChunkArray` belongs to.
 
         :return: reference doc
         """
@@ -80,7 +74,7 @@ class ChunkList(DocumentList):
     @property
     def granularity(self) -> int:
         """
-        Get granularity of all document in this list.
+        Get granularity of all document in this array.
 
         :return: granularity
         """
@@ -89,7 +83,7 @@ class ChunkList(DocumentList):
     @property
     def adjacency(self) -> int:
         """
-        Get adjacency of all document in this list.
+        Get adjacency of all document in this array.
 
         :return: adjacency
         """

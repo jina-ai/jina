@@ -18,7 +18,7 @@ class TraversableSequence:
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
-        Each :class:``TraversableSequence`` is either the root Documents, a ChunkList or a MatchList.
+        Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.
 
         :param traversal_paths: a list of string that represents the traversal path
         :yield: :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
