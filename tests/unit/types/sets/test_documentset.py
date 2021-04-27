@@ -7,7 +7,7 @@ import torch
 import tensorflow as tf
 
 from jina import Document
-from jina.types.sets import DocumentSet
+from jina.types.lists import DocumentList
 from jina.enums import EmbeddingClsType
 
 DOCUMENTS_PER_LEVEL = 1
@@ -36,7 +36,7 @@ def docs(document_factory):
 
 @pytest.fixture
 def docset(docs):
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 @pytest.fixture
@@ -50,7 +50,7 @@ def docset_with_scipy_sparse_embedding(docs):
     )
     for doc in docs:
         doc.embedding = embedding
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 def test_length(docset, docs):
@@ -70,7 +70,7 @@ def test_add(docset, document_factory):
 
 
 def test_union(docset, document_factory):
-    additional_docset = DocumentSet([])
+    additional_docset = DocumentList([])
     for idx in range(4, 10):
         doc = document_factory.create(idx, f'test {idx}')
         additional_docset.add(doc)
@@ -82,7 +82,7 @@ def test_union(docset, document_factory):
 
 
 def test_union_inplace(docset, document_factory):
-    additional_docset = DocumentSet([])
+    additional_docset = DocumentList([])
     for idx in range(4, 10):
         doc = document_factory.create(idx, f'test {idx}')
         additional_docset.add(doc)
@@ -131,7 +131,7 @@ def test_set_get_success(docset, document_factory):
 
 
 def test_set_get_from_slice_success(docs, document_factory):
-    docset = DocumentSet(docs)
+    docset = DocumentList(docs)
     assert len(docset[:1]) == 1
     assert len(docset[:2]) == 2
     assert len(docset[:3]) == 3
@@ -229,7 +229,7 @@ def documentset():
             d.adjacency = 0
             docs.append(d)
             iterate_build(d, 0, 0)
-    return DocumentSet(docs)
+    return DocumentList(docs)
 
 
 def callback_fn(docs, *args, **kwargs) -> None:
@@ -248,7 +248,7 @@ def test_get_content(stack, num_rows, field):
 
     kwargs = {field: np.random.random((num_rows, embed_size))}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentList([Document(**kwargs) for _ in range(batch_size)])
     docs.append(Document())
 
     contents, pts = docs.extract_docs(field, stack_contents=stack)
@@ -268,7 +268,7 @@ def test_get_content_text_fields(stack, field):
 
     kwargs = {field: 'text'}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentList([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(field, stack_contents=stack)
     if stack:
@@ -287,7 +287,7 @@ def test_get_content_bytes_fields(stack, bytes_input, field):
 
     kwargs = {field: bytes_input}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentList([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(field, stack_contents=stack)
 
@@ -305,7 +305,7 @@ def test_get_content_multiple_fields_text(stack, fields):
 
     kwargs = {field: f'text-{field}' for field in fields}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentList([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 
@@ -328,7 +328,7 @@ def test_get_content_multiple_fields_text_buffer(stack, bytes_input):
     fields = ['id', 'buffer']
     kwargs = {'id': 'text', 'buffer': bytes_input}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentList([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 
@@ -354,7 +354,7 @@ def test_get_content_multiple_fields_arrays(stack, num_rows):
     embed_size = 20
 
     kwargs = {field: np.random.random((num_rows, embed_size)) for field in fields}
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentList([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 
@@ -387,7 +387,7 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
         else 'text'
         for field in fields
     }
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentList([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 

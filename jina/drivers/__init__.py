@@ -436,7 +436,7 @@ class DocsExtractUpdateMixin:
     def _stack_document_content(self):
         return self._exec_fn_required_keys_is_ndarray
 
-    def _apply_all(self, docs: 'DocumentSet') -> None:
+    def _apply_all(self, docs: 'DocumentList') -> None:
         """Apply function works on a list of docs, modify the docs in-place.
 
         The list refers to all reachable leaves of a single ``traversal_path``.
@@ -477,7 +477,7 @@ class DocsExtractUpdateMixin:
 
     def update_docs(
         self,
-        docs_pts: 'DocumentSet',
+        docs_pts: 'DocumentList',
         exec_results: Union[List[Dict], List['Document'], Any],
     ) -> None:
         """
