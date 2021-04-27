@@ -47,10 +47,10 @@ def test_binarypb_update1(test_metas, delete_on_dump):
     save_abspath = idxer.save_abspath
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query('1') == [b'oldvalue']
+        assert idxer.query(['1']) == [b'oldvalue']
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query('1') == [b'oldvalue']
+        assert idxer.query(['1']) == [b'oldvalue']
 
     second_size = os.path.getsize(idxer.index_abspath)
     assert second_size == first_size
@@ -68,10 +68,10 @@ def test_binarypb_update1(test_metas, delete_on_dump):
     assert idxer.size == 3
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query('1') == [b'newvalue']
-        assert idxer.query('2') == [b'same']
-        assert idxer.query('3') == [b'random']
-        assert idxer.query('99') is None
+        assert idxer.query(['1']) == [b'newvalue']
+        assert idxer.query(['2']) == [b'same']
+        assert idxer.query(['3']) == [b'random']
+        assert idxer.query(['99']) is None
 
     with BaseIndexer.load(save_abspath) as idxer:
         # partial update when missing keys encountered
@@ -87,10 +87,10 @@ def test_binarypb_update1(test_metas, delete_on_dump):
     assert idxer.size == 3
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query('1') == [b'abcvalue']
-        assert idxer.query('2') == [b'abcd']
-        assert idxer.query('3') == [b'random']
-        assert idxer.query('99') is None
+        assert idxer.query(['1']) == [b'abcvalue']
+        assert idxer.query(['2']) == [b'abcd']
+        assert idxer.query(['3']) == [b'random']
+        assert idxer.query(['99']) is None
 
 
 @pytest.mark.parametrize('delete_on_dump', [True, False])
@@ -113,10 +113,10 @@ def test_binarypb_add_and_update_not_working(test_metas, delete_on_dump):
         idxer.save()
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query('11') == [b'eleven']
-        assert idxer.query('12') == [b'twelve-new']
+        assert idxer.query(['11']) == [b'eleven']
+        assert idxer.query(['12']) == [b'twelve-new']
         assert idxer.size == 2
-        assert idxer.sample() in (b'eleven', b'twelve-new')
+        assert idxer.sample() in ([b'eleven'], [b'twelve-new'])
 
 
 @pytest.mark.parametrize('delete_on_dump', [True, False])
@@ -157,8 +157,8 @@ def test_binarypb_update_twice(test_metas, delete_on_dump):
         idxer.save()
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query('1') == [b'newvalue']
-        assert idxer.query('2') == [b'othernewvalue']
+        assert idxer.query(['1']) == [b'newvalue']
+        assert idxer.query(['2']) == [b'othernewvalue']
 
 
 # benchmark only
