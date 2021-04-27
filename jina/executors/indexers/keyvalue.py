@@ -296,7 +296,7 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         :return: A random entry from the indexer.
         """
         k = random.sample(self.query_handler.header.keys(), k=1)[0]
-        return self[k]
+        return self.query([k])
 
     def __iter__(self):
         for k in self.query_handler.header.keys():
