@@ -45,6 +45,8 @@ class DummyMarkExecutor(BaseEncoder):
 
 
 def test_normal(docs):
+    NUM_REPLICAS = 3
+    NUM_SHARDS = 2
     # this test is a bit hacky.
     # It uses the score field to pass the information of the used replica during search.
     # Please don't use it that way in application code
@@ -57,15 +59,25 @@ def test_normal(docs):
     flow = Flow().add(
         name='pod1',
         uses='!DummyMarkExecutor',
-        replicas=3,
-        parallel=2,
+        replicas=NUM_REPLICAS,
+        parallel=NUM_SHARDS,
     )
     with flow:
         flow.search(inputs=docs, request_size=1, on_done=handle_search_result)
 
-    # 20 time one of the replicas is called
-    assert len(doc_id_path.keys()) == 20
-    print(f' doc_id_path {doc_id_path}')
+    assert len(doc_id_path.keys()) == len(docs)
+
+    num_used_replicas = len(set(map(lambda x: x[0], doc_id_path.values())))
+    assert num_used_replicas == NUM_REPLICAS
+
+    shards = collections.defaultdict(list)
+    for replica, shard in doc_id_path.values():
+        shards[replica].append(shard)
+
+    assert len(shards.keys()) == NUM_REPLICAS
+
+    for shard_list in shards.values():
+        assert len(set(shard_list)) == NUM_SHARDS
 
 
 @pytest.mark.timeout(30)
