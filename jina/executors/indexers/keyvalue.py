@@ -203,12 +203,18 @@ class BinaryPbWriterMixin:
                 )
                 self._size -= 1
 
-    def _query(self, key):
-        pos_info = self.query_handler.header.get(key, None)
-        if pos_info is not None:
-            p, r, l = pos_info
-            with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
-                return m[r:]
+    def _query(self, keys):
+        query_results = []
+        for key in keys:
+            pos_info = self.query_handler.header.get(key, None)
+            if pos_info is not None:
+                p, r, l = pos_info
+                with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
+                    query_results.append(m[r:])
+            else:
+                return query_results.append[None]
+
+        return query_results
 
 
 class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
