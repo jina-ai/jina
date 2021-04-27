@@ -75,8 +75,9 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
             miss_idx = (
                 []
             )  #: missed hit results, some search may not end with results. especially in shards
-            for idx, retrieved_doc in enumerate(docs):
-                serialized_doc = self.exec_fn(retrieved_doc.id)
+            ids, _ = docs.extract_docs('id')
+            serialized_docs = self.exec_fn(ids)
+            for retrieved_doc, serialized_doc in zip(docs, serialized_docs):
                 if serialized_doc:
                     r = Document(serialized_doc)
                     if self._is_update:
@@ -85,6 +86,7 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
                         retrieved_doc.CopyFrom(r)
                 else:
                     miss_idx.append(idx)
+
             # delete non-existed matches in reverse
             for j in reversed(miss_idx):
                 del docs[j]

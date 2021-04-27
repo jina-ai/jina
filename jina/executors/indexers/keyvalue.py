@@ -302,15 +302,15 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         for k in self.query_handler.header.keys():
             yield self[k]
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, keys: Iterable[str], *args, **kwargs) -> Iterable[Optional[bytes]]:
         """Find the serialized document to the index via document id.
 
-        :param key: document id
+        :param keys: list of document ids
         :param args: extra arguments
         :param kwargs: keyword arguments
         :return: serialized documents
         """
-        return self._query(key)
+        return self._query(keys)
 
     def update(
         self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
