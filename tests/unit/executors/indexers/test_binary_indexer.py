@@ -91,12 +91,14 @@ def test_binarypb_update1(test_metas, delete_on_dump):
         assert idxer.query(['2']) == [b'abcd']
         assert idxer.query(['3']) == [b'random']
         assert idxer.query(['99']) is None
+        assert idxer.query(['1', '2']) == [b'abcvalue', b'abcd']
+        assert idxer.query(['1', '2', '3']) == [b'abcvalue', b'abcd', b'random']
 
 
 @pytest.mark.parametrize('delete_on_dump', [True, False])
 def test_binarypb_add_and_update_not_working(test_metas, delete_on_dump):
     with BinaryPbIndexer(metas=test_metas, delete_on_dump=delete_on_dump) as idxer:
-        idxer.add(['11', '12'], [b'eleven', b'twelve'])
+        idxer.add(['11', '12', '13'], [b'eleven', b'twelve', b'thirteen'])
         idxer.save()
         # FIXME `add` and `update` won't work in the same context
         # since `.save` calls `.flush` on a closed handler
@@ -105,7 +107,7 @@ def test_binarypb_add_and_update_not_working(test_metas, delete_on_dump):
         with pytest.raises(AttributeError):
             idxer.update(['12'], [b'twelve-new'])
             idxer.save()
-        assert idxer.size == 2
+        assert idxer.size == 3
         save_abspath = idxer.save_abspath
 
     with BaseIndexer.load(save_abspath) as idxer:
@@ -115,8 +117,9 @@ def test_binarypb_add_and_update_not_working(test_metas, delete_on_dump):
     with BaseIndexer.load(save_abspath) as idxer:
         assert idxer.query(['11']) == [b'eleven']
         assert idxer.query(['12']) == [b'twelve-new']
-        assert idxer.size == 2
-        assert idxer.sample() in ([b'eleven'], [b'twelve-new'])
+        assert idxer.query(['12', '13']) == [b'twelve-new', b'thirteen']
+        assert idxer.size == 3
+        assert idxer.sample() in (b'eleven', b'twelve-new', b'thirteen')
 
 
 @pytest.mark.parametrize('delete_on_dump', [True, False])
@@ -152,13 +155,13 @@ def test_binarypb_update_twice(test_metas, delete_on_dump):
         save_abspath = idxer.save_abspath
 
     with BaseIndexer.load(save_abspath) as idxer:
-        idxer.update(['1'], [b'newvalue'])
-        idxer.update(['2'], [b'othernewvalue'])
+        idxer.update(['1', '2'], [b'newvalue', b'othernewvalue'])
         idxer.save()
 
     with BaseIndexer.load(save_abspath) as idxer:
         assert idxer.query(['1']) == [b'newvalue']
         assert idxer.query(['2']) == [b'othernewvalue']
+        assert idxer.query(['1', '2']) == [b'newvalue', b'othernewvalue']
 
 
 # benchmark only
