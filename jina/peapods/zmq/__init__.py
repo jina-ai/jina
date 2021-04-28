@@ -208,12 +208,14 @@ class Zmqlet:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def close(self):
+    def close(self, *args, **kwargs):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
 
         .. note::
             This method is idempotent.
 
+        :param args: Extra positional arguments
+        :param kwargs: Extra key-value arguments
         """
         if not self.is_closed:
             self.is_closed = True
@@ -369,16 +371,20 @@ class ZmqStreamlet(Zmqlet):
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
-    def close(self):
+    def close(self, flush: bool = True, *args, **kwargs):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
 
         .. note::
             This method is idempotent.
+
+        :param flush: flag indicating if `sockets` need to be flushed before close is done
+        :param args: Extra positional arguments
+        :param kwargs: Extra key-value arguments
         """
-        if self.in_sock_type == zmq.DEALER:
+        if not self.is_closed and self.in_sock_type == zmq.DEALER:
             try:
                 self._send_cancel_to_router(raise_exception=True)
-            except zmq.error.ZMQError:
+            except zmq.error.ZMQError as e:
                 self.logger.info(
                     f'The dealer {self.name} can not unsubscribe from the router. '
                     f'In case the router is down this is expected.'
@@ -386,8 +392,9 @@ class ZmqStreamlet(Zmqlet):
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
-            for s in self.opened_socks:
-                s.flush()
+            if flush:
+                for s in self.opened_socks:
+                    s.flush()
             super().close()
             if hasattr(self, 'io_loop'):
                 try:
@@ -438,7 +445,9 @@ class ZmqStreamlet(Zmqlet):
         self.io_loop.close(all_fds=True)
 
 
-def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
+def send_ctrl_message(
+    address: str, cmd: Union[str, Message], timeout: int
+) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
@@ -446,11 +455,16 @@ def send_ctrl_message(address: str, cmd: str, timeout: int) -> 'Message':
     :param timeout: the waiting time (in ms) for the response
     :return: received message
     """
+    if isinstance(cmd, str):
+        # we assume ControlMessage as default
+        msg = ControlMessage(cmd)
+    else:
+        msg = cmd
+
     # control message is short, set a timeout and ask for quick response
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        msg = ControlMessage(cmd)
         send_message(sock, msg, timeout)
         r = None
         try:

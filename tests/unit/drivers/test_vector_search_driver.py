@@ -1,11 +1,18 @@
 from typing import Tuple
 
 import numpy as np
+import scipy
+import torch
+import tensorflow as tf
 import pytest
 
 from jina import Document, QueryLang
 from jina.drivers.search import VectorSearchDriver
 from jina.executors.indexers import BaseVectorIndexer
+
+
+def embedding_cls_type_supported():
+    return ['dense', 'scipy_csr', 'scipy_coo', 'torch', 'tf']
 
 
 class MockVectorSearchDriver(VectorSearchDriver):
@@ -24,21 +31,44 @@ class MockVectorSearchDriverWithQS(VectorSearchDriver):
         return [q]
 
 
-@pytest.fixture
-def create_document_to_search():
-    # 1-D embedding
-    # doc: 1 - chunk: 2 - embedding(2.0)
-    #        - chunk: 3 - embedding(3.0)
-    #        - chunk: 4 - embedding(4.0)
-    #        - chunk: 5 - embedding(5.0)
-    # ....
-    doc = Document()
-    for c in range(10):
-        chunk = Document()
-        chunk.id = str(c) * 16
-        chunk.embedding = np.array([c])
-        doc.chunks.append(chunk)
-    return doc
+@pytest.fixture(scope='function')
+def documents_factory():
+    def documents(embedding_cls_type):
+        doc = Document()
+        for c in range(10):
+            chunk = Document()
+            chunk.id = str(c) * 16
+            dense_embedding = np.random.random([10])
+            if embedding_cls_type == 'dense':
+                chunk.embedding = dense_embedding
+            elif embedding_cls_type == 'scipy_csr':
+                chunk.embedding = scipy.sparse.csr_matrix(dense_embedding)
+            elif embedding_cls_type == 'scipy_coo':
+                chunk.embedding = scipy.sparse.coo_matrix(dense_embedding)
+            elif embedding_cls_type == 'torch':
+                sparse_embedding = scipy.sparse.coo_matrix(dense_embedding)
+                values = sparse_embedding.data
+                indices = np.vstack((sparse_embedding.row, sparse_embedding.col))
+                chunk.embedding = torch.sparse_coo_tensor(
+                    indices,
+                    values,
+                    sparse_embedding.shape,
+                )
+            elif embedding_cls_type == 'tf':
+                sparse_embedding = scipy.sparse.coo_matrix(dense_embedding)
+                values = sparse_embedding.data
+                indices = [
+                    (x, y) for x, y in zip(sparse_embedding.row, sparse_embedding.col)
+                ]
+                chunk.embedding = tf.SparseTensor(
+                    indices=indices,
+                    values=values,
+                    dense_shape=[1, 10],
+                )
+            doc.chunks.append(chunk)
+        return doc
+
+    return documents
 
 
 def test_vectorsearch_driver_mock_queryset():
@@ -51,7 +81,7 @@ def test_vectorsearch_driver_mock_queryset():
     assert driver.top_k == 4
 
 
-def mock_query(vectors: 'np.ndarray', top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
+def mock_query(vectors, top_k: int) -> Tuple['np.ndarray', 'np.ndarray']:
     idx = np.zeros((vectors.shape[0], top_k), dtype=(np.str_, 16))
     dist = np.zeros((vectors.shape[0], top_k))
     for i, row in enumerate(dist):
@@ -64,14 +94,17 @@ def mock_query_by_key(keys: 'np.ndarray'):
     return np.random.random([len(keys), 7])
 
 
-def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search):
+@pytest.mark.parametrize('embedding_cls_type', embedding_cls_type_supported())
+def test_vectorsearch_driver_mock_indexer(
+    monkeypatch, documents_factory, embedding_cls_type
+):
     driver = MockVectorSearchDriver(top_k=2)
     index = BaseVectorIndexer()
     monkeypatch.setattr(index, 'query_by_key', None)
     monkeypatch.setattr(driver, '_exec', index)
     monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)
-    doc = create_document_to_search
+    doc = documents_factory(embedding_cls_type)
     driver._apply_all(doc.chunks)
 
     for chunk in doc.chunks:
@@ -84,8 +117,9 @@ def test_vectorsearch_driver_mock_indexer(monkeypatch, create_document_to_search
         assert chunk.matches[1].score.value == 1.0
 
 
+@pytest.mark.parametrize('embedding_cls_type', embedding_cls_type_supported())
 def test_vectorsearch_driver_mock_indexer_with_fill(
-    monkeypatch, create_document_to_search
+    monkeypatch, documents_factory, embedding_cls_type
 ):
     driver = MockVectorSearchDriver(top_k=2, fill_embedding=True)
     index = BaseVectorIndexer()
@@ -93,7 +127,7 @@ def test_vectorsearch_driver_mock_indexer_with_fill(
     monkeypatch.setattr(driver, '_exec', index)
     monkeypatch.setattr(driver, 'runtime', None)
     monkeypatch.setattr(driver, '_exec_fn', mock_query)
-    doc = create_document_to_search
+    doc = documents_factory(embedding_cls_type)
     driver._apply_all(doc.chunks)
 
     for chunk in doc.chunks:

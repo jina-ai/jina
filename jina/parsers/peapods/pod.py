@@ -34,6 +34,14 @@ def mixin_base_pod_parser(parser):
         'and routers will be added automatically when necessary',
     )
     gp.add_argument(
+        '--replicas',
+        type=int,
+        default=1,
+        help='The number of replicas in the pod, '
+        '`port_in` and `port_out` will be set to random, '
+        'and routers will be added automatically when necessary',
+    )
+    gp.add_argument(
         '--polling',
         type=PollingType.from_string,
         choices=list(PollingType),
@@ -68,5 +76,5 @@ The polling strategy of the Pod (when `parallel>1`)
         type=str,
         help='''The hosts of the peas when parallel greater than 1.
         Peas will be evenly distributed among the hosts. By default,
-        peas are running in the same host as the pod.''',
+        peas are running on host provided by the argument ``host``''',
     )

@@ -7,7 +7,7 @@ import time
 from google.protobuf.json_format import MessageToJson
 
 from . import BaseDriver
-from ..excepts import UnknownControlCommand, RuntimeTerminated, NoExplicitMessage
+from ..excepts import UnknownControlCommand, RuntimeTerminated
 from ..proto import jina_pb2
 from ..types.querylang.queryset.dunderkey import dunder_get
 
@@ -85,6 +85,10 @@ class ControlReqDriver(BaseControlDriver):
             pass
         elif self.req.command == 'CANCEL':
             pass
+        elif self.req.command == 'DUMP':
+            self.logger.warning(
+                'DUMP command cannot be processed by ControlReqDriver. Use DumpDriver'
+            )
         elif self.req.command == 'RELOAD':
             if self.req.targets and self.runtime.__class__.__name__ == 'ZEDRuntime':
                 patterns = self.req.targets

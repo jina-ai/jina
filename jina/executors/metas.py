@@ -15,14 +15,6 @@
 
 Any executor inherited from :class:`BaseExecutor` always has the following **meta** fields:
 
-    .. confval:: is_trained
-
-        indicates if the executor is trained or not, if not then methods decorated by :func:`@required_train`
-        can not be executed.
-
-        :type: bool
-        :default: ``False``
-
     .. confval:: is_updated
 
         indicates if the executor is updated or changed since last save, if not then :func:`save` will do nothing.
@@ -156,7 +148,7 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
         ``pea_id`` is set in a way that when the executor ``A`` is used as
         a component of a :class:`jina.executors.compound.CompoundExecutor` ``B``, then ``A``'s setting will be overridden by B's counterpart.
 
-    These **meta** fields can be accessed via `self.is_trained` or loaded from a YAML config via :func:`load_config`:
+    These **meta** fields can be accessed via `self.name` or loaded from a YAML config via :func:`load_config`:
 
     .. highlight:: yaml
     .. code-block:: yaml
@@ -166,7 +158,6 @@ Any executor inherited from :class:`BaseExecutor` always has the following **met
           ...
         metas:
           name: my_transformer  # a customized name
-          is_trained: true  # indicate the model has been trained
           workspace: ./  # path for serialize/deserialize
 
 

@@ -64,7 +64,6 @@ def check_indexers_size(
     with BaseIndexer.load(cache_indexer_path) as cache:
         assert isinstance(cache, DocCache)
         cache_full_size = cache.size
-        print(f'cache size {cache.size}')
 
     for indexer_fname in [KV_IDX_FILENAME, VEC_IDX_FILENAME]:
         indexers_full_size = 0
@@ -178,7 +177,6 @@ def test_cache_crud(tmp_path, mocker, indexers, field, shards, chunks, same_cont
     # INDEX
     with flow_index as f:
         f.index(docs, request_size=REQUEST_SIZE)
-
     check_indexers_size(
         chunks, len(docs), field, tmp_path, same_content, shards, 'index'
     )

@@ -71,7 +71,10 @@ class ZEDRuntime(ZMQRuntime):
         """Load the executor to this runtime, specified by ``uses`` CLI argument."""
         try:
             self._executor = BaseExecutor.load_config(
-                self.args.uses, pea_id=self.args.pea_id, read_only=self.args.read_only
+                self.args.uses,
+                pea_id=self.args.pea_id,
+                replica_id=getattr(self.args, 'replica_id', -1),
+                read_only=self.args.read_only,
             )
             self._executor.attach(runtime=self)
         except BadConfigSource as ex:
@@ -200,7 +203,12 @@ class ZEDRuntime(ZMQRuntime):
             # this is the proper way to end when a terminate signal is sent
             self._zmqlet.send_message(msg)
             self._zmqlet.close()
-        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
+        except (KeyboardInterrupt) as kbex:
+            # save executor
+            self.logger.info(f'{kbex!r} causes the breaking from the event loop')
+            self._zmqlet.send_message(msg)
+            self._zmqlet.close(flush=False)
+        except (SystemError, zmq.error.ZMQError) as ex:
             # save executor
             self.logger.info(f'{ex!r} causes the breaking from the event loop')
             self._zmqlet.send_message(msg)

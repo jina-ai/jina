@@ -13,7 +13,7 @@ class BaseClassifier(BaseExecutor):
     This class should not be used directly. Subclasses should be used.
     """
 
-    def predict(self, data: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
+    def predict(self, content: 'np.ndarray', *args, **kwargs) -> 'np.ndarray':
         """
         Perform hard/soft classification on ``data``, the predicted value for each sample in X is returned.
 
@@ -24,12 +24,11 @@ class BaseClassifier(BaseExecutor):
             - (B,) or (B, 1); zero/one or float
             - (B, L): zero/one one-hot or soft label for L-class multi-class classification
 
-        :param data: the input data to be classified, can be a ndim array.
+        :param content: the input data to be classified, can be a ndim array.
             where axis=0 represents the batch size, i.e. data[0] is the first sample, data[1] is the second sample, data[n] is the n sample
-        :type data: np.ndarray
+        :type content: np.ndarray
         :param args:  Additional positional arguments
         :param kwargs: Additional keyword arguments
-        :return: Predicted value of each sample.
         :rtype: np.ndarray
         """
         raise NotImplementedError

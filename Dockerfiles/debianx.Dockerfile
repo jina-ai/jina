@@ -41,11 +41,9 @@ ENV JINA_COMPILERS="gcc libc-dev make" \
 COPY . /jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
-    if [ "${PY_VERSION}" = "3.9" ]; then apt-get update && apt-get install --no-install-recommends -y ${JINA_COMPILERS}; fi && \
     cd /jina && \
     pip install . --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
     if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile --extra-index-url $PIP_EXTRA_INDEX_URL; fi && \
-    if [ "${PY_VERSION}" = "3.9" ]; then apt-get remove -y --auto-remove ${JINA_COMPILERS}; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
@@ -56,11 +54,9 @@ FROM jina_base AS jina_devel
 COPY . /jina/
 
 RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
-    if [ "${PY_VERSION}" = "3.9" ]; then apt-get update && apt-get install --no-install-recommends -y ${JINA_COMPILERS}; fi && \
     apt-get install --no-install-recommends -y ${JINA_BUILD_DEVEL_DEP} && \
     ln -s locale.h /usr/include/xlocale.h && cd /jina && \
     pip install .[devel] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
-    if [ "${PY_VERSION}" = "3.9" ]; then apt-get remove -y --auto-remove ${JINA_COMPILERS}; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
@@ -71,11 +67,9 @@ FROM jina_base AS jina_daemon
 COPY . /jina/
 
 RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev ${JINA_COMPILERS} && \
-    if [ "${PY_VERSION}" = "3.9" ]; then apt-get update && apt-get install --no-install-recommends -y ${JINA_COMPILERS}; fi && \
     gem install fluentd --no-doc && \
     ln -s locale.h /usr/include/xlocale.h && cd /jina && \
     pip install .[daemon] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
-    if [ "${PY_VERSION}" = "3.9" ]; then apt-get remove -y --auto-remove ruby-dev ${JINA_COMPILERS}; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 

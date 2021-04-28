@@ -6,9 +6,11 @@ import numpy as np
 import pytest
 
 from cli import _is_latest_version
+from jina import Executor
 from jina import NdArray, Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
+from jina.executors.decorators import requests, batching
 from jina.helper import (
     cached_property,
     convert_tuple_to_list,
@@ -16,6 +18,7 @@ from jina.helper import (
     is_yaml_filepath,
     touch_dir,
     random_port,
+    find_request_binding,
 )
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
@@ -83,11 +86,10 @@ def test_check_update():
 
 
 def test_wrap_func():
-    from jina.executors import BaseExecutor
     from jina.executors.encoders import BaseEncoder
 
     class DummyEncoder(BaseEncoder):
-        def train(self):
+        def encode(self):
             pass
 
     class MockEnc(DummyEncoder):
@@ -97,7 +99,7 @@ def test_wrap_func():
         pass
 
     class MockMockMockEnc(MockEnc):
-        def train(self):
+        def encode(self):
             pass
 
     def check_override(cls, method):
@@ -108,14 +110,11 @@ def test_wrap_func():
         is_override = not is_inherit and is_parent_method
         return is_override
 
-    # newly created
-    assert not check_override(BaseExecutor, 'train')
-
-    assert not check_override(BaseEncoder, 'train')
-    assert check_override(DummyEncoder, 'train')
-    assert not check_override(MockEnc, 'train')
-    assert not check_override(MockMockEnc, 'train')
-    assert check_override(MockMockMockEnc, 'train')
+    assert not check_override(BaseEncoder, 'encode')
+    assert check_override(DummyEncoder, 'encode')
+    assert not check_override(MockEnc, 'encode')
+    assert not check_override(MockMockEnc, 'encode')
+    assert check_override(MockMockMockEnc, 'encode')
 
 
 def test_pprint_routes(capfd):
@@ -292,3 +291,30 @@ def test_random_port_max_failures_for_tests_only(config_few_ports):
         random_port_with_max_failures()
         random_port_with_max_failures()
         random_port_with_max_failures()
+
+
+class MyDummyExecutor(Executor):
+    @batching
+    @requests
+    def foo(self):
+        pass
+
+    @requests(on='index')
+    def bar(self):
+        pass
+
+    @requests(on='search')
+    def bar2(self):
+        pass
+
+    @batching
+    def foo2(self):
+        pass
+
+
+def test_find_request_binding():
+    r = find_request_binding(MyDummyExecutor)
+    assert r['default'] == 'foo'
+    assert r['index'] == 'bar'
+    assert r['search'] == 'bar2'
+    assert 'foo2' not in r.values()
