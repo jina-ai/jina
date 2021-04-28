@@ -6,7 +6,6 @@ with:
 metas:
   name: vecidx
   workspace: $JINA_REPLICA_DIR
-
 requests:
   on:
     IndexRequest:

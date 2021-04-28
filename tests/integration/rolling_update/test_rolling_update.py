@@ -47,9 +47,6 @@ class DummyMarkExecutor(BaseEncoder):
 def test_normal(docs):
     NUM_REPLICAS = 3
     NUM_SHARDS = 2
-    # this test is a bit hacky.
-    # It uses the score field to pass the information of the used replica during search.
-    # Please don't use it that way in application code
     doc_id_path = collections.OrderedDict()
 
     def handle_search_result(resp):
@@ -113,7 +110,7 @@ def test_thread_run(docs):
 def test_vector_indexer_thread(config, docs):
     with Flow().add(
         name='pod1',
-        uses=os.path.join(cur_dir, 'yaml/mock_index_vector.yml'),
+        uses='!DummyMarkExecutor',
         replicas=2,
         parallel=3,
     ) as flow:
@@ -268,7 +265,7 @@ def test_port_configuration(replicas_and_parallel):
 def test_num_peas(config):
     with Flow().add(
         name='pod1',
-        uses=os.path.join(cur_dir, 'yaml/simple_index_vector.yml'),
+        uses='!DummyMarkExecutor',
         replicas=3,
         parallel=4,
     ) as flow:
