@@ -157,11 +157,10 @@ def deprecated_class(dep_class=None, new_class=None, custom_msg=None):
     def wrapper(*args, **kwargs):
         """
         Set wrapper function.
+
         :param args: wrapper arguments
         :param kwargs: wrapper key word arguments
-        :param custom_msg: a custom message to describe the new class
-
-        :return: deprecated class instance.
+        :return: class instance of the new type.
         """
 
         warnings_msg = f'{dep_class.__name__} class is deprecated and will be removed in the next version. '
