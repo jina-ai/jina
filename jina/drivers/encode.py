@@ -1,14 +1,15 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, Any
+from typing import Optional, Any, Union
 
 from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 
 # noinspection PyUnreachableCode
 if False:
-    from .. import Document
-    from .. import DocumentSet
+    from .. import Document, DocumentSet, NdArray
+    import numpy as np
+    from ..proto import jina_pb2
 
 
 class BaseEncodeDriver(BaseExecutableDriver):
@@ -23,7 +24,11 @@ class BaseEncodeDriver(BaseExecutableDriver):
 class EncodeDriver(DocsExtractUpdateMixin, FlatRecursiveMixin, BaseEncodeDriver):
     """Extract the content from documents and call executor and do encoding"""
 
-    def update_single_doc(self, doc: 'Document', exec_result) -> None:
+    def update_single_doc(
+        self,
+        doc: 'Document',
+        exec_result: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray'],
+    ) -> None:
         """Update the document embedding with returned ndarray result
 
         :param doc: the Document object
