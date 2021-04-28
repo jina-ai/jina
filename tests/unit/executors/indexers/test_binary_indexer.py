@@ -71,7 +71,7 @@ def test_binarypb_update1(test_metas, delete_on_dump):
         assert idxer.query(['1']) == [b'newvalue']
         assert idxer.query(['2']) == [b'same']
         assert idxer.query(['3']) == [b'random']
-        assert idxer.query(['99']) is None
+        assert idxer.query(['99']) == [None]
 
     with BaseIndexer.load(save_abspath) as idxer:
         # partial update when missing keys encountered
@@ -90,7 +90,7 @@ def test_binarypb_update1(test_metas, delete_on_dump):
         assert idxer.query(['1']) == [b'abcvalue']
         assert idxer.query(['2']) == [b'abcd']
         assert idxer.query(['3']) == [b'random']
-        assert idxer.query(['99']) is None
+        assert idxer.query(['99']) == [None]
         assert idxer.query(['1', '2']) == [b'abcvalue', b'abcd']
         assert idxer.query(['1', '2', '3']) == [b'abcvalue', b'abcd', b'random']
 
@@ -140,8 +140,8 @@ def test_binarypb_delete(test_metas, delete_on_dump):
         assert idxer.size == 1
 
     with BaseIndexer.load(save_abspath) as idxer:
-        assert idxer.query('1') is None
-        assert idxer.query('2') is None
+        assert idxer.query('1') == [None]
+        assert idxer.query('2') == [None]
         assert idxer.query('3') == [b'random']
 
 
