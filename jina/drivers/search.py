@@ -77,7 +77,9 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
             )  #: missed hit results, some search may not end with results. especially in shards
             ids, _ = docs.extract_docs('id')
             serialized_docs = self.exec_fn(ids)
-            for retrieved_doc, serialized_doc in zip(docs, serialized_docs):
+            for idx, (retrieved_doc, serialized_doc) in enumerate(
+                zip(docs, serialized_docs)
+            ):
                 if serialized_doc:
                     r = Document(serialized_doc)
                     if self._is_update:

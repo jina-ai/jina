@@ -15,11 +15,11 @@ class MockIndexer(BaseKVIndexer):
     ) -> None:
         pass
 
-    def query(self, key: str) -> Optional[bytes]:
-        if key in self.db.keys():
-            return self.db[key]
-        else:
-            return None
+    def query(self, keys: Iterable[str]) -> Optional[bytes]:
+        values = []
+        for k in keys:
+            values.append(self.db.get(k, None))
+        return values
 
     def get_query_handler(self):
         pass
