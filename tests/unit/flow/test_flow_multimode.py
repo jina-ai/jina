@@ -96,7 +96,7 @@ def test_flow_with_modalities(tmpdir, restful):
     d_id = list(chunkIndexer1.query_handler.header.keys())[0]
 
     query_doc = jina_pb2.DocumentProto()
-    query_doc.ParseFromString(chunkIndexer1.query(d_id))
+    query_doc.ParseFromString(chunkIndexer1.query([d_id])[0])
     assert query_doc.text == 'title: this is mode1 from doc1'
     assert query_doc.modality == 'mode1'
 
@@ -107,7 +107,7 @@ def test_flow_with_modalities(tmpdir, restful):
     d_id = list(chunkIndexer2.query_handler.header.keys())[0]
 
     query_doc = jina_pb2.DocumentProto()
-    query_doc.ParseFromString(chunkIndexer2.query(d_id))
+    query_doc.ParseFromString(chunkIndexer2.query([d_id])[0])
     assert query_doc.text == ' body: this is mode2 from doc1'
     assert query_doc.modality == 'mode2'
 
