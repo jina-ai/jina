@@ -1,24 +1,32 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import argparse
+import copy
 from argparse import Namespace
+from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
 
+from .. import BasePod
 from .. import Pea
 from .. import Pod
-from .. import BasePod
-from ...enums import PollingType, PeaRoleType
+from ... import helper
+from ...enums import PollingType, SocketType, SchedulerType
+from ...helper import random_identity
 
 
 class CompoundPod(BasePod):
-    """A CompoundPod is a immutable set of pods, which run in parallel. They share the same input and output socket.
-    Internally, the peas of the pods can run with the process/thread backend. They can be also run in their own containers.
-    :param args: pod arguments parsed from the CLI
+    """A CompoundPod is a immutable set of pods, which run in parallel.
+    A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as replicas.
+
+    CompoundPod will make sure to add a `HeadPea` and a `TailPea` to serve as routing/merging pattern for the different Pod replicas
+
+    :param args: pod arguments parsed from the CLI. These arguments will be used for each of the replicas
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
+    def __init__(
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+    ):
         super().__init__(args, needs)
         self.replica_list = []  # type: List['Pod']
         if isinstance(args, Dict):
@@ -31,7 +39,6 @@ class CompoundPod(BasePod):
     def port_expose(self) -> int:
         """Get the grpc port number
 
-
         .. # noqa: DAR201
         """
         return self.head_args.port_expose
@@ -40,7 +47,6 @@ class CompoundPod(BasePod):
     def host(self) -> str:
         """Get the host name of this Pod
 
-
         .. # noqa: DAR201
         """
         return self.head_args.host
@@ -48,14 +54,20 @@ class CompoundPod(BasePod):
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        return self._parse_base_pod_args(
+        parsed_args = {'head': None, 'tail': None, 'replicas': []}
+        # reasons to separate head and tail from peas is that they
+        # can be deducted based on the previous and next pods
+        self._set_after_to_pass(args)
+        self.is_head_router = True
+        self.is_tail_router = True
+        parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
+        parsed_args['tail'] = BasePod._copy_to_tail_args(args, PollingType.ANY)
+        parsed_args['replicas'] = self._set_replica_args(
             args,
-            attribute='replicas',
-            id_attribute_name='replica_id',
-            role_type=PeaRoleType.REPLICA,
-            repetition_attribute='replicas',
-            polling_type=PollingType.ANY,
+            head_args=parsed_args['head'],
+            tail_args=parsed_args['tail'],
         )
+        return parsed_args
 
     @property
     def head_args(self):
@@ -217,6 +229,58 @@ class CompoundPod(BasePod):
         if PollingType.ANY.is_push:
             # ONLY reset when it is push
             args.uses_after = '_pass'
+
+    @staticmethod
+    def _set_replica_args(
+        args: Namespace,
+        head_args: Namespace,
+        tail_args: Namespace,
+    ) -> List[Namespace]:
+        """
+        Sets the arguments of the replicas in the compound pod.
+
+        :param args: arguments configured by the user for the replicas
+        :param head_args: head args from the compound pod
+        :param tail_args: tail args from the compound pod
+
+        :return: list of arguments for the replicas
+        """
+        result = []
+        _host_list = (
+            args.peas_hosts
+            if args.peas_hosts
+            else [
+                args.host,
+            ]
+        )
+        host_generator = cycle(_host_list)
+        for idx in range(args.replicas):
+            _args = copy.deepcopy(args)
+            pod_host_list = [
+                host for _, host in zip(range(args.parallel), host_generator)
+            ]
+            _args.peas_hosts = pod_host_list
+            _args.replica_id = idx
+            _args.identity = random_identity()
+            if _args.name:
+                _args.name += f'/{idx}'
+            else:
+                _args.name = f'{idx}'
+
+            _args.port_in = head_args.port_out
+            _args.port_out = tail_args.port_in
+            _args.port_ctrl = helper.random_port()
+            _args.socket_out = SocketType.PUSH_CONNECT
+            _args.socket_in = SocketType.DEALER_CONNECT
+
+            _args.host_in = BasePod._fill_in_host(
+                bind_args=head_args, connect_args=_args
+            )
+            _args.host_out = BasePod._fill_in_host(
+                bind_args=tail_args, connect_args=_args
+            )
+            result.append(_args)
+        return result
 
     def rolling_update(self):
         """

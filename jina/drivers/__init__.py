@@ -430,6 +430,10 @@ class DocsExtractUpdateMixin:
         - :meth:`update_single_doc` if you want to modify the behavior of updating a single doc
     """
 
+    @property
+    def _stack_document_content(self):
+        return self._exec_fn_required_keys_is_ndarray
+
     def _apply_all(self, docs: 'DocumentSet') -> None:
         """Apply function works on a list of docs, modify the docs in-place.
 
@@ -440,7 +444,7 @@ class DocsExtractUpdateMixin:
 
         contents, docs_pts = docs.extract_docs(
             *self._exec_fn_required_keys,
-            stack_contents=self._exec_fn_required_keys_is_ndarray,
+            stack_contents=self._stack_document_content,
         )
 
         if docs_pts:
@@ -528,34 +532,38 @@ class DocsExtractUpdateMixin:
         if not required_keys:
             raise AttributeError(f'{self.exec_fn} takes no argument.')
 
-        if self._strict_method_args:
-            from ..proto import jina_pb2
-            from .. import Document
+        if not self._strict_method_args:
+            return required_keys
 
-            support_keys = Document.get_all_attributes()
-            unrecognized_keys = set(required_keys).difference(support_keys)
-            if unrecognized_keys:
-                camel_keys = set(
-                    jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name
-                )
-                legacy_keys = {'data'}
-                unrecognized_camel_keys = unrecognized_keys.intersection(camel_keys)
-                if unrecognized_camel_keys:
-                    raise AttributeError(
-                        f'{unrecognized_camel_keys} are supported but you give them in CamelCase, '
-                        f'please rewrite them in canonical form.'
-                    )
-                elif unrecognized_keys.intersection(legacy_keys):
-                    raise AttributeError(
-                        f'{unrecognized_keys.intersection(legacy_keys)} is now deprecated and not a valid argument of '
-                        'the executor function, '
-                        'please change `data` to `content: \'np.ndarray\'` in your executor function. '
-                        'details: https://github.com/jina-ai/jina/pull/2313/'
-                    )
-                else:
-                    raise AttributeError(
-                        f'{unrecognized_keys} are invalid Document attributes, must come from {support_keys}'
-                    )
+        from .. import Document
+
+        support_keys = Document.get_all_attributes()
+        unrecognized_keys = set(required_keys).difference(support_keys)
+
+        if not unrecognized_keys:
+            return required_keys
+
+        from ..proto import jina_pb2
+
+        camel_keys = set(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name)
+        legacy_keys = {'data'}
+        unrecognized_camel_keys = unrecognized_keys.intersection(camel_keys)
+        if unrecognized_camel_keys:
+            raise AttributeError(
+                f'{unrecognized_camel_keys} are supported but you give them in CamelCase, '
+                f'please rewrite them in canonical form.'
+            )
+        elif unrecognized_keys.intersection(legacy_keys):
+            raise AttributeError(
+                f'{unrecognized_keys.intersection(legacy_keys)} is now deprecated and not a valid argument of '
+                'the executor function, '
+                'please change `data` to `content: \'np.ndarray\'` in your executor function. '
+                'details: https://github.com/jina-ai/jina/pull/2313/'
+            )
+        else:
+            raise AttributeError(
+                f'{unrecognized_keys} are invalid Document attributes, must come from {support_keys}'
+            )
 
         return required_keys
 
@@ -698,8 +706,10 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             decor_bindings = find_request_binding(self.exec.__class__)
             if req_type:
                 canonic_name = _canonical_request_name(req_type)
-            if req_type and canonic_name in decor_bindings:
-                self._method_name = decor_bindings[canonic_name]
+                if canonic_name in decor_bindings:
+                    self._method_name = decor_bindings[canonic_name]
+                elif 'default' in decor_bindings:
+                    self._method_name = decor_bindings['default']
             elif 'default' in decor_bindings:
                 self._method_name = decor_bindings['default']
 

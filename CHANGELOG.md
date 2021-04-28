@@ -51,6 +51,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -227,6 +228,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`1.1.7`)](#release-note-117)
 - [Release Note (`1.1.8`)](#release-note-118)
 - [Release Note (`1.1.9`)](#release-note-119)
+- [Release Note (`1.1.10`)](#release-note-1110)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -8456,4 +8458,40 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```cd70b5a4```](https://github.com/jina-ai/jina/commit/cd70b5a4408a675961fc92b94fc640e5320837ed)] __-__ update snippet (*Han Xiao*)
  - [[```3fd7ed3f```](https://github.com/jina-ai/jina/commit/3fd7ed3fad87088bf275141cd6af927c8452880f)] __-__ update cookbook (*Han Xiao*)
  - [[```43f382f8```](https://github.com/jina-ai/jina/commit/43f382f805c1c40af722350dee2a4006e0c10971)] __-__ __version__: the next version will be 1.1.9 (*Jina Dev Bot*)
+
+<a name=release-note-1-1-10></a>
+## Release Note (`1.1.10`)
+
+> Release time: 2021-04-25 23:04:09
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Joan Fontanals,  Wang Bo,  Han Xiao,  cristian,  Florian Hönicke,  🙇
+
+
+### 🆕 New Features
+
+ - [[```d367b3cd```](https://github.com/jina-ai/jina/commit/d367b3cdbaa1738f567bfbb0795795d774e15cad)] __-__ introduce replicas (#2224) (*Florian Hönicke*)
+
+### 🐞 Bug fixes
+
+ - [[```4b3c1807```](https://github.com/jina-ai/jina/commit/4b3c1807bdb5cc3786288aebdfc5fceff681a690)] __-__ proper context management of handlers (#2322) (*Joan Fontanals*)
+ - [[```9b50b458```](https://github.com/jina-ai/jina/commit/9b50b458e9822cab5b9fcf1e0a1480dffd6bce0b)] __-__ remove unused imports (#2340) (*Wang Bo*)
+ - [[```493efb49```](https://github.com/jina-ai/jina/commit/493efb496879ea8a5a75a231f4f51e165b7b65e5)] __-__ __dockerfile__: remove gcc from py39 as pb wheel is mature (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```82fb8103```](https://github.com/jina-ai/jina/commit/82fb810396fc00a99cd330ea6bc037a10655a954)] __-__ small changes to compound pod (#2329) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```5c2794ee```](https://github.com/jina-ai/jina/commit/5c2794eeb1fdb79303d882822e3d2bbb11e0655f)] __-__ clarification on post init (#2336) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```d001150e```](https://github.com/jina-ai/jina/commit/d001150e50cc2460e22113542b44da84835699df)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```c9a94e98```](https://github.com/jina-ai/jina/commit/c9a94e98e125e1c1b95c68a47807c88ae32f1519)] __-__ fix readme (*Han Xiao*)
+ - [[```3715f557```](https://github.com/jina-ai/jina/commit/3715f55703569346d8d7dd5057d8aa03ece699a9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1dd9c082```](https://github.com/jina-ai/jina/commit/1dd9c0827c597e232f1e38eaa30c65b1a630262d)] __-__ __version__: the next version will be 1.1.10 (*Jina Dev Bot*)
 

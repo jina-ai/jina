@@ -34,8 +34,6 @@ def test_normal(config):
         uses=os.path.join(cur_dir, 'yaml/mock_index_vector.yml'),
         replicas=3,
         parallel=2,
-        port_in=5100,
-        port_out=5200,
     )
     with flow:
         for i in range(20):
@@ -55,8 +53,6 @@ def test_simple_run():
         name='pod1',
         replicas=2,
         parallel=3,
-        port_in=5100,
-        port_out=5200,
     )
     with flow:
         # test rolling update does not hang
@@ -70,8 +66,6 @@ def test_thread_run():
         name='pod1',
         replicas=2,
         parallel=2,
-        port_in=5100,
-        port_out=5200,
     )
     with flow:
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
@@ -89,8 +83,6 @@ def test_vector_indexer_thread(config):
         uses=os.path.join(cur_dir, 'yaml/mock_index_vector.yml'),
         replicas=2,
         parallel=3,
-        port_in=5100,
-        port_out=5200,
     ) as flow:
         for i in range(5):
             flow.search(get_doc(i))
@@ -109,8 +101,6 @@ def test_workspace(config, tmpdir):
         uses=os.path.join(cur_dir, 'yaml/simple_index_vector.yml'),
         replicas=2,
         parallel=3,
-        port_in=5100,
-        port_out=5200,
     ) as flow:
         # in practice, we don't send index requests to the compound pod this is just done to test the workspaces
         for i in range(10):
