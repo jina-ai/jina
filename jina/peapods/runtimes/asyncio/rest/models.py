@@ -88,7 +88,10 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
 
     def oneof_setter(cls, values):
         for oneof_field in oneof_fields:
-            if values[oneof_field] == cls.__fields__[oneof_field].default:
+            if (
+                oneof_field in values
+                and values[oneof_field] == cls.__fields__[oneof_field].default
+            ):
                 values.pop(oneof_field)
         return values
 
@@ -159,7 +162,7 @@ def protobuf_to_pydantic_model(
             # Proto Field Type: enum
             enum_dict = {}
             for enum_field in f.enum_type.values:
-                enum_dict[enum_field.name] = enum_field.number
+                enum_dict[enum_field.name] = enum_field.name
             field_type = Enum(f.enum_type.name, enum_dict)
 
         if f.message_type:

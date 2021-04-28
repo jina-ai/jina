@@ -36,17 +36,32 @@ def test_enum_definitions():
     quantization_enum_definition = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['QuantizationMode']
-    assert quantization_enum_definition['enum'] == [0, 1, 2]
+    assert quantization_enum_definition['enum'] == ['NONE', 'FP16', 'UINT8']
 
     status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS.StatusProto().schema()[
         'definitions'
     ]['StatusCode']
-    assert status_code_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
+    assert status_code_enum_definition['enum'] == [
+        'SUCCESS',
+        'PENDING',
+        'READY',
+        'ERROR',
+        'ERROR_DUPLICATE',
+        'ERROR_NOTALLOWED',
+        'ERROR_CHAINED',
+    ]
 
     command_enum_definition = PROTO_TO_PYDANTIC_MODELS.RequestProto().schema()[
         'definitions'
     ]['Command']
-    assert command_enum_definition['enum'] == [0, 1, 3, 4, 5, 6]
+    assert command_enum_definition['enum'] == [
+        'TERMINATE',
+        'STATUS',
+        'IDLE',
+        'CANCEL',
+        'RELOAD',
+        'SCALE',
+    ]
 
 
 def test_all_fields_in_document_proto():
@@ -202,8 +217,8 @@ def test_jina_document_to_pydantic_document():
         pydantic_doc = document_proto_model(**jina_doc)
 
         assert jina_doc['text'] == pydantic_doc.text
-        assert jina_doc['mimeType'] == pydantic_doc.mime_type
-        assert jina_doc['contentHash'] == pydantic_doc.content_hash
+        assert jina_doc['mime_type'] == pydantic_doc.mime_type
+        assert jina_doc['content_hash'] == pydantic_doc.content_hash
         assert (
             jina_doc['embedding']['dense']['shape']
             == pydantic_doc.embedding.dense.shape
@@ -219,10 +234,10 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['id'] == pydantic_doc_chunk.id
             assert jina_doc_chunk['tags'] == pydantic_doc_chunk.tags
             assert jina_doc_chunk['text'] == pydantic_doc_chunk.text
-            assert jina_doc_chunk['mimeType'] == pydantic_doc_chunk.mime_type
-            assert jina_doc_chunk['parentId'] == pydantic_doc_chunk.parent_id
+            assert jina_doc_chunk['mime_type'] == pydantic_doc_chunk.mime_type
+            assert jina_doc_chunk['parent_id'] == pydantic_doc_chunk.parent_id
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
-            assert jina_doc_chunk['contentHash'] == pydantic_doc_chunk.content_hash
+            assert jina_doc_chunk['content_hash'] == pydantic_doc_chunk.content_hash
 
 
 def test_pydatic_document_to_jina_document():
