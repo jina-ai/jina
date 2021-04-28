@@ -6,8 +6,8 @@ from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 from ..helper import typename
 
 if False:
-    from ..types.sets import DocumentSet
-    from ..types.document import Document
+    from .. import DocumentSet, Document, NdArray
+    from ..proto import jina_pb2
 
 
 class BasePredictDriver(
@@ -173,7 +173,11 @@ class Prediction2DocBlobDriver(BasePredictDriver):
         This will erase the content in ``document.text`` and ``document.buffer``.
     """
 
-    def update_single_doc(self, doc: 'Document', exec_result: Any) -> None:
+    def update_single_doc(
+        self,
+        doc: 'Document',
+        exec_result: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray'],
+    ) -> None:
         """Update doc blob with executor's return.
 
         :param doc: the Document object
