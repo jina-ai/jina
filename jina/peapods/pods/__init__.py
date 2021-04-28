@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import argparse
+
 import copy
 from abc import abstractmethod
 from argparse import Namespace
@@ -26,8 +26,11 @@ class BasePod(ExitStack):
     They can be also run in their own containers on remote machines.
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
+    def __init__(
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+    ):
         super().__init__()
+        self.peas = []  # type: List['BasePea']
         self.args = args
         self._set_conditional_args(self.args)
         self.needs = (
@@ -38,9 +41,6 @@ class BasePod(ExitStack):
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.enter_context(pea)
 
     def start(self) -> 'BasePod':
         """Start to run all :class:`BasePea` in this BasePod.
@@ -116,16 +116,16 @@ class BasePod(ExitStack):
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
+    def _enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
+
     def __enter__(self) -> 'BasePod':
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
-
-    @staticmethod
-    def _set_after_to_pass(args):
-        raise NotImplemented
 
     @staticmethod
     def _copy_to_head_args(
@@ -254,6 +254,7 @@ class BasePod(ExitStack):
 
         .. # noqa: DAR201
         """
+        ...
 
     @abstractmethod
     def tail_args(self):
@@ -261,6 +262,7 @@ class BasePod(ExitStack):
 
         .. # noqa: DAR201
         """
+        ...
 
 
 class Pod(BasePod):
@@ -270,18 +272,15 @@ class Pod(BasePod):
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
-    def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
+    def __init__(
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+    ):
         super().__init__(args, needs)
-        self.peas = []  # type: List['BasePea']
-
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
             self.peas_args = args
         else:
             self.peas_args = self._parse_args(args)
-        for _args in self.all_args:
-            _args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
-            self.peas.append(BasePea(_args))
 
     @property
     def is_singleton(self) -> bool:
@@ -410,7 +409,7 @@ class Pod(BasePod):
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def start(self) -> 'Pod':
+    def start(self) -> 'BasePod':
         """
         Start to run all :class:`BasePea` in this BasePod.
 
@@ -420,16 +419,16 @@ class Pod(BasePod):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-
         if getattr(self.args, 'noblock_on_start', False):
-            for pea in self.peas:
-                self._enter_pea(pea)
+            for _args in self.all_args:
+                _args.noblock_on_start = True
+                self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for pea in self.peas:
-                    self._enter_pea(pea)
+                for _args in self.all_args:
+                    self._enter_pea(BasePea(_args))
             except:
                 self.close()
                 raise
