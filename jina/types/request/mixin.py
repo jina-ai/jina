@@ -22,15 +22,6 @@ class GroundtruthPropertyMixin:
         return DocumentSet(self.body.groundtruths)
 
 
-class IdsMixin:
-    """Mixin class of ids property."""
-
-    @property
-    def ids(self):
-        """Get the ids."""
-        return self.body.ids
-
-
 class CommandMixin:
     """Mixin class of command property."""
 

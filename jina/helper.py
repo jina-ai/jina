@@ -54,8 +54,6 @@ __all__ = [
     'deprecated_alias',
 ]
 
-from jina.excepts import NotSupportedError
-
 
 def deprecated_alias(**aliases):
     """
@@ -71,6 +69,7 @@ def deprecated_alias(**aliases):
     :param aliases: maps aliases to new arguments
     :return: wrapper
     """
+    from .excepts import NotSupportedError
 
     def _rename_kwargs(func_name: str, kwargs, aliases):
         """
@@ -1268,6 +1267,7 @@ def find_request_binding(target):
     :return: a dictionary with key as request type and value as method name
     """
     import ast, inspect
+    from . import __default_endpoint__
 
     res = {}
 
@@ -1278,9 +1278,8 @@ def find_request_binding(target):
             if isinstance(e, ast.Call) and e.func.id == 'requests':
                 req_name = e.keywords[0].value.s
             elif isinstance(e, ast.Name) and e.id == 'requests':
-                req_name = 'default'
+                req_name = __default_endpoint__
             if req_name:
-                req_name = _canonical_request_name(req_name)
                 if req_name in res:
                     raise ValueError(
                         f'you already bind `{res[req_name]}` with `{req_name}` request'
@@ -1300,4 +1299,9 @@ def _canonical_request_name(req_name: str):
     :param req_name: the orginal request name
     :return: canonical form of the request
     """
-    return req_name.lower().replace('request', '')
+    if req_name.startswith('/'):
+        # new data request
+        return f'data://{req_name}'
+    else:
+        # legacy request type
+        return req_name.lower().replace('request', '')

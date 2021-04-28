@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 
 from typing import Iterator, Union, AsyncIterator, Optional
 
-from .helper import _new_request_from_batch
+from .helper import _new_data_request_from_batch
 from .. import GeneratorSourceType
 from ... import Request
 from ...enums import RequestType, DataInputType
@@ -15,6 +15,7 @@ from ...types.sets.querylang import AcceptQueryLangType
 
 async def request_generator(
     data: GeneratorSourceType,
+    exec_endpoint: str,
     request_size: int = 0,
     mode: RequestType = RequestType.INDEX,
     mime_type: Optional[str] = None,
@@ -22,6 +23,7 @@ async def request_generator(
         Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]]
     ] = None,
     data_type: DataInputType = DataInputType.AUTO,
+    peapod_target: Optional[str] = None,
     **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> AsyncIterator['Request']:
     """An async :function:`request_generator`.
@@ -43,7 +45,9 @@ async def request_generator(
             import aiostream
 
         async for batch in aiostream.stream.chunks(data, request_size):
-            yield _new_request_from_batch(_kwargs, batch, data_type, mode, queryset)
+            yield _new_data_request_from_batch(
+                _kwargs, batch, data_type, mode, queryset, exec_endpoint, peapod_target
+            )
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception
         default_logger.critical(f'inputs is not valid! {ex!r}', exc_info=True)

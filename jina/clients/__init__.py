@@ -2,7 +2,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Union, List
+from typing import Union, List, Sequence, Optional
 
 from . import request
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
@@ -167,6 +167,40 @@ class Client(BaseClient):
         self.mode = RequestType.DELETE
         return run_async(
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
+        )
+
+    def post(
+        self,
+        inputs: InputType,
+        on: str,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        target_peapod: Optional[str] = None,
+        parameters: Optional[dict] = None,
+        **kwargs,
+    ) -> None:
+        """Post a general data request to the Flow.
+
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
+        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: additional parameters
+        :return: None
+        """
+        self.mode = RequestType.DATA
+        return run_async(
+            self._get_results,
+            inputs,
+            on_done,
+            on_error,
+            on_always,
+            exec_endpoint=on,
+            target=target_peapod,
+            parameters=parameters,
+            **kwargs,
         )
 
     def reload(

@@ -263,14 +263,8 @@ class PodRoleType(BetterEnum):
 class RequestType(BetterEnum):
     """The enum of Client mode."""
 
-    INDEX = 0
-    SEARCH = 1
-    DELETE = 2
-    UPDATE = 3
-    CONTROL = 4
-    TRAIN = 5
-    # TODO make Dump a control request to be passed to the Pod directly
-    DUMP = 6
+    DATA = 0
+    CONTROL = 1
 
 
 class CompressAlgo(BetterEnum):

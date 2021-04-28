@@ -21,6 +21,7 @@ from ....executors import BaseExecutor
 from ....helper import random_identity
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
+from ....types.request.data import DataRequest
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -177,7 +178,16 @@ class ZEDRuntime(ZMQRuntime):
             msg.envelope.status.code != jina_pb2.StatusProto.ERROR
             or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
-            self._executor(self.request_type)
+            if self.request_type == 'DataRequest':
+                self._executor(
+                    req_type=self.request.header.exec_endpoint,
+                    docs=self.request.docs,
+                    groundtruths=self.request.groundtruths,
+                    queryset=self.request.queryset,
+                    parameters=self.request.parameters,
+                )
+            else:
+                self._executor.on_control_fn()
         else:
             raise ChainedPodException
         return self

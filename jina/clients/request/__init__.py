@@ -2,9 +2,9 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional
+from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional, Sequence
 
-from .helper import _new_request_from_batch
+from .helper import _new_data_request_from_batch
 from ... import Request
 from ...enums import RequestType, DataInputType
 from ...helper import batch_iterator
@@ -27,13 +27,15 @@ GeneratorSourceType = Union[
 
 def request_generator(
     data: GeneratorSourceType,
+    exec_endpoint: Optional[str] = None,
     request_size: int = 0,
-    mode: RequestType = RequestType.INDEX,
     mime_type: Optional[str] = None,
     queryset: Optional[
         Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]]
     ] = None,
     data_type: DataInputType = DataInputType.AUTO,
+    target_peapod: Optional[str] = None,
+    parameters: Optional[dict] = None,
     **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> Iterator['Request']:
     """Generate a request iterator.
@@ -55,8 +57,14 @@ def request_generator(
         if not isinstance(data, Iterable):
             data = [data]
         for batch in batch_iterator(data, request_size):
-            yield _new_request_from_batch(
-                _kwargs, batch, data_type, mode, queryset, **kwargs
+            yield _new_data_request_from_batch(
+                _kwargs=kwargs,
+                batch=batch,
+                data_type=data_type,
+                queryset=queryset,
+                endpoint=exec_endpoint,
+                target=target_peapod,
+                parameters=parameters,
             )
 
     except Exception as ex:

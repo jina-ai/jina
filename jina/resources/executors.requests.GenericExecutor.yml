@@ -11,5 +11,7 @@ on:
     - !GenericExecutorDriver { }
   TrainRequest:
     - !GenericExecutorDriver { }
+  DataRequest:
+    - !GenericExecutorDriver { }
   ControlRequest:
     - !ControlReqDriver { }

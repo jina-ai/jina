@@ -43,7 +43,7 @@ def test_multiple_access():
 
     for r in reqs:
         assert not r.is_used
-        assert r.index
+        assert r.data
         assert r.is_used
 
 
@@ -58,7 +58,7 @@ def test_lazy_nest_access():
         r.docs[0].id = '1' * 16
         # now it is read
         assert r.is_used
-        assert r.index.docs[0].id == '1' * 16
+        assert r.data.docs[0].id == '1' * 16
 
 
 def test_lazy_change_message_type():
@@ -72,7 +72,7 @@ def test_lazy_change_message_type():
         r.control.command = jina_pb2.RequestProto.ControlRequestProto.IDLE
         # now it is read
         assert r.is_used
-        assert len(r.index.docs) == 0
+        assert len(r.data.docs) == 0
 
 
 def test_lazy_append_access():
@@ -82,7 +82,7 @@ def test_lazy_append_access():
     )
     for r in reqs:
         assert not r.is_used
-        r.request_type = 'index'
+        r.request_type = 'data'
         # write access r.train
         r.docs.append(Document())
         # now it is read
@@ -97,7 +97,7 @@ def test_lazy_clear_access():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.ClearField('index')
+        r.ClearField('data')
         # now it is read
         assert r.is_used
 
@@ -110,7 +110,7 @@ def test_lazy_nested_clear_access():
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.index.ClearField('docs')
+        r.data.ClearField('docs')
         # now it is read
         assert r.is_used
 
@@ -123,7 +123,7 @@ def test_lazy_msg_access():
             'test',
             '123',
             request_id='123',
-            request_type='IndexRequest',
+            request_type='DataRequest',
         )
         for r in request_generator(random_docs(10))
     ]
@@ -141,7 +141,7 @@ def test_lazy_msg_access():
 
     for r in reqs:
         assert not r.request.is_used
-        assert r.request.index.docs
+        assert r.request.data.docs
         assert len(r.dump()) == 3
         assert r.request.is_used
 
@@ -209,9 +209,7 @@ def test_request_extend_queryset():
 @pytest.mark.parametrize(
     'typ,pb_typ',
     [
-        ('train', jina_pb2.RequestProto.TrainRequestProto),
-        ('index', jina_pb2.RequestProto.IndexRequestProto),
-        ('search', jina_pb2.RequestProto.SearchRequestProto),
+        ('data', jina_pb2.RequestProto.DataRequestProto),
         ('control', jina_pb2.RequestProto.ControlRequestProto),
     ],
 )
@@ -229,8 +227,7 @@ def test_empty_request_type(typ, pb_typ):
 @pytest.mark.parametrize(
     'typ,pb_typ',
     [
-        ('index', jina_pb2.RequestProto.IndexRequestProto),
-        ('search', jina_pb2.RequestProto.SearchRequestProto),
+        ('data', jina_pb2.RequestProto.DataRequestProto),
     ],
 )
 def test_add_doc_to_type(typ, pb_typ):

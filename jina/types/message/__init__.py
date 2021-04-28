@@ -126,9 +126,7 @@ class Message:
 
         :return: boolean which states if data is requested
         """
-        return (
-            self.envelope.request_type != 'ControlRequest' or self.request.propagate
-        ) and self.envelope.request_type != 'DumpRequest'
+        return self.envelope.request_type == 'DataRequest'
 
     def _add_envelope(
         self,
@@ -413,6 +411,7 @@ class Message:
         :return: request object which contains the response
         """
         self.envelope.routes[0].end_time.GetCurrentTime()
+        self.request.header.CopyFrom(self.envelope.header)
         self.request.status.CopyFrom(self.envelope.status)
         self.request.routes.extend(self.envelope.routes)
         return self.request

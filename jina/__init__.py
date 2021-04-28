@@ -98,9 +98,7 @@ __jina_env__ = (
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
-__binary_delimiter__ = _os.environ.get(
-    'JINA_BINARY_DELIMITER', '460841a0a8a430ae25d9ad7c1f048c57'
-).encode()
+__default_endpoint__ = '/default'
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 
 _names_with_underscore = [

@@ -11,7 +11,6 @@ from typing import Dict, Union, Set
 from typing import List, Optional
 
 from jina.peapods.zmq import send_ctrl_message
-from jina.types.message.dump import DumpMessage
 from ..peas import BasePea
 from ... import __default_host__
 from ... import helper

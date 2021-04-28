@@ -497,6 +497,37 @@ class CRUDFlowMixin:
             inputs, on_done, on_error, on_always, **kwargs
         )
 
+    def post(
+        self,
+        inputs: InputType,
+        on: str,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        target_peapod: Optional[str] = None,
+        parameters: Optional[dict] = None,
+        **kwargs,
+    ):
+        """Do indexing on the current Flow
+        :param inputs: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
+        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param kwargs: accepts all keyword arguments of `jina client` CLI
+        :return: results
+        """
+        return self._get_client(**kwargs).post(
+            inputs,
+            on,
+            on_done,
+            on_error,
+            on_always,
+            target_peapod,
+            parameters,
+            **kwargs,
+        )
+
     @deprecated_alias(input_fn=('inputs', 0))
     def update(
         self,

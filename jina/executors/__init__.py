@@ -7,7 +7,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Type, List, Optional
+from typing import Dict, TypeVar, Type, List, Optional, Callable
 
 from .decorators import (
     as_update_method,
@@ -15,9 +15,10 @@ from .decorators import (
     as_aggregate_method,
     wrap_func,
 )
+from .. import __default_endpoint__
 from .metas import get_default_metas, fill_metas_with_defaults
 from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import typename, random_identity
+from ..helper import typename, random_identity, cached_property, find_request_binding
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 
@@ -565,11 +566,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     executor=self, runtime=runtime, req_type=req_type, *args, **kwargs
                 )
 
+        from ..drivers.control import RouteDriver
+
+        self._default_control_driver = RouteDriver()
+        self._default_control_driver.attach(
+            executor=self, runtime=runtime, *args, **kwargs
+        )
+
         # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
             self.logger = runtime.logger
 
-    def __call__(self, req_type, *args, **kwargs):
+    def __call__(self, req_type: str, **kwargs):
         """
 
 
@@ -581,14 +589,23 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         # noqa: DAR102
         """
-        if req_type in self._drivers:
-            for d in self._drivers[req_type]:
-                if d.attached:
-                    d()
-                else:
-                    raise UnattachedDriver(d)
+        if req_type in self.function_bindings:
+            self.function_bindings[req_type](**kwargs)
+        elif __default_endpoint__ in self.function_bindings:
+            self.function_bindings[__default_endpoint__](**kwargs)
         else:
             raise NoDriverForRequest(f'{req_type} for {self}')
+
+    @cached_property
+    def function_bindings(self) -> Dict[str, Callable]:
+        decor_bindings = find_request_binding(self.__class__)
+        return {
+            endpoint: getattr(self, func_name)
+            for endpoint, func_name in decor_bindings.items()
+        }
+
+    def on_control_fn(self) -> None:
+        self._default_control_driver()
 
     def __str__(self):
         return self.__class__.__name__
