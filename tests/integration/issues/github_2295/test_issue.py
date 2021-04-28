@@ -15,7 +15,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 class SearchDocIndexer(BinaryPbIndexer):
     def query(self, jina_id: str = None, mongo_ids: List[str] = None):
-        return super().query(jina_id)  # serialized document
+        return super().query([jina_id])[0]  # serialized document
 
     def post_init(self):
         super().post_init()

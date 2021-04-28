@@ -212,7 +212,7 @@ class BinaryPbWriterMixin:
                 with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
                     query_results.append(m[r:])
             else:
-                return query_results.append(None)
+                query_results.append(None)
 
         return query_results
 
