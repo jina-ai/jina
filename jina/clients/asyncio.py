@@ -64,7 +64,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> None:
         """Issue 'train' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -93,7 +93,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> None:
         """Issue 'search' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -123,7 +123,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> None:
         """Issue 'index' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -152,7 +152,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> None:
         """Issue 'delete' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id
@@ -181,7 +181,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> None:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
