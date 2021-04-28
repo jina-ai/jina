@@ -257,18 +257,19 @@ def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_ou
         ]
     )
     compound_pod = CompoundPod(args)
-    replica_args = compound_pod.replicas_args
-    head = replica_args['head']
+    head_pea = compound_pod.head_pea
+    tail_pea = compound_pod.tail_pea
+
+    head = head_pea.args
     assert head.socket_in == SocketType.PULL_BIND
     assert head.socket_out == SocketType.ROUTER_BIND
     assert head.scheduling == SchedulerType.LOAD_BALANCE
-    tail = replica_args['tail']
+    tail = tail_pea.args
     assert tail.socket_in == SocketType.PULL_BIND
     assert tail.socket_out == SocketType.PUSH_BIND
     assert tail.scheduling == SchedulerType.LOAD_BALANCE
-    replicas = replica_args['replicas']
-    for pod_args in replicas:
-        pod = Pod(pod_args)
+    for pod in compound_pod.replicas:
+        pod_args = pod.args
         if parallel > 1:
             assert pod_args.polling == polling_type
             for pea in pod.peas_args['peas']:

@@ -24,12 +24,34 @@ class CompoundPod(BasePod):
 
     def __init__(self, args: Union['argparse.Namespace', Dict], needs: Set[str] = None):
         super().__init__(args, needs)
-        self.replica_list = []  # type: List['Pod']
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
             self.replicas_args = args
         else:
             self.replicas_args = self._parse_args(args)
+
+        head_args = self.all_args['peas'][0]
+        head_args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+        self.head_pea = Pea(head_args)
+
+        tail_args = self.all_args['peas'][1]
+        tail_args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+        self.tail_pea = Pea(tail_args)
+
+        self.replicas = []
+
+        for _args in self.all_args['replicas']:
+            _args.noblock_on_start = True
+            _args.polling = PollingType.ALL
+            self.replicas.append(Pod(_args))
+
+    @property
+    def peas(self):
+        """Get the list with head and tail peas
+
+        .. # noqa: DAR201
+        """
+        return [self.head_pea, self.tail_pea]
 
     @property
     def port_expose(self) -> int:
@@ -133,7 +155,7 @@ class CompoundPod(BasePod):
 
         :return: total number of peas including head and tail
         """
-        return sum([replica.num_peas for replica in self.replica_list]) + len(self.peas)
+        return sum([replica.num_peas for replica in self.replicas]) + len(self.peas)
 
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -149,22 +171,18 @@ class CompoundPod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args['peas']:
-                _args.noblock_on_start = True
-                self._enter_pea(Pea(_args))
-            for _args in self.all_args['replicas']:
-                _args.noblock_on_start = True
-                _args.polling = PollingType.ALL
-                self._enter_replica(Pod(_args))
-
+            self._enter_pea(self.head_pea)
+            self._enter_pea(self.tail_pea)
+            for replica in self.replicas:
+                self._enter_replica(replica)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args['peas']:
-                    self._enter_pea(Pea(_args))
-                for _args in self.all_args['replicas']:
-                    self._enter_replica(Pod(_args))
+                self._enter_pea(self.head_pea)
+                self._enter_pea(self.tail_pea)
+                for replica in self.replicas:
+                    self._enter_replica(replica)
             except:
                 self.close()
                 raise
@@ -184,14 +202,13 @@ class CompoundPod(BasePod):
         try:
             for p in self.peas:
                 p.wait_start_success()
-            for p in self.replica_list:
+            for p in self.replicas:
                 p.wait_start_success()
         except:
             self.close()
             raise
 
     def _enter_replica(self, replica: 'Pod') -> None:
-        self.replica_list.append(replica)
         self.enter_context(replica)
 
     def join(self):
@@ -199,13 +216,13 @@ class CompoundPod(BasePod):
         try:
             for p in self.peas:
                 p.join()
-            for p in self.replica_list:
+            for p in self.replicas:
                 p.join()
         except KeyboardInterrupt:
             pass
         finally:
             self.peas.clear()
-            self.replica_list.clear()
+            self.replicas.clear()
 
     @property
     def is_ready(self) -> bool:
@@ -218,7 +235,7 @@ class CompoundPod(BasePod):
         """
         return all(
             [p.is_ready.is_set() for p in self.peas]
-            + [p.is_ready for p in self.replica_list]
+            + [p.is_ready for p in self.replicas]
         )
 
     def _set_after_to_pass(self, args):
@@ -282,11 +299,11 @@ class CompoundPod(BasePod):
         """
         Update all pods of this compound pod.
         """
-        for i in range(len(self.replica_list)):
-            replica = self.replica_list[i]
+        for i in range(len(self.replicas)):
+            replica = self.replicas[i]
             replica.close()
             _args = self.all_args['replicas'][i]
             _args.noblock_on_start = False
             new_replica = Pod(_args)
             self.enter_context(new_replica)
-            self.replica_list[i] = new_replica
+            self.replicas[i] = new_replica
