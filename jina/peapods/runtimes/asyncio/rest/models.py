@@ -47,9 +47,10 @@ PROTOBUF_TO_PYTHON_TYPE = {
 }
 
 
-class CamelCaseConfig(BaseConfig):
-    """Pydantic config for Camel case handling"""
+class CustomConfig(BaseConfig):
+    """Pydantic config for Camel case and enum handling"""
 
+    use_enum_values = True
     allow_population_by_field_name = True
 
 
@@ -162,7 +163,7 @@ def protobuf_to_pydantic_model(
             # Proto Field Type: enum
             enum_dict = {}
             for enum_field in f.enum_type.values:
-                enum_dict[enum_field.name] = enum_field.name
+                enum_dict[enum_field.name] = enum_field.number
             field_type = Enum(f.enum_type.name, enum_dict)
 
         if f.message_type:
@@ -204,11 +205,11 @@ def protobuf_to_pydantic_model(
     if model_name == 'DocumentProto':
         oneof_field_validators['tags_validator'] = _get_tags_updater()
 
-    CamelCaseConfig.fields = camel_case_fields
+    CustomConfig.fields = camel_case_fields
     model = create_model(
         model_name,
         **all_fields,
-        __config__=CamelCaseConfig,
+        __config__=CustomConfig,
         __validators__=oneof_field_validators,
     )
     model.update_forward_refs()

@@ -19,6 +19,7 @@ class ProtoTypeMixin:
             self._pb_body,
             including_default_value_fields=True,
             preserving_proto_field_name=True,
+            use_integers_for_enums=True,
         )
 
     def dict(self) -> Dict:
@@ -30,6 +31,7 @@ class ProtoTypeMixin:
             self._pb_body,
             including_default_value_fields=True,
             preserving_proto_field_name=True,
+            use_integers_for_enums=True,
         )
 
     @property
