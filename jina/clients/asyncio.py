@@ -5,6 +5,7 @@ from .base import InputType, InputDeleteType, BaseClient, CallbackFnType
 from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
+from jina.types.request import Response
 
 
 class AsyncClient(BaseClient):
@@ -64,7 +65,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> AsyncGenerator[Response]:
         """Issue 'train' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -123,7 +124,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> AsyncGenerator[Response]:
         """Issue 'index' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -181,7 +182,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator:
+    ) -> AsyncGenerator[Response]:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
