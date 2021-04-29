@@ -16,11 +16,14 @@ class MockGroundTruthIndexer(BaseKVIndexer):
     ) -> None:
         pass
 
-    def query(self, key: str) -> Optional[bytes]:
-        if key in self.db.keys():
-            return self.db[key]
-        else:
-            return None
+    def query(self, keys: str) -> Optional[bytes]:
+        retrieved_queries = []
+        for key in keys:
+            if key in self.db.keys():
+                retrieved_queries.append(self.db[key])
+            else:
+                retrieved_queries.append(None)
+        return retrieved_queries
 
     def get_query_handler(self):
         pass

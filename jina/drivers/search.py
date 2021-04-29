@@ -71,12 +71,12 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
     def _apply_all(
         self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
     ) -> None:
+
         for docs in doc_sequences:
             miss_idx = (
                 []
             )  #: missed hit results, some search may not end with results. especially in shards
-            ids, _ = docs.extract_docs('id')
-            serialized_docs = self.exec_fn(ids)
+            serialized_docs = self.exec_fn([d.id for d in docs])
 
             for idx, (retrieved_doc, serialized_doc) in enumerate(
                 zip(docs, serialized_docs)
