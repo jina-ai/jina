@@ -208,16 +208,17 @@ class Zmqlet:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def close(self, *args, **kwargs):
+    def close(self, force_close=False, *args, **kwargs):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
 
         .. note::
             This method is idempotent.
 
+        :param force_close: forces a close, even if `is_closed` is already set to True
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        if not self.is_closed:
+        if not self.is_closed or force_close:
             self.is_closed = True
             self._close_sockets()
             if hasattr(self, 'ctx'):
@@ -381,21 +382,26 @@ class ZmqStreamlet(Zmqlet):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        if not self.is_closed and self.in_sock_type == zmq.DEALER:
-            try:
-                self._send_cancel_to_router(raise_exception=True)
-            except zmq.error.ZMQError as e:
-                self.logger.info(
-                    f'The dealer {self.name} can not unsubscribe from the router. '
-                    f'In case the router is down this is expected.'
-                )
+
         if not self.is_closed:
+            self.is_closed = True
+
+            if self.in_sock_type == zmq.DEALER:
+                try:
+                    self._send_cancel_to_router(raise_exception=True)
+                except zmq.error.ZMQError:
+                    self.logger.info(
+                        f'The dealer {self.name} can not unsubscribe from the router. '
+                        f'In case the router is down this is expected.'
+                    )
+
             # wait until the close signal is received
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
                     s.flush()
-            super().close()
+
+            super().close(force_close=True)
             if hasattr(self, 'io_loop'):
                 try:
                     self.io_loop.stop()
