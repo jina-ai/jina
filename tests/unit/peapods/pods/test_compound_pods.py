@@ -223,7 +223,7 @@ def test_host_list_matching(num_hosts, used_hosts):
             'all',
             1,
             SchedulerType.LOAD_BALANCE,
-            SocketType.SUB_CONNECT,
+            SocketType.DEALER_CONNECT,
             SocketType.PUSH_CONNECT,
         ),
         (
@@ -256,23 +256,29 @@ def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_ou
             '3',
         ]
     )
-    compound_pod = CompoundPod(args)
-    replica_args = compound_pod.replicas_args
-    head = replica_args['head']
-    assert head.socket_in == SocketType.PULL_BIND
-    assert head.socket_out == SocketType.ROUTER_BIND
-    assert head.scheduling == SchedulerType.LOAD_BALANCE
-    tail = replica_args['tail']
-    assert tail.socket_in == SocketType.PULL_BIND
-    assert tail.socket_out == SocketType.PUSH_BIND
-    assert tail.scheduling == SchedulerType.LOAD_BALANCE
-    replicas = replica_args['replicas']
-    for pod_args in replicas:
-        pod = Pod(pod_args)
-        if parallel > 1:
-            assert pod_args.polling == polling_type
-            for pea in pod.peas_args['peas']:
-                assert pea.polling == polling_type
-                assert pea.socket_in == pea_socket_in
-                assert pea.socket_out == pea_socket_out
-                assert pea.scheduling == pea_scheduling
+    with CompoundPod(args) as compound_pod:
+        replica_args = compound_pod.replicas_args
+        head = replica_args['head']
+        assert head.socket_in == SocketType.PULL_BIND
+        assert head.socket_out == SocketType.ROUTER_BIND
+        assert head.scheduling == SchedulerType.LOAD_BALANCE
+        tail = replica_args['tail']
+        assert tail.socket_in == SocketType.PULL_BIND
+        assert tail.socket_out == SocketType.PUSH_BIND
+        assert tail.scheduling == SchedulerType.LOAD_BALANCE
+        replicas = compound_pod.replica_list
+        for replica in replicas:
+            if parallel > 1:
+                assert replica.args.polling == polling_type
+                assert len(replica.peas_args['peas']) == parallel
+                for pea in replica.peas_args['peas']:
+                    assert pea.polling == polling_type
+                    assert pea.socket_in == pea_socket_in
+                    assert pea.socket_out == pea_socket_out
+                    assert pea.scheduling == pea_scheduling
+            else:
+                assert len(replica.peas) == 1
+                assert replica.peas[0].args.polling == polling_type
+                assert replica.peas[0].args.socket_in == pea_socket_in
+                assert replica.peas[0].args.socket_out == pea_socket_out
+                assert replica.peas[0].args.scheduling == pea_scheduling
