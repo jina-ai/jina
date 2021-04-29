@@ -32,7 +32,7 @@ class BaseRanker(BaseExecutor):
 
     def __init__(
         self,
-        trainable: False,
+        trainable: bool = False,
         query_required_keys: Optional[List[str]] = None,
         match_required_keys: Optional[List[str]] = None,
         *args,
@@ -71,7 +71,7 @@ class BaseRanker(BaseExecutor):
         raise NotImplementedError
 
     @property
-    def trainable(self) -> bool:
+    def trainable(self):
         return self._trainable
 
     @trainable.setter

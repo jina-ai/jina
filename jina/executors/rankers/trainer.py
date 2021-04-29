@@ -9,8 +9,11 @@ from . import BaseRanker
 class RankerTrainer(abc.ABC):
     """pass"""
 
-    def __init__(self, ranker: BaseRanker = None, params: dict = None):
+    def __init__(self, ranker: BaseRanker, params: dict = None):
         super().__init__()
+        if not ranker.trainable:
+            # TODO customize exception.
+            raise Exception('The ranker is not trainable.')
         self._ranker = ranker
         self._params = params
 
