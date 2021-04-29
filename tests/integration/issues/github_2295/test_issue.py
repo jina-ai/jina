@@ -6,7 +6,7 @@ import pytest
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers.keyvalue import BinaryPbIndexer
 from jina.flow import Flow
-from jina import Document, DocumentSet
+from jina import Document, DocumentArray
 
 from tests import validate_callback
 
@@ -15,7 +15,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 class SearchDocIndexer(BinaryPbIndexer):
     def query(self, jina_id: str = None, mongo_ids: List[str] = None):
-        return super().query(jina_id)  # serialized document
+        return super().query([jina_id])[0]  # serialized document
 
     def post_init(self):
         super().post_init()
@@ -26,7 +26,7 @@ class SearchDocIndexer(BinaryPbIndexer):
 
 class SearchDocDriver(KVSearchDriver):
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentArray'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             for idx, doc in enumerate(docs):
@@ -49,8 +49,8 @@ def test_issue_2295(test_workspace, mocker):
         assert resp.search.docs[0].id == 'id'
         assert resp.search.docs[0].text == 'text'
 
-    index_set = DocumentSet([Document(id='id', text='text')])
-    query_set = DocumentSet([Document(id='id')])
+    index_set = DocumentArray([Document(id='id', text='text')])
+    query_set = DocumentArray([Document(id='id')])
 
     with Flow.load_config(os.path.join(cur_dir, 'flow_index.yml')) as f:
         f.index(inputs=index_set)

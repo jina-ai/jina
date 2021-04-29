@@ -5,7 +5,7 @@ from jina.drivers.rank import Matches2DocRankDriver
 from jina.executors.rankers import Match2DocRanker
 from jina.types.score import NamedScore
 from jina.executors.decorators import batching
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 
 
 class MockMatches2DocRankDriver(Matches2DocRankDriver):
@@ -28,7 +28,7 @@ class MockAbsoluteLengthRanker(Match2DocRanker):
             query_required_keys=('weight',),
             match_required_keys=('weight',),
             *args,
-            **kwargs
+            **kwargs,
         )
 
     @batching(slice_nargs=3)
@@ -68,7 +68,7 @@ def create_document_to_score():
 
 def test_chunk2doc_ranker_driver_mock_exec():
     doc = create_document_to_score()
-    driver = MockMatches2DocRankDriver(DocumentSet([doc]))
+    driver = MockMatches2DocRankDriver(DocumentArray([doc]))
     executor = MockAbsoluteLengthRanker()
     driver.attach(executor=executor, runtime=None)
     driver()

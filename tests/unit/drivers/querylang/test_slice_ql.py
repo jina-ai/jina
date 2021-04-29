@@ -1,4 +1,4 @@
-from jina import DocumentSet
+from jina import DocumentArray
 from jina.drivers.querylang.slice import SliceQL
 from jina.proto import jina_pb2
 
@@ -34,7 +34,7 @@ def random_docs_with_chunks(num_docs):
                 dcc.tags['id'] = cc
                 dcc.granularity = 2
         docs.append(d)
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
 def random_docs_with_chunks_and_matches(num_docs):
@@ -92,7 +92,7 @@ def random_docs_with_chunks_and_matches(num_docs):
                 dmc.granularity = dm.granularity + 1
 
         docs.append(d)
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
 def test_slice_ql_on_chunks():

@@ -7,7 +7,7 @@ from jina.importer import ImportExtensions
 
 if False:
     # noinspection PyUnreachableCode
-    from jina import DocumentSet
+    from jina import DocumentArray
 
 
 class PngToDiskDriver(FlatRecursiveMixin, BaseRecursiveDriver):
@@ -32,7 +32,7 @@ class PngToDiskDriver(FlatRecursiveMixin, BaseRecursiveDriver):
 
     def _apply_all(
         self,
-        docs: 'DocumentSet',
+        docs: 'DocumentArray',
         *args,
         **kwargs,
     ) -> None:

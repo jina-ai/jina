@@ -1,10 +1,17 @@
 from typing import Iterable
 import itertools
 
+from ..arrays.traversable import TraversableSequence
+from ...helper import deprecated_class
+
 if False:
     from ..document.traversable import Traversable
 
 
+@deprecated_class(
+    new_class=TraversableSequence,
+    custom_msg="The class has been moved to '..types.arrays', keeping its original name.",
+)
 class TraversableSequence:
     """
     A mixin used for traversing a `Sequence[Traversable]`.
@@ -18,7 +25,7 @@ class TraversableSequence:
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
-        Each :class:``TraversableSequence`` is either the root Documents, a ChunkSet or a MatchSet.
+        Each :class:``TraversableSequence`` is either the root Documents, a ChunkArray or a MatchArray.
 
         :param traversal_paths: a list of string that represents the traversal path
         :yield: :class:``TraversableSequence`` of the leaves when applying the traversal_paths.

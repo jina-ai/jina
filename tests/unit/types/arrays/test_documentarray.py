@@ -7,7 +7,7 @@ import torch
 import tensorflow as tf
 
 from jina import Document
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 from jina.enums import EmbeddingClsType
 
 DOCUMENTS_PER_LEVEL = 1
@@ -35,12 +35,12 @@ def docs(document_factory):
 
 
 @pytest.fixture
-def docset(docs):
-    return DocumentSet(docs)
+def docarray(docs):
+    return DocumentArray(docs)
 
 
 @pytest.fixture
-def docset_with_scipy_sparse_embedding(docs):
+def docarray_with_scipy_sparse_embedding(docs):
     embedding = coo_matrix(
         (
             np.array([1, 2, 3, 4, 5, 6]),
@@ -50,132 +50,132 @@ def docset_with_scipy_sparse_embedding(docs):
     )
     for doc in docs:
         doc.embedding = embedding
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
-def test_length(docset, docs):
-    assert len(docs) == len(docset) == 3
+def test_length(docarray, docs):
+    assert len(docs) == len(docarray) == 3
 
 
-def test_append(docset, document_factory):
+def test_append(docarray, document_factory):
     doc = document_factory.create(4, 'test 4')
-    docset.append(doc)
-    assert docset[-1].id == doc.id
+    docarray.append(doc)
+    assert docarray[-1].id == doc.id
 
 
-def test_add(docset, document_factory):
+def test_add(docarray, document_factory):
     doc = document_factory.create(4, 'test 4')
-    docset.add(doc)
-    assert docset[-1].id == doc.id
+    docarray.add(doc)
+    assert docarray[-1].id == doc.id
 
 
-def test_union(docset, document_factory):
-    additional_docset = DocumentSet([])
+def test_union(docarray, document_factory):
+    additional_docarray = DocumentArray([])
     for idx in range(4, 10):
         doc = document_factory.create(idx, f'test {idx}')
-        additional_docset.add(doc)
-    union = docset + additional_docset
+        additional_docarray.add(doc)
+    union = docarray + additional_docarray
     for idx in range(0, 3):
-        assert union[idx].id == docset[idx].id
+        assert union[idx].id == docarray[idx].id
     for idx in range(0, 6):
-        assert union[idx + 3].id == additional_docset[idx].id
+        assert union[idx + 3].id == additional_docarray[idx].id
 
 
-def test_union_inplace(docset, document_factory):
-    additional_docset = DocumentSet([])
+def test_union_inplace(docarray, document_factory):
+    additional_docarray = DocumentArray([])
     for idx in range(4, 10):
         doc = document_factory.create(idx, f'test {idx}')
-        additional_docset.add(doc)
-    union = deepcopy(docset)
-    union += additional_docset
+        additional_docarray.add(doc)
+    union = deepcopy(docarray)
+    union += additional_docarray
     for idx in range(0, 3):
-        assert union[idx].id == docset[idx].id
+        assert union[idx].id == docarray[idx].id
     for idx in range(0, 6):
-        assert union[idx + 3].id == additional_docset[idx].id
+        assert union[idx + 3].id == additional_docarray[idx].id
 
 
-def test_extend(docset, document_factory):
+def test_extend(docarray, document_factory):
     docs = [document_factory.create(4, 'test 4'), document_factory.create(5, 'test 5')]
-    docset.extend(docs)
-    assert len(docset) == 5
-    assert docset[-1].tags['id'] == 5
-    assert docset[-1].text == 'test 5'
+    docarray.extend(docs)
+    assert len(docarray) == 5
+    assert docarray[-1].tags['id'] == 5
+    assert docarray[-1].text == 'test 5'
 
 
-def test_clear(docset):
-    docset.clear()
-    assert len(docset) == 0
+def test_clear(docarray):
+    docarray.clear()
+    assert len(docarray) == 0
 
 
-def test_delete(docset, document_factory):
+def test_delete(docarray, document_factory):
     doc = document_factory.create(4, 'test 4')
-    docset.append(doc)
-    del docset[-1]
-    assert len(docset) == 3
-    assert docset == docset
+    docarray.append(doc)
+    del docarray[-1]
+    assert len(docarray) == 3
+    assert docarray == docarray
 
 
-def test_build(docset):
-    docset.build()
+def test_build(docarray):
+    docarray.build()
 
 
-def test_set_get_success(docset, document_factory):
-    docset.build()
+def test_array_get_success(docarray, document_factory):
+    docarray.build()
     doc = document_factory.create(4, 'test 4')
     doc_id = 2
-    docset[doc_id] = doc
-    assert docset[doc_id].text == 'test 4'
-    doc_0_id = docset[0].id
-    docset[doc_0_id] = doc
-    assert docset[doc_0_id].text == 'test 4'
+    docarray[doc_id] = doc
+    assert docarray[doc_id].text == 'test 4'
+    doc_0_id = docarray[0].id
+    docarray[doc_0_id] = doc
+    assert docarray[doc_0_id].text == 'test 4'
 
 
-def test_set_get_from_slice_success(docs, document_factory):
-    docset = DocumentSet(docs)
-    assert len(docset[:1]) == 1
-    assert len(docset[:2]) == 2
-    assert len(docset[:3]) == 3
-    assert len(docset[:100]) == 3
+def test_array_get_from_slice_success(docs, document_factory):
+    docarray = DocumentArray(docs)
+    assert len(docarray[:1]) == 1
+    assert len(docarray[:2]) == 2
+    assert len(docarray[:3]) == 3
+    assert len(docarray[:100]) == 3
 
-    assert len(docset[1:]) == 2
-    assert len(docset[2:]) == 1
-    assert len(docset[3:]) == 0
-    assert len(docset[100:]) == 0
+    assert len(docarray[1:]) == 2
+    assert len(docarray[2:]) == 1
+    assert len(docarray[3:]) == 0
+    assert len(docarray[100:]) == 0
 
 
-def test_set_get_fail(docset, document_factory):
-    docset.build()
+def test_array_get_fail(docarray, document_factory):
+    docarray.build()
     with pytest.raises(IndexError):
-        docset[0.1] = 1  # Set fail, not a supported type
+        docarray[0.1] = 1  # Set fail, not a supported type
     with pytest.raises(IndexError):
-        docset[0.1]  # Get fail, not a supported type
+        docarray[0.1]  # Get fail, not a supported type
 
 
-def test_docset_init(docs, docset):
+def test_docarray_init(docs, docarray):
     # we need low-level protobuf generation for testing
-    assert len(docs) == len(docset)
-    for d, od in zip(docs, docset):
+    assert len(docs) == len(docarray)
+    for d, od in zip(docs, docarray):
         assert isinstance(d, Document)
         assert d.id == od.id
         assert d.text == od.text
 
 
-def test_docset_iterate_twice(docset):
+def test_docarray_iterate_twice(docarray):
     j = 0
-    for _ in docset:
-        for _ in docset:
+    for _ in docarray:
+        for _ in docarray:
             j += 1
-    assert j == len(docset) ** 2
+    assert j == len(docarray) ** 2
 
 
-def test_docset_reverse(docs, docset):
+def test_docarray_reverse(docs, docarray):
     ids = [d.id for d in docs]
-    docset.reverse()
-    ids2 = [d.id for d in docset]
+    docarray.reverse()
+    ids2 = [d.id for d in docarray]
     assert list(reversed(ids)) == ids2
 
 
-def test_match_chunk_set():
+def test_match_chunk_array():
     with Document() as d:
         d.content = 'hello world'
 
@@ -207,7 +207,7 @@ def add_match(doc):
 
 
 @pytest.fixture
-def documentset():
+def documentarray():
     """ Builds up a complete chunk-match structure, with a depth of 2 in both directions recursively. """
     max_granularity = 2
     max_adjacency = 2
@@ -229,7 +229,7 @@ def documentset():
             d.adjacency = 0
             docs.append(d)
             iterate_build(d, 0, 0)
-    return DocumentSet(docs)
+    return documentarray(docs)
 
 
 def callback_fn(docs, *args, **kwargs) -> None:
@@ -248,7 +248,7 @@ def test_get_content(stack, num_rows, field):
 
     kwargs = {field: np.random.random((num_rows, embed_size))}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
     docs.append(Document())
 
     contents, pts = docs.extract_docs(field, stack_contents=stack)
@@ -268,7 +268,7 @@ def test_get_content_text_fields(stack, field):
 
     kwargs = {field: 'text'}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(field, stack_contents=stack)
     if stack:
@@ -287,7 +287,7 @@ def test_get_content_bytes_fields(stack, bytes_input, field):
 
     kwargs = {field: bytes_input}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(field, stack_contents=stack)
 
@@ -305,7 +305,7 @@ def test_get_content_multiple_fields_text(stack, fields):
 
     kwargs = {field: f'text-{field}' for field in fields}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 
@@ -328,7 +328,7 @@ def test_get_content_multiple_fields_text_buffer(stack, bytes_input):
     fields = ['id', 'buffer']
     kwargs = {'id': 'text', 'buffer': bytes_input}
 
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 
@@ -354,7 +354,7 @@ def test_get_content_multiple_fields_arrays(stack, num_rows):
     embed_size = 20
 
     kwargs = {field: np.random.random((num_rows, embed_size)) for field in fields}
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 
@@ -387,7 +387,7 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
         else 'text'
         for field in fields
     }
-    docs = DocumentSet([Document(**kwargs) for _ in range(batch_size)])
+    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
     contents, pts = docs.extract_docs(*fields, stack_contents=stack)
 
@@ -420,14 +420,14 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
     ],
 )
 def test_all_sparse_embeddings(
-    docset_with_scipy_sparse_embedding,
+    docarray_with_scipy_sparse_embedding,
     embedding_cls_type,
     return_expected_type,
 ):
     (
         all_embeddings,
         doc_pts,
-    ) = docset_with_scipy_sparse_embedding.get_all_sparse_embeddings(
+    ) = docarray_with_scipy_sparse_embedding.get_all_sparse_embeddings(
         embedding_cls_type=embedding_cls_type,
     )
     assert all_embeddings is not None
