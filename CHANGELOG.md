@@ -52,6 +52,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8494,4 +8495,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```c9a94e98```](https://github.com/jina-ai/jina/commit/c9a94e98e125e1c1b95c68a47807c88ae32f1519)] __-__ fix readme (*Han Xiao*)
  - [[```3715f557```](https://github.com/jina-ai/jina/commit/3715f55703569346d8d7dd5057d8aa03ece699a9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1dd9c082```](https://github.com/jina-ai/jina/commit/1dd9c0827c597e232f1e38eaa30c65b1a630262d)] __-__ __version__: the next version will be 1.1.10 (*Jina Dev Bot*)
+
+<a name=release-note-1-2-0></a>
+## Release Note (`1.2.0`)
+
+> Release time: 2021-04-29 03:53:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Nan Wang@Home.MBP,  Jina Dev Bot,  winstonww,  Kelton Zhang,  Nan Wang,  Joan Fontanals,  Florian Hönicke,  🙇
+
+
+### 🆕 New Features
+
+ - [[```9cb2330c```](https://github.com/jina-ai/jina/commit/9cb2330c2ca9e1d5474863b37fdb273dcf370eae)] __-__ hosts for replicas (#2338) (*Florian Hönicke*)
+
+### 🐞 Bug fixes
+
+ - [[```3a54b8d2```](https://github.com/jina-ai/jina/commit/3a54b8d2b430207cfe24b8303a2e2fc079120ce5)] __-__ avoid flush when kbinterrupt (#2353) (*Joan Fontanals*)
+ - [[```38d8c327```](https://github.com/jina-ai/jina/commit/38d8c327a222136df7aa088a94db776483bec6f4)] __-__ keep old crafter and segmenter functionality (#2351) (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```c1037e35```](https://github.com/jina-ai/jina/commit/c1037e3502389b51210e4629185da69ae2ddb416)] __-__ reduceAll drive update and delete requests (#2354) (*Kelton Zhang*)
+ - [[```df871abb```](https://github.com/jina-ai/jina/commit/df871abb1d688144610c31a24db272572f8fb4e2)] __-__ improve the readability (#2357) (*Nan Wang*)
+ - [[```f4d0893a```](https://github.com/jina-ai/jina/commit/f4d0893a40aef923a3288b8fe69843a8afb85182)] __-__ abstract the construction of different pods (#2346) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```8b2b9da7```](https://github.com/jina-ai/jina/commit/8b2b9da782976f9c8ad95fbfbf5fefed50b6c37d)] __-__ prettify zed runtime argument doc (#2358) (*Kelton Zhang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```c4415390```](https://github.com/jina-ai/jina/commit/c441539017ba19bbae6ed6545f9ee1ad76742478)] __-__ increase zmqlet test coverage (recv_message) (#2361) (*winstonww*)
+
+### 🍹 Other Improvements
+
+ - [[```8a8c1da3```](https://github.com/jina-ai/jina/commit/8a8c1da32579a0efe8a80f992149237040858e27)] __-__ bump version to 1.2.0 (*Nan Wang@Home.MBP*)
+ - [[```513a2d2b```](https://github.com/jina-ai/jina/commit/513a2d2b5b15829fee40d90938487c408bcb901e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f29447dd```](https://github.com/jina-ai/jina/commit/f29447dde6c355b26c87e87d433e841f930b6599)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```89a04117```](https://github.com/jina-ai/jina/commit/89a04117e2d6fd7b6c85e2368d4079210bd551cb)] __-__ __version__: the next version will be 1.1.11 (*Jina Dev Bot*)
 
