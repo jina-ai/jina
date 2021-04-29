@@ -30,7 +30,6 @@ class BasePod(ExitStack):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
-        self.peas = []  # type: List['BasePea']
         self.args = args
         self._set_conditional_args(self.args)
         self.needs = (
@@ -117,7 +116,6 @@ class BasePod(ExitStack):
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
     def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
         self.enter_context(pea)
 
     def __enter__(self) -> 'BasePod':
@@ -281,6 +279,13 @@ class Pod(BasePod):
             self.peas_args = args
         else:
             self.peas_args = self._parse_args(args)
+        self.peas = []  # type: List['BasePea']
+        for _args in self.all_args:
+            _args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+            self.peas.append(BasePea(_args))
+
+        for pea in self.peas:
+            print(f' hey Pea {pea}')
 
     @property
     def is_singleton(self) -> bool:
@@ -409,7 +414,7 @@ class Pod(BasePod):
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def start(self) -> 'BasePod':
+    def start(self) -> 'Pod':
         """
         Start to run all :class:`BasePea` in this BasePod.
 
@@ -420,15 +425,14 @@ class Pod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args:
-                _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args))
+            for pea in self.peas:
+                self._enter_pea(pea)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args:
-                    self._enter_pea(BasePea(_args))
+                for pea in self.peas:
+                    self._enter_pea(pea)
             except:
                 self.close()
                 raise
