@@ -14,7 +14,7 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         self, ids: List[str]
     ) -> Generator[Tuple[str, np.array, bytes], None, None]:
         for id_ in ids:
-            vecs_metas_list_bytes = super()._query(id_)
+            vecs_metas_list_bytes = super()._query([id_])
             vec, meta = pickle.loads(vecs_metas_list_bytes[0])
             yield id_, vec, meta
 
