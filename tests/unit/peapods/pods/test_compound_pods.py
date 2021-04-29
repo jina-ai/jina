@@ -98,7 +98,13 @@ def test_pod_context_parallel(runtime, parallel, replicas):
         pass
 
 
-@pytest.mark.parametrize('runtime', ['process', 'thread'])
+@pytest.mark.parametrize(
+    'runtime',
+    [
+        'process',
+        'thread',
+    ],
+)
 def test_pod_naming_with_parallel(runtime):
     args = set_pod_parser().parse_args(
         [

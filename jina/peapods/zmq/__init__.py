@@ -218,6 +218,7 @@ class Zmqlet:
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
+        print(f'### ')
         if not self.is_closed or force_close:
             self.is_closed = True
             self._close_sockets()
@@ -262,6 +263,7 @@ class Zmqlet:
 
     def _send_control_to_router(self, command, raise_exception=False):
         msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
+        print(f'### sending CtrlMsg with {command} from {self.in_sock}')
         self.bytes_sent += send_message(
             self.in_sock, msg, raise_exception=raise_exception, **self.send_recv_kwargs
         )
@@ -382,13 +384,14 @@ class ZmqStreamlet(Zmqlet):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-
         if not self.is_closed:
+            print(f'### is_closed was False {self.name}')
             self.is_closed = True
 
             if self.in_sock_type == zmq.DEALER:
                 try:
                     self._send_cancel_to_router(raise_exception=True)
+                    print(f'### sent cancel to router {self.name}')
                 except zmq.error.ZMQError:
                     self.logger.info(
                         f'The dealer {self.name} can not unsubscribe from the router. '
@@ -396,11 +399,14 @@ class ZmqStreamlet(Zmqlet):
                     )
 
             # wait until the close signal is received
+            print(f'### before sleep {self.name}')
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
+                    print(f'### before flush on socket {s} {self.name}')
                     s.flush()
 
+            print(f'### after flush {self.name}')
             super().close(force_close=True)
             if hasattr(self, 'io_loop'):
                 try:
@@ -501,7 +507,11 @@ def send_message(
     num_bytes = 0
     try:
         _prep_send_socket(sock, timeout)
-        sock.send_multipart(msg.dump())
+        if 'flags' in kwargs:
+            kwargs['flags'] |= zmq.NOBLOCK
+        else:
+            kwargs['flags'] = zmq.NOBLOCK
+        sock.send_multipart(msg.dump(), **kwargs)
         num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(

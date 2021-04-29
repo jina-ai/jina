@@ -53,6 +53,7 @@ class ZEDRuntime(ZMQRuntime):
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
+        print(f'### ZEDRuntime {self.name} calling _zmqlet.close()')
         self._zmqlet.close()
         self._executor.close()
         super().teardown()
