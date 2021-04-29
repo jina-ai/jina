@@ -1,12 +1,10 @@
 """Module for Jina Requests."""
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional, Sequence
+from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional
 
 from .helper import _new_data_request_from_batch
 from ... import Request
-from ...enums import RequestType, DataInputType
+from ...enums import DataInputType
 from ...helper import batch_iterator
 from ...logging import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType, Document

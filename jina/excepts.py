@@ -1,8 +1,5 @@
 """This modules defines all kinds of exceptions raised in Jina."""
 
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 
 class NoExplicitMessage(Exception):
     """Waiting until all partial messages are received."""

@@ -1,5 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+
 
 import argparse
 import os
@@ -41,7 +40,7 @@ def api_to_dict():
 
 def _export_parser_args(parser_fn, type_as_str: bool = False):
     from jina.enums import BetterEnum
-    from argparse import _StoreAction, _StoreTrueAction, _HelpAction, _SubParsersAction
+    from argparse import _StoreAction, _StoreTrueAction
     from jina.parsers.helper import KVAppendAction
 
     port_attr = ('help', 'choices', 'default', 'required', 'option_strings', 'dest')

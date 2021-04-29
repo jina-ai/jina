@@ -1,5 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+
 
 import sys
 import time
@@ -7,8 +6,8 @@ from collections import defaultdict
 from functools import wraps
 from typing import Optional
 
-from ..importer import ImportExtensions
 from ..helper import colored, get_readable_size, get_readable_time
+from ..importer import ImportExtensions
 
 if False:
     # fix type-hint complain for sphinx and flake

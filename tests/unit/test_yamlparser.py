@@ -128,7 +128,7 @@ def test_class_yaml3():
 
 def test_joint_indexer(test_workspace):
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
-    b.attach(runtime=None)
+    b.override_logger(runtime=None)
     assert b._drivers['SearchRequest'][0]._exec == b[0]
     assert b._drivers['SearchRequest'][-1]._exec == b[1]
 

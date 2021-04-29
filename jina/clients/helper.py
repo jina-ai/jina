@@ -1,6 +1,4 @@
 """Helper functions for clients in Jina."""
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 
 from functools import wraps
 from typing import Callable

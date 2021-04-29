@@ -1,5 +1,4 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+
 
 import copy
 from argparse import Namespace
@@ -10,7 +9,7 @@ from .. import BasePod
 from .. import Pea
 from .. import Pod
 from ... import helper
-from ...enums import PollingType, SocketType, SchedulerType
+from ...enums import PollingType, SocketType
 from ...helper import random_identity
 
 

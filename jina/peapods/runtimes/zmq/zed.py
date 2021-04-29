@@ -3,11 +3,13 @@ from collections import defaultdict
 from typing import Dict, List
 
 import zmq
+from google.protobuf.json_format import MessageToDict
 
 from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
 from .... import Message
 from .... import Request
+from ....drivers.control import RouteDriver
 from ....enums import OnErrorStrategy
 from ....excepts import (
     NoExplicitMessage,
@@ -18,10 +20,10 @@ from ....excepts import (
     RuntimeTerminated,
 )
 from ....executors import BaseExecutor
-from ....helper import random_identity
+from ....helper import random_identity, typename
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
-from ....types.request.data import DataRequest
+from ....types.sets.document import DocumentSet
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -77,7 +79,9 @@ class ZEDRuntime(ZMQRuntime):
                 replica_id=getattr(self.args, 'replica_id', -1),
                 read_only=self.args.read_only,
             )
-            self._executor.attach(runtime=self)
+            self._executor.override_logger(runtime=self)
+            self._control_driver = RouteDriver()
+            self._control_driver.attach(runtime=self)
         except BadConfigSource as ex:
             self.logger.error(
                 f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
@@ -175,19 +179,26 @@ class ZEDRuntime(ZMQRuntime):
             raise NoExplicitMessage
 
         if (
-            msg.envelope.status.code != jina_pb2.StatusProto.ERROR
-            or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
+                msg.envelope.status.code != jina_pb2.StatusProto.ERROR
+                or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
             if self.request_type == 'DataRequest':
-                self._executor(
-                    req_type=self.request.header.exec_endpoint,
-                    docs=self.request.docs,
+                r_docs = self._executor(
+                    req_endpoint=self.request.header.exec_endpoint,
+                    docs=self.docs,
                     groundtruths=self.request.groundtruths,
                     queryset=self.request.queryset,
-                    parameters=self.request.parameters,
+                    parameters=MessageToDict(self.request.parameters),
                 )
+                if r_docs is not None:
+                    if not isinstance(r_docs, DocumentSet):
+                        raise TypeError(f'return type must be {DocumentSet!r} object, but getting {typename(r_docs)}')
+                    elif r_docs != self.request.docs:
+                        # this means the returned DocArray is a completely new one
+                        self.request.docs.clear()
+                        self.request.docs.extend(r_docs)
             else:
-                self._executor.on_control_fn()
+                self._control_driver()
         else:
             raise ChainedPodException
         return self
@@ -319,3 +330,11 @@ class ZEDRuntime(ZMQRuntime):
 
         """
         return self._partial_messages
+
+    @property
+    def docs(self) -> 'DocumentSet':
+        """The DocumentSet to handle"""
+        if self.expect_parts > 1:
+            return DocumentSet([d for r in reversed(self.partial_requests) for d in r.docs])
+        else:
+            return self.request.docs

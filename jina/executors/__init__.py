@@ -1,5 +1,3 @@
-__copyright__ = 'Copyright (c) 2020 Jina AI Limited. All rights reserved.'
-__license__ = 'Apache-2.0'
 
 import os
 import pickle
@@ -7,7 +5,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Type, List, Optional, Callable
+from typing import Dict, TypeVar, Type, Optional
 
 from .decorators import (
     as_update_method,
@@ -15,19 +13,18 @@ from .decorators import (
     as_aggregate_method,
     wrap_func,
 )
-from .. import __default_endpoint__
 from .metas import get_default_metas, fill_metas_with_defaults
-from ..excepts import BadPersistantFile, NoDriverForRequest, UnattachedDriver
-from ..helper import typename, random_identity, cached_property, find_request_binding
+from .. import __default_endpoint__
+from ..excepts import BadPersistantFile
+from ..helper import typename, random_identity
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 from ..logging import JinaLogger
 
 # noinspection PyUnreachableCode
 if False:
     from ..peapods.runtimes.zmq.zed import ZEDRuntime
-    from ..drivers import BaseDriver
 
-__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType', 'GenericExecutor']
+__all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
 
 AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 
@@ -127,16 +124,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     .. highlight:: yaml
     .. code-block:: yaml
 
-        !MyAwesomeExecutor
+        jtype: MyAwesomeExecutor
         with:
             awesomeness: 5
-
-    To use an executor in a :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`,
-    a proper :class:`jina.drivers.Driver` is required. This is because the
-    executor is *NOT* protobuf-aware and has no access to the key-values in the protobuf message.
-
-    Different executor may require different :class:`Driver` with
-    proper :mod:`jina.drivers.handlers`, :mod:`jina.drivers.hooks` installed.
 
     .. seealso::
         Methods of the :class:`BaseExecutor` can be decorated via :mod:`jina.executors.decorators`.
@@ -159,91 +149,20 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._last_snapshot_ts = datetime.now()
 
     def _post_init_wrapper(
-        self,
-        _metas: Optional[Dict] = None,
-        _requests: Optional[Dict] = None,
-        fill_in_metas: bool = True,
+            self,
+            _metas: Optional[Dict] = None,
+            _requests: Optional[Dict] = None,
+            fill_in_metas: bool = True,
     ) -> None:
         if fill_in_metas:
             if not _metas:
                 _metas = get_default_metas()
 
             self._fill_metas(_metas)
-            self.fill_in_drivers(_requests)
 
         _before = set(list(vars(self).keys()))
         self.post_init()
         self._post_init_vars = {k for k in vars(self) if k not in _before}
-
-    def fill_in_drivers(self, _requests: Optional[Dict]):
-        """
-        Fill in drivers in a BaseExecutor.
-
-        :param _requests: Dict containing driver information.
-        """
-        from ..executors.requests import get_default_reqs
-
-        default_requests = get_default_reqs(type.mro(self.__class__))
-
-        if not _requests:
-            self._drivers = self._get_drivers_from_requests(default_requests)
-        else:
-            parsed_drivers = self._get_drivers_from_requests(_requests)
-
-            if _requests.get('use_default', False):
-                default_drivers = self._get_drivers_from_requests(default_requests)
-
-                for k, v in default_drivers.items():
-                    if k not in parsed_drivers:
-                        parsed_drivers[k] = v
-
-            self._drivers = parsed_drivers
-
-    @staticmethod
-    def _get_drivers_from_requests(_requests):
-        _drivers = {}  # type: Dict[str, List['BaseDriver']]
-
-        if _requests and 'on' in _requests and isinstance(_requests['on'], dict):
-            # if control request is forget in YAML, then fill it
-            if 'ControlRequest' not in _requests['on']:
-                from ..drivers.control import ControlReqDriver
-
-                _requests['on']['ControlRequest'] = [ControlReqDriver()]
-
-            for req_type, drivers_spec in _requests['on'].items():
-                if isinstance(req_type, str):
-                    req_type = [req_type]
-                if isinstance(drivers_spec, list):
-                    # old syntax
-                    drivers = drivers_spec
-                    common_kwargs = {}
-                elif isinstance(drivers_spec, dict):
-                    drivers = drivers_spec.get('drivers', [])
-                    common_kwargs = drivers_spec.get('with', {})
-                else:
-                    raise TypeError(f'unsupported type of driver spec: {drivers_spec}')
-
-                for r in req_type:
-                    if r not in _drivers:
-                        _drivers[r] = list()
-                    if _drivers[r] != drivers:
-                        _drivers[r].extend(drivers)
-
-                    # inject common kwargs to drivers
-                    if common_kwargs:
-                        new_drivers = []
-                        for d in _drivers[r]:
-                            new_init_kwargs_dict = {
-                                k: v for k, v in d._init_kwargs_dict.items()
-                            }
-                            new_init_kwargs_dict.update(common_kwargs)
-                            new_drivers.append(d.__class__(**new_init_kwargs_dict))
-                        _drivers[r].clear()
-                        _drivers[r] = new_drivers
-
-                    if not _drivers[r]:
-                        _drivers.pop(r)
-        return _drivers
 
     def _fill_metas(self, _metas):
         unresolved_attr = False
@@ -279,7 +198,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 if not hasattr(self, k):
                     if isinstance(v, str):
                         if not (
-                            subvar_regex.findall(v) or internal_var_regex.findall(v)
+                                subvar_regex.findall(v) or internal_var_regex.findall(v)
                         ):
                             setattr(self, k, v)
                         else:
@@ -333,10 +252,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @staticmethod
     def get_shard_workspace(
-        workspace_folder: str,
-        workspace_name: str,
-        pea_id: int,
-        replica_id: int = -1,
+            workspace_folder: str,
+            workspace_name: str,
+            pea_id: int,
+            replica_id: int = -1,
     ) -> str:
         """
         Get the path of the current shard.
@@ -416,7 +335,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         for k in cached:
             del d[k]
 
-        d.pop('_drivers', None)
         return d
 
     def __setstate__(self, d):
@@ -465,8 +383,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
             if self.max_snapshot > 0 and os.path.exists(f):
                 bak_f = (
-                    f
-                    + f'.snapshot-{self._last_snapshot_ts.strftime("%Y%m%d%H%M%S") or "NA"}'
+                        f
+                        + f'.snapshot-{self._last_snapshot_ts.strftime("%Y%m%d%H%M%S") or "NA"}'
                 )
                 os.rename(f, bak_f)
                 self._snapshot_files.append(bak_f)
@@ -490,13 +408,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @classmethod
     def inject_config(
-        cls: Type[AnyExecutor],
-        raw_config: Dict,
-        pea_id: int = 0,
-        replica_id: int = -1,
-        read_only: bool = False,
-        *args,
-        **kwargs,
+            cls: Type[AnyExecutor],
+            raw_config: Dict,
+            pea_id: int = 0,
+            replica_id: int = -1,
+            read_only: bool = False,
+            *args,
+            **kwargs,
     ) -> Dict:
         """Inject config into the raw_config before loading into an object.
 
@@ -551,33 +469,15 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def attach(self, runtime: 'ZEDRuntime', *args, **kwargs):
-        """Attach this executor to a Basepea
-
-        This is called inside the initializing of a :class:`jina.peapods.runtime.BasePea`.
+    def override_logger(self, runtime: 'ZEDRuntime') -> None:
+        """Override `self.logger` by its parent the Runtime logger.
 
         :param runtime: Runtime procedure leveraging ZMQ.
-        :param args: Additional arguments.
-        :param kwargs: Additional key word arguments.
         """
-        for req_type, drivers in self._drivers.items():
-            for driver in drivers:
-                driver.attach(
-                    executor=self, runtime=runtime, req_type=req_type, *args, **kwargs
-                )
-
-        from ..drivers.control import RouteDriver
-
-        self._default_control_driver = RouteDriver()
-        self._default_control_driver.attach(
-            executor=self, runtime=runtime, *args, **kwargs
-        )
-
-        # replacing the logger to runtime's logger
         if runtime and isinstance(getattr(runtime, 'logger', None), JinaLogger):
             self.logger = runtime.logger
 
-    def __call__(self, req_type: str, **kwargs):
+    def __call__(self, req_endpoint: str, **kwargs):
         """
 
 
@@ -589,27 +489,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         # noqa: DAR102
         """
-        if req_type in self.function_bindings:
-            self.function_bindings[req_type](**kwargs)
-        elif __default_endpoint__ in self.function_bindings:
-            self.function_bindings[__default_endpoint__](**kwargs)
+        if req_endpoint in self._requests_mapping:
+            return self._requests_mapping[req_endpoint](self, **kwargs)
+        elif __default_endpoint__ in self._requests_mapping:
+            return self._requests_mapping[__default_endpoint__](self, **kwargs)
         else:
-            raise NoDriverForRequest(f'{req_type} for {self}')
-
-    @cached_property
-    def function_bindings(self) -> Dict[str, Callable]:
-        decor_bindings = find_request_binding(self.__class__)
-        return {
-            endpoint: getattr(self, func_name)
-            for endpoint, func_name in decor_bindings.items()
-        }
-
-    def on_control_fn(self) -> None:
-        self._default_control_driver()
+            raise ValueError(f'{req_endpoint} is not bind to any method of {self}')
 
     def __str__(self):
         return self.__class__.__name__
-
-
-class GenericExecutor(BaseExecutor):
-    """Alias to BaseExecutor, but bind with GenericDriver by default. """

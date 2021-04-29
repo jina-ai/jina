@@ -1,8 +1,6 @@
 """Module wrapping the Client of Jina."""
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 
-from typing import Union, List, Sequence, Optional
+from typing import Union, List, Optional
 
 from . import request
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType

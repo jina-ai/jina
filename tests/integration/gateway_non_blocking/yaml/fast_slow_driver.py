@@ -1,10 +1,7 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
+import time
 from typing import Optional
 
 from jina.drivers import FlatRecursiveMixin, BaseExecutableDriver
-import time
 
 if False:
     from jina import DocumentSet

@@ -1,9 +1,9 @@
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
 
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+
 
 import copy
+import functools
 import inspect
 from functools import wraps
 from itertools import islice, chain
@@ -406,21 +406,23 @@ def single(
         return _single_multi_input
 
 
-def requests(func: Callable = None, on: str = 'default') -> Callable:
-    """Decorator for binding an Executor function to requests
+def requests(func: Callable = None, on: Optional[str] = None) -> Callable:
+    from . import __default_endpoint__
 
-    :param func: the Executor function to decorate
-    :param on: the request type to bind, e.g. IndexRequest, SearchRequest, UpdateRequest, DeleteRequest, etc.
-            you may also use `index`, `search`, `update`, `delete` as shortcut.
-    :return: the wrapped function
-    """
+    class _requests:
+        def __init__(self, fn):
+            @functools.wraps(fn)
+            def arg_wrapper(*args, **kwargs):
+                return fn(*args, **kwargs)
 
-    def _requests(func):
-        @wraps(func)
-        def arg_wrapper(*args, **kwargs):
-            return func(*args, **kwargs)
+            self.fn = arg_wrapper
 
-        return arg_wrapper
+        def __set_name__(self, owner, name):
+            self.fn.class_name = owner.__name__
+            if not hasattr(owner, '_requests_mapping'):
+                owner._requests_mapping = {}
+
+            owner._requests_mapping[on or __default_endpoint__] = self.fn
 
     if func:
         return _requests(func)

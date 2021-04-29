@@ -1,15 +1,8 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 import re
-import time
-
-from google.protobuf.json_format import MessageToJson
 
 from . import BaseDriver
 from ..excepts import UnknownControlCommand, RuntimeTerminated
 from ..proto import jina_pb2
-from ..types.querylang.queryset.dunderkey import dunder_get
 
 
 class BaseControlDriver(BaseDriver):
@@ -24,46 +17,6 @@ class BaseControlDriver(BaseDriver):
         .. # noqa: DAR201
         """
         return self.msg.envelope
-
-
-class LogInfoDriver(BaseControlDriver):
-    """
-    Log output the request info
-
-    :param key: (str) that represents a first level or nested key in the dict
-    :param json: (bool) indicating if the log output should be formatted as json
-    :param args: additional positional arguments which are just used for the parent initialization
-    :param kwargs: additional key value arguments which are just used for the parent initialization
-    """
-
-    def __init__(self, key: str = 'request', json: bool = True, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.key = key
-        self.json = json
-
-    def __call__(self, *args, **kwargs):
-        """Log the information.
-
-        :param args: unused
-        :param kwargs: unused
-        """
-        data = dunder_get(self.msg.proto, self.key)
-        if self.json:
-            self.logger.info(MessageToJson(data))
-        else:
-            self.logger.info(data)
-
-
-class WaitDriver(BaseControlDriver):
-    """Wait for some seconds, mainly for demo purpose"""
-
-    def __call__(self, *args, **kwargs):
-        """Wait for some seconds, mainly for demo purpose
-
-
-        .. # noqa: DAR101
-        """
-        time.sleep(5)
 
 
 class ControlReqDriver(BaseControlDriver):
@@ -181,27 +134,3 @@ class RouteDriver(ControlReqDriver):
                 self.idle_dealer_ids.remove(self.envelope.receiver_id)
         else:
             super().__call__(*args, **kwargs)
-
-
-class ForwardDriver(RouteDriver):
-    """Alias to :class:`RouteDriver`"""
-
-
-class WhooshDriver(BaseControlDriver):
-    """Play a whoosh! sound"""
-
-    def __call__(self, *args, **kwargs):
-        """Play a whoosh sound, used in 2021 April fools day
-
-        .. # noqa: DAR101
-        """
-        import subprocess
-        from pkg_resources import resource_filename
-
-        whoosh_mp3 = resource_filename(
-            'jina', '/'.join(('resources', 'soundfx', 'whoosh.mp3'))
-        )
-
-        subprocess.Popen(
-            f'ffplay  -nodisp -autoexit {whoosh_mp3} >/dev/null 2>&1', shell=True
-        )

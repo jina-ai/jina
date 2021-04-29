@@ -1,14 +1,13 @@
 """Module containing the Base Client for Jina."""
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 
 import argparse
+import asyncio
+import inspect
 import os
 from typing import Callable, Union, Optional, Iterator, Iterable, Dict, AsyncIterator
-import asyncio
 
 import grpc
-import inspect
+
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..enums import RequestType

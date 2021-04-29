@@ -1,9 +1,8 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+
 
 import numpy as np
-
 from jina.executors.encoders import BaseEncoder
+
 from jina.executors.decorators import batching
 
 

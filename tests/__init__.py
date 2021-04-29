@@ -5,9 +5,9 @@ from typing import Iterator
 
 import numpy as np
 import pytest
+
 from jina import Document
-from jina.executors.decorators import batching, as_ndarray
-from jina.executors.encoders import BaseTextEncoder
+from jina.executors.decorators import batching
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(os.path.dirname(file_dir))
@@ -154,7 +154,7 @@ def test_docs_generator(chunks, same_content, nr):
     check_docs(chunk_content, chunks, same_content, new_docs, ids_used, index_start)
 
 
-class DummyOneHotTextEncoder(BaseTextEncoder):
+class DummyOneHotTextEncoder:
     """
     One-hot Encoder encodes the characters into one-hot vectors. ONLY FOR TESTING USAGES.
     :param on_value: the default value for the locations represented by characters

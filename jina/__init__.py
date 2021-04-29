@@ -50,8 +50,7 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 # Underscore variables shared globally
 
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
+
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
@@ -198,14 +197,7 @@ from jina.clients import Client
 from jina.clients.asyncio import AsyncClient
 
 # Executor
-from jina.executors import GenericExecutor as Executor
-from jina.executors.classifiers import BaseClassifier as Classifier
-from jina.executors.crafters import BaseCrafter as Crafter
-from jina.executors.encoders import BaseEncoder as Encoder
-from jina.executors.evaluators import BaseEvaluator as Evaluator
-from jina.executors.indexers import BaseIndexer as Indexer
-from jina.executors.rankers import BaseRanker as Ranker
-from jina.executors.segmenters import BaseSegmenter as Segmenter
+from jina.executors import BaseExecutor as Executor
 from jina.executors.decorators import requests
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
