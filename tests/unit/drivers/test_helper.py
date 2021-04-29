@@ -3,7 +3,7 @@ import random
 import numpy as np
 import pytest
 
-from jina import Document, DocumentSet
+from jina import Document, DocumentArray
 from jina.proto import jina_pb2
 from jina.types.message import Message
 from jina.types.ndarray.generic import NdArray
@@ -47,10 +47,10 @@ def test_add_route():
 def test_extract_docs():
     d = Document()
 
-    contents, docs_pts = DocumentSet([d]).all_embeddings
+    contents, docs_pts = DocumentArray([d]).all_embeddings
     assert contents is None
 
     vec = np.random.random([2, 2])
     d.embedding = vec
-    contents, docs_pts = DocumentSet([d]).all_embeddings
+    contents, docs_pts = DocumentArray([d]).all_embeddings
     np.testing.assert_equal(contents[0], vec)

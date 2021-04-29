@@ -47,9 +47,10 @@ PROTOBUF_TO_PYTHON_TYPE = {
 }
 
 
-class CamelCaseConfig(BaseConfig):
-    """Pydantic config for Camel case handling"""
+class CustomConfig(BaseConfig):
+    """Pydantic config for Camel case and enum handling"""
 
+    use_enum_values = True
     allow_population_by_field_name = True
 
 
@@ -88,7 +89,10 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
 
     def oneof_setter(cls, values):
         for oneof_field in oneof_fields:
-            if values[oneof_field] == cls.__fields__[oneof_field].default:
+            if (
+                oneof_field in values
+                and values[oneof_field] == cls.__fields__[oneof_field].default
+            ):
                 values.pop(oneof_field)
         return values
 
@@ -201,11 +205,11 @@ def protobuf_to_pydantic_model(
     if model_name == 'DocumentProto':
         oneof_field_validators['tags_validator'] = _get_tags_updater()
 
-    CamelCaseConfig.fields = camel_case_fields
+    CustomConfig.fields = camel_case_fields
     model = create_model(
         model_name,
         **all_fields,
-        __config__=CamelCaseConfig,
+        __config__=CustomConfig,
         __validators__=oneof_field_validators,
     )
     model.update_forward_refs()

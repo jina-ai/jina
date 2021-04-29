@@ -31,7 +31,7 @@ from ..helper import (
 )
 from ..jaml import JAMLCompatible
 from ..types.querylang import QueryLang
-from ..types.sets import DocumentSet
+from ..types.arrays import DocumentArray
 
 # noinspection PyUnreachableCode
 if False:
@@ -41,7 +41,7 @@ if False:
     from ..logging.logger import JinaLogger
     from ..types.message import Message
     from ..types.request import Request
-    from ..types.sets import QueryLangSet
+    from ..types.arrays import QueryLangArray
     from ..types.document import Document
 
 
@@ -255,15 +255,17 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.runtime.expect_parts
 
     @property
-    def docs(self) -> 'DocumentSet':
-        """The DocumentSet after applying the traversal
+    def docs(self) -> 'DocumentArray':
+        """The DocumentArray after applying the traversal
 
 
         .. # noqa: DAR201"""
-        from ..types.sets import DocumentSet
+        from ..types.arrays import DocumentArray
 
         if self.expect_parts > 1:
-            return DocumentSet([d for r in reversed(self.partial_reqs) for d in r.docs])
+            return DocumentArray(
+                [d for r in reversed(self.partial_reqs) for d in r.docs]
+            )
         else:
             return self.req.docs
 
@@ -277,7 +279,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
         return self.runtime.message
 
     @property
-    def queryset(self) -> 'QueryLangSet':
+    def queryset(self) -> 'QueryLangArray':
         """
 
 
@@ -332,7 +334,7 @@ class BaseDriver(JAMLCompatible, metaclass=DriverType):
 class ContextAwareRecursiveMixin:
     """
     The full data structure version of :class:`FlatRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
-    It uses :meth:`traverse` in :class:`DocumentSet` and allows direct manipulation of Chunk-/Match-/DocumentSets.
+    It uses :meth:`traverse` in :class:`DocumentArray` and allows direct manipulation of Chunk-/Match-/DocumentArrays.
 
     .. seealso::
        https://github.com/jina-ai/jina/issues/1932
@@ -350,16 +352,16 @@ class ContextAwareRecursiveMixin:
 
     def _apply_all(
         self,
-        doc_sequences: Iterable['DocumentSet'],
+        doc_sequences: Iterable['DocumentArray'],
         *args,
         **kwargs,
     ) -> None:
-        """Apply function works on an Iterable of DocumentSet, modify the docs in-place.
+        """Apply function works on an Iterable of DocumentArray, modify the docs in-place.
 
-        Each DocumentSet refers to a leaf (e.g. roots, matches or chunks wrapped
-        in a :class:`jina.DocumentSet`) in the traversal_paths. Modifications on the
-        DocumentSets (e.g. adding or deleting Documents) are directly applied on the underlying objects.
-        Adding a chunk to a ChunkSet results in adding a chunk to the parent Document.
+        Each DocumentArray refers to a leaf (e.g. roots, matches or chunks wrapped
+        in a :class:`jina.DocumentArray`) in the traversal_paths. Modifications on the
+        DocumentArrays (e.g. adding or deleting Documents) are directly applied on the underlying objects.
+        Adding a chunk to a ChunkArray results in adding a chunk to the parent Document.
 
         :param doc_sequences: the Documents that should be handled
         :param args: driver specific arguments, which might be forwarded to the Executor
@@ -370,7 +372,7 @@ class ContextAwareRecursiveMixin:
 class FlatRecursiveMixin:
     """
     The batch optimized version of :class:`ContextAwareRecursiveMixin`, to be mixed in with :class:`BaseRecursiveDriver`.
-    It uses :meth:`traverse_flattened_per_path` in :class:`DocumentSet` and yield much better performance
+    It uses :meth:`traverse_flattened_per_path` in :class:`DocumentArray` and yield much better performance
     when no context is needed and batching is possible.
 
     .. seealso::
@@ -391,7 +393,7 @@ class FlatRecursiveMixin:
 
     def _apply_all(
         self,
-        docs: 'DocumentSet',
+        docs: 'DocumentArray',
         *args,
         **kwargs,
     ) -> None:
@@ -430,7 +432,11 @@ class DocsExtractUpdateMixin:
         - :meth:`update_single_doc` if you want to modify the behavior of updating a single doc
     """
 
-    def _apply_all(self, docs: 'DocumentSet') -> None:
+    @property
+    def _stack_document_content(self):
+        return self._exec_fn_required_keys_is_ndarray
+
+    def _apply_all(self, docs: 'DocumentArray') -> None:
         """Apply function works on a list of docs, modify the docs in-place.
 
         The list refers to all reachable leaves of a single ``traversal_path``.
@@ -440,7 +446,7 @@ class DocsExtractUpdateMixin:
 
         contents, docs_pts = docs.extract_docs(
             *self._exec_fn_required_keys,
-            stack_contents=self._exec_fn_required_keys_is_ndarray,
+            stack_contents=self._stack_document_content,
         )
 
         if docs_pts:
@@ -471,7 +477,7 @@ class DocsExtractUpdateMixin:
 
     def update_docs(
         self,
-        docs_pts: 'DocumentSet',
+        docs_pts: 'DocumentArray',
         exec_results: Union[List[Dict], List['Document'], Any],
     ) -> None:
         """
@@ -528,34 +534,38 @@ class DocsExtractUpdateMixin:
         if not required_keys:
             raise AttributeError(f'{self.exec_fn} takes no argument.')
 
-        if self._strict_method_args:
-            from ..proto import jina_pb2
-            from .. import Document
+        if not self._strict_method_args:
+            return required_keys
 
-            support_keys = Document.get_all_attributes()
-            unrecognized_keys = set(required_keys).difference(support_keys)
-            if unrecognized_keys:
-                camel_keys = set(
-                    jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name
-                )
-                legacy_keys = {'data'}
-                unrecognized_camel_keys = unrecognized_keys.intersection(camel_keys)
-                if unrecognized_camel_keys:
-                    raise AttributeError(
-                        f'{unrecognized_camel_keys} are supported but you give them in CamelCase, '
-                        f'please rewrite them in canonical form.'
-                    )
-                elif unrecognized_keys.intersection(legacy_keys):
-                    raise AttributeError(
-                        f'{unrecognized_keys.intersection(legacy_keys)} is now deprecated and not a valid argument of '
-                        'the executor function, '
-                        'please change `data` to `content: \'np.ndarray\'` in your executor function. '
-                        'details: https://github.com/jina-ai/jina/pull/2313/'
-                    )
-                else:
-                    raise AttributeError(
-                        f'{unrecognized_keys} are invalid Document attributes, must come from {support_keys}'
-                    )
+        from .. import Document
+
+        support_keys = Document.get_all_attributes()
+        unrecognized_keys = set(required_keys).difference(support_keys)
+
+        if not unrecognized_keys:
+            return required_keys
+
+        from ..proto import jina_pb2
+
+        camel_keys = set(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name)
+        legacy_keys = {'data'}
+        unrecognized_camel_keys = unrecognized_keys.intersection(camel_keys)
+        if unrecognized_camel_keys:
+            raise AttributeError(
+                f'{unrecognized_camel_keys} are supported but you give them in CamelCase, '
+                f'please rewrite them in canonical form.'
+            )
+        elif unrecognized_keys.intersection(legacy_keys):
+            raise AttributeError(
+                f'{unrecognized_keys.intersection(legacy_keys)} is now deprecated and not a valid argument of '
+                'the executor function, '
+                'please change `data` to `content: \'np.ndarray\'` in your executor function. '
+                'details: https://github.com/jina-ai/jina/pull/2313/'
+            )
+        else:
+            raise AttributeError(
+                f'{unrecognized_keys} are invalid Document attributes, must come from {support_keys}'
+            )
 
         return required_keys
 
@@ -698,8 +708,10 @@ class BaseExecutableDriver(BaseRecursiveDriver):
             decor_bindings = find_request_binding(self.exec.__class__)
             if req_type:
                 canonic_name = _canonical_request_name(req_type)
-            if req_type and canonic_name in decor_bindings:
-                self._method_name = decor_bindings[canonic_name]
+                if canonic_name in decor_bindings:
+                    self._method_name = decor_bindings[canonic_name]
+                elif 'default' in decor_bindings:
+                    self._method_name = decor_bindings['default']
             elif 'default' in decor_bindings:
                 self._method_name = decor_bindings['default']
 
