@@ -8,6 +8,8 @@ from ...enums import PeaRoleType, RuntimeBackendType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
+import multiprocessing
+import threading
 
 __all__ = ['BasePea']
 
@@ -108,13 +110,14 @@ class BasePea(metaclass=PeaType):
             self.is_ready.clear()
             self._unset_envs()
 
-    def start(self):
+    def start(self) -> 'BasePea':
         """Start the Pea.
 
         This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-        """
 
-        super().start()  #: required here to call process/thread method
+        .. # noqa: DAR201
+        """
+        super().start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
 
@@ -230,5 +233,8 @@ class BasePea(metaclass=PeaType):
 
     @property
     def role(self) -> 'PeaRoleType':
-        """Get the role of this pea in a pod"""
+        """Get the role of this pea in a pod
+
+        .. # noqa: DAR201
+        """
         return self.args.pea_role

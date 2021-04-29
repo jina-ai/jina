@@ -284,9 +284,6 @@ class Pod(BasePod):
             _args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
             self.peas.append(BasePea(_args))
 
-        for pea in self.peas:
-            print(f' hey Pea {pea}')
-
     @property
     def is_singleton(self) -> bool:
         """Return if the Pod contains only a single Pea
