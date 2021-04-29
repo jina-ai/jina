@@ -32,6 +32,7 @@ class BaseRanker(BaseExecutor):
 
     def __init__(
         self,
+        trainable: False,
         query_required_keys: Optional[List[str]] = None,
         match_required_keys: Optional[List[str]] = None,
         *args,
@@ -58,6 +59,7 @@ class BaseRanker(BaseExecutor):
                 ranker = BaseRanker(query_required_keys=('tags__color'), match_required_keys=('tags__color, 'tags__price')
         """
         super().__init__(*args, **kwargs)
+        self._trainable = trainable
         self.query_required_keys = query_required_keys
         self.match_required_keys = match_required_keys
 
@@ -67,6 +69,14 @@ class BaseRanker(BaseExecutor):
         :param kwargs: Extra keyword arguments
         """
         raise NotImplementedError
+
+    @property
+    def trainable(self) -> bool:
+        return self._trainable
+
+    @trainable.setter
+    def trainable(self, is_trainable: bool):
+        self._trainable = is_trainable
 
 
 class Chunk2DocRanker(BaseRanker):
