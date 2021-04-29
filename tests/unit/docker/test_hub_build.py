@@ -155,6 +155,15 @@ def test_jina_version_freeze_no_jina_dependency(requirements, tmpdir):
         assert len(list(filter(lambda x: 'jina' in str(x), requirements))) == 0
 
 
+@pytest.mark.parametrize(
+    'requirements', ['git+https://github.com/openai/CLIP.git'], indirect=True
+)
+def test_jina_version_freeze_no_jina_dependency_git_no_raise(requirements, tmpdir):
+    args = set_hub_build_parser().parse_args([str(tmpdir)])
+    hubio = HubIO(args)
+    hubio._freeze_jina_version()
+
+
 def test_labels():
     class MockContainers:
         def __init__(self):
