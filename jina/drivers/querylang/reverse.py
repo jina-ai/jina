@@ -6,7 +6,7 @@ from typing import Iterable, Tuple
 from .. import QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver
 
 if False:
-    from ...types.sets import DocumentSet
+    from ...types.arrays import DocumentArray
 
 
 class ReverseQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
@@ -25,7 +25,7 @@ class ReverseQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver)
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentArray'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             docs.reverse()

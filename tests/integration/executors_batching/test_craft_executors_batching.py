@@ -10,7 +10,7 @@ from jina.executors.decorators import (
 from jina import Document
 from jina.flow import Flow
 from jina.types.ndarray.generic import NdArray
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 from tests import validate_callback
 
 
@@ -39,7 +39,7 @@ class DummyCrafterTextSingle(BaseCrafter):
     'crafter', [DummyCrafterTextSingle(), DummyCrafterTextBatching()]
 )
 def test_batching_text_one_argument(stack, crafter):
-    docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
+    docs = DocumentArray([Document(text=f'text-{i}') for i in range(15)])
     texts, _ = docs.extract_docs('text', stack_contents=stack)
 
     crafted_docs = crafter.craft(texts)
@@ -58,7 +58,7 @@ def test_batching_text_one_argument_flow(crafter, mocker):
         for i, doc in enumerate(resp.index.docs):
             assert doc.text == f'text-{i}-crafted'
 
-    docs = DocumentSet([Document(text=f'text-{i}') for i in range(NUM_DOCS)])
+    docs = DocumentArray([Document(text=f'text-{i}') for i in range(NUM_DOCS)])
     mock = mocker.Mock()
 
     with Flow().add(name='crafter', uses=crafter) as f:
@@ -97,7 +97,7 @@ class DummyCrafterTextIdSingle(BaseCrafter):
     'crafter', [DummyCrafterTextIdSingle(), DummyCrafterTextIdBatching()]
 )
 def test_batching_text_multi(stack, crafter):
-    docs = DocumentSet([Document(text=f'text-{i}', id=f'id-{i}') for i in range(15)])
+    docs = DocumentArray([Document(text=f'text-{i}', id=f'id-{i}') for i in range(15)])
     required_keys = ['text', 'id']
     text_ids, _ = docs.extract_docs(*required_keys, stack_contents=stack)
 
@@ -120,7 +120,7 @@ def test_batching_text_multi_flow(crafter, mocker):
             assert doc.text == f'text-{i}-crafted'
             assert doc.id == f'id-{i}-crafted'
 
-    docs = DocumentSet(
+    docs = DocumentArray(
         [Document(text=f'text-{i}', id=f'id-{i}') for i in range(NUM_DOCS)]
     )
     mock = mocker.Mock()
@@ -157,7 +157,9 @@ class DummyCrafterBlobSingle(BaseCrafter):
     'crafter', [DummyCrafterBlobSingle(), DummyCrafterBlobBatching()]
 )
 def test_batching_blob_one_argument(stack, crafter):
-    docs = DocumentSet([Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(15)])
+    docs = DocumentArray(
+        [Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(15)]
+    )
     texts, _ = docs.extract_docs('blob', stack_contents=stack)
 
     crafted_docs = crafter.craft(texts)
@@ -178,7 +180,7 @@ def test_batching_blob_one_argument_flow(crafter, mocker):
                 NdArray(doc.blob).value, np.array([[i] * 5, [i] * 5])
             )
 
-    docs = DocumentSet(
+    docs = DocumentArray(
         [Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(NUM_DOCS)]
     )
     mock = mocker.Mock()
@@ -217,7 +219,7 @@ class DummyCrafterBlobEmbeddingSingle(BaseCrafter):
     'crafter', [DummyCrafterBlobEmbeddingSingle(), DummyCrafterBlobEmbeddingBatching()]
 )
 def test_batching_blob_multi(stack, crafter):
-    docs = DocumentSet(
+    docs = DocumentArray(
         [
             Document(
                 blob=np.array([[i] * 5, [i] * 5]),
@@ -251,7 +253,7 @@ def test_batching_blob_multi_flow(crafter, mocker):
             )
             np.testing.assert_equal(NdArray(doc.embedding).value, np.array([i] * 5))
 
-    docs = DocumentSet(
+    docs = DocumentArray(
         [
             Document(
                 blob=np.array([[i] * 5, [i] * 5]),
@@ -299,7 +301,7 @@ class DummyCrafterTextEmbeddingSingle(BaseCrafter):
     'crafter', [DummyCrafterTextEmbeddingSingle(), DummyCrafterTextEmbeddingBatching()]
 )
 def test_batching_mix_multi(stack, crafter):
-    docs = DocumentSet(
+    docs = DocumentArray(
         [Document(text=f'text-{i}', embedding=np.array([i] * 5)) for i in range(15)]
     )
     required_keys = ['text', 'embedding']
@@ -325,7 +327,7 @@ def test_batching_mix_multi_flow(crafter, mocker):
             assert doc.text == f'text-{i}-crafted'
             np.testing.assert_equal(NdArray(doc.embedding).value, np.array([i] * 5))
 
-    docs = DocumentSet(
+    docs = DocumentArray(
         [
             Document(
                 text=f'text-{i}',

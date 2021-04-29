@@ -1,7 +1,7 @@
 from ..drivers import FlatRecursiveMixin, BaseRecursiveDriver
 
 if False:
-    from ..types.sets import DocumentSet
+    from ..types.arrays import DocumentArray
 
 
 class ConvertDriver(FlatRecursiveMixin, BaseRecursiveDriver):
@@ -23,7 +23,7 @@ class ConvertDriver(FlatRecursiveMixin, BaseRecursiveDriver):
 
     def _apply_all(
         self,
-        docs: 'DocumentSet',
+        docs: 'DocumentArray',
         *args,
         **kwargs,
     ) -> None:

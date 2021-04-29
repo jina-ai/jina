@@ -1,17 +1,10 @@
 from typing import Iterable
 import itertools
 
-from ..arrays.traversable import TraversableSequence
-from ...helper import deprecated_class
-
 if False:
     from ..document.traversable import Traversable
 
 
-@deprecated_class(
-    new_class=TraversableSequence,
-    custom_msg="The class has been moved to '..types.arrays', keeping its original name.",
-)
 class TraversableSequence:
     """
     A mixin used for traversing a `Sequence[Traversable]`.

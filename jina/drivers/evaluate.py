@@ -11,7 +11,7 @@ from .search import KVSearchDriver
 from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair
 from ..helper import deprecated_alias
-from ..types.sets.doc_groundtruth import DocumentGroundtruthSequence
+from ..types.arrays.doc_groundtruth import DocumentGroundtruthSequence
 
 
 class BaseEvaluateDriver(BaseExecutableDriver):

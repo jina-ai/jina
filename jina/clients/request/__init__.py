@@ -10,7 +10,7 @@ from ...enums import RequestType, DataInputType
 from ...helper import batch_iterator
 from ...logging import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType, Document
-from ...types.sets.querylang import AcceptQueryLangType
+from ...types.arrays.querylang import AcceptQueryLangType
 
 SingletonDataType = Union[
     DocumentContentType,

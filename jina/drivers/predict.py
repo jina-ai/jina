@@ -6,7 +6,7 @@ from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 from ..helper import typename
 
 if False:
-    from .. import DocumentSet, Document, NdArray
+    from .. import DocumentArray, Document, NdArray
     from ..proto import jina_pb2
 
 
@@ -42,7 +42,7 @@ class BaseLabelPredictDriver(BasePredictDriver):
         super().__init__(*args, **kwargs)
         self.output_tag = output_tag
 
-    def update_docs(self, docs_pts: 'DocumentSet', exec_results: Any):
+    def update_docs(self, docs_pts: 'DocumentArray', exec_results: Any):
         """Update doc tags attribute with executor's return
 
         :param: docs_pts: the set of document to be updated

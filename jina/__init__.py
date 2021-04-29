@@ -24,13 +24,13 @@ if _api_implementation._default_implementation_type != 'cpp':
     _warnings.warn(
         '''
     You are using Python protobuf backend, not the C++ version, which is much faster.
-    
+
     This is often due to C++ implementation failed to compile while installing Protobuf
     - You are using in Python 3.9 (https://github.com/jina-ai/jina/issues/1801)
     - You are using on architecture other than x86_64/armv6/armv7
     - You installation is broken, try `pip install --force protobuf`
     - You have C++ backend but you shut it down, try `export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp`
-    
+
     ''',
         RuntimeWarning,
     )
@@ -125,7 +125,7 @@ from jina.types.message import Message
 from jina.types.querylang import QueryLang
 from jina.types.document import Document
 from jina.types.document.multimodal import MultimodalDocument
-from jina.types.sets import DocumentSet, QueryLangSet
+from jina.types.arrays import DocumentArray, QueryLangArray
 
 # ADD GLOBAL NAMESPACE VARIABLES
 JINA_GLOBAL = _types.SimpleNamespace()
