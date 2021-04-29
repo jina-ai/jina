@@ -1,12 +1,47 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
+import abc
 
-class TrainerMixin(object):
-    """
-    Interface of trainer for Rankers.
-    """
+from . import BaseRanker
 
-    def losses(self):
-        return self._losses
 
+class RankerTrainer(abc.ABC):
+    """pass"""
+
+    def __init__(self, ranker: BaseRanker = None, params: dict = None):
+        super().__init__()
+        self._ranker = ranker
+        self._params = params
+
+    @abc.abstractmethod
+    def train(self):
+        """Train ranker based on user feedback, updating ranker weights based on
+        the `loss` function."""
+        pass
+
+    @property
+    def ranker(self) -> BaseRanker:
+        return self._ranker
+
+    @abc.abstractmethod
+    def save(self, ranker_path: str):
+        """
+        Save the ranker model.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def load(self, ranker_path: str):
+        """
+        Load the ranker model.
+        """
+        raise NotImplementedError
+
+    @property
+    def params(self):
+        return self._params
+
+    @params.setter
+    def params(self, key, value):
+        self.params[key] = value
