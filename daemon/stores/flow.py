@@ -62,14 +62,11 @@ class FlowStore(BaseStore):
         :param dump_path: the dump path
         :param pod_name: the pod to target
         :param shards: the nr of shards to dump for (only used for the `dump` op)"""
-        try:
-            flow_dict = self._items[id]
-            flow_obj = flow_dict.get('object')
-            ws = flow_dict.get('workspace_id')
-            with jina_workspace(ws) as _workdir:
-                if kind == UpdateOperationEnum.rolling_update:
-                    flow_obj.rolling_update(pod_name=pod_name, dump_path=dump_path)
-                elif kind == UpdateOperationEnum.dump:
-                    flow_obj.dump(pod_name=pod_name, dump_path=dump_path, shards=shards)
-        except KeyError:
-            raise HTTPException(status_code=404, detail=f'{id} not found in {self!r}')
+        flow_dict = self._items[id]
+        flow_obj = flow_dict.get('object')
+        ws = flow_dict.get('workspace_id')
+        with jina_workspace(ws) as _workdir:
+            if kind == UpdateOperationEnum.rolling_update:
+                flow_obj.rolling_update(pod_name=pod_name, dump_path=dump_path)
+            elif kind == UpdateOperationEnum.dump:
+                flow_obj.dump(pod_name=pod_name, dump_path=dump_path, shards=shards)

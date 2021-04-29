@@ -4,6 +4,8 @@ from typing import Optional
 from fastapi import APIRouter, File, UploadFile, Body
 from fastapi.exceptions import HTTPException
 from starlette.requests import Request
+from starlette.responses import Response
+from starlette.status import HTTP_200_OK
 
 from ... import Runtime400Exception
 from ...models import FlowModel, UpdateOperationEnum
@@ -93,4 +95,10 @@ async def _update(
     pod_name: str,
     shards: int = None,
 ):
-    store.update(id, kind, dump_path, pod_name, shards)
+    try:
+        store.update(id, kind, dump_path, pod_name, shards)
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'{e!r}')
+    return Response(status_code=HTTP_200_OK)

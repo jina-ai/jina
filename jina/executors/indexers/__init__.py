@@ -145,6 +145,7 @@ class BaseIndexer(BaseExecutor):
             else:
                 self.logger.info(f'indexer size: {self.size}')
                 self.is_handler_loaded = True
+                self.logger.warning(f'### query handler loaded. {self.index_abspath=}')
         if r is None:
             r = self.null_query_handler
         return r
@@ -180,6 +181,7 @@ class BaseIndexer(BaseExecutor):
         # =
         # ! a || b
         if not self.handler_mutex or not self.is_handler_loaded:
+            print(f'### {self.is_exist=}')
             r = self.get_add_handler() if self.is_exist else self.get_create_handler()
 
             if r is None:
@@ -189,6 +191,7 @@ class BaseIndexer(BaseExecutor):
                 )
             else:
                 self.is_handler_loaded = True
+                self.logger.warning(f'### write handler created. {self.index_abspath=}')
             return r
 
     def get_query_handler(self):

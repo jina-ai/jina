@@ -28,11 +28,12 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         # noinspection PyPropertyAccess
         del self.write_handler
         self.handler_mutex = False
+        self.logger.warning(f'### about to call header.keys()')
         ids = self.query_handler.header.keys()
         export_dump_streaming(
             path,
             shards=shards,
-            size=self.size,
+            size=len(ids),
             data=self._get_generator(ids),
         )
         self.query_handler.close()

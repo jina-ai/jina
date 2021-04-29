@@ -1,4 +1,4 @@
-from ..sets import DocumentSet
+from ... import DocumentArray
 from ...proto import jina_pb2
 
 
