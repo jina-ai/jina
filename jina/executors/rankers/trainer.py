@@ -1,40 +1,28 @@
 __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import abc
 
-from . import BaseRanker
+from .. import BaseExecutor
 
 
-class RankerTrainer(abc.ABC):
+class RankerTrainer(BaseExecutor):
     """pass"""
 
-    def __init__(self, ranker: BaseRanker, params: dict = None):
+    def __init__(self, params: dict = None):
         super().__init__()
-        if not ranker.trainable:
-            # TODO customize exception.
-            raise Exception('The ranker is not trainable.')
-        self._ranker = ranker
         self._params = params
 
-    @abc.abstractmethod
     def train(self):
         """Train ranker based on user feedback, updating ranker weights based on
         the `loss` function."""
-        pass
+        raise NotImplementedError
 
-    @property
-    def ranker(self) -> BaseRanker:
-        return self._ranker
-
-    @abc.abstractmethod
     def save(self, ranker_path: str):
         """
         Save the ranker model.
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
     def load(self, ranker_path: str):
         """
         Load the ranker model.
