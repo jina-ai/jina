@@ -99,12 +99,11 @@ def test_thread_run(docs):
     )
     with flow:
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
-        x.start()
-        # TODO remove the join to make it asynchronous again
-        x.join()
-        # TODO there is a problem with the gateway even after request times out - open issue
-        for i in range(600):
+        for i in range(50):
             flow.search(docs)
+            if i == 5:
+                x.start()
+        x.join()
 
 
 def test_vector_indexer_thread(config, docs):
@@ -117,12 +116,12 @@ def test_vector_indexer_thread(config, docs):
         for i in range(5):
             flow.search(docs)
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
-        x.start()
-        # TODO there is a problem with the gateway even after request times out - open issue
-        # TODO remove the join to make it asynchronous again
         x.join()
         for i in range(40):
             flow.search(docs)
+            if i == 5:
+                x.start()
+        x.join()
 
 
 def test_workspace(config, tmpdir, docs):
