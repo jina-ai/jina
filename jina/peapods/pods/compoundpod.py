@@ -24,6 +24,9 @@ class CompoundPod(BasePod):
     :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod
     """
 
+    head_args = None
+    tail_args = None
+
     def __init__(
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
