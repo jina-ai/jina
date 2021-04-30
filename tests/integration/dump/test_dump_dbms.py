@@ -29,6 +29,10 @@ def get_documents(nr=10, index_start=0, emb_size=7):
             d.text = f'hello world {i}'
             d.embedding = np.random.random(emb_size)
             d.tags['tag_field'] = f'tag data {i}'
+        # meta = DBMSIndexDriver._doc_without_embedding(d).SerializeToString()
+        # print(f'### creation: {i=}; {meta}')
+        # new_d = Document(meta)
+        # assert new_d.tags['tag_field'] == f'tag data {d.id}'
         yield d
 
 
@@ -147,10 +151,12 @@ def _error_callback(resp):
     raise Exception('error callback called')
 
 
-@pytest.mark.parametrize('shards', [1, 3, 5])
+@pytest.mark.parametrize('shards', [5, 3, 1])
 @pytest.mark.parametrize('nr_docs', [7])
 @pytest.mark.parametrize('emb_size', [10])
-def test_dump_dbms(tmpdir, mocker, shards, nr_docs, emb_size, run_basic=False):
+def test_dump_dbms(
+    tmpdir, mocker, shards, nr_docs, emb_size, run_basic=False, times_to_index=2
+):
     """showcases using replicas + dump + rolling update with independent clients"""
 
     cb, docs, dump_path, nr_search = _test_dump_prepare(
@@ -160,42 +166,54 @@ def test_dump_dbms(tmpdir, mocker, shards, nr_docs, emb_size, run_basic=False):
         shards,
         tmpdir,
     )
-
+    times_indexed = 0
+    full_docs = []
     with Flow.load_config('flow_dbms.yml') as flow_dbms:
         with Flow.load_config('flow_query.yml') as flow_query:
-            client_dbms = get_client(flow_dbms.port_expose)
-            client_query = get_client(flow_query.port_expose)
+            while times_indexed < times_to_index:
+                dump_path = os.path.join(dump_path, f'dump-{str(times_indexed)}')
+                client_dbms = get_client(flow_dbms.port_expose)
+                client_query = get_client(flow_query.port_expose)
+                docs = list(
+                    get_documents(
+                        nr=nr_docs,
+                        index_start=times_indexed * nr_docs,
+                        emb_size=emb_size,
+                    )
+                )
+                full_docs.extend(docs)
 
-            with TimeContext(f'### indexing {len(docs)} docs'):
-                # client is used for data requests
-                client_dbms.index(docs)
+                with TimeContext(f'### indexing {len(docs)} docs'):
+                    # client is used for data requests
+                    client_dbms.index(docs)
 
-            with TimeContext(f'### dumping {len(docs)} docs'):
-                # TODO add to JInad
-                # flow object is used for ctrl requests
-                flow_dbms.dump('indexer_dbms', dump_path=dump_path, shards=shards)
+                with TimeContext(f'### dumping {len(docs)} docs'):
+                    # TODO add to JInad
+                    # flow object is used for ctrl requests
+                    flow_dbms.dump('indexer_dbms', dump_path=dump_path, shards=shards)
 
-            dir_size = path_size(dump_path)
-            print(f'### dump path size: {dir_size} MBs')
+                dir_size = path_size(dump_path)
+                print(f'### dump path size: {dir_size} MBs')
 
-            with TimeContext(f'### rolling update on {len(docs)}'):
-                # flow object is used for ctrl requests
-                flow_query.rolling_update('indexer_query', dump_path)
+                with TimeContext(f'### rolling update on {len(docs)}'):
+                    # flow object is used for ctrl requests
+                    flow_query.rolling_update('indexer_query', dump_path)
 
-            mock = mocker.Mock()
+                mock = mocker.Mock()
 
-            # data request goes to client
-            client_query.search(
-                docs[:nr_search],
-                on_done=mock,
-                on_error=_error_callback,
-            )
-            mock.assert_called_once()
-            validate_callback(mock, cb)
+                # data request goes to client
+                client_query.search(
+                    docs[:nr_search],
+                    on_done=mock,
+                    on_error=_error_callback,
+                )
+                mock.assert_called_once()
+                validate_callback(mock, cb)
+                times_indexed += 1
 
-    # assert data dumped is correct
-    for pea_id in range(shards):
-        assert_dump_data(dump_path, docs, shards, pea_id)
+                # assert data dumped is correct
+                for pea_id in range(shards):
+                    assert_dump_data(dump_path, full_docs, shards, pea_id)
 
 
 def _test_dump_prepare(emb_size, nr_docs, run_basic, shards, tmpdir):
@@ -206,7 +224,9 @@ def _test_dump_prepare(emb_size, nr_docs, run_basic, shards, tmpdir):
     os.environ['USES_AFTER'] = '_merge_matches' if shards > 1 else '_pass'
     os.environ['QUERY_SHARDS'] = str(shards)
 
-    cb = functools.partial(_validate_results_nonempty, nr_search, nr_docs, emb_size)
+    cb = functools.partial(
+        _validate_results_nonempty, nr_search, nr_docs * 2, emb_size
+    )  # x 2 because we run it twice
     cb.__name__ = 'cb'
 
     if run_basic:
@@ -360,5 +380,11 @@ def test_threading_query_while_reloading(tmpdir, nr_docs, emb_size, mocker):
 def test_benchmark(tmpdir, mocker):
     nr_docs = 100000
     return test_dump_dbms(
-        tmpdir, mocker, shards=1, nr_docs=nr_docs, emb_size=128, run_basic=True
+        tmpdir,
+        mocker,
+        shards=1,
+        nr_docs=nr_docs,
+        emb_size=128,
+        run_basic=True,
+        times_to_index=1,
     )

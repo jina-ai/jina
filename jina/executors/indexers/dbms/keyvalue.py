@@ -2,6 +2,7 @@ import pickle
 from typing import List, Tuple, Generator
 import numpy as np
 
+from jina import Document
 from jina.executors.indexers.dump import export_dump_streaming
 from jina.executors.indexers.dbms import BaseDBMSIndexer
 from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
@@ -16,6 +17,7 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         for id_ in ids:
             vecs_metas_list_bytes = super()._query([id_])
             vec, meta = pickle.loads(vecs_metas_list_bytes[0])
+            assert Document(meta).tags['tag_field'] is not None
             yield id_, vec, meta
 
     def dump(self, path: str, shards: int) -> None:
@@ -28,7 +30,6 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         # noinspection PyPropertyAccess
         del self.write_handler
         self.handler_mutex = False
-        self.logger.warning(f'### about to call header.keys()')
         ids = self.query_handler.header.keys()
         export_dump_streaming(
             path,
@@ -55,7 +56,11 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         if not any(ids):
             return
 
-        vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
+        vecs_metas = [pickle.dumps([vec, meta]) for vec, meta in zip(vecs, metas)]
+        # for vec_meta in vecs_metas:
+        #     vec, meta = pickle.loads(vec_meta)
+        #     assert vec is not None
+        #     assert meta is not None
         with self.write_handler as write_handler:
             self._add(ids, vecs_metas, write_handler)
 

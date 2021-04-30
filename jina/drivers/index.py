@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable, Optional
 
 from . import BaseExecutableDriver, FlatRecursiveMixin
+from .. import Document
 from ..enums import EmbeddingClsType
 
 if False:
@@ -80,12 +81,19 @@ class DBMSIndexDriver(BaseIndexDriver):
             (
                 doc.id,
                 doc.embedding,
-                self._doc_without_embedding(doc).SerializeToString(),
+                DBMSIndexDriver._doc_without_embedding(doc).SerializeToString(),
             )
             for doc in docs
         ]
         if info:
             ids, vecs, metas = zip(*info)
+            # ids = list(ids)
+            # vecs = list(vecs)
+            # metas = list(metas)
+            # for id, meta in zip(ids, metas):
+            #     print(f'### driver: {id=}; {meta}')
+            #     d = Document(meta)
+            #     assert d.tags['tag_field'] == f'tag data {d.id}'
             self.check_key_length(ids)
             self.exec_fn(ids, vecs, metas)
 

@@ -1,3 +1,4 @@
+import shutil
 import os
 import sys
 import time
@@ -53,7 +54,9 @@ def _index_client(nr_docs_index):
     while KEEP_RUNNING:
         docs = list(
             _get_documents(
-                nr=nr_docs_index, index_start=INDEX_TIMES * 10, emb_size=EMB_SIZE
+                nr=nr_docs_index,
+                index_start=INDEX_TIMES * nr_docs_index,
+                emb_size=EMB_SIZE,
             )
         )
         Client.check_input(docs)
@@ -62,7 +65,7 @@ def _index_client(nr_docs_index):
             REST_PORT_DBMS, 'index', 'post', [doc.dict() for doc in docs]
         )
         INDEX_TIMES += 1
-        time.sleep(2)
+        time.sleep(4)
 
 
 def _query_client(nr_docs_query):
@@ -72,19 +75,24 @@ def _query_client(nr_docs_query):
     docs = list(_get_documents(nr=nr_docs_query, index_start=0, emb_size=EMB_SIZE))
     Client.check_input(docs)
     while KEEP_RUNNING:
-        logger.info(f'querying...')
-        r = _send_rest_request(
-            REST_PORT_QUERY,
-            'search',
-            'post',
-            [doc.dict() for doc in docs],
-        )
-        len_matches = len(r['search']['docs'][0].get('matches'))
-        assert len_matches >= prev_len_matches
-        logger.info(f'got {len_matches} matches')
-        prev_len_matches = len_matches
-        QUERY_TIMES += 1
-        time.sleep(2)
+        try:
+            logger.info(f'querying...')
+            r = _send_rest_request(
+                REST_PORT_QUERY,
+                'search',
+                'post',
+                [doc.dict() for doc in docs],
+                timeout=5,
+            )
+            for doc in r['search']['docs']:
+                len_matches = len(doc.get('matches'))
+                assert len_matches >= prev_len_matches
+            logger.info(f'got {len_matches} matches')
+            prev_len_matches = len_matches
+            QUERY_TIMES += 1
+            time.sleep(2)
+        except Exception as e:
+            logger.error(f'querying failed: {e}. trying again...')
 
 
 def _dump_roll_update(dbms_flow_id, query_flow_id):
@@ -117,15 +125,15 @@ def _dump_roll_update(dbms_flow_id, query_flow_id):
         folder_id += 1
         logger.info(f'rolling update done!')
         DUMP_ROLL_UPDATE_TIME += 1
-        time.sleep(2)
+        time.sleep(4)
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_dump_dbms_remote_stress(tmpdir, docker_compose):
-    # def test_dump_dbms_remote_stress(tmpdir):
+    # def test_dump_dbms_remote_stress(tmpdir, cleanup_dump):
     global KEEP_RUNNING
-    nr_docs_index = 20
-    nr_docs_search = 2
+    nr_docs_index = 5
+    nr_docs_search = 1
 
     time.sleep(2)
     dbms_flow_id, query_flow_id = _create_flows()
@@ -154,7 +162,7 @@ def test_dump_dbms_remote_stress(tmpdir, docker_compose):
     threads = [query_thread, index_thread, dump_roll_update_thread]
 
     logger.info('sleeping')
-    time.sleep(20)
+    time.sleep(30)
 
     for t in threads:
         if not t.is_alive():
@@ -162,9 +170,9 @@ def test_dump_dbms_remote_stress(tmpdir, docker_compose):
             t.join()
             assert False, f'check error from thread {t.name}'
 
-    assert INDEX_TIMES > 2
-    assert QUERY_TIMES > 2
-    assert DUMP_ROLL_UPDATE_TIME > 2
+    assert INDEX_TIMES > 3
+    assert QUERY_TIMES > 3
+    assert DUMP_ROLL_UPDATE_TIME > 3
 
     logger.info(f'ending and exit threads')
 
@@ -234,7 +242,8 @@ def test_dump_dbms_remote(tmpdir, docker_compose):
     r = _send_rest_request(
         REST_PORT_QUERY, 'search', 'post', [doc.dict() for doc in docs[:nr_search]]
     )
-    assert len(r['search']['docs'][0].get('matches')) == nr_docs
+    for doc in r['search']['docs']:
+        assert len(doc.get('matches')) == nr_docs
 
 
 def _create_flow(
@@ -321,3 +330,10 @@ def _jinad_rolling_update(pod_name, dump_path, url):
     logger.info(f'sending PUT to roll update')
     r = requests.put(url, params=params)
     assert r.status_code == 200
+
+
+@pytest.fixture()
+def cleanup_dump():
+    shutil.rmtree(DUMP_PATH_LOCAL, ignore_errors=True)
+    yield
+    shutil.rmtree(DUMP_PATH_LOCAL)

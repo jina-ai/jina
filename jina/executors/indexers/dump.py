@@ -1,10 +1,10 @@
-import getpass
 import os
 import sys
 from typing import Tuple, Generator, BinaryIO, TextIO
 
 import numpy as np
 
+from jina import Document
 from jina.logging import JinaLogger
 
 BYTE_PADDING = 4
@@ -81,6 +81,7 @@ def _write_shard_files(
     vectors_fh: BinaryIO,
 ):
     id_, vec, meta = next(data)
+    # assert Document(meta).tags['tag_field'] is not None
     vec_bytes = vec.tobytes()
     vectors_fh.write(len(vec_bytes).to_bytes(BYTE_PADDING, sys.byteorder) + vec_bytes)
     metas_fh.write(len(meta).to_bytes(BYTE_PADDING, sys.byteorder) + meta)
