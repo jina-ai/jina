@@ -74,7 +74,7 @@ class CompoundPod(BasePod):
 
         :return: total number of peas including head and tail
         """
-        return sum([replica.num_peas for replica in self.replica_list]) + len(self.peas)
+        return sum([replica.num_peas for replica in self.replica_list]) + 2
 
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -93,7 +93,6 @@ class CompoundPod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
             self.tail_pea = Pea(tail_args)
@@ -136,8 +135,8 @@ class CompoundPod(BasePod):
             )
 
         try:
-            for p in self.peas:
-                p.wait_start_success()
+            self.head_pea.wait_start_success()
+            self.tail_pea.wait_start_success()
             for p in self.replica_list:
                 p.wait_start_success()
         except:

@@ -116,7 +116,6 @@ def test_vector_indexer_thread(config, docs):
         for i in range(5):
             flow.search(docs)
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
-        x.join()
         for i in range(40):
             flow.search(docs)
             if i == 5:
