@@ -1,9 +1,9 @@
 import os
 import sys
 import warnings
+from collections import defaultdict
 from types import SimpleNamespace, ModuleType
 from typing import Optional, List, Any, Dict
-from collections import defaultdict
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
@@ -27,7 +27,6 @@ def import_classes(
     """
     _namespace2type = {
         'jina.executors': 'ExecutorType',
-        'jina.drivers': 'DriverType',
         'jina.hub': 'ExecutorType',
     }
     _import_type = _namespace2type.get(namespace)

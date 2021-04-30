@@ -1,5 +1,3 @@
-
-
 import os
 
 from . import __jina_env__
@@ -36,9 +34,6 @@ class ImportChecker:
         if args.summary_exec and _r:
             with open(args.summary_exec, 'w') as fp:
                 _print_dep_tree_rst(fp, _r, 'Executor')
-
-        default_logger.info('\navailable drivers\n'.upper())
-        _r = import_classes('jina.drivers', show_import_table=True, import_once=False)
 
         if args.summary_driver:
             with open(args.summary_driver, 'w') as fp:

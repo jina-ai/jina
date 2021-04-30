@@ -51,7 +51,6 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # Underscore variables shared globally
 
 
-
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
@@ -133,7 +132,6 @@ JINA_GLOBAL.torch_installed = None
 import jina.importer as _ji
 
 # driver first, as executor may contain driver
-_ji.import_classes('jina.drivers', show_import_table=False, import_once=True)
 _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
 _ji.import_classes('jina.hub', show_import_table=False, import_once=True)
 
