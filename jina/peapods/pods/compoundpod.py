@@ -93,31 +93,31 @@ class CompoundPod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            tail_args = self.tail_args
-            tail_args.noblock_on_start = True
-            self.tail_pea = Pea(tail_args)
-            self._enter_pea(self.tail_pea)
-            for _args in self.replicas_args:
-                _args.noblock_on_start = True
-                _args.polling = PollingType.ALL
-                self._enter_replica(Pod(_args))
             head_args = self.head_args
             head_args.noblock_on_start = True
             self.head_pea = Pea(head_args)
             self._enter_pea(self.head_pea)
+            for _args in self.replicas_args:
+                _args.noblock_on_start = True
+                _args.polling = PollingType.ALL
+                self._enter_replica(Pod(_args))
+            tail_args = self.tail_args
+            tail_args.noblock_on_start = True
+            self.tail_pea = Pea(tail_args)
+            self._enter_pea(self.tail_pea)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                tail_args = self.tail_args
-                self.tail_pea = Pea(tail_args)
-                self._enter_pea(self.tail_pea)
-                for _args in self.replicas_args:
-                    _args.polling = PollingType.ALL
-                    self._enter_replica(Pod(_args))
                 head_args = self.head_args
                 self.head_pea = Pea(head_args)
                 self._enter_pea(self.head_pea)
+                for _args in self.replicas_args:
+                    _args.polling = PollingType.ALL
+                    self._enter_replica(Pod(_args))
+                tail_args = self.tail_args
+                self.tail_pea = Pea(tail_args)
+                self._enter_pea(self.tail_pea)
             except:
                 self.close()
                 raise
