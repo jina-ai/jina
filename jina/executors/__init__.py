@@ -1,4 +1,3 @@
-
 import os
 import pickle
 import tempfile
@@ -489,12 +488,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         # noqa: DAR102
         """
-        if req_endpoint in self._requests_mapping:
-            return self._requests_mapping[req_endpoint](self, **kwargs)
-        elif __default_endpoint__ in self._requests_mapping:
-            return self._requests_mapping[__default_endpoint__](self, **kwargs)
-        else:
-            raise ValueError(f'{req_endpoint} is not bind to any method of {self}')
+        if getattr(self, '_requests_mapping', {}):
+            if req_endpoint in self._requests_mapping:
+                return self._requests_mapping[req_endpoint](self, **kwargs)
+            elif __default_endpoint__ in self._requests_mapping:
+                return self._requests_mapping[__default_endpoint__](self, **kwargs)
+            else:
+                raise ValueError(f'{req_endpoint} is not bind to any method of {self}')
 
     def __str__(self):
         return self.__class__.__name__

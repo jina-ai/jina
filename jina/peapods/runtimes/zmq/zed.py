@@ -186,13 +186,17 @@ class ZEDRuntime(ZMQRuntime):
                 r_docs = self._executor(
                     req_endpoint=self.request.header.exec_endpoint,
                     docs=self.docs,
-                    groundtruths=self.request.groundtruths,
+                    groundtruths=self.groundtruths,
                     queryset=self.request.queryset,
                     parameters=MessageToDict(self.request.parameters),
+                    docs_matrix=self.docs_matrix,
+                    groundtruths_matrix=self.groundtruths_matrix
                 )
                 if r_docs is not None:
                     if not isinstance(r_docs, DocumentSet):
-                        raise TypeError(f'return type must be {DocumentSet!r} object, but getting {typename(r_docs)}')
+                        raise TypeError(
+                            f'return type must be {DocumentSet!r} object, but getting {typename(r_docs)}'
+                        )
                     elif r_docs != self.request.docs:
                         # this means the returned DocArray is a completely new one
                         self.request.docs.clear()
@@ -331,10 +335,48 @@ class ZEDRuntime(ZMQRuntime):
         """
         return self._partial_messages
 
+    def _get_docs(self, field: str) -> 'DocumentSet':
+        if self.expect_parts > 1:
+            result = DocumentSet(
+                [d for r in reversed(self.partial_requests) for d in getattr(r, field)]
+            )
+        else:
+            result = getattr(self.request, field)
+
+        # to unify all length=0 DocumentSet (or any other results) will simply considered as None
+        # otherwise the executor has to handle DocSet(0)
+        if len(result):
+            return result
+
+    def _get_docs_matrix(self, field) -> List['DocumentSet']:
+        """ DocumentSet from (multiple) requests"""
+        if self.expect_parts > 1:
+            result = [getattr(r, field) for r in reversed(self.partial_requests)]
+        else:
+            result = [getattr(self.request, field)]
+
+        # to unify all length=0 DocumentSet (or any other results) will simply considered as None
+        # otherwise, the executor has to handle [None, None, None] or [DocSet(0), DocSet(0), DocSet(0)]
+        len_r = sum(len(r) for r in result)
+        if len_r:
+            return result
+
     @property
     def docs(self) -> 'DocumentSet':
-        """The DocumentSet to handle"""
-        if self.expect_parts > 1:
-            return DocumentSet([d for r in reversed(self.partial_requests) for d in r.docs])
-        else:
-            return self.request.docs
+        """Return a DocumentSet by concatenate (multiple) ``requests.docs``"""
+        return self._get_docs('docs')
+
+    @property
+    def groundtruths(self) -> 'DocumentSet':
+        """Return a DocumentSet by concatenate (multiple) ``requests.groundtruths``"""
+        return self._get_docs('groundtruths')
+
+    @property
+    def docs_matrix(self) -> List['DocumentSet']:
+        """Return a list of DocumentSet from multiple requests"""
+        return self._get_docs_matrix('docs')
+
+    @property
+    def groundtruths_matrix(self) -> List['DocumentSet']:
+        """A flattened DocumentSet from (multiple) requests"""
+        return self._get_docs_matrix('groundtruths')

@@ -2,7 +2,3 @@
 with: {}
 metas:
   name: forward
-requests:
-  on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ControlRequest]:
-      - !RouteDriver {}

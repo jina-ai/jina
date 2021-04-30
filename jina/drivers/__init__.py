@@ -1,5 +1,3 @@
-
-
 import inspect
 from functools import wraps
 from typing import (
@@ -66,7 +64,6 @@ def store_init_kwargs(func: Callable) -> Callable:
         return f
 
     return _arg_wrapper
-
 
 
 class DriverType(type(JAMLCompatible), type):
@@ -223,4 +220,3 @@ class BaseDriver:
 
         d = dict(self.__class__(**self._init_kwargs_dict).__dict__)
         return d
-
