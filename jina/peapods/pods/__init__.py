@@ -399,6 +399,18 @@ class Pod(BasePod):
         )
 
     @property
+    def _stacked_args(self) -> List[Namespace]:
+        """Get all arguments of all Peas in this BasePod.
+
+        .. # noqa: DAR201
+        """
+        return (
+            ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            + self.peas_args['peas']
+            + ([self.peas_args['head']] if self.peas_args['head'] else [])
+        )
+
+    @property
     def num_peas(self) -> int:
         """Get the number of running :class:`BasePea`
 
@@ -420,14 +432,14 @@ class Pod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args:
+            for _args in self._stacked_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args:
+                for _args in self._stacked_args:
                     self._enter_pea(BasePea(_args))
             except:
                 self.close()
