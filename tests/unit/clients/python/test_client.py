@@ -27,11 +27,6 @@ def flow_with_rest_api_enabled():
 
 
 @pytest.fixture(scope='function')
-def websocket_client():
-    return Flow(rest_api=True).add()
-
-
-@pytest.fixture(scope='function')
 def test_img_1():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AxWcWRUeCEeBO68T3u1qLWarHqMaxDnxhAEaLh0Ssu6ZGfnKcjP4CeDLoJok3o4aOPYAJocsjktZfo4Z7Q/WR1UTgppAAdguAhR+AUm9AnqRH2jgdBZ0R+kKxAFoAME32BL7fwQbcLzhw+dXMmY9BS9K8EarXyWLH8VYK1MACkxlLTY4Eh69XfjpROqjE7P0AeBx6DGmA8/lRRlTCmPkL196pC0aWBkVs2wyjqb/LABVYL8Xgeomjl3VtEMxAeaUrGvnIawVh/oBAAD///GwU6v3yCoVAAAAAElFTkSuQmCC'
 
@@ -123,7 +118,6 @@ def test_client_csv(restful, mocker, func_name):
 def test_client_websocket(mocker, flow_with_rest_api_enabled):
     with flow_with_rest_api_enabled:
         time.sleep(0.5)
-        mock = mocker.Mock()
         client = WebSocketClient(
             set_client_cli_parser().parse_args(
                 [
@@ -134,11 +128,24 @@ def test_client_websocket(mocker, flow_with_rest_api_enabled):
                 ]
             )
         )
-        # Test that a regular index request triggers the callback
-        client.index(iter([Document()]), request_size=1, on_always=mock)
-        mock.assert_called_once()
+        # Test that a regular index request triggers the correct callbacks
+        on_always_mock = mocker.Mock()
+        on_error_mock = mocker.Mock()
+        on_done_mock = mocker.Mock()
+        client.index(
+            iter([Document()]),
+            request_size=1,
+            on_always=on_always_mock,
+            on_error=on_error_mock,
+            on_done=on_done_mock,
+        )
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_called_once()
+        on_error_mock.assert_not_called()
 
+        # Test that an empty index request does not trigger any callback and does not time out
         mock = mocker.Mock()
-        # Test that an empty index request does not trigger the callback and does not time out
-        client.index(iter([()]), request_size=1, on_always=mock)
+        client.index(
+            iter([()]), request_size=1, on_always=mock, on_error=mock, on_done=mock
+        )
         mock.assert_not_called()
