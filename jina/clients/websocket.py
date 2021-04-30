@@ -76,7 +76,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                         await websocket.send(bytes(True))
                     else:
                         # There is nothing to send, disconnect gracefully
-                        await websocket.close(reason="No data to send")
+                        await websocket.close(reason='No data to send')
 
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     # Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.
