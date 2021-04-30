@@ -96,7 +96,7 @@ The Executor's method receive the following arguments in order:
 | --- | --- | --- |
 | `docs`   | `Optional[DocumentSet]`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentSet`. When `DocumentSet` has zero element, then it is `None`.  |
 | `groundtruths`   | `Optional[DocumentSet]`  | `Request.groundtruths`. When `DocumentSet` has zero element, then it is `None`.  |
-| `parameters`  | `Dict`  | `Request.parameters` |
+| `parameters`  | `Dict`  | `Request.parameters`, given by `Flow.post(..., parameters=)` |
 | `docs_matrix`  | `List[DocumentSet]`  | When multiple requests are available, it is a list of all `Request.docs`. On single request, it is `None` |
 | `groundtruths_matrix`  | `List[DocumentSet]`  | Same behavior as `docs_matrix` but on `Request.groundtruths` |
 
@@ -128,5 +128,43 @@ def foo(**kwargs):
   shared state (via `self`).
 - Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
 
+## Flow/Client API
+
+### `post` method
+
+`post` is the core method. All 1.x methods, e.g. `index`, `search`, `update`, `delete` are just sugary syntax of `post`
+by specifing `on='\index'`, `on='\search'`, etc.
+
+```python
+def post(
+        self,
+        inputs: InputType,
+        on: str,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        parameters: Optional[dict] = None,
+        target_peapod: Optional[str] = None,
+        **kwargs,
+) -> None:
+  """Post a general data request to the Flow.
+
+  :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
+  :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
+  :param on_done: the function to be called when the :class:`Request` object is resolved.
+  :param on_error: the function to be called when the :class:`Request` object is rejected.
+  :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+  :param target_peapod: a regex string represent the certain peas/pods request targeted
+  :param parameters: the kwargs that will be sent to the executor
+  :param kwargs: additional parameters
+  :return: None
+  """
+```
+
+Comparing to 1.x Client/Flow API, the three new arguments are:
+
+- `on`: endpoint, as explained above
+- `parameters`: the kwargs that will be sent to the executor, as explained above
+- `target_peapod`: a regex string represent the certain peas/pods request targeted
 
 

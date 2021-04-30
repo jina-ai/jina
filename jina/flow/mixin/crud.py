@@ -498,15 +498,15 @@ class CRUDFlowMixin:
         )
 
     def post(
-        self,
-        inputs: InputType,
-        on: str,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        target_peapod: Optional[str] = None,
-        parameters: Optional[dict] = None,
-        **kwargs,
+            self,
+            inputs: InputType,
+            on: str,
+            on_done: CallbackFnType = None,
+            on_error: CallbackFnType = None,
+            on_always: CallbackFnType = None,
+            parameters: Optional[dict] = None,
+            target_peapod: Optional[str] = None,
+            **kwargs,
     ):
         """Do indexing on the current Flow
         :param inputs: An iterator of bytes. If not given, then you have to specify it in **kwargs**.
