@@ -22,14 +22,16 @@ class MockRankerTrainer(RankerTrainer):
     def __init__(self, params: dict = None, weights_shape: float = (2, 2)):
         super().__init__()
         self._params = params
+        self._weights_shape = weights_shape
         self._weights = np.random.uniform(
             -self.WEIGHT_LIMIT, self.WEIGHT_LIMIT, size=weights_shape
         )
 
-    def train(self):
-        """Train ranker based on user feedback, updating ranker weights based on
-        the `loss` function."""
-        return 123
+    def train(self, *args, **kwargs):
+        # Mock the training process, generate a new random weight matrix.
+        self._weights = np.random.uniform(
+            -self.WEIGHT_LIMIT, self.WEIGHT_LIMIT, size=self._weights_shape
+        )
 
     def save(self, path: str):
         """
