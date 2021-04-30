@@ -495,7 +495,7 @@ class Pod(BasePod):
             return self
         else:
             try:
-                for _args in self._stacked_args:
+                for _args in self._fifo_args:
                     self._enter_pea(BasePea(_args))
             except:
                 self.close()
