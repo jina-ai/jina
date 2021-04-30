@@ -134,9 +134,9 @@ def test_port_configuration(replicas_and_parallel):
             tail_args = pod.peas_args['tail']
             middle_args = pod.peas_args['peas']
         else:
-            head_args = pod.replicas_args['head']
-            tail_args = pod.replicas_args['tail']
-            middle_args = pod.replicas_args['replicas']
+            head_args = pod.head_args
+            tail_args = pod.tail_args
+            middle_args = pod.replicas_args
         return pod, head_args, tail_args, middle_args
 
     def get_outer_ports(pod, head_args, tail_args, middle_args):
@@ -148,10 +148,10 @@ def test_port_configuration(replicas_and_parallel):
                 replica = middle_args[0]  # there is only one
                 return replica.port_in, replica.port_out
             else:
-                return pod.peas_args['head'].port_in, pod.peas_args['tail'].port_out
+                return pod.head_args.port_in, pod.tail_args.port_out
         else:
             assert pod.args.replicas == len(middle_args)
-            return pod.replicas_args['head'].port_in, pod.replicas_args['tail'].port_out
+            return pod.head_args.port_in, pod.tail_args.port_out
 
     def validate_ports_pods(pods):
         for i in range(len(pods) - 1):
@@ -185,8 +185,9 @@ def test_port_configuration(replicas_and_parallel):
             name=f'pod{i}',
             replicas=replicas,
             parallel=parallel,
-            port_in=f'51{i}00',  # info: needs to be set in this test since the test is asserting pod args with pod tail args
-            port_out=f'51{i+1}00',  # outside this test, it don't have to be set
+            port_in=f'51{i}00',
+            # info: needs to be set in this test since the test is asserting pod args with pod tail args
+            port_out=f'51{i + 1}00',  # outside this test, it don't have to be set
             copy_flow=False,
         )
 
@@ -210,18 +211,13 @@ def test_port_configuration(replicas_and_parallel):
             else:
                 replica_port_in = pod.head_args.port_out
                 replica_port_out = pod.tail_args.port_in
-            # replica_head_out = pod.replicas_args['head'].port_out, # equals
-            # replica_tail_in = pod.replicas_args['tail'].port_in, # equals
 
-            for pea in pod.peas:
-                if 'head' in pea.name:
-                    assert pea.args.port_in == pod.args.port_in
-                    assert pea.args.port_out == replica_port_in
-                if 'tail' in pea.name:
-                    assert pea.args.port_in == replica_port_out
-                    assert pea.args.port_out == pod.args.port_out
+            assert pod.head_pea.args.port_in == pod.args.port_in
+            assert pod.head_pea.args.port_out == replica_port_in
+            assert pod.tail_pea.args.port_in == replica_port_out
+            assert pod.tail_pea.args.port_out == pod.args.port_out
             if pod.args.replicas > 1:
-                for replica in pod.replica_list:
+                for replica in pod.replicas:
                     validate_ports_replica(
                         replica,
                         replica_port_in,
