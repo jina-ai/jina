@@ -5,8 +5,8 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina.types.request import Request
-from jina.types.sets.document import DocumentSet
-from jina.types.sets.querylang import QueryLangSet
+from jina.types.arrays.document import DocumentArray
+from jina.types.arrays.querylang import QueryLangArray
 
 
 @pytest.fixture(scope='function')
@@ -35,7 +35,7 @@ def test_docs(req):
     request.request_type = 'data'
     docs = request.docs
     assert request.is_used
-    assert isinstance(docs, DocumentSet)
+    assert isinstance(docs, DocumentArray)
     assert len(docs) == 1
 
 
@@ -44,7 +44,7 @@ def test_groundtruth(req):
     request.request_type = 'data'
     groundtruths = request.groundtruths
     assert request.is_used
-    assert isinstance(groundtruths, DocumentSet)
+    assert isinstance(groundtruths, DocumentArray)
     assert len(groundtruths) == 0
 
 
@@ -64,7 +64,7 @@ def test_queryset(req):
     request = Request(request=req, copy=False)
     queryset = request.queryset
     assert request.is_used
-    assert isinstance(queryset, QueryLangSet)
+    assert isinstance(queryset, QueryLangArray)
 
 
 def test_command(req):

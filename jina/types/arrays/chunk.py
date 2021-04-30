@@ -1,14 +1,14 @@
 from typing import Iterable
 
-from .document import DocumentSet
+from .document import DocumentArray
 
 if False:
     from ..document import Document
 
 
-class ChunkSet(DocumentSet):
+class ChunkArray(DocumentArray):
     """
-    :class:`ChunkSet` inherits from :class:`DocumentSet`.
+    :class:`ChunkArray` inherits from :class:`DocumentArray`.
     It's a subset of Documents.
 
     :param docs_proto: Set of sub-documents (i.e chunks) of `reference_doc`
@@ -37,7 +37,7 @@ class ChunkSet(DocumentSet):
         :rtype: :class:`Document`
 
         .. note::
-            Comparing to :attr:`DocumentSet.append()`, this method adds more safeguard to
+            Comparing to :attr:`DocumentArray.append()`, this method adds more safeguard to
             make sure the added chunk is legit.
         """
 
@@ -58,9 +58,9 @@ class ChunkSet(DocumentSet):
 
     def extend(self, iterable: Iterable['Document']) -> None:
         """
-        Extend the :class:`DocumentSet` by appending all the items from the iterable.
+        Extend the :class:`DocumentArray` by appending all the items from the iterable.
 
-        :param iterable: the iterable of Documents to extend this set with
+        :param iterable: the iterable of Documents to extend this array with
         """
         for doc in iterable:
             self.append(doc)
@@ -71,7 +71,7 @@ class ChunkSet(DocumentSet):
     @property
     def reference_doc(self) -> 'Document':
         """
-        Get the document that :class:`ChunkSet` belongs to.
+        Get the document that :class:`ChunkArray` belongs to.
 
         :return: reference doc
         """
@@ -80,7 +80,7 @@ class ChunkSet(DocumentSet):
     @property
     def granularity(self) -> int:
         """
-        Get granularity of all document in this set.
+        Get granularity of all document in this array.
 
         :return: granularity
         """
@@ -89,7 +89,7 @@ class ChunkSet(DocumentSet):
     @property
     def adjacency(self) -> int:
         """
-        Get adjacency of all document in this set.
+        Get adjacency of all document in this array.
 
         :return: adjacency
         """

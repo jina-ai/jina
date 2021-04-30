@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from jina import Document, DocumentSet
+from jina import Document, DocumentArray
 from jina.drivers.multimodal import MultiModalDriver
 from jina.executors.encoders.multimodal import BaseMultiModalEncoder
 from jina.types.document.multimodal import MultimodalDocument
@@ -85,7 +85,7 @@ def test_multimodal_driver(
     simple_multimodal_driver, mock_multimodal_encoder, doc_with_multimodal_chunks
 ):
     simple_multimodal_driver.attach(executor=mock_multimodal_encoder, runtime=None)
-    simple_multimodal_driver._apply_all(DocumentSet([doc_with_multimodal_chunks]))
+    simple_multimodal_driver._apply_all(DocumentArray([doc_with_multimodal_chunks]))
     doc = doc_with_multimodal_chunks
     assert len(doc.chunks) == 3
     visual1 = doc.chunks[0]
@@ -137,7 +137,7 @@ def test_multimodal_driver_with_shuffled_order(
     simple_multimodal_driver.attach(
         executor=mock_multimodal_encoder_shuffled, runtime=None
     )
-    simple_multimodal_driver._apply_all(DocumentSet([doc_with_multimodal_chunks]))
+    simple_multimodal_driver._apply_all(DocumentArray([doc_with_multimodal_chunks]))
     doc = doc_with_multimodal_chunks
     assert len(doc.chunks) == 3
     visual1 = doc.chunks[2]

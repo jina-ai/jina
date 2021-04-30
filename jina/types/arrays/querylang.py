@@ -20,12 +20,12 @@ from ...proto.jina_pb2 import QueryLangProto
 
 AcceptQueryLangType = Union[QueryLang, QueryLangProto, Dict]
 
-__all__ = ['QueryLangSet', 'AcceptQueryLangType']
+__all__ = ['QueryLangArray', 'AcceptQueryLangType']
 
 
-class QueryLangSet(MutableSequence):
+class QueryLangArray(MutableSequence):
     """
-    :class:`QueryLangSet` is a mutable sequence of :class:`QueryLang`.
+    :class:`QueryLangArray` is a mutable sequence of :class:`QueryLang`.
     It gives an efficient view of a list of Document. One can iterate over it like
     a generator but ALSO modify it, count it, get item.
 
@@ -82,16 +82,16 @@ class QueryLangSet(MutableSequence):
             raise TypeError(f'unknown type {typename(value)}')
 
     def extend(self, iterable: Iterable[AcceptQueryLangType]) -> None:
-        """Extend an iterable to :class:QueryLangSet."""
+        """Extend an iterable to :class:QueryLangArray."""
         for q in iterable:
             self.append(q)
 
     def clear(self):
-        """Clear `_querylangs_proto` set."""
+        """Clear `_querylangs_proto` array."""
         del self._querylangs_proto[:]
 
     def reverse(self):
-        """Reverse order of `_querylangs_proto` set."""
+        """Reverse order of `_querylangs_proto` array."""
         size = len(self._querylangs_proto)
         hi_idx = size - 1
         for i in range(int(size / 2)):
