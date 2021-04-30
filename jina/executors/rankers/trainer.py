@@ -34,7 +34,7 @@ class RankerTrainer(BaseExecutor):
         Save the weights of the ranker model.
         """
         path = Path(path)
-        weights_path = path.joinpath(self.BACKEND_WEIGHTS_FILENAME)
+        weights_path = path.joinpath(self.WEIGHT_FILENAME)
 
         if not path.exists():
             path.mkdir(parents=True)
