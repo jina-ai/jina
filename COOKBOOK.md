@@ -1,4 +1,4 @@
-# Temporary Cookbook on Jina 2.0
+# Temporary Cookbook on Jina 2.0 API
 
 ## Minimum working example
 
@@ -59,7 +59,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses=MyExecutor)
 
 with f:
-# ...
+  pass
 ```
 
 Then:
@@ -88,17 +88,30 @@ class MyExecutor(Executor):
     print(kwargs)
 ```
 
+### Method Signature
+
+Class method decorated by `@request` follows the signature below:
+
+```python
+def foo(docs: Optional[DocumentArray],
+        groundtruths: Optional[DocumentArray],
+        parameters: Dict,
+        docs_matrix: List[DocumentArray],
+        groundtruths_matrix: List[DocumentArray]) -> Optional[DocumentArray]:
+  pass
+```
+
 ### Method Arguments
 
 The Executor's method receive the following arguments in order:
 
 | Name | Type | Description  | 
 | --- | --- | --- |
-| `docs`   | `Optional[DocumentSet]`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentSet`. When `DocumentSet` has zero element, then it is `None`.  |
-| `groundtruths`   | `Optional[DocumentSet]`  | `Request.groundtruths`. When `DocumentSet` has zero element, then it is `None`.  |
+| `docs`   | `Optional[DocumentArray]`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentArray`. When `DocumentArray` has zero element, then it is `None`.  |
+| `groundtruths`   | `Optional[DocumentArray]`  | `Request.groundtruths`. When `DocumentArray` has zero element, then it is `None`.  |
 | `parameters`  | `Dict`  | `Request.parameters`, given by `Flow.post(..., parameters=)` |
-| `docs_matrix`  | `List[DocumentSet]`  | When multiple requests are available, it is a list of all `Request.docs`. On single request, it is `None` |
-| `groundtruths_matrix`  | `List[DocumentSet]`  | Same behavior as `docs_matrix` but on `Request.groundtruths` |
+| `docs_matrix`  | `List[DocumentArray]`  | When multiple requests are available, it is a list of all `Request.docs`. On single request, it is `None` |
+| `groundtruths_matrix`  | `List[DocumentArray]`  | Same behavior as `docs_matrix` but on `Request.groundtruths` |
 
 Note, executor's methods not decorated with `@request` do not enjoy these arguments.
 
@@ -121,6 +134,13 @@ def foo(**kwargs):
   bar(kwargs['docs_matrix'])
 ```
 
+### Method Returns
+
+Method decorated with `@request` can return `Optional[DocumentSet]`. If not `None`, then the current `Request.docs` will
+be overridden by the return value.
+
+If return is just a shallow copy of `Request.docs`, then nothing happens.
+
 ### Summary
 
 - All `executor` come from `Executor` class directly.
@@ -133,7 +153,7 @@ def foo(**kwargs):
 ### `post` method
 
 `post` is the core method. All 1.x methods, e.g. `index`, `search`, `update`, `delete` are just sugary syntax of `post`
-by specifing `on='\index'`, `on='\search'`, etc.
+by specifying `on='/index'`, `on='/search'`, etc.
 
 ```python
 def post(
@@ -167,4 +187,61 @@ Comparing to 1.x Client/Flow API, the three new arguments are:
 - `parameters`: the kwargs that will be sent to the executor, as explained above
 - `target_peapod`: a regex string represent the certain peas/pods request targeted
 
+## Remarks
 
+### Joining/Merging
+
+Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding to Executor's function.
+Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
+/`DocumentArray`
+
+```python
+from jina import Executor, requests, Flow, Document
+
+
+class C(Executor):
+
+  @requests
+  def foo(self, docs, **kwargs):
+    # 6 docs
+    return docs
+
+
+class B(Executor):
+
+  @requests
+  def foo(self, docs, **kwargs):
+    # 3 docs
+    for idx, d in enumerate(docs):
+      d.text = f'hello {idx}'
+
+
+class A(Executor):
+
+  @requests
+  def A(self, docs, **kwargs):
+    # 3 docs
+    for idx, d in enumerate(docs):
+      d.text = f'world {idx}'
+
+
+f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['pod0', 'pod1'])
+
+with f:
+  f.post([Document() for _ in range(3)],
+         on='/some_endpoint',
+         on_done=print)
+```
+
+You can also modify the docs while merging, which is not feasible to do in 1.x, e.g.
+
+```python
+class C(Executor):
+
+  @requests
+  def foo(self, docs, **kwargs):
+    # 6 docs
+    for d in docs:
+      d.text += '!!!'
+    return docs
+```
