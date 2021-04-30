@@ -30,8 +30,10 @@ class CompoundPod(BasePod):
         super().__init__(args, needs)
         self.replica_list = []  # type: List['Pod']
         # we will see how to have `CompoundPods` in remote later when we add tests for it
-        self.head_args = self._parse_head_args(args)
-        self.tail_args = self._parse_tail_args(args)
+        self.is_head_router = True
+        self.is_tail_router = True
+        self.head_args = BasePod._copy_to_head_args(args, PollingType.ANY)
+        self.tail_args = BasePod._copy_to_tail_args(args, PollingType.ANY)
         self.replicas_args = [
             self._parse_pod_args(copy(args)) for _ in range(args.replicas)
         ]
@@ -52,59 +54,13 @@ class CompoundPod(BasePod):
         """
         return self.head_args.host
 
-    def _parse_pod_args(
-        self, args: Namespace
-    ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
-        parsed_args = {'head': None, 'tail': None, 'replicas': []}
-        # reasons to separate head and tail from peas is that they
-        # can be deducted based on the previous and next pods
+    def _parse_pod_args(self, args: Namespace) -> List[Namespace]:
         self._set_after_to_pass(args)
-        self.is_head_router = True
-        self.is_tail_router = True
-        parsed_args['head'] = BasePod._copy_to_head_args(args, PollingType.ANY)
-        parsed_args['tail'] = BasePod._copy_to_tail_args(args, PollingType.ANY)
-        parsed_args['replicas'] = self._set_replica_args(
+        return self._set_replica_args(
             args,
-            head_args=parsed_args['head'],
-            tail_args=parsed_args['tail'],
+            head_args=self.head_args,
+            tail_args=self.tail_args,
         )
-        return parsed_args
-
-    @property
-    def head_args(self):
-        """
-        Get the arguments for the `head` of this BasePod.
-
-        :return: arguments of the head pea
-        """
-        return self.replicas_args['head']
-
-    @head_args.setter
-    def head_args(self, args):
-        """
-        Set the arguments for the `head` of this BasePod.
-
-        :param args: arguments of the head pea
-        """
-        self.replicas_args['head'] = args
-
-    @property
-    def tail_args(self):
-        """
-        Get the arguments for the `tail` of this BasePod.
-
-        :return: arguments of the tail pea
-        """
-        return self.replicas_args['tail']
-
-    @tail_args.setter
-    def tail_args(self, args):
-        """
-        Set the arguments for the `tail` of this BasePod.
-
-        :param args: arguments of the tail pea
-        """
-        self.replicas_args['tail'] = args
 
     @property
     def all_args(
