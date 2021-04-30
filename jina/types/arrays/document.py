@@ -21,7 +21,7 @@ except:
 from ...proto.jina_pb2 import DocumentProto
 from .traversable import TraversableSequence
 
-__all__ = ['DocumentSet']
+__all__ = ['DocumentArray']
 
 if False:
     from ..document import Document
@@ -58,11 +58,11 @@ if False:
     )
 
 
-class DocumentSet(TraversableSequence, MutableSequence):
+class DocumentArray(TraversableSequence, MutableSequence):
     """
-    :class:`DocumentSet` is a mutable sequence of :class:`Document`.
+    :class:`DocumentArray` is a mutable sequence of :class:`Document`.
     It gives an efficient view of a list of Document. One can iterate over it like
-    a generator but ALSO modify it, count it, get item, or union two 'DocumentSet's using the '+' and '+=' operators.
+    a generator but ALSO modify it, count it, get item, or union two 'DocumentArray's using the '+' and '+=' operators.
 
     :param docs_proto: A list of :class:`Document`
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
@@ -75,7 +75,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
     def insert(self, index: int, doc: 'Document') -> None:
         """
-        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentSet` .
+        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentArray` .
 
         :param index: Position of the insertion.
         :param doc: The doc needs to be inserted.
@@ -110,26 +110,26 @@ class DocumentSet(TraversableSequence, MutableSequence):
         elif isinstance(item, str):
             return Document(self._docs_map[item])
         elif isinstance(item, slice):
-            return DocumentSet(self._docs_proto[item])
+            return DocumentArray(self._docs_proto[item])
         else:
             raise IndexError(f'do not support this index {item}')
 
-    def __add__(self, other: 'DocumentSet'):
-        v = DocumentSet([])
+    def __add__(self, other: 'DocumentArray'):
+        v = DocumentArray([])
         for doc in self:
             v.add(doc)
         for doc in other:
             v.add(doc)
         return v
 
-    def __iadd__(self, other: 'DocumentSet'):
+    def __iadd__(self, other: 'DocumentArray'):
         for doc in other:
             self.add(doc)
         return self
 
     def append(self, doc: 'Document') -> 'Document':
         """
-        Append :param:`doc` in :class:`DocumentSet`.
+        Append :param:`doc` in :class:`DocumentArray`.
 
         :param doc: The doc needs to be appended.
         :return: Appended list.
@@ -139,22 +139,22 @@ class DocumentSet(TraversableSequence, MutableSequence):
     def add(self, doc: 'Document') -> 'Document':
         """Shortcut to :meth:`append`, do not override this method.
 
-        :param doc: the document to add to the set
+        :param doc: the document to add to the array
         :return: Appended list.
         """
         return self.append(doc)
 
     def extend(self, iterable: Iterable['Document']) -> None:
         """
-        Extend the :class:`DocumentSet` by appending all the items from the iterable.
+        Extend the :class:`DocumentArray` by appending all the items from the iterable.
 
-        :param iterable: the iterable of Documents to extend this set with
+        :param iterable: the iterable of Documents to extend this array with
         """
         for doc in iterable:
             self.append(doc)
 
     def clear(self):
-        """Clear the data of :class:`DocumentSet`"""
+        """Clear the data of :class:`DocumentArray`"""
         del self._docs_proto[:]
 
     def reverse(self):
@@ -177,7 +177,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
     def sort(self, *args, **kwargs):
         """
-        Sort the items of the :class:`DocumentSet` in place.
+        Sort the items of the :class:`DocumentArray` in place.
 
         :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
@@ -185,25 +185,25 @@ class DocumentSet(TraversableSequence, MutableSequence):
         self._docs_proto.sort(*args, **kwargs)
 
     @property
-    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentSet']:
-        """Return all embeddings from every document in this set as a ndarray
+    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentArray']:
+        """Return all embeddings from every document in this array as a ndarray
 
-        :return: The corresponding documents in a :class:`DocumentSet`,
-                and the documents have no embedding in a :class:`DocumentSet`.
+        :return: The corresponding documents in a :class:`DocumentArray`,
+                and the documents have no embedding in a :class:`DocumentArray`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         return self.extract_docs('embedding', stack_contents=True)
 
     def get_all_sparse_embeddings(
         self, embedding_cls_type: EmbeddingClsType
-    ) -> Tuple['SparseEmbeddingType', 'DocumentSet']:
-        """Return all embeddings from every document in this set as a sparse array
+    ) -> Tuple['SparseEmbeddingType', 'DocumentArray']:
+        """Return all embeddings from every document in this array as a sparse array
 
         :param embedding_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
 
-        :return: The corresponding documents in a :class:`DocumentSet`,
-            and the documents have no embedding in a :class:`DocumentSet`.
-        :rtype: A tuple of embedding and DocumentSet as sparse arrays
+        :return: The corresponding documents in a :class:`DocumentArray`,
+            and the documents have no embedding in a :class:`DocumentArray`.
+        :rtype: A tuple of embedding and DocumentArray as sparse arrays
         """
 
         def stack_embeddings(embeddings):
@@ -266,11 +266,11 @@ class DocumentSet(TraversableSequence, MutableSequence):
         return stack_embeddings(embeddings), docs_pts
 
     @property
-    def all_contents(self) -> Tuple['np.ndarray', 'DocumentSet']:
-        """Return all embeddings from every document in this set as a ndarray
+    def all_contents(self) -> Tuple['np.ndarray', 'DocumentArray']:
+        """Return all embeddings from every document in this array as a ndarray
 
-        :return: The corresponding documents in a :class:`DocumentSet`,
-                and the documents have no contents in a :class:`DocumentSet`.
+        :return: The corresponding documents in a :class:`DocumentArray`,
+                and the documents have no contents in a :class:`DocumentArray`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         # stack true for backward compatibility, but will not work if content is blob of different shapes
@@ -278,7 +278,7 @@ class DocumentSet(TraversableSequence, MutableSequence):
 
     def extract_docs(
         self, *fields: str, stack_contents: Union[bool, List[bool]] = False
-    ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentSet']:
+    ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentArray']:
         """Return in batches all the values of the fields
 
         :param fields: Variable length argument with the name of the fields to extract
@@ -344,19 +344,19 @@ class DocumentSet(TraversableSequence, MutableSequence):
         if not docs_pts:
             default_logger.warning('no documents are extracted')
 
-        return contents, DocumentSet(docs_pts)
+        return contents, DocumentArray(docs_pts)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
 
-        :return: returns true if the length of the set is larger than 0
+        :return: returns true if the length of the array is larger than 0
         """
         return len(self) > 0
 
     def new(self) -> 'Document':
-        """Create a new empty document appended to the end of the set.
+        """Create a new empty document appended to the end of the array.
 
-        :return: a new Document appended to the set
+        :return: a new Document appended to the array
         """
         from ..document import Document
 

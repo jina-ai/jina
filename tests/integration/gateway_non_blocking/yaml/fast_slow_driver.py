@@ -4,7 +4,7 @@ from typing import Optional
 from jina.drivers import FlatRecursiveMixin, BaseExecutableDriver
 
 if False:
-    from jina import DocumentSet
+    from jina import DocumentArray
 
 
 class FastSlowDriver(FlatRecursiveMixin, BaseExecutableDriver):
@@ -13,7 +13,7 @@ class FastSlowDriver(FlatRecursiveMixin, BaseExecutableDriver):
     ):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs):
         if docs:
             assert len(docs) == 1
             if docs[0].text == 'slow':

@@ -1,4 +1,4 @@
-from jina import Flow, Document, Executor, requests, DocumentSet
+from jina import Flow, Document, Executor, requests, DocumentArray
 
 
 def test_func_simple_routing(mocker):
@@ -64,7 +64,7 @@ def test_func_return_():
     class MyExecutor(Executor):
         @requests
         def foo(self, **kwargs):
-            return DocumentSet([Document(), Document()])
+            return DocumentArray([Document(), Document()])
 
     f = Flow().add(uses=MyExecutor)
 
@@ -99,9 +99,9 @@ def test_func_joiner(mocker):
 
     f = (
         Flow()
-            .add(uses=M1)
-            .add(uses=M2, needs='gateway')
-            .add(uses=Joiner, needs=['pod0', 'pod1'])
+        .add(uses=M1)
+        .add(uses=M2, needs='gateway')
+        .add(uses=Joiner, needs=['pod0', 'pod1'])
     )
 
     mock = mocker.Mock()

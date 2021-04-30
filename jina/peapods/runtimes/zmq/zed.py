@@ -24,7 +24,7 @@ from ....executors import BaseExecutor
 from ....helper import random_identity, typename
 from ....logging.profile import used_memory, TimeDict
 from ....proto import jina_pb2
-from ....types.sets.document import DocumentSet
+from ....types.arrays.document import DocumentArray
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -181,8 +181,8 @@ class ZEDRuntime(ZMQRuntime):
             raise NoExplicitMessage
 
         if (
-                msg.envelope.status.code != jina_pb2.StatusProto.ERROR
-                or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
+            msg.envelope.status.code != jina_pb2.StatusProto.ERROR
+            or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
             if self.request_type == 'DataRequest':
 
@@ -207,13 +207,13 @@ class ZEDRuntime(ZMQRuntime):
 
                 # assigning result back to request
                 # 1. Return none: do nothing
-                # 2. Return nonempty and non-DocumentSet: raise error
-                # 3. Return DocSet, but the memory pointer says it is the same as self.docs: do nothing
-                # 4. Return DocSet and its not a shallow copy of self.docs: assign self.request.docs
+                # 2. Return nonempty and non-DocumentArray: raise error
+                # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
+                # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
                 if r_docs is not None:
-                    if not isinstance(r_docs, DocumentSet):
+                    if not isinstance(r_docs, DocumentArray):
                         raise TypeError(
-                            f'return type must be {DocumentSet!r} object, but getting {typename(r_docs)}'
+                            f'return type must be {DocumentArray!r} object, but getting {typename(r_docs)}'
                         )
                     elif r_docs != self.request.docs:
                         # this means the returned DocArray is a completely new one
@@ -386,50 +386,50 @@ class ZEDRuntime(ZMQRuntime):
         """
         return self._partial_messages
 
-    def _get_docs(self, field: str) -> 'DocumentSet':
+    def _get_docs(self, field: str) -> 'DocumentArray':
         if self.expect_parts > 1:
-            result = DocumentSet(
+            result = DocumentArray(
                 [d for r in reversed(self.partial_requests) for d in getattr(r, field)]
             )
         else:
             result = getattr(self.request, field)
 
-        # to unify all length=0 DocumentSet (or any other results) will simply considered as None
-        # otherwise the executor has to handle DocSet(0)
+        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+        # otherwise the executor has to handle DocArray(0)
         if len(result):
             return result
 
-    def _get_docs_matrix(self, field) -> List['DocumentSet']:
-        """ DocumentSet from (multiple) requests"""
+    def _get_docs_matrix(self, field) -> List['DocumentArray']:
+        """ DocumentArray from (multiple) requests"""
         if self.expect_parts > 1:
             result = [getattr(r, field) for r in reversed(self.partial_requests)]
         else:
             result = [getattr(self.request, field)]
 
-        # to unify all length=0 DocumentSet (or any other results) will simply considered as None
-        # otherwise, the executor has to handle [None, None, None] or [DocSet(0), DocSet(0), DocSet(0)]
+        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
         len_r = sum(len(r) for r in result)
         if len_r:
             return result
 
     @property
-    def docs(self) -> 'DocumentSet':
-        """Return a DocumentSet by concatenate (multiple) ``requests.docs``"""
+    def docs(self) -> 'DocumentArray':
+        """Return a DocumentArray by concatenate (multiple) ``requests.docs``"""
         return self._get_docs('docs')
 
     @property
-    def groundtruths(self) -> 'DocumentSet':
-        """Return a DocumentSet by concatenate (multiple) ``requests.groundtruths``"""
+    def groundtruths(self) -> 'DocumentArray':
+        """Return a DocumentArray by concatenate (multiple) ``requests.groundtruths``"""
         return self._get_docs('groundtruths')
 
     @property
-    def docs_matrix(self) -> List['DocumentSet']:
-        """Return a list of DocumentSet from multiple requests"""
+    def docs_matrix(self) -> List['DocumentArray']:
+        """Return a list of DocumentArray from multiple requests"""
         return self._get_docs_matrix('docs')
 
     @property
-    def groundtruths_matrix(self) -> List['DocumentSet']:
-        """A flattened DocumentSet from (multiple) requests"""
+    def groundtruths_matrix(self) -> List['DocumentArray']:
+        """A flattened DocumentArray from (multiple) requests"""
         return self._get_docs_matrix('groundtruths')
 
     @property
