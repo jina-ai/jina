@@ -14,8 +14,8 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         self, ids: List[str]
     ) -> Generator[Tuple[str, np.array, bytes], None, None]:
         for id_ in ids:
-            vecs_metas_bytes = super()._query(id_)
-            vec, meta = pickle.loads(vecs_metas_bytes)
+            vecs_metas_list_bytes = super()._query([id_])
+            vec, meta = pickle.loads(vecs_metas_list_bytes[0])
             yield id_, vec, meta
 
     def dump(self, path: str, shards: int) -> None:
@@ -55,7 +55,8 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
             return
 
         vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
-        self._add(ids, vecs_metas)
+        with self.write_handler as write_handler:
+            self._add(ids, vecs_metas, write_handler)
 
     def update(
         self, ids: List[str], vecs: List[np.array], metas: List[bytes], *args, **kwargs
@@ -76,7 +77,8 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         self.handler_mutex = False
         if keys:
             self._delete(keys)
-            self._add(keys, vecs_metas)
+            with self.write_handler as write_handler:
+                self._add(keys, vecs_metas, write_handler)
 
     def delete(self, ids: List[str], *args, **kwargs):
         """Delete the serialized documents from the index via document ids.

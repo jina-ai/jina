@@ -3,7 +3,7 @@ from typing import Optional, Iterable
 import numpy as np
 import pytest
 
-from jina import Document, DocumentSet
+from jina import Document, DocumentArray
 from jina.drivers.search import KVSearchDriver
 from jina.executors.indexers import BaseKVIndexer
 from jina.types.ndarray.generic import NdArray
@@ -15,11 +15,11 @@ class MockIndexer(BaseKVIndexer):
     ) -> None:
         pass
 
-    def query(self, key: str) -> Optional[bytes]:
-        if key in self.db.keys():
-            return self.db[key]
-        else:
-            return None
+    def query(self, keys: Iterable[str]) -> Optional[bytes]:
+        values = []
+        for k in keys:
+            values.append(self.db.get(k, None))
+        return values
 
     def get_query_handler(self):
         pass
@@ -108,7 +108,7 @@ def test_vectorsearch_driver_mock_indexer_apply_all(document):
     for chunk in dcs:
         assert chunk.embedding is None
 
-    driver._apply_all([DocumentSet(document.chunks)])
+    driver._apply_all([DocumentArray(document.chunks)])
 
     dcs = list(document.chunks)
 
@@ -126,7 +126,9 @@ def test_vectorsearch_driver_mock_indexer(document):
     for chunk in dcs:
         assert chunk.embedding is None
 
-    driver = SimpleKVSearchDriver(docs=DocumentSet([document]), traversal_paths=('c',))
+    driver = SimpleKVSearchDriver(
+        docs=DocumentArray([document]), traversal_paths=('c',)
+    )
 
     executor = MockIndexer()
     driver.attach(executor=executor, runtime=None)
@@ -146,7 +148,7 @@ def test_vectorsearch_driver_mock_indexer_with_matches_on_chunks(
     document_with_matches_on_chunks,
 ):
     driver = SimpleKVSearchDriver(
-        docs=DocumentSet([document_with_matches_on_chunks]), traversal_paths=('cm',)
+        docs=DocumentArray([document_with_matches_on_chunks]), traversal_paths=('cm',)
     )
     executor = MockIndexer()
     driver.attach(executor=executor, runtime=None)

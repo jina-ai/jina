@@ -1,8 +1,9 @@
-import inspect
+__copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
+__license__ = "Apache-2.0"
+
 from typing import Dict, List, Union
 
 from .. import BaseExecutor
-from ...helper import typename
 
 
 class BaseSegmenter(BaseExecutor):

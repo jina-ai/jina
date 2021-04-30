@@ -11,7 +11,7 @@ from .encode import BaseEncodeDriver
 from ..types.document.multimodal import MultimodalDocument
 
 if False:
-    from ..types.sets import DocumentSet
+    from ..types.arrays import DocumentArray
 
 
 class MultiModalDriver(FlatRecursiveMixin, BaseEncodeDriver):
@@ -65,7 +65,7 @@ class MultiModalDriver(FlatRecursiveMixin, BaseEncodeDriver):
         """
         return [content_by_modality[modality] for modality in self.positional_modality]
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         """Apply the driver to each of the Documents in docs.
 
         :param docs: the docs for which a ``multimodal embedding`` will be computed, whose chunks are of different

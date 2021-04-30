@@ -15,14 +15,24 @@ class ProtoTypeMixin:
 
         :return: JSON string of the object
         """
-        return MessageToJson(self._pb_body)
+        return MessageToJson(
+            self._pb_body,
+            including_default_value_fields=True,
+            preserving_proto_field_name=True,
+            use_integers_for_enums=True,
+        )
 
     def dict(self) -> Dict:
         """Return the object in Python dictionary
 
         :return: dict representation of the object
         """
-        return MessageToDict(self._pb_body)
+        return MessageToDict(
+            self._pb_body,
+            including_default_value_fields=True,
+            preserving_proto_field_name=True,
+            use_integers_for_enums=True,
+        )
 
     @property
     def proto(self) -> 'jina_pb2._reflection.GeneratedProtocolMessageType':

@@ -7,7 +7,7 @@ from jina import Document
 from jina.drivers.segment import SegmentDriver
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.decorators import single
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 
 
 class MockSegmenter(BaseSegmenter):
@@ -33,6 +33,18 @@ class MockSegmenter(BaseSegmenter):
             return [{'non_existing_key': 1}]
 
 
+class MockImageSegmenter(BaseSegmenter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.required_keys = {'text'}
+
+    @single
+    def segment(self, blob: np.ndarray, *args, **kwargs) -> List[Dict]:
+        assert len(blob.shape) == 3
+        assert blob.shape[0] == 1
+        return [{'blob': blob}]
+
+
 class SimpleSegmentDriver(SegmentDriver):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,15 +54,28 @@ class SimpleSegmentDriver(SegmentDriver):
         return self._exec_fn
 
 
-def test_segment_driver():
+@pytest.fixture()
+def text_segmenter_executor():
+    return MockSegmenter()
+
+
+@pytest.fixture()
+def image_segmenter_executor():
+    return MockImageSegmenter()
+
+
+@pytest.fixture()
+def segment_driver():
+    return SimpleSegmentDriver()
+
+
+def test_segment_driver(segment_driver, text_segmenter_executor):
     valid_doc = Document()
     valid_doc.text = 'valid'
     valid_doc.mime_type = 'image/png'
 
-    driver = SimpleSegmentDriver()
-    executor = MockSegmenter()
-    driver.attach(executor=executor, runtime=None)
-    driver._apply_all(DocumentSet([valid_doc]))
+    segment_driver.attach(executor=text_segmenter_executor, runtime=None)
+    segment_driver._apply_all(DocumentArray([valid_doc]))
 
     assert valid_doc.chunks[0].tags['id'] == 3
     assert valid_doc.chunks[0].parent_id == valid_doc.id
@@ -71,7 +96,7 @@ def test_segment_driver():
     assert valid_doc.chunks[2].mime_type == 'image/png'
 
 
-def test_chunks_exist_already():
+def test_chunks_exist_already(segment_driver, text_segmenter_executor):
     document = Document(
         text='valid', chunks=[Document(text='test2'), Document(text='test3')]
     )
@@ -80,11 +105,8 @@ def test_chunks_exist_already():
     for chunk in document.chunks:
         assert chunk.parent_id == document.id
         assert chunk.siblings == 2
-
-    driver = SimpleSegmentDriver()
-    executor = MockSegmenter()
-    driver.attach(executor=executor, runtime=None)
-    driver._apply_all(DocumentSet([document]))
+    segment_driver.attach(executor=text_segmenter_executor, runtime=None)
+    segment_driver._apply_all(DocumentArray([document]))
 
     # after segmentation
     assert len(document.chunks) == 5
@@ -93,14 +115,24 @@ def test_chunks_exist_already():
         assert chunk.siblings == 5
 
 
-def test_broken_document():
-    driver = SimpleSegmentDriver()
-    executor = MockSegmenter()
-    driver.attach(executor=executor, runtime=None)
+def test_broken_document(segment_driver, text_segmenter_executor):
+    segment_driver.attach(executor=text_segmenter_executor, runtime=None)
 
     invalid_doc = Document()
     invalid_doc.id = 1
     invalid_doc.text = 'invalid'
 
     with pytest.raises(AttributeError):
-        driver._apply_all([DocumentSet([invalid_doc])])
+        segment_driver._apply_all([DocumentArray([invalid_doc])])
+
+
+def test_image_segmenter(segment_driver, image_segmenter_executor):
+    blob1 = np.random.random((1, 32, 64))
+    blob2 = np.random.random((1, 64, 32))
+    docs = DocumentArray([Document(blob=blob1), Document(blob=blob2)])
+    segment_driver.attach(executor=image_segmenter_executor, runtime=None)
+    segment_driver._apply_all(docs)
+    for doc in docs:
+        assert len(doc.chunks) == 1
+    np.testing.assert_equal(docs[0].chunks[0].blob, blob1)
+    np.testing.assert_equal(docs[1].chunks[0].blob, blob2)

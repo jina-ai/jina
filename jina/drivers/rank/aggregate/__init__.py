@@ -10,7 +10,7 @@ from ....types.score import NamedScore
 from .. import BaseRankDriver
 
 if False:
-    from ....types.sets import DocumentSet
+    from ....types.arrays import DocumentArray
 
 COL_STR_TYPE = 'U64'  #: the ID column data type for score matrix
 
@@ -168,7 +168,7 @@ class Chunk2DocRankDriver(BaseAggregateMatchesRankerDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         """
         :param docs: the doc which gets bubbled up matches
         :param args: not used (kept to maintain interface)
@@ -248,7 +248,7 @@ class AggregateMatches2DocRankDriver(BaseAggregateMatchesRankerDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         """
 
         :param docs: the document at granularity ``k``

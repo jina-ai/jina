@@ -1,5 +1,5 @@
 from jina.drivers import FlatRecursiveMixin, BaseExecutableDriver
-from jina import DocumentSet, Document
+from jina import DocumentArray, Document
 
 DOCUMENTS_PER_LEVEL = 1
 
@@ -56,7 +56,7 @@ def build_docs():
         document.adjacency = 0
         docs.append(document)
         iterate_build(document, 0, 0)
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
 def apply_traversal_path(traversal_paths):
@@ -230,7 +230,7 @@ def test_call():
     docs = build_docs()
     doc = docs[0]
     doc.ClearField('chunks')
-    docs = DocumentSet([doc])
+    docs = DocumentArray([doc])
     driver = AppendOneChunkTwoMatchesCrafter(docs=docs, traversal_paths=('mcm',))
     assert docs[0].matches[0].chunks[0].matches[0].granularity == 1
     assert docs[0].matches[0].chunks[0].matches[0].adjacency == 2
