@@ -250,14 +250,10 @@ class ZEDRuntime(ZMQRuntime):
             if self.args.on_error_strategy == OnErrorStrategy.THROW_EARLY:
                 raise
             if isinstance(ex, ChainedPodException):
+                # the error is print from previous pod, no need to show it again
+                # hence just add exception and propagate further
+                # please do NOT add logger.error here!
                 msg.add_exception()
-                self.logger.error(
-                    f'{ex!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
             else:
                 msg.add_exception(ex, executor=getattr(self, '_executor'))
                 self.logger.error(

@@ -1,8 +1,0 @@
-!BaseExecutor
-with: {}
-metas:
-  name: whoosh
-requests:
-  on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest, ControlRequest]:
-      - !WhooshDriver {}

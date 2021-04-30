@@ -1,9 +1,0 @@
-on:
-  ControlRequest:
-    - !ControlReqDriver {}
-  SearchRequest:
-    - !KVSearchDriver {}
-  [IndexRequest, UpdateRequest]:
-    - !KVIndexDriver {}
-  DeleteRequest:
-    - !DeleteDriver {}

@@ -1,7 +1,7 @@
 from jina import Flow, Document, Executor, requests, DocumentSet
 
 
-def test_func_simple_routing():
+def test_func_simple_routing(mocker):
     class MyExecutor(Executor):
         @requests(on='/search')
         def foo(self, **kwargs):
@@ -11,13 +11,35 @@ def test_func_simple_routing():
 
     f = Flow().add(uses=MyExecutor)
 
+    done_mock = mocker.Mock()
+    fail_mock = mocker.Mock()
+
     with f:
         f.post(
             [Document() for _ in range(3)],
             on='/search',
             parameters={'hello': 'world', 'topk': 10},
-            on_done=print,
+            on_done=done_mock,
+            on_error=fail_mock,
         )
+
+    done_mock.assert_called_once()
+    fail_mock.assert_not_called()
+
+    done_mock = mocker.Mock()
+    fail_mock = mocker.Mock()
+
+    with f:
+        f.post(
+            [Document() for _ in range(3)],
+            on='/random',
+            parameters={'hello': 'world', 'topk': 10},
+            on_done=done_mock,
+            on_error=fail_mock,
+        )
+
+    fail_mock.assert_called_once()
+    done_mock.assert_not_called()
 
 
 def test_func_default_routing():
@@ -55,7 +77,7 @@ def test_func_return_():
         )
 
 
-def test_func_joiner():
+def test_func_joiner(mocker):
     class Joiner(Executor):
         @requests
         def foo(self, docs, **kwargs):
@@ -82,10 +104,21 @@ def test_func_joiner():
             .add(uses=Joiner, needs=['pod0', 'pod1'])
     )
 
+    mock = mocker.Mock()
+
+    def validate(req):
+        texts = {d.text for d in req.docs}
+        assert len(texts) == 6
+        expect = {'hello 0!!!', 'hello 1!!!', 'hello 2!!!', 'world 0!!!', 'world 1!!!', 'world 2!!!'}
+        assert texts == expect
+        mock()
+
     with f:
         f.post(
             [Document() for _ in range(3)],
             on='/some_endpoint',
             parameters={'hello': 'world', 'topk': 10},
-            on_done=print,
+            on_done=validate,
         )
+
+    mock.assert_called_once()
