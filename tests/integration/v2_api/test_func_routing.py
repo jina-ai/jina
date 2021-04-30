@@ -131,8 +131,15 @@ def test_func_joiner(mocker):
     mock.assert_called_once()
 
 
-def test_dealer_routing():
+def test_dealer_routing(mocker):
     f = Flow().add(parallel=3)
-
+    mock = mocker.Mock()
     with f:
-        f.post([Document() for _ in range(100)], request_size=2, on='/some_endpoint')
+        f.post(
+            [Document() for _ in range(100)],
+            request_size=2,
+            on='/some_endpoint',
+            on_done=mock,
+        )
+
+    mock.assert_called()
