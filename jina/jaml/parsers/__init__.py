@@ -14,12 +14,9 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     """
     from ...executors import BaseExecutor
     from ...flow import BaseFlow
-    from ...drivers import BaseDriver
 
     if issubclass(cls, BaseFlow):
         return _get_flow_parser()
-    elif issubclass(cls, BaseDriver):
-        return _get_driver_parser()
     elif issubclass(cls, BaseExecutor):
         return _get_exec_parser()
     else:

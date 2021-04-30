@@ -132,7 +132,7 @@ def test_func_joiner(mocker):
 
 
 def test_dealer_routing():
-    f = Flow().add(parallels=3)
+    f = Flow().add(parallel=3)
 
     with f:
         f.post([Document() for _ in range(100)], request_size=2, on='/some_endpoint')

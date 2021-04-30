@@ -1,3 +1,4 @@
+import re
 import time
 from collections import defaultdict
 from typing import Dict, List
@@ -9,7 +10,6 @@ from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
 from .... import Message
 from .... import Request
-from ....drivers.control import RouteDriver
 from ....enums import OnErrorStrategy
 from ....excepts import (
     NoExplicitMessage,
@@ -17,7 +17,7 @@ from ....excepts import (
     MemoryOverHighWatermark,
     ChainedPodException,
     BadConfigSource,
-    RuntimeTerminated,
+    RuntimeTerminated, UnknownControlCommand,
 )
 from ....executors import BaseExecutor
 from ....helper import random_identity, typename
@@ -50,6 +50,9 @@ class ZEDRuntime(ZMQRuntime):
         self._partial_requests = None
         self._partial_messages = None
 
+        # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
+        self._idle_dealer_ids = set()
+
         self._load_zmqlet()
         self._load_plugins()
         self._load_executor()
@@ -80,8 +83,6 @@ class ZEDRuntime(ZMQRuntime):
                 read_only=self.args.read_only,
             )
             self._executor.override_logger(runtime=self)
-            self._control_driver = RouteDriver()
-            self._control_driver.attach(runtime=self)
         except BadConfigSource as ex:
             self.logger.error(
                 f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
@@ -183,6 +184,14 @@ class ZEDRuntime(ZMQRuntime):
                 or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
             if self.request_type == 'DataRequest':
+                if self._idle_dealer_ids:
+                    dealer_id = self._idle_dealer_ids.pop()
+                    self.envelope.receiver_id = dealer_id
+
+                    # when no available dealer, pause the pollin from upstream
+                    if not self._idle_dealer_ids:
+                        self._zmqlet.pause_pollin()
+
                 r_docs = self._executor(
                     req_endpoint=self.request.header.exec_endpoint,
                     docs=self.docs,
@@ -202,10 +211,44 @@ class ZEDRuntime(ZMQRuntime):
                         self.request.docs.clear()
                         self.request.docs.extend(r_docs)
             else:
-                self._control_driver()
+                self._handle_control_req()
         else:
             raise ChainedPodException
         return self
+
+    def _handle_control_req(self):
+        if self.request.command == 'TERMINATE':
+            self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
+            raise RuntimeTerminated
+        elif self.request.command == 'STATUS':
+            self.envelope.status.code = jina_pb2.StatusProto.READY
+            self.request.args = vars(self.args)
+        elif self.request.command == 'IDLE':
+            self._idle_dealer_ids.add(self.envelope.receiver_id)
+            self._zmqlet.resume_pollin()
+            self.logger.debug(
+                f'{self.envelope.receiver_id} is idle, now I know these idle peas {self._idle_dealer_ids}'
+            )
+        elif self.request.command == 'CANCEL':
+            if self.envelope.receiver_id in self._idle_dealer_ids:
+                self._idle_dealer_ids.remove(self.envelope.receiver_id)
+        elif self.request.command == 'DUMP':
+            # TODO: rewrite dump logic here, perhaps ``self._executor.save()``
+            pass
+        elif self.request.command == 'RELOAD':
+            if self.request.targets:
+                patterns = self.request.targets
+                if isinstance(patterns, str):
+                    patterns = [patterns]
+                for p in patterns:
+                    if re.match(p, self.name):
+                        self.logger.info(
+                            f'reloading the Executor `{self._executor.name}` in `{self.name}`'
+                        )
+                        self._load_executor()
+                        break
+        else:
+            raise UnknownControlCommand(f'don\'t know how to handle {self.request.command}')
 
     def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
@@ -376,3 +419,11 @@ class ZEDRuntime(ZMQRuntime):
     def groundtruths_matrix(self) -> List['DocumentSet']:
         """A flattened DocumentSet from (multiple) requests"""
         return self._get_docs_matrix('groundtruths')
+
+    @property
+    def envelope(self) -> 'jina_pb2.EnvelopeProto':
+        """Get the current message envelope
+
+        .. # noqa: DAR201
+        """
+        return self._message.envelope

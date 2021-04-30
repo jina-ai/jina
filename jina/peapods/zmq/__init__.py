@@ -58,6 +58,7 @@ class Zmqlet:
         self.msg_recv = 0
         self.msg_sent = 0
         self.is_closed = False
+        self.is_polling_paused = False
         self.opened_socks = []  # this must be here for `close()`
         self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self._init_sockets()
         self._register_pollin()
@@ -405,10 +406,13 @@ class ZmqStreamlet(Zmqlet):
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """
         self.in_sock.stop_on_recv()
+        self.is_polling_paused = True
 
     def resume_pollin(self):
         """Put :attr:`in_sock` back to the poller """
-        self.in_sock.on_recv(self._in_sock_callback)
+        if self.is_polling_paused:
+            self.in_sock.on_recv(self._in_sock_callback)
+            self.is_polling_paused = False
 
     def start(self, callback: Callable[['Message'], 'Message']):
         """
