@@ -17,15 +17,15 @@ class RankerTrainer(BaseExecutor):
         the `loss` function."""
         raise NotImplementedError
 
-    def save(self, ranker_path: str):
+    def save_weights(self, path: str):
         """
-        Save the ranker model.
+        Save the weights of the ranker model.
         """
         raise NotImplementedError
 
-    def load(self, ranker_path: str):
+    def load_weights(self, path: str):
         """
-        Load the ranker model.
+        Load the weights of the ranker model.
         """
         raise NotImplementedError
 
