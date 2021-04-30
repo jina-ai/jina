@@ -114,7 +114,7 @@ def test_pod_naming_with_parallel(runtime):
     )
     with CompoundPod(args) as bp:
         assert bp.head_pea.name == 'pod/head'
-        assert bp.head_pea.name == 'pod/tail'
+        assert bp.tail_pea.name == 'pod/tail'
 
         assert bp.replica_list[0].name == 'pod/0'
         assert bp.replica_list[0].peas[0].name == 'pod/0/head'
