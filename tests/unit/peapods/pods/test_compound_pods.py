@@ -73,16 +73,6 @@ def test_equal(pod_args, pod_args_singleton):
     pod2.close()
 
 
-def test_head_args_get_set(pod_args):
-    with CompoundPod(pod_args) as pod:
-        assert pod.head_args == pod.replicas_args['head']
-
-
-def test_tail_args_get_set(pod_args):
-    with CompoundPod(pod_args) as pod:
-        assert pod.tail_args == pod.replicas_args['tail']
-
-
 @pytest.mark.parametrize('parallel', [1, 4])
 @pytest.mark.parametrize('replicas', [3])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
@@ -123,8 +113,8 @@ def test_pod_naming_with_parallel(runtime):
         ]
     )
     with CompoundPod(args) as bp:
-        assert bp.peas[0].name == 'pod/head'
-        assert bp.peas[1].name == 'pod/tail'
+        assert bp.head_pea.name == 'pod/head'
+        assert bp.head_pea.name == 'pod/tail'
 
         assert bp.replica_list[0].name == 'pod/0'
         assert bp.replica_list[0].peas[0].name == 'pod/0/head'
@@ -145,8 +135,8 @@ def test_pod_naming_with_parallel(runtime):
         assert bp.replica_list[2].peas[3].name == 'pod/2/1'
 
         # runtime
-        assert bp.peas[0].runtime.name == 'pod/head/ZEDRuntime'
-        assert bp.peas[1].runtime.name == 'pod/tail/ZEDRuntime'
+        assert bp.head_pea.runtime.name == 'pod/head/ZEDRuntime'
+        assert bp.tail_pea.runtime.name == 'pod/tail/ZEDRuntime'
 
         assert bp.replica_list[0].peas[0].runtime.name == 'pod/0/head/ZEDRuntime'
         assert bp.replica_list[0].peas[1].runtime.name == 'pod/0/tail/ZEDRuntime'
@@ -209,7 +199,7 @@ def test_host_list_matching(num_hosts, used_hosts):
         ]
     )
     compound_pod = CompoundPod(args)
-    replica_args = compound_pod.replicas_args['replicas']
+    replica_args = compound_pod.replicas_args
     assert replica_args[0].peas_hosts == used_hosts[0]
     assert replica_args[1].peas_hosts == used_hosts[1]
     assert replica_args[2].peas_hosts == used_hosts[2]
