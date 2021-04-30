@@ -68,38 +68,13 @@ class CompoundPod(BasePod):
         )
 
     @property
-    def all_args(
-        self,
-    ) -> Dict[
-        str,
-        Union[
-            List[Union[List[Namespace], Namespace, None]],
-            list,
-            List[Namespace],
-            Namespace,
-            None,
-        ],
-    ]:
-        """
-        Get all arguments of all Peas and Pods (replicas) in this CompoundPod.
-
-        :return: arguments for all Peas and pods
-        """
-        args = {
-            'head': self.head_args,
-            'tail': self.tail_args,
-            'replicas': self.replicas_args,
-        }
-        return args
-
-    @property
     def num_peas(self) -> int:
         """
         Get the number of running :class:`Pod`
 
         :return: total number of peas including head and tail
         """
-        return sum([replica.num_peas for replica in self.replica_list]) + len(self.peas)
+        return sum([replica.num_peas for replica in self.replica_list]) + 2
 
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
@@ -126,7 +101,7 @@ class CompoundPod(BasePod):
             tail_args.noblock_on_start = True
             self.tail_pea = Pea(tail_args)
             self._enter_pea(self.tail_pea)
-            for _args in self.all_args['replicas']:
+            for _args in self.replicas_args:
                 _args.noblock_on_start = True
                 _args.polling = PollingType.ALL
                 self._enter_replica(Pod(_args))
@@ -136,14 +111,12 @@ class CompoundPod(BasePod):
         else:
             try:
                 head_args = self.head_args
-                head_args.noblock_on_start = True
                 self.head_pea = Pea(head_args)
                 self._enter_pea(self.head_pea)
                 tail_args = self.tail_args
-                tail_args.noblock_on_start = True
                 self.tail_pea = Pea(tail_args)
                 self._enter_pea(self.tail_pea)
-                for _args in self.all_args['replicas']:
+                for _args in self.replicas_args:
                     _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
             except:
@@ -163,8 +136,8 @@ class CompoundPod(BasePod):
             )
 
         try:
-            for p in self.peas:
-                p.wait_start_success()
+            self.head_pea.wait_start_success()
+            self.tail_pea.wait_start_success()
             for p in self.replica_list:
                 p.wait_start_success()
         except:
@@ -265,7 +238,7 @@ class CompoundPod(BasePod):
         for i in range(len(self.replica_list)):
             replica = self.replica_list[i]
             replica.close()
-            _args = self.all_args['replicas'][i]
+            _args = self.replicas_args[i]
             _args.noblock_on_start = False
             new_replica = Pod(_args)
             self.enter_context(new_replica)
