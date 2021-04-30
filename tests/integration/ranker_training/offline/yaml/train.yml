@@ -1,0 +1,9 @@
+!RankerTrainer
+with:
+  params: {metric: ndcg}
+metas:
+  workspace: $JINA_TEST_TRAIN_OFFLINE
+requests:
+  on:
+    TrainRequest:
+      - !TrainDriver {}
