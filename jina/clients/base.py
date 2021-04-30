@@ -220,15 +220,15 @@ class BaseClient:
             else:
                 raise BadClient(msg) from rpc_ex
 
-    def index(self):
+    def index(self, **kwargs):
         """Issue 'index' request to the Flow."""
         raise NotImplementedError
 
-    def search(self):
+    def search(self, **kwargs):
         """Issue 'search' request to the Flow."""
         raise NotImplementedError
 
-    def train(self):
+    def train(self, **kwargs):
         """Issue 'train' request to the Flow."""
         raise NotImplementedError
 

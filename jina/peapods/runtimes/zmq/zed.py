@@ -209,8 +209,8 @@ class ZEDRuntime(ZMQRuntime):
                 # assigning result back to request
                 # 1. Return none: do nothing
                 # 2. Return nonempty and non-DocumentSet: raise error
-                # 3. Return DocSet, but the memory pointer says it is the same as self.request.docs: do nothing
-                # 4. Return DocSet and its not a shallow copy: assign self.request.docs
+                # 3. Return DocSet, but the memory pointer says it is the same as self.docs: do nothing
+                # 4. Return DocSet and its not a shallow copy of self.docs: assign self.request.docs
                 if r_docs is not None:
                     if not isinstance(r_docs, DocumentSet):
                         raise TypeError(

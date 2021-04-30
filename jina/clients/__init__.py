@@ -1,5 +1,4 @@
 """Module wrapping the Client of Jina."""
-
 from typing import Union, List, Optional
 
 from . import request
@@ -8,7 +7,7 @@ from .helper import callback_exec
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 from ..enums import RequestType
-from ..helper import run_async, deprecated_alias
+from ..helper import run_async
 
 
 class Client(BaseClient):
@@ -26,19 +25,49 @@ class Client(BaseClient):
         if self.args.return_results:
             return result
 
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
+    def post(
+            self,
+            inputs: InputType,
+            on: str,
+            on_done: CallbackFnType = None,
+            on_error: CallbackFnType = None,
+            on_always: CallbackFnType = None,
+            target_peapod: Optional[str] = None,
+            parameters: Optional[dict] = None,
+            **kwargs,
+    ) -> None:
+        """Post a general data request to the Flow.
+
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
+        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
+        :param on_done: the function to be called when the :class:`Request` object is resolved.
+        :param on_error: the function to be called when the :class:`Request` object is rejected.
+        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param target_peapod: a regex string represent the certain peas/pods request targeted
+        :param parameters: the kwargs that will be sent to the executor
+        :param kwargs: additional parameters
+        :return: None
+        """
+        self.mode = RequestType.DATA
+        return run_async(
+            self._get_results,
+            inputs,
+            on_done,
+            on_error,
+            on_always,
+            exec_endpoint=on,
+            target=target_peapod,
+            parameters=parameters,
+            **kwargs,
+        )
+
     def train(
-        self,
-        inputs: InputType,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs,
+            self,
+            inputs: InputType,
+            on_done: CallbackFnType = None,
+            on_error: CallbackFnType = None,
+            on_always: CallbackFnType = None,
+            **kwargs,
     ) -> None:
         """Issue 'train' request to the Flow.
 
@@ -54,12 +83,6 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
     def search(
         self,
         inputs: InputType,
@@ -83,12 +106,6 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
     def index(
         self,
         inputs: InputType,
@@ -111,12 +128,6 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
     def update(
         self,
         inputs: InputType,
@@ -139,12 +150,6 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
     def delete(
         self,
         inputs: InputDeleteType,
@@ -167,39 +172,7 @@ class Client(BaseClient):
             self._get_results, inputs, on_done, on_error, on_always, **kwargs
         )
 
-    def post(
-        self,
-        inputs: InputType,
-        on: str,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        target_peapod: Optional[str] = None,
-        parameters: Optional[dict] = None,
-        **kwargs,
-    ) -> None:
-        """Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
-        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: additional parameters
-        :return: None
-        """
-        self.mode = RequestType.DATA
-        return run_async(
-            self._get_results,
-            inputs,
-            on_done,
-            on_error,
-            on_always,
-            exec_endpoint=on,
-            target=target_peapod,
-            parameters=parameters,
-            **kwargs,
-        )
 
     def reload(
         self,
