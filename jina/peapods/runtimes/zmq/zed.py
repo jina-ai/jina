@@ -17,7 +17,8 @@ from ....excepts import (
     MemoryOverHighWatermark,
     ChainedPodException,
     BadConfigSource,
-    RuntimeTerminated, UnknownControlCommand,
+    RuntimeTerminated,
+    UnknownControlCommand,
 )
 from ....executors import BaseExecutor
 from ....helper import random_identity, typename
@@ -184,6 +185,8 @@ class ZEDRuntime(ZMQRuntime):
                 or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
             if self.request_type == 'DataRequest':
+
+                # migrated from the previously RouteDriver logic
                 if self._idle_dealer_ids:
                     dealer_id = self._idle_dealer_ids.pop()
                     self.envelope.receiver_id = dealer_id
@@ -192,6 +195,7 @@ class ZEDRuntime(ZMQRuntime):
                     if not self._idle_dealer_ids:
                         self._zmqlet.pause_pollin()
 
+                # executor logic
                 r_docs = self._executor(
                     req_endpoint=self.request.header.exec_endpoint,
                     docs=self.docs,
@@ -199,8 +203,14 @@ class ZEDRuntime(ZMQRuntime):
                     queryset=self.request.queryset,
                     parameters=MessageToDict(self.request.parameters),
                     docs_matrix=self.docs_matrix,
-                    groundtruths_matrix=self.groundtruths_matrix
+                    groundtruths_matrix=self.groundtruths_matrix,
                 )
+
+                # assigning result back to request
+                # 1. Return none: do nothing
+                # 2. Return nonempty and non-DocumentSet: raise error
+                # 3. Return DocSet, but the memory pointer says it is the same as self.request.docs: do nothing
+                # 4. Return DocSet and its not a shallow copy: assign self.request.docs
                 if r_docs is not None:
                     if not isinstance(r_docs, DocumentSet):
                         raise TypeError(
@@ -217,6 +227,7 @@ class ZEDRuntime(ZMQRuntime):
         return self
 
     def _handle_control_req(self):
+        # migrated from previous ControlDriver logic
         if self.request.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated
@@ -248,7 +259,9 @@ class ZEDRuntime(ZMQRuntime):
                         self._load_executor()
                         break
         else:
-            raise UnknownControlCommand(f'don\'t know how to handle {self.request.command}')
+            raise UnknownControlCommand(
+                f'don\'t know how to handle {self.request.command}'
+            )
 
     def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
