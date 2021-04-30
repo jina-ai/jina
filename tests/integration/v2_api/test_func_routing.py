@@ -109,7 +109,14 @@ def test_func_joiner(mocker):
     def validate(req):
         texts = {d.text for d in req.docs}
         assert len(texts) == 6
-        expect = {'hello 0!!!', 'hello 1!!!', 'hello 2!!!', 'world 0!!!', 'world 1!!!', 'world 2!!!'}
+        expect = {
+            'hello 0!!!',
+            'hello 1!!!',
+            'hello 2!!!',
+            'world 0!!!',
+            'world 1!!!',
+            'world 2!!!',
+        }
         assert texts == expect
         mock()
 
@@ -122,3 +129,10 @@ def test_func_joiner(mocker):
         )
 
     mock.assert_called_once()
+
+
+def test_dealer_routing():
+    f = Flow().add(parallels=3)
+
+    with f:
+        f.post([Document() for _ in range(100)], request_size=2, on='/some_endpoint')
