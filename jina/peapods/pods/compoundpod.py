@@ -150,8 +150,10 @@ class CompoundPod(BasePod):
     def join(self):
         """Wait until all pods and peas exit."""
         try:
-            self.head_pea.join()
-            self.tail_pea.join()
+            if getattr(self, 'head_pea', None):
+                self.head_pea.join()
+            if getattr(self, 'head_pea', None):
+                self.tail_pea.join()
             for p in self.replica_list:
                 p.join()
         except KeyboardInterrupt:
@@ -169,7 +171,7 @@ class CompoundPod(BasePod):
             A Pod is ready when all the Peas it contains are ready
         """
         return all(
-            [p.is_ready.is_set() for p in self.peas]
+            [p.is_ready.is_set() for p in [self.head_pea, self.tail_pea]]
             + [p.is_ready for p in self.replica_list]
         )
 
