@@ -1,4 +1,4 @@
-from ..sets import DocumentSet
+from ..arrays import DocumentArray
 from ...proto import jina_pb2
 
 
@@ -6,20 +6,20 @@ class DocsPropertyMixin:
     """Mixin class of docs property."""
 
     @property
-    def docs(self) -> 'DocumentSet':
-        """Get the :class: `DocumentSet` with sequence `body.docs` as content."""
+    def docs(self) -> 'DocumentArray':
+        """Get the :class: `DocumentArray` with sequence `body.docs` as content."""
         self.is_used = True
-        return DocumentSet(self.body.docs)
+        return DocumentArray(self.body.docs)
 
 
 class GroundtruthPropertyMixin:
     """Mixin class of groundtruths property."""
 
     @property
-    def groundtruths(self) -> 'DocumentSet':
-        """Get the groundtruths in :class: `DocumentSet` type."""
+    def groundtruths(self) -> 'DocumentArray':
+        """Get the groundtruths in :class: `DocumentArray` type."""
         self.is_used = True
-        return DocumentSet(self.body.groundtruths)
+        return DocumentArray(self.body.groundtruths)
 
 
 class CommandMixin:

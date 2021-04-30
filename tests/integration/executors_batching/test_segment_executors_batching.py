@@ -4,7 +4,7 @@ from jina.executors.segmenters import BaseSegmenter
 from jina.executors.decorators import batching, single
 from jina import Document
 from jina.flow import Flow
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 from tests import validate_callback
 
 NUM_CHUNKS = 3
@@ -38,7 +38,7 @@ class DummySegmenterTextSingle(BaseSegmenter):
     'segmenter', [DummySegmenterTextSingle(), DummySegmenterTextBatching()]
 )
 def test_batching_text_one_argument(segmenter):
-    docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
+    docs = DocumentArray([Document(text=f'text-{i}') for i in range(15)])
     texts, _ = docs.extract_docs('text')
 
     chunks_sets = segmenter.segment(texts)
@@ -61,7 +61,7 @@ def test_batching_text_one_argument_flow(segmenter, mocker):
             for j, chunk in enumerate(doc.chunks):
                 assert chunk.text == f'text-{i}-chunk-{j}'
 
-    docs = DocumentSet([Document(text=f'text-{i}') for i in range(NUM_DOCS)])
+    docs = DocumentArray([Document(text=f'text-{i}') for i in range(NUM_DOCS)])
     mock = mocker.Mock()
 
     with Flow().add(name='segmenter', uses=segmenter) as f:

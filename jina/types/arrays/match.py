@@ -1,12 +1,12 @@
-from .document import DocumentSet
+from .document import DocumentArray
 
 if False:
     from ..document import Document
 
 
-class MatchSet(DocumentSet):
+class MatchArray(DocumentArray):
     """
-    :class:`MatchSet` inherits from :class:`DocumentSet`.
+    :class:`MatchArray` inherits from :class:`DocumentArray`.
     It's a subset of Documents that represents the matches
 
     :param docs_proto: Set of matches of the `reference_doc`
@@ -43,21 +43,21 @@ class MatchSet(DocumentSet):
 
     @property
     def reference_doc(self) -> 'Document':
-        """Get the document that this :class:`MatchSet` referring to.
+        """Get the document that this :class:`MatchArray` referring to.
         :return: the document the match refers to
         """
         return self._ref_doc
 
     @property
     def granularity(self) -> int:
-        """Get granularity of all document in this set.
+        """Get granularity of all document in this array.
         :return: the granularity of the documents of which these are match
         """
         return self._ref_doc.granularity
 
     @property
     def adjacency(self) -> int:
-        """Get the adjacency of all document in this set.
-        :return: the adjacency of the set of matches
+        """Get the adjacency of all document in this array.
+        :return: the adjacency of the array of matches
         """
         return self._ref_doc.adjacency + 1
