@@ -68,31 +68,6 @@ class CompoundPod(BasePod):
         )
 
     @property
-    def all_args(
-        self,
-    ) -> Dict[
-        str,
-        Union[
-            List[Union[List[Namespace], Namespace, None]],
-            list,
-            List[Namespace],
-            Namespace,
-            None,
-        ],
-    ]:
-        """
-        Get all arguments of all Peas and Pods (replicas) in this CompoundPod.
-
-        :return: arguments for all Peas and pods
-        """
-        args = {
-            'head': self.head_args,
-            'tail': self.tail_args,
-            'replicas': self.replicas_args,
-        }
-        return args
-
-    @property
     def num_peas(self) -> int:
         """
         Get the number of running :class:`Pod`
@@ -263,7 +238,7 @@ class CompoundPod(BasePod):
         for i in range(len(self.replica_list)):
             replica = self.replica_list[i]
             replica.close()
-            _args = self.all_args['replicas'][i]
+            _args = self.replicas_args[i]
             _args.noblock_on_start = False
             new_replica = Pod(_args)
             self.enter_context(new_replica)
