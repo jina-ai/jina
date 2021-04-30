@@ -125,7 +125,8 @@ class CompoundPod(BasePod):
         :return: arguments for all Peas and pods
         """
         args = {
-            'peas': [self.head_args, self.tail_args],
+            'head': self.head_args,
+            'tail': self.tail_args,
             'replicas': self.replicas_args,
         }
         return args
@@ -153,7 +154,7 @@ class CompoundPod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args['peas']:
+            for _args in [self.all_args['head'], self.all_args['tail']]:
                 _args.noblock_on_start = True
                 self._enter_pea(Pea(_args))
             for _args in self.all_args['replicas']:
@@ -165,9 +166,10 @@ class CompoundPod(BasePod):
             return self
         else:
             try:
-                for _args in self.all_args['peas']:
+                for _args in [self.all_args['head'], self.all_args['tail']]:
                     self._enter_pea(Pea(_args))
                 for _args in self.all_args['replicas']:
+                    _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
             except:
                 self.close()
