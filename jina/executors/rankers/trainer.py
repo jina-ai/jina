@@ -2,6 +2,8 @@ __copyright__ = "Copyright (c) 2021 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import math
+import pickle
+from pathlib import Path
 
 import numpy as np
 
@@ -13,6 +15,7 @@ class RankerTrainer(BaseExecutor):
 
     WEIGHT_SCALE = 1 / max(1.0, (2 + 2) / 2.0)
     WEIGHT_LIMIT = math.sqrt(3.0 * WEIGHT_SCALE)
+    WEIGHT_FILENAME = 'weights.txt'
 
     def __init__(self, params: dict = None, weights_shape: float = (2, 2)):
         super().__init__()
@@ -30,13 +33,16 @@ class RankerTrainer(BaseExecutor):
         """
         Save the weights of the ranker model.
         """
-        raise NotImplementedError
+        path = Path(path)
+        weights_path = path.joinpath(self.BACKEND_WEIGHTS_FILENAME)
 
-    def load_weights(self, path: str):
-        """
-        Load the weights of the ranker model.
-        """
-        raise NotImplementedError
+        if not path.exists():
+            path.mkdir(parents=True)
+        else:
+            raise FileExistsError(f'{path} already exist, fail to save.')
+
+        with open(weights_path, mode='wb') as weights_file:
+            pickle.dump(self._weights, weights_file)
 
     @property
     def params(self):
