@@ -10,7 +10,7 @@ from .. import BasePod
 from .. import Pea
 from .. import Pod
 from ... import helper
-from ...enums import PollingType, SocketType, SchedulerType
+from ...enums import PollingType, SocketType
 from ...helper import random_identity
 
 
@@ -29,11 +29,12 @@ class CompoundPod(BasePod):
     ):
         super().__init__(args, needs)
         self.replica_list = []  # type: List['Pod']
-        if isinstance(args, Dict):
-            # This is used when a Pod is created in a remote context, where peas & their connections are already given.
-            self.replicas_args = args
-        else:
-            self.replicas_args = self._parse_args(args)
+        # we will see how to have `CompoundPods` in remote later when we add tests for it
+        self.head_args = self._parse_head_args(args)
+        self.tail_args = self._parse_tail_args(args)
+        self.replicas_args = [
+            self._parse_pod_args(copy(args)) for _ in range(args.replicas)
+        ]
 
     @property
     def port_expose(self) -> int:
@@ -51,7 +52,7 @@ class CompoundPod(BasePod):
         """
         return self.head_args.host
 
-    def _parse_args(
+    def _parse_pod_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         parsed_args = {'head': None, 'tail': None, 'replicas': []}
@@ -124,9 +125,9 @@ class CompoundPod(BasePod):
         :return: arguments for all Peas and pods
         """
         args = {
-            'peas': ([self.replicas_args['head']] if self.replicas_args['head'] else [])
-            + ([self.replicas_args['tail']] if self.replicas_args['tail'] else []),
-            'replicas': self.replicas_args['replicas'],
+            'head': self.head_args,
+            'tail': self.tail_args,
+            'replicas': self.replicas_args,
         }
         return args
 
@@ -153,7 +154,7 @@ class CompoundPod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args['peas']:
+            for _args in [self.all_args['head'], self.all_args['tail']]:
                 _args.noblock_on_start = True
                 self._enter_pea(Pea(_args))
             for _args in self.all_args['replicas']:
@@ -165,9 +166,10 @@ class CompoundPod(BasePod):
             return self
         else:
             try:
-                for _args in self.all_args['peas']:
+                for _args in [self.all_args['head'], self.all_args['tail']]:
                     self._enter_pea(Pea(_args))
                 for _args in self.all_args['replicas']:
+                    _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
             except:
                 self.close()
