@@ -299,8 +299,9 @@ subclassing `Executor` should be easy.
 | `.load()` | ❌ |
 | `.logger`  | ❌ |
 | Pickle interface | ❌ |
-| init boilerplate (`__init__`, `pre_init`, `post_init`) | ❌ |
+| init boilerplates (`__init__`, `pre_init`, `post_init`) | ❌ |
 | Context manager interface |  ❌ |
+| Inline `import` coding style |  ❌ |
 
 ![](.github/1.xvs2.0%20BaseExecutor.svg)
 

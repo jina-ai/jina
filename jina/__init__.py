@@ -97,6 +97,7 @@ __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __default_endpoint__ = '/default'
+__num_args_executor_func__ = 5
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 
 _names_with_underscore = [
