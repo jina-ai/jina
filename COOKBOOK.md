@@ -267,7 +267,7 @@ developer"):
 
 - **Not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and less intrusive as
   a `mixin` class:
-  - do not change its `init` behavior;
+  - do not customize the class constructor logic;
   - do not change its builtin interface `__getstate__`, `__setstate__`;
   - do not add new members to the `Executor` object unless we must.
 - **Not overpromise user**: do not promise features that we can hardly deliver. Trying to control the interface while
@@ -304,6 +304,11 @@ Executor's workspace is inherited according to the following rule (`OR` is a pyt
 then second):
 
 ![](.github/workspace-inherit.svg)
+
+### Metas
+
+The meta attributes of an `Executor` object is now gathered in `self.metas`, instead of directly posing them to `self`,
+e.g. to access `name` use `self.metas.name`.
 
 ## Flow/Client API
 
