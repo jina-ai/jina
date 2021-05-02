@@ -34,7 +34,7 @@ class MyExecutor(Executor):
 
     @requests
     def foo(self, **kwargs):
-        print(kwargs)
+      print(kwargs)
 
 
 f = Flow().add(uses=MyExecutor)
@@ -45,20 +45,9 @@ with f:
 
 ### With YAML
 
-```python
-from jina import Executor, Flow, Document
+`my.yml`:
 
-
-class MyExecutor(Executor):
-
-    def __init__(self, bar: int):
-        self.bar = bar
-
-    def foo(self, **kwargs):
-        print(f'foo says: {self.bar} {self.metas} {kwargs}')
-
-
-yaml_literal = """
+```yaml
 jtype: MyExecutor
 with:
   bar: 123
@@ -67,9 +56,22 @@ metas:
   description: my first awesome executor
 requests:
   /random_work: foo
-"""
+```
 
-f = Flow().add(uses=yaml_literal)
+```python
+from jina import Executor, Flow, Document
+
+
+class MyExecutor(Executor):
+
+  def __init__(self, bar: int):
+    self.bar = bar
+
+  def foo(self, **kwargs):
+    print(f'foo says: {self.bar} {self.metas} {kwargs}')
+
+
+f = Flow().add(uses='my.yml')
 
 with f:
   f.post(Document(), on='/random_work', on_done=print)
