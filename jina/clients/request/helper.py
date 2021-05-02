@@ -1,5 +1,5 @@
 """Module for helper functions for clients."""
-from typing import Tuple, Sequence
+from typing import Tuple
 
 from ... import Document, Request
 from ...enums import DataInputType
@@ -7,7 +7,7 @@ from ...excepts import BadDocType, BadRequestType
 
 
 def _new_data_request_from_batch(
-    _kwargs, batch, data_type, queryset, endpoint, target, parameters
+        _kwargs, batch, data_type, endpoint, target, parameters
 ):
     req = Request()
     req.request_type = 'data'
@@ -21,12 +21,6 @@ def _new_data_request_from_batch(
     # add parameters field
     if parameters:
         req.parameters.update(parameters)
-
-    # add queryset field
-    if isinstance(queryset, Sequence):
-        req.queryset.extend(queryset)
-    elif queryset is not None:
-        req.queryset.append(queryset)
 
     # add docs, groundtruths fields
     try:

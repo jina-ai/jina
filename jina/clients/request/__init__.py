@@ -8,7 +8,6 @@ from ...enums import DataInputType
 from ...helper import batch_iterator
 from ...logging import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType, Document
-from ...types.arrays.querylang import AcceptQueryLangType
 
 SingletonDataType = Union[
     DocumentContentType,
@@ -28,9 +27,6 @@ def request_generator(
     exec_endpoint: Optional[str] = None,
     request_size: int = 0,
     mime_type: Optional[str] = None,
-    queryset: Optional[
-        Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]]
-    ] = None,
     data_type: DataInputType = DataInputType.AUTO,
     target_peapod: Optional[str] = None,
     parameters: Optional[dict] = None,
@@ -40,9 +36,7 @@ def request_generator(
 
     :param data: the data to use in the request
     :param request_size: the request size for the client
-    :param mode: the request mode (index, search etc.)
     :param mime_type: mime type
-    :param queryset: querylang set of queries
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
     :param kwargs: additional arguments
@@ -59,7 +53,6 @@ def request_generator(
                 _kwargs=kwargs,
                 batch=batch,
                 data_type=data_type,
-                queryset=queryset,
                 endpoint=exec_endpoint,
                 target=target_peapod,
                 parameters=parameters,
