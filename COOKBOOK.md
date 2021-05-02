@@ -300,6 +300,8 @@ subclassing `Executor` should be easy.
 | init boilerplate (`__init__`, `pre_init`, `post_init`) | ❌ |
 | Context manager interface |  ❌ |
 
+![](.github/1.xvs2.0%20BaseExecutor.svg)
+
 ### Workspace
 
 Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
