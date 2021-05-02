@@ -1,6 +1,5 @@
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
 
-
 import copy
 import functools
 import inspect
@@ -11,6 +10,7 @@ from typing import Callable, Any, Union, Iterator, List, Optional, Dict, Iterabl
 import numpy as np
 
 from .metas import get_default_metas
+from .. import DocumentArray
 from ..helper import batch_iterator, convert_tuple_to_list
 from ..logging import default_logger
 
@@ -405,10 +405,27 @@ def single(
         return _single_multi_input
 
 
-def requests(func: Callable = None, on: Optional[str] = None) -> Callable:
+def requests(
+        func: Callable[
+            [DocumentArray, DocumentArray, Dict, List[DocumentArray], List[DocumentArray]],
+            Optional[DocumentArray],
+        ] = None,
+        *,
+        on: Optional[str] = None,
+):
+    """
+    `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
+
+    A class method decorated with plan `@requests` (without `on=`) is the default handler for all endpoints.
+    That means, it is the fallback handler for endpoints that are not found.
+
+    :param func: the method to decorate
+    :param on: the endpoint string, by convention starts with `/`
+    :return:
+    """
     from . import __default_endpoint__
 
-    class _requests:
+    class FunctionMapper:
         def __init__(self, fn):
             @functools.wraps(fn)
             def arg_wrapper(*args, **kwargs):
@@ -424,6 +441,6 @@ def requests(func: Callable = None, on: Optional[str] = None) -> Callable:
             owner.requests[on or __default_endpoint__] = self.fn
 
     if func:
-        return _requests(func)
+        return FunctionMapper(func)
     else:
-        return _requests
+        return FunctionMapper

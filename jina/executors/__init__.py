@@ -93,7 +93,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if callable(_func):
                 # the target function is not decorated with `@requests` yet
                 request_mapping[endpoint] = _func
-            elif typename(_func) == 'jina.executors.decorators._requests':
+            elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                 # the target function is already decorated with `@requests`, need unwrap with `.fn`
                 request_mapping[endpoint] = _func.fn
             else:
@@ -158,7 +158,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         pass
 
     @classmethod
-    def inject_config(
+    def _inject_config(
             cls: Type[AnyExecutor],
             raw_config: Dict,
             *args,
