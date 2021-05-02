@@ -15,13 +15,13 @@
   + [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
   + [Summary](#summary)
 * [Executor Built-in Features](#executor-built-in-features)
-    + [1.x vs 2.0](#1x-vs-20)
-    + [Workspace](#workspace)
-    + [Metas](#metas)
-* [Flow/Client API](#flow-client-api)
-    + [`post` method](#-post--method)
+  + [1.x vs 2.0](#1x-vs-20)
+  + [Workspace](#workspace)
+  + [Metas](#metas)
+* [Flow/Client API](#flowclient-api)
+  + [`post` method](#post-method)
 * [Remarks](#remarks)
-    + [Joining/Merging](#joining-merging)
+  + [Joining/Merging](#joiningmerging)
 
 ## Minimum working example
 
