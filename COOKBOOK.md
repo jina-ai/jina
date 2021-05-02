@@ -80,6 +80,11 @@ with f:
 
 ## Executor API
 
+- All `executor` come from `Executor` class directly.
+- An `executor` class can contain arbitrary number of functions with arbitrary names. It is a bag of functions with
+  shared state (via `self`).
+- Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
+
 ### Inheritance
 
 Every new executor should be inherited directly from `jina.Executor`.
@@ -256,12 +261,6 @@ exec.save_config('y.yml')
 Executor.load_config('y.yml')
 ```
 
-### Summary
-
-- All `executor` come from `Executor` class directly.
-- An `executor` class can contain arbitrary number of functions with arbitrary names. It is a bag of functions with
-  shared state (via `self`).
-- Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
 
 ## Executor Built-in Features
 
@@ -283,8 +282,8 @@ subclassing `Executor` should be easy.
 
 ### 1.x vs 2.0
 
-- ❌: Completely removed. User has to implemented themselves.
-- ✅: Preserved
+- ❌: Completely removed. Users have to implement it on their own.
+- ✅: Preserved.
 
 | 1.x | 2.0 |
 | --- | --- |
