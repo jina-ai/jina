@@ -305,7 +305,7 @@ subclassing `Executor` should be easy.
 Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
 then second):
 
-![](.github/workspace-inherit.svg)
+![](.github/workspace-inherit.svg?raw=true)
 
 ### Metas
 
