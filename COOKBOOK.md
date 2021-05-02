@@ -292,7 +292,7 @@ subclassing `Executor` should be easy.
 | `.close()` |  ✅ |
 | `workspace` interface |  ✅ [Refactored](#workspace). |
 | `metas` config | Moved to `self.metas.xxx`. [Number of fields are greatly reduced](#yaml-interface). |
-| `requests` config | Refactored and moved to `self.requests.xxx`. |
+| `._drivers` | Refactored and moved to `self.requests.xxx`. |
 | `.save()` | ❌ |
 | `.load()` | ❌ |
 | `.logger`  | ❌ |
