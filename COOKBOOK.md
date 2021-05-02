@@ -297,7 +297,7 @@ subclassing `Executor` should be easy.
 | `.load()` | ❌ |
 | `.logger`  | ❌ |
 | Pickle interface | ❌ |
-| init boilerplate (`pre_init` `post_init`) | ❌ |
+| init boilerplate (`__init__`, `pre_init`, `post_init`) | ❌ |
 | Context manager interface |  ❌ |
 
 ### Workspace
