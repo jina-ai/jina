@@ -288,7 +288,7 @@ subclassing `Executor` should be easy.
 | `.save_config()` | ✅ |
 | `.load_config()` | ✅ |
 | `.close()` |  ✅ |
-| `workspace` interface |  ✅ Refactored |
+| `workspace` interface |  ✅ Refactored, see below. |
 | `metas` config | Moved to `self.metas.xxx`. Number of fields are greatly reduced. |
 | `requests` config | Refactored and moved to `self.requests.xxx`. |
 | `.save()` | ❌ |
@@ -300,7 +300,8 @@ subclassing `Executor` should be easy.
 
 ### Workspace
 
-Executor's workspace is inherited according to the following rule:
+Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
+then second):
 
 ![](.github/workspace-inherit.svg)
 
