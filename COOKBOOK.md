@@ -7,7 +7,7 @@
     + [Inheritance](#inheritance)
     + [Method naming](#method-naming)
     + [`@requests` decorator](#--requests--decorator)
-    + [`@requests` decorator without `on=`](#--requests--decorator-without--on--)
+        - [`@requests` decorator without `on=`](#--requests--decorator-without--on--)
     + [Method Signature](#method-signature)
     + [Method Arguments](#method-arguments)
     + [Method Returns](#method-returns)
@@ -122,10 +122,10 @@ Then:
 - `f.post(..., on='/random_work')` will trigger `MyExecutor.bar`;
 - `f.post(..., on='/blah')` will throw an error, as no function bind with `/blah`;
 
-### `@requests` decorator without `on=`
+#### `@requests` decorator without `on=`
 
-A class method decorated with `@requests` is the default handler for all endpoints. That means, it is the fallback
-handler for endpoints that are not found. `f.post(..., on='/blah')` will call `MyExecutor.foo`
+A class method decorated with plan `@requests` (without `on=`) is the default handler for all endpoints. That means, it
+is the fallback handler for endpoints that are not found. `f.post(..., on='/blah')` will call `MyExecutor.foo`
 
 ```python
 from jina import Executor, requests
