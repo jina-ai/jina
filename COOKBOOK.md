@@ -267,13 +267,13 @@ Executor.load_config('y.yml')
 In 2.0 Executor class has few built-in features than in 1.x. The design principles are (`user` here means "Executor
 developer"):
 
-- **Not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and less intrusive as
+- **Do not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and less intrusive as
   a `mixin` class:
   - do not customize the class constructor logic;
   - do not change its builtin interface `__getstate__`, `__setstate__`;
   - do not add new members to the `Executor` object unless we must.
-- **Not overpromise user**: do not promise features that we can hardly deliver. Trying to control the interface while
-  delivering just loosely implemented features is bad for scaling the core framework. For example, `save`, `load`
+- **Do not overpromise to user**: do not promise features that we can hardly deliver. Trying to control the interface
+  while delivering just loosely implemented features is bad for scaling the core framework. For example, `save`, `load`
   , `on_gpu`, etc.
 
 We want to give back the programming freedom to user. If a user is a good Python programmer, he/she should pick
@@ -290,8 +290,8 @@ subclassing `Executor` should be easy.
 | `.save_config()` | ✅ |
 | `.load_config()` | ✅ |
 | `.close()` |  ✅ |
-| `workspace` interface |  ✅ Refactored, see below. |
-| `metas` config | Moved to `self.metas.xxx`. Number of fields are greatly reduced. |
+| `workspace` interface |  ✅ [Refactored](#workspace). |
+| `metas` config | Moved to `self.metas.xxx`. [Number of fields are greatly reduced](#yaml-interface). |
 | `requests` config | Refactored and moved to `self.requests.xxx`. |
 | `.save()` | ❌ |
 | `.load()` | ❌ |
