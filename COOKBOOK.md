@@ -21,10 +21,11 @@
     + [`post` method](#-post--method)
 * [Remarks](#remarks)
     + [Joining/Merging](#joining-merging)
-  
+
 ## Minimum working example
 
 ### Pure Python
+
 ```python
 from jina import Executor, Flow, Document, requests
 
@@ -39,9 +40,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses=MyExecutor)
 
 with f:
-    f.post(Document(),
-           on='/random_work',
-           on_done=print)
+  f.post(Document(), on='/random_work', on_done=print)
 ```
 
 ### With YAML
@@ -73,9 +72,7 @@ requests:
 f = Flow().add(uses=yaml_literal)
 
 with f:
-    f.post(Document(),
-           on='/random_work',
-           on_done=print)
+  f.post(Document(), on='/random_work', on_done=print)
 ```
 
 ## Executor API
