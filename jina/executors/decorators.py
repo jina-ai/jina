@@ -1,7 +1,6 @@
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
 
 
-
 import copy
 import functools
 import inspect
@@ -419,10 +418,10 @@ def requests(func: Callable = None, on: Optional[str] = None) -> Callable:
 
         def __set_name__(self, owner, name):
             self.fn.class_name = owner.__name__
-            if not hasattr(owner, '_requests_mapping'):
-                owner._requests_mapping = {}
+            if not hasattr(owner, 'requests'):
+                owner.requests = {}
 
-            owner._requests_mapping[on or __default_endpoint__] = self.fn
+            owner.requests[on or __default_endpoint__] = self.fn
 
     if func:
         return _requests(func)

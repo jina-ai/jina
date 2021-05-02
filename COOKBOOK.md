@@ -1,5 +1,23 @@
 # Temporary Cookbook on Jina 2.0 API
 
+* [Minimum working example](#minimum-working-example)
+* [Minimum working example with YAML](#minimum-working-example-with-yaml)
+* [Executor API](#executor-api)
+    + [Inheritance](#inheritance)
+    + [Method naming](#method-naming)
+    + [`@requests` decorator](#--requests--decorator)
+    + [`@requests` decorator without `on=`](#--requests--decorator-without--on--)
+    + [Method Signature](#method-signature)
+    + [Method Arguments](#method-arguments)
+    + [Method Returns](#method-returns)
+    + [Summary](#summary)
+* [Executor YAML API](#executor-yaml-api)
+    + [Load and Save Executor's YAML config](#load-and-save-executor-s-yaml-config)
+* [Flow/Client API](#flow-client-api)
+    + [`post` method](#-post--method)
+* [Remarks](#remarks)
+    + [Joining/Merging](#joining-merging)
+  
 ## Minimum working example
 
 ```python
@@ -8,17 +26,51 @@ from jina import Executor, Flow, Document, requests
 
 class MyExecutor(Executor):
 
-  @requests
-  def foo(self, **kwargs):
-    print(kwargs)
+    @requests
+    def foo(self, **kwargs):
+        print(kwargs)
 
 
 f = Flow().add(uses=MyExecutor)
 
 with f:
-  f.post(Document(),
-         on='/random_work',
-         on_done=print)
+    f.post(Document(),
+           on='/random_work',
+           on_done=print)
+```
+
+## Minimum working example with YAML
+
+```python
+from jina import Executor, Flow, Document
+
+
+class MyExecutor(Executor):
+
+    def __init__(self, bar: int):
+        self.bar = bar
+
+    def foo(self, **kwargs):
+        print(f'foo says: {self.bar} {self.metas} {kwargs}')
+
+
+yaml_literal = """
+jtype: MyExecutor
+with:
+  bar: 123
+metas:
+  name: awesomeness
+  description: my first awesome executor
+requests:
+  /random_work: foo
+"""
+
+f = Flow().add(uses=yaml_literal)
+
+with f:
+    f.post(Document(),
+           on='/random_work',
+           on_done=print)
 ```
 
 ## Executor API
@@ -147,6 +199,64 @@ If return is just a shallow copy of `Request.docs`, then nothing happens.
 - An `executor` class can contain arbitrary number of functions with arbitrary names. It is a bag of functions with
   shared state (via `self`).
 - Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
+
+## Executor YAML API
+
+Executor can be load from and stored to a YAML file. The YAML file has the following format:
+
+```yaml
+jtype: MyExecutor
+with:
+  ...
+metas:
+  ...
+requests:
+  ...
+```
+
+- `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
+- `with` is a map. Defines kwargs of the class `__init__` method
+- `metas` is a map. Defines the meta information of that class, comparing to `1.x` it is reduced to the following
+  fields:
+    - `name` is a string. Defines the name of the executor;
+    - `description` is a string. Defines the description of this executor. It will be used in automatics docs UI;
+    - `workspace` is a string. Defines the workspace of the executor
+    - `py_modules` is a list of string. Defines the python dependencies of the executor.
+- `requests` is a map. Defines the mapping from endpoint to class method name.
+
+### Load and Save Executor's YAML config
+
+You can use class method `Executor.load_config` and object method `exec.save_config` to load & save YAML config as
+follows:
+
+```python
+from jina import Executor
+
+
+class MyExecutor(Executor):
+
+    def __init__(self, bar: int):
+        self.bar = bar
+
+    def foo(self, **kwargs):
+        pass
+
+
+y_literal = """
+jtype: MyExecutor
+with:
+  bar: 123
+metas:
+  name: awesomeness
+  description: my first awesome executor
+requests:
+  /random_work: foo
+"""
+
+exec = Executor.load_config(y_literal)
+exec.save_config('y.yml')
+Executor.load_config('y.yml')
+```
 
 ## Flow/Client API
 

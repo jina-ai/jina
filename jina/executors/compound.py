@@ -175,24 +175,6 @@ class CompoundExecutor(BaseExecutor):
 
     """
 
-    class _FnWrapper:
-        def __init__(self, fns):
-            self.fns = fns
-
-        def __call__(self, *args, **kwargs):
-            r = []
-            for f in self.fns:
-                r.append(f())
-            return r
-
-    class _FnAllWrapper(_FnWrapper):
-        def __call__(self, *args, **kwargs):
-            return all(super().__call__(*args, **kwargs))
-
-    class _FnOrWrapper(_FnWrapper):
-        def __call__(self, *args, **kwargs):
-            return any(super().__call__(*args, **kwargs))
-
     def __init__(
         self, routes: Dict[str, Dict] = None, resolve_all: bool = True, *args, **kwargs
     ):

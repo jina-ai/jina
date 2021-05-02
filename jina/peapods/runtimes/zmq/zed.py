@@ -79,11 +79,12 @@ class ZEDRuntime(ZMQRuntime):
         try:
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
-                pea_id=self.args.pea_id,
-                replica_id=getattr(self.args, 'replica_id', -1),
-                read_only=self.args.read_only,
+                metas=dict(
+                    pea_id=self.args.pea_id,
+                    replica_id=getattr(self.args, 'replica_id', -1),
+                    read_only=self.args.read_only,
+                ),
             )
-            self._executor.override_logger(runtime=self)
         except BadConfigSource as ex:
             self.logger.error(
                 f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
