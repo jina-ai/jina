@@ -1,6 +1,6 @@
 """Module for Jina Requests."""
 
-from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional
+from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional, Dict
 
 from .helper import _new_data_request_from_batch
 from ... import Request
@@ -23,14 +23,14 @@ GeneratorSourceType = Union[
 
 
 def request_generator(
-    data: GeneratorSourceType,
-    exec_endpoint: Optional[str] = None,
-    request_size: int = 0,
-    mime_type: Optional[str] = None,
-    data_type: DataInputType = DataInputType.AUTO,
-    target_peapod: Optional[str] = None,
-    parameters: Optional[dict] = None,
-    **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
+        exec_endpoint: Optional[str],
+        data: GeneratorSourceType,
+        request_size: int = 0,
+        mime_type: Optional[str] = None,
+        data_type: DataInputType = DataInputType.AUTO,
+        target_peapod: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> Iterator['Request']:
     """Generate a request iterator.
 

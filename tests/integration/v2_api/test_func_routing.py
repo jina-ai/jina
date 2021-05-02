@@ -16,8 +16,8 @@ def test_func_simple_routing(mocker):
 
     with f:
         f.post(
-            [Document() for _ in range(3)],
             on='/search',
+            inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
             on_done=done_mock,
             on_error=fail_mock,
@@ -31,8 +31,8 @@ def test_func_simple_routing(mocker):
 
     with f:
         f.post(
-            [Document() for _ in range(3)],
             on='/random',
+            inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
             on_done=done_mock,
             on_error=fail_mock,
@@ -54,8 +54,8 @@ def test_func_default_routing():
 
     with f:
         f.post(
-            [Document() for _ in range(3)],
             on='/some_endpoint',
+            inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
         )
 
@@ -70,8 +70,8 @@ def test_func_return_():
 
     with f:
         f.post(
-            [Document() for _ in range(3)],
             on='/some_endpoint',
+            inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
             on_done=print,
         )
@@ -122,8 +122,8 @@ def test_func_joiner(mocker):
 
     with f:
         f.post(
-            [Document() for _ in range(3)],
             on='/some_endpoint',
+            inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
             on_done=validate,
         )
@@ -136,9 +136,9 @@ def test_dealer_routing(mocker):
     mock = mocker.Mock()
     with f:
         f.post(
-            [Document() for _ in range(100)],
-            request_size=2,
             on='/some_endpoint',
+            inputs=[Document() for _ in range(100)],
+            request_size=2,
             on_done=mock,
         )
 

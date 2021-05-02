@@ -81,7 +81,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
 
-    def _add_requests(self, _requests: Optional[dict]):
+    def _add_requests(self, _requests: Optional[Dict]):
         if not _requests:
             return
 
@@ -105,7 +105,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         else:
             self.requests = request_mapping
 
-    def _add_metas(self, _metas: Optional[dict]):
+    def _add_metas(self, _metas: Optional[Dict]):
         if not _metas:
             return
 

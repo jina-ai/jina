@@ -41,7 +41,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses=MyExecutor)
 
 with f:
-  f.post(Document(), on='/random_work', on_done=print)
+  f.post(on='/random_work', inputs=Document(), on_done=print)
 ```
 
 ### With YAML
@@ -75,7 +75,7 @@ class MyExecutor(Executor):
 f = Flow().add(uses='my.yml')
 
 with f:
-  f.post(Document(), on='/random_work', on_done=print)
+  f.post(on='/random_work', inputs=Document(), on_done=print)
 ```
 
 ## Executor API
@@ -101,7 +101,7 @@ You can name your executor class freely.
 
 `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
 
-To call an Executor's function, uses `Flow.post(..., on=)`. For example, given
+To call an Executor's function, uses `Flow.post(on=..., ...)`. For example, given
 
 ```python
 from jina import Executor, Flow, requests
@@ -126,14 +126,14 @@ with f:
 
 Then:
 
-- `f.post(..., on='/index')` will trigger `MyExecutor.foo`;
-- `f.post(..., on='/random_work')` will trigger `MyExecutor.bar`;
-- `f.post(..., on='/blah')` will throw an error, as no function bind with `/blah`;
+- `f.post(on='/index', ...)` will trigger `MyExecutor.foo`;
+- `f.post(on='/random_work', ...)` will trigger `MyExecutor.bar`;
+- `f.post(on='/blah', ...)` will throw an error, as no function bind with `/blah`;
 
 #### `@requests` decorator without `on=`
 
 A class method decorated with plan `@requests` (without `on=`) is the default handler for all endpoints. That means, it
-is the fallback handler for endpoints that are not found. `f.post(..., on='/blah')` will call `MyExecutor.foo`
+is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will call `MyExecutor.foo`
 
 ```python
 from jina import Executor, requests
@@ -180,18 +180,18 @@ Note, executor's methods not decorated with `@request` do not enjoy these argume
 If you don't need some arguments, you can suppress it into `**kwargs`. For example:
 
 ```python
-@request
+@requests
 def foo(docs, **kwargs):
   bar(docs)
 
 
-@request
+@requests
 def foo(docs, groundtruths, **kwargs):
   bar(docs)
   bar(groundtruths)
 
 
-@request
+@requests
 def foo(**kwargs):
   bar(kwargs['docs_matrix'])
 ```
@@ -398,8 +398,8 @@ class A(Executor):
 f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['pod0', 'pod1'])
 
 with f:
-  f.post([Document() for _ in range(3)],
-         on='/some_endpoint',
+  f.post(on='/some_endpoint',
+         inputs=[Document() for _ in range(3)],
          on_done=print)
 ```
 

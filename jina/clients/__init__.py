@@ -1,12 +1,13 @@
 """Module wrapping the Client of Jina."""
 from functools import partialmethod
-from typing import Optional
+from typing import Optional, Dict
 
 from . import request
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
+from .. import Response
 from ..enums import RequestType
 from ..helper import run_async
 
@@ -33,10 +34,10 @@ class Client(BaseClient):
             on_done: CallbackFnType = None,
             on_error: CallbackFnType = None,
             on_always: CallbackFnType = None,
-            parameters: Optional[dict] = None,
+            parameters: Optional[Dict] = None,
             target_peapod: Optional[str] = None,
             **kwargs,
-    ) -> None:
+    ) -> Optional[Response]:
         """Post a general data request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
@@ -52,17 +53,16 @@ class Client(BaseClient):
         self.mode = RequestType.DATA
         return run_async(
             self._get_results,
-            inputs,
-            on_done,
-            on_error,
-            on_always,
+            inputs=inputs,
+            on_done=on_done,
+            on_error=on_error,
+            on_always=on_always,
             exec_endpoint=on,
             target=target_peapod,
             parameters=parameters,
             **kwargs,
         )
 
-    # add_four = typing.cast(Callable[[int], int], partial(add, 4))
     index = partialmethod(post, '/index')
     search = partialmethod(post, '/search')
     update = partialmethod(post, '/update')
