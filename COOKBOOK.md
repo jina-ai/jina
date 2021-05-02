@@ -4,19 +4,20 @@
     + [Pure Python](#pure-python)
     + [With YAML](#with-yaml)
 * [Executor API](#executor-api)
-    + [Inheritance](#inheritance)
-    + [Method naming](#method-naming)
-    + [`@requests` decorator](#--requests--decorator)
-        - [`@requests` decorator without `on=`](#--requests--decorator-without--on--)
-    + [Method Signature](#method-signature)
-    + [Method Arguments](#method-arguments)
-    + [Method Returns](#method-returns)
-    + [YAML Interface](#yaml-interface)
-    + [Load and Save Executor's YAML config](#load-and-save-executor-s-yaml-config)
-    + [Summary](#summary)
+  + [Inheritance](#inheritance)
+  + [Method naming](#method-naming)
+  + [`@requests` decorator](#requests-decorator)
+    - [`@requests` decorator without `on=`](#requests-decorator-without-on)
+  + [Method Signature](#method-signature)
+  + [Method Arguments](#method-arguments)
+  + [Method Returns](#method-returns)
+  + [YAML Interface](#yaml-interface)
+  + [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
+  + [Summary](#summary)
 * [Executor Built-in Features](#executor-built-in-features)
     + [1.x vs 2.0](#1x-vs-20)
     + [Workspace](#workspace)
+    + [Metas](#metas)
 * [Flow/Client API](#flow-client-api)
     + [`post` method](#-post--method)
 * [Remarks](#remarks)
@@ -312,6 +313,8 @@ then second):
 The meta attributes of an `Executor` object is now gathered in `self.metas`, instead of directly posing them to `self`,
 e.g. to access `name` use `self.metas.name`.
 
+---
+
 ## Flow/Client API
 
 ### `post` method
@@ -350,6 +353,8 @@ Comparing to 1.x Client/Flow API, the three new arguments are:
 - `on`: endpoint, as explained above
 - `parameters`: the kwargs that will be sent to the executor, as explained above
 - `target_peapod`: a regex string represent the certain peas/pods request targeted
+
+--- 
 
 ## Remarks
 
