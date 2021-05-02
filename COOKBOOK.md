@@ -14,10 +14,14 @@
     + [YAML Interface](#yaml-interface)
     + [Load and Save Executor's YAML config](#load-and-save-executor-s-yaml-config)
     + [Summary](#summary)
+* [Executor Features](#executor-features)
+    + [1.x vs 2.0 Executor Built-in Features](#1x-vs-20-executor-built-in-features)
+    + [Workspace](#workspace)
 * [Flow/Client API](#flow-client-api)
     + [`post` method](#-post--method)
 * [Remarks](#remarks)
     + [Joining/Merging](#joining-merging)
+
   
 ## Minimum working example
 
@@ -299,6 +303,10 @@ subclassing `Executor` should be easy.
 | Context manager interface |  ❌ |
 
 ### Workspace
+
+Executor's workspace is inherited according to the following rule:
+
+![](.github/workspace-inherit.svg)
 
 ## Flow/Client API
 
