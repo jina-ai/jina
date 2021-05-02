@@ -1,7 +1,8 @@
 # Temporary Cookbook on Jina 2.0 API
 
 * [Minimum working example](#minimum-working-example)
-* [Minimum working example with YAML](#minimum-working-example-with-yaml)
+    + [Pure Python](#pure-python)
+    + [With YAML](#with-yaml)
 * [Executor API](#executor-api)
     + [Inheritance](#inheritance)
     + [Method naming](#method-naming)
@@ -10,9 +11,9 @@
     + [Method Signature](#method-signature)
     + [Method Arguments](#method-arguments)
     + [Method Returns](#method-returns)
-    + [Summary](#summary)
-* [Executor YAML API](#executor-yaml-api)
+    + [YAML Interface](#yaml-interface)
     + [Load and Save Executor's YAML config](#load-and-save-executor-s-yaml-config)
+    + [Summary](#summary)
 * [Flow/Client API](#flow-client-api)
     + [`post` method](#-post--method)
 * [Remarks](#remarks)
@@ -20,6 +21,7 @@
   
 ## Minimum working example
 
+### Pure Python
 ```python
 from jina import Executor, Flow, Document, requests
 
@@ -39,7 +41,7 @@ with f:
            on_done=print)
 ```
 
-## Minimum working example with YAML
+### With YAML
 
 ```python
 from jina import Executor, Flow, Document
@@ -193,14 +195,7 @@ be overridden by the return value.
 
 If return is just a shallow copy of `Request.docs`, then nothing happens.
 
-### Summary
-
-- All `executor` come from `Executor` class directly.
-- An `executor` class can contain arbitrary number of functions with arbitrary names. It is a bag of functions with
-  shared state (via `self`).
-- Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
-
-## Executor YAML API
+### YAML Interface
 
 Executor can be load from and stored to a YAML file. The YAML file has the following format:
 
@@ -257,6 +252,13 @@ exec = Executor.load_config(y_literal)
 exec.save_config('y.yml')
 Executor.load_config('y.yml')
 ```
+
+### Summary
+
+- All `executor` come from `Executor` class directly.
+- An `executor` class can contain arbitrary number of functions with arbitrary names. It is a bag of functions with
+  shared state (via `self`).
+- Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
 
 ## Flow/Client API
 
