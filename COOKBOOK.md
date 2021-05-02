@@ -14,14 +14,13 @@
     + [YAML Interface](#yaml-interface)
     + [Load and Save Executor's YAML config](#load-and-save-executor-s-yaml-config)
     + [Summary](#summary)
-* [Executor Features](#executor-features)
-    + [1.x vs 2.0 Executor Built-in Features](#1x-vs-20-executor-built-in-features)
+* [Executor Built-in Features](#executor-built-in-features)
+    + [1.x vs 2.0](#1x-vs-20)
     + [Workspace](#workspace)
 * [Flow/Client API](#flow-client-api)
     + [`post` method](#-post--method)
 * [Remarks](#remarks)
     + [Joining/Merging](#joining-merging)
-
   
 ## Minimum working example
 
@@ -264,7 +263,7 @@ Executor.load_config('y.yml')
   shared state (via `self`).
 - Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
 
-## Executor Features
+## Executor Built-in Features
 
 In 2.0 Executor class has few built-in features than in 1.x. The design principles are (`user` here means "Executor
 developer"):
@@ -282,7 +281,7 @@ We want to give back the programming freedom to user. If a user is a good Python
 up `Executor` in no time - not spending extra time on learning the implicit boilerplate as in 1.x. Plus,
 subclassing `Executor` should be easy.
 
-### 1.x vs 2.0 Executor Built-in Features
+### 1.x vs 2.0
 
 - ❌: Completely removed. User has to implemented themselves.
 - ✅: Preserved
