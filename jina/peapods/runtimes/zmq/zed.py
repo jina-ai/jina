@@ -200,9 +200,9 @@ class ZEDRuntime(ZMQRuntime):
                 r_docs = self._executor(
                     req_endpoint=self.request.header.exec_endpoint,
                     docs=self.docs,
-                    groundtruths=self.groundtruths,
                     parameters=MessageToDict(self.request.parameters),
                     docs_matrix=self.docs_matrix,
+                    groundtruths=self.groundtruths,
                     groundtruths_matrix=self.groundtruths_matrix,
                 )
 

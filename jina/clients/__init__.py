@@ -58,7 +58,7 @@ class Client(BaseClient):
             on_error=on_error,
             on_always=on_always,
             exec_endpoint=on,
-            target=target_peapod,
+            target_peapod=target_peapod,
             parameters=parameters,
             **kwargs,
         )

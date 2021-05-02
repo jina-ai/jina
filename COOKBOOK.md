@@ -170,12 +170,14 @@ The Executor's method receive the following arguments in order:
 | Name | Type | Description  | 
 | --- | --- | --- |
 | `docs`   | `Optional[DocumentArray]`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentArray`. When `DocumentArray` has zero element, then it is `None`.  |
-| `groundtruths`   | `Optional[DocumentArray]`  | `Request.groundtruths`. Same behavior as `docs`  |
 | `parameters`  | `Dict`  | `Request.parameters`, given by `Flow.post(..., parameters=)` |
 | `docs_matrix`  | `List[DocumentArray]`  | When multiple requests are available, it is a list of all `Request.docs`. On single request, it is `None` |
+| `groundtruths`   | `Optional[DocumentArray]`  | `Request.groundtruths`. Same behavior as `docs`  |
 | `groundtruths_matrix`  | `List[DocumentArray]`  | Same behavior as `docs_matrix` but on `Request.groundtruths` |
 
 Note, executor's methods not decorated with `@request` do not enjoy these arguments.
+
+The arguments order is designed as common-usage-first. Not based on alphabetical order or semantic closeness.
 
 If you don't need some arguments, you can suppress it into `**kwargs`. For example:
 
@@ -186,9 +188,9 @@ def foo(docs, **kwargs):
 
 
 @requests
-def foo(docs, groundtruths, **kwargs):
+def foo(docs, parameters, **kwargs):
   bar(docs)
-  bar(groundtruths)
+  bar(parameters)
 
 
 @requests
@@ -326,8 +328,8 @@ by specifying `on='/index'`, `on='/search'`, etc.
 ```python
 def post(
         self,
-        inputs: InputType,
         on: str,
+        inputs: InputType,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -337,8 +339,8 @@ def post(
 ) -> None:
   """Post a general data request to the Flow.
 
-  :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
   :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
+  :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
   :param on_done: the function to be called when the :class:`Request` object is resolved.
   :param on_error: the function to be called when the :class:`Request` object is rejected.
   :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.

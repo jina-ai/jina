@@ -23,7 +23,7 @@ GeneratorSourceType = Union[
 
 
 def request_generator(
-        exec_endpoint: Optional[str],
+        exec_endpoint: str,
         data: GeneratorSourceType,
         request_size: int = 0,
         mime_type: Optional[str] = None,
