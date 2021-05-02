@@ -151,7 +151,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         self.metas = target
 
-    def close(self):
+    def close(self) -> None:
+        """
+        Release the resources as executor is destroyed, need to be overridden
+        """
         pass
 
     @classmethod
