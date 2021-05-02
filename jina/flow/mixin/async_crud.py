@@ -69,7 +69,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_ndarray
+        from jina.types.generator.sugary_io import _input_ndarray
 
         async for r in self._get_client(**kwargs).index(
             _input_ndarray(array, axis, size, shuffle),
@@ -110,7 +110,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_ndarray
+        from jina.types.generator.sugary_io import _input_ndarray
 
         async for r in self._get_client(**kwargs).search(
             _input_ndarray(array, axis, size, shuffle),
@@ -160,7 +160,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_lines
+        from jina.types.generator.sugary_io import _input_lines
 
         async for r in self._get_client(**kwargs).index(
             _input_lines(
@@ -204,7 +204,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_csv
+        from jina.types.generator.sugary_io import _input_csv
 
         async for r in self._get_client(**kwargs).index(
             _input_csv(
@@ -245,7 +245,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_ndjson
+        from jina.types.generator.sugary_io import _input_ndjson
 
         async for r in self._get_client(**kwargs).index(
             _input_ndjson(
@@ -295,7 +295,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_files
+        from jina.types.generator.sugary_io import _input_files
 
         async for r in self._get_client(**kwargs).index(
             _input_files(patterns, recursive, size, sampling_rate, read_mode),
@@ -340,7 +340,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_files
+        from jina.types.generator.sugary_io import _input_files
 
         async for r in self._get_client(**kwargs).search(
             _input_files(patterns, recursive, size, sampling_rate, read_mode),
@@ -376,7 +376,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_ndjson
+        from jina.types.generator.sugary_io import _input_ndjson
 
         async for r in self._get_client(**kwargs).search(
             _input_ndjson(
@@ -417,7 +417,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_csv
+        from jina.types.generator.sugary_io import _input_csv
 
         async for r in self._get_client(**kwargs).search(
             _input_csv(
@@ -472,7 +472,7 @@ class AsyncCRUDFlowMixin:
         :param kwargs: accepts all keyword arguments of `jina client` CLI
         :yields: results
         """
-        from ...clients.sugary_io import _input_lines
+        from jina.types.generator.sugary_io import _input_lines
 
         async for r in self._get_client(**kwargs).search(
             _input_lines(

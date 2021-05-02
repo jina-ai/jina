@@ -2,16 +2,15 @@ import os
 
 import numpy as np
 import pytest
-
-from jina import Document
-from jina.clients import Client
-from jina.clients.sugary_io import (
+from jina.types.generator.sugary_io import (
     _input_files,
     _input_lines,
     _input_ndarray,
     _input_csv,
 )
-from jina.enums import DataInputType
+
+from jina import Document
+from jina.clients import Client
 from jina.excepts import BadClientInput
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -113,8 +112,7 @@ def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
             size=size,
             sampling_rate=sampling_rate,
             read_mode=read_mode,
-        ),
-        data_type=DataInputType.CONTENT,
+        )
     )
 
 

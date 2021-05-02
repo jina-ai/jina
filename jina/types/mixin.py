@@ -1,4 +1,3 @@
-import pprint
 from typing import Dict
 
 from google.protobuf.json_format import MessageToJson, MessageToDict
@@ -59,7 +58,7 @@ class ProtoTypeMixin:
         """
         content = self.dict()
         if hasattr(self, '_attributes_in_str') and isinstance(
-            self._attributes_in_str, list
+                self._attributes_in_str, list
         ):
             content = {k: content[k] for k in self._attributes_in_str}
         return content

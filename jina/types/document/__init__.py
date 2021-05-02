@@ -1,13 +1,17 @@
 import base64
+import csv
+import glob
 import io
+import itertools as it
 import json
 import mimetypes
 import os
+import random
 import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
-from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List, Type
+from typing import Iterable, Generator, Union, Dict, Optional, TypeVar, Any, Tuple, List, Type
 
 import numpy as np
 from google.protobuf import json_format
@@ -15,12 +19,12 @@ from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from .traversable import Traversable
+from ..arrays.chunk import ChunkArray
+from ..arrays.match import MatchArray
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..querylang.queryset.dunderkey import dunder_get
 from ..score import NamedScore
-from ..arrays.chunk import ChunkArray
-from ..arrays.match import MatchArray
 from ...excepts import BadDocType
 from ...helper import (
     is_url,
@@ -143,11 +147,11 @@ class Document(ProtoTypeMixin, Traversable):
     """
 
     def __init__(
-        self,
-        document: Optional[DocumentSourceType] = None,
-        field_resolver: Dict[str, str] = None,
-        copy: bool = False,
-        **kwargs,
+            self,
+            document: Optional[DocumentSourceType] = None,
+            field_resolver: Dict[str, str] = None,
+            copy: bool = False,
+            **kwargs,
     ):
         """
         :param document: the document to construct from. If ``bytes`` is given
@@ -297,12 +301,12 @@ class Document(ProtoTypeMixin, Traversable):
 
     @staticmethod
     def _update(
-        source: 'Document',
-        destination: 'Document',
-        exclude_fields: Optional[Tuple[str]] = None,
-        include_fields: Optional[Tuple[str]] = None,
-        replace_message_field: bool = True,
-        replace_repeated_field: bool = True,
+            source: 'Document',
+            destination: 'Document',
+            exclude_fields: Optional[Tuple[str]] = None,
+            include_fields: Optional[Tuple[str]] = None,
+            replace_message_field: bool = True,
+            replace_repeated_field: bool = True,
     ) -> None:
         """Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
 
@@ -367,10 +371,10 @@ class Document(ProtoTypeMixin, Traversable):
             destination.proto.MergeFrom(_dest)
 
     def update(
-        self,
-        source: 'Document',
-        exclude_fields: Optional[Tuple[str, ...]] = None,
-        include_fields: Optional[Tuple[str, ...]] = None,
+            self,
+            source: 'Document',
+            exclude_fields: Optional[Tuple[str, ...]] = None,
+            include_fields: Optional[Tuple[str, ...]] = None,
     ) -> None:
         """Updates fields specified in ``include_fields`` from the source to current Document.
 
@@ -383,7 +387,7 @@ class Document(ProtoTypeMixin, Traversable):
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
         if (include_fields and not isinstance(include_fields, tuple)) or (
-            exclude_fields and not isinstance(exclude_fields, tuple)
+                exclude_fields and not isinstance(exclude_fields, tuple)
         ):
             raise TypeError('include_fields and exclude_fields must be tuple of str')
 
@@ -412,15 +416,15 @@ class Document(ProtoTypeMixin, Traversable):
         )
 
     def update_content_hash(
-        self,
-        exclude_fields: Optional[Tuple[str]] = (
-            'id',
-            'chunks',
-            'matches',
-            'content_hash',
-            'parent_id',
-        ),
-        include_fields: Optional[Tuple[str]] = None,
+            self,
+            exclude_fields: Optional[Tuple[str]] = (
+                    'id',
+                    'chunks',
+                    'matches',
+                    'content_hash',
+                    'parent_id',
+            ),
+            include_fields: Optional[Tuple[str]] = None,
     ) -> None:
         """Update the document hash according to its content.
 
@@ -512,7 +516,7 @@ class Document(ProtoTypeMixin, Traversable):
         return NdArray(self._pb_body.embedding).value
 
     def get_sparse_embedding(
-        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
+            self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
     ) -> 'SparseEmbeddingType':
         """Return ``embedding`` of the content of a Document as an sparse array.
 
@@ -664,9 +668,9 @@ class Document(ProtoTypeMixin, Traversable):
                 getattr(self._pb_body, k).update(v)
             else:
                 if (
-                    hasattr(Document, k)
-                    and isinstance(getattr(Document, k), property)
-                    and getattr(Document, k).fset
+                        hasattr(Document, k)
+                        and isinstance(getattr(Document, k), property)
+                        and getattr(Document, k).fset
                 ):
                     # if class property has a setter
                     setattr(self, k, v)
@@ -781,11 +785,11 @@ class Document(ProtoTypeMixin, Traversable):
         self._pb_body.buffer = value
         if value and not self._pb_body.mime_type:
             with ImportExtensions(
-                required=False,
-                pkg_name='python-magic',
-                help_text=f'can not sniff the MIME type '
-                f'MIME sniffing requires brew install '
-                f'libmagic (Mac)/ apt-get install libmagic1 (Linux)',
+                    required=False,
+                    pkg_name='python-magic',
+                    help_text=f'can not sniff the MIME type '
+                              f'MIME sniffing requires brew install '
+                              f'libmagic (Mac)/ apt-get install libmagic1 (Linux)',
             ):
                 import magic
 
@@ -830,10 +834,10 @@ class Document(ProtoTypeMixin, Traversable):
         """
         scheme = urllib.parse.urlparse(value).scheme
         if (
-            (scheme in {'http', 'https'} and is_url(value))
-            or (scheme in {'data'})
-            or os.path.exists(value)
-            or os.access(os.path.dirname(value), os.W_OK)
+                (scheme in {'http', 'https'} and is_url(value))
+                or (scheme in {'data'})
+                or os.path.exists(value)
+                or os.access(os.path.dirname(value), os.W_OK)
         ):
             self._pb_body.uri = value
             self.mime_type = guess_mime(value)
@@ -992,7 +996,7 @@ class Document(ProtoTypeMixin, Traversable):
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
     def convert_blob_to_uri(
-        self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs
+            self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs
     ):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
         :param width: the width of the blob
@@ -1004,7 +1008,7 @@ class Document(ProtoTypeMixin, Traversable):
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
     def convert_uri_to_blob(
-        self, color_axis: int = -1, uri_prefix: Optional[str] = None, **kwargs
+            self, color_axis: int = -1, uri_prefix: Optional[str] = None, **kwargs
     ):
         """Convert uri to blob
 
@@ -1047,7 +1051,7 @@ class Document(ProtoTypeMixin, Traversable):
             raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
 
     def convert_uri_to_data_uri(
-        self, charset: str = 'utf-8', base64: bool = False, **kwargs
+            self, charset: str = 'utf-8', base64: bool = False, **kwargs
     ):
         """Convert uri to data uri.
         Internally it reads uri into buffer and convert it to data uri
@@ -1060,7 +1064,7 @@ class Document(ProtoTypeMixin, Traversable):
         self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
 
     def convert_buffer_to_uri(
-        self, charset: str = 'utf-8', base64: bool = False, **kwargs
+            self, charset: str = 'utf-8', base64: bool = False, **kwargs
     ):
         """Convert buffer to data uri.
         Internally it first reads into buffer and then converts it to data URI.
@@ -1080,7 +1084,7 @@ class Document(ProtoTypeMixin, Traversable):
         self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
 
     def convert_text_to_uri(
-        self, charset: str = 'utf-8', base64: bool = False, **kwargs
+            self, charset: str = 'utf-8', base64: bool = False, **kwargs
     ):
         """Convert text to data uri.
 
@@ -1172,12 +1176,12 @@ class Document(ProtoTypeMixin, Traversable):
             img_type = 'img'
 
         mermaid_str = (
-            """
-    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-    classDiagram
-
-            """
-            + self.__mermaid_str__()
+                """
+        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+        classDiagram
+    
+                """
+                + self.__mermaid_str__()
         )
 
         encoded_str = base64.b64encode(bytes(mermaid_str.strip(), 'utf-8')).decode(
@@ -1254,3 +1258,170 @@ class Document(ProtoTypeMixin, Traversable):
             )
         ]
         return list(set(support_keys))
+
+    @staticmethod
+    def from_lines(
+            lines: Optional[Iterable[str]] = None,
+            filepath: Optional[str] = None,
+            read_mode: str = 'r',
+            line_format: str = 'json',
+            field_resolver: Optional[Dict[str, str]] = None,
+            size: Optional[int] = None,
+            sampling_rate: Optional[float] = None,
+    ) -> Generator['Document', None, None]:
+        """Generator function for lines, json and sc. Yields documents or strings.
+
+        :param lines: a list of strings, each is considered as a document
+        :param filepath: a text file that each line contains a document
+        :param read_mode: specifies the mode in which the file
+                    is opened. 'r' for reading in text mode, 'rb' for reading in binary
+        :param line_format: the format of each line ``json`` or ``csv``
+        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
+                names defined in Protobuf. This is only used when the given ``document`` is
+                a JSON string or a Python dict.
+        :param size: the maximum number of the documents
+        :param sampling_rate: the sampling rate between [0, 1]
+        :yields: documents
+
+        .. note::
+        This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
+        """
+        if filepath:
+            file_type = os.path.splitext(filepath)[1]
+            with open(filepath, read_mode) as f:
+                if file_type in _jsonl_ext:
+                    yield from Document.from_ndjson(f)
+                elif file_type in _csv_ext:
+                    yield from Document.from_csv(f, field_resolver, size, sampling_rate)
+                else:
+                    yield from _subsample(f, size, sampling_rate)
+        elif lines:
+            if line_format == 'json':
+                yield from Document.from_ndjson(lines)
+            elif line_format == 'csv':
+                yield from Document.from_csv(lines, field_resolver, size, sampling_rate)
+            else:
+                yield from _subsample(lines, size, sampling_rate)
+        else:
+            raise ValueError('"filepath" and "lines" can not be both empty')
+
+    @staticmethod
+    def from_ndjson(
+            fp: Iterable[str],
+            field_resolver: Optional[Dict[str, str]] = None,
+            size: Optional[int] = None,
+            sampling_rate: Optional[float] = None,
+    ) -> Generator['Document', None, None]:
+        for line in _subsample(fp, size, sampling_rate):
+            value = json.loads(line)
+            if 'groundtruth' in value and 'document' in value:
+                yield Document(value['document'], field_resolver), Document(
+                    value['groundtruth'], field_resolver
+                )
+            else:
+                yield Document(value, field_resolver)
+
+    @staticmethod
+    def from_csv(
+            fp: Iterable[str],
+            field_resolver: Optional[Dict[str, str]] = None,
+            size: Optional[int] = None,
+            sampling_rate: Optional[float] = None,
+    ) -> Generator['Document', None, None]:
+        lines = csv.DictReader(fp)
+        for value in _subsample(lines, size, sampling_rate):
+            if 'groundtruth' in value and 'document' in value:
+                yield Document(value['document'], field_resolver), Document(
+                    value['groundtruth'], field_resolver
+                )
+            else:
+                yield Document(value, field_resolver)
+
+    @staticmethod
+    def from_files(
+            patterns: Union[str, List[str]],
+            recursive: bool = True,
+            size: Optional[int] = None,
+            sampling_rate: Optional[float] = None,
+            read_mode: Optional[str] = None,
+    ) -> Generator['Document', None, None]:
+        """Creates an iterator over a list of file path or the content of the files.
+
+        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
+        :param recursive: If recursive is true, the pattern '**' will match any files
+            and zero or more directories and subdirectories
+        :param size: the maximum number of the files
+        :param sampling_rate: the sampling rate between [0, 1]
+        :param read_mode: specifies the mode in which the file is opened.
+            'r' for reading in text mode, 'rb' for reading in binary mode.
+            If `read_mode` is None, will iterate over filenames.
+        :yield: file paths or binary content
+
+        .. note::
+            This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
+        """
+        if read_mode not in {'r', 'rb', None}:
+            raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
+
+        def _iter_file_exts(ps):
+            return it.chain.from_iterable(glob.iglob(p, recursive=recursive) for p in ps)
+
+        d = 0
+        if isinstance(patterns, str):
+            patterns = [patterns]
+        for g in _iter_file_exts(patterns):
+            if sampling_rate is None or random.random() < sampling_rate:
+                if read_mode is None:
+                    yield Document(uri=g)
+                elif read_mode in {'r', 'rb'}:
+                    with open(g, read_mode) as fp:
+                        yield Document(content=fp.read())
+                d += 1
+            if size is not None and d > size:
+                break
+
+    @staticmethod
+    def from_ndarray(
+            array: 'np.ndarray',
+            axis: int = 0,
+            size: Optional[int] = None,
+            shuffle: bool = False,
+    ) -> Generator['Document', None, None]:
+        """Create a generator for a given dimension of a numpy array.
+
+        :param array: the numpy ndarray data source
+        :param axis: iterate over that axis
+        :param size: the maximum number of the sub arrays
+        :param shuffle: shuffle the numpy data source beforehand
+        :yield: ndarray
+
+        .. note::
+            This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead
+        """
+
+        if shuffle:
+            # shuffle for random query
+            array = np.take(array, np.random.permutation(array.shape[0]), axis=axis)
+        d = 0
+        for r in array:
+            yield Document(content=r)
+            d += 1
+            if size is not None and d >= size:
+                break
+
+
+# https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
+_jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
+_csv_ext = {'.csv', '.tcsv'}
+
+
+def _sample(iterable, sampling_rate: Optional[float] = None):
+    for i in iterable:
+        if sampling_rate is None or random.random() < sampling_rate:
+            yield i
+
+
+def _subsample(
+        iterable, size: Optional[int] = None, sampling_rate: Optional[float] = None
+):
+    yield from it.islice(_sample(iterable, sampling_rate), size)

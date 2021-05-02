@@ -81,6 +81,7 @@ class BaseClient:
             inputs = inputs()
 
         kwargs['data'] = inputs
+        kwargs['exec_endpoint'] = '/'
 
         if inspect.isasyncgenfunction(inputs) or inspect.isasyncgen(inputs):
             raise ValidationError(

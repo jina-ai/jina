@@ -3,12 +3,12 @@ import time
 
 import pytest
 import requests
+from jina.types.generator.sugary_io import _input_files
 
+from jina import helper
 from jina.clients import Client
-from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
-from jina import helper
 from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
