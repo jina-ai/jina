@@ -245,6 +245,18 @@ class Document(ProtoTypeMixin, Traversable):
         self.set_attrs(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
 
+    def pop(self, *fields) -> None:
+        """Remove the values from the given fields of this Document.
+
+        :param fields: field names
+        """
+        for k in fields:
+            self._pb_body.ClearField(k)
+
+    def clear(self) -> None:
+        """Remove all values from all fields of this Document. """
+        self._pb_body.Clear()
+
     @property
     def siblings(self) -> int:
         """

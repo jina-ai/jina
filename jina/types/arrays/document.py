@@ -1,11 +1,11 @@
 from collections.abc import MutableSequence
-from typing import Union, Iterable, Tuple, Sequence, List, Optional
+from typing import Union, Iterable, Tuple, Sequence, List, Iterator
 
 import numpy as np
 
+from ...enums import EmbeddingClsType
 from ...helper import typename
 from ...logging import default_logger
-from ...enums import EmbeddingClsType
 
 try:
     # when protobuf using Cpp backend
@@ -96,7 +96,7 @@ class DocumentArray(TraversableSequence, MutableSequence):
     def __len__(self):
         return len(self._docs_proto)
 
-    def __iter__(self) -> 'Document':
+    def __iter__(self) -> Iterator['Document']:
         from ..document import Document
 
         for d in self._docs_proto:
