@@ -5,6 +5,7 @@ import numpy as np
 
 from jina import Document
 from jina.flow import Flow
+from tests import get_documents
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -61,6 +62,7 @@ def test_simple_run():
         flow.search(get_doc(1))
 
 
+@pytest.mark.repeat(5)
 def test_thread_run():
     flow = Flow().add(
         name='pod1',
@@ -68,15 +70,20 @@ def test_thread_run():
         parallel=2,
     )
     with flow:
+        docs = list(
+            get_documents(chunks=False, index_start=0, nr=100, same_content=False)
+        )
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
-        x.start()
-        # TODO remove the join to make it asynchronous again
-        x.join()
+        # TODO this is still happening some times
         # TODO there is a problem with the gateway even after request times out - open issue
         for i in range(600):
-            flow.search(get_doc(i))
+            if i == 10:
+                x.start()
+            flow.search(docs)
+        x.join()
 
 
+@pytest.mark.repeat(5)
 def test_vector_indexer_thread(config):
     with Flow().add(
         name='pod1',
@@ -84,15 +91,19 @@ def test_vector_indexer_thread(config):
         replicas=2,
         parallel=3,
     ) as flow:
+        docs = list(
+            get_documents(chunks=False, index_start=0, nr=100, same_content=False)
+        )
         for i in range(5):
-            flow.search(get_doc(i))
+            flow.search(docs)
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
-        x.start()
+        # TODO this fails some times?
         # TODO there is a problem with the gateway even after request times out - open issue
-        # TODO remove the join to make it asynchronous again
-        x.join()
         for i in range(40):
-            flow.search(get_doc(i))
+            if i == 4:
+                x.start()
+            flow.search(docs)
+        x.join()
 
 
 def test_workspace(config, tmpdir):
