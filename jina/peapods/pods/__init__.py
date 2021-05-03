@@ -20,10 +20,38 @@ from ...enums import SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
-class ExitFIFO(ExitStack):
+class CustomCtxtManager(ExitStack):
     """
-    ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
+    CustomCtxtManager changes the exiting order of exitStack to make sure HEAD is closed before INNER and before TAIL.
     """
+
+    def enter_context(self, cm, tag='INNER'):
+        """Enters the supplied context manager.
+
+        If successful, also pushes its __exit__ method as a callback and
+        returns the result of the __enter__ method.
+        """
+        print(f'\n\n\n##### JOAN ENTERING CONTEXT {tag}\n\n\n')
+        # We look up the special methods on the type to match the with
+        # statement.
+        _cm_type = type(cm)
+        _exit = _cm_type.__exit__
+        result = _cm_type.__enter__(cm)
+        self._push_cm_exit(cm, _exit, tag=tag)
+        return result
+
+    def _push_cm_exit(self, cm, cm_exit, tag):
+        """Helper to correctly register callbacks to __exit__ methods."""
+        _exit_wrapper = self._create_exit_wrapper(cm, cm_exit)
+        _exit_wrapper.__self__ = cm
+        self._push_exit_callback(_exit_wrapper, tag=tag)
+
+    def _push_exit_callback(self, callback, is_sync=True, tag='INNER'):
+        print(f' \n\n\n####_push_exit_callback {callback}, tag {tag}')
+        if tag == 'HEAD':
+            print(f' callback in front {callback}')
+            self._exit_callbacks.appendleft((is_sync, callback))
+        self._exit_callbacks.append((is_sync, callback))
 
     def __exit__(self, *exc_details):
         received_exc = exc_details[0] is not None
@@ -76,7 +104,7 @@ class ExitFIFO(ExitStack):
         return received_exc and suppressed_exc
 
 
-class BasePod(ExitFIFO):
+class BasePod(CustomCtxtManager):
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
@@ -171,9 +199,9 @@ class BasePod(ExitFIFO):
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
-    def _enter_pea(self, pea: 'BasePea') -> None:
+    def _enter_pea(self, pea: 'BasePea', tag: str) -> None:
         self.peas.append(pea)
-        self.enter_context(pea)
+        self.enter_context(pea, tag=tag)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -455,16 +483,16 @@ class Pod(BasePod):
         )
 
     @property
-    def _fifo_args(self) -> List[Namespace]:
+    def _start_args(self) -> Dict[str, Namespace]:
         """Get all arguments of all Peas in this BasePod.
 
         .. # noqa: DAR201
         """
-        return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + self.peas_args['peas']
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
-        )
+        return {
+            'HEAD': [self.peas_args['head']] if self.peas_args['head'] else [],
+            'INNER': self.peas_args['peas'],
+            'TAIL': [self.peas_args['tail']] if self.peas_args['tail'] else [],
+        }
 
     @property
     def num_peas(self) -> int:
@@ -488,15 +516,17 @@ class Pod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self._fifo_args:
-                _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args))
+            for tag, _args_list in self._start_args.items():
+                for _args in _args_list:
+                    _args.noblock_on_start = True
+                    self._enter_pea(BasePea(_args), tag=tag)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self._fifo_args:
-                    self._enter_pea(BasePea(_args))
+                for tag, _args_list in self._start_args.items():
+                    for _args in _args_list:
+                        self._enter_pea(BasePea(_args), tag=tag)
             except:
                 self.close()
                 raise

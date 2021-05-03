@@ -79,8 +79,8 @@ class CompoundPod(BasePod):
     def __eq__(self, other: 'CompoundPod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def _enter_pea(self, pea: 'Pea') -> None:
-        self.enter_context(pea)
+    def _enter_pea(self, pea: 'Pea', tag: str) -> None:
+        self.enter_context(pea, tag=tag)
 
     def start(self) -> 'CompoundPod':
         """
@@ -96,7 +96,7 @@ class CompoundPod(BasePod):
             head_args = self.head_args
             head_args.noblock_on_start = True
             self.head_pea = Pea(head_args)
-            self._enter_pea(self.head_pea)
+            self._enter_pea(self.head_pea, tag='HEAD')
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
                 _args.polling = PollingType.ALL
@@ -104,20 +104,20 @@ class CompoundPod(BasePod):
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
             self.tail_pea = Pea(tail_args)
-            self._enter_pea(self.tail_pea)
+            self._enter_pea(self.tail_pea, tag='TAIL')
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
                 head_args = self.head_args
                 self.head_pea = Pea(head_args)
-                self._enter_pea(self.head_pea)
+                self._enter_pea(self.head_pea, tag='HEAD')
                 for _args in self.replicas_args:
                     _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
                 tail_args = self.tail_args
                 self.tail_pea = Pea(tail_args)
-                self._enter_pea(self.tail_pea)
+                self._enter_pea(self.tail_pea, tag='TAIL')
             except:
                 self.close()
                 raise
@@ -145,7 +145,7 @@ class CompoundPod(BasePod):
 
     def _enter_replica(self, replica: 'Pod') -> None:
         self.replicas.append(replica)
-        self.enter_context(replica)
+        self.enter_context(replica, tag='INNER')
 
     def join(self):
         """Wait until all pods and peas exit."""
@@ -238,9 +238,13 @@ class CompoundPod(BasePod):
         """
         for i in range(len(self.replicas)):
             replica = self.replicas[i]
+            print(f'\n\n\n\n ###### REPLICA {i} CLOSE \n\n\n\n', flush=True)
             replica.close()
+            print(f'\n\n\n\n ###### REPLICA {i} CLOSED \n\n\n\n', flush=True)
             _args = self.replicas_args[i]
             _args.noblock_on_start = False
             new_replica = Pod(_args)
+            print(f'\n\n\n\n ###### REPLICA {i} RESTART \n\n\n\n', flush=True)
             self.enter_context(new_replica)
+            print(f'\n\n\n\n ###### REPLICA {i} RESTARTED \n\n\n\n', flush=True)
             self.replicas[i] = new_replica
