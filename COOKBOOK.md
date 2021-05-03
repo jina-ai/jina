@@ -162,9 +162,9 @@ Class method decorated by `@request` follows the signature below:
 
 ```python
 def foo(docs: Optional[DocumentArray],
-        groundtruths: Optional[DocumentArray],
         parameters: Dict,
         docs_matrix: List[DocumentArray],
+        groundtruths: Optional[DocumentArray],
         groundtruths_matrix: List[DocumentArray]) -> Optional[DocumentArray]:
   pass
 ```
