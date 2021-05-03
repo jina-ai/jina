@@ -368,7 +368,7 @@ Comparing to 1.x Client/Flow API, the three new arguments are:
 
 ## Migration in Practice
 
-### Hello-World Fashion-MNIST
+### `jina hello fashion`
 
 #### Encoder
 
