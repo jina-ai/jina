@@ -17,6 +17,13 @@ class MyEncoder(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
+        """
+        Encode data and reduce dimension
+
+        :param docs: docs array
+        :param kwargs: keyword arguments
+        :return: encoded data
+        """
         # reduce dimension to 50 by random orthogonal projection
         content, doc_pts = docs.all_contents
         embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat

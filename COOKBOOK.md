@@ -374,7 +374,7 @@ Comparing to 1.x Client/Flow API, the three new arguments are:
 
 Left is 1.x, right is 2.0.
 
-![img.png](.github/migration-fashion.png)
+![img.png](.github/migration-fashion.png?raw=true)
 
 Line number corresponds to the 1.x code:
 
