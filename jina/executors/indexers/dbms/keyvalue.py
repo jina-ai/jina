@@ -17,7 +17,6 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         for id_ in ids:
             vecs_metas_list_bytes = super()._query([id_])
             vec, meta = pickle.loads(vecs_metas_list_bytes[0])
-            assert Document(meta).tags['tag_field'] is not None
             yield id_, vec, meta
 
     def dump(self, path: str, shards: int) -> None:
