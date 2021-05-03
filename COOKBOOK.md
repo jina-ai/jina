@@ -386,7 +386,8 @@ Line number corresponds to the 1.x code:
 - `L32`:
   - the content extraction and embedding assignment are now done manually;
   - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
-    methods `convert_blob_to_uri` and `pop`.
+    methods `convert_blob_to_uri` and `pop`
+  - there is nothing to return, as the change is done in-place.
 
 ## Remarks
 
