@@ -366,6 +366,28 @@ Comparing to 1.x Client/Flow API, the three new arguments are:
 
 --- 
 
+## Migration in Practice
+
+### Hello-World Fashion-MNIST
+
+#### Encoder
+
+Left is 1.x, right is 2.0.
+
+![img.png](.github/migration-fashion.png)
+
+Line number corresponds to the 1.x code:
+
+- L5: change imports to top-level namespace `jina`;
+- L8: all executors now subclass from `Executor` class;
+- L13-14: there is no need to inherit from `__init__`, no signature is enforced;
+- L20: `.touch()` is removed; for this particular encoder as long as the seed is fixed there is no need to store;
+- L22: add `@requests` to decorate the core method, change signature to `docs, **kwargs`;
+- L32:
+  - the encoding logic stays the same;
+  - the embedding now directly assigned to the doc;
+  - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in methods.
+
 ## Remarks
 
 ### Joining/Merging
