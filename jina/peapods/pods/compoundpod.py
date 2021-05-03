@@ -238,13 +238,9 @@ class CompoundPod(BasePod):
         """
         for i in range(len(self.replicas)):
             replica = self.replicas[i]
-            print(f'\n\n\n\n ###### REPLICA {i} CLOSE \n\n\n\n', flush=True)
             replica.close()
-            print(f'\n\n\n\n ###### REPLICA {i} CLOSED \n\n\n\n', flush=True)
             _args = self.replicas_args[i]
             _args.noblock_on_start = False
             new_replica = Pod(_args)
-            print(f'\n\n\n\n ###### REPLICA {i} RESTART \n\n\n\n', flush=True)
             self.enter_context(new_replica)
-            print(f'\n\n\n\n ###### REPLICA {i} RESTARTED \n\n\n\n', flush=True)
             self.replicas[i] = new_replica

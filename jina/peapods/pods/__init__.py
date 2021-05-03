@@ -30,8 +30,11 @@ class CustomCtxtManager(ExitStack):
 
         If successful, also pushes its __exit__ method as a callback and
         returns the result of the __enter__ method.
+
+        :param cm: context manager
+        :param tag: tag to know where it should be placed
+        :return: the result of the __enter__ method.
         """
-        print(f'\n\n\n##### JOAN ENTERING CONTEXT {tag}\n\n\n')
         # We look up the special methods on the type to match the with
         # statement.
         _cm_type = type(cm)
@@ -41,15 +44,17 @@ class CustomCtxtManager(ExitStack):
         return result
 
     def _push_cm_exit(self, cm, cm_exit, tag):
-        """Helper to correctly register callbacks to __exit__ methods."""
+        """Helper to correctly register callbacks to __exit__ methods.
+        :param cm: context manager
+        :param cm_exit: the function to exit
+        :param tag: tag to know where it should be placed
+        """
         _exit_wrapper = self._create_exit_wrapper(cm, cm_exit)
         _exit_wrapper.__self__ = cm
         self._push_exit_callback(_exit_wrapper, tag=tag)
 
     def _push_exit_callback(self, callback, is_sync=True, tag='INNER'):
-        print(f' \n\n\n####_push_exit_callback {callback}, tag {tag}')
         if tag == 'HEAD':
-            print(f' callback in front {callback}')
             self._exit_callbacks.appendleft((is_sync, callback))
         self._exit_callbacks.append((is_sync, callback))
 
@@ -488,11 +493,18 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        return {
-            'HEAD': [self.peas_args['head']] if self.peas_args['head'] else [],
-            'INNER': self.peas_args['peas'],
-            'TAIL': [self.peas_args['tail']] if self.peas_args['tail'] else [],
-        }
+        from collections import OrderedDict
+
+        ret = OrderedDict()
+        is_push = self.peas_args['peas'][0].socket_in == SocketType.DEALER_CONNECT
+        if not is_push:
+            ret['INNER'] = self.peas_args['peas']
+            ret['HEAD'] = [self.peas_args['head']] if self.peas_args['head'] else []
+        else:
+            ret['HEAD'] = [self.peas_args['head']] if self.peas_args['head'] else []
+            ret['INNER'] = self.peas_args['peas']
+        ret['TAIL'] = [self.peas_args['tail']] if self.peas_args['tail'] else []
+        return ret
 
     @property
     def num_peas(self) -> int:
