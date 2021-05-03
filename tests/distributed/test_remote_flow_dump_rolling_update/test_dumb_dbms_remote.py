@@ -210,7 +210,7 @@ def test_dump_dbms_remote(tmpdir, docker_compose):
         'post',
         [doc.dict() for doc in docs[:nr_search]],
     )
-    # TODO not sure
+    # TODO some times it was None
     assert (
         r['search']['docs'][0].get('matches') is None
         or r['search']['docs'][0].get('matches') == []

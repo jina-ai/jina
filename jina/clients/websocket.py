@@ -64,13 +64,19 @@ class WebSocketClientMixin(BaseClient, ABC):
                 self.num_responses = 0
 
                 async def _send_requests(request_iterator):
+                    next_request = None
                     for next_request in request_iterator:
                         await websocket.send(next_request.SerializeToString())
                         self.num_requests += 1
-                    # Server has no way of knowing when to stop the await on sending response back to the client
-                    # We send one last message to say `request_iterator` is completed.
-                    # On the client side, this :meth:`send` doesn't need to be awaited with a :meth:`recv`
-                    await websocket.send(bytes(True))
+                    # Check if there was any request generated
+                    if next_request is not None:
+                        # Server has no way of knowing when to stop the await on sending response back to the client
+                        # We send one last message to say `request_iterator` is completed.
+                        # On the client side, this :meth:`send` doesn't need to be awaited with a :meth:`recv`
+                        await websocket.send(bytes(True))
+                    else:
+                        # There is nothing to send, disconnect gracefully
+                        await websocket.close(reason='No data to send')
 
                 with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
                     # Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.

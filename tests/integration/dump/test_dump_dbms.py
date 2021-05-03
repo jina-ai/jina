@@ -274,19 +274,19 @@ def test_threading_query_while_reloading(tmpdir, nr_docs, emb_size, mocker):
     # patch
     def _rolling_update(self, dump_path):
         _print_and_append_to_ops(f'### calling patched rolling update')
-        for i in range(len(self.replica_list)):
+        for i in range(len(self.replicas)):
             _print_and_append_to_ops(f'### replica {i} -- starting')
-            replica = self.replica_list[i]
+            replica = self.replicas[i]
             replica.close()
             _print_and_append_to_ops(f'### replica {i} -- went offline')
             time.sleep(3)  # wait for query to hit system when one replica is offline
-            _args = self.all_args['replicas'][i]
+            _args = self.replicas_args[i]
             _args.noblock_on_start = False
             _args.dump_path = dump_path
             new_replica = Pod(_args)
             self.enter_context(new_replica)
             _print_and_append_to_ops(f'### replica {i} - new instance online')
-            self.replica_list[i] = new_replica
+            self.replicas[i] = new_replica
             time.sleep(5)
 
     mocker.patch(

@@ -31,7 +31,6 @@ class BasePod(ExitStack):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
-        self.peas = []  # type: List['BasePea']
         self.args = args
         self._set_conditional_args(self.args)
         self.needs = (
@@ -281,6 +280,7 @@ class Pod(BasePod):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__(args, needs)
+        self.peas = []  # type: List['BasePea']
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
             self.peas_args = args

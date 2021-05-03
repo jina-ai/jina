@@ -946,7 +946,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                     raise ValueError(
                         f'could not find "peas_args" or "replicas_args" on {p}'
                     )
-                for k, v in args.items():
+                values = None
+                if isinstance(args, dict):
+                    values = args.values()
+                elif isinstance(args, list):
+                    values = args
+                for v in values:
                     if v and isinstance(v, argparse.Namespace):
                         v.workspace_id = value
                     if v and isinstance(v, List):
