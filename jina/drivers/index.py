@@ -87,13 +87,6 @@ class DBMSIndexDriver(BaseIndexDriver):
         ]
         if info:
             ids, vecs, metas = zip(*info)
-            # ids = list(ids)
-            # vecs = list(vecs)
-            # metas = list(metas)
-            # for id, meta in zip(ids, metas):
-            #     print(f'### driver: {id=}; {meta}')
-            #     d = Document(meta)
-            #     assert d.tags['tag_field'] == f'tag data {d.id}'
             self.check_key_length(ids)
             self.exec_fn(ids, vecs, metas)
 

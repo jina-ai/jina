@@ -57,13 +57,3 @@ class BaseQueryIndexer(BaseIndexer):
         .. # noqa: DAR101
         """
         self._log_warn()
-
-    def is_exist(self) -> bool:
-        """
-        Check if the database is exist or not
-
-        NOTE: For Query indexers, this is always False, since we always want to overwrite the data
-
-        :return: false
-        """
-        return False

@@ -151,7 +151,6 @@ class BinaryPbWriterMixin:
         self, keys: Iterable[str], values: Iterable[bytes], write_handler: _WriteHandler
     ):
         for key, value in zip(keys, values):
-            # print(f'### writing in _add {key=}; {value=}')
             l = len(value)  #: the length
             p = (
                 int(self._start / self._page_size) * self._page_size

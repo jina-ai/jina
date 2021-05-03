@@ -130,7 +130,6 @@ def _dump_roll_update(dbms_flow_id, query_flow_id):
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_dump_dbms_remote_stress(tmpdir, docker_compose):
-    # def test_dump_dbms_remote_stress(tmpdir, cleanup_dump):
     global KEEP_RUNNING
     nr_docs_index = 5
     nr_docs_search = 1

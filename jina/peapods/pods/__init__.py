@@ -584,7 +584,6 @@ class Pod(BasePod):
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args
 
-    # TODO move to smth like Flow.get_client().dump instead
     def dump(self, pod_name, dump_path, shards, timeout):
         """Emit a Dump request to its Peas
 

@@ -57,10 +57,6 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
             return
 
         vecs_metas = [pickle.dumps([vec, meta]) for vec, meta in zip(vecs, metas)]
-        # for vec_meta in vecs_metas:
-        #     vec, meta = pickle.loads(vec_meta)
-        #     assert vec is not None
-        #     assert meta is not None
         with self.write_handler as write_handler:
             self._add(ids, vecs_metas, write_handler)
 
