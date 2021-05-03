@@ -50,7 +50,9 @@ class BaseStore(MutableMapping):
 
         :param id: the id of the object
         :param workspace: whether to delete the workdir of the object
-        :param everything: whether to delete everything"""
+        :param everything: whether to delete everything
+        :param kwargs: not used
+        """
         if isinstance(id, str):
             id = uuid.UUID(id)
 
@@ -88,6 +90,8 @@ class BaseStore(MutableMapping):
         """Release a Pea/Pod/Flow object from the store
 
         :param key: the key of the object
+
+
         .. #noqa: DAR201"""
         self._items.pop(key)
         self._time_updated = datetime.now()
