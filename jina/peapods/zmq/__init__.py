@@ -208,18 +208,16 @@ class Zmqlet:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def close(self, force_close=False, *args, **kwargs):
+    def close(self, *args, **kwargs):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
 
         .. note::
             This method is idempotent.
 
-        :param force_close: forces a close, even if `is_closed` is already set to True
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        print(f'### ')
-        if not self.is_closed or force_close:
+        if not self.is_closed:
             self.is_closed = True
             self._close_sockets()
             if hasattr(self, 'ctx'):
@@ -263,7 +261,6 @@ class Zmqlet:
 
     def _send_control_to_router(self, command, raise_exception=False):
         msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
-        print(f'### sending CtrlMsg with {command} from {self.in_sock}')
         self.bytes_sent += send_message(
             self.in_sock, msg, raise_exception=raise_exception, **self.send_recv_kwargs
         )
@@ -385,13 +382,11 @@ class ZmqStreamlet(Zmqlet):
         :param kwargs: Extra key-value arguments
         """
         if not self.is_closed:
-            print(f'### is_closed was False {self.name}')
             self.is_closed = True
 
             if self.in_sock_type == zmq.DEALER:
                 try:
                     self._send_cancel_to_router(raise_exception=True)
-                    print(f'### sent cancel to router {self.name}')
                 except zmq.error.ZMQError:
                     self.logger.info(
                         f'The dealer {self.name} can not unsubscribe from the router. '
@@ -399,15 +394,12 @@ class ZmqStreamlet(Zmqlet):
                     )
 
             # wait until the close signal is received
-            print(f'### before sleep {self.name}')
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
-                    print(f'### before flush on socket {s} {self.name}')
                     s.flush()
 
-            print(f'### after flush {self.name}')
-            super().close(force_close=True)
+            super().close()
             if hasattr(self, 'io_loop'):
                 try:
                     self.io_loop.stop()
