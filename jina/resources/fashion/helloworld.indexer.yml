@@ -1,16 +1,4 @@
-jtype: CompoundIndexer
-components:
-  - jtype: VectorIndexer
-    with:
-      index_filename: vec.gz
-      metric: euclidean
-    metas:
-      name: vecidx  # a customized name
-  - jtype: KeyValueIndexer
-    with:
-      index_filename: chunk.gz
-    metas:
-      name: chunkidx
+jtype: BinaryPbDBMSIndexer
 metas:
   name: chunk_indexer
   workspace: $HW_WORKDIR

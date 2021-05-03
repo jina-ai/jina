@@ -1,5 +1,3 @@
-
-
 import os
 from pathlib import Path
 
@@ -15,6 +13,9 @@ from ..helper import (
 from ...flow import Flow
 from ...helper import countdown, colored
 
+from ...executors.converters.image import Blob2PngURI
+from ...executors.indexers.dbms.keyvalue import BinaryPbDBMSIndexer
+
 
 def hello_world(args):
     """
@@ -29,6 +30,8 @@ def hello_world(args):
         Results are shown in a webpage.
 
     More options can be found in :command:`jina hello-world --help`
+
+    :param args: Argparse object
     """
 
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
@@ -59,8 +62,8 @@ def hello_world(args):
     os.environ['PATH'] += (
         os.pathsep + resource_filename('jina', 'resources') + '/fashion/'
     )
-    os.environ['SHARDS'] = str(args.shards)
-    os.environ['PARALLEL'] = str(args.parallel)
+    os.environ['SHARDS'] = '1'  # str(args.shards)
+    os.environ['PARALLEL'] = '1'  # str(args.parallel)
     os.environ['HW_WORKDIR'] = args.workdir
 
     # reduce the network load by using `fp16`, or even `uint8`
@@ -76,6 +79,7 @@ def hello_world(args):
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
             request_size=args.index_request_size,
         )
+    return
 
     # wait for couple of seconds
     countdown(

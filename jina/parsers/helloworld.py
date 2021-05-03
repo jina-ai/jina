@@ -27,7 +27,11 @@ def mixin_hw_base_parser(parser):
 
 
 def set_hello_parser(parser=None):
-    """Set the hello parser"""
+    """
+    Set the hello parser
+
+    :param parser: the parser configure
+    """
 
     if not parser:
         parser = set_base_parser()
@@ -53,11 +57,11 @@ def set_hello_parser(parser=None):
         spp.add_parser(
             'chatbot',
             help='''
-Start a simple Covid-19 chatbot. 
+Start a simple Covid-19 chatbot.
 
 Remarks:
 
-- Pytorch, transformers & FastAPI are required to run this demo. To install all dependencies, use 
+- Pytorch, transformers & FastAPI are required to run this demo. To install all dependencies, use
 
     pip install "jina[chatbot]"
 
@@ -72,7 +76,7 @@ Remarks:
         spp.add_parser(
             'multimodal',
             help='''
-Start a simple multimodal document search. 
+Start a simple multimodal document search.
 
 Remarks:
 
