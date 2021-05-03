@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 
 import pytest
+from jina.logging import JinaLogger
+
+from jina.enums import BuildTestLevel
 
 from jina import __version__ as jina_version
 from jina.docker import hubapi
@@ -16,6 +19,7 @@ from jina.parsers.hub import (
     set_hub_build_parser,
     set_hub_list_parser,
     set_hub_pushpull_parser,
+    set_hub_new_parser,
 )
 from jina.peapods import Pod
 
@@ -228,3 +232,49 @@ def test_hub_build_multistage(dockerfile_path):
     )
     result = HubIO(args).build()
     assert result['is_build_success']
+
+
+@pytest.mark.parametrize('new_type', ['pod', 'app', 'template'])
+def test_create_new(tmpdir, new_type):
+    args = set_hub_new_parser().parse_args(
+        ['--output-dir', str(tmpdir), '--type', new_type]
+    )
+    HubIO(args).new(no_input=True)
+    list_dir = os.listdir(str(tmpdir))
+    assert len(list_dir) == 1
+
+
+def test_hub_build_level_pass(monkeypatch, test_workspace, docker_image):
+    args = set_hub_build_parser().parse_args(
+        ['path/hub-mwu', '--push', '--host-info', '--test-level', 'EXECUTOR']
+    )
+    expected_failed_levels = []
+
+    _, failed_levels = HubIO(args)._test_build(
+        docker_image,
+        BuildTestLevel.EXECUTOR,
+        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        60000,
+        True,
+        JinaLogger('unittest'),
+    )
+
+    assert expected_failed_levels == failed_levels
+
+
+def test_hub_build_level_fail(monkeypatch, test_workspace, docker_image):
+    args = set_hub_build_parser().parse_args(
+        ['path/hub-mwu', '--push', '--host-info', '--test-level', 'FLOW']
+    )
+    expected_failed_levels = [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]
+
+    _, failed_levels = HubIO(args)._test_build(
+        docker_image,
+        BuildTestLevel.FLOW,
+        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        60000,
+        True,
+        JinaLogger('unittest'),
+    )
+
+    assert expected_failed_levels == failed_levels
