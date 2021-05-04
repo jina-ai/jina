@@ -1,6 +1,3 @@
-
-
-
 def set_pea_parser(parser=None):
     """Set the parser for the Pea
 
@@ -133,7 +130,7 @@ def get_main_parser():
     sp = parser.add_subparsers(
         dest='cli',
         description='use `%(prog)-8s [sub-command] --help` '
-        'to get detailed information about each sub-command',
+                    'to get detailed information about each sub-command',
         required=True,
     )
 
@@ -215,8 +212,8 @@ def get_main_parser():
         sp.add_parser(
             'pea',
             description='Start a Jina pea. '
-            'You should rarely use this directly unless you '
-            'are doing low-level orchestration',
+                        'You should rarely use this directly unless you '
+                        'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='start a pea')) if _SHOW_ALL_ARGS else {}
         )
@@ -244,7 +241,7 @@ def get_main_parser():
         sp.add_parser(
             'hello-world',
             description='Start the hello-world demo, a simple end2end image index and search demo '
-            'without any extra dependencies.',
+                        'without any extra dependencies.',
             formatter_class=_chf,
             **(dict(help='👋 Hello World! Hello Jina!')) if _SHOW_ALL_ARGS else {}
         )

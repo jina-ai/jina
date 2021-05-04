@@ -16,6 +16,10 @@ AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 class ExecutorType(type(JAMLCompatible), type):
     """The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""
 
+    def __new__(cls, *args, **kwargs):
+        _cls = super().__new__(cls, *args, **kwargs)
+        return cls.register_class(_cls)
+
     def __call__(cls, *args, **kwargs):
         m = kwargs.pop('metas') if 'metas' in kwargs else {}
         r = kwargs.pop('requests') if 'requests' in kwargs else {}
