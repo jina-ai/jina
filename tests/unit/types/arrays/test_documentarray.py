@@ -1,14 +1,14 @@
 from copy import deepcopy
 
-import pytest
 import numpy as np
-from scipy.sparse import coo_matrix, csr_matrix
-import torch
+import pytest
 import tensorflow as tf
+import torch
+from scipy.sparse import coo_matrix, csr_matrix
 
 from jina import Document
-from jina.types.arrays import DocumentArray
 from jina.enums import EmbeddingClsType
+from jina.types.arrays import DocumentArray
 
 DOCUMENTS_PER_LEVEL = 1
 
@@ -251,7 +251,7 @@ def test_get_content(stack, num_rows, field):
     docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
     docs.append(Document())
 
-    contents, pts = docs.extract_docs(field, stack_contents=stack)
+    contents, pts = docs.extract_fields(field, stack_contents=stack)
     if stack:
         assert isinstance(contents, np.ndarray)
         assert contents.shape == (batch_size, num_rows, embed_size)
@@ -270,7 +270,7 @@ def test_get_content_text_fields(stack, field):
 
     docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs.extract_docs(field, stack_contents=stack)
+    contents, pts = docs.extract_fields(field, stack_contents=stack)
     if stack:
         assert isinstance(contents, np.ndarray)
         assert contents.shape == (batch_size,)
@@ -289,7 +289,7 @@ def test_get_content_bytes_fields(stack, bytes_input, field):
 
     docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs.extract_docs(field, stack_contents=stack)
+    contents, pts = docs.extract_fields(field, stack_contents=stack)
 
     assert len(contents) == batch_size
     assert isinstance(contents, list)
@@ -307,7 +307,7 @@ def test_get_content_multiple_fields_text(stack, fields):
 
     docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs.extract_docs(*fields, stack_contents=stack)
+    contents, pts = docs.extract_fields(*fields, stack_contents=stack)
 
     assert len(contents) == len(fields)
     assert isinstance(contents, list)
@@ -330,7 +330,7 @@ def test_get_content_multiple_fields_text_buffer(stack, bytes_input):
 
     docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs.extract_docs(*fields, stack_contents=stack)
+    contents, pts = docs.extract_fields(*fields, stack_contents=stack)
 
     assert len(contents) == len(fields)
     assert isinstance(contents, list)
@@ -356,7 +356,7 @@ def test_get_content_multiple_fields_arrays(stack, num_rows):
     kwargs = {field: np.random.random((num_rows, embed_size)) for field in fields}
     docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs.extract_docs(*fields, stack_contents=stack)
+    contents, pts = docs.extract_fields(*fields, stack_contents=stack)
 
     assert len(contents) == len(fields)
     assert isinstance(contents, list)
@@ -389,7 +389,7 @@ def test_get_content_multiple_fields_merge(stack, num_rows):
     }
     docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
 
-    contents, pts = docs.extract_docs(*fields, stack_contents=stack)
+    contents, pts = docs.extract_fields(*fields, stack_contents=stack)
 
     assert len(contents) == len(fields)
     assert isinstance(contents, list)

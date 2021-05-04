@@ -112,7 +112,7 @@ class LegacyParser(VersionedYAMLParser):
             k: getattr(data.metas, k)
             for k, v in _defaults.items()
             if getattr(data.metas, k) != v
-        }
+        } if hasattr(data, 'metas') else {}
         a = {k: v for k, v in data._init_kwargs_dict.items() if k not in _defaults}
         r = {}
         if a:

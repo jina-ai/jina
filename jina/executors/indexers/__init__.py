@@ -1,86 +1,26 @@
 import os
 from typing import Tuple, Optional, Any, Iterable
 
-import numpy as np
-
 from .. import BaseExecutor
-from ..compound import CompoundExecutor
 from ...helper import call_obj_fn, cached_property, get_readable_size
+from ...logging import JinaLogger
 
 
 class BaseIndexer(BaseExecutor):
-    """Base class for storing and searching any kind of data structure.
-    The key functions here are :func:`add` and :func:`query`.
-    One can decorate them with :func:`jina.helper.batching` and :func:`jina.logging.profile.profiling`.
-    One should always inherit from either :class:`BaseVectorIndexer` or :class:`BaseKVIndexer`.
-    .. seealso::
-        :mod:`jina.drivers.handlers.index`
-    .. note::
-        Calling :func:`save` to save a :class:`BaseIndexer` will create
-        more than one files. One is the serialized version of the :class:`BaseIndexer` object, often ends with ``.bin``
-    .. warning::
-        When using :class:`BaseIndexer` out of the Pod, use it with context manager
-        .. highlight:: python
-        .. code-block:: python
-            with BaseIndexer() as b:
-                b.add()
-        So that it can safely save the data. Or you have to manually call `b.close()` to close the indexer safely.
-    :param index_filename: the name of the file for storing the index, when not given metas.name is used.
-    :param args:  Additional positional arguments which are just used for the parent initialization
-    :param kwargs: Additional keyword arguments which are just used for the parent initialization
-    """
 
     def __init__(
             self,
             index_filename: Optional[str] = None,
             key_length: int = 36,
-            *args,
-            **kwargs,
     ):
-        super().__init__(*args, **kwargs)
         self.index_filename = (
-            index_filename  #: the file name of the stored index, no path is required
+                index_filename or self.metas.name  #: the file name of the stored index, no path is required
         )
+        self.logger = JinaLogger(self.metas.name or self.__class__.__name__)
         self.key_length = key_length  #: the default minimum length of the key, will be expanded one time on the first batch
         self._size = 0
-
-    def add(self, *args, **kwargs):
-        """
-        Add documents to the index.
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def update(self, *args, **kwargs):
-        """
-        Update documents on the index.
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def delete(self, *args, **kwargs):
-        """
-        Delete documents from the index.
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def post_init(self):
-        """query handler and write handler can not be serialized, thus they must be put into :func:`post_init`. """
-        self.index_filename = self.index_filename or self.name
         self.handler_mutex = True  #: only one handler at a time by default
         self.is_handler_loaded = False
-
-    def query(self, *args, **kwargs):
-        """
-        Query documents from the index.
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
 
     @property
     def index_abspath(self) -> str:
@@ -88,7 +28,7 @@ class BaseIndexer(BaseExecutor):
         Get the file path of the index storage
         :return: absolute path
         """
-        return self.get_file_from_workspace(self.index_filename)
+        return os.path.join(self.workspace, self.index_filename)
 
     @cached_property
     def query_handler(self):
@@ -207,189 +147,3 @@ class BaseIndexer(BaseExecutor):
             self, keys: Iterable, existent_keys: Iterable
     ) -> Iterable:
         return [key for key in keys if key in set(existent_keys)]
-
-    def sample(self):
-        """Return a sample from this indexer, useful in sanity check """
-        raise NotImplementedError
-
-    def __iter__(self):
-        """Iterate over all entries in this indexer. """
-        raise NotImplementedError
-
-
-class BaseVectorIndexer(BaseIndexer):
-    """An abstract class for vector indexer. It is equipped with drivers in ``requests.on``
-    All vector indexers should inherit from it.
-    It can be used to tell whether an indexer is vector indexer, via ``isinstance(a, BaseVectorIndexer)``
-    """
-
-    embedding_cls_type = 'dense'
-
-    def query_by_key(self, keys: Iterable[str], *args, **kwargs) -> 'np.ndarray':
-        """Get the vectors by id, return a subset of indexed vectors
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def add(
-            self, keys: Iterable[str], vectors: 'EncodingType', *args, **kwargs
-    ) -> None:
-        """Add new chunks and their vector representations
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param vectors: vector representations in B x D
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def query(
-            self, vectors: 'EncodingType', top_k: int, *args, **kwargs
-    ) -> Tuple['np.ndarray', 'np.ndarray']:
-        """Find k-NN using query vectors, return chunk ids and chunk scores
-        :param vectors: query vectors in ndarray, shape B x D
-        :param top_k: int, the number of nearest neighbour to return
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def update(
-            self, keys: Iterable[str], vectors: 'EncodingType', *args, **kwargs
-    ) -> None:
-        """Update vectors on the index.
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param vectors: vector representations in B x D
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
-        """Delete vectors from the index.
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-
-class BaseKVIndexer(BaseIndexer):
-    """An abstract class for key-value indexer.
-    All key-value indexers should inherit from it.
-    It can be used to tell whether an indexer is key-value indexer, via ``isinstance(a, BaseKVIndexer)``
-    """
-
-    def add(
-            self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
-    ) -> None:
-        """Add the serialized documents to the index via document ids.
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: serialized documents
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
-        """Find the serialized document to the index via document id.
-        :param key: document id
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def update(
-            self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
-    ) -> None:
-        """Update the serialized documents on the index via document ids.
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: serialized documents
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
-        """Delete the serialized documents from the index via document ids.
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args: Additional positional arguments
-        :param kwargs: Additional keyword arguments
-        """
-        raise NotImplementedError
-
-    def __getitem__(self, key: Any) -> Optional[bytes]:
-        return self.query(key)
-
-
-class UniqueVectorIndexer(CompoundExecutor):
-    """A frequently used pattern for combining a :class:`BaseVectorIndexer` and a :class:`DocCache` """
-
-
-class CompoundIndexer(CompoundExecutor):
-    """A Frequently used pattern for combining A :class:`BaseVectorIndexer` and :class:`BaseKVIndexer`.
-    It will be equipped with predefined ``requests.on`` behaviors:
-        -  In the index time
-            - 1. stores the vector via :class:`BaseVectorIndexer`
-            - 2. remove all vector information (embedding, buffer, blob, text)
-            - 3. store the remained meta information via :class:`BaseKVIndexer`
-        - In the query time
-            - 1. Find the knn using the vector via :class:`BaseVectorIndexer`
-            - 2. remove all vector information (embedding, buffer, blob, text)
-            - 3. Fill in the meta information of the document via :class:`BaseKVIndexer`
-    One can use the :class:`ChunkIndexer` via
-    .. highlight:: yaml
-    .. code-block:: yaml
-        !ChunkIndexer
-        components:
-          - !NumpyIndexer
-            with:
-              index_filename: vec.gz
-            metas:
-              name: vecidx  # a customized name
-              workspace: ${{TEST_WORKDIR}}
-          - !BinaryPbIndexer
-            with:
-              index_filename: chunk.gz
-            metas:
-              name: chunkidx  # a customized name
-              workspace: ${{TEST_WORKDIR}}
-        metas:
-          name: chunk_compound_indexer
-          workspace: ${{TEST_WORKDIR}}
-    Without defining any ``requests.on`` logic. When load from this YAML, it will be auto equipped with
-    .. highlight:: yaml
-    .. code-block:: yaml
-        on:
-          SearchRequest:
-            - !VectorSearchDriver
-              with:
-                executor: BaseVectorIndexer
-            - !PruneDriver
-              with:
-                pruned:
-                  - embedding
-                  - buffer
-                  - blob
-                  - text
-            - !KVSearchDriver
-              with:
-                executor: BaseKVIndexer
-            IndexRequest:
-            - !VectorIndexDriver
-              with:
-                executor: BaseVectorIndexer
-            - !PruneDriver
-              with:
-                pruned:
-                  - embedding
-                  - buffer
-                  - blob
-                  - text
-            - !KVIndexDriver
-              with:
-                executor: BaseKVIndexer
-          ControlRequest:
-            - !ControlReqDriver {}
-    """

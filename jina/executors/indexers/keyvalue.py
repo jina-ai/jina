@@ -5,9 +5,6 @@ from typing import Iterable, Optional, Union
 
 import numpy as np
 
-from . import BaseKVIndexer
-from ..compound import CompoundExecutor
-
 HEADER_NONE_ENTRY = (-1, -1, -1)
 
 
@@ -208,7 +205,7 @@ class BinaryPbWriterMixin:
         return query_results
 
 
-class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
+class KeyValueIndexer(BinaryPbWriterMixin, BaseKVIndexer):
     """Simple Key-value indexer."""
 
     def __init__(self, delete_on_dump: bool = False, *args, **kwargs):
@@ -323,16 +320,4 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
         :param kwargs: not used"""
-        super(BinaryPbIndexer, self).delete(keys)
-
-
-class KeyValueIndexer(BinaryPbIndexer):
-    """Alias for :class:`BinaryPbIndexer` """
-
-
-class DataURIPbIndexer(BinaryPbIndexer):
-    """Alias for BinaryPbIndexer"""
-
-
-class UniquePbIndexer(CompoundExecutor):
-    """A frequently used pattern for combining a :class:`BaseKVIndexer` and a :class:`DocCache` """
+        super(KeyValueIndexer, self).delete(keys)

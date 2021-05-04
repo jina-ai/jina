@@ -192,7 +192,7 @@ class DocumentArray(TraversableSequence, MutableSequence):
                 and the documents have no embedding in a :class:`DocumentArray`.
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
-        return self.extract_docs('embedding', stack_contents=True)
+        return self.extract_fields('embedding', stack_contents=True)
 
     def get_all_sparse_embeddings(
         self, embedding_cls_type: EmbeddingClsType
@@ -274,10 +274,10 @@ class DocumentArray(TraversableSequence, MutableSequence):
         :rtype: A tuple of embedding in :class:`np.ndarray`
         """
         # stack true for backward compatibility, but will not work if content is blob of different shapes
-        return self.extract_docs('content', stack_contents=True)
+        return self.extract_fields('content', stack_contents=True)
 
-    def extract_docs(
-        self, *fields: str, stack_contents: Union[bool, List[bool]] = False
+    def extract_fields(
+            self, *fields: str, stack_contents: Union[bool, List[bool]] = False
     ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentArray']:
         """Return in batches all the values of the fields
 

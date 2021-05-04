@@ -1,8 +1,8 @@
 import pytest
-
 from jina.executors.segmenters import BaseSegmenter
-from jina.executors.decorators import batching, single
+
 from jina import Document
+from jina.executors.decorators import batching, single
 from jina.flow import Flow
 from jina.types.arrays import DocumentArray
 from tests import validate_callback
@@ -39,7 +39,7 @@ class DummySegmenterTextSingle(BaseSegmenter):
 )
 def test_batching_text_one_argument(segmenter):
     docs = DocumentArray([Document(text=f'text-{i}') for i in range(15)])
-    texts, _ = docs.extract_docs('text')
+    texts, _ = docs.extract_fields('text')
 
     chunks_sets = segmenter.segment(texts)
     for i, chunks in enumerate(chunks_sets):

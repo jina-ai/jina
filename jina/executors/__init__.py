@@ -20,16 +20,6 @@ class ExecutorType(type(JAMLCompatible), type):
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
-    def __call__(cls, *args, **kwargs):
-        m = kwargs.pop('metas') if 'metas' in kwargs else {}
-        r = kwargs.pop('requests') if 'requests' in kwargs else {}
-
-        obj = type.__call__(cls, *args, **kwargs)
-
-        getattr(obj, '_add_metas', lambda *x: None)(m)
-        getattr(obj, '_add_requests', lambda *x: None)(r)
-        return obj
-
     @staticmethod
     def register_class(cls):
         """
@@ -74,13 +64,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         with:
             awesomeness: 5
 
-    .. seealso::
-        Methods of the :class:`BaseExecutor` can be decorated via :mod:`jina.executors.decorators`.
-
-    .. seealso::
-        Meta fields :mod:`jina.executors.metas.defaults`.
-
     """
+
+    def __init__(self, metas: dict, requests: dict):
+        self._add_metas(metas)
+        self._add_requests(requests)
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not _requests:

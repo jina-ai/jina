@@ -1,16 +1,15 @@
-import pytest
-
 import numpy as np
-
+import pytest
 from jina.executors.crafters import BaseCrafter
+
+from jina import Document
 from jina.executors.decorators import (
     batching,
     single,
 )
-from jina import Document
 from jina.flow import Flow
-from jina.types.ndarray.generic import NdArray
 from jina.types.arrays import DocumentArray
+from jina.types.ndarray.generic import NdArray
 from tests import validate_callback
 
 
@@ -40,7 +39,7 @@ class DummyCrafterTextSingle(BaseCrafter):
 )
 def test_batching_text_one_argument(stack, crafter):
     docs = DocumentArray([Document(text=f'text-{i}') for i in range(15)])
-    texts, _ = docs.extract_docs('text', stack_contents=stack)
+    texts, _ = docs.extract_fields('text', stack_contents=stack)
 
     crafted_docs = crafter.craft(texts)
     for i, crafted_doc in enumerate(crafted_docs):
@@ -99,7 +98,7 @@ class DummyCrafterTextIdSingle(BaseCrafter):
 def test_batching_text_multi(stack, crafter):
     docs = DocumentArray([Document(text=f'text-{i}', id=f'id-{i}') for i in range(15)])
     required_keys = ['text', 'id']
-    text_ids, _ = docs.extract_docs(*required_keys, stack_contents=stack)
+    text_ids, _ = docs.extract_fields(*required_keys, stack_contents=stack)
 
     crafted_docs = crafter.craft(*text_ids)
 
@@ -160,7 +159,7 @@ def test_batching_blob_one_argument(stack, crafter):
     docs = DocumentArray(
         [Document(blob=np.array([[i] * 5, [i] * 5])) for i in range(15)]
     )
-    texts, _ = docs.extract_docs('blob', stack_contents=stack)
+    texts, _ = docs.extract_fields('blob', stack_contents=stack)
 
     crafted_docs = crafter.craft(texts)
     for i, crafted_doc in enumerate(crafted_docs):
@@ -229,7 +228,7 @@ def test_batching_blob_multi(stack, crafter):
         ]
     )
     required_keys = ['blob', 'embedding']
-    text_ids, _ = docs.extract_docs(*required_keys, stack_contents=stack)
+    text_ids, _ = docs.extract_fields(*required_keys, stack_contents=stack)
 
     crafted_docs = crafter.craft(*text_ids)
 
@@ -305,7 +304,7 @@ def test_batching_mix_multi(stack, crafter):
         [Document(text=f'text-{i}', embedding=np.array([i] * 5)) for i in range(15)]
     )
     required_keys = ['text', 'embedding']
-    text_ids, _ = docs.extract_docs(*required_keys, stack_contents=stack)
+    text_ids, _ = docs.extract_fields(*required_keys, stack_contents=stack)
 
     crafted_docs = crafter.craft(*text_ids)
 
