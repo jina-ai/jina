@@ -1,0 +1,16 @@
+jtype: KeyValueDBMSIndexer
+with:
+  index_filename: keyvalue.bin
+metas:
+  workspace: workspace_dbms
+  name: keyvalue
+requests:
+  on:
+    [IndexRequest, UpdateRequest]:
+      - jtype: DBMSIndexDriver
+        with:
+          executor: keyvalue
+    DeleteRequest:
+      - jtype: DeleteDriver
+        with:
+          executor: keyvalue
