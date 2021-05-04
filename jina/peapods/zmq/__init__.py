@@ -64,8 +64,6 @@ class Zmqlet:
         self._register_pollin()
 
         self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
-        if self.in_sock_type == zmq.DEALER:
-            self._send_idle_to_router()
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""

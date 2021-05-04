@@ -20,43 +20,10 @@ from ...enums import SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
-class CustomCtxtManager(ExitStack):
+class ExitFIFO(ExitStack):
     """
-    CustomCtxtManager changes the exiting order of exitStack to make sure HEAD is closed before INNER and before TAIL.
+    ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
     """
-
-    def enter_context(self, cm, tag='INNER'):
-        """Enters the supplied context manager.
-
-        If successful, also pushes its __exit__ method as a callback and
-        returns the result of the __enter__ method.
-
-        :param cm: context manager
-        :param tag: tag to know where it should be placed
-        :return: the result of the __enter__ method.
-        """
-        # We look up the special methods on the type to match the with
-        # statement.
-        _cm_type = type(cm)
-        _exit = _cm_type.__exit__
-        result = _cm_type.__enter__(cm)
-        self._push_cm_exit(cm, _exit, tag=tag)
-        return result
-
-    def _push_cm_exit(self, cm, cm_exit, tag):
-        """Helper to correctly register callbacks to __exit__ methods.
-        :param cm: context manager
-        :param cm_exit: the function to exit
-        :param tag: tag to know where it should be placed
-        """
-        _exit_wrapper = self._create_exit_wrapper(cm, cm_exit)
-        _exit_wrapper.__self__ = cm
-        self._push_exit_callback(_exit_wrapper, tag=tag)
-
-    def _push_exit_callback(self, callback, is_sync=True, tag='INNER'):
-        if tag == 'HEAD':
-            self._exit_callbacks.appendleft((is_sync, callback))
-        self._exit_callbacks.append((is_sync, callback))
 
     def __exit__(self, *exc_details):
         received_exc = exc_details[0] is not None
@@ -109,7 +76,7 @@ class CustomCtxtManager(ExitStack):
         return received_exc and suppressed_exc
 
 
-class BasePod(CustomCtxtManager):
+class BasePod(ExitFIFO):
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
@@ -140,7 +107,10 @@ class BasePod(CustomCtxtManager):
         raise NotImplemented()
 
     def close(self):
-        """Stop all :class:`BasePea` in this BasePod."""
+        """Stop all :class:`BasePea` in this BasePod.
+
+        .. # noqa: DAR201
+        """
         self.__exit__(None, None, None)
 
     @staticmethod
@@ -204,9 +174,9 @@ class BasePod(CustomCtxtManager):
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
-    def _enter_pea(self, pea: 'BasePea', tag: str) -> None:
+    def _enter_pea(self, pea: 'BasePea') -> None:
         self.peas.append(pea)
-        self.enter_context(pea, tag=tag)
+        self.enter_context(pea)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -488,23 +458,15 @@ class Pod(BasePod):
         )
 
     @property
-    def _start_args(self) -> Dict[str, Namespace]:
+    def _fifo_args(self) -> List[Namespace]:
         """Get all arguments of all Peas in this BasePod.
-
         .. # noqa: DAR201
         """
-        from collections import OrderedDict
-
-        ret = OrderedDict()
-        is_push = self.peas_args['peas'][0].socket_in == SocketType.DEALER_CONNECT
-        if not is_push:
-            ret['INNER'] = self.peas_args['peas']
-            ret['HEAD'] = [self.peas_args['head']] if self.peas_args['head'] else []
-        else:
-            ret['HEAD'] = [self.peas_args['head']] if self.peas_args['head'] else []
-            ret['INNER'] = self.peas_args['peas']
-        ret['TAIL'] = [self.peas_args['tail']] if self.peas_args['tail'] else []
-        return ret
+        return (
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + self.peas_args['peas']
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+        )
 
     @property
     def num_peas(self) -> int:
@@ -528,17 +490,26 @@ class Pod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for tag, _args_list in self._start_args.items():
-                for _args in _args_list:
-                    _args.noblock_on_start = True
-                    self._enter_pea(BasePea(_args), tag=tag)
+            for _args in self._fifo_args:
+                _args.noblock_on_start = True
+                self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
+
+            # order is good. Activate from tail to head
+            for pea in reversed(self.peas):
+                if pea.args.socket_in == SocketType.DEALER_CONNECT:
+                    pea.runtime.activate()
+
             return self
         else:
             try:
-                for tag, _args_list in self._start_args.items():
-                    for _args in _args_list:
-                        self._enter_pea(BasePea(_args), tag=tag)
+                for _args in self._fifo_args:
+                    self._enter_pea(BasePea(_args))
+
+                # order is good. Activate from tail to head
+                for pea in reversed(self.peas):
+                    if pea.args.socket_in == SocketType.DEALER_CONNECT:
+                        pea.runtime.activate()
             except:
                 self.close()
                 raise

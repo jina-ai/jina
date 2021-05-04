@@ -16,8 +16,12 @@ class ZMQRuntime(BaseRuntime, ABC):
         )[0]
 
     def cancel(self):
-        """Send cancel control message."""
+        """Send terminate control message."""
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
+
+    def activate(self):
+        """Send activate control message."""
+        send_ctrl_message(self.ctrl_addr, 'ACTIVATE', timeout=self.args.timeout_ctrl)
 
     @property
     def status(self):
@@ -68,10 +72,15 @@ class ZMQManyRuntime(BaseRuntime, ABC):
             self.port_expose = args.port_expose
 
     def cancel(self):
-        """Send cancel control messages to all control address."""
+        """Send terminate control messages to all control address."""
         # TODO: can use send_message_async to avoid sequential waiting
         for ctrl_addr in self.many_ctrl_addr:
             send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=self.timeout_ctrl)
+
+    def activate(self):
+        """Send activate control messages to all control address."""
+        for ctrl_addr in self.many_ctrl_addr:
+            send_ctrl_message(ctrl_addr, 'ACTIVATE', timeout=self.timeout_ctrl)
 
     @property
     def status(self):
