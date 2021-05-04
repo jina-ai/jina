@@ -8,7 +8,6 @@ import numpy as np
 
 from ..dump import export_dump_streaming
 from ..keyvalue import BinaryPbWriterMixin
-from ...helper import physical_size
 from .... import Executor, requests, DocumentArray, Document
 from ....helper import call_obj_fn, cached_property, get_readable_size
 from ....logging import JinaLogger

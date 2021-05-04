@@ -200,14 +200,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-
-        pea_id = self.metas.pea_id
-        replica_id = self.metas.replica_id
-        workspace_folder = self.metas.workspace
-        workspace_name = self.metas.name
-        if replica_id == -1:
-            return os.path.join(workspace_folder, f'{workspace_name}-{pea_id}')
-        else:
-            return os.path.join(
-                workspace_folder, f'{workspace_name}-{replica_id}-{pea_id}'
-            )
+        return self.metas.workspace or (
+            os.path.join(self.metas.parent_workspace, self.metas.name) if self.metas.replica_id == -1 else
+            os.path.join(self.metas.parent_workspace, self.metas.name, self.metas.replica_id))

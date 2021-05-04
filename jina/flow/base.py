@@ -306,6 +306,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             parser = set_gateway_parser()
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
+
+        # pod workspace if not set then derive from flow workspace
+        if not args.workspace:
+            args.workspace = self.args.workspace
+
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
         op_flow.last_pod = pod_name
 

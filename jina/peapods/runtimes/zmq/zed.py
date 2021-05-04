@@ -83,6 +83,7 @@ class ZEDRuntime(ZMQRuntime):
                     pea_id=self.args.pea_id,
                     replica_id=getattr(self.args, 'replica_id', -1),
                     read_only=self.args.read_only,
+                    parent_workspace=self.args.workspace
                 ),
             )
         except BadConfigSource as ex:

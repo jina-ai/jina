@@ -1,11 +1,9 @@
 import inspect
-import os
 from functools import reduce
 from typing import Dict, Type, Set
 
 from ..base import VersionedYAMLParser
 from ....executors import BaseExecutor, get_default_metas
-from ....executors.compound import CompoundExecutor
 
 
 class LegacyParser(VersionedYAMLParser):
@@ -51,36 +49,6 @@ class LegacyParser(VersionedYAMLParser):
         all_classes = accumulate_classes(class_)
         args = list(map(lambda x: get_class_arguments(x), all_classes))
         return set(reduce(lambda x, y: x + y, args))
-
-    @staticmethod
-    def _get_dump_path_from_config(meta_config: Dict):
-        if 'name' in meta_config:
-            work_dir = meta_config['workspace']
-            name = meta_config['name']
-            pea_id = meta_config['pea_id']
-            if work_dir:
-                # then try to see if it can be loaded from its regular expected workspace (ref_indexer)
-                dump_path = BaseExecutor.get_shard_workspace(work_dir, name, pea_id)
-                bin_dump_path = os.path.join(dump_path, f'{name}.bin')
-                if os.path.exists(bin_dump_path):
-                    return bin_dump_path
-
-            root_work_dir = meta_config['root_workspace']
-            root_name = meta_config['root_name']
-            if root_name != name:
-                # try to load from the corresponding file as if it was a CompoundExecutor, if the `.bin` does not exist,
-                # we should try to see if from its workspace can be loaded as it may be a `ref_indexer`
-                compound_work_dir = (
-                    CompoundExecutor.get_component_workspace_from_compound_workspace(
-                        root_work_dir, root_name, pea_id
-                    )
-                )
-                dump_path = BaseExecutor.get_shard_workspace(
-                    compound_work_dir, name, pea_id
-                )
-                bin_dump_path = os.path.join(dump_path, f'{name}.{"bin"}')
-                if os.path.exists(bin_dump_path):
-                    return bin_dump_path
 
     def parse(self, cls: Type['BaseExecutor'], data: Dict) -> 'BaseExecutor':
         """

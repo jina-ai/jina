@@ -1,6 +1,3 @@
-
-
-
 import copy
 from abc import abstractmethod
 from argparse import Namespace
@@ -9,7 +6,6 @@ from itertools import cycle
 from typing import Dict, Union, Set
 from typing import List, Optional
 
-from jina.peapods.zmq import send_ctrl_message
 from ..peas import BasePea
 from ... import __default_host__
 from ... import helper
@@ -25,7 +21,7 @@ class BasePod(ExitStack):
     """
 
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+            self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
         self.peas = []  # type: List['BasePea']
@@ -127,7 +123,7 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _copy_to_head_args(
-        args: Namespace, polling_type: PollingType, as_router: bool = True
+            args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the outgoing args of the head router
@@ -168,7 +164,7 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _copy_to_tail_args(
-        args: Namespace, polling_type: PollingType, as_router: bool = True
+            args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the incoming args of the tail router
@@ -222,7 +218,7 @@ class BasePod(ExitStack):
 
         # is BIND & CONNECT all on the same remote?
         bind_conn_same_remote = (
-            not bind_local and not conn_local and (bind_args.host == connect_args.host)
+                not bind_local and not conn_local and (bind_args.host == connect_args.host)
         )
 
         if platform in ('linux', 'linux2'):
@@ -271,7 +267,7 @@ class Pod(BasePod):
     """
 
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+            self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__(args, needs)
         if isinstance(args, Dict):
@@ -318,7 +314,7 @@ class Pod(BasePod):
         return self.first_pea_args.host
 
     def _parse_args(
-        self, args: Namespace
+            self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_base_pod_args(args)
 
@@ -391,9 +387,9 @@ class Pod(BasePod):
         .. # noqa: DAR201
         """
         return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
-            + self.peas_args['peas']
+                ([self.peas_args['head']] if self.peas_args['head'] else [])
+                + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+                + self.peas_args['peas']
         )
 
     @property
@@ -479,26 +475,11 @@ class Pod(BasePod):
             # ONLY reset when it is push
             args.uses_after = '_pass'
 
-    def dump(self, path, shards, timeout):
-        """Emit a Dump request to its Peas
-
-        :param shards: the nr of shards in the dump
-        :param path: the path to which to dump
-        :param timeout: time to wait (seconds)
-        """
-        for pea in self.peas:
-            if 'head' not in pea.name and 'tail' not in pea.name:
-                send_ctrl_message(
-                    pea.runtime.ctrl_addr,
-                    DumpMessage(path=path, shards=shards),
-                    timeout=timeout,
-                )
-
     @staticmethod
     def _set_peas_args(
-        args: Namespace,
-        head_args: Optional[Namespace] = None,
-        tail_args: Namespace = None,
+            args: Namespace,
+            head_args: Optional[Namespace] = None,
+            tail_args: Namespace = None,
     ) -> List[Namespace]:
         result = []
         _host_list = (
@@ -552,6 +533,9 @@ class Pod(BasePod):
                     bind_args=tail_args, connect_args=_args
                 )
 
+            # pea workspace if not set then derive from workspace
+            if not _args.workspace:
+                _args.workspace = args.workspace
             result.append(_args)
         return result
 
@@ -571,7 +555,7 @@ class Pod(BasePod):
                 tail_args=parsed_args['tail'],
             )
         elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+                getattr(args, 'uses_after', None) and args.uses_after != '_pass'
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
