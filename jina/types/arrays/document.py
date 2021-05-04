@@ -68,9 +68,12 @@ class DocumentArray(TraversableSequence, MutableSequence):
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
-    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document']]):
+    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document'], None] = None):
         super().__init__()
-        self._docs_proto = docs_proto
+        if docs_proto is not None:
+            self._docs_proto = docs_proto
+        else:
+            self._docs_proto = []
         self._docs_map = {}
 
     def insert(self, index: int, doc: 'Document') -> None:
@@ -112,7 +115,7 @@ class DocumentArray(TraversableSequence, MutableSequence):
         elif isinstance(item, slice):
             return DocumentArray(self._docs_proto[item])
         else:
-            raise IndexError(f'do not support this index {item}')
+            raise IndexError(f'do not support this index type {typename(item)}: {item}')
 
     def __add__(self, other: 'DocumentArray'):
         v = DocumentArray([])

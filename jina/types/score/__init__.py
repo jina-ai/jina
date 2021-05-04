@@ -71,6 +71,22 @@ class NamedScore(ProtoTypeMixin):
         self.set_attrs(**kwargs)
 
     @property
+    def value(self) -> str:
+        """
+        Return the ``ref_id`` of this NamedScore, the `id` of which this NamedScore is a score.
+        :return:: the ref_id
+        """
+        return self._pb_body.value
+
+    @value.setter
+    def value(self, val: float):
+        """
+        Set the ``ref_id`` to :param: `val`.
+        :param val: The ref_id value to set
+        """
+        self._pb_body.value = val
+
+    @property
     def ref_id(self) -> str:
         """
         Return the ``ref_id`` of this NamedScore, the `id` of which this NamedScore is a score.

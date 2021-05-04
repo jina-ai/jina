@@ -121,7 +121,7 @@ def set_hw_parser(parser=None):
         '--uses-index',
         type=str,
         default=resource_filename(
-            'jina', '/'.join(('resources', 'fashion', 'helloworld.flow.index.yml'))
+            'jina', '/'.join(('resources', 'fashion', 'helloworld.flow.yml'))
         ),
         help='The yaml path of the index flow',
     )

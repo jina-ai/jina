@@ -13,9 +13,6 @@ from ..helper import (
 from ...flow import Flow
 from ...helper import countdown, colored
 
-from ...executors.converters.image import Blob2PngURI
-from ...executors.indexers.dbms.keyvalue import BinaryPbDBMSIndexer
-
 
 def hello_world(args):
     """
@@ -60,7 +57,7 @@ def hello_world(args):
 
     # this envs are referred in index and query flow YAMLs
     os.environ['PATH'] += (
-        os.pathsep + resource_filename('jina', 'resources') + '/fashion/'
+            os.pathsep + resource_filename('jina', 'resources') + '/fashion/'
     )
     os.environ['SHARDS'] = '1'  # str(args.shards)
     os.environ['PARALLEL'] = '1'  # str(args.parallel)
@@ -79,22 +76,17 @@ def hello_world(args):
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
             request_size=args.index_request_size,
         )
-    return
 
-    # wait for couple of seconds
-    countdown(
-        8,
-        reason=colored(
-            'behold! im going to switch to query mode',
-            'cyan',
-            attrs=['underline', 'bold', 'reverse'],
-        ),
-    )
+        # wait for couple of seconds
+        countdown(
+            3,
+            reason=colored(
+                'behold! im going to switch to query mode',
+                'cyan',
+                attrs=['underline', 'bold', 'reverse'],
+            ),
+        )
 
-    # now load query flow from another YAML file
-    f = Flow.load_config(args.uses_query)
-    # run it!
-    with f:
         f.search(
             query_generator(
                 num_docs=args.num_query, target=targets, with_groundtruth=True
@@ -102,7 +94,7 @@ def hello_world(args):
             shuffle=True,
             on_done=print_result,
             request_size=args.query_request_size,
-            top_k=args.top_k,
+            parameters={'top_k': args.top_k},
         )
 
     # write result to html
