@@ -66,7 +66,8 @@ from jina import Executor, Flow, Document
 
 class MyExecutor(Executor):
 
-  def __init__(self, bar: int):
+  def __init__(self, bar: int, **kwargs):
+    super().__init__(**kwargs)
     self.bar = bar
 
   def foo(self, **kwargs):
@@ -93,6 +94,27 @@ Every new executor should be inherited directly from `jina.Executor`.
 The 1.x inheritance tree is removed,  `Executor` does not have polymorphism anymore.
 
 You can name your executor class freely.
+
+### `__init__` Constructor
+
+If your executor defines `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
+in the body, e.g.
+
+```python
+from jina import Executor
+
+
+class MyExecutor(Executor):
+
+  def __init__(self, foo: str, bar: int, **kwargs):
+    super().__init__(**kwargs)
+    self.bar = bar
+    self.foo = foo
+```
+
+Here, `kwargs` contains `metas` and `requests` values from YAML config. Note that you can access the value of `metas`
+/`requests` in `__init__` body via `self.metas`/`self.requests`, or modifying their values before sending
+to `super().__init__()`.
 
 ### Method naming
 
@@ -246,11 +268,12 @@ from jina import Executor
 
 class MyExecutor(Executor):
 
-    def __init__(self, bar: int):
-        self.bar = bar
+  def __init__(self, bar: int, **kwargs):
+    super().__init__(**kwargs)
+    self.bar = bar
 
-    def foo(self, **kwargs):
-        pass
+  def foo(self, **kwargs):
+    pass
 
 
 y_literal = """
@@ -305,7 +328,7 @@ subclassing `Executor` should be easy.
 | `.load()` | ❌ |
 | `.logger`  | ❌ |
 | Pickle interface | ❌ |
-| init boilerplates (`__init__`, `pre_init`, `post_init`) | ❌ |
+| init boilerplates (`pre_init`, `post_init`) | ❌ |
 | Context manager interface |  ❌ |
 | Inline `import` coding style |  ❌ |
 
