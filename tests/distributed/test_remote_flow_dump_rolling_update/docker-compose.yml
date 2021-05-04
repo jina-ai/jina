@@ -12,5 +12,3 @@ services:
       - "45678:45678"
     expose:
       - 10000-60000
-    volumes:
-      - "/tmp/dump_path_mount:/tmp/dump_path_mount"
