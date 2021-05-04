@@ -1,7 +1,0 @@
-!Flow
-version: '1'
-with:
-  restful: True
-pods:
-  - name: indexer
-    uses: yaml/index_kv.yml
