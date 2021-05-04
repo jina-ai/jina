@@ -105,6 +105,10 @@ class ControlReqDriver(BaseControlDriver):
             # TODO (Joan): This is a hack, but I checked in devel-2.0 branch, this _handle_control_req will be moved into the `ZedRuntime` so this code
             # aligns very well with that view
             self.runtime._zmqlet._send_idle_to_router()
+        elif self.req.command == 'DEACTIVATE':
+            # TODO (Joan): This is a hack, but I checked in devel-2.0 branch, this _handle_control_req will be moved into the `ZedRuntime` so this code
+            # aligns very well with that view
+            self.runtime._zmqlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 

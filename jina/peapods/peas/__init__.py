@@ -180,6 +180,10 @@ class BasePea(metaclass=PeaType):
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
                 self.join()
+        else:
+            # if it fails to start, the process will hang at `join`
+            if getattr(self, 'terminate', None):
+                self.terminate()
 
         self.logger.success(__stop_msg__)
         self.logger.close()

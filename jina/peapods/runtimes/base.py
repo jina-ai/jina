@@ -87,6 +87,10 @@ class BaseRuntime:
         """Send activate control message."""
         raise NotImplementedError
 
+    def deactivate(self):
+        """Send deactivate control message."""
+        raise NotImplementedError
+
     def setup(self):
         """Method called to prepare the runtime inside ``S``. Optional in subclasses.
         The default implementation does nothing.

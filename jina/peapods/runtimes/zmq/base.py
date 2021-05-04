@@ -23,6 +23,10 @@ class ZMQRuntime(BaseRuntime, ABC):
         """Send activate control message."""
         send_ctrl_message(self.ctrl_addr, 'ACTIVATE', timeout=self.args.timeout_ctrl)
 
+    def deactivate(self):
+        """Send activate control message."""
+        send_ctrl_message(self.ctrl_addr, 'DEACTIVATE', timeout=self.args.timeout_ctrl)
+
     @property
     def status(self):
         """
@@ -81,6 +85,11 @@ class ZMQManyRuntime(BaseRuntime, ABC):
         """Send activate control messages to all control address."""
         for ctrl_addr in self.many_ctrl_addr:
             send_ctrl_message(ctrl_addr, 'ACTIVATE', timeout=self.timeout_ctrl)
+
+    def deactivate(self):
+        """Send activate control messages to all control address."""
+        for ctrl_addr in self.many_ctrl_addr:
+            send_ctrl_message(ctrl_addr, 'DEACTIVATE', timeout=self.timeout_ctrl)
 
     @property
     def status(self):

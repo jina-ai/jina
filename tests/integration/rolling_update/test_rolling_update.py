@@ -77,7 +77,6 @@ def test_normal(docs):
         assert len(set(shard_list)) == NUM_SHARDS
 
 
-@pytest.mark.repeat(10)
 @pytest.mark.timeout(30)
 def test_simple_run(docs):
     flow = Flow().add(
@@ -92,14 +91,14 @@ def test_simple_run(docs):
         flow.search(docs)
 
 
-@pytest.mark.repeat(10)
-@pytest.mark.timeout(30)
+@pytest.mark.repeat(5)
+@pytest.mark.timeout(20)
 def test_thread_run(docs):
     flow = Flow().add(
         name='pod1',
         replicas=2,
         parallel=2,
-        timeout_ready=10000,
+        timeout_ready=20000,
     )
     with flow:
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
@@ -110,15 +109,15 @@ def test_thread_run(docs):
         x.join()
 
 
-@pytest.mark.repeat(10)
-@pytest.mark.timeout(30)
+@pytest.mark.repeat(5)
+@pytest.mark.timeout(20)
 def test_vector_indexer_thread(config, docs):
     with Flow().add(
         name='pod1',
         uses='!DummyMarkExecutor',
         replicas=2,
         parallel=3,
-        timeout_ready=10000,
+        timeout_ready=20000,
     ) as flow:
         for i in range(5):
             flow.search(docs)

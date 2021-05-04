@@ -236,11 +236,15 @@ class CompoundPod(BasePod):
         """
         Update all pods of this compound pod.
         """
-        for i in range(len(self.replicas)):
-            replica = self.replicas[i]
-            replica.close()
-            _args = self.replicas_args[i]
-            _args.noblock_on_start = False
-            new_replica = Pod(_args)
-            self.enter_context(new_replica)
-            self.replicas[i] = new_replica
+        try:
+            for i in range(len(self.replicas)):
+                replica = self.replicas[i]
+                replica.deactivate()
+                replica.close()
+                _args = self.replicas_args[i]
+                _args.noblock_on_start = False
+                new_replica = Pod(_args)
+                self.enter_context(new_replica)
+                self.replicas[i] = new_replica
+        except:
+            raise

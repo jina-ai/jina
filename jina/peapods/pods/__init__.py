@@ -464,6 +464,8 @@ class Pod(BasePod):
         """Get all arguments of all Peas in this BasePod.
         .. # noqa: DAR201
         """
+        # For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and
+        # some messages are not received by the inner peas. That's why ExitFIFO is needed
         return (
             ([self.peas_args['head']] if self.peas_args['head'] else [])
             + self.peas_args['peas']
@@ -485,6 +487,29 @@ class Pod(BasePod):
         self.peas.append(pea)
         self.enter_context(pea)
 
+    def _activate(self):
+        # order is good. Activate from tail to head
+        for pea in reversed(self.peas):
+            if pea.args.socket_in == SocketType.DEALER_CONNECT:
+                pea.runtime.activate()
+        self._activated = True
+
+    def deactivate(self):
+        """Force Dealer Peas to send CANCEL messages to their ROUTERs
+
+        .. note:
+            This is to make sure Head of Replica always sends CANCEL in a blocking manner.
+            Like this we are sure that in CANCEL has been properly handled by the time the Head of CompoundPod
+            receives any Request and so can't send it to the wrong replica.
+
+        .. # noqa: DAR201
+        """
+        # order is good. Activate from tail to head
+        for pea in self.peas:
+            if pea.args.socket_in == SocketType.DEALER_CONNECT:
+                pea.runtime.deactivate()
+        self._activated = False
+
     def start(self) -> 'BasePod':
         """
         Start to run all :class:`BasePea` in this BasePod.
@@ -501,23 +526,14 @@ class Pod(BasePod):
                 self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
 
-            # order is good. Activate from tail to head
-            for pea in reversed(self.peas):
-                if pea.args.socket_in == SocketType.DEALER_CONNECT:
-                    pea.runtime.activate()
-            self._activated = True
-
+            self._activate()
             return self
         else:
             try:
                 for _args in self._fifo_args:
                     self._enter_pea(BasePea(_args))
 
-                # order is good. Activate from tail to head
-                for pea in reversed(self.peas):
-                    if pea.args.socket_in == SocketType.DEALER_CONNECT:
-                        pea.runtime.activate()
-                self._activated = True
+                self._activate()
             except:
                 self.close()
                 raise
