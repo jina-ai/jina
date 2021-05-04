@@ -236,7 +236,7 @@ class CompoundPod(BasePod):
             replica.close()
             _args = self.replicas_args[i]
             _args.noblock_on_start = False
-            # TODO better way?
+            # TODO better way to pass args to the new Pod
             _args.dump_path = dump_path
             new_replica = Pod(_args)
             self.enter_context(new_replica)

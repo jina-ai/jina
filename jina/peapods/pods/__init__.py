@@ -593,7 +593,7 @@ class Pod(BasePod):
         :param timeout: time to wait (seconds)
         """
         for pea in self.peas:
-            if 'head' not in pea.name and 'tail' not in pea.name:
+            if pea.inner:
                 send_ctrl_message(
                     pea.runtime.ctrl_addr,
                     ControlMessage(
