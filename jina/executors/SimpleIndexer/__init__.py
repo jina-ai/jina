@@ -1,5 +1,5 @@
 import os
-from typing import Tuple, Optional, Any, Iterable
+from typing import Optional, Any
 
 from .. import BaseExecutor
 from ...helper import call_obj_fn, cached_property, get_readable_size
@@ -8,11 +8,8 @@ from ...logging import JinaLogger
 
 class BaseIndexer(BaseExecutor):
 
-    def __init__(
-            self,
-            index_filename: Optional[str] = None,
-            key_length: int = 36,
-    ):
+    def __init__(self, index_filename: Optional[str] = None, key_length: int = 36, **kwargs):
+        super().__init__(**kwargs)
         self.index_filename = (
                 index_filename or self.metas.name  #: the file name of the stored index, no path is required
         )
@@ -111,11 +108,6 @@ class BaseIndexer(BaseExecutor):
         """
         return self._size
 
-    def __getstate__(self):
-        d = super().__getstate__()
-        self.flush()
-        return d
-
     def close(self):
         """Close all file-handlers and release all resources. """
         self.logger.info(
@@ -134,16 +126,3 @@ class BaseIndexer(BaseExecutor):
         except:
             pass
 
-    def _filter_nonexistent_keys_values(
-            self, keys: Iterable, values: Iterable, existent_keys: Iterable
-    ) -> Tuple[Iterable, Iterable]:
-        f = [(key, value) for key, value in zip(keys, values) if key in existent_keys]
-        if f:
-            return zip(*f)
-        else:
-            return None, None
-
-    def _filter_nonexistent_keys(
-            self, keys: Iterable, existent_keys: Iterable
-    ) -> Iterable:
-        return [key for key in keys if key in set(existent_keys)]

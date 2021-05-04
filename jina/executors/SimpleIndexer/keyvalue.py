@@ -1,9 +1,10 @@
 import mmap
 import os
-import random
 from typing import Iterable, Optional, Union
 
 import numpy as np
+
+from . import BaseIndexer
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 
@@ -205,56 +206,8 @@ class BinaryPbWriterMixin:
         return query_results
 
 
-class KeyValueIndexer(BinaryPbWriterMixin, BaseKVIndexer):
+class KeyValueIndexer(BinaryPbWriterMixin, BaseIndexer):
     """Simple Key-value indexer."""
-
-    def __init__(self, delete_on_dump: bool = False, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.delete_on_dump = delete_on_dump
-
-    def __getstate__(self):
-        # called on pickle save
-        if self.delete_on_dump:
-            self._delete_invalid_indices()
-        d = super().__getstate__()
-        return d
-
-    def _delete_invalid_indices(self):
-        # make sure the file is closed before querying.
-        with _CloseHandler(handler=self.write_handler):
-            pass
-
-        keys = []
-        vals = []
-        # we read the valid values and write them to the intermediary file
-        with _CloseHandler(
-                handler=_ReadHandler(self.index_abspath, self.key_length)
-        ) as close_handler:
-            for key in close_handler.handler.header.keys():
-                pos_info = close_handler.handler.header.get(key, None)
-                if pos_info:
-                    p, r, l = pos_info
-                    with mmap.mmap(close_handler.handler.body, offset=p, length=l) as m:
-                        keys.append(key)
-                        vals.append(m[r:])
-        if len(keys) == 0:
-            return
-
-        # intermediary file
-        tmp_file = self.index_abspath + '-tmp'
-        self._start = 0
-        with _CloseHandler(handler=_WriteHandler(tmp_file, 'ab')) as close_handler:
-            # reset size
-            self._size = 0
-            self._add(keys, vals, write_handler=close_handler.handler)
-
-        # replace orig. file
-        # and .head file
-        head_path = self.index_abspath + '.head'
-        os.remove(self.index_abspath)
-        os.remove(head_path)
-        os.rename(tmp_file, self.index_abspath)
-        os.rename(tmp_file + '.head', head_path)
 
     def add(
             self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
@@ -277,17 +230,6 @@ class KeyValueIndexer(BinaryPbWriterMixin, BaseKVIndexer):
             del self.write_handler
             self.is_handler_loaded = False
 
-    def sample(self) -> Optional[bytes]:
-        """Return a random entry from the indexer for sanity check.
-        :return: A random entry from the indexer.
-        """
-        k = random.sample(self.query_handler.header.keys(), k=1)[0]
-        return self.query([k])[0]
-
-    def __iter__(self):
-        for k in self.query_handler.header.keys():
-            yield self[k]
-
     def query(self, keys: Iterable[str], *args, **kwargs) -> Iterable[Optional[bytes]]:
         """Find the serialized document to the index via document id.
         :param keys: list of document ids
@@ -296,28 +238,3 @@ class KeyValueIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         :return: serialized documents
         """
         return self._query(keys)
-
-    def update(
-            self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs
-    ) -> None:
-        """Update the serialized documents on the index via document ids.
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param values: serialized documents
-        :param args: extra arguments
-        :param kwargs: keyword arguments
-        """
-        keys, values = self._filter_nonexistent_keys_values(
-            keys, values, self.query_handler.header.keys()
-        )
-        del self.query_handler
-        self.handler_mutex = False
-        if keys:
-            self._delete(keys)
-            self.add(keys, values)
-
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
-        """Delete the serialized documents from the index via document ids.
-        :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
-        :param args: not used
-        :param kwargs: not used"""
-        super(KeyValueIndexer, self).delete(keys)
