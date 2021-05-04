@@ -66,7 +66,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
 
-    def __init__(self, metas: dict, requests: dict):
+    def __init__(self, metas: Optional[Dict] = None, requests: Optional[Dict] = None):
+        """`metas` and `requests` are always auto-filled with values from YAML config.
+
+        :param metas: a dict of metas fields
+        :param requests: a dict of endpoint-function mapping
+        """
         self._add_metas(metas)
         self._add_requests(requests)
 
@@ -193,5 +198,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: returns the workspace of the shard of this Executor.
         """
         return self.metas.workspace or (
-            os.path.join(self.metas.parent_workspace, self.metas.name) if self.metas.replica_id == -1 else
-            os.path.join(self.metas.parent_workspace, self.metas.name, self.metas.replica_id))
+            os.path.join(self.metas.parent_workspace, self.metas.name)
+            if self.metas.replica_id == -1
+            else os.path.join(
+                self.metas.parent_workspace, self.metas.name, self.metas.replica_id
+            )
+        )

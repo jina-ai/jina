@@ -6,8 +6,8 @@ from jina import Executor, requests, Flow, Document
 
 
 class MyExec(Executor):
-
-    def __init__(self, bar: str, bar2: int = 3):
+    def __init__(self, bar: str, bar2: int = 3, **kwargs):
+        super().__init__(**kwargs)
         self.bar = bar
         self.bar2 = bar2
 
@@ -55,12 +55,17 @@ def test_load_save_yml(tmp_path):
         assert k in m.requests
 
 
-@pytest.mark.parametrize('req_endpoint, doc_text', [('/foo', '/foo'),
-                                                    ('/foo2', '/foo'),
-                                                    ('/foo3', '/bar'),
-                                                    ('/foo_endpoint', '/foo'),
-                                                    ('/random_endpoint', '/random'),
-                                                    ('/bar', '/bar')])
+@pytest.mark.parametrize(
+    'req_endpoint, doc_text',
+    [
+        ('/foo', '/foo'),
+        ('/foo2', '/foo'),
+        ('/foo3', '/bar'),
+        ('/foo_endpoint', '/foo'),
+        ('/random_endpoint', '/random'),
+        ('/bar', '/bar'),
+    ],
+)
 def test_load_yaml_route(mocker, req_endpoint, doc_text):
     f = Flow().add(uses=y)
 
