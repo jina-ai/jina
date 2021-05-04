@@ -504,7 +504,7 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        # order is good. Activate from tail to head
+        # order is good. Deactivate from head to tail
         for pea in self.peas:
             if pea.args.socket_in == SocketType.DEALER_CONNECT:
                 pea.runtime.deactivate()
