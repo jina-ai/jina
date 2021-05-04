@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Tuple, Dict
 
 import numpy as np
@@ -31,13 +30,6 @@ class MyIndexer(Executor):
     def _get_sorted_top_k(
             dist: 'np.array', top_k: int
     ) -> Tuple['np.ndarray', 'np.ndarray']:
-        """Find top-k smallest distances in ascending order.
-        Idea is to use partial sort to retrieve top-k smallest distances unsorted and then sort these
-        in ascending order. Equivalent to full sort but faster for n >> k. If k >= n revert to full sort.
-        :param dist: the distances
-        :param top_k: nr to limit
-        :return: tuple of indices, computed distances
-        """
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
             dist = np.take_along_axis(dist, idx, axis=1)
@@ -52,11 +44,6 @@ class MyIndexer(Executor):
 
 
 class MyEncoder(Executor):
-    """Simple Encoder used in :command:`jina hello-world`,
-    it transforms the original 784-dim vector into a 64-dim vector using
-    a random orthogonal matrix, which is stored and shared in index and query time
-    """
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         np.random.seed(1337)
@@ -67,13 +54,6 @@ class MyEncoder(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
-        """
-        Encode data and reduce dimension
-
-        :param docs: docs array
-        :param kwargs: keyword arguments
-        :return: encoded data
-        """
         # reduce dimension to 50 by random orthogonal projection
         content, doc_pts = docs.all_contents
         embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat
@@ -83,7 +63,6 @@ class MyEncoder(Executor):
             doc.pop('blob')
 
 
-@lru_cache(maxsize=3)
 def _get_ones(x, y):
     return np.ones((x, y))
 

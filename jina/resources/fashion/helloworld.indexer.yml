@@ -1,4 +1,0 @@
-jtype: BinaryPbDBMSIndexer
-metas:
-  name: chunk_indexer
-  workspace: $HW_WORKDIR
