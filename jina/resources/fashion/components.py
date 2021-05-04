@@ -1,12 +1,16 @@
 import numpy as np
 
-from jina import Executor, requests, DocumentArray
+from jina import Executor, DocumentArray, requests
 
 
 class MyEncoder(Executor):
     """Simple Encoder used in :command:`jina hello-world`,
     it transforms the original 784-dim vector into a 64-dim vector using
-    a random orthogonal matrix, which is stored and shared in index and query time"""
+    a random orthogonal matrix, which is stored and shared in index and query time
+
+    :param width: target width of images
+    :param height: target height of images
+    """
 
     def __init__(self):
         np.random.seed(1337)

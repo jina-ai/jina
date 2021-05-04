@@ -5,7 +5,7 @@ with:
 pods:
   - name: encode
     uses: helloworld.encoder.yml
-    parallel: $PARALLEL
+    # parallel: $PARALLEL
   - name: index
     uses: helloworld.indexer.yml
-    shards: $SHARDS
+    # shards: $SHARDS
