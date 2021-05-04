@@ -5,7 +5,7 @@ def test_func_simple_routing(mocker):
     class MyExecutor(Executor):
         @requests(on='/search')
         def foo(self, **kwargs):
-            for j in ('docs', 'groundtruths', 'queryset', 'parameters'):
+            for j in ('docs', 'groundtruths', 'parameters'):
                 assert j in kwargs
             assert len(kwargs['docs']) == 3
 
@@ -46,7 +46,7 @@ def test_func_default_routing():
     class MyExecutor(Executor):
         @requests
         def foo(self, **kwargs):
-            for j in ('docs', 'groundtruths', 'queryset', 'parameters'):
+            for j in ('docs', 'groundtruths', 'parameters'):
                 assert j in kwargs
             assert len(kwargs['docs']) == 3
 
