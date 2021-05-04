@@ -2,6 +2,7 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import copy
+import time
 from argparse import Namespace
 from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
@@ -241,3 +242,6 @@ class CompoundPod(BasePod):
             new_replica = Pod(_args)
             self.enter_context(new_replica)
             self.replicas[i] = new_replica
+            # TODO might be required in order to allow time for the Replica to come online
+            # before taking down the next
+            time.sleep(3)

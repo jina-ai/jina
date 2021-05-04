@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile
     ports:
-      - "8000:8000"
+      - "8001:8000"
       - "9000:9000"
       - "9001:9001"
       - "45678:45678"

@@ -1,7 +1,7 @@
-import shutil
 import os
 import sys
 import time
+import traceback
 from contextlib import ExitStack
 from pathlib import Path
 from threading import Thread
@@ -10,6 +10,8 @@ from typing import List
 import numpy as np
 import pytest
 import requests
+from requests.exceptions import ConnectionError
+from urllib3.exceptions import ReadTimeoutError, NewConnectionError
 
 from jina import Document, Client
 from jina.logging import JinaLogger
@@ -19,13 +21,11 @@ dbms_flow_yml = os.path.join(cur_dir, 'flow_dbms.yml')
 query_flow_yml = os.path.join(cur_dir, 'flow_query.yml')
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
-JINAD_PORT_DBMS = '8000'
-JINAD_PORT_QUERY = '8000'
+JINAD_PORT_DBMS = '8001'
+JINAD_PORT_QUERY = '8001'
 REST_PORT_DBMS = '9000'
 REST_PORT_QUERY = '9001'
 
-# TODO to be cleaned up. submitted for CI trial
-# DUMP_PATH_LOCAL = '/tmp/dump_path_mount/dump'
 DUMP_PATH_DOCKER = '/tmp/dump'
 
 logger = JinaLogger('test-dump')
@@ -66,7 +66,7 @@ def _index_client(nr_docs_index):
             REST_PORT_DBMS, 'index', 'post', [doc.dict() for doc in docs]
         )
         INDEX_TIMES += 1
-        time.sleep(4)
+        time.sleep(7)
 
 
 def _query_client(nr_docs_query):
@@ -75,6 +75,7 @@ def _query_client(nr_docs_query):
     prev_len_matches = 0
     docs = list(_get_documents(nr=nr_docs_query, index_start=0, emb_size=EMB_SIZE))
     Client.check_input(docs)
+    query_docs = [doc.dict() for doc in docs]
     while KEEP_RUNNING:
         try:
             logger.info(f'querying...')
@@ -82,18 +83,24 @@ def _query_client(nr_docs_query):
                 REST_PORT_QUERY,
                 'search',
                 'post',
-                [doc.dict() for doc in docs],
-                timeout=5,
+                query_docs,
+                timeout=8,
             )
             for doc in r['search']['docs']:
                 len_matches = len(doc.get('matches'))
                 assert len_matches >= prev_len_matches
             logger.info(f'got {len_matches} matches')
+            if len_matches != prev_len_matches:
+                # only count queries after a change in index size
+                QUERY_TIMES += 1
             prev_len_matches = len_matches
-            QUERY_TIMES += 1
-            time.sleep(2)
-        except Exception as e:
+            time.sleep(3)
+        except (ConnectionError, ReadTimeoutError) as e:
             logger.error(f'querying failed: {e}. trying again...')
+            logger.error(traceback.format_exc())
+        except (NewConnectionError, Exception) as e:
+            logger.error(f'error in query thread: {e!r}')
+            raise e
 
 
 def _dump_roll_update(dbms_flow_id, query_flow_id):
@@ -111,10 +118,10 @@ def _dump_roll_update(dbms_flow_id, query_flow_id):
             f'http://localhost:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
         )
 
-        # logger.info(f'checking size...')
-        # dir_size = path_size(DUMP_PATH_LOCAL)
-        # assert dir_size > 0
-        # logger.info(f'dump path size: {dir_size} MBs')
+        logger.info(f'checking size...')
+        dir_size = _path_size_remote(this_dump_path)
+        assert dir_size > 0
+        logger.info(f'dump path size: {dir_size}')
 
         # jinad is used for ctrl requests
         logger.info(f'rolling update...')
@@ -126,13 +133,22 @@ def _dump_roll_update(dbms_flow_id, query_flow_id):
         folder_id += 1
         logger.info(f'rolling update done!')
         DUMP_ROLL_UPDATE_TIME += 1
-        time.sleep(4)
+        time.sleep(10)
+
+
+def _path_size_remote(this_dump_path):
+    os.system(
+        f'docker exec jina_jinad_1 /bin/bash -c "du -sh {this_dump_path}" > dump_size.txt'
+    )
+    contents = open('dump_size.txt').readline()
+    dir_size = float(contents.split('K')[0].split('M')[0])
+    return dir_size
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_dump_dbms_remote_stress(tmpdir, docker_compose):
     global KEEP_RUNNING
-    nr_docs_index = 5
+    nr_docs_index = 1
     nr_docs_search = 1
 
     time.sleep(2)
@@ -162,7 +178,8 @@ def test_dump_dbms_remote_stress(tmpdir, docker_compose):
     threads = [query_thread, index_thread, dump_roll_update_thread]
 
     logger.info('sleeping')
-    time.sleep(30)
+    time.sleep(60)
+    KEEP_RUNNING = False
 
     for t in threads:
         if not t.is_alive():
@@ -172,7 +189,7 @@ def test_dump_dbms_remote_stress(tmpdir, docker_compose):
 
     assert INDEX_TIMES > 3
     assert QUERY_TIMES > 3
-    assert DUMP_ROLL_UPDATE_TIME > 3
+    assert DUMP_ROLL_UPDATE_TIME > 2
 
     logger.info(f'ending and exit threads')
 
@@ -199,7 +216,7 @@ def _create_flows():
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_dump_dbms_remote(tmpdir, docker_compose):
-    nr_docs = 20
+    nr_docs = 100
     nr_search = 1
     docs = list(_get_documents(nr=nr_docs, index_start=0, emb_size=EMB_SIZE))
 
@@ -227,9 +244,9 @@ def test_dump_dbms_remote(tmpdir, docker_compose):
         f'http://localhost:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
     )
 
-    # dir_size = path_size(DUMP_PATH_LOCAL)
-    # assert dir_size > 0
-    # logger.info(f'dump path_sizeth size: {dir_size} MBs')
+    dir_size = _path_size_remote(DUMP_PATH_DOCKER)
+    assert dir_size > 0
+    logger.info(f'dump path size size: {dir_size}')
 
     # jinad is used for ctrl requests
     _jinad_rolling_update(
@@ -330,10 +347,3 @@ def _jinad_rolling_update(pod_name, dump_path, url):
     logger.info(f'sending PUT to roll update')
     r = requests.put(url, params=params)
     assert r.status_code == 200
-
-
-# @pytest.fixture()
-# def cleanup_dump():
-#     shutil.rmtree(DUMP_PATH_LOCAL, ignore_errors=True)
-#     yield
-#     shutil.rmtree(DUMP_PATH_LOCAL)
