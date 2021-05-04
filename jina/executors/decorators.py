@@ -105,7 +105,7 @@ def store_init_kwargs(func: Callable) -> Callable:
             raise TypeError(
                 'this decorator should only be used on __init__ method of an executor'
             )
-        taboo = {'self', 'args', 'kwargs'}
+        taboo = {'self', 'args', 'kwargs', 'metas', 'requests'}
         _defaults = get_default_metas()
         taboo.update(_defaults.keys())
         all_pars = inspect.signature(func).parameters
