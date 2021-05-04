@@ -1,4 +1,3 @@
-!BaseExecutor
-with: {}
+jtype: BaseExecutor
 metas:
   name: forward
