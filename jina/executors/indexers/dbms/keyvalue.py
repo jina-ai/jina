@@ -1,17 +1,17 @@
 import mmap
-
+import os
 import pickle
 import shutil
 from typing import List, Tuple, Generator, Optional, Iterable
+
 import numpy as np
-import os
-from .... import Executor, requests, DocumentArray, Document
-from ....logging import JinaLogger
 
 from ..dump import export_dump_streaming
-from ....helper import call_obj_fn, cached_property, get_readable_size
 from ..keyvalue import BinaryPbWriterMixin
 from ...helper import physical_size
+from .... import Executor, requests, DocumentArray, Document
+from ....helper import call_obj_fn, cached_property, get_readable_size
+from ....logging import JinaLogger
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 
@@ -177,7 +177,7 @@ class BinaryPbDBMSIndexer(Executor, BinaryPbWriterMixin):
             yield id_, vec, meta
 
     @requests(on='/dump')
-    def dump(self, parameters, *args, **kwargs) -> None:
+    def dump(self, docs, parameters, **kwargs) -> None:
         """Dump the index
 
         :param parameters: requests parameters

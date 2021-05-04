@@ -12,10 +12,7 @@ class MyEncoder(Executor):
     :param height: target height of images
     """
 
-    def __init__(self, width=28, height=28, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._width = 28
-        self._height = 28
+    def __init__(self):
         np.random.seed(1337)
         # generate a random orthogonal matrix
         H = np.random.rand(784, 64)
@@ -36,5 +33,5 @@ class MyEncoder(Executor):
         embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat
         for doc, embed in zip(doc_pts, embeds):
             doc.embedding = embed
-            doc.convert_blob_to_uri(width=self._width, height=self._height)
+            doc.convert_blob_to_uri(width=28, height=28)
             doc.pop('blob')

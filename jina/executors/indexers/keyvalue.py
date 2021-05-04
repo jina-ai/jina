@@ -7,7 +7,7 @@ from typing import Iterable, Union
 
 import numpy as np
 
-from ... import requests
+from ... import requests, DocumentArray
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 
@@ -146,15 +146,15 @@ class BinaryPbWriterMixin:
         return _ReadHandler(self.index_abspath, self.key_length)
 
     def _add(
-        self, keys: Iterable[str], values: Iterable[bytes], write_handler: _WriteHandler
+            self, keys: Iterable[str], values: Iterable[bytes], write_handler: _WriteHandler
     ):
         for key, value in zip(keys, values):
             l = len(value)  #: the length
             p = (
-                int(self._start / self._page_size) * self._page_size
+                    int(self._start / self._page_size) * self._page_size
             )  #: offset of the page
             r = (
-                self._start % self._page_size
+                    self._start % self._page_size
             )  #: the remainder, i.e. the start position given the offset
             # noinspection PyTypeChecker
             write_handler.header.write(
@@ -172,15 +172,16 @@ class BinaryPbWriterMixin:
             write_handler.body.write(value)
             self._size += 1
 
-    @requests(on='delete')
-    def delete(self, keys: Iterable[str], *args, **kwargs) -> None:
+    @requests(on='/delete')
+    def delete(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         """Delete the serialized documents from the index via document ids.
 
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param args: not used
         :param kwargs: not used
         """
-        keys = self._filter_nonexistent_keys(keys, self.query_handler.header.keys())
+        ids = docs.extract_docs('id')
+        keys = self._filter_nonexistent_keys(ids, self.query_handler.header.keys())
         del self.query_handler
         self.handler_mutex = False
         if keys:

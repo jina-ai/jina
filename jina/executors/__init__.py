@@ -1,6 +1,6 @@
 import os
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Type, Optional
+from typing import Dict, TypeVar, Type, Optional, Callable
 
 from .decorators import store_init_kwargs, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
@@ -16,9 +16,15 @@ AnyExecutor = TypeVar('AnyExecutor', bound='BaseExecutor')
 class ExecutorType(type(JAMLCompatible), type):
     """The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""
 
-    def __new__(cls, *args, **kwargs):
-        _cls = super().__new__(cls, *args, **kwargs)
-        return cls.register_class(_cls)
+    def __call__(cls, *args, **kwargs):
+        m = kwargs.pop('metas') if 'metas' in kwargs else {}
+        r = kwargs.pop('requests') if 'requests' in kwargs else {}
+
+        obj = type.__call__(cls, *args, **kwargs)
+
+        getattr(obj, '_add_metas', lambda *x: None)(m)
+        getattr(obj, '_add_requests', lambda *x: None)(r)
+        return obj
 
     @staticmethod
     def register_class(cls):
@@ -72,16 +78,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
 
-    def __init__(self, metas=None, requests=None, *args, **kwargs):
-        super().__init__()
-        if metas is None:
-            metas = {}
-        if requests is not None:
-            requests = {}
-
-        self._add_metas(metas)
-        self._add_requests(requests)
-
     def _add_requests(self, _requests: Optional[Dict]):
         if not _requests:
             return
@@ -134,7 +130,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 if not hasattr(target, k):
                     if isinstance(v, str):
                         if not (
-                            subvar_regex.findall(v) or internal_var_regex.findall(v)
+                                subvar_regex.findall(v) or internal_var_regex.findall(v)
                         ):
                             setattr(target, k, v)
                         else:
@@ -160,10 +156,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @classmethod
     def _inject_config(
-        cls: Type[AnyExecutor],
-        raw_config: Dict,
-        *args,
-        **kwargs,
+            cls: Type[AnyExecutor],
+            raw_config: Dict,
+            *args,
+            **kwargs,
     ) -> Dict:
         """Inject config into the raw_config before loading into an object.
 
