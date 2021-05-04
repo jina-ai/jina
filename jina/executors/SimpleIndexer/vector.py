@@ -2,32 +2,18 @@ import io
 import os
 from functools import lru_cache
 from os import path
-from typing import Optional, Iterable, Tuple, Dict, Union
+from typing import Optional, Tuple, Dict, Union
 
 import numpy as np
 
 from . import BaseIndexer
-from ..decorators import batching
+from ..decorators import batching, requests
+from ... import DocumentArray
 from ...helper import cached_property
 from ...importer import ImportExtensions
 
 
 class VectorIndexer(BaseIndexer):
-    """
-    :class:`BaseNumpyIndexer` stores and loads vector in a compresses binary file
-    .. note::
-        :attr:`compress_level` balances between time and space. By default, :classL`NumpyIndexer` has
-        :attr:`compress_level` = 0.
-        Setting :attr:`compress_level`>0 gives a smaller file size on the disk in the index time. However, in the query
-        time it loads all data into memory at once. Not ideal for large scale application.
-        Setting :attr:`compress_level`=0 enables :func:`np.memmap`, which loads data in an on-demand way and
-        gives smaller memory footprint in the query time. However, it often gives larger file size on the disk.
-    :param compress_level: The compresslevel argument is an integer from 0 to 9 controlling the
-                    level of compression; 1 is fastest and produces the least compression,
-                    and 9 is slowest and produces the most compression. 0 is no compression
-                    at all. The default is 9.
-    """
-
     batch_size = 512
 
     def __init__(
@@ -79,17 +65,15 @@ class VectorIndexer(BaseIndexer):
                 f'number of key {keys.shape[0]} not equal to number of vectors {vectors.shape[0]}'
             )
 
-    def add(self, keys: Iterable[str], vectors: 'np.ndarray', *args, **kwargs) -> None:
+    def add(self, docs: 'DocumentArray', **kwargs) -> None:
         """Add the embeddings and document ids to the index.
         :param keys: a list of ``id``, i.e. ``doc.id`` in protobuf
         :param vectors: embeddings
         :param args: not used
         :param kwargs: not used
         """
-        np_keys = np.array(keys, (np.str_, self.key_length))
-        self._add(np_keys, vectors)
-
-    def _add(self, keys: 'np.ndarray', vectors: 'np.ndarray'):
+        ids, vectors = docs.extract_fields('id', 'embedding', stack_contents=[False, True])
+        keys = np.array(ids, (np.str_, self.key_length))
         if keys.size and vectors.size:
             self._validate_key_vector_shapes(keys, vectors)
             self.write_handler.write(vectors.tobytes())
@@ -166,8 +150,9 @@ class VectorIndexer(BaseIndexer):
 
         return idx, dist
 
+    @requests(on='/search')
     def query(
-            self, vectors: 'np.ndarray', top_k: int, *args, **kwargs
+            self, docs: 'DocumentArray', **kwargs
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         """Find the top-k vectors with smallest ``metric`` and return their ids in ascending order.
         :return: a tuple of two ndarray.
@@ -181,6 +166,9 @@ class VectorIndexer(BaseIndexer):
         :param top_k: nr of results to return
         :return: tuple of indices within matrix and distances
         """
+
+        vectors, doc_pts = docs.all_embeddings
+
         if self.size == 0:
             return np.array([]), np.array([])
         if self.metric not in {'cosine', 'euclidean'} or self.backend == 'scipy':
@@ -195,7 +183,7 @@ class VectorIndexer(BaseIndexer):
             raise NotImplementedError
 
         idx, dist = self._get_sorted_top_k(dist, top_k)
-        indices = self._int2ext_id[self.valid_indices][idx]
+        indices = self._int2ext_id[idx]
         return indices, dist
 
     @batching(merge_over_axis=1, slice_on=2)
