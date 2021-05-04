@@ -49,7 +49,6 @@ def _handle_dump(
                 size_this_shard = size_per_shard
             _write_shard_data(data, path, shard_id, size_this_shard)
     else:
-        print(os.listdir(path))
         raise Exception(
             f'path for dump {path} contains data. Please empty. Not dumping...'
         )
