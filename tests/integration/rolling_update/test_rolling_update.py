@@ -99,6 +99,7 @@ def test_thread_run(docs):
         name='pod1',
         replicas=2,
         parallel=2,
+        timeout_ready=10000,
     )
     with flow:
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))

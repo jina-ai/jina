@@ -174,10 +174,6 @@ class BasePod(ExitFIFO):
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
-
     def __enter__(self) -> 'BasePod':
         return self.start()
 
@@ -322,6 +318,11 @@ class BasePod(ExitFIFO):
         """
         ...
 
+    @abstractmethod
+    def join(self):
+        """Wait until all pods and peas exit."""
+        ...
+
 
 class Pod(BasePod):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
@@ -340,6 +341,7 @@ class Pod(BasePod):
             self.peas_args = args
         else:
             self.peas_args = self._parse_args(args)
+        self._activated = False
 
     @property
     def is_singleton(self) -> bool:
@@ -479,6 +481,10 @@ class Pod(BasePod):
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
+    def _enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
+
     def start(self) -> 'BasePod':
         """
         Start to run all :class:`BasePea` in this BasePod.
@@ -499,6 +505,7 @@ class Pod(BasePod):
             for pea in reversed(self.peas):
                 if pea.args.socket_in == SocketType.DEALER_CONNECT:
                     pea.runtime.activate()
+            self._activated = True
 
             return self
         else:
@@ -510,6 +517,7 @@ class Pod(BasePod):
                 for pea in reversed(self.peas):
                     if pea.args.socket_in == SocketType.DEALER_CONNECT:
                         pea.runtime.activate()
+                self._activated = True
             except:
                 self.close()
                 raise
@@ -542,6 +550,7 @@ class Pod(BasePod):
             pass
         finally:
             self.peas.clear()
+            self._activated = False
 
     @property
     def is_ready(self) -> bool:
@@ -553,7 +562,7 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        return all(p.is_ready.is_set() for p in self.peas)
+        return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
     def _set_after_to_pass(self, args):
         # TODO: check if needed
