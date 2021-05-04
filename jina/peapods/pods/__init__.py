@@ -492,6 +492,7 @@ class Pod(BasePod):
         for pea in reversed(self.peas):
             if pea.args.socket_in == SocketType.DEALER_CONNECT:
                 pea.runtime.activate()
+
         self._activated = True
 
     def deactivate(self):
@@ -525,8 +526,6 @@ class Pod(BasePod):
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
-
-            self._activate()
             return self
         else:
             try:
@@ -553,6 +552,7 @@ class Pod(BasePod):
         try:
             for p in self.peas:
                 p.wait_start_success()
+            self._activate()
         except:
             self.close()
             raise
