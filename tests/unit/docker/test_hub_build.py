@@ -96,16 +96,16 @@ def test_hub_build_uses():
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error']
     )
-    assert HubIO(args).build()["is_build_success"]
+    assert HubIO(args).build()['is_build_success']
     # build again it shall not fail
-    assert HubIO(args).build()["is_build_success"]
+    assert HubIO(args).build()['is_build_success']
 
     args = set_hub_build_parser().parse_args(
         [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--daemon', '--raise-error']
     )
-    assert HubIO(args).build()["is_build_success"]
+    assert HubIO(args).build()['is_build_success']
     # build again it shall not fail
-    assert HubIO(args).build()["is_build_success"]
+    assert HubIO(args).build()['is_build_success']
 
 
 def test_hub_build_failures():

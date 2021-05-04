@@ -14,7 +14,7 @@ def test_hub_list_local_with_submodule():
 @mock.patch('jina.docker.hubapi.remote.urlopen')
 def test_hub_list_keywords(mocker):
     mocker.return_value.__enter__.return_value.read.return_value = json.dumps(
-        [{'name': "foo"}, {'name': "bar"}]
+        [{'name': 'foo'}, {'name': 'bar'}]
     )
 
     args = set_hub_list_parser().parse_args(['--keywords', 'numeric'])
