@@ -17,14 +17,17 @@ class ZMQRuntime(BaseRuntime, ABC):
 
     def cancel(self):
         """Send terminate control message."""
+        # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
         send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
 
     def activate(self):
         """Send activate control message."""
+        # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
         send_ctrl_message(self.ctrl_addr, 'ACTIVATE', timeout=self.args.timeout_ctrl)
 
     def deactivate(self):
         """Send activate control message."""
+        # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
         send_ctrl_message(self.ctrl_addr, 'DEACTIVATE', timeout=self.args.timeout_ctrl)
 
     @property
