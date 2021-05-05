@@ -1,5 +1,4 @@
 import functools
-import logging
 import os
 import time
 from pathlib import Path
@@ -8,17 +7,14 @@ from typing import List
 
 import numpy as np
 import pytest
-import requests
 
-from jina import Flow, Document, Client
+from jina import Flow, Document
 from jina.drivers.index import DBMSIndexDriver
 from jina.executors.indexers.dump import import_vectors, import_metas
 from jina.executors.indexers.query import BaseQueryIndexer
 from jina.executors.indexers.query.compound import CompoundQueryExecutor
 from jina.logging.profile import TimeContext
-from jina.parsers import set_client_cli_parser
 from jina.peapods import Pod
-from tests import validate_callback
 from tests.distributed.helpers import get_client
 
 
@@ -29,10 +25,6 @@ def get_documents(nr=10, index_start=0, emb_size=7):
             d.text = f'hello world {i}'
             d.embedding = np.random.random(emb_size)
             d.tags['tag_field'] = f'tag data {i}'
-        # meta = DBMSIndexDriver._doc_without_embedding(d).SerializeToString()
-        # print(f'### creation: {i=}; {meta}')
-        # new_d = Document(meta)
-        # assert new_d.tags['tag_field'] == f'tag data {d.id}'
         yield d
 
 
@@ -42,15 +34,14 @@ def basic_benchmark(tmpdir, docs, validate_results_nonempty, error_callback, nr_
     with Flow().add(uses='basic/query.yml') as flow:
         flow.index(docs)
 
-    with Flow().add(uses='basic/query.yml') as flow:
+    with Flow(return_results=True).add(uses='basic/query.yml') as flow:
         with TimeContext(
             f'### baseline - query time with {nr_search} on {len(docs)} docs'
         ):
-            flow.search(
+            results = flow.search(
                 docs[:nr_search],
-                on_done=validate_results_nonempty,
-                on_error=error_callback,
             )
+            validate_results_nonempty(results[0])
 
     with Flow().add(uses='basic/index.yml') as flow_dbms:
         with TimeContext(f'### baseline - indexing: {len(docs)} docs'):
@@ -188,7 +179,6 @@ def test_dump_dbms(
                     client_dbms.index(docs)
 
                 with TimeContext(f'### dumping {len(docs)} docs'):
-                    # TODO add to JInad
                     # flow object is used for ctrl requests
                     flow_dbms.dump('indexer_dbms', dump_path=dump_path, shards=shards)
 
@@ -199,16 +189,11 @@ def test_dump_dbms(
                     # flow object is used for ctrl requests
                     flow_query.rolling_update('indexer_query', dump_path)
 
-                mock = mocker.Mock()
-
                 # data request goes to client
-                client_query.search(
+                result = client_query.search(
                     docs[:nr_search],
-                    on_done=mock,
-                    on_error=_error_callback,
                 )
-                mock.assert_called_once()
-                validate_callback(mock, cb)
+                cb(result[0])
                 times_indexed += 1
 
                 # assert data dumped is correct
@@ -224,19 +209,18 @@ def _test_dump_prepare(emb_size, nr_docs, run_basic, shards, tmpdir):
     os.environ['USES_AFTER'] = '_merge_matches' if shards > 1 else '_pass'
     os.environ['QUERY_SHARDS'] = str(shards)
 
-    cb = functools.partial(
+    validation_query = functools.partial(
         _validate_results_nonempty, nr_search, nr_docs * 2, emb_size
     )  # x 2 because we run it twice
-    cb.__name__ = 'cb'
 
     if run_basic:
-        basic_benchmark(tmpdir, docs, cb, _error_callback, nr_search)
+        basic_benchmark(tmpdir, docs, validation_query, _error_callback, nr_search)
 
     dump_path = os.path.join(str(tmpdir), 'dump_dir')
     os.environ['DBMS_WORKSPACE'] = os.path.join(str(tmpdir), 'index_ws')
     os.environ['QUERY_WORKSPACE'] = os.path.join(str(tmpdir), 'query_ws')
 
-    return cb, docs, dump_path, nr_search
+    return validation_query, docs, dump_path, nr_search
 
 
 def _assert_order_ops(ops_log, ops: List[str]):
@@ -324,39 +308,27 @@ def test_threading_query_while_reloading(tmpdir, nr_docs, emb_size, mocker):
                 target=flow_query.rolling_update, args=('indexer_query', dump_path)
             )
 
-            mock = mocker.Mock()
-
             # searching on the still empty replica
             t.start()
             time.sleep(1)  # wait a bit for replica 1 to be offline
             _print_and_append_to_ops(f'### querying -- expecting empty')
-            client_query.search(
+            result = client_query.search(
                 docs[:nr_search],
-                on_done=mock,
-                on_error=_error_callback,
             )
-            mock.assert_called_once()
-            validate_callback(mock, _validate_results_empty)
+            _validate_results_empty(result[0])
 
             t.join()
-
-            mock = mocker.Mock()
 
             # done with both -- we should have matches now
             cb = functools.partial(
                 _validate_results_nonempty, nr_search, nr_docs, emb_size
             )
-            # required by Jina internals
-            cb.__name__ = 'callback'
 
             _print_and_append_to_ops(f'### querying -- expecting data')
-            client_query.search(
+            result = client_query.search(
                 docs[:nr_search],
-                on_done=mock,
-                on_error=_error_callback,
             )
-            mock.assert_called_once()
-            validate_callback(mock, cb)
+            cb(result[0])
 
     # collect logs and assert order of operations
     assert _assert_order_ops(
