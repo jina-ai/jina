@@ -12,16 +12,6 @@ from jina.parsers.hub import (
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.mark.parametrize('new_type', ['pod', 'app', 'template'])
-def test_create_new(tmpdir, new_type):
-    args = set_hub_new_parser().parse_args(
-        ['--output-dir', str(tmpdir), '--type', new_type]
-    )
-    HubIO(args).new(no_input=True)
-    list_dir = os.listdir(str(tmpdir))
-    assert len(list_dir) == 1
-
-
 def test_login(tmpdir, monkeypatch, mocker):
     import requests
     import webbrowser
