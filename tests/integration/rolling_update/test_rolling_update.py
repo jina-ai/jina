@@ -92,13 +92,13 @@ def test_simple_run(docs):
 
 
 @pytest.mark.repeat(5)
-@pytest.mark.timeout(20)
+@pytest.mark.timeout(30)
 def test_thread_run(docs):
     flow = Flow().add(
         name='pod1',
         replicas=2,
         parallel=2,
-        timeout_ready=20000,
+        timeout_ready=30000,
     )
     with flow:
         x = threading.Thread(target=flow.rolling_update, args=('pod1',))
@@ -110,14 +110,14 @@ def test_thread_run(docs):
 
 
 @pytest.mark.repeat(5)
-@pytest.mark.timeout(20)
+@pytest.mark.timeout(30)
 def test_vector_indexer_thread(config, docs):
     with Flow().add(
         name='pod1',
         uses='!DummyMarkExecutor',
         replicas=2,
         parallel=3,
-        timeout_ready=20000,
+        timeout_ready=30000,
     ) as flow:
         for i in range(5):
             flow.search(docs)
