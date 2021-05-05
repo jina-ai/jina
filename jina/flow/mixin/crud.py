@@ -140,7 +140,8 @@ class CRUDFlowMixin:
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param line_format: the format of each line: ``json`` or ``csv``
+        :param line_format: the format of each line: ``json``, ``csv`` or ``plain``
+                ``plain`` keyword can be any string, as it donates any values other than ``json`` or ``csv``
         :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
             names defined in Protobuf. This is only used when the given ``document`` is
             a JSON string or a Python dict.
@@ -402,7 +403,8 @@ class CRUDFlowMixin:
         :param sampling_rate: the sampling rate between [0, 1]
         :param read_mode: specifies the mode in which the file
                 is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param line_format: the format of each line ``json`` or ``csv``
+        :param line_format: the format of each line: ``json``, ``csv`` or ``plain``
+                ``plain`` keyword can be any string, as it donates any values other than ``json`` or ``csv``
         :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
             names defined in Protobuf. This is only used when the given ``document`` is
             a JSON string or a Python dict.

@@ -32,7 +32,7 @@ class FlowRunner(JAMLCompatible):
 
 
 class SingleFlowRunner(FlowRunner):
-    """:class:`SingleFlowRunner` enables running a flow repeadetly with different `context`."""
+    """:class:`SingleFlowRunner` enables running a flow repeatedly with different `context`."""
 
     def __init__(
         self,
