@@ -38,16 +38,6 @@ class MyTransformer(Executor):
         )
         self.model.to(torch.device('cpu'))
 
-    def amp_accelerate(self):
-        """Check acceleration method """
-        import torch
-        from contextlib import nullcontext
-
-        if self.acceleration == 'amp':
-            return torch.cuda.amp.autocast()
-        else:
-            return nullcontext()
-
     def _compute_embedding(self, hidden_states: 'torch.Tensor', input_tokens: Dict):
         import torch
 
@@ -91,11 +81,10 @@ class MyTransformer(Executor):
                 k: v.to(torch.device('cpu')) for k, v in input_tokens.items()
             }
 
-            with self.amp_accelerate():
-                outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
-                if isinstance(outputs, torch.Tensor):
-                    return outputs.cpu().numpy()
-                hidden_states = outputs.hidden_states
+            outputs = getattr(self.model, self.embedding_fn_name)(**input_tokens)
+            if isinstance(outputs, torch.Tensor):
+                return outputs.cpu().numpy()
+            hidden_states = outputs.hidden_states
 
             embeds = self._compute_embedding(hidden_states, input_tokens)
             for doc, embed in zip(docs, embeds):
