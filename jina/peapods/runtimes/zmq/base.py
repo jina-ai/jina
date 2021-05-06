@@ -90,7 +90,7 @@ class ZMQManyRuntime(BaseRuntime, ABC):
             send_ctrl_message(ctrl_addr, 'ACTIVATE', timeout=self.timeout_ctrl)
 
     def deactivate(self):
-        """Send activate control messages to all control address."""
+        """Send deactivate control messages to all control address."""
         for ctrl_addr in self.many_ctrl_addr:
             send_ctrl_message(ctrl_addr, 'DEACTIVATE', timeout=self.timeout_ctrl)
 
