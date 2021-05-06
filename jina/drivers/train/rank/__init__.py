@@ -4,7 +4,7 @@ from ...rank import Matches2DocRankDriver
 
 
 class RankerTrainerDriver(Matches2DocRankDriver):
-    """"""
+    """Ranker trainer driver."""
 
     def __init__(self, method: str = 'train', *args, **kwargs):
         super().__init__(method=method, *args, **kwargs)

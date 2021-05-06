@@ -1,55 +1,72 @@
-import math
 import pickle
 from pathlib import Path
+from typing import List, Dict
 
 import numpy as np
 
+from jina.executors.decorators import batching
+from jina.executors.rankers import Match2DocRanker
 from jina.executors.rankers.trainer import RankerTrainer
 
 
-class RandomWeightedRankerTrainer(RankerTrainer):
+class SGDRegressorRanker(Match2DocRanker):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    WEIGHT_SCALE = 1 / max(1.0, (2 + 2) / 2.0)
-    WEIGHT_LIMIT = math.sqrt(3.0 * WEIGHT_SCALE)
-    WEIGHT_FILENAME = 'weights.txt'
+    def post_init(self):
+        super().post_init()
+        self.regressor = pickle.load('model.pickle')
 
-    def __init__(self, params: dict = None, weights_shape: float = (2, 2)):
-        super().__init__()
-        self._params = params
-        self._weights_shape = weights_shape
-        self._weights = np.random.uniform(
-            -self.WEIGHT_LIMIT, self.WEIGHT_LIMIT, size=weights_shape
+    @batching(slice_nargs=3)
+    def score(
+        self,
+        old_match_scores: List[List[float]],
+        query_meta: List[Dict],
+        match_meta: List[List[Dict]],
+    ) -> 'np.ndarray':
+        # build X
+        dataset = self._get_features_dataset(
+            query_meta=query_meta, match_meta=match_meta
         )
+        return self.booster.predict(dataset.get_data())
 
-    def train(self, *args, **kwargs):
-        # Mock the training process, generate a new random weight matrix.
-        self._weights = np.random.uniform(
-            -self.WEIGHT_LIMIT, self.WEIGHT_LIMIT, size=self._weights_shape
-        )
 
-    def save(self, path: str):
+class SGDRegressorRankerTrainer(RankerTrainer):
+
+    MODEL_FILENAME = 'model.pickle'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def post_init(self):
+        from sklearn.linear_model import SGDRegressor
+
+        self.regressor = SGDRegressor(warm_start=True)
+
+    def train(self, matches_metas, *args, **kwargs):
+        sizes = []
+        prices = []
+        relevance = []
+        for match_meta in matches_metas:
+            for m in match_meta:
+                sizes.append(m['tags__size'])
+                prices.append(m['tags__price'])
+                relevance.append(m['tags_relevance'])
+        X = np.column_stack((sizes, prices))
+        y = np.asarray(relevance)
+        self.regressor.partial_fit(X, y)
+
+    def save(self, filename: str):
         """
         Save the weights of the ranker model.
         """
-        path = Path(path)
-        weights_path = path.joinpath(self.WEIGHT_FILENAME)
+        path = Path(filename)
+        model_path = path.joinpath(self.MODEL_FILENAME)
 
         if not path.exists():
             path.mkdir(parents=True)
         else:
             raise FileExistsError(f'{path} already exist, fail to save.')
 
-        with open(weights_path, mode='wb') as weights_file:
-            pickle.dump(self._weights, weights_file)
-
-    @property
-    def params(self):
-        return self._params
-
-    @params.setter
-    def params(self, key, value):
-        self.params[key] = value
-
-    @property
-    def weights(self):
-        return self._weights
+        with open(model_path, mode='wb') as model_file_name:
+            pickle.dump(self.regressor, model_file_name)

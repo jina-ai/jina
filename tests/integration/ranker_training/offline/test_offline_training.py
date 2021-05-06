@@ -22,7 +22,7 @@ def documents():
         for i in range(1, 5):
             match = Document()
             # large size higher relevance
-            match.tags['price'] = i
+            match.tags['price'] = q
             match.tags['size'] = i * 10
             match.tags['relevance'] = i
             query.matches.add(match)
@@ -30,6 +30,6 @@ def documents():
     return DocumentSet(queries)
 
 
-def test_train_offline(document_to_score):
+def test_train_offline(documents):
     with Flow.load_config(os.path.join(cur_dir, 'flow_offline_train.yml')) as f:
-        f.train(inputs=document_to_score)
+        f.train(inputs=documents)
