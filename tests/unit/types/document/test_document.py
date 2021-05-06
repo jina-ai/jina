@@ -80,7 +80,7 @@ def test_doc_update_fields():
     d = [12, 34, 56]
     e = 'text-mod'
     w = 2.0
-    a.set_attrs(embedding=b, tags=c, location=d, modality=e, weight=w)
+    a.set_attributes(embedding=b, tags=c, location=d, modality=e, weight=w)
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e
@@ -664,7 +664,7 @@ def test_get_attr_values():
         'tags__inexistant',
         'inexistant',
     ]
-    res = d.get_attrs_values(*required_keys)
+    res = d.get_attributes(*required_keys)
 
     assert len(res) == len(required_keys)
     assert res[required_keys.index('id')] == '123'
@@ -678,14 +678,14 @@ def test_get_attr_values():
     assert res[required_keys.index('inexistant')] is None
 
     required_keys_2 = ['tags', 'text']
-    res2 = d.get_attrs_values(*required_keys_2)
+    res2 = d.get_attributes(*required_keys_2)
     assert len(res2) == 2
     assert res2[required_keys_2.index('text')] == 'document'
     assert res2[required_keys_2.index('tags')] == d.tags
 
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
     required_keys_3 = ['tags__outterkey__innerkey']
-    res3 = d.get_attrs_values(*required_keys_3)
+    res3 = d.get_attributes(*required_keys_3)
     assert len(res3) == 1
     assert res3[required_keys_3.index('tags__outterkey__innerkey')] == 'real_value'
 

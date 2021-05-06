@@ -47,7 +47,7 @@ class ChunkArray(DocumentArray):
         c.CopyFrom(document.proto)
         chunk = Document(c)
 
-        chunk.set_attrs(
+        chunk.set_attributes(
             parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
         )
 

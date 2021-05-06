@@ -1,17 +1,16 @@
 import os
 from pathlib import Path
 
-from pkg_resources import resource_filename
-
-from ..helper import (
+from jina import Flow
+from jina.helper import countdown
+from .helper import (
     print_result,
     write_html,
     download_data,
     index_generator,
     query_generator,
+    colored,
 )
-from ...flow import Flow
-from ...helper import countdown, colored
 
 
 def hello_world(args):
@@ -55,20 +54,12 @@ def hello_world(args):
     # download the data
     download_data(targets, args.download_proxy)
 
-    # this envs are referred in index and query flow YAMLs
-    os.environ['PATH'] += (
-            os.pathsep + resource_filename('jina', 'resources') + '/fashion/'
-    )
-    os.environ['SHARDS'] = '1'  # str(args.shards)
-    os.environ['PARALLEL'] = '1'  # str(args.parallel)
-    os.environ['HW_WORKDIR'] = args.workdir
-
     # reduce the network load by using `fp16`, or even `uint8`
     os.environ['JINA_ARRAY_QUANT'] = 'fp16'
 
     # now comes the real work
     # load index flow from a YAML file
-    f = Flow.load_config(args.uses_index)
+    f = Flow.load_config('flow.yml')
 
     # run it!
     with f:
@@ -98,4 +89,4 @@ def hello_world(args):
         )
 
     # write result to html
-    write_html(os.path.join(args.workdir, 'hello-world.html'))
+    write_html(os.path.join(args.workdir, 'demo.html'))

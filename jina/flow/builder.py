@@ -5,11 +5,11 @@ from typing import Dict, List, Callable
 from .. import __default_host__
 from ..enums import SocketType, FlowBuildLevel, PodRoleType
 from ..excepts import FlowBuildLevelError, SocketTypeError
+from ..peapods import BasePod
 
 # noinspection PyUnreachableCode
 if False:
     from . import Flow
-    from ..peapods import BasePod
 
 
 def build_required(required_level: 'FlowBuildLevel'):

@@ -103,15 +103,6 @@ def set_hw_parser(parser=None):
         parser = set_base_parser()
 
     mixin_hw_base_parser(parser)
-    gp = add_arg_group(parser, title='General')
-    gp.add_argument(
-        '--uses',
-        type=str,
-        default=resource_filename(
-            'jina', '/'.join(('resources', 'fashion', 'helloworld.flow.yml'))
-        ),
-        help='The yaml path of the index & query flow',
-    )
     gp = add_arg_group(parser, title='Index')
     gp.add_argument(
         '--index-data-url',

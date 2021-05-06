@@ -79,7 +79,7 @@ class MyTransformer(Executor):
                 self.model.resize_token_embeddings(len(self.tokenizer.vocab))
 
             input_tokens = self.tokenizer(
-                docs.get_attributes('content'),
+                docs.get_fields('content'),
                 max_length=self.max_length,
                 padding='longest',
                 truncation=True,

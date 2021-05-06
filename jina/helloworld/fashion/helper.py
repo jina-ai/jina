@@ -1,23 +1,17 @@
-
-
 import gzip
 import os
 import random
 import urllib.request
 import webbrowser
-from collections import defaultdict
 
 import numpy as np
-from pkg_resources import resource_filename
 
-from .. import Document
-from ..helper import colored
-from ..logging import default_logger
-from ..logging.profile import ProgressBar
+from jina import Document
+from jina.helper import colored
+from jina.logging import default_logger
+from jina.logging.profile import ProgressBar
 
 result_html = []
-num_docs_evaluated = 0
-evaluation_value = defaultdict(float)
 top_k = 0
 
 
@@ -86,7 +80,6 @@ def print_result(resp):
 
     :param resp: returned response with data
     """
-    global evaluation_value
     global top_k
     for d in resp.docs:
         vi = d.uri
@@ -97,11 +90,6 @@ def print_result(resp):
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
         result_html.append('</td></tr>\n')
 
-        # update evaluation values
-        # as evaluator set to return running avg, here we can simply replace the value
-        for evaluation in d.evaluations:
-            evaluation_value[evaluation.op_name] = evaluation.value
-
 
 def write_html(html_path):
     """
@@ -109,27 +97,12 @@ def write_html(html_path):
 
     :param html_path: path of the written html
     """
-    global num_docs_evaluated
-    global evaluation_value
 
     with open(
-        resource_filename(
-            'jina', '/'.join(('resources', 'fashion', 'helloworld.html'))
-        ),
-        'r',
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'demo.html')
     ) as fp, open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
-        t = t.replace(
-            '{% PRECISION_EVALUATION %}',
-            '{:.2f}%'.format(evaluation_value['PrecisionEvaluator'] * 100.0),
-        )
-        t = t.replace(
-            '{% RECALL_EVALUATION %}',
-            '{:.2f}%'.format(evaluation_value['RecallEvaluator'] * 100.0),
-        )
-        t = t.replace('{% TOP_K %}', str(top_k))
-
         fw.write(t)
 
     url_html_path = 'file://' + os.path.abspath(html_path)

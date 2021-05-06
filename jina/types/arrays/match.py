@@ -34,7 +34,7 @@ class MatchArray(DocumentArray):
         m.CopyFrom(document.proto)
         match = Document(m)
 
-        match.set_attrs(
+        match.set_attributes(
             granularity=self.granularity, adjacency=self.adjacency, **kwargs
         )
         match.score.ref_id = self._ref_doc.id

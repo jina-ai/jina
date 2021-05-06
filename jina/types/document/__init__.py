@@ -11,7 +11,18 @@ import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
-from typing import Iterable, Generator, Union, Dict, Optional, TypeVar, Any, Tuple, List, Type
+from typing import (
+    Iterable,
+    Generator,
+    Union,
+    Dict,
+    Optional,
+    TypeVar,
+    Any,
+    Tuple,
+    List,
+    Type,
+)
 
 import numpy as np
 from google.protobuf import json_format
@@ -242,7 +253,7 @@ class Document(ProtoTypeMixin, Traversable):
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
-        self.set_attrs(**kwargs)
+        self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
 
     def pop(self, *fields) -> None:
@@ -658,7 +669,7 @@ class Document(ProtoTypeMixin, Traversable):
             value = dunder_get(self._pb_body, item)
         return value
 
-    def set_attrs(self, **kwargs):
+    def set_attributes(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs
 
         .. seealso::
@@ -737,7 +748,7 @@ class Document(ProtoTypeMixin, Traversable):
                 ret[k] = None
         return ret
 
-    def get_attrs_values(self, *args) -> List[Any]:
+    def get_attributes(self, *fields: str) -> Union[Any, List[Any]]:
         """Bulk fetch Document fields and return a list of the values of these fields
 
         .. note::
@@ -756,12 +767,12 @@ class Document(ProtoTypeMixin, Traversable):
 
                 assert res == ['123', 'world', 'bye', 'external_id']
 
-        :param args: the variable length values to extract from the document
+        :param fields: the variable length values to extract from the document
         :return: a list with the attributes of this document ordered as the args
         """
 
         ret = []
-        for k in args:
+        for k in fields:
             try:
                 value = getattr(self, k)
 
@@ -774,6 +785,10 @@ class Document(ProtoTypeMixin, Traversable):
                     f'Could not get attribute `{typename(self)}.{k}`, returning `None`'
                 )
                 ret.append(None)
+
+        # unboxing if args is single
+        if len(fields) == 1:
+            ret = ret[0]
 
         return ret
 
@@ -1189,10 +1204,10 @@ class Document(ProtoTypeMixin, Traversable):
 
         mermaid_str = (
                 """
-        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-        classDiagram
-    
-                """
+                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                classDiagram
+            
+                        """
                 + self.__mermaid_str__()
         )
 
@@ -1373,10 +1388,14 @@ class Document(ProtoTypeMixin, Traversable):
             This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
         """
         if read_mode not in {'r', 'rb', None}:
-            raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
+            raise RuntimeError(
+                f'read_mode should be "r", "rb" or None, got {read_mode}'
+            )
 
         def _iter_file_exts(ps):
-            return it.chain.from_iterable(glob.iglob(p, recursive=recursive) for p in ps)
+            return it.chain.from_iterable(
+                glob.iglob(p, recursive=recursive) for p in ps
+            )
 
         d = 0
         if isinstance(patterns, str):

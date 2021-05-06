@@ -16,8 +16,10 @@ class MyIndexer(Executor):
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
-        q_emb = _ext_A(_norm(docs.all_embeddings[0]))
-        d_emb = _ext_B(_norm(self._docs.all_embeddings[0]))
+        a = np.stack(docs.get_attributes('embedding'))
+        b = np.stack(self._docs.get_attributes('embedding'))
+        q_emb = _ext_A(_norm(a))
+        d_emb = _ext_B(_norm(b))
         dists = _cosine(q_emb, d_emb)
         idx, dist = self._get_sorted_top_k(dists, int(parameters['top_k']))
         for _q, _ids, _dists in zip(docs, idx, dist):
@@ -55,9 +57,9 @@ class MyEncoder(Executor):
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
         # reduce dimension to 50 by random orthogonal projection
-        content, doc_pts = docs.all_contents
+        content = np.stack(docs.get_attributes('content'))
         embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat
-        for doc, embed in zip(doc_pts, embeds):
+        for doc, embed in zip(docs, embeds):
             doc.embedding = embed
             doc.convert_blob_to_uri(width=28, height=28)
             doc.pop('blob')

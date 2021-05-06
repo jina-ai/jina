@@ -1,8 +1,6 @@
 from collections.abc import MutableSequence
 from typing import Union, Iterable, Tuple, Sequence, List, Iterator
 
-import numpy as np
-
 from ...enums import EmbeddingClsType
 from ...helper import typename
 from ...logging import default_logger
@@ -68,7 +66,9 @@ class DocumentArray(TraversableSequence, MutableSequence):
     :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
     """
 
-    def __init__(self, docs_proto: Union['RepeatedContainer', Sequence['Document'], None] = None):
+    def __init__(
+            self, docs_proto: Union['RepeatedContainer', Sequence['Document'], None] = None
+    ):
         super().__init__()
         if docs_proto is not None:
             self._docs_proto = docs_proto
@@ -187,16 +187,6 @@ class DocumentArray(TraversableSequence, MutableSequence):
         """
         self._docs_proto.sort(*args, **kwargs)
 
-    @property
-    def all_embeddings(self) -> Tuple['np.ndarray', 'DocumentArray']:
-        """Return all embeddings from every document in this array as a ndarray
-
-        :return: The corresponding documents in a :class:`DocumentArray`,
-                and the documents have no embedding in a :class:`DocumentArray`.
-        :rtype: A tuple of embedding in :class:`np.ndarray`
-        """
-        return self.extract_fields('embedding', stack_contents=True)
-
     def get_all_sparse_embeddings(
         self, embedding_cls_type: EmbeddingClsType
     ) -> Tuple['SparseEmbeddingType', 'DocumentArray']:
@@ -268,75 +258,39 @@ class DocumentArray(TraversableSequence, MutableSequence):
 
         return stack_embeddings(embeddings), docs_pts
 
-    @property
-    def all_contents(self) -> Tuple['np.ndarray', 'DocumentArray']:
-        """Return all embeddings from every document in this array as a ndarray
-
-        :return: The corresponding documents in a :class:`DocumentArray`,
-                and the documents have no contents in a :class:`DocumentArray`.
-        :rtype: A tuple of embedding in :class:`np.ndarray`
-        """
-        # stack true for backward compatibility, but will not work if content is blob of different shapes
-        return self.extract_fields('content', stack_contents=True)
-
-    def extract_fields(
-            self, *fields: str, stack_contents: Union[bool, List[bool]] = False
-    ) -> Tuple[Union['np.ndarray', List['np.ndarray']], 'DocumentArray']:
-        """Return in batches all the values of the fields
+    def get_attributes(self, *fields: str) -> Union[List, List[List]]:
+        """Return all nonempty values of the fields from all docs this array contains
 
         :param fields: Variable length argument with the name of the fields to extract
-        :param stack_contents: boolean flag indicating if output lists should be stacked with `np.stack`
-        :return: Returns an :class:`np.ndarray` or a list of :class:`np.ndarray` with the batches for these fields
+        :return: Returns a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list.
+        """
+        return self.get_attributes_with_docs(*fields)[0]
+
+    def get_attributes_with_docs(
+            self,
+            *fields: str,
+    ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
+        """Return all nonempty values of the fields together with their nonempty docs
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns a tuple. The first element is  a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.
         """
 
-        list_of_contents_output = len(fields) > 1
-        contents = [[] for _ in fields if list_of_contents_output]
+        contents = []
         docs_pts = []
         bad_docs = []
 
-        if list_of_contents_output:
-            for doc in self:
-                content = doc.get_attrs_values(*fields)
-                if content is None:
-                    bad_docs.append(doc)
-                    continue
-                for i, c in enumerate(content):
-                    contents[i].append(c)
-                docs_pts.append(doc)
-            for idx, c in enumerate(contents):
-                if not c:
-                    continue
-                if (
-                    isinstance(stack_contents, bool)
-                    and stack_contents
-                    and not isinstance(c[0], bytes)
-                ) or (
-                    isinstance(stack_contents, list)
-                    and stack_contents[idx]
-                    and not isinstance(c[0], bytes)
-                ):
-                    contents[idx] = np.stack(c)
-        else:
-            for doc in self:
-                content = doc.get_attrs_values(*fields)[0]
-                if content is None:
-                    bad_docs.append(doc)
-                    continue
-                contents.append(content)
-                docs_pts.append(doc)
+        for doc in self:
+            r = doc.get_attributes(*fields)
+            if r is None:
+                bad_docs.append(doc)
+                continue
+            contents.append(r)
+            docs_pts.append(doc)
 
-            if not contents:
-                contents = None
-            elif (
-                isinstance(stack_contents, bool)
-                and stack_contents
-                and not isinstance(contents[0], bytes)
-            ) or (
-                isinstance(stack_contents, list)
-                and stack_contents[0]
-                and not isinstance(contents[0], bytes)
-            ):
-                contents = np.stack(contents)
+        # contents = list(zip(*contents))
 
         if bad_docs:
             default_logger.warning(

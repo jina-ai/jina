@@ -10,6 +10,7 @@ pods:
       metas:
         py_modules:
           - executors.py
+    parallel: 2
   - name: index
     uses:
       jtype: MyIndexer

@@ -42,10 +42,11 @@ def hello_world(args):
 
     # now comes the real work
     # load index flow from a YAML file
+    from .executors import MyTransformer
 
     f = (
         Flow()
-        .add(uses='TransformerTorchEncoder', parallel=args.parallel)
+            .add(uses=MyTransformer, parallel=args.parallel)
         .add(
             uses=f'{resource_filename("jina", "resources")}/chatbot/helloworld.indexer.yml'
         )
