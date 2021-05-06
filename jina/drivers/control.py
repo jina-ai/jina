@@ -89,6 +89,14 @@ class ControlReqDriver(BaseControlDriver):
             self._dump()
         elif self.req.command == 'RELOAD':
             self._reload()
+        elif self.req.command == 'ACTIVATE':
+            # TODO (Joan): This is a hack, but I checked in devel-2.0 branch, this _handle_control_req will be moved into the `ZedRuntime` so this code
+            # aligns very well with that view
+            self.runtime._zmqlet._send_idle_to_router()
+        elif self.req.command == 'DEACTIVATE':
+            # TODO (Joan): This is a hack, but I checked in devel-2.0 branch, this _handle_control_req will be moved into the `ZedRuntime` so this code
+            # aligns very well with that view
+            self.runtime._zmqlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
 
@@ -199,6 +207,9 @@ class RouteDriver(ControlReqDriver):
         elif self.req.command == 'CANCEL':
             if self.envelope.receiver_id in self.idle_dealer_ids:
                 self.idle_dealer_ids.remove(self.envelope.receiver_id)
+            self.logger.debug(
+                f'{self.envelope.receiver_id} is cancelled, now I know these idle peas {self.idle_dealer_ids}'
+            )
         else:
             super().__call__(*args, **kwargs)
 

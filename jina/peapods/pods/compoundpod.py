@@ -2,7 +2,6 @@ __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
 import copy
-import time
 from argparse import Namespace
 from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
@@ -96,15 +95,14 @@ class CompoundPod(BasePod):
             head_args.noblock_on_start = True
             self.head_pea = Pea(head_args)
             self._enter_pea(self.head_pea)
-            tail_args = self.tail_args
-            tail_args.noblock_on_start = True
-            self.tail_pea = Pea(tail_args)
-            self._enter_pea(self.tail_pea)
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
                 _args.polling = PollingType.ALL
                 self._enter_replica(Pod(_args))
-
+            tail_args = self.tail_args
+            tail_args.noblock_on_start = True
+            self.tail_pea = Pea(tail_args)
+            self._enter_pea(self.tail_pea)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
@@ -112,12 +110,12 @@ class CompoundPod(BasePod):
                 head_args = self.head_args
                 self.head_pea = Pea(head_args)
                 self._enter_pea(self.head_pea)
-                tail_args = self.tail_args
-                self.tail_pea = Pea(tail_args)
-                self._enter_pea(self.tail_pea)
                 for _args in self.replicas_args:
                     _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
+                tail_args = self.tail_args
+                self.tail_pea = Pea(tail_args)
+                self._enter_pea(self.tail_pea)
             except:
                 self.close()
                 raise
@@ -232,16 +230,19 @@ class CompoundPod(BasePod):
 
         :param dump_path: the dump from which to read the data
         """
-        for i in range(len(self.replicas)):
-            replica = self.replicas[i]
-            replica.close()
-            _args = self.replicas_args[i]
-            _args.noblock_on_start = False
-            # TODO better way to pass args to the new Pod
-            _args.dump_path = dump_path
-            new_replica = Pod(_args)
-            self.enter_context(new_replica)
-            self.replicas[i] = new_replica
-            # TODO might be required in order to allow time for the Replica to come online
-            # before taking down the next
-            time.sleep(3)
+        try:
+            for i in range(len(self.replicas)):
+                replica = self.replicas[i]
+                replica.deactivate()
+                replica.close()
+                _args = self.replicas_args[i]
+                _args.noblock_on_start = False
+                # TODO better way to pass args to the new Pod
+                _args.dump_path = dump_path
+                new_replica = Pod(_args)
+                self.enter_context(new_replica)
+                self.replicas[i] = new_replica
+                # TODO might be required in order to allow time for the Replica to come online
+                # before taking down the next
+        except:
+            raise

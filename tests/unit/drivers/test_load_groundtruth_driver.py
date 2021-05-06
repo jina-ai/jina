@@ -1,6 +1,5 @@
 from typing import Optional, Iterable
 
-import numpy as np
 import pytest
 
 from jina import Request
