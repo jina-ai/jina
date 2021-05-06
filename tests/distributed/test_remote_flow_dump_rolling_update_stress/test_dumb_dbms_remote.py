@@ -148,8 +148,8 @@ def _path_size_remote(this_dump_path):
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_dump_dbms_remote_stress(docker_compose):
     global KEEP_RUNNING
-    nr_docs_index = 1
-    nr_docs_search = 1
+    nr_docs_index = 10
+    nr_docs_search = 2
 
     time.sleep(2)
     dbms_flow_id, query_flow_id = _create_flows()
