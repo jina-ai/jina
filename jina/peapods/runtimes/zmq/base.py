@@ -26,7 +26,7 @@ class ZMQRuntime(BaseRuntime, ABC):
         send_ctrl_message(self.ctrl_addr, 'ACTIVATE', timeout=self.args.timeout_ctrl)
 
     def deactivate(self):
-        """Send activate control message."""
+        """Send deactivate control message."""
         # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
         send_ctrl_message(self.ctrl_addr, 'DEACTIVATE', timeout=self.args.timeout_ctrl)
 
