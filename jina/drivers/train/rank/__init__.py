@@ -1,12 +1,15 @@
-from typing import Optional
+from typing import Iterable
 
-from ... import BaseExecutableDriver
+from ...rank import Matches2DocRankDriver
 
 
-class RankerTrainerDriver(BaseExecutableDriver):
+class RankerTrainerDriver(Matches2DocRankDriver):
     """"""
 
-    def __init__(
-        self, executor: Optional[str] = None, method: str = 'train', *args, **kwargs
-    ):
-        super().__init__(executor, method, *args, **kwargs)
+    def __init__(self, method: str = 'train', *args, **kwargs):
+        super().__init__(method=method, *args, **kwargs)
+
+    def _sort_matches_in_place(
+        self, matches: 'MatchArray', match_scores: Iterable[float]
+    ) -> None:
+        pass
