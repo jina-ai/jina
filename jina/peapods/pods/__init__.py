@@ -15,14 +15,18 @@ from jina.types.message.dump import DumpMessage
 from ..peas import BasePea
 from ... import __default_host__
 from ... import helper
-from ...enums import SchedulerType, PodRoleType
-from ...enums import SocketType, PeaRoleType, PollingType
+from ...enums import SchedulerType, PodRoleType, SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
 class ExitFIFO(ExitStack):
     """
     ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
+
+    .. note::
+    The `__exit__` method is copied literally from `ExitStack` and changed the call:
+    `is_sync, cb = self._exit_callbacks.pop()` to `is_sync, cb = self._exit_callbacks.popleft()`
+
     """
 
     def __exit__(self, *exc_details):
@@ -495,22 +499,6 @@ class Pod(BasePod):
 
         self._activated = True
 
-    def deactivate(self):
-        """Force Dealer Peas to send CANCEL messages to their ROUTERs
-
-        .. note:
-            This is to make sure Head of Replica always sends CANCEL in a blocking manner.
-            Like this we are sure that in CANCEL has been properly handled by the time the Head of CompoundPod
-            receives any Request and so can't send it to the wrong replica.
-
-        .. # noqa: DAR201
-        """
-        # order is good. Deactivate from head to tail
-        for pea in self.peas:
-            if pea.args.socket_in == SocketType.DEALER_CONNECT:
-                pea.runtime.deactivate()
-        self._activated = False
-
     def start(self) -> 'BasePod':
         """
         Start to run all :class:`BasePea` in this BasePod.
@@ -562,6 +550,7 @@ class Pod(BasePod):
         try:
             for p in self.peas:
                 p.join()
+                self._activated = False
         except KeyboardInterrupt:
             pass
         finally:
