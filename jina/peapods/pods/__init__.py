@@ -1,8 +1,8 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-
 import copy
+import sys
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -20,7 +20,63 @@ from ...enums import SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
-class BasePod(ExitStack):
+class ExitFIFO(ExitStack):
+    """
+    ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
+    """
+
+    def __exit__(self, *exc_details):
+        received_exc = exc_details[0] is not None
+
+        # We manipulate the exception state so it behaves as though
+        # we were actually nesting multiple with statements
+        frame_exc = sys.exc_info()[1]
+
+        def _fix_exception_context(new_exc, old_exc):
+            # Context may not be correct, so find the end of the chain
+            while 1:
+                exc_context = new_exc.__context__
+                if exc_context is old_exc:
+                    # Context is already set correctly (see issue 20317)
+                    return
+                if exc_context is None or exc_context is frame_exc:
+                    break
+                new_exc = exc_context
+            # Change the end of the chain to point to the exception
+            # we expect it to reference
+            new_exc.__context__ = old_exc
+
+        # Callbacks are invoked in LIFO order to match the behaviour of
+        # nested context managers
+        suppressed_exc = False
+        pending_raise = False
+        while self._exit_callbacks:
+            is_sync, cb = self._exit_callbacks.popleft()
+            assert is_sync
+            try:
+                if cb(*exc_details):
+                    suppressed_exc = True
+                    pending_raise = False
+                    exc_details = (None, None, None)
+            except:
+                new_exc_details = sys.exc_info()
+                # simulate the stack of exceptions by setting the context
+                _fix_exception_context(new_exc_details[1], exc_details[1])
+                pending_raise = True
+                exc_details = new_exc_details
+        if pending_raise:
+            try:
+                # bare "raise exc_details[1]" replaces our carefully
+                # set-up context
+                fixed_ctx = exc_details[1].__context__
+                raise exc_details[1]
+            except BaseException:
+                exc_details[1].__context__ = fixed_ctx
+                raise
+        return received_exc and suppressed_exc
+
+
+class BasePod(ExitFIFO):
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
@@ -51,7 +107,10 @@ class BasePod(ExitStack):
         raise NotImplemented()
 
     def close(self):
-        """Stop all :class:`BasePea` in this BasePod."""
+        """Stop all :class:`BasePea` in this BasePod.
+
+        .. # noqa: DAR201
+        """
         self.__exit__(None, None, None)
 
     @staticmethod
@@ -114,10 +173,6 @@ class BasePod(ExitStack):
         .. # noqa: DAR201
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
-
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -263,6 +318,11 @@ class BasePod(ExitStack):
         """
         ...
 
+    @abstractmethod
+    def join(self):
+        """Wait until all pods and peas exit."""
+        ...
+
 
 class Pod(BasePod):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
@@ -281,6 +341,7 @@ class Pod(BasePod):
             self.peas_args = args
         else:
             self.peas_args = self._parse_args(args)
+        self._activated = False
 
     @property
     def is_singleton(self) -> bool:
@@ -399,6 +460,19 @@ class Pod(BasePod):
         )
 
     @property
+    def _fifo_args(self) -> List[Namespace]:
+        """Get all arguments of all Peas in this BasePod.
+        .. # noqa: DAR201
+        """
+        # For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and
+        # some messages are not received by the inner peas. That's why ExitFIFO is needed
+        return (
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + self.peas_args['peas']
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+        )
+
+    @property
     def num_peas(self) -> int:
         """Get the number of running :class:`BasePea`
 
@@ -408,6 +482,34 @@ class Pod(BasePod):
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
+
+    def _enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
+
+    def _activate(self):
+        # order is good. Activate from tail to head
+        for pea in reversed(self.peas):
+            if pea.args.socket_in == SocketType.DEALER_CONNECT:
+                pea.runtime.activate()
+
+        self._activated = True
+
+    def deactivate(self):
+        """Force Dealer Peas to send CANCEL messages to their ROUTERs
+
+        .. note:
+            This is to make sure Head of Replica always sends CANCEL in a blocking manner.
+            Like this we are sure that in CANCEL has been properly handled by the time the Head of CompoundPod
+            receives any Request and so can't send it to the wrong replica.
+
+        .. # noqa: DAR201
+        """
+        # order is good. Deactivate from head to tail
+        for pea in self.peas:
+            if pea.args.socket_in == SocketType.DEALER_CONNECT:
+                pea.runtime.deactivate()
+        self._activated = False
 
     def start(self) -> 'BasePod':
         """
@@ -420,15 +522,17 @@ class Pod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args:
+            for _args in self._fifo_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args:
+                for _args in self._fifo_args:
                     self._enter_pea(BasePea(_args))
+
+                self._activate()
             except:
                 self.close()
                 raise
@@ -448,6 +552,7 @@ class Pod(BasePod):
         try:
             for p in self.peas:
                 p.wait_start_success()
+            self._activate()
         except:
             self.close()
             raise
@@ -461,6 +566,7 @@ class Pod(BasePod):
             pass
         finally:
             self.peas.clear()
+            self._activated = False
 
     @property
     def is_ready(self) -> bool:
@@ -472,7 +578,7 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        return all(p.is_ready.is_set() for p in self.peas)
+        return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
     def _set_after_to_pass(self, args):
         # TODO: check if needed

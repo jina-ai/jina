@@ -112,8 +112,9 @@ class BasePea(metaclass=PeaType):
         """Start the Pea.
 
         This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-        """
 
+        .. # noqa: DAR201
+        """
         super().start()  #: required here to call process/thread method
         if not self.args.noblock_on_start:
             self.wait_start_success()
@@ -179,6 +180,10 @@ class BasePea(metaclass=PeaType):
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
                 self.join()
+        else:
+            # if it fails to start, the process will hang at `join`
+            if hasattr(self, 'terminate'):
+                self.terminate()
 
         self.logger.success(__stop_msg__)
         self.logger.close()
@@ -230,5 +235,8 @@ class BasePea(metaclass=PeaType):
 
     @property
     def role(self) -> 'PeaRoleType':
-        """Get the role of this pea in a pod"""
+        """Get the role of this pea in a pod
+
+        .. # noqa: DAR201
+        """
         return self.args.pea_role
