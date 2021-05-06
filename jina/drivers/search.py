@@ -1,7 +1,6 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-import sys
 from typing import Iterable, Tuple, Optional
 
 from . import (
@@ -10,9 +9,9 @@ from . import (
     FlatRecursiveMixin,
     ContextAwareRecursiveMixin,
 )
+from ..enums import EmbeddingClsType
 from ..types.document import Document
 from ..types.score import NamedScore
-from ..enums import EmbeddingClsType
 
 if False:
     from ..types.arrays import DocumentArray

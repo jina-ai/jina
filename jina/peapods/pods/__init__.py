@@ -183,10 +183,6 @@ class BasePod(ExitFIFO):
         self.join()
 
     @staticmethod
-    def _set_after_to_pass(args):
-        raise NotImplementedError
-
-    @staticmethod
     def _copy_to_head_args(
         args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:

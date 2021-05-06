@@ -87,7 +87,7 @@ def test_simple_run(docs):
     with flow:
         # test rolling update does not hang
         flow.search(docs)
-        flow.rolling_update('pod1')
+        flow.rolling_update('pod1', None)
         flow.search(docs)
 
 
@@ -101,7 +101,7 @@ def test_thread_run(docs):
         timeout_ready=30000,
     )
     with flow:
-        x = threading.Thread(target=flow.rolling_update, args=('pod1',))
+        x = threading.Thread(target=flow.rolling_update, args=('pod1', None))
         for i in range(50):
             flow.search(docs)
             if i == 5:
@@ -121,7 +121,7 @@ def test_vector_indexer_thread(config, docs):
     ) as flow:
         for i in range(5):
             flow.search(docs)
-        x = threading.Thread(target=flow.rolling_update, args=('pod1',))
+        x = threading.Thread(target=flow.rolling_update, args=('pod1', None))
         for i in range(40):
             flow.search(docs)
             if i == 5:
