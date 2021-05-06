@@ -1,12 +1,9 @@
-!RandomWeightedRankerTrainer
+!SGDRegressorRankerTrainer
 with:
-  params:
-    metric: ndcg
-    objective: lambdarank
+  {}
 metas:
-  workspace: $JINA_TEST_TRAIN_OFFLINE
   py_modules: trainer.py
 requests:
   on:
     TrainRequest:
-      - !RankTrainerDriver {}
+      - !RankerTrainerDriver {}
