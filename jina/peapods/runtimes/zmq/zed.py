@@ -108,11 +108,6 @@ class ZEDRuntime(ZMQRuntime):
 
     #: Private methods required by :meth:`teardown`
 
-    def _save_executor(self):
-        """Save the contained executor according to the `dump_interval` parameter."""
-        if (time.perf_counter() - self._last_dump_time) > self.args.dump_interval > 0:
-            self._executor.save()
-            self._last_dump_time = time.perf_counter()
 
     def _reload_executor(self):
         if (time.perf_counter() - self._last_load_time) > self.args.load_interval > 0:
@@ -158,7 +153,6 @@ class ZEDRuntime(ZMQRuntime):
         :return: `ZEDRuntime`
         """
         self._last_active_time = time.perf_counter()
-        self._save_executor()
         self._zmqlet.print_stats()
         self._check_memory_watermark()
 
@@ -215,7 +209,7 @@ class ZEDRuntime(ZMQRuntime):
                 if r_docs is not None:
                     if not isinstance(r_docs, DocumentArray):
                         raise TypeError(
-                            f'return type must be {DocumentArray!r} object, but getting {typename(r_docs)}'
+                            f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                         )
                     elif r_docs != self.request.docs:
                         # this means the returned DocArray is a completely new one

@@ -170,12 +170,6 @@ def set_hw_chatbot_parser(parser=None):
         help='The url of index csv data',
     )
     parser.add_argument(
-        '--demo-url',
-        type=str,
-        default='https://static.jina.ai/chatbot/',
-        help='The url of the demo page',
-    )
-    parser.add_argument(
         '--port-expose',
         type=int,
         default=8080,

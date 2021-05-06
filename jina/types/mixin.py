@@ -31,7 +31,6 @@ class ProtoTypeMixin:
         """
         return self._pb_body
 
-    @property
     def binary_str(self) -> bytes:
         """Return the serialized the message to a string.
 

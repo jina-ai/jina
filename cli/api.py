@@ -114,16 +114,6 @@ def export_api(args: 'Namespace'):
             default_logger.info(f'API is exported to {f_name}')
 
 
-def hello_world(args: 'Namespace'):
-    """
-    Run the fashion hello world example
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.helloworld.fashion.app import hello_world
-
-    hello_world(args)
-
 
 def hello(args: 'Namespace'):
     """
@@ -134,7 +124,7 @@ def hello(args: 'Namespace'):
     if args.hello == 'fashion':
         from jina.helloworld.fashion.app import hello_world
     elif args.hello == 'chatbot':
-        from jina.helloworld.chatbot import hello_world
+        from jina.helloworld.chatbot.app import hello_world
     elif args.hello == 'multimodal':
         from jina.helloworld.multimodal import hello_world
     else:

@@ -6,6 +6,8 @@ from typing import Callable, Dict, Any, Optional, List, Union
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
+from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
+
 from jina.enums import DataInputType
 from jina.parsers import set_client_cli_parser
 from jina.proto.jina_pb2 import (
@@ -22,7 +24,6 @@ from jina.proto.jina_pb2 import (
     QueryLangProto,
 )
 from jina.types.document import Document
-from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
 DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
@@ -253,6 +254,7 @@ class JinaRequestModel(BaseModel):
     """
 
     # To avoid an error while loading the request model schema on swagger, we've added an example.
+    exec_endpoint: Optional[str] = None
     data: Union[
         List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
         List[Dict[str, Any]],
@@ -261,8 +263,9 @@ class JinaRequestModel(BaseModel):
     ] = Field(..., example=[Document().dict()])
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
     mime_type: Optional[str] = ''
-    queryset: Optional[List[PROTO_TO_PYDANTIC_MODELS.QueryLangProto]] = None
     data_type: DataInputType = DataInputType.AUTO
+    target_peapod: Optional[str] = ''
+    parameters: Optional[Dict] = None
 
     @root_validator(pre=True, allow_reuse=True)
     def add_default_kwargs(cls, kwargs: dict):
@@ -302,25 +305,25 @@ class JinaRequestModel(BaseModel):
 class JinaIndexRequestModel(JinaRequestModel):
     """Index request model."""
 
-    pass
+    exec_endpoint = '/index'
 
 
 class JinaSearchRequestModel(JinaRequestModel):
     """Search request model."""
 
-    pass
+    exec_endpoint = '/search'
 
 
 class JinaUpdateRequestModel(JinaRequestModel):
     """Update request model."""
 
-    pass
+    exec_endpoint = '/update'
 
 
 class JinaDeleteRequestModel(JinaRequestModel):
     """Delete request model."""
 
-    data: List[str]
+    exec_endpoint = '/delete'
 
 
 class JinaControlRequestModel(JinaRequestModel):
@@ -332,4 +335,4 @@ class JinaControlRequestModel(JinaRequestModel):
 class JinaTrainRequestModel(JinaRequestModel):
     """Train request model."""
 
-    pass
+    exec_endpoint = '/train'

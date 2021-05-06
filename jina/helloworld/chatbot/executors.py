@@ -1,3 +1,5 @@
+import json
+import os
 from typing import Optional, Dict, Tuple
 
 import numpy as np
@@ -95,26 +97,41 @@ class MyTransformer(Executor):
                     return outputs.cpu().numpy()
                 hidden_states = outputs.hidden_states
 
-            return self._compute_embedding(hidden_states, input_tokens)
+            embeds = self._compute_embedding(hidden_states, input_tokens)
+            for doc, embed in zip(docs, embeds):
+                doc.embedding = embed
 
 
 class MyIndexer(Executor):
+    filename = 'chatbot.ndjson'
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._docs = DocumentArray()
+        if os.path.exists(self.filename):
+            with open(self.filename) as fp:
+                for v in fp:
+                    d = Document(v)
+                    self._docs.append(d)
+
+    def close(self) -> None:
+        with open(self.filename, 'w') as fp:
+            for d in self._docs:
+                json.dump(d.dict(), fp)
+                fp.write('\n')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
         self._docs.extend(docs)
 
     @requests(on='/search')
-    def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
+    def search(self, docs: 'DocumentArray', **kwargs):
         a = np.stack(docs.get_attributes('embedding'))
         b = np.stack(self._docs.get_attributes('embedding'))
         q_emb = _ext_A(_norm(a))
         d_emb = _ext_B(_norm(b))
         dists = _cosine(q_emb, d_emb)
-        idx, dist = self._get_sorted_top_k(dists, int(parameters['top_k']))
+        idx, dist = self._get_sorted_top_k(dists, 1)
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
