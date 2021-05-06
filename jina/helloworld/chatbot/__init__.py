@@ -2,12 +2,10 @@ import os
 import webbrowser
 from pathlib import Path
 
-from pkg_resources import resource_filename
-
-from ..helper import download_data
-from ... import Flow
-from ...importer import ImportExtensions
-from ...logging import default_logger
+from jina import Flow, Document
+from jina.importer import ImportExtensions
+from jina.logging import default_logger
+from .helper import download_data
 
 
 def hello_world(args):
@@ -19,9 +17,9 @@ def hello_world(args):
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
     with ImportExtensions(
-        required=True,
-        help_text='this demo requires Pytorch and Transformers to be installed, '
-        'if you haven\'t, please do `pip install jina[torch,transformers]`',
+            required=True,
+            help_text='this demo requires Pytorch and Transformers to be installed, '
+                      'if you haven\'t, please do `pip install jina[torch,transformers]`',
     ):
         import transformers, torch
 
@@ -37,24 +35,19 @@ def hello_world(args):
     # download the data
     download_data(targets, args.download_proxy, task_name='download csv data')
 
-    # this envs are referred in index and query flow YAMLs
-    os.environ['HW_WORKDIR'] = args.workdir
-
     # now comes the real work
     # load index flow from a YAML file
-    from .executors import MyTransformer
+    from .executors import MyTransformer, MyIndexer
 
     f = (
         Flow()
             .add(uses=MyTransformer, parallel=args.parallel)
-        .add(
-            uses=f'{resource_filename("jina", "resources")}/chatbot/helloworld.indexer.yml'
-        )
+            .add(uses=MyIndexer)
     )
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:
-        f.index_csv(fp, field_resolver={'question': 'text', 'url': 'uri'})
+        f.index(Document.from_csv(fp, field_resolver={'question': 'text', 'url': 'uri'}))
 
     # switch to REST gateway
     f.use_rest_gateway(args.port_expose)

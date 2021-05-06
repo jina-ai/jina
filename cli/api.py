@@ -120,7 +120,7 @@ def hello_world(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.helloworld.fashion import hello_world
+    from jina.helloworld.fashion.app import hello_world
 
     hello_world(args)
 
@@ -132,7 +132,7 @@ def hello(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     if args.hello == 'fashion':
-        from jina.helloworld.fashion import hello_world
+        from jina.helloworld.fashion.app import hello_world
     elif args.hello == 'chatbot':
         from jina.helloworld.chatbot import hello_world
     elif args.hello == 'multimodal':

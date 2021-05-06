@@ -15,31 +15,6 @@ result_html = []
 top_k = 0
 
 
-def _get_groundtruths(target, pseudo_match=True):
-    # group doc_ids by their labels
-    a = np.squeeze(target['index-labels']['data'])
-    a = np.stack([a, np.arange(len(a))], axis=1)
-    a = a[a[:, 0].argsort()]
-    lbl_group = np.split(a[:, 1], np.unique(a[:, 0], return_index=True)[1][1:])
-
-    # each label has one groundtruth, i.e. all docs have the same label are considered as matches
-    groundtruths = {lbl: Document() for lbl in range(10)}
-    for lbl, doc_ids in enumerate(lbl_group):
-        if not pseudo_match:
-            # full-match, each doc has 6K matches
-            for doc_id in doc_ids:
-                match = Document()
-                match.tags['id'] = int(doc_id)
-                groundtruths[lbl].matches.append(match)
-        else:
-            # pseudo-match, each doc has only one match, but this match's id is a list of 6k elements
-            match = Document()
-            match.tags['id'] = doc_ids.tolist()
-            groundtruths[lbl].matches.append(match)
-
-    return groundtruths
-
-
 def index_generator(num_docs: int, target: dict):
     """
     Generate the index data.
@@ -63,15 +38,10 @@ def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
     :param with_groundtruth: True if want to include labels into query data
     :yields: query data
     """
-    gts = _get_groundtruths(target)
     for _ in range(num_docs):
         num_data = len(target['query-labels']['data'])
         idx = random.randint(0, num_data - 1)
-        d = Document(content=(target['query']['data'][idx]))
-        if with_groundtruth:
-            yield d, gts[target['query-labels']['data'][idx][0]]
-        else:
-            yield d
+        yield Document(content=(target['query']['data'][idx]))
 
 
 def print_result(resp):
@@ -99,7 +69,7 @@ def write_html(html_path):
     """
 
     with open(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'demo.html')
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'demo.html')
     ) as fp, open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))

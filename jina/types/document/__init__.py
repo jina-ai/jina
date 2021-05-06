@@ -703,51 +703,6 @@ class Document(ProtoTypeMixin, Traversable):
                 else:
                     raise AttributeError(f'{k} is not recognized')
 
-    def get_attrs(self, *args) -> Dict[str, Any]:
-        """Bulk fetch Document fields and return a dict of the key-value pairs
-
-        .. seealso::
-            :meth:`update` for bulk set/update attributes
-
-        .. note::
-            Arguments will be extracted using `dunder_get`
-            .. highlight:: python
-            .. code-block:: python
-
-                d = Document({'id': '123', 'hello': 'world', 'tags': {'id': 'external_id', 'good': 'bye'}})
-
-                assert d.id == '123'  # true
-                assert d.tags['hello'] == 'world' # true
-                assert d.tags['good'] == 'bye' # true
-                assert d.tags['id'] == 'external_id' # true
-
-                res = d.get_attrs(*['id', 'tags__hello', 'tags__good', 'tags__id'])
-
-                assert res['id'] == '123' # true
-                assert res['tags__hello'] == 'world' # true
-                assert res['tags__good'] == 'bye' # true
-                assert res['tags__id'] == 'external_id' # true
-
-        :param args: the variable length values to extract from the document
-        :return: a dictionary mapping the fields in `:param:args` to the actual attributes of this document
-        """
-
-        ret = {}
-        for k in args:
-            try:
-                value = getattr(self, k)
-
-                if value is None:
-                    raise ValueError
-
-                ret[k] = value
-            except (AttributeError, ValueError):
-                default_logger.warning(
-                    f'Could not get attribute `{typename(self)}.{k}`, returning `None`'
-                )
-                ret[k] = None
-        return ret
-
     def get_attributes(self, *fields: str) -> Union[Any, List[Any]]:
         """Bulk fetch Document fields and return a list of the values of these fields
 
@@ -1259,14 +1214,6 @@ class Document(ProtoTypeMixin, Traversable):
         :return: the tuple of non-empty fields
         """
         return tuple(field[0].name for field in self.ListFields())
-
-    @property
-    def raw(self) -> 'Document':
-        """Return self as a document object.
-
-        :return: this Document
-        """
-        return self
 
     @staticmethod
     def get_all_attributes() -> List[str]:
