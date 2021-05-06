@@ -40,7 +40,7 @@ class JinadRuntime(AsyncZMQRuntime):
         )
 
     def deactivate(self):
-        """Send activate control message."""
+        """Send deactivate control message."""
         send_ctrl_message(
             self.remote_ctrl_addr, 'DEACTIVATE', timeout=self.args.timeout_ctrl
         )
