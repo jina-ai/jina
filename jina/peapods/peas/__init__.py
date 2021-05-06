@@ -182,7 +182,7 @@ class BasePea(metaclass=PeaType):
                 self.join()
         else:
             # if it fails to start, the process will hang at `join`
-            if getattr(self, 'terminate', None):
+            if hasattr(self, 'terminate'):
                 self.terminate()
 
         self.logger.success(__stop_msg__)
