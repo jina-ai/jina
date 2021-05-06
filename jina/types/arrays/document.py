@@ -1,4 +1,4 @@
-from collections.abc import MutableSequence
+from collections.abc import MutableSequence, Iterable as Itr
 from typing import Union, Iterable, Tuple, Sequence, List, Iterator
 
 from ...enums import EmbeddingClsType
@@ -56,7 +56,7 @@ if False:
     )
 
 
-class DocumentArray(TraversableSequence, MutableSequence):
+class DocumentArray(TraversableSequence, MutableSequence, Itr):
     """
     :class:`DocumentArray` is a mutable sequence of :class:`Document`.
     It gives an efficient view of a list of Document. One can iterate over it like
@@ -92,8 +92,15 @@ class DocumentArray(TraversableSequence, MutableSequence):
         else:
             raise IndexError(f'do not support this index {key}')
 
-    def __delitem__(self, index):
-        del self._docs_proto[index]
+    def __delitem__(self, index: Union[int, str, slice]):
+        if isinstance(index, int):
+            del self._docs_proto[index]
+        elif isinstance(index, str):
+            del self._docs_map[index]
+        elif isinstance(index, slice):
+            del self._docs_proto[index]
+        else:
+            raise IndexError(f'do not support this index type {typename(index)}: {index}')
 
     def __len__(self):
         return len(self._docs_proto)
@@ -104,7 +111,7 @@ class DocumentArray(TraversableSequence, MutableSequence):
         for d in self._docs_proto:
             yield Document(d)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Union[int, str, slice]):
         from ..document import Document
 
         if isinstance(item, int):
