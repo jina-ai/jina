@@ -103,28 +103,16 @@ def set_hw_parser(parser=None):
         parser = set_base_parser()
 
     mixin_hw_base_parser(parser)
-    gp = add_arg_group(parser, title='Scalability')
+    gp = add_arg_group(parser, title='General')
     gp.add_argument(
-        '--shards',
-        type=int,
-        default=2,
-        help='The number of shards when index and query',
-    )
-    gp.add_argument(
-        '--parallel',
-        type=int,
-        default=2,
-        help='The number of parallel when index and query',
-    )
-    gp = add_arg_group(parser, title='Index')
-    gp.add_argument(
-        '--uses-index',
+        '--uses',
         type=str,
         default=resource_filename(
             'jina', '/'.join(('resources', 'fashion', 'helloworld.flow.yml'))
         ),
-        help='The yaml path of the index flow',
+        help='The yaml path of the index & query flow',
     )
+    gp = add_arg_group(parser, title='Index')
     gp.add_argument(
         '--index-data-url',
         type=str,
@@ -146,14 +134,6 @@ def set_hw_parser(parser=None):
     )
 
     gp = add_arg_group(parser, title='Search')
-    gp.add_argument(
-        '--uses-query',
-        type=str,
-        default=resource_filename(
-            'jina', '/'.join(('resources', 'fashion', 'helloworld.flow.query.yml'))
-        ),
-        help='The yaml path of the query flow',
-    )
     gp.add_argument(
         '--query-data-url',
         type=str,

@@ -2,19 +2,18 @@ jtype: Flow
 version: '1.0'
 with:
   compress_hwm: 1024
+  workspace: $HW_WORKDIR
 pods:
   - name: encode
     uses:
       jtype: MyEncoder
       metas:
-        workspace: $HW_WORKDIR
         py_modules:
-          - components.py
+          - executors.py
   - name: index
     uses:
       jtype: MyIndexer
       metas:
-        workspace: $HW_WORKDIR
         py_modules:
-          - components.py
+          - executors.py
 
