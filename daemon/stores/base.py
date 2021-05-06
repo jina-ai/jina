@@ -33,7 +33,7 @@ class BaseStore(MutableMapping):
         raise NotImplementedError
 
     def update(self, *args, **kwargs) -> 'uuid.UUID':
-        """Add a new element to the store. This method needs to be overridden by the subclass
+        """Updates the element to the store. This method needs to be overridden by the subclass
 
 
         .. #noqa: DAR101"""
