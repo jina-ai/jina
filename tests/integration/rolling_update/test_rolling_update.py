@@ -93,40 +93,63 @@ def test_simple_run(docs):
 
 @pytest.mark.repeat(5)
 @pytest.mark.timeout(30)
-def test_thread_run(docs):
-    flow = Flow().add(
+def test_thread_run(docs, mocker, reraise):
+    def update_rolling(flow, pod_name):
+        with reraise:
+            flow.rolling_update(pod_name)
+
+    error_mock = mocker.Mock()
+    with Flow().add(
         name='pod1',
         replicas=2,
         parallel=2,
-        timeout_ready=30000,
-    )
-    with flow:
-        x = threading.Thread(target=flow.rolling_update, args=('pod1',))
+        timeout_ready=5000,
+    ) as flow:
+        x = threading.Thread(
+            target=update_rolling,
+            args=(
+                flow,
+                'pod1',
+            ),
+        )
         for i in range(50):
-            flow.search(docs)
+            flow.search(docs, on_error=error_mock)
             if i == 5:
                 x.start()
         x.join()
+    error_mock.assert_not_called()
 
 
 @pytest.mark.repeat(5)
 @pytest.mark.timeout(30)
-def test_vector_indexer_thread(config, docs):
+def test_vector_indexer_thread(config, docs, mocker, reraise):
+    def update_rolling(flow, pod_name):
+        with reraise:
+            flow.rolling_update(pod_name)
+
+    error_mock = mocker.Mock()
     with Flow().add(
         name='pod1',
         uses='!DummyMarkExecutor',
         replicas=2,
         parallel=3,
-        timeout_ready=30000,
+        timeout_ready=5000,
     ) as flow:
         for i in range(5):
-            flow.search(docs)
-        x = threading.Thread(target=flow.rolling_update, args=('pod1',))
+            flow.search(docs, on_error=error_mock)
+        x = threading.Thread(
+            target=update_rolling,
+            args=(
+                flow,
+                'pod1',
+            ),
+        )
         for i in range(40):
-            flow.search(docs)
+            flow.search(docs, on_error=error_mock)
             if i == 5:
                 x.start()
         x.join()
+    error_mock.assert_not_called()
 
 
 def test_workspace(config, tmpdir, docs):
