@@ -1,7 +1,5 @@
 jtype: Flow
 version: '1'
-with:
-  restful: $RESTFUL
 pods:
   - name: trainer
     uses: yaml/train.yml
