@@ -290,7 +290,8 @@ class DocumentArray(TraversableSequence, MutableSequence):
             contents.append(r)
             docs_pts.append(doc)
 
-        # contents = list(zip(*contents))
+        if len(fields) > 1:
+            contents = list(zip(*contents))
 
         if bad_docs:
             default_logger.warning(

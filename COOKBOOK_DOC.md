@@ -27,3 +27,9 @@ class MyExec(Executor):
         ...
 ```
 
+## Extracting Multiple Attributes
+
+One can extract multiple attributes from a `Document` via
+
+
+

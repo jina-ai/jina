@@ -99,7 +99,7 @@ def write_html(html_path):
     """
 
     with open(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'demo.html')
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'demo.html')
     ) as fp, open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
