@@ -1,10 +1,10 @@
 from typing import Optional, Dict
 
 import numpy as np
+import torch
+from transformers import AutoModel, AutoTokenizer
 
 from jina import Executor, DocumentArray, requests
-
-HTTP_SERVICE_UNAVAILABLE = 503
 
 
 class TransformerEncoder(Executor):
@@ -66,13 +66,7 @@ class TransformerEncoder(Executor):
         self.max_length = max_length
         self.acceleration = acceleration
         self.embedding_fn_name = embedding_fn_name
-
-    def post_init(self):
-        """Load the transformer model and encoder"""
-        from transformers import AutoModel, AutoTokenizer
-
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_tokenizer_model)
-
         self.model = AutoModel.from_pretrained(
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
