@@ -2,7 +2,7 @@ from collections.abc import MutableSequence
 from typing import Union, Iterable, Tuple, Sequence, List, Iterator
 
 from ...enums import EmbeddingClsType
-from ...helper import typename
+from ...helper import typename, cached_property
 from ...logging import default_logger
 
 try:
@@ -74,7 +74,6 @@ class DocumentArray(TraversableSequence, MutableSequence):
             self._docs_proto = docs_proto
         else:
             self._docs_proto = []
-        self._docs_map = {}
 
     def insert(self, index: int, doc: 'Document') -> None:
         """
@@ -117,35 +116,27 @@ class DocumentArray(TraversableSequence, MutableSequence):
         else:
             raise IndexError(f'do not support this index type {typename(item)}: {item}')
 
-    def __add__(self, other: 'DocumentArray'):
-        v = DocumentArray([])
+    def __add__(self, other: Iterable['Document']):
+        v = DocumentArray()
         for doc in self:
-            v.add(doc)
+            v.append(doc)
         for doc in other:
-            v.add(doc)
+            v.append(doc)
         return v
 
-    def __iadd__(self, other: 'DocumentArray'):
+    def __iadd__(self, other: Iterable['Document']):
         for doc in other:
-            self.add(doc)
+            self.append(doc)
         return self
 
-    def append(self, doc: 'Document') -> 'Document':
+    def append(self, doc: 'Document'):
         """
         Append :param:`doc` in :class:`DocumentArray`.
 
         :param doc: The doc needs to be appended.
         :return: Appended list.
         """
-        return self._docs_proto.append(doc.proto)
-
-    def add(self, doc: 'Document') -> 'Document':
-        """Shortcut to :meth:`append`, do not override this method.
-
-        :param doc: the document to add to the array
-        :return: Appended list.
-        """
-        return self.append(doc)
+        self._docs_proto.append(doc.proto)
 
     def extend(self, iterable: Iterable['Document']) -> None:
         """
@@ -174,9 +165,10 @@ class DocumentArray(TraversableSequence, MutableSequence):
         elif isinstance(self._docs_proto, list):
             self._docs_proto.reverse()
 
-    def build(self):
+    @cached_property
+    def _docs_map(self):
         """Build a doc_id to doc mapping so one can later index a Document using doc_id as string key."""
-        self._docs_map = {d.id: d for d in self._docs_proto}
+        return {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
         """
@@ -188,7 +180,7 @@ class DocumentArray(TraversableSequence, MutableSequence):
         self._docs_proto.sort(*args, **kwargs)
 
     def get_all_sparse_embeddings(
-        self, embedding_cls_type: EmbeddingClsType
+            self, embedding_cls_type: EmbeddingClsType
     ) -> Tuple['SparseEmbeddingType', 'DocumentArray']:
         """Return all embeddings from every document in this array as a sparse array
 
@@ -311,21 +303,12 @@ class DocumentArray(TraversableSequence, MutableSequence):
         """
         return len(self) > 0
 
-    def new(self) -> 'Document':
-        """Create a new empty document appended to the end of the array.
-
-        :return: a new Document appended to the array
-        """
-        from ..document import Document
-
-        return self.append(Document())
-
     def __str__(self):
         from ..document import Document
 
-        content = ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
-        if len(self._docs_proto) > 3:
-            content += f'in total {len(self._docs_proto)} items'
+        content = f'in total {len(self._docs_proto)} items' if len(self._docs_proto) > 3 else ''
+        content += ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
+
         return content
 
     def __repr__(self):
