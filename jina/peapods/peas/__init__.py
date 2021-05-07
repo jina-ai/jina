@@ -1,10 +1,11 @@
 import argparse
 import os
 from typing import Type
+import time
 
 from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__, __default_host__
-from ...enums import PeaRoleType, RuntimeBackendType
+from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -154,6 +155,13 @@ class BasePea(metaclass=PeaType):
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms'
             )
 
+    @property
+    def _dealer(self):
+        """Return true if this `Pea` must act as a Dealer responding to a Router
+        .. # noqa: DAR201
+        """
+        return self.args.socket_in == SocketType.DEALER_CONNECT
+
     def close(self) -> None:
         """Close the Pea
 
@@ -168,6 +176,11 @@ class BasePea(metaclass=PeaType):
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                if self._dealer:
+                    self.runtime.deactivate()
+                    # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
+                    # it does not block. Needs to be refactored
+                    time.sleep(0.1)
                 self.runtime.cancel()
                 self.is_shutdown.wait()
             except Exception as ex:

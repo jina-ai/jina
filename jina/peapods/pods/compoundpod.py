@@ -233,7 +233,6 @@ class CompoundPod(BasePod):
         try:
             for i in range(len(self.replicas)):
                 replica = self.replicas[i]
-                replica.deactivate()
                 replica.close()
                 _args = self.replicas_args[i]
                 _args.noblock_on_start = False
