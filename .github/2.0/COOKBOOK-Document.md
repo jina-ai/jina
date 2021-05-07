@@ -38,25 +38,9 @@ A `Document` object has the following attributes, which can be put into the foll
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
-#### Recursive Attributes
 
-`Document` can be recurred in both horizontal & vertical way.
 
-|     |     |
-| --- | --- |
-| `doc.chunks` | The list of sub-documents of this document. They have `granularity + 1` but same `adjacency` |
-| `doc.matches` | The list of matched documents of this document. They have `adjacency + 1` but same `granularity` |
-|  `doc.granularity` | The recursion "depth" of the recursive chunks structure |
-|  `doc.adjacency` | The recursion "width" of the recursive match structure |
-
-#### Relevance Attributes
-
-|     |     |
-| --- | --- |
-| `doc.score` | The relevance information of this document |
-| `doc.evaluations` | The evaluation information of this document |
-
-### Construct a `Document`
+### Construct `Document`
 
 ##### Content Attributes
 
@@ -218,6 +202,17 @@ b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
 
 ### Add Recursion to `Document`
 
+#### Recursive Attributes
+
+`Document` can be recurred in both horizontal & vertical way.
+
+|     |     |
+| --- | --- |
+| `doc.chunks` | The list of sub-documents of this document. They have `granularity + 1` but same `adjacency` |
+| `doc.matches` | The list of matched documents of this document. They have `adjacency + 1` but same `granularity` |
+|  `doc.granularity` | The recursion "depth" of the recursive chunks structure |
+|  `doc.adjacency` | The recursion "width" of the recursive match structure |
+
 You can add **chunks** (sub-document) and **matches** (neighbour-document) to a `Document` via the following ways:
 
 - Add in constructor:
@@ -273,6 +268,43 @@ d0.plot()  # simply `d0` on JupyterLab
 </td>
 </tr>
 </table>
+
+### Add Relevancy to `Document`
+
+#### Relevance Attributes
+
+|     |     |
+| --- | --- |
+| `doc.score` | The relevance information of this document |
+| `doc.evaluations` | The evaluation information of this document |
+
+You can add relevance score to a `Document` object via:
+
+```python
+from jina import Document
+d = Document()
+d.score.value = 0.96
+d.score.description = 'cosine similarity'
+d.score.op_name = 'cosine()'
+```
+
+```text
+<jina.types.document.Document id=0a986c50-aeff-11eb-84c1-1e008a366d48 score={'value': 0.96, 'opName': 'cosine()', 'description': 'cosine similarity'} at 6281686928>
+```
+
+Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
+follows:
+
+```python
+from jina import Document
+
+# some query document
+q = Document()
+# get match document `m`
+m = Document()
+m.score.value = 0.96
+q.matches.append(m)
+```
 
 ## `DocumentArray` API
 

@@ -71,7 +71,7 @@ class NamedScore(ProtoTypeMixin):
         self.set_attrs(**kwargs)
 
     @property
-    def value(self) -> str:
+    def value(self) -> float:
         """
         Return the ``value`` of this NamedScore, the `id` of which this NamedScore is a score.
         :return:: the score value
@@ -101,6 +101,38 @@ class NamedScore(ProtoTypeMixin):
         :param val: The ref_id value to set
         """
         self._pb_body.ref_id = val
+
+    @property
+    def op_name(self) -> str:
+        """
+        Return the ``op_name`` of this NamedScore
+        :return:: the op_name
+        """
+        return self._pb_body.op_name
+
+    @op_name.setter
+    def op_name(self, val: str):
+        """
+        Set the ``op_name`` to :param: `val`.
+        :param val: The op_name value to set
+        """
+        self._pb_body.op_name = val
+
+    @property
+    def description(self) -> str:
+        """
+        Return the ``description`` of this NamedScore
+        :return:: the description
+        """
+        return self._pb_body.description
+
+    @description.setter
+    def description(self, val: str):
+        """
+        Set the ``description`` to :param: `val`.
+        :param val: The description value to set
+        """
+        self._pb_body.description = val
 
     @property
     def operands(self) -> List['NamedScore']:
@@ -151,3 +183,4 @@ class NamedScore(ProtoTypeMixin):
                     setattr(self._pb_body, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
+
