@@ -1,7 +1,7 @@
 # Temporary Cookbook on `Document`/`DocumentArray` 2.0 API
 
-`Document` is the primitive data type in Jina. It is the basic data type that Jina operates with. Text, picture, video,
-audio, image, 3D mesh, they are all `Document` in Jina.
+`Document` is the basic data type that Jina operates with. Text, picture, video, audio, image, 3D mesh, they are
+all `Document` in Jina.
 
 `DocumentArray` is a sequence container of `Document`. It is the first-class citizen of `Executor`, serving as the input
 & output.
