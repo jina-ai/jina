@@ -1,23 +1,10 @@
 # Temporary Cookbook on `Document`/`DocumentArray` 2.0 API
 
-`Document` is the primitive data type in Jina. It is the basic data type that Jina operates with.
+`Document` is the primitive data type in Jina. It is the basic data type that Jina operates with. Text, picture, video,
+audio, image, 3D mesh, they are all `Document` in Jina.
 
-Text, picture, video, audio, image, 3D mesh, they are all `Document` in Jina.
-
-`DocumentArray` is a sequence container of `Document`.
-
-`DocumentArray` is the first-class citizen of `Executor`. It serves as the input & output of Jina, e.g.
-
-```python
-from jina import Executor, requests, DocumentArray
-
-
-class MyExec(Executor):
-
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs) -> Optional[DocumentArray]:
-        ...
-```
+`DocumentArray` is a sequence container of `Document`. It is the first-class citizen of `Executor`, serving as the input
+& output.
 
 One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray` is like `np.ndarray`.
 
@@ -177,6 +164,19 @@ To make a deep copy, use `copy=True`,
 d1 = Document(d, copy=True)
 
 assert id(d) == id(d1)  # False
+```
+
+## `DocumentArray` API
+
+```python
+from jina import Executor, requests, DocumentArray
+
+
+class MyExec(Executor):
+
+  @requests
+  def foo(self, docs: DocumentArray, **kwargs) -> Optional[DocumentArray]:
+    ...
 ```
 
 ## Extracting Multiple Attributes
