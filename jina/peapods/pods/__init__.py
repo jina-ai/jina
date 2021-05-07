@@ -18,6 +18,7 @@ from ... import helper
 from ...enums import SchedulerType, PodRoleType
 from ...enums import SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
+from ...types.message.common import ControlMessage
 
 
 class ExitFIFO(ExitStack):
@@ -587,21 +588,6 @@ class Pod(BasePod):
             # ONLY reset when it is push
             args.uses_after = '_pass'
 
-    def dump(self, path, shards, timeout):
-        """Emit a Dump request to its Peas
-
-        :param shards: the nr of shards in the dump
-        :param path: the path to which to dump
-        :param timeout: time to wait (seconds)
-        """
-        for pea in self.peas:
-            if 'head' not in pea.name and 'tail' not in pea.name:
-                send_ctrl_message(
-                    pea.runtime.ctrl_addr,
-                    DumpMessage(path=path, shards=shards),
-                    timeout=timeout,
-                )
-
     @staticmethod
     def _set_peas_args(
         args: Namespace,
@@ -668,7 +654,6 @@ class Pod(BasePod):
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
-            self._set_after_to_pass(args)
             self.is_head_router = True
             self.is_tail_router = True
             parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
@@ -700,3 +685,26 @@ class Pod(BasePod):
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args
+
+    def dump(self, pod_name, dump_path, shards, timeout):
+        """Emit a Dump request to its Peas
+
+        :param pod_name: the pod to target
+        :param shards: the nr of shards in the dump
+        :param dump_path: the path to which to dump
+        :param timeout: time to wait (seconds)
+        """
+        for pea in self.peas:
+            if pea.inner:
+                send_ctrl_message(
+                    pea.runtime.ctrl_addr,
+                    ControlMessage(
+                        command='DUMP',
+                        pod_name=pod_name,
+                        args={
+                            'dump_path': dump_path,
+                            'shards': shards,
+                        },
+                    ),
+                    timeout=timeout,
+                )
