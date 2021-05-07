@@ -20,6 +20,8 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
   - [Serialize `Document`](#serialize-document)
+  - [Add Recursion to `Document`](#add-recursion-to-document)
+  - [Visualize `Document`](#visualize-document)
 - [`DocumentArray` API](#documentarray-api)
 - [Extracting Multiple Attributes](#extracting-multiple-attributes)
 
