@@ -8,6 +8,8 @@ from jina.executors.rankers import Match2DocRanker
 
 
 class SGDRegressorRanker(Match2DocRanker):
+    """The :class:`SGDRegressorRanker` loads an :class:`SGDRegressor` and make use of the trained model
+    to predict relevance score."""
 
     MODEL_FILENAME = 'model.pickle'
 
@@ -30,6 +32,12 @@ class SGDRegressorRanker(Match2DocRanker):
         queries_metas: List[Dict],
         matches_metas: List[List[Dict]],
     ) -> 'np.ndarray':
+        """
+        Scoring function of the ranker.
+
+        This method extract features, i.e. `size` and `price` from `Document` tags,
+        make prediction based on the loaded model and return the score.
+        """
         sizes = []
         prices = []
         for match_meta in matches_metas:
