@@ -39,10 +39,10 @@ class SGDRegressorRankerTrainer(RankerTrainer):
         Save the weights of the ranker model.
         """
         path = Path(self.model_path)
-        model_path = path.joinpath(self.MODEL_FILENAME)
+        model_path = path.joinpath(path, self.MODEL_FILENAME)
 
-        if not path.exists():
-            path.mkdir(parents=True)
+        if not model_path.exists():
+            model_path.mkdir(parents=True)
 
         with open(model_path, mode='wb') as model_file_name:
             pickle.dump(self.regressor, model_file_name)

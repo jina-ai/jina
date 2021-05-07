@@ -20,7 +20,7 @@ class SGDRegressorRanker(Match2DocRanker):
     def post_init(self):
         super().post_init()
         path = Path(self.model_path)
-        model_path = path.joinpath(self.MODEL_FILENAME)
+        model_path = path.joinpath(path, self.MODEL_FILENAME)
         if not model_path.exists():
             raise FileNotFoundError('Ranker file not found.')
         self.model = pickle.load(model_path)
