@@ -13,9 +13,10 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
 
 - [`Document` API](#document-api)
   - [`Document` Attributes](#document-attributes)
-    - [Meta information](#meta-information)
-    - [Content information](#content-information)
-    - [Recursive information](#recursive-information)
+    - [Meta Attributes](#meta-attributes)
+    - [Content Attributes](#content-attributes)
+    - [Recursive Attributes](#recursive-attributes)
+    - [Relevance Attributes](#relevance-attributes)
   - [Construct a `Document`](#construct-a-document)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
