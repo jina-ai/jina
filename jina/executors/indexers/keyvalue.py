@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import mmap
 import os
 import random
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Union, List
 
 import numpy as np
 
@@ -203,7 +203,7 @@ class BinaryPbWriterMixin:
                 )
                 self._size -= 1
 
-    def _query(self, keys: Iterable[str]):
+    def _query(self, keys: Iterable[str]) -> List[bytes]:
         query_results = []
         for key in keys:
             pos_info = self.query_handler.header.get(key, None)

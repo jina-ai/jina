@@ -9,7 +9,12 @@ from jina import helper
 
 
 def _get_validator(field: str, choices: Iterable):
-    """ Pydantic validator classmethod generator to validate fields exist in choices """
+    """Pydantic validator classmethod generator to validate fields exist in choices
+
+    :param field: the field to validate
+    :param choices: the choices to check
+    :return: whether or not it's valid
+    """
 
     def validate_arg_choices(v, values):
         if v not in choices:
@@ -60,6 +65,13 @@ def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser']):
 
 
 def build_pydantic_model(model_name: str, module: str):
+    """Built the model for Pydantic
+
+    :param model_name: the name
+    :param module: the module
+    :return: the model
+    """
+
     class _PydanticConfig(BaseConfig):
         arbitrary_types_allowed = True
 

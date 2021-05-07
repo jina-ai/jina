@@ -2,7 +2,7 @@ jtype: KeyValueDBMSIndexer
 with:
   index_filename: keyvalue.bin
 metas:
-  workspace: $DBMS_WORKSPACE
+  workspace: workspace_dbms
   name: keyvalue
 requests:
   on:

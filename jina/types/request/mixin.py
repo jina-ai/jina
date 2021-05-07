@@ -1,4 +1,4 @@
-from ..arrays import DocumentArray
+from ... import DocumentArray
 from ...proto import jina_pb2
 
 
@@ -8,8 +8,9 @@ class DocsPropertyMixin:
     @property
     def docs(self) -> 'DocumentArray':
         """Get the :class: `DocumentArray` with sequence `body.docs` as content.
-        :return: requested :class: `DocumentArray`
-        """
+
+
+        .. #noqa: DAR201"""
         self.is_used = True
         return DocumentArray(self.body.docs)
 
@@ -20,8 +21,9 @@ class GroundtruthPropertyMixin:
     @property
     def groundtruths(self) -> 'DocumentArray':
         """Get the groundtruths in :class: `DocumentArray` type.
-        :return: requested groundtruths :class: `DocumentArray`
-        """
+
+
+        .. #noqa: DAR201"""
         self.is_used = True
         return DocumentArray(self.body.groundtruths)
 
@@ -32,8 +34,9 @@ class IdsMixin:
     @property
     def ids(self):
         """Get the ids.
-        :return: ids
-        """
+
+
+        .. #noqa: DAR201"""
         return self.body.ids
 
 
@@ -43,8 +46,9 @@ class CommandMixin:
     @property
     def command(self) -> str:
         """Get the command.
-        :return: command
-        """
+
+
+        .. #noqa: DAR201"""
         self.is_used = True
         return jina_pb2.RequestProto.ControlRequestProto.Command.Name(
             self.proto.control.command

@@ -87,7 +87,7 @@ def test_simple_run(docs):
     with flow:
         # test rolling update does not hang
         flow.search(docs)
-        flow.rolling_update('pod1')
+        flow.rolling_update('pod1', None)
         flow.search(docs)
 
 
