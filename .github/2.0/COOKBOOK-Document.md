@@ -20,6 +20,7 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
+- [`DocumentArray` API](#documentarray-api)
 - [Extracting Multiple Attributes](#extracting-multiple-attributes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
