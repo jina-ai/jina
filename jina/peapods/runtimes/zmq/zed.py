@@ -83,7 +83,7 @@ class ZEDRuntime(ZMQRuntime):
                     pea_id=self.args.pea_id,
                     replica_id=getattr(self.args, 'replica_id', -1),
                     read_only=self.args.read_only,
-                    parent_workspace=self.args.workspace
+                    parent_workspace=self.args.workspace,
                 ),
             )
         except BadConfigSource as ex:
@@ -107,7 +107,6 @@ class ZEDRuntime(ZMQRuntime):
             PathImporter.add_modules(*self.args.py_modules)
 
     #: Private methods required by :meth:`teardown`
-
 
     def _reload_executor(self):
         if (time.perf_counter() - self._last_load_time) > self.args.load_interval > 0:
@@ -211,7 +210,7 @@ class ZEDRuntime(ZMQRuntime):
                         raise TypeError(
                             f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                         )
-                    elif r_docs != self.request.docs:
+                    elif r_docs._docs_proto != self.request.docs._docs_proto:
                         # this means the returned DocArray is a completely new one
                         self.request.docs.clear()
                         self.request.docs.extend(r_docs)
