@@ -38,6 +38,14 @@ class ProtoTypeMixin:
         """
         return self._pb_body.SerializeToString()
 
+    @property
+    def nbytes(self) -> int:
+        """Return total bytes consumed by protobuf.
+
+        :return: number of bytes
+        """
+        return len(self.binary_str())
+
     def __getattr__(self, name: str):
         return getattr(self._pb_body, name)
 

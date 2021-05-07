@@ -39,29 +39,6 @@ A `Document` object has the following attributes, which can be put into the foll
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
-#### Meta Attributes
-
-|     |     |
-| --- | --- |
-| `doc.id` | A hexdigest that represents a unique document ID |
-| `doc.weight` | The weight of this document |
-| `doc.uri` | A uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |  
-| `doc.mime_type` | The mime type of this document |
-| `doc.location` | The position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |
-| `doc.offset` | The offset of this doc in the previous granularity document|
-| `doc.modality` | An identifier to the modality this document belongs to|
-
-#### Content Attributes
-
-|     |     |
-| --- | --- |
-| `doc.buffer` | The raw binary content of this document |
-| `doc.blob` | The `ndarray` of the image/audio/video document |
-| `doc.text` | The text info of the document |
-| `doc.content` | One of the above non-empty field |
-| `doc.embedding` | The embedding `ndarray` of this Document |
-| `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
-
 #### Recursive Attributes
 
 `Document` can be recurred in both horizontal & vertical way.
@@ -82,6 +59,17 @@ A `Document` object has the following attributes, which can be put into the foll
 
 ### Construct a `Document`
 
+##### Content Attributes
+
+|     |     |
+| --- | --- |
+| `doc.buffer` | The raw binary content of this document |
+| `doc.blob` | The `ndarray` of the image/audio/video document |
+| `doc.text` | The text info of the document |
+| `doc.content` | One of the above non-empty field |
+| `doc.embedding` | The embedding `ndarray` of this Document |
+| `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
+
 You can assign `str`, `ndarray`, `buffer` to a `Document`.
 
 ```python
@@ -99,9 +87,22 @@ d3 = Document(content=np.array([1, 2, 3]))
 <jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
 ```
 
-The content will be automatically assigned to one of `text`, `buffer`, `blob` fields.
+The content will be automatically assigned to one of `text`, `buffer`, `blob` fields, `id` and `mime_type` are
+auto-generated when not given.
 
 #### Construct with Multiple Attributes
+
+##### Meta Attributes
+
+|     |     |
+| --- | --- |
+| `doc.id` | A hexdigest that represents a unique document ID |
+| `doc.weight` | The weight of this document |
+| `doc.uri` | A uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |  
+| `doc.mime_type` | The mime type of this document |
+| `doc.location` | The position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |
+| `doc.offset` | The offset of this doc in the previous granularity document|
+| `doc.modality` | An identifier to the modality this document belongs to|
 
 You can assign multiple attributes in the constructor via:
 
@@ -180,6 +181,40 @@ To make a deep copy, use `copy=True`,
 d1 = Document(d, copy=True)
 
 assert id(d) == id(d1)  # False
+```
+
+### Serialize `Document`
+
+You can serialize a `Document` into JSON string or Python dict or binary string via
+
+```python
+from jina import Document
+d = Document(content='hello, world')
+d.json()
+```
+
+```
+{
+  "id": "6a1c7f34-aef7-11eb-b075-1e008a366d48",
+  "mimeType": "text/plain",
+  "text": "hello world"
+}
+```
+
+```python
+d.dict()
+```
+
+```
+{'id': '6a1c7f34-aef7-11eb-b075-1e008a366d48', 'mimeType': 'text/plain', 'text': 'hello world'}
+```
+
+```python
+d.binary_str()
+```
+
+```
+b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
 ```
 
 ## `DocumentArray` API
