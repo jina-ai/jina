@@ -31,9 +31,12 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
 
 A `Document` object has the following attributes, which can be put into the following categories:
 
-| | | | Meta attributes | `.id`, `.weight`, `.uri`, `.mime_type`, `.location`, `.offset`, `.modality` | | Content
-attributes | `.buffer`, `.blob`, `.text`, `.content`, `.embedding`, `.tags` | | Recursive attributes | `.chunks`
-, `.matches`, `.granularity`, `.adjacency` | | Relevance attributes | `.score`, `.evaluations` |
+| | | 
+|---|---|
+| Meta attributes | `.id`, `.weight`, `.uri`, `.mime_type`, `.location`, `.offset`, `.modality` |
+| Content attributes | `.buffer`, `.blob`, `.text`, `.content`, `.embedding`, `.tags` | 
+| Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
+| Relevance attributes | `.score`, `.evaluations` |
 
 #### Meta Attributes
 
