@@ -169,12 +169,26 @@ d1 = Document(d, copy=True)
 assert id(d) == id(d1)  # False
 ```
 
+#### Construct from Generator
+
+You can also construct `Document` from some generator:
+
+|     |     |
+| --- | --- |
+| `Document.from_ndjson()` | Yield `Document` from a line-based JSON file, each line is a `Document` object |
+| `Document.from_csv()` | Yield `Document` from a CSV file, each line is a `Document` object |
+| `Document.from_files()` | Yield `Document` from a glob files, each file is a `Document` object |
+| `Document.from_ndarray()` | Yield `Document` from a `ndarray`, each row (depending on `axis`) is a `Document` object |
+
+Using generator is sometimes less memory demanding, as it does not load build all Document objects in one shot.
+
 ### Serialize `Document`
 
 You can serialize a `Document` into JSON string or Python dict or binary string via
 
 ```python
 from jina import Document
+
 d = Document(content='hello, world')
 d.json()
 ```
@@ -239,6 +253,8 @@ You can add **chunks** (sub-document) and **matches** (neighbour-document) to a 
   d.chunks.append(Document())
   d.matches.append(Document())
   ```
+
+Note that both `doc.chunks` and `doc.matches` return `DocumentArray`, which we will introduce later.
 
 ### Visualize `Document`
 
@@ -311,20 +327,53 @@ q.matches.append(m)
 
 ## `DocumentArray` API
 
+`DocumentArray` is a list of `Document` objects. You can construct, delete, insert, sort, traverse a `DocumentArray`
+like a Python `list`.
+
+Methods supported by `DocumentArray`:
+
+| | |
+|--- |--- |
+| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `pop`, `remove`, `__iadd__`, `__add__`, `__iter__`, `__clear__`, `sort` |
+| Persistence | `save`, `load` |
+| Advanced getters | `get_attributes`, `get_attributes_with_docs` |
+
+### Construct `DocumentArray`
+
+One can construct a `DocumentArray` from iterable of `Document` via:
+
 ```python
-from jina import Executor, requests, DocumentArray
+from jina import DocumentArray, Document
 
+# from list
+da1 = DocumentArray([Document(), Document()])
 
-class MyExec(Executor):
+# from generator
+da2 = DocumentArray((Document() for _ in range(10)))
 
-  @requests
-  def foo(self, docs: DocumentArray, **kwargs) -> Optional[DocumentArray]:
-    ...
+# from another `DocumentArray`
+da3 = DocumentArray(da2)
 ```
 
-## Extracting Multiple Attributes
+### Get Attributes in Bulk
 
-One can extract multiple attributes from a `Document` via
+`DocumentArray` implements powerful getters that allows one to fetch multiple attributes from the documents it contains
+in one-shot.
 
+```python
+import numpy as np
+
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(id=1, text='hello', embedding=np.array([1, 2, 3])),
+                    Document(id=2, text='goodbye', embedding=np.array([4, 5, 6])),
+                    Document(id=3, text='world', embedding=np.array([7, 8, 9]))])
+
+da.get_attributes('id', 'text', 'embedding')
+```
+
+```text
+[('1', '2', '3'), ('hello', 'goodbye', 'world'), (array([1, 2, 3]), array([4, 5, 6]), array([7, 8, 9]))]
+```
 
 

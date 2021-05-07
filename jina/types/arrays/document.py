@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence, Iterable as Itr
-from typing import Union, Iterable, Tuple, Sequence, List, Iterator
+from typing import Union, Iterable, Tuple, List, Iterator
 
 from ...enums import EmbeddingClsType
 from ...helper import typename, cached_property
@@ -67,11 +67,15 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     """
 
     def __init__(
-            self, docs_proto: Union['RepeatedContainer', Sequence['Document'], None] = None
+            self, docs_proto: Union['RepeatedContainer', Iterable['Document'], None] = None
     ):
         super().__init__()
         if docs_proto is not None:
-            self._docs_proto = docs_proto
+            if isinstance(docs_proto, RepeatedContainer):
+                self._docs_proto = docs_proto
+            elif isinstance(docs_proto, Iterable):
+                self._docs_proto = []
+                self.extend(docs_proto)
         else:
             self._docs_proto = []
 
@@ -313,7 +317,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     def __str__(self):
         from ..document import Document
 
-        content = f'in total {len(self._docs_proto)} items' if len(self._docs_proto) > 3 else ''
+        content = f'in total {len(self._docs_proto)} items\n' if len(self._docs_proto) > 3 else ''
         content += ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
 
         return content
