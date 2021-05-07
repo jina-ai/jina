@@ -15,21 +15,30 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture
-def documents():
+def documents_to_train():
     queries = []
     for q in range(1, 5):
         query = Document()
         for i in range(1, 5):
             match = Document()
             # large size higher relevance
-            match.tags['price'] = q
+            match.tags['price'] = 1
             match.tags['size'] = i * 10
-            match.tags['relevance'] = i
+            match.tags['relevance'] = i / 10
             query.matches.add(match)
         queries.append(query)
     return DocumentSet(queries)
 
 
-def test_train_offline(documents):
+@pytest.fixture
+def doc_to_query():
+    doc = Document()
+    doc.tags['price'] = 1
+    doc.tags['size'] = 4
+    return doc
+
+
+def test_train_offline(documents_to_train, doc_to_query):
     with Flow.load_config(os.path.join(cur_dir, 'flow_offline_train.yml')) as f:
-        f.train(inputs=documents)
+        f.train(inputs=documents_to_train)
+        f.search(inputs=[doc_to_query])
