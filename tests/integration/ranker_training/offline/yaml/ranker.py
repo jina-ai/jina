@@ -3,7 +3,7 @@ from typing import List, Dict
 
 import numpy as np
 
-from jina.executors.decorators import batching
+from jina.executors.decorators import single
 from jina.executors.rankers import Match2DocRanker
 
 
@@ -23,7 +23,7 @@ class SGDRegressorRanker(Match2DocRanker):
         with open(self.model_path + '/' + self.MODEL_FILENAME, 'rb') as pickle_file:
             self.model = pickle.load(pickle_file)
 
-    @batching(slice_nargs=3)
+    @single
     def score(
         self,
         old_match_scores: List[List[float]],

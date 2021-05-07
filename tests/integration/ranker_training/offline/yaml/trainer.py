@@ -7,11 +7,14 @@ from jina.executors.rankers.trainer import RankerTrainer
 
 
 class SGDRegressorRankerTrainer(RankerTrainer):
+    """The :class:`SGDRegressorRankerTrainer` trains an :class:`SGDRegressor` and save the trained model
+    to the expected directory. To be loaded into :class:`SGDRegressorRanker`."""
 
     MODEL_FILENAME = 'model.pickle'
 
     def __init__(self, model_path: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.model = None
         self.model_path = model_path
         self.match_required_keys = {'tags__size', 'tags__price', 'tags__relevance'}
         self.query_required_keys = None
@@ -19,9 +22,16 @@ class SGDRegressorRankerTrainer(RankerTrainer):
     def post_init(self):
         from sklearn.linear_model import SGDRegressor
 
-        self.regressor = SGDRegressor(warm_start=True)
+        self.model = SGDRegressor(warm_start=True)
 
     def train(self, query_metas, matches_metas, *args, **kwargs):
+        """
+        Train the ranker, the core function of trainer.
+
+        This method extract `size` and `price` features from ``Document`` tags,
+        serve as the features for model training. And extract `relevance` from ``Document``,
+        serve as the labels for model training.
+        """
         sizes = []
         prices = []
         relevance = []
@@ -32,16 +42,14 @@ class SGDRegressorRankerTrainer(RankerTrainer):
                 relevance.append(m['tags__relevance'])
         X = np.column_stack((prices, sizes))
         y = np.asarray(relevance)
-        self.regressor.partial_fit(X, y)
+        self.model.partial_fit(X, y)
 
     def save(self):
-        """
-        Save the weights of the ranker model.
-        """
+        """Save the updated the ranker model."""
         path = Path(self.model_path)
 
         if not path.exists():
             path.mkdir(parents=True)
 
         with open(str(path) + '/' + self.MODEL_FILENAME, mode='wb') as model_file_name:
-            pickle.dump(self.regressor, model_file_name)
+            pickle.dump(self.model, model_file_name)
