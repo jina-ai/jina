@@ -1,28 +1,7 @@
 # Temporary Cookbook on `Executor` 2.0 API
 
-* [Minimum working example](#minimum-working-example)
-    + [Pure Python](#pure-python)
-    + [With YAML](#with-yaml)
-* [Executor API](#executor-api)
-  + [Inheritance](#inheritance)
-  + [Method naming](#method-naming)
-  + [`@requests` decorator](#requests-decorator)
-    - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
-    - [Multiple binding: `@requests(on=[...])`](#multiple-binding-requestson)
-  + [Method Signature](#method-signature)
-  + [Method Arguments](#method-arguments)
-  + [Method Returns](#method-returns)
-  + [YAML Interface](#yaml-interface)
-  + [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
-  + [Summary](#summary)
-* [Executor Built-in Features](#executor-built-in-features)
-  + [1.x vs 2.0](#1x-vs-20)
-  + [Workspace](#workspace)
-  + [Metas](#metas)
-* [Flow/Client API](#flowclient-api)
-  + [`post` method](#post-method)
-* [Remarks](#remarks)
-  + [Joining/Merging](#joiningmerging)
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 ## Minimum working example
 
@@ -332,14 +311,14 @@ subclassing `Executor` should be easy.
 | Context manager interface |  ❌ |
 | Inline `import` coding style |  ❌ |
 
-![](.github/1.xvs2.0%20BaseExecutor.svg)
+![](1.xvs2.0%20BaseExecutor.svg)
 
 ### Workspace
 
 Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
 then second):
 
-![](.github/workspace-inherit.svg?raw=true)
+![](workspace-inherit.svg?raw=true)
 
 ### Metas
 
@@ -397,7 +376,7 @@ Comparing to 1.x Client/Flow API, the three new arguments are:
 
 Left is 1.x, right is 2.0.
 
-![img.png](.github/migration-fashion.png?raw=true)
+![img.png](migration-fashion.png?raw=true)
 
 Line number corresponds to the 1.x code:
 

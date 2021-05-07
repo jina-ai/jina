@@ -1,0 +1,35 @@
+name: Autocommit
+
+on:
+  push:
+    branches:
+      - devel-2.0
+
+jobs:
+  autocommit:
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
+      - run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+      - name: Generate TOC
+        uses: technote-space/toc-generator@v3
+        with:
+          MAX_HEADER_LEVEL: 2
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          COMMIT_NAME: Jina Dev Bot
+          COMMIT_EMAIL: dev-bot@jina.ai
+          TOC_TITLE: ''
+          TARGET_PATHS: '.github/2.0/COOKBOOK-*.md'
+      - uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          branch: devel-2.0

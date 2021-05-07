@@ -21,6 +21,9 @@ class MyExec(Executor):
 
 One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray` is like `np.ndarray`.
 
+<!-- START doctoc -->
+<!-- END doctoc -->
+
 ## `Document` API
 
 ### `Document` Attributes
@@ -82,6 +85,25 @@ d3 = Document(content=np.array([1, 2, 3]))
 
 The content will be automatically assigned to one of `text`, `buffer`, `blob` fields.
 
+#### Construct with Multiple Attributes
+
+You can assign multiple attributes in the constructor via:
+
+```python
+from jina import Document
+
+d = Document(content='hello',
+             uri='https://jina.ai',
+             mime_type='text/plain',
+             granularity=1,
+             adjacency=3,
+             tags={'foo': 'bar'})
+```
+
+```text
+<jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} text=hello granularity=1 adjacency=3 at 6317309200>
+```
+
 #### Construct from Dict or JSON String
 
 You can build a `Document` from `dict` or a JSON string.
@@ -97,7 +119,7 @@ d = json.dumps({'id': 'hello123', 'content': 'world'})
 d2 = Document(d)
 ```
 
-#### Parsing Unrecognized Fields
+##### Parsing Unrecognized Fields
 
 Unrecognized fields in Dict/JSON string are automatically put into `.tags` field.
 
@@ -121,6 +143,27 @@ d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'
 
 ```text
 <jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
+```
+
+#### Construct from Another `Document`
+
+Assigning a `Document` object to another `Document` object will make a shallow copy.
+
+```python
+from jina import Document
+
+d = Document(content='hello, world!')
+d1 = d
+
+assert id(d) == id(d1)  # True
+```
+
+To make a deep copy, use `copy=True`,
+
+```python
+d1 = Document(d, copy=True)
+
+assert id(d) == id(d1)  # False
 ```
 
 ## Extracting Multiple Attributes
