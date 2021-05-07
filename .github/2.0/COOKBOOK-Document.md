@@ -21,8 +21,13 @@ class MyExec(Executor):
 
 One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray` is like `np.ndarray`.
 
-<!-- START doctoc -->
-<!-- END doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [`Document` API](#document-api)
+- [Extracting Multiple Attributes](#extracting-multiple-attributes)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## `Document` API
 

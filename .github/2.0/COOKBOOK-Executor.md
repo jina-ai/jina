@@ -1,7 +1,16 @@
 # Temporary Cookbook on `Executor` 2.0 API
 
-<!-- START doctoc -->
-<!-- END doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Minimum working example](#minimum-working-example)
+- [Executor API](#executor-api)
+- [Executor Built-in Features](#executor-built-in-features)
+- [Flow/Client API](#flowclient-api)
+- [Migration in Practice](#migration-in-practice)
+- [Remarks](#remarks)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Minimum working example
 
