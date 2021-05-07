@@ -87,11 +87,6 @@ DocumentSourceType = TypeVar(
     'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
 )
 
-_document_fields = set(
-    list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name)
-    + list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
-)
-
 _all_mime_types = set(mimetypes.types_map.values())
 
 
@@ -209,17 +204,27 @@ class Document(ProtoTypeMixin, Traversable):
                     }
 
                 user_fields = set(document.keys())
-                if _document_fields.issuperset(user_fields):
+                support_fields = set(self.attributes(include_proto_fields_camelcase=True, include_properties=False))
+
+                if support_fields.issuperset(user_fields):
                     json_format.ParseDict(document, self._pb_body)
                 else:
-                    _intersect = _document_fields.intersection(user_fields)
+                    _intersect = support_fields.intersection(user_fields)
                     _remainder = user_fields.difference(_intersect)
                     if _intersect:
                         json_format.ParseDict(
                             {k: document[k] for k in _intersect}, self._pb_body
                         )
                     if _remainder:
-                        self._pb_body.tags.update({k: document[k] for k in _remainder})
+                        support_prop = set(self.attributes(include_proto_fields=False, include_properties=True))
+                        _intersect2 = support_prop.intersection(_remainder)
+                        _remainder2 = _remainder.difference(_intersect2)
+
+                        if _intersect2:
+                            self.set_attributes(**{p: document[p] for p in _intersect2})
+
+                        if _remainder2:
+                            self._pb_body.tags.update({k: document[k] for k in _remainder})
             elif isinstance(document, bytes):
                 # directly parsing from binary string gives large false-positive
                 # fortunately protobuf throws a warning when the parsing seems go wrong
@@ -1216,21 +1221,29 @@ class Document(ProtoTypeMixin, Traversable):
         return tuple(field[0].name for field in self.ListFields())
 
     @staticmethod
-    def get_all_attributes() -> List[str]:
+    def attributes(include_proto_fields: bool = True,
+                   include_proto_fields_camelcase: bool = False,
+                   include_properties: bool = False) -> List[str]:
         """Return all attributes supported by the Document, which can be accessed by ``doc.attribute``
 
         :return: a list of attributes in string.
         """
         import inspect
 
-        support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+        support_keys = []
 
-        support_keys += [
-            name
-            for (name, value) in inspect.getmembers(
-                Document, lambda x: isinstance(x, property)
-            )
-        ]
+        if include_proto_fields:
+            support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+        if include_proto_fields_camelcase:
+            support_keys += list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name)
+
+        if include_properties:
+            support_keys += [
+                name
+                for (name, value) in inspect.getmembers(
+                    Document, lambda x: isinstance(x, property)
+                )
+            ]
         return list(set(support_keys))
 
     @staticmethod

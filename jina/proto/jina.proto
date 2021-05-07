@@ -83,10 +83,7 @@ message DocumentProto {
     // the width of the recursive match structure
     uint32 adjacency = 22;
 
-    // the name of the level
-    string level_name = 15;
-
-    // the parent id from the previous level
+    // the parent id from the previous granularity
     string parent_id = 16;
 
     oneof content {
@@ -100,16 +97,16 @@ message DocumentProto {
         string text = 13;
     }
 
-    // list of the chunks of this document (recursive structure)
+    // list of the sub-documents of this document (recursive structure)
     repeated DocumentProto chunks = 4;
 
-    // the weight of this document
+    // The weight of this document
     float weight = 5;
 
     // total number of siblings of this document (docs that are in the same granularity and have the same parent_id)
     uint32 siblings = 25;
 
-    // the top-k matched Docs on the same level (recursive structure)
+    // the matched documents on the same level (recursive structure)
     repeated DocumentProto matches = 8;
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
@@ -124,10 +121,10 @@ message DocumentProto {
     // the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip
     repeated uint32 location = 17;
 
-    // the offset of this doc in the previous level document
+    // the offset of this doc in the previous granularity document
     uint32 offset = 18;
 
-    // the embedding array of this doc
+    // the embedding `ndarray` of this document
     NdArrayProto embedding = 19;
 
     // TODO: List of matching scores performed on the document, each element corresponds to a metric

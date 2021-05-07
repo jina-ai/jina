@@ -1,4 +1,4 @@
-# Temporary Cookbook on Jina 2.0 API
+# Temporary Cookbook on `Executor` 2.0 API
 
 * [Minimum working example](#minimum-working-example)
     + [Pure Python](#pure-python)
