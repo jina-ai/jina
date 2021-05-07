@@ -1,11 +1,11 @@
 !SGDRegressorRanker
 with:
-  model_path: .
+  model_path: "/Users/bo/Documents/work/jina"
 metas:
   py_modules: ranker.py
 requests:
   on:
     SearchRequest:
-      - jtype: Chunk2DocRankDriver
+      - jtype: Matches2DocRankDriver
         with:
           traversal_paths: ['r']

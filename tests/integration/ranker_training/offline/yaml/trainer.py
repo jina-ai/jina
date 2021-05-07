@@ -30,7 +30,7 @@ class SGDRegressorRankerTrainer(RankerTrainer):
                 sizes.append(m['tags__size'])
                 prices.append(m['tags__price'])
                 relevance.append(m['tags__relevance'])
-        X = np.column_stack((sizes, prices))
+        X = np.column_stack((prices, sizes))
         y = np.asarray(relevance)
         self.regressor.partial_fit(X, y)
 
@@ -39,10 +39,9 @@ class SGDRegressorRankerTrainer(RankerTrainer):
         Save the weights of the ranker model.
         """
         path = Path(self.model_path)
-        model_path = path.joinpath(path, self.MODEL_FILENAME)
 
-        if not model_path.exists():
-            model_path.mkdir(parents=True)
+        if not path.exists():
+            path.mkdir(parents=True)
 
-        with open(model_path, mode='wb') as model_file_name:
+        with open(str(path) + '/' + self.MODEL_FILENAME, mode='wb') as model_file_name:
             pickle.dump(self.regressor, model_file_name)

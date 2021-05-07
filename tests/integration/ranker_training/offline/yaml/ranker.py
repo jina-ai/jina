@@ -1,5 +1,4 @@
 import pickle
-from pathlib import Path
 from typing import List, Dict
 
 import numpy as np
@@ -16,24 +15,26 @@ class SGDRegressorRanker(Match2DocRanker):
         super().__init__(*args, **kwargs)
         self.model = None
         self.model_path = model_path
+        self.match_required_keys = {'tags__size', 'tags__price'}
+        self.query_required_keys = None
 
     def post_init(self):
         super().post_init()
-        path = Path(self.model_path)
-        model_path = path.joinpath(path, self.MODEL_FILENAME)
-        if not model_path.exists():
-            raise FileNotFoundError('Ranker file not found.')
-        self.model = pickle.load(model_path)
+        with open(self.model_path + '/' + self.MODEL_FILENAME, 'rb') as pickle_file:
+            self.model = pickle.load(pickle_file)
 
     @batching(slice_nargs=3)
     def score(
         self,
         old_match_scores: List[List[float]],
-        query_meta: List[Dict],
-        match_meta: List[List[Dict]],
+        queries_metas: List[Dict],
+        matches_metas: List[List[Dict]],
     ) -> 'np.ndarray':
-        # build X
-        dataset = self._get_features_dataset(
-            query_meta=query_meta, match_meta=match_meta
-        )
-        return self.model.predict(dataset.get_data())
+        sizes = []
+        prices = []
+        for match_meta in matches_metas:
+            for m in match_meta:
+                sizes.append(m['tags__size'])
+                prices.append(m['tags__price'])
+        X = np.column_stack((prices, sizes))
+        return self.model.predict(X)

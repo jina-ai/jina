@@ -6,4 +6,4 @@ metas:
 requests:
   on:
     TrainRequest:
-      - !RankerTrainerDriver {}
+      - jtype: RankerTrainerDriver {}
