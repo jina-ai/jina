@@ -29,7 +29,6 @@ from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
-from .traversable import Traversable
 from ..arrays.chunk import ChunkArray
 from ..arrays.match import MatchArray
 from ..mixin import ProtoTypeMixin
@@ -90,7 +89,7 @@ DocumentSourceType = TypeVar(
 _all_mime_types = set(mimetypes.types_map.values())
 
 
-class Document(ProtoTypeMixin, Traversable):
+class Document(ProtoTypeMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -204,7 +203,11 @@ class Document(ProtoTypeMixin, Traversable):
                     }
 
                 user_fields = set(document.keys())
-                support_fields = set(self.attributes(include_proto_fields_camelcase=True, include_properties=False))
+                support_fields = set(
+                    self.attributes(
+                        include_proto_fields_camelcase=True, include_properties=False
+                    )
+                )
 
                 if support_fields.issuperset(user_fields):
                     json_format.ParseDict(document, self._pb_body)
@@ -216,7 +219,11 @@ class Document(ProtoTypeMixin, Traversable):
                             {k: document[k] for k in _intersect}, self._pb_body
                         )
                     if _remainder:
-                        support_prop = set(self.attributes(include_proto_fields=False, include_properties=True))
+                        support_prop = set(
+                            self.attributes(
+                                include_proto_fields=False, include_properties=True
+                            )
+                        )
                         _intersect2 = support_prop.intersection(_remainder)
                         _remainder2 = _remainder.difference(_intersect2)
 
@@ -224,7 +231,9 @@ class Document(ProtoTypeMixin, Traversable):
                             self.set_attributes(**{p: document[p] for p in _intersect2})
 
                         if _remainder2:
-                            self._pb_body.tags.update({k: document[k] for k in _remainder})
+                            self._pb_body.tags.update(
+                                {k: document[k] for k in _remainder}
+                            )
             elif isinstance(document, bytes):
                 # directly parsing from binary string gives large false-positive
                 # fortunately protobuf throws a warning when the parsing seems go wrong
@@ -1164,10 +1173,10 @@ class Document(ProtoTypeMixin, Traversable):
 
         mermaid_str = (
                 """
-                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                classDiagram
-            
-                        """
+                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                    classDiagram
+                
+                            """
                 + self.__mermaid_str__()
         )
 
@@ -1221,9 +1230,11 @@ class Document(ProtoTypeMixin, Traversable):
         return tuple(field[0].name for field in self.ListFields())
 
     @staticmethod
-    def attributes(include_proto_fields: bool = True,
-                   include_proto_fields_camelcase: bool = False,
-                   include_properties: bool = False) -> List[str]:
+    def attributes(
+            include_proto_fields: bool = True,
+            include_proto_fields_camelcase: bool = False,
+            include_properties: bool = False,
+    ) -> List[str]:
         """Return all attributes supported by the Document, which can be accessed by ``doc.attribute``
 
         :return: a list of attributes in string.
@@ -1235,7 +1246,9 @@ class Document(ProtoTypeMixin, Traversable):
         if include_proto_fields:
             support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
         if include_proto_fields_camelcase:
-            support_keys += list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name)
+            support_keys += list(
+                jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name
+            )
 
         if include_properties:
             support_keys += [

@@ -31,7 +31,11 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
 
 A `Document` object has the following attributes, which can be put into the following categories:
 
-#### Meta information
+| | | | Meta attributes | `.id`, `.weight`, `.uri`, `.mime_type`, `.location`, `.offset`, `.modality` | | Content
+attributes | `.buffer`, `.blob`, `.text`, `.content`, `.embedding`, `.tags` | | Recursive attributes | `.chunks`
+, `.matches`, `.granularity`, `.adjacency` | | Relevance attributes | `.score`, `.evaluations` |
+
+#### Meta Attributes
 
 |     |     |
 | --- | --- |
@@ -43,7 +47,7 @@ A `Document` object has the following attributes, which can be put into the foll
 | `doc.offset` | The offset of this doc in the previous granularity document|
 | `doc.modality` | An identifier to the modality this document belongs to|
 
-#### Content information
+#### Content Attributes
 
 |     |     |
 | --- | --- |
@@ -54,7 +58,7 @@ A `Document` object has the following attributes, which can be put into the foll
 | `doc.embedding` | The embedding `ndarray` of this Document |
 | `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
 
-#### Recursive information
+#### Recursive Attributes
 
 `Document` can be recurred in both horizontal & vertical way.
 
@@ -64,6 +68,13 @@ A `Document` object has the following attributes, which can be put into the foll
 | `doc.matches` | The list of matched documents of this document. They have `adjacency + 1` but same `granularity` |
 |  `doc.granularity` | The recursion "depth" of the recursive chunks structure |
 |  `doc.adjacency` | The recursion "width" of the recursive match structure |
+
+#### Relevance Attributes
+
+|     |     |
+| --- | --- |
+| `doc.score` | The relevance information of this document |
+| `doc.evaluations` | The evaluation information of this document |
 
 ### Construct a `Document`
 
