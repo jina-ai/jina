@@ -146,7 +146,7 @@ def _error_callback(resp):
 @pytest.mark.parametrize('nr_docs', [7])
 @pytest.mark.parametrize('emb_size', [10])
 def test_dump_dbms(
-    tmpdir, mocker, shards, nr_docs, emb_size, run_basic=False, times_to_index=2
+    tmpdir, shards, nr_docs, emb_size, run_basic=False, times_to_index=2
 ):
     """showcases using replicas + dump + rolling update with independent clients"""
 
@@ -251,8 +251,12 @@ def _print_and_append_to_ops(statement):
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('nr_docs', [700])
 @pytest.mark.parametrize('emb_size', [10])
-def test_threading_query_while_reloading(tmpdir, nr_docs, emb_size, mocker):
+def test_threading_query_while_reloading(tmpdir, nr_docs, emb_size, mocker, reraise):
     global operations
+
+    def update_rolling(flow, pod_name, dump_path):
+        with reraise:
+            flow.rolling_update(pod_name, dump_path)
 
     # TODO better way to test async procedure call order
     # patch
@@ -305,7 +309,7 @@ def test_threading_query_while_reloading(tmpdir, nr_docs, emb_size, mocker):
 
             # test with query while reloading async.
             t = Thread(
-                target=flow_query.rolling_update, args=('indexer_query', dump_path)
+                target=update_rolling, args=(flow_query, 'indexer_query', dump_path)
             )
 
             # searching on the still empty replica

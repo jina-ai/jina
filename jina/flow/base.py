@@ -983,7 +983,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def rolling_update(self, pod_name, dump_path):
+    def rolling_update(self, pod_name: str, dump_path: Optional[str] = None):
         """
         Reload Pods sequentially - only used for compound pods.
 

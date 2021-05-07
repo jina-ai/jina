@@ -225,7 +225,7 @@ class CompoundPod(BasePod):
             result.append(_args)
         return result
 
-    def rolling_update(self, dump_path):
+    def rolling_update(self, dump_path: Optional[str] = None):
         """Reload all Pods of this Compound Pod.
 
         :param dump_path: the dump from which to read the data

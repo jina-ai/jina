@@ -3,7 +3,6 @@ import sys
 import time
 import traceback
 from contextlib import ExitStack
-from pathlib import Path
 from threading import Thread
 from typing import List
 
@@ -146,7 +145,19 @@ def _path_size_remote(this_dump_path):
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_dump_dbms_remote_stress(docker_compose):
+def test_dump_dbms_remote_stress(docker_compose, reraise):
+    def _inner_query_client(nr_docs_search):
+        with reraise:
+            _query_client(nr_docs_search)
+
+    def _inner_index_client(nr_docs_index):
+        with reraise:
+            _index_client(nr_docs_index)
+
+    def _inner_dump_rolling_update(dbms_flow_id, query_flow_id):
+        with reraise:
+            _dump_roll_update(dbms_flow_id, query_flow_id)
+
     global KEEP_RUNNING
     nr_docs_index = 20
     nr_docs_search = 3
@@ -156,19 +167,25 @@ def test_dump_dbms_remote_stress(docker_compose):
     time.sleep(4)
 
     query_thread = MyThread(
-        target=_query_client, name='_query_client', args=(nr_docs_search,), daemon=True
+        target=_inner_query_client,
+        name='_query_client',
+        args=(nr_docs_search,),
+        daemon=True,
     )
     query_thread.start()
 
     index_thread = MyThread(
-        target=_index_client, name='_index_client', args=(nr_docs_index,), daemon=True
+        target=_inner_index_client,
+        name='_index_client',
+        args=(nr_docs_index,),
+        daemon=True,
     )
     index_thread.start()
 
     # give it time to index
     time.sleep(2)
     dump_roll_update_thread = MyThread(
-        target=_dump_roll_update,
+        target=_inner_dump_rolling_update,
         name='_dump_roll_update',
         args=(dbms_flow_id, query_flow_id),
         daemon=True,
