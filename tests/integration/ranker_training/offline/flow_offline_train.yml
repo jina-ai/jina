@@ -3,5 +3,3 @@ version: '1'
 pods:
   - name: trainer
     uses: yaml/train.yml
-  - name: search
-    uses: yaml/search.yml

@@ -24,7 +24,7 @@ def documents_to_train():
             # large size higher relevance
             match.tags['price'] = 1
             match.tags['size'] = i * 10
-            match.tags['relevance'] = i / 10
+            match.tags['relevance'] = i
             query.matches.add(match)
         queries.append(query)
     return DocumentSet(queries)
@@ -33,12 +33,21 @@ def documents_to_train():
 @pytest.fixture
 def doc_to_query():
     doc = Document()
-    doc.tags['price'] = 1
-    doc.tags['size'] = 4
+    for i in range(1, 5):
+        match = Document()
+        match.tags['price'] = 1
+        match.tags['size'] = i * 10
+        doc.matches.add(match)
     return doc
 
 
 def test_train_offline(documents_to_train, doc_to_query):
+    def print_result(req):
+        for match in req.docs[0].matches:
+            print(match.score.value)
+
     with Flow.load_config(os.path.join(cur_dir, 'flow_offline_train.yml')) as f:
         f.train(inputs=documents_to_train)
-        f.search(inputs=[doc_to_query])
+
+    with Flow.load_config(os.path.join(cur_dir, 'flow_offline_search.yml')) as f:
+        f.search(inputs=[doc_to_query], on_done=print_result)
