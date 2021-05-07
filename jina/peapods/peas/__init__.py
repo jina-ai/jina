@@ -114,8 +114,10 @@ class BasePea(metaclass=PeaType):
 
         This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
-        .. # noqa: DAR201
+
+        .. #noqa: DAR201
         """
+
         super().start()  #: required here to call process/thread method
         if not self.args.noblock_on_start:
             self.wait_start_success()
@@ -176,6 +178,8 @@ class BasePea(metaclass=PeaType):
             try:
                 if self._dealer:
                     self.runtime.deactivate()
+                    # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
+                    # it does not block. Needs to be refactored
                     time.sleep(0.1)
                 self.runtime.cancel()
                 self.is_shutdown.wait()
@@ -248,6 +252,14 @@ class BasePea(metaclass=PeaType):
     def role(self) -> 'PeaRoleType':
         """Get the role of this pea in a pod
 
-        .. # noqa: DAR201
-        """
+
+        .. #noqa: DAR201"""
         return self.args.pea_role
+
+    @property
+    def inner(self) -> bool:
+        """Determine whether this is a inner pea or a head/tail
+
+
+        .. #noqa: DAR201"""
+        return self.role is PeaRoleType.SINGLETON or self.role is PeaRoleType.PARALLEL

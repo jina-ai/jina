@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
+from jina import Document
 from jina.executors.indexers.dump import import_metas
 from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
 from jina.executors.indexers.query import BaseQueryIndexer
@@ -13,23 +14,21 @@ class BinaryPbQueryIndexer(BinaryPbWriterMixin, BaseQueryIndexer):
 
         :param dump_path: the path of the dump"""
         ids, metas = import_metas(dump_path, str(self.pea_id))
-        with self.write_handler as write_handler:
+        with self.get_create_handler() as write_handler:
             self._add(list(ids), list(metas), write_handler)
-        del self.write_handler
-        self.handler_mutex = False
-        self.is_handler_loaded = False
         # warming up
-        self._query('someid')
+        self.query(['someid'])
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, keys: List[str], *args, **kwargs) -> List[Optional[bytes]]:
         """Get a document by its id
 
-        :param key: the id
+        :param keys: the ids
         :param args: not used
         :param kwargs: not used
-        :return: the bytes of the Document
+        :return: List of the bytes of the Documents (or None, if not found)
         """
-        return self._query(key)
+        res = self._query(keys)
+        return res
 
 
 class KeyValueQueryIndexer(BinaryPbQueryIndexer):

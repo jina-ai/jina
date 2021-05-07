@@ -4,6 +4,7 @@ __license__ = "Apache-2.0"
 from typing import Iterable, Optional
 
 from . import BaseExecutableDriver, FlatRecursiveMixin
+from .. import Document
 from ..enums import EmbeddingClsType
 
 if False:
@@ -80,7 +81,7 @@ class DBMSIndexDriver(BaseIndexDriver):
             (
                 doc.id,
                 doc.embedding,
-                self._doc_without_embedding(doc).SerializeToString(),
+                DBMSIndexDriver._doc_without_embedding(doc).SerializeToString(),
             )
             for doc in docs
         ]

@@ -13,7 +13,7 @@ components:
       name: kvidx
 metas:
   name: compound_indexer
-  workspace: $QUERY_WORKSPACE
+  workspace: workspace_query
 requests:
   on:
     SearchRequest:
