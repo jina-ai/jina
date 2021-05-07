@@ -4,11 +4,31 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Minimum working example](#minimum-working-example)
+  - [Pure Python](#pure-python)
+  - [With YAML](#with-yaml)
 - [Executor API](#executor-api)
+  - [Inheritance](#inheritance)
+  - [`__init__` Constructor](#__init__-constructor)
+  - [Method naming](#method-naming)
+  - [`@requests` decorator](#requests-decorator)
+    - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
+    - [Multiple binding: `@requests(on=[...])`](#multiple-binding-requestson)
+  - [Method Signature](#method-signature)
+  - [Method Arguments](#method-arguments)
+  - [Method Returns](#method-returns)
+  - [YAML Interface](#yaml-interface)
+  - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
 - [Executor Built-in Features](#executor-built-in-features)
+  - [1.x vs 2.0](#1x-vs-20)
+  - [Workspace](#workspace)
+  - [Metas](#metas)
 - [Flow/Client API](#flowclient-api)
+  - [`post` method](#post-method)
 - [Migration in Practice](#migration-in-practice)
+  - [`jina hello fashion`](#jina-hello-fashion)
+    - [Encoder](#encoder)
 - [Remarks](#remarks)
+  - [Joining/Merging](#joiningmerging)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
