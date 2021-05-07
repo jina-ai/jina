@@ -217,6 +217,64 @@ d.binary_str()
 b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
 ```
 
+### Add Recursion to `Document`
+
+You can add **chunks** (sub-document) and **matches** (neighbour-document) to a `Document` via the following ways:
+
+- Add in constructor:
+
+  ```python
+  d = Document(chunks=[Document(), Document()], matches=[Document(), Document()])
+  ```
+
+- Add to existing `Document`:
+
+  ```python
+  d = Document()
+  d.chunks = [Document(), Document()]
+  d.matches = [Document(), Document()]
+  ```
+
+- Add to existing `doc.chunks` or `doc.matches`:
+
+  ```python
+  d = Document()
+  d.chunks.append(Document())
+  d.matches.append(Document())
+  ```
+
+### Visualize `Document`
+
+To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
+all `Document` objects will be auto-rendered.
+
+<table>
+  <tr>
+    <td>
+
+```python
+import numpy as np
+from jina import Document
+
+d0 = Document(id='🐲', embedding=np.array([0, 0]))
+d1 = Document(id='🐦', embedding=np.array([1, 0]))
+d2 = Document(id='🐢', embedding=np.array([0, 1]))
+d3 = Document(id='🐯', embedding=np.array([1, 1]))
+
+d0.chunks.append(d1)
+d0.chunks[0].chunks.append(d2)
+d0.matches.append(d3)
+
+d0.plot()  # simply `d0` on JupyterLab
+```
+
+</td>
+<td>
+<img src="https://github.com/jina-ai/jina/blob/master/.github/images/four-symbol-docs.svg?raw=true"/>
+</td>
+</tr>
+</table>
+
 ## `DocumentArray` API
 
 ```python

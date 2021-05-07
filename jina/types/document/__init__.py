@@ -668,6 +668,15 @@ class Document(ProtoTypeMixin):
         """
         return MatchArray(self._pb_body.matches, reference_doc=self)
 
+    @matches.setter
+    def matches(self, value: Iterable['Document']):
+        """Get all chunks of the current document.
+
+        :return: the array of chunks of this document
+        """
+        self.pop('matches')
+        self.matches.extend(value)
+
     @property
     def chunks(self) -> 'ChunkArray':
         """Get all chunks of the current document.
@@ -675,6 +684,15 @@ class Document(ProtoTypeMixin):
         :return: the array of chunks of this document
         """
         return ChunkArray(self._pb_body.chunks, reference_doc=self)
+
+    @chunks.setter
+    def chunks(self, value: Iterable['Document']):
+        """Get all chunks of the current document.
+
+        :return: the array of chunks of this document
+        """
+        self.pop('chunks')
+        self.chunks.extend(value)
 
     def __getattr__(self, item):
         if hasattr(self._pb_body, item):
