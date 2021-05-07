@@ -357,6 +357,18 @@ da2 = DocumentArray((Document() for _ in range(10)))
 da3 = DocumentArray(da2)
 ```
 
+### Persistence via `save()`/`load()`
+
+```python
+from jina import DocumentArray, Document
+
+# from list
+da = DocumentArray([Document(), Document()])
+
+da.save('data.json')
+da1 = DocumentArray.load('data.json')
+```
+
 ### Get Attributes in Bulk
 
 `DocumentArray` implements powerful getters that allows one to fetch multiple attributes from the documents it contains

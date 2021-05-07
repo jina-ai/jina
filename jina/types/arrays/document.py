@@ -1,9 +1,13 @@
+import json
 from collections.abc import MutableSequence, Iterable as Itr
-from typing import Union, Iterable, Tuple, List, Iterator
+from contextlib import nullcontext
+from typing import Union, Iterable, Tuple, List, Iterator, TextIO
 
+from .traversable import TraversableSequence
 from ...enums import EmbeddingClsType
 from ...helper import typename, cached_property
 from ...logging import default_logger
+from ...proto.jina_pb2 import DocumentProto
 
 try:
     # when protobuf using Cpp backend
@@ -15,9 +19,6 @@ except:
     from google.protobuf.internal.containers import (
         RepeatedCompositeFieldContainer as RepeatedContainer,
     )
-
-from ...proto.jina_pb2 import DocumentProto
-from .traversable import TraversableSequence
 
 __all__ = ['DocumentArray']
 
@@ -329,3 +330,37 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         content += f' at {id(self)}'
         content = content.strip()
         return f'<{typename(self)} {content}>'
+
+    def save(self, file: Union[str, TextIO]) -> None:
+        """Save array elements into a JSON file.
+
+        :param file: File or filename to which the data is saved.
+        """
+        if hasattr(file, 'write'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'w')
+
+        with file_ctx as fp:
+            for d in self:
+                json.dump(d.dict(), fp)
+                fp.write('\n')
+
+    @staticmethod
+    def load(file: Union[str, TextIO]) -> 'DocumentArray':
+        """Load array elements from a JSON file.
+
+        :param file: File or filename to which the data is saved.
+        """
+
+        if hasattr(file, 'read'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file)
+
+        from jina import Document
+        da = DocumentArray()
+        with file_ctx as fp:
+            for v in fp:
+                da.append(Document(v))
+        return da

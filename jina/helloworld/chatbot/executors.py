@@ -1,4 +1,3 @@
-import json
 import os
 from typing import Optional, Dict, Tuple
 
@@ -98,16 +97,10 @@ class MyIndexer(Executor):
         super().__init__(**kwargs)
         self._docs = DocumentArray()
         if os.path.exists(self.filename):
-            with open(self.filename) as fp:
-                for v in fp:
-                    d = Document(v)
-                    self._docs.append(d)
+            self._docs.load(self.filename)
 
     def close(self) -> None:
-        with open(self.filename, 'w') as fp:
-            for d in self._docs:
-                json.dump(d.dict(), fp)
-                fp.write('\n')
+        self._docs.save(self.filename)
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
