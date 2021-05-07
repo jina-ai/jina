@@ -1,5 +1,6 @@
 """Module wrapping AsyncIO ops for clients."""
-from typing import Union, List
+from typing import Union, List, AsyncGenerator
+from jina.types.request import Response
 
 from .base import InputType, InputDeleteType, BaseClient, CallbackFnType
 from .websocket import WebSocketClientMixin
@@ -64,7 +65,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> AsyncGenerator[Response]:
         """Issue 'train' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -93,7 +94,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> AsyncGenerator[Response]:
         """Issue 'search' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -123,7 +124,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> AsyncGenerator[Response]:
         """Issue 'index' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -152,7 +153,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> AsyncGenerator[Response]:
         """Issue 'delete' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id
@@ -181,7 +182,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> None:
+    ) -> AsyncGenerator[Response]:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
