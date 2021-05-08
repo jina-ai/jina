@@ -50,14 +50,12 @@ if False:
     from scipy.sparse import coo_matrix
 
     # fix type-hint complain for sphinx and flake
-    from typing import TypeVar
-    import numpy as np
     import scipy
     import tensorflow as tf
     import torch
 
     EmbeddingType = TypeVar(
-        'EncodingType',
+        'EmbeddingType',
         np.ndarray,
         scipy.sparse.csr_matrix,
         scipy.sparse.coo_matrix,
