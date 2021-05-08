@@ -1,3 +1,13 @@
+Document, Executor, Flow are three fundamental concepts in Jina.
+
+- **Document** is the basic data type in Jina;
+- **Executor** is how Jina processes Documents;
+- **Flow** is how Jina streamlines and scales Executors.
+
+*Learn them all, nothing more, you are good to go.*
+
+---
+
 # Temporary Cookbook on `Executor` 2.0 API
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -42,9 +52,9 @@ from jina import Executor, Flow, Document, requests
 
 class MyExecutor(Executor):
 
-    @requests
-    def foo(self, **kwargs):
-      print(kwargs)
+  @requests
+  def foo(self, **kwargs):
+    print(kwargs)
 
 
 f = Flow().add(uses=MyExecutor)
@@ -257,12 +267,11 @@ requests:
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
 - `with` is a map. Defines kwargs of the class `__init__` method
-- `metas` is a map. Defines the meta information of that class, comparing to `1.x` it is reduced to the following
-  fields:
-    - `name` is a string. Defines the name of the executor;
-    - `description` is a string. Defines the description of this executor. It will be used in automatics docs UI;
-    - `workspace` is a string. Defines the workspace of the executor
-    - `py_modules` is a list of string. Defines the python dependencies of the executor.
+- `metas` is a map. Defines the meta information of that class, comparing to `1.x` it is reduced to the following fields:
+  - `name` is a string. Defines the name of the executor;
+  - `description` is a string. Defines the description of this executor. It will be used in automatics docs UI;
+  - `workspace` is a string. Defines the workspace of the executor
+  - `py_modules` is a list of string. Defines the python dependencies of the executor.
 - `requests` is a map. Defines the mapping from endpoint to class method name.
 
 ### Load and Save Executor's YAML config
@@ -300,14 +309,12 @@ exec.save_config('y.yml')
 Executor.load_config('y.yml')
 ```
 
-
 ## Executor Built-in Features
 
 In 2.0 Executor class has few built-in features than in 1.x. The design principles are (`user` here means "Executor
 developer"):
 
-- **Do not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and less intrusive as
-  a `mixin` class:
+- **Do not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and less intrusive as a `mixin` class:
   - do not customize the class constructor logic;
   - do not change its builtin interface `__getstate__`, `__setstate__`;
   - do not add new members to the `Executor` object unless we must.
@@ -416,8 +423,7 @@ Line number corresponds to the 1.x code:
 - `L22`: adding `@requests` to decorate the core method, changing signature to `docs, **kwargs`;
 - `L32`:
   - the content extraction and embedding assignment are now done manually;
-  - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
-    methods `convert_blob_to_uri` and `pop`
+  - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in methods `convert_blob_to_uri` and `pop`
   - there is nothing to return, as the change is done in-place.
 
 ## Remarks

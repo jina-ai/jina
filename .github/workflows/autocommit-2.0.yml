@@ -27,7 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
           COMMIT_NAME: Jina Dev Bot
           COMMIT_EMAIL: dev-bot@jina.ai
-          TOC_TITLE: ''
+          TOC_TITLE: 'Table of Contents'
           TARGET_PATHS: '.github/2.0/COOKBOOK-*.md'
       - uses: ad-m/github-push-action@v0.6.0
         with:
