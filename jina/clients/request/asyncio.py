@@ -1,6 +1,6 @@
 """Module for async requests generator."""
 
-from typing import Iterator, Union, AsyncIterator, Optional
+from typing import AsyncIterator, Optional
 
 from .helper import _new_data_request_from_batch
 from .. import GeneratorSourceType
@@ -8,7 +8,6 @@ from ... import Request
 from ...enums import RequestType, DataInputType
 from ...importer import ImportExtensions
 from ...logging import default_logger
-from ...types.arrays.querylang import AcceptQueryLangType
 
 
 async def request_generator(
@@ -17,9 +16,6 @@ async def request_generator(
     request_size: int = 0,
     mode: RequestType = RequestType.INDEX,
     mime_type: Optional[str] = None,
-    queryset: Optional[
-        Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]]
-    ] = None,
     data_type: DataInputType = DataInputType.AUTO,
     peapod_target: Optional[str] = None,
     **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
@@ -30,7 +26,6 @@ async def request_generator(
     :param request_size: the request size for the client
     :param mode: the request mode (index, search etc.)
     :param mime_type: mime type
-    :param queryset: querylang set of queries
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
     :param kwargs: additional key word arguments

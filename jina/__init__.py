@@ -7,8 +7,6 @@ sub-modules, as described below.
 
 """
 
-# DO SOME OS-WISE PATCHES
-
 import datetime as _datetime
 import os as _os
 import platform as _platform
@@ -16,10 +14,10 @@ import signal as _signal
 import sys as _sys
 import types as _types
 
-
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
+# DO SOME OS-WISE PATCHES
 if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # temporary fix for python 3.8 on macos where the default start is set to "spawn"
     # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
@@ -29,9 +27,6 @@ if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
-
-# Underscore variables shared globally
-
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
@@ -170,10 +165,6 @@ _set_nofile()
 # Flow
 from jina.flow import Flow
 from jina.flow.asyncio import AsyncFlow
-
-# Client
-from jina.clients import Client
-from jina.clients.asyncio import AsyncClient
 
 # Executor
 from jina.executors import BaseExecutor as Executor

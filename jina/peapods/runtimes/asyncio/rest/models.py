@@ -21,7 +21,6 @@ from jina.proto.jina_pb2 import (
     StatusProto,
     MessageProto,
     RequestProto,
-    QueryLangProto,
 )
 from jina.types.document import Document
 
@@ -225,7 +224,6 @@ for proto in (
     StatusProto,
     MessageProto,
     RequestProto,
-    QueryLangProto,
 ):
     protobuf_to_pydantic_model(proto)
 
@@ -266,40 +264,6 @@ class JinaRequestModel(BaseModel):
     data_type: DataInputType = DataInputType.AUTO
     target_peapod: Optional[str] = ''
     parameters: Optional[Dict] = None
-
-    @root_validator(pre=True, allow_reuse=True)
-    def add_default_kwargs(cls, kwargs: dict):
-        """
-        Replicates jina.clients.base.BaseClient.add_default_kwargs for Pydantic
-
-        :param kwargs: arguments passed to the Pydantic model
-        :type kwargs: dict
-        :return: kwargs
-        """
-        if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
-            # associate all VectorSearchDriver and SliceQL driver to use top_k
-            topk_ql = [
-                PROTO_TO_PYDANTIC_MODELS.QueryLangProto(
-                    **{
-                        'name': 'SliceQL',
-                        'priority': 1,
-                        'parameters': {'end': kwargs['top_k']},
-                    }
-                ),
-                PROTO_TO_PYDANTIC_MODELS.QueryLangProto(
-                    **{
-                        'name': 'VectorSearchDriver',
-                        'priority': 1,
-                        'parameters': {'top_k': kwargs['top_k']},
-                    }
-                ),
-            ]
-            if 'queryset' not in kwargs:
-                kwargs['queryset'] = topk_ql
-            else:
-                kwargs['queryset'].extend(topk_ql)
-
-        return kwargs
 
 
 class JinaIndexRequestModel(JinaRequestModel):

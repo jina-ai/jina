@@ -232,36 +232,3 @@ class BaseClient:
     def train(self, **kwargs):
         """Issue 'train' request to the Flow."""
         raise NotImplementedError
-
-    @staticmethod
-    def add_default_kwargs(kwargs: Dict):
-        """
-        Add the default kwargs to the instance.
-
-        :param kwargs: the kwargs to add
-        """
-        # TODO: refactor it into load from config file
-        if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
-            # associate all VectorSearchDriver and SliceQL driver to use top_k
-            from jina import QueryLang
-
-            topk_ql = [
-                QueryLang(
-                    {
-                        'name': 'SliceQL',
-                        'priority': 1,
-                        'parameters': {'end': kwargs['top_k']},
-                    }
-                ),
-                QueryLang(
-                    {
-                        'name': 'VectorSearchDriver',
-                        'priority': 1,
-                        'parameters': {'top_k': kwargs['top_k']},
-                    }
-                ),
-            ]
-            if 'queryset' not in kwargs:
-                kwargs['queryset'] = topk_ql
-            else:
-                kwargs['queryset'].extend(topk_ql)
