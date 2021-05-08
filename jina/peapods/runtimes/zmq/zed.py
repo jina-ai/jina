@@ -22,7 +22,7 @@ from ....excepts import (
 )
 from ....executors import BaseExecutor
 from ....helper import random_identity, typename
-from ....logging.profile import used_memory, TimeDict
+from ....logging.profile import used_memory
 from ....proto import jina_pb2
 from ....types.arrays.document import DocumentArray
 
@@ -38,10 +38,6 @@ class ZEDRuntime(ZMQRuntime):
         """Initialize private parameters and execute private loading functions."""
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
-        self._last_dump_time = time.perf_counter()
-        self._last_load_time = time.perf_counter()
-
-        self._timer = TimeDict()
 
         self._request = None
         self._message = None
@@ -108,11 +104,6 @@ class ZEDRuntime(ZMQRuntime):
 
     #: Private methods required by :meth:`teardown`
 
-    def _reload_executor(self):
-        if (time.perf_counter() - self._last_load_time) > self.args.load_interval > 0:
-            self._load_executor()
-            self._last_load_time = time.perf_counter()
-
     def _check_memory_watermark(self):
         """Check the memory watermark."""
         if used_memory() > self.args.memory_hwm > 0:
@@ -127,7 +118,6 @@ class ZEDRuntime(ZMQRuntime):
         :return: `ZEDRuntime`
         """
         msg.add_route(self.name, self._id)
-        self._reload_executor()
         self._request = msg.request
         self._message = msg
 
@@ -210,7 +200,7 @@ class ZEDRuntime(ZMQRuntime):
                         raise TypeError(
                             f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                         )
-                    elif r_docs._docs_proto != self.request.docs._docs_proto:
+                    elif r_docs != self.request.docs:
                         # this means the returned DocArray is a completely new one
                         self.request.docs.clear()
                         self.request.docs.extend(r_docs)

@@ -5,18 +5,16 @@ from tests import validate_callback
 
 
 @pytest.fixture()
-def docs():
+def test_docs():
     return DocumentArray([Document(id='1')])
 
 
-def test_different_responses(docs, mocker):
+def test_different_responses(test_docs, mocker):
     def assert_response(response):
         assert len(response.data.docs) == 1
         assert response.data.docs[0].id == '1'
 
     class MyExecutor(Executor):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
 
         @requests(on='/return_docs')
         def return_docs(self, docs, *args, **kwargs):
@@ -40,11 +38,11 @@ def test_different_responses(docs, mocker):
 
     mock = mocker.Mock()
     with Flow().add(uses=MyExecutor) as flow:
-        flow.post(inputs=docs, on='/return_docs', on_done=mock)
+        flow.post(inputs=test_docs, on='/return_docs', on_done=mock)
         validate_callback(mock, assert_response)
-        flow.post(inputs=docs, on='/return_none', on_done=mock)
+        flow.post(inputs=test_docs, on='/return_none', on_done=mock)
         validate_callback(mock, assert_response)
-        flow.post(inputs=docs, on='/return_copy', on_done=mock)
+        flow.post(inputs=test_docs, on='/return_copy', on_done=mock)
         validate_callback(mock, assert_response)
-        flow.post(inputs=docs, on='/return_deepcopy', on_done=mock)
+        flow.post(inputs=test_docs, on='/return_deepcopy', on_done=mock)
         validate_callback(mock, assert_response)

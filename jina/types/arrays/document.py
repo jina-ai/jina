@@ -107,6 +107,9 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         else:
             raise IndexError(f'do not support this index type {typename(index)}: {index}')
 
+    def __eq__(self, other):
+        return type(self._docs_proto) is type(other._docs_proto) and self._docs_proto == other._docs_proto
+
     def __len__(self):
         return len(self._docs_proto)
 
