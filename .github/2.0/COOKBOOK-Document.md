@@ -14,6 +14,8 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
 - [`Document` API](#document-api)
   - [`Document` Attributes](#document-attributes)
   - [Construct `Document`](#construct-document)
+    - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
+    - [Conversion between `doc.content`](#conversion-between-doccontent)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
