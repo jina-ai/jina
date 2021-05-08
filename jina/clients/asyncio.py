@@ -153,7 +153,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator[Response]:
+    ) -> AsyncGenerator[Response, None]:
         """Issue 'delete' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id
