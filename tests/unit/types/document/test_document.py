@@ -638,12 +638,11 @@ def test_get_attr_values():
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
     required_keys_3 = ['tags__outterkey__innerkey']
     res3 = d.get_attributes(*required_keys_3)
-    assert len(res3) == 1
-    assert res3[required_keys_3.index('tags__outterkey__innerkey')] == 'real_value'
+    assert res3 == 'real_value'
 
     d = Document(content=np.array([1, 2, 3]))
-    res4 = d.get_attrs(*['blob'])
-    np.testing.assert_equal(res4['blob'], np.array([1, 2, 3]))
+    res4 = np.stack(d.get_attributes(*['blob']))
+    np.testing.assert_equal(res4, np.array([1, 2, 3]))
 
 
 def test_document_sparse_attributes_scipy(scipy_sparse_matrix):

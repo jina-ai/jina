@@ -1314,3 +1314,41 @@ def physical_size(directory: str) -> int:
     """
     root_directory = Path(directory)
     return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
+
+def dunder_get(_dict: Any, key: str) -> Any:
+    """Returns value for a specified dunderkey
+    A "dunderkey" is just a fieldname that may or may not contain
+    double underscores (dunderscores!) for referencing nested keys in
+    a dict. eg::
+         >>> data = {'a': {'b': 1}}
+         >>> dunder_get(data, 'a__b')
+         1
+    key 'b' can be referrenced as 'a__b'
+    :param _dict : (dict, list, struct or object) which we want to index into
+    :param key   : (str) that represents a first level or nested key in the dict
+    :return: (mixed) value corresponding to the key
+    """
+
+    try:
+        part1, part2 = key.split('__', 1)
+    except ValueError:
+        part1, part2 = key, ''
+
+    try:
+        part1 = int(part1)  # parse int parameter
+    except ValueError:
+        pass
+
+    from google.protobuf.struct_pb2 import Struct
+
+    if isinstance(part1, int):
+        result = _dict[part1]
+    elif isinstance(_dict, (dict, Struct)):
+        if part1 in _dict:
+            result = _dict[part1]
+        else:
+            result = None
+    else:
+        result = getattr(_dict, part1)
+
+    return dunder_get(result, part2) if part2 else result

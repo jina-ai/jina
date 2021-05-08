@@ -39,7 +39,7 @@ from ...helper import (
     is_url,
     typename,
     random_identity,
-    download_mermaid_url,
+    download_mermaid_url, dunder_get,
 )
 from ...importer import ImportExtensions
 from ...logging import default_logger
@@ -1414,6 +1414,12 @@ class Document(ProtoTypeMixin):
             if size is not None and d >= size:
                 break
 
+    def __getattr__(self, item):
+        if hasattr(self._pb_body, item):
+            value = getattr(self._pb_body, item)
+        else:
+            value = dunder_get(self._pb_body, item)
+        return value
 
 # https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
 _jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
