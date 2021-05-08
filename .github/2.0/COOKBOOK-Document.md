@@ -1,7 +1,7 @@
 Document, Executor, Flow are three fundamental concepts in Jina.
 
-- **Document** is the basic data type in Jina;
-- **Executor** is how Jina processes Documents;
+- [**Document**](COOKBOOK-Document.md) is the basic data type in Jina;
+- [**Executor**](COOKBOOK-Executor.md) is how Jina processes Documents;
 - **Flow** is how Jina streamlines and scales Executors.
 
 *Learn them all, nothing more, you are good to go.*
