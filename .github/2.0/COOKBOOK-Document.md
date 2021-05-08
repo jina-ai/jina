@@ -451,6 +451,8 @@ da3 = DocumentArray(da2)
 
 ### Persistence via `save()`/`load()`
 
+To save all elements in a `DocumentArray` in a JSON lines format:
+
 ```python
 from jina import DocumentArray, Document
 
@@ -481,4 +483,16 @@ da.get_attributes('id', 'text', 'embedding')
 [('1', '2', '3'), ('hello', 'goodbye', 'world'), (array([1, 2, 3]), array([4, 5, 6]), array([7, 8, 9]))]
 ```
 
+This can be very useful when extracting a batch of embeddings,
 
+```python
+import numpy as np
+
+np.stack(da.get_attributes('embedding'))
+```
+
+```text
+[[1 2 3]
+ [4 5 6]
+ [7 8 9]]
+```
