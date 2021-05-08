@@ -7,6 +7,8 @@ from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
 
+it
+
 
 class AsyncClient(BaseClient):
     """
@@ -65,7 +67,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator[Response]:
+    ) -> AsyncGenerator[Response, None]:
         """Issue 'train' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -94,7 +96,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator[Response]:
+    ) -> AsyncGenerator[Response, None]:
         """Issue 'search' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -124,7 +126,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator[Response]:
+    ) -> AsyncGenerator[Response, None]:
         """Issue 'index' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
@@ -182,7 +184,7 @@ class AsyncClient(BaseClient):
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
         **kwargs
-    ) -> AsyncGenerator[Response]:
+    ) -> AsyncGenerator[Response, None]:
         """Issue 'update' request to the Flow.
 
         :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
