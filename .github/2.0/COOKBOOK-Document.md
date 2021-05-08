@@ -81,6 +81,12 @@ d4 = Document(content='https://static.jina.ai/logo/core/notext/light/logo.png')
 The content will be automatically assigned to one of `text`, `buffer`, `blob`, `uri` fields, `id` and `mime_type` are
 auto-generated when not given.
 
+In Jupyter notebook or use `.plot()`, you can get the visualization of a `Document` object.
+
+|   |  |  |  |
+| --- | --- | --- | --- |
+| ![](doc-plot-v1.svg) | ![](doc-plot-v2.svg) | ![](doc-plot-v3.svg) | ![](doc-plot-v4.svg)|
+
 #### Exclusivity of `doc.content`
 
 ![](doc.content.svg?raw=true)
