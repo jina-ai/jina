@@ -12,22 +12,24 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [`Document` API](#document-api)
-    - [`Document` Attributes](#document-attributes)
-    - [Construct `Document`](#construct-document)
-        - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
-        - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
-        - [Construct from Another `Document`](#construct-from-another-document)
-        - [Construct from Generator](#construct-from-generator)
-    - [Serialize `Document`](#serialize-document)
-    - [Add Recursion to `Document`](#add-recursion-to-document)
-        - [Recursive Attributes](#recursive-attributes)
-    - [Visualize `Document`](#visualize-document)
-    - [Add Relevancy to `Document`](#add-relevancy-to-document)
-        - [Relevance Attributes](#relevance-attributes)
+  - [`Document` Attributes](#document-attributes)
+  - [Construct `Document`](#construct-document)
+    - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
+    - [Conversion between `doc.content`](#conversion-between-doccontent)
+    - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
+    - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
+    - [Construct from Another `Document`](#construct-from-another-document)
+    - [Construct from Generator](#construct-from-generator)
+  - [Serialize `Document`](#serialize-document)
+  - [Add Recursion to `Document`](#add-recursion-to-document)
+    - [Recursive Attributes](#recursive-attributes)
+  - [Visualize `Document`](#visualize-document)
+  - [Add Relevancy to `Document`](#add-relevancy-to-document)
+    - [Relevance Attributes](#relevance-attributes)
 - [`DocumentArray` API](#documentarray-api)
-    - [Construct `DocumentArray`](#construct-documentarray)
-    - [Persistence via `save()`/`load()`](#persistence-via-saveload)
-    - [Get Attributes in Bulk](#get-attributes-in-bulk)
+  - [Construct `DocumentArray`](#construct-documentarray)
+  - [Persistence via `save()`/`load()`](#persistence-via-saveload)
+  - [Get Attributes in Bulk](#get-attributes-in-bulk)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -125,18 +127,6 @@ doc.convert_image_uri_to_blob()
 doc.convert_image_datauri_to_blob()
 ```
 
-##### Set Embedding
-
-Embedding is the high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as its embedding.
-
-```python
-import numpy as np
-from jina import Document
-
-d1 = Document(embedding=np.array([1, 2, 3]))
-d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
-```
-
 #### Construct with Multiple Attributes
 
 ##### Meta Attributes
@@ -228,31 +218,6 @@ To make a deep copy, use `copy=True`,
 d1 = Document(d, copy=True)
 
 assert id(d) == id(d1)  # False
-```
-
-You can update a `Document` partially according to another source `Document`,
-
-```python
-from jina import Document
-
-s = Document(
-    id='🐲',
-    content='hello-world',
-    tags={'a': 'b'},
-    chunks=[Document(id='🐢')],
-)
-d = Document(
-    id='🐦',
-    content='goodbye-world',
-    tags={'c': 'd'},
-    chunks=[Document(id='🐯')],
-)
-
-# only update `id` field
-d.update(s, include_fields=('id',))
-
-# only preserve `id` field
-d.update(s, exclude_fields=('id',))
 ```
 
 #### Construct from Generator
@@ -387,7 +352,6 @@ You can add relevance score to a `Document` object via:
 
 ```python
 from jina import Document
-
 d = Document()
 d.score.value = 0.96
 d.score.description = 'cosine similarity'
