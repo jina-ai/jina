@@ -1,9 +1,8 @@
 import sys
-from typing import Sequence
 
 import pytest
 
-from jina import Request, QueryLang, Document
+from jina import Request, Document
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto
@@ -166,44 +165,6 @@ def test_lazy_request_fields():
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())
 
-
-def test_request_extend_queryset():
-    q1 = {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}}
-    q2 = QueryLang(
-        {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}, 'priority': 1}
-    )
-    q3 = jina_pb2.QueryLangProto()
-    q3.name = 'SliceQL'
-    q3.parameters['start'] = 3
-    q3.parameters['end'] = 4
-    q3.priority = 2
-    r = Request()
-    r.queryset.extend([q1, q2, q3])
-    assert isinstance(r.queryset, Sequence)
-    assert len(r.queryset) == 3
-    for idx, q in enumerate(r.queryset):
-        assert q.priority == idx
-        assert q.parameters['start'] == 3
-        assert q.parameters['end'] == 4
-
-    # q1 and q2 refer to the same
-    assert len({id(q) for q in r.queryset}) == 2
-
-    r2 = Request()
-    r2.queryset.extend(r.queryset)
-    assert len({id(q) for q in r2.queryset}) == 2
-
-    r = Request()
-    r.queryset.append(q1)
-    r.queryset.append(q2)
-    r.queryset.append(q3)
-    for idx, q in enumerate(r.queryset):
-        assert q.priority == idx
-        assert q.parameters['start'] == 3
-        assert q.parameters['end'] == 4
-
-    with pytest.raises(TypeError):
-        r.queryset.extend(1)
 
 
 @pytest.mark.parametrize(

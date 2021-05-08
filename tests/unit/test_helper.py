@@ -4,10 +4,11 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
+from jina.types.querylang.queryset.dunderkey import dunder_get
 
 from cli import _is_latest_version
 from jina import Executor
-from jina import NdArray, Request
+from jina import Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
 from jina.executors.decorators import requests, batching
@@ -24,7 +25,7 @@ from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina.types.querylang.queryset.dunderkey import dunder_get
+from jina.types.ndarray.generic import NdArray
 from tests import random_docs
 
 

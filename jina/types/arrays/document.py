@@ -72,11 +72,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     ):
         super().__init__()
         if docs_proto is not None:
-            if isinstance(docs_proto, RepeatedContainer):
-                self._docs_proto = docs_proto
-            elif isinstance(docs_proto, Iterable):
-                self._docs_proto = []
-                self.extend(docs_proto)
+            self._docs_proto = docs_proto
         else:
             self._docs_proto = []
 
@@ -90,10 +86,8 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         self._docs_proto.insert(index, doc.proto)
 
     def __setitem__(self, key, value: 'Document'):
-        if isinstance(key, int):
-            self._docs_proto[key].CopyFrom(value)
-        elif isinstance(key, str):
-            self._docs_map[key].CopyFrom(value)
+        if isinstance(key, (int, str)):
+            self[key].CopyFrom(value)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -149,7 +143,6 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         Append :param:`doc` in :class:`DocumentArray`.
 
         :param doc: The doc needs to be appended.
-        :return: Appended list.
         """
         self._docs_proto.append(doc.proto)
 
@@ -298,7 +291,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             docs_pts.append(doc)
 
         if len(fields) > 1:
-            contents = list(zip(*contents))
+            contents = list(map(list, zip(*contents)))
 
         if bad_docs:
             default_logger.warning(

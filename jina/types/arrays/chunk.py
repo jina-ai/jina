@@ -12,9 +12,7 @@ class ChunkArray(DocumentArray):
     It's a subset of Documents.
 
     :param docs_proto: Set of sub-documents (i.e chunks) of `reference_doc`
-    :type docs_proto: :class:`Document`
     :param reference_doc: Reference :class:`Document` for the sub-documents
-    :type reference_doc: :class:`Document`
     """
 
     def __init__(self, docs_proto, reference_doc: 'Document'):
@@ -24,8 +22,8 @@ class ChunkArray(DocumentArray):
         :param docs_proto: protobuf representation of the chunks
         :param reference_doc: parent document
         """
-        super().__init__(docs_proto)
         self._ref_doc = reference_doc
+        super().__init__(docs_proto)
 
     def append(self, document: 'Document', **kwargs) -> 'Document':
         """Add a sub-document (i.e chunk) to the current Document.
@@ -43,9 +41,7 @@ class ChunkArray(DocumentArray):
 
         from ..document import Document
 
-        c = self._docs_proto.add()
-        c.CopyFrom(document.proto)
-        chunk = Document(c)
+        chunk = Document(document, copy=True)
 
         chunk.set_attributes(
             parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
@@ -54,6 +50,7 @@ class ChunkArray(DocumentArray):
         if not chunk.mime_type:
             chunk.mime_type = self._ref_doc.mime_type
         chunk.update_content_hash()
+        super().append(chunk)
         return chunk
 
     def extend(self, iterable: Iterable['Document']) -> None:
