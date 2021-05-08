@@ -308,8 +308,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
 
         # pod workspace if not set then derive from flow workspace
-        if not args.workspace:
-            args.workspace = self.args.workspace
+        args.workspace = os.path.abspath(args.workspace or self.workspace)
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
         op_flow.last_pod = pod_name
@@ -922,6 +921,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def _update_client(self):
         if self._pod_nodes['gateway'].args.restful:
             self._cls_client = WebSocketClient
+
+    @property
+    def workspace(self) -> str:
+        """Return the workspace path of the flow. """
+        return os.path.abspath(self.args.workspace or './')
 
     @property
     def workspace_id(self) -> Dict[str, str]:

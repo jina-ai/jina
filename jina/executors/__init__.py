@@ -5,7 +5,7 @@ from typing import Dict, TypeVar, Type, Optional, Callable
 from .decorators import store_init_kwargs, wrap_func
 from .metas import get_default_metas, fill_metas_with_defaults
 from .. import __default_endpoint__
-from ..helper import typename, random_identity
+from ..helper import typename
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
 
 __all__ = ['BaseExecutor', 'AnyExecutor', 'ExecutorType']
@@ -139,9 +139,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         # `name` is important as it serves as an identifier of the executor
         # if not given, then set a name by the rule
         if not getattr(target, 'name', None):
-            _id = random_identity().split('-')[0]
-            _name = f'{typename(self)}-{_id}'
-            setattr(target, 'name', _name)
+            setattr(target, 'name', typename(self))
 
         self.metas = target
 
@@ -197,10 +195,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        return self.metas.workspace or (
+        return os.path.abspath(self.metas.workspace or (
             os.path.join(self.metas.parent_workspace, self.metas.name)
             if self.metas.replica_id == -1
             else os.path.join(
                 self.metas.parent_workspace, self.metas.name, self.metas.replica_id
             )
-        )
+        ))

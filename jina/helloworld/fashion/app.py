@@ -3,7 +3,7 @@ from pathlib import Path
 
 from jina import Flow
 from jina.helper import countdown
-from jina.parsers.helloworld import set_hello_parser
+from jina.parsers.helloworld import set_hw_parser
 from .helper import (
     print_result,
     write_html,
@@ -94,5 +94,5 @@ def hello_world(args):
 
 
 if __name__ == '__main__':
-    args = set_hello_parser().parse_args([])
+    args = set_hw_parser().parse_args([])
     hello_world(args)

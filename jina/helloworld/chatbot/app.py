@@ -2,7 +2,7 @@ import os
 import webbrowser
 from pathlib import Path
 
-from jina import Flow
+from jina import Flow, Document
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.parsers.helloworld import set_hw_chatbot_parser
@@ -43,12 +43,12 @@ def hello_world(args):
     f = (
         Flow()
             .add(uses=MyTransformer, parallel=args.parallel)
-            .add(uses=MyIndexer)
+            .add(uses=MyIndexer, workspace=args.workdir)
     )
 
-    # # index it!
-    # with f, open(targets['covid-csv']['filename']) as fp:
-    #     f.index(Document.from_csv(fp, field_resolver={'question': 'text', 'url': 'uri'}))
+    # index it!
+    with f, open(targets['covid-csv']['filename']) as fp:
+        f.index(Document.from_csv(fp, field_resolver={'question': 'text'}))
 
     # switch to REST gateway
     url_html_path = 'file://' + os.path.abspath(
