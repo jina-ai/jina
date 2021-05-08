@@ -7,8 +7,6 @@ from .websocket import WebSocketClientMixin
 from ..enums import RequestType
 from ..helper import deprecated_alias
 
-it
-
 
 class AsyncClient(BaseClient):
     """
