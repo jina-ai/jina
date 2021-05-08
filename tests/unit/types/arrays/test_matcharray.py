@@ -1,8 +1,8 @@
 import pytest
-from jina import Request
 
-from jina.types.document import Document
+from jina import Request
 from jina.types.arrays.match import MatchArray
+from jina.types.document import Document
 
 
 @pytest.fixture(scope='function')
@@ -26,7 +26,7 @@ def reference_doc(document_factory):
 @pytest.fixture
 def matches(document_factory):
     req = Request()
-    req.request_type = 'index'
+    req.request_type = 'data'
     req.docs.extend(
         [
             document_factory.create(1, 'test 1'),
@@ -34,7 +34,7 @@ def matches(document_factory):
             document_factory.create(3, 'test 3'),
         ]
     )
-    return req.proto.index.docs
+    return req.proto.data.docs
 
 
 @pytest.fixture

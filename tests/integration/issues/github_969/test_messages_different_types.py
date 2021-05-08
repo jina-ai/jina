@@ -1,10 +1,9 @@
-import pytest
 import numpy as np
+import pytest
 
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
-
 from tests import validate_callback
 
 random_np_array = np.random.randint(10, size=(50, 10))
@@ -16,14 +15,14 @@ text = 'text_content'
 def input_doc_with_chunks():
     doc = jina_pb2.DocumentProto()
     doc.tags['id'] = 1
-    chunk0 = doc.chunks.add()
+    chunk0 = doc.chunks.append()
     chunk0.tags['id'] = 10
     chunk0.text = text
     NdArray(chunk0.embedding).value = random_np_array
-    chunk1 = doc.chunks.add()
+    chunk1 = doc.chunks.append()
     chunk1.tags['id'] = 20
     NdArray(chunk1.blob).value = random_np_array
-    chunk2 = doc.chunks.add()
+    chunk2 = doc.chunks.append()
     chunk2.tags['id'] = 30
     chunk2.buffer = buffer
     return doc
@@ -62,14 +61,14 @@ def test_message_docs_different_chunk_types(input_doc_with_chunks, mocker):
 def input_doc_with_matches():
     doc = jina_pb2.DocumentProto()
     doc.tags['id'] = 1
-    match0 = doc.matches.add()
+    match0 = doc.matches.append()
     match0.tags['id'] = 10
     match0.text = text
     NdArray(match0.embedding).value = random_np_array
-    match1 = doc.matches.add()
+    match1 = doc.matches.append()
     match1.tags['id'] = 20
     NdArray(match1.blob).value = random_np_array
-    match2 = doc.matches.add()
+    match2 = doc.matches.append()
     match2.tags['id'] = 30
     match2.buffer = buffer
     return doc
@@ -106,24 +105,24 @@ def test_message_docs_different_matches_types(input_doc_with_matches, mocker):
 def input_doc_chunks_and_matches():
     doc = jina_pb2.DocumentProto()
     doc.tags['id'] = 1
-    chunk0 = doc.chunks.add()
+    chunk0 = doc.chunks.append()
     chunk0.tags['id'] = 10
     chunk0.text = text
     NdArray(chunk0.embedding).value = random_np_array
-    chunk1 = doc.chunks.add()
+    chunk1 = doc.chunks.append()
     chunk1.tags['id'] = 20
     NdArray(chunk1.blob).value = random_np_array
-    chunk2 = doc.chunks.add()
+    chunk2 = doc.chunks.append()
     chunk2.tags['id'] = 30
     chunk2.buffer = buffer
-    match0 = doc.matches.add()
+    match0 = doc.matches.append()
     match0.tags['id'] = 10
     match0.text = text
     NdArray(match0.embedding).value = random_np_array
-    match1 = doc.matches.add()
+    match1 = doc.matches.append()
     match1.tags['id'] = 20
     NdArray(match1.blob).value = random_np_array
-    match2 = doc.matches.add()
+    match2 = doc.matches.append()
     match2.tags['id'] = 30
     match2.buffer = buffer
     return doc

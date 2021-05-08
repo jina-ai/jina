@@ -49,8 +49,8 @@ def text_chunk():
 @pytest.fixture
 def query_document(image_chunk, text_chunk):
     query_document = Document()
-    query_document.chunks.add(image_chunk)
-    query_document.chunks.add(text_chunk)
+    query_document.chunks.append(image_chunk)
+    query_document.chunks.append(text_chunk)
     return query_document
 
 

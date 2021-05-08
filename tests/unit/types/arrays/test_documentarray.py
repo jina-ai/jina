@@ -198,7 +198,7 @@ def add_match(doc):
     with Document() as match:
         match.granularity = doc.granularity
         match.adjacency = doc.adjacency + 1
-        doc.matches.add(match)
+        doc.matches.append(match)
         return match
 
 

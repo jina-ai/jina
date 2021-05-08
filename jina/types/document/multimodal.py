@@ -119,7 +119,7 @@ class MultimodalDocument(Document):
             with Document() as chunk:
                 chunk.modality = modality
                 chunk.content = content
-                self.chunks.add(chunk)
+                self.chunks.append(chunk)
 
     def __getitem__(self, modality: str) -> DocumentContentType:
         """Extract content by the name of the modality.

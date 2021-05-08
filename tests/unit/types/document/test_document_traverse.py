@@ -1,7 +1,7 @@
-from collections import Iterator
-
-import pytest
 import types
+
+import numpy as np
+import pytest
 
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
@@ -22,11 +22,11 @@ def doc_req():
     # add some random matches
     for d in ds:
         for _ in range(num_matches_per_doc):
-            d.matches.add(Document(content='hello'))
+            d.matches.append(Document(content='hello'))
         for c in d.chunks:
             for _ in range(num_matches_per_chunk):
-                c.matches.add(Document(content='world'))
-    req = list(request_generator(ds))[0]
+                c.matches.append(Document(content='world'))
+    req = list(request_generator('/', ds))[0]
     yield req
 
 
@@ -99,8 +99,8 @@ def test_batching_traverse(doc_req):
 
 def test_traverse_flatten_embedding(doc_req):
     flattened_results = doc_req.docs.traverse_flatten(['r', 'c'])
-    ds = flattened_results.all_embeddings
-    assert ds[0].shape == (num_docs + num_chunks_per_doc * num_docs, 10)
+    ds = np.stack(flattened_results.get_attributes('embedding'))
+    assert ds.shape == (num_docs + num_chunks_per_doc * num_docs, 10)
 
 
 def test_traverse_flatten_root(doc_req):
@@ -131,11 +131,11 @@ def test_traverse_flatten_match_chunk(doc_req):
 def test_traverse_flatten_root_match_chunk(doc_req):
     ds = list(doc_req.docs.traverse_flatten(['r', 'c', 'm', 'cm']))
     assert (
-        len(ds)
-        == num_docs
-        + num_chunks_per_doc * num_docs
-        + num_matches_per_doc * num_docs
-        + num_docs * num_chunks_per_doc * num_matches_per_chunk
+            len(ds)
+            == num_docs
+            + num_chunks_per_doc * num_docs
+            + num_matches_per_doc * num_docs
+            + num_docs * num_chunks_per_doc * num_matches_per_chunk
     )
 
 
@@ -152,11 +152,11 @@ def test_batching_flatten_traverse(doc_req):
 
 def test_traverse_flattened_per_path_embedding(doc_req):
     flattened_results = list(doc_req.docs.traverse_flattened_per_path(['r', 'c']))
-    ds = flattened_results[0].all_embeddings
-    assert ds[0].shape == (num_docs, 10)
+    ds = np.stack(flattened_results[0].get_attributes('embedding'))
+    assert ds.shape == (num_docs, 10)
 
-    ds = flattened_results[1].all_embeddings
-    assert ds[0].shape == (num_docs * num_chunks_per_doc, 10)
+    ds = np.stack(flattened_results[1].get_attributes('embedding'))
+    assert ds.shape == (num_docs * num_chunks_per_doc, 10)
 
 
 def test_traverse_flattened_per_path_root(doc_req):

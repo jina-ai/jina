@@ -7,7 +7,6 @@ from jina import Document
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from jina.types.request import Response
-
 from tests import validate_callback
 
 num_docs = 5
@@ -31,7 +30,7 @@ def documents(start_index, end_index):
             with Document() as chunk:
                 chunk.text = 'text in chunk'
                 chunk.tags['id'] = 'id in chunk tags'
-            doc.chunks.add(chunk)
+            doc.chunks.append(chunk)
         yield doc
 
 

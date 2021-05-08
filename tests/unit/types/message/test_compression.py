@@ -22,7 +22,7 @@ def test_compression(compress_algo, low_bytes, high_ratio):
     )
 
     with TimeContext(f'no compress'):
-        for r in request_generator(docs):
+        for r in request_generator('/', docs):
             m = Message(None, r, compress=CompressAlgo.NONE, **kwargs)
             m.dump()
             no_comp_sizes.append(m.size)
@@ -34,7 +34,7 @@ def test_compression(compress_algo, low_bytes, high_ratio):
         compress_min_ratio=10 if high_ratio else 1,
     )
     with TimeContext(f'compressing with {str(compress_algo)}') as tc:
-        for r in request_generator(docs):
+        for r in request_generator('/', docs):
             m = Message(None, r, compress=compress_algo, **kwargs)
             m.dump()
             sizes.append(m.size)

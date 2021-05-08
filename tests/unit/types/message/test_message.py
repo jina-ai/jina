@@ -18,7 +18,7 @@ from tests import random_docs
 def test_lazy_access(field):
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -33,7 +33,7 @@ def test_lazy_access(field):
 def test_multiple_access():
     reqs = [
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     ]
     for r in reqs:
         assert not r.is_used
@@ -49,7 +49,7 @@ def test_multiple_access():
 def test_lazy_nest_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -63,7 +63,7 @@ def test_lazy_nest_access():
 def test_lazy_change_message_type():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -77,7 +77,7 @@ def test_lazy_change_message_type():
 def test_lazy_append_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -91,7 +91,7 @@ def test_lazy_append_access():
 def test_lazy_clear_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -104,7 +104,7 @@ def test_lazy_clear_access():
 def test_lazy_nested_clear_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -124,7 +124,7 @@ def test_lazy_msg_access():
             request_id='123',
             request_type='DataRequest',
         )
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     ]
     for r in reqs:
         assert not r.request.is_used
@@ -146,7 +146,7 @@ def test_lazy_msg_access():
 
 
 def test_message_size():
-    reqs = [Message(None, r, 'test', '123') for r in request_generator(random_docs(10))]
+    reqs = [Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))]
     for r in reqs:
         assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())
@@ -160,7 +160,7 @@ def test_message_size():
 def test_lazy_request_fields():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())

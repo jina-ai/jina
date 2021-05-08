@@ -133,13 +133,6 @@ def test_convert_content_to_uri():
 )
 def test_convert_uri_to_data_uri(uri, mimetype):
     doc = Document(uri=uri, mime_type=mimetype)
-    intialiazed_buffer = doc.buffer
-    intialiazed_uri = doc.uri
     doc.convert_uri_to_datauri()
-    converted_buffer = doc.buffer
-    converted_uri = doc.uri
-    print(doc.content_type)
     assert doc.uri.startswith(f'data:{mimetype}')
-    assert intialiazed_uri != converted_uri
-    assert converted_buffer != intialiazed_buffer
     assert doc.mime_type == mimetype

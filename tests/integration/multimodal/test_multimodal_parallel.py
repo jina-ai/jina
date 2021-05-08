@@ -6,7 +6,6 @@ import pytest
 from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
-
 from tests import validate_callback
 
 NUM_DOCS = 100
@@ -29,7 +28,7 @@ def multimodal_documents():
         doc.text = f'{idx}'
 
         for modality in ['modality1', 'modality2']:
-            chunk = doc.chunks.add()
+            chunk = doc.chunks.append()
             chunk.modality = modality
             if modality == 'modality1':
                 NdArray(chunk.blob).value = np.array([idx, idx])
@@ -80,7 +79,7 @@ def multimodal_all_types_documents():
         doc.text = f'{idx}'
 
         for modality in ['modality1', 'modality2', 'modality3', 'modality4']:
-            chunk = doc.chunks.add()
+            chunk = doc.chunks.append()
             chunk.modality = modality
             if modality == 'modality1':
                 NdArray(chunk.embedding).value = np.array([idx, idx])
