@@ -846,17 +846,8 @@ class Document(ProtoTypeMixin):
 
         :param value: acceptable URI/URL, raise ``ValueError`` when it is not a valid URI
         """
-        scheme = urllib.parse.urlparse(value).scheme
-        if (
-                (scheme in {'http', 'https'} and is_url(value))
-                or (scheme in {'data'})
-                or os.path.exists(value)
-                or os.access(os.path.dirname(value), os.W_OK)
-        ):
-            self._pb_body.uri = value
-            self.mime_type = guess_mime(value)
-        else:
-            raise ValueError(f'{value} is not a valid URI')
+        self._pb_body.uri = value
+        self.mime_type = guess_mime(value)
 
     @property
     def mime_type(self) -> str:
@@ -923,13 +914,9 @@ class Document(ProtoTypeMixin):
         if isinstance(value, bytes):
             self.buffer = value
         elif isinstance(value, str):
-            # TODO(Han): this implicit fallback is too much but that's
-            #  how the original _generate function implement. And a lot of
-            #  tests depend on this logic. Stay in this
-            #  way to keep all tests passing until I got time to refactor this part
-            try:
+            if _is_uri(value):
                 self.uri = value
-            except ValueError:
+            else:
                 self.text = value
         elif isinstance(value, np.ndarray):
             self.blob = value
@@ -990,18 +977,7 @@ class Document(ProtoTypeMixin):
         else:
             raise TypeError(f'score is in unsupported type {typename(value)}')
 
-    def convert_buffer_to_blob(self, **kwargs):
-        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
-        set :attr:`blob` accordingly.
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
-
-        .. note::
-            One can only recover values not shape information from pure buffer.
-        """
-        self.blob = np.frombuffer(self.buffer)
-
-    def convert_buffer_image_to_blob(self, color_axis: int = -1, **kwargs):
+    def convert_image_buffer_to_blob(self, color_axis: int = -1):
         """Convert an image buffer to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
@@ -1009,8 +985,8 @@ class Document(ProtoTypeMixin):
         """
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
-    def convert_blob_to_uri(
-            self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs
+    def convert_image_blob_to_uri(
+            self, width: int, height: int, resize_method: str = 'BILINEAR'
     ):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
         :param width: the width of the blob
@@ -1021,8 +997,8 @@ class Document(ProtoTypeMixin):
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    def convert_uri_to_blob(
-            self, color_axis: int = -1, uri_prefix: Optional[str] = None, **kwargs
+    def convert_image_uri_to_blob(
+            self, color_axis: int = -1, uri_prefix: Optional[str] = None
     ):
         """Convert uri to blob
 
@@ -1034,7 +1010,7 @@ class Document(ProtoTypeMixin):
             (uri_prefix + self.uri) if uri_prefix else self.uri, color_axis
         )
 
-    def convert_data_uri_to_blob(self, color_axis: int = -1, **kwargs):
+    def convert_image_datauri_to_blob(self, color_axis: int = -1):
         """Convert data URI to image blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
@@ -1045,7 +1021,23 @@ class Document(ProtoTypeMixin):
             buffer = fp.read()
         self.blob = to_image_blob(io.BytesIO(buffer), color_axis)
 
-    def convert_uri_to_buffer(self, **kwargs):
+    def convert_buffer_to_blob(self, dtype=None, count=-1, offset=0):
+        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
+        set :attr:`blob` accordingly.
+
+        :param dtype: Data-type of the returned array; default: float.
+        :param count: Number of items to read. ``-1`` means all data in the buffer.
+        :param offset: Start reading the buffer from this offset (in bytes); default: 0.
+
+        .. note::
+            One can only recover values not shape information from pure buffer.
+        """
+        self.blob = np.frombuffer(self.buffer, dtype, count, offset)
+
+    def convert_blob_to_buffer(self):
+        self.buffer = self.blob.tobytes()
+
+    def convert_uri_to_buffer(self):
         """Convert uri to buffer
         Internally it downloads from the URI and set :attr:`buffer`.
 
@@ -1064,8 +1056,8 @@ class Document(ProtoTypeMixin):
         else:
             raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
 
-    def convert_uri_to_data_uri(
-            self, charset: str = 'utf-8', base64: bool = False, **kwargs
+    def convert_uri_to_datauri(
+            self, charset: str = 'utf-8', base64: bool = False
     ):
         """Convert uri to data uri.
         Internally it reads uri into buffer and convert it to data uri
@@ -1074,11 +1066,12 @@ class Document(ProtoTypeMixin):
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
-        self.convert_uri_to_buffer()
-        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+        if not _is_datauri(self.uri):
+            self.convert_uri_to_buffer()
+            self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
 
     def convert_buffer_to_uri(
-            self, charset: str = 'utf-8', base64: bool = False, **kwargs
+            self, charset: str = 'utf-8', base64: bool = False
     ):
         """Convert buffer to data uri.
         Internally it first reads into buffer and then converts it to data URI.
@@ -1098,7 +1091,7 @@ class Document(ProtoTypeMixin):
         self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
 
     def convert_text_to_uri(
-            self, charset: str = 'utf-8', base64: bool = False, **kwargs
+            self, charset: str = 'utf-8', base64: bool = False
     ):
         """Convert text to data uri.
 
@@ -1111,7 +1104,7 @@ class Document(ProtoTypeMixin):
 
         self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
 
-    def convert_uri_to_text(self, **kwargs):
+    def convert_uri_to_text(self):
         """Assuming URI is text, convert it to text
 
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
@@ -1119,7 +1112,7 @@ class Document(ProtoTypeMixin):
         self.convert_uri_to_buffer()
         self.text = self.buffer.decode()
 
-    def convert_content_to_uri(self, **kwargs):
+    def convert_content_to_uri(self):
         """Convert content in URI with best effort
 
         :param kwargs: reserved for maximum compatibility when using with ConvertDriver
@@ -1447,3 +1440,18 @@ def _subsample(
         iterable, size: Optional[int] = None, sampling_rate: Optional[float] = None
 ):
     yield from it.islice(_sample(iterable, sampling_rate), size)
+
+
+def _is_uri(value: str) -> bool:
+    scheme = urllib.parse.urlparse(value).scheme
+    return (
+            (scheme in {'http', 'https'} and is_url(value))
+            or (scheme in {'data'})
+            or os.path.exists(value)
+            or os.access(os.path.dirname(value), os.W_OK)
+    )
+
+
+def _is_datauri(value: str) -> bool:
+    scheme = urllib.parse.urlparse(value).scheme
+    return is_url(value) and scheme in {'data'}

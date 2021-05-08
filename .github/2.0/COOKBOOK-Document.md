@@ -38,8 +38,8 @@ A `Document` object has the following attributes, which can be put into the foll
 
 | | | 
 |---|---|
-| Meta attributes | `.id`, `.weight`, `.uri`, `.mime_type`, `.location`, `.offset`, `.modality` |
-| Content attributes | `.buffer`, `.blob`, `.text`, `.content`, `.embedding`, `.tags` | 
+| Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
+| Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality` |
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
@@ -54,11 +54,11 @@ A `Document` object has the following attributes, which can be put into the foll
 | `doc.buffer` | The raw binary content of this document |
 | `doc.blob` | The `ndarray` of the image/audio/video document |
 | `doc.text` | The text info of the document |
+| `doc.uri` | A uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |
 | `doc.content` | One of the above non-empty field |
 | `doc.embedding` | The embedding `ndarray` of this Document |
-| `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
 
-You can assign `str`, `ndarray`, `buffer` to a `Document`.
+You can assign `str`, `ndarray`, `buffer`, `uri` to a `Document`.
 
 ```python
 from jina import Document
@@ -67,16 +67,64 @@ import numpy as np
 d1 = Document(content='hello')
 d2 = Document(content=b'\f1')
 d3 = Document(content=np.array([1, 2, 3]))
+d4 = Document(content='https://static.jina.ai/logo/core/notext/light/logo.png')
 ```
 
 ```text
 <jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
 <jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= mimeType=text/plain at 6247702160>
 <jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
+<jina.types.document.Document id=4c008c40-af9f-11eb-bb84-1e008a366d49 uri=https://static.jina.ai/logo/core/notext/light/logo.png mimeType=image/png at 6252395600>
 ```
 
-The content will be automatically assigned to one of `text`, `buffer`, `blob` fields, `id` and `mime_type` are
+The content will be automatically assigned to one of `text`, `buffer`, `blob`, `uri` fields, `id` and `mime_type` are
 auto-generated when not given.
+
+#### Exclusivity of `doc.content`
+
+![](doc.content.svg?raw=true)
+
+Note that one `Document` can only contain one type of `content`: it is one of `text`, `buffer`, `blob`, `uri`.
+Setting `text` first and then set `uri` will clear the `text field.
+
+```python
+d = Document(text='hello world')
+d.uri = 'https://jina.ai/'
+assert not d.text  # True
+
+d = Document(content='https://jina.ai')
+assert d.uri == 'https://jina.ai'  # True
+assert not d.text  # True
+d.text = 'hello world'
+
+assert d.content == 'hello world'  # True
+assert not d.uri  # True
+```
+
+#### Conversion between `doc.content`
+
+You can use the following methods to convert between `.uri`, `.text`, `.buffer`, `.blob`:
+
+```python
+doc.convert_buffer_to_blob()
+doc.convert_blob_to_buffer()
+doc.convert_uri_to_buffer()
+doc.convert_buffer_to_uri()
+doc.convert_text_to_uri()
+doc.convert_uri_to_text()
+```
+
+You can convert a URI to data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch the
+resource and make it inline.
+
+In particular, when you work with the image `Document`, there are some extra helpers that enables more conversion.
+
+```python
+doc.convert_image_buffer_to_blob()
+doc.convert_image_blob_to_uri()
+doc.convert_image_uri_to_blob()
+doc.convert_image_datauri_to_blob()
+```
 
 #### Construct with Multiple Attributes
 
@@ -84,9 +132,9 @@ auto-generated when not given.
 
 |     |     |
 | --- | --- |
+| `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
 | `doc.id` | A hexdigest that represents a unique document ID |
 | `doc.weight` | The weight of this document |
-| `doc.uri` | A uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |  
 | `doc.mime_type` | The mime type of this document |
 | `doc.location` | The position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |
 | `doc.offset` | The offset of this doc in the previous granularity document|
@@ -362,7 +410,6 @@ da3 = DocumentArray(da2)
 ```python
 from jina import DocumentArray, Document
 
-# from list
 da = DocumentArray([Document(), Document()])
 
 da.save('data.json')

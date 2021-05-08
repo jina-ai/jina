@@ -95,6 +95,9 @@ message DocumentProto {
 
         // a text document
         string text = 13;
+
+        // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
+        string uri = 9;
     }
 
     // list of the sub-documents of this document (recursive structure)
@@ -111,9 +114,6 @@ message DocumentProto {
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
     string mime_type = 10;
-
-    // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
-    string uri = 9;
 
     // a structured data value, consisting of field which map to dynamically typed values.
     google.protobuf.Struct tags = 11;
