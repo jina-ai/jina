@@ -127,6 +127,18 @@ doc.convert_image_uri_to_blob()
 doc.convert_image_datauri_to_blob()
 ```
 
+##### Set Embedding
+
+Embedding is the high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as its embedding.
+
+```python
+import numpy as np
+from jina import Document
+
+d1 = Document(embedding=np.array([1, 2, 3]))
+d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
+```
+
 #### Construct with Multiple Attributes
 
 ##### Meta Attributes
@@ -218,6 +230,31 @@ To make a deep copy, use `copy=True`,
 d1 = Document(d, copy=True)
 
 assert id(d) == id(d1)  # False
+```
+
+You can update a `Document` partially according to another source `Document`,
+
+```python
+from jina import Document
+
+s = Document(
+  id='🐲',
+  content='hello-world',
+  tags={'a': 'b'},
+  chunks=[Document(id='🐢')],
+)
+d = Document(
+  id='🐦',
+  content='goodbye-world',
+  tags={'c': 'd'},
+  chunks=[Document(id='🐯')],
+)
+
+# only update `id` field
+d.update(s, include_fields=('id',))
+
+# only preserve `id` field
+d.update(s, exclude_fields=('id',))
 ```
 
 #### Construct from Generator
