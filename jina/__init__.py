@@ -16,24 +16,6 @@ import signal as _signal
 import sys as _sys
 import types as _types
 
-from google.protobuf.internal import api_implementation as _api_implementation
-
-if _api_implementation._default_implementation_type != 'cpp':
-    import warnings as _warnings
-
-    _warnings.warn(
-        '''
-    You are using Python protobuf backend, not the C++ version, which is much faster.
-
-    This is often due to C++ implementation failed to compile while installing Protobuf
-    - You are using in Python 3.9 (https://github.com/jina-ai/jina/issues/1801)
-    - You are using on architecture other than x86_64/armv6/armv7
-    - You installation is broken, try `pip install --force protobuf`
-    - You have C++ backend but you shut it down, try `export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp`
-
-    ''',
-        RuntimeWarning,
-    )
 
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
@@ -54,7 +36,7 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '1.1.11'
+__version__ = '2.0.0'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -116,13 +98,10 @@ _names_with_underscore = [
 
 # Primitive data type,
 # note, they must be loaded BEFORE all executors/drivers/... to avoid cyclic imports
-from jina.types.ndarray.generic import NdArray
 from jina.types.request import Request, Response
 from jina.types.message import Message
-from jina.types.querylang import QueryLang
 from jina.types.document import Document
-from jina.types.document.multimodal import MultimodalDocument
-from jina.types.arrays import DocumentArray, QueryLangArray
+from jina.types.arrays import DocumentArray
 
 # ADD GLOBAL NAMESPACE VARIABLES
 JINA_GLOBAL = _types.SimpleNamespace()
@@ -134,7 +113,8 @@ import jina.importer as _ji
 
 # driver first, as executor may contain driver
 _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
-_ji.import_classes('jina.hub', show_import_table=False, import_once=True)
+## temporally disable the hub loading in 2.0rc
+# _ji.import_classes('jina.hub', show_import_table=False, import_once=True)
 
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 

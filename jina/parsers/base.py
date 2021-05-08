@@ -26,8 +26,7 @@ def set_base_parser():
 
     parser = argparse.ArgumentParser(
         epilog=f'''
-Jina (v{colored(__version__, "green")}) is the cloud-native neural search solution powered by AI & deep learning.
-It is a universal solution to large-scale index and query of unstructured & multimedia data.
+Jina (v{colored(__version__, "green")}) is the cloud-native neural search framework powered by deep learning.
 
 {url_str}
 

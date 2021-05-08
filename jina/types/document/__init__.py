@@ -33,7 +33,6 @@ from ..arrays.chunk import ChunkArray
 from ..arrays.match import MatchArray
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
-from ..querylang.queryset.dunderkey import dunder_get
 from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import (
@@ -691,13 +690,6 @@ class Document(ProtoTypeMixin):
         """
         self.pop('chunks')
         self.chunks.extend(value)
-
-    def __getattr__(self, item):
-        if hasattr(self._pb_body, item):
-            value = getattr(self._pb_body, item)
-        else:
-            value = dunder_get(self._pb_body, item)
-        return value
 
     def set_attributes(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs

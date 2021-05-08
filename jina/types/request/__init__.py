@@ -3,7 +3,6 @@ from typing import Union, Optional, TypeVar, Dict
 from google.protobuf import json_format
 
 from ..mixin import ProtoTypeMixin
-from ..arrays import QueryLangArray
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
@@ -225,16 +224,6 @@ class Request(ProtoTypeMixin):
         else:
             # no touch, skip serialization, return original
             return self._buffer
-
-    @property
-    def queryset(self) -> 'QueryLangArray':
-        """
-        Get the queryset in :class:`QueryLangArray` type.
-
-        :return: query lang set
-        """
-        self.is_used = True
-        return QueryLangArray(self.proto.queryset)
 
     def as_response(self):
         """
