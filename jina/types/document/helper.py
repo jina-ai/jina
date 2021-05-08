@@ -1,9 +1,9 @@
 from typing import Iterable
 
-from . import Document
-
 __all__ = ['DocGroundtruthPair']
 
+if False:
+    from . import Document
 
 class DocGroundtruthPair:
     """

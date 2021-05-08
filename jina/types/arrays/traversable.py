@@ -1,8 +1,5 @@
-from typing import Iterable
 import itertools
-
-if False:
-    from ..document.traversable import Traversable
+from typing import Iterable
 
 
 class TraversableSequence:
@@ -10,11 +7,11 @@ class TraversableSequence:
     A mixin used for traversing a `Sequence[Traversable]`.
     """
 
-    def __iter__(self) -> Iterable['Traversable']:
+    def __iter__(self) -> Iterable:
         raise NotImplementedError
 
     def traverse(
-        self, traversal_paths: Iterable[str]
+            self, traversal_paths: Iterable[str]
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
@@ -54,7 +51,7 @@ class TraversableSequence:
             yield docs
 
     def traverse_flattened_per_path(
-        self, traversal_paths: Iterable[str]
+            self, traversal_paths: Iterable[str]
     ) -> Iterable['TraversableSequence']:
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``
@@ -77,7 +74,7 @@ class TraversableSequence:
             behavior then in :method:``traverse`` and :method:``traverse_flattened_per_path``!
 
         :param traversal_paths: a list of string that represents the traversal path
-        :return: a singel :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
+        :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
         """
         leaves = self.traverse(traversal_paths)
         return self._flatten(leaves)

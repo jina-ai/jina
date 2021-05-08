@@ -34,12 +34,12 @@ class MultimodalDocument(Document):
     """
 
     def __init__(
-        self,
-        document: Optional[DocumentSourceType] = None,
-        chunks: Sequence[Document] = None,
-        modality_content_map: Dict[str, DocumentContentType] = None,
-        copy: bool = False,
-        **kwargs,
+            self,
+            document: Optional[DocumentSourceType] = None,
+            chunks: Sequence[Document] = None,
+            modality_content_map: Dict[str, DocumentContentType] = None,
+            copy: bool = False,
+            **kwargs,
     ):
 
         super().__init__(document=document, copy=copy, **kwargs)
@@ -141,9 +141,9 @@ class MultimodalDocument(Document):
         return list(self.modality_content_map.keys())
 
     def update_content_hash(
-        self,
-        exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash'),
-        include_fields: Optional[Tuple[str]] = None,
+            self,
+            exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash'),
+            include_fields: Optional[Tuple[str]] = None,
     ) -> None:
         """
         Update content hash of the document by including ``chunks`` when computing the hash
