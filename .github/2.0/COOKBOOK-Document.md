@@ -83,9 +83,7 @@ auto-generated when not given.
 
 In Jupyter notebook or use `.plot()`, you can get the visualization of a `Document` object.
 
-|   |  |  |  |
-| --- | --- | --- | --- |
-| ![](doc-plot-v1.svg) | ![](doc-plot-v2.svg) | ![](doc-plot-v3.svg) | ![](doc-plot-v4.svg)|
+![](doc-plot-v1.svg) ![](doc-plot-v2.svg)  ![](doc-plot-v3.svg)  ![](doc-plot-v4.svg)
 
 #### Exclusivity of `doc.content`
 
