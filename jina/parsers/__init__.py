@@ -237,14 +237,4 @@ def get_main_parser():
         )
     )
 
-    set_hw_parser(
-        sp.add_parser(
-            'hello-world',
-            description='Start the hello-world demo, a simple end2end image index and search demo '
-                        'without any extra dependencies.',
-            formatter_class=_chf,
-            **(dict(help='👋 Hello World! Hello Jina!')) if _SHOW_ALL_ARGS else {}
-        )
-    )
-
     return parser

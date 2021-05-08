@@ -4,7 +4,6 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from jina.types.querylang.queryset.dunderkey import dunder_get
 
 from cli import _is_latest_version
 from jina import Executor
@@ -19,7 +18,7 @@ from jina.helper import (
     is_yaml_filepath,
     touch_dir,
     random_port,
-    find_request_binding,
+    find_request_binding, dunder_get,
 )
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
@@ -87,9 +86,9 @@ def test_check_update():
 
 
 def test_wrap_func():
-    from jina.executors.encoders import BaseEncoder
+    from jina import Executor
 
-    class DummyEncoder(BaseEncoder):
+    class DummyEncoder(Executor):
         def encode(self):
             pass
 
@@ -111,7 +110,7 @@ def test_wrap_func():
         is_override = not is_inherit and is_parent_method
         return is_override
 
-    assert not check_override(BaseEncoder, 'encode')
+    assert not check_override(Executor, 'encode')
     assert check_override(DummyEncoder, 'encode')
     assert not check_override(MockEnc, 'encode')
     assert not check_override(MockMockEnc, 'encode')
@@ -297,15 +296,15 @@ def test_random_port_max_failures_for_tests_only(config_few_ports):
 class MyDummyExecutor(Executor):
     @batching
     @requests
-    def foo(self):
+    def foo(self, **kwargs):
         pass
 
     @requests(on='index')
-    def bar(self):
+    def bar(self, **kwargs):
         pass
 
     @requests(on='search')
-    def bar2(self):
+    def bar2(self, **kwargs):
         pass
 
     @batching

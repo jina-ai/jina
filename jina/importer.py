@@ -8,14 +8,12 @@ from typing import Optional, List, Any, Dict
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
 IMPORTED.executors = False
-IMPORTED.drivers = False
 IMPORTED.hub = False
 IMPORTED.schema_executors = {}
-IMPORTED.schema_drivers = {}
 
 
 def import_classes(
-    namespace: str, show_import_table: bool = False, import_once: bool = False
+        namespace: str, show_import_table: bool = False, import_once: bool = False
 ):
     """
     Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML constructor beforehand. It can be also used to import third-part or external executors.
@@ -81,12 +79,12 @@ class ImportExtensions:
     """
 
     def __init__(
-        self,
-        required: bool,
-        logger=None,
-        help_text: Optional[str] = None,
-        pkg_name: Optional[str] = None,
-        verbose: bool = True,
+            self,
+            required: bool,
+            logger=None,
+            help_text: Optional[str] = None,
+            pkg_name: Optional[str] = None,
+            verbose: bool = True,
     ):
         self._required = required
         self._tags = []
@@ -104,16 +102,16 @@ class ImportExtensions:
             from pkg_resources import resource_filename
 
             with open(
-                resource_filename(
-                    'jina', '/'.join(('resources', 'extra-requirements.txt'))
-                )
+                    resource_filename(
+                        'jina', '/'.join(('resources', 'extra-requirements.txt'))
+                    )
             ) as fp:
                 for v in fp:
                     if (
-                        v.strip()
-                        and not v.startswith('#')
-                        and v.startswith(missing_module)
-                        and ':' in v
+                            v.strip()
+                            and not v.startswith('#')
+                            and v.startswith(missing_module)
+                            and ':' in v
                     ):
                         missing_module, install_tags = v.split(':')
                         self._tags.append(missing_module)
@@ -216,10 +214,10 @@ def _print_load_table(load_stat: Dict[str, List[Any]], logger=None):
     if load_table:
         load_table.sort()
         load_table = [
-            '',
-            '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
-            '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10),
-        ] + load_table
+                         '',
+                         '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
+                         '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10),
+                     ] + load_table
         pr = logger.info if logger else print
         pr('\n'.join(load_table))
 
@@ -315,17 +313,6 @@ def _filter_modules(modules):
     return {m for m in modules if not _ignored_module_pattern.findall(m)}
 
 
-def _load_default_exc_config(cls_obj):
-    from .executors.requests import get_default_reqs
-
-    try:
-        _request = get_default_reqs(type.mro(cls_obj))
-    except ValueError as ex:
-        warnings.warn(
-            f'Please ensure a config yml is given for {cls_obj.__name__}. {ex}'
-        )
-
-
 def _update_depend_tree(cls_obj, module_name, cur_tree):
     d = cur_tree
     for vvv in cls_obj.mro()[:-1][::-1]:
@@ -350,15 +337,10 @@ def _import_module(module_name, import_type, depend_tree, load_stat):
         try:
             _update_depend_tree(_cls_obj, module_name, depend_tree)
             if _cls_obj.__class__.__name__ == 'ExecutorType':
-                _load_default_exc_config(_cls_obj)
                 IMPORTED.schema_executors[
                     f'Jina::Executors::{_cls_obj.__name__}'
                 ] = _jina_class_to_schema(_cls_obj)
-            else:
-                IMPORTED.schema_drivers[
-                    f'Jina::Drivers::{_cls_obj.__name__}'
-                ] = _jina_class_to_schema(_cls_obj)
-            # TODO: _success_msg is never used
+
             _success_msg = colored('▸', 'green').join(
                 f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1]
             )

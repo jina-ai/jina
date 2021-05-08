@@ -4,23 +4,18 @@ def get_full_schema() -> dict:
     """
     from .. import __version__
     from ..importer import IMPORTED
-    from .driver import schema_all_drivers
     from .executor import schema_all_executors
     from .flow import schema_flow
     from .meta import schema_metas
-    from .request import schema_requests
     from .pod import schema_pod
 
     definitions = {}
     for s in [
-        schema_all_drivers,
         schema_all_executors,
         schema_flow,
         schema_metas,
-        schema_requests,
         schema_pod,
         IMPORTED.schema_executors,
-        IMPORTED.schema_drivers,
     ]:
         definitions.update(s)
 

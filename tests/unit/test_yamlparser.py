@@ -6,13 +6,10 @@ from pkg_resources import resource_filename
 
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
-from jina.executors.compound import CompoundExecutor
 from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
 from jina.jaml import JAML
-from jina.parsers import set_pea_parser
-from jina.peapods.peas import BasePea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -115,16 +112,6 @@ def test_class_yaml2():
         JAML.load(fp)
 
 
-def test_class_yaml3():
-    args = set_pea_parser().parse_args([])
-
-    with BasePea(args):
-        pass
-
-    from jina.executors.requests import _defaults
-
-    assert _defaults is not None
-
 
 def test_joint_indexer(test_workspace):
     b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
@@ -204,26 +191,9 @@ def test_load_from_dict():
     #       name: test2
     # metas:
     #   name: compound1
-
-    d2 = {
-        'jtype': 'CompoundExecutor',
-        'components': [
-            {
-                'jtype': 'BinaryPbIndexer',
-                'with': {'index_filename': 'tmp1'},
-                'metas': {'name': 'test1'},
-            },
-            {
-                'jtype': 'BinaryPbIndexer',
-                'with': {'index_filename': 'tmp2'},
-                'metas': {'name': 'test2'},
-            },
-        ],
-    }
     d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
     b1 = BaseExecutor.load_config(d1, context=d)
-    b2 = BaseExecutor.load_config(d2, context=d)
     assert isinstance(b1, BaseExecutor)
-    assert isinstance(b2, CompoundExecutor)
+
     assert b1.batch_size == 256
     assert b1.name == 'hello123'
