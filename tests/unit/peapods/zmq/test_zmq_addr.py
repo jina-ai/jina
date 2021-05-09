@@ -39,7 +39,7 @@ def runtime(zmq_args_argparse):
 
 @pytest.fixture
 def ctrl_messages():
-    return [Message(None, r, 'test', '123') for r in request_generator(random_docs(10))]
+    return [Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))]
 
 
 @pytest.fixture(params=['zmq_args_dict', 'zmq_args_argparse'])
