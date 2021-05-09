@@ -13,17 +13,14 @@ from tests import random_docs
 
 @pytest.mark.parametrize('compress_algo', list(CompressAlgo))
 def test_compression(compress_algo, mocker):
-    class CompressCheckDriver(BaseControlDriver):
-        def __call__(self, *args, **kwargs):
-            assert self.req._envelope.compression.algorithm == str(compress_algo)
 
     response_mock = mocker.Mock()
 
     f = (
         Flow(compress=str(compress_algo))
-            .add(uses='- !CompressCheckDriver {}')
+            .add()
             .add(name='DummyEncoder', parallel=2)
-            .add(uses='- !CompressCheckDriver {}')
+            .add()
     )
 
     with f:

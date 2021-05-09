@@ -19,11 +19,6 @@ def get_full_schema() -> dict:
     ]:
         definitions.update(s)
 
-    # fix CompoundExecutor
-    definitions['Jina::Executors::CompoundExecutor']['properties']['components'] = {
-        '$ref': '#/definitions/Jina::Executors::All'
-    }
-
     return {
         '$id': f'https://api.jina.ai/schemas/{__version__}.json',
         '$schema': 'http://json-schema.org/draft-07/schema#',

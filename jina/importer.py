@@ -23,14 +23,8 @@ def import_classes(
     :param import_once: import everything only once, to avoid repeated import
     :return: the dependency tree of the imported classes under the `namespace`
     """
-    _namespace2type = {
-        'jina.executors': 'ExecutorType',
-        'jina.hub': 'ExecutorType',
-    }
-    _import_type = _namespace2type.get(namespace)
-    if _import_type is None:
-        raise TypeError(f'namespace: {namespace} is unrecognized')
 
+    _import_type = 'ExecutorType'
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:

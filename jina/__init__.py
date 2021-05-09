@@ -79,16 +79,15 @@ __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 
 _names_with_underscore = [
     '__version__',
-    '__copyright__',
-    '__license__',
     '__proto_version__',
     '__default_host__',
     '__ready_msg__',
     '__stop_msg__',
-    '__binary_delimiter__',
     '__jina_env__',
     '__uptime__',
     '__root_dir__',
+    '__default_endpoint__',
+    '__num_args_executor_func__'
 ]
 
 # Primitive data type,

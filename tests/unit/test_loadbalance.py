@@ -18,7 +18,6 @@ class SlowWorker(Executor):
     def craft(self, **kwargs):
         if self.is_slow:
             time.sleep(1)
-        return {'id': id}
 
 
 def test_lb():

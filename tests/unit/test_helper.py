@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from cli import _is_latest_version
-from jina import Executor
+from jina import Executor, __default_endpoint__
 from jina import Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
@@ -89,7 +89,7 @@ def test_wrap_func():
     from jina import Executor
 
     class DummyEncoder(Executor):
-        def encode(self):
+        def __init__(self):
             pass
 
     class MockEnc(DummyEncoder):
@@ -99,7 +99,7 @@ def test_wrap_func():
         pass
 
     class MockMockMockEnc(MockEnc):
-        def encode(self):
+        def __init__(self):
             pass
 
     def check_override(cls, method):
@@ -110,11 +110,10 @@ def test_wrap_func():
         is_override = not is_inherit and is_parent_method
         return is_override
 
-    assert not check_override(Executor, 'encode')
-    assert check_override(DummyEncoder, 'encode')
-    assert not check_override(MockEnc, 'encode')
-    assert not check_override(MockMockEnc, 'encode')
-    assert check_override(MockMockMockEnc, 'encode')
+    assert check_override(DummyEncoder, '__init__')
+    assert not check_override(MockEnc, '__init__')
+    assert not check_override(MockMockEnc, '__init__')
+    assert check_override(MockMockMockEnc, '__init__')
 
 
 def test_pprint_routes(capfd):
@@ -314,7 +313,7 @@ class MyDummyExecutor(Executor):
 
 def test_find_request_binding():
     r = find_request_binding(MyDummyExecutor)
-    assert r['default'] == 'foo'
+    assert r[__default_endpoint__] == 'foo'
     assert r['index'] == 'bar'
     assert r['search'] == 'bar2'
     assert 'foo2' not in r.values()

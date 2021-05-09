@@ -103,21 +103,9 @@ def test_class_yaml():
     assert type(a) == DummyClass
 
 
-def test_class_yaml2():
-    with open(
-        resource_filename(
-            'jina', '/'.join(('resources', 'executors.requests.BaseExecutor.yml'))
-        )
-    ) as fp:
-        JAML.load(fp)
 
 
 
-def test_joint_indexer(test_workspace):
-    b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
-    b.override_logger(runtime=None)
-    assert b._drivers['SearchRequest'][0]._exec == b[0]
-    assert b._drivers['SearchRequest'][-1]._exec == b[1]
 
 
 def test_load_external_fail():
@@ -140,23 +128,20 @@ def test_enum_yaml():
 
 def test_encoder_name_env_replace():
     os.environ['BE_TEST_NAME'] = 'hello123'
-    os.environ['BATCH_SIZE'] = '256'
     with BaseExecutor.load_config('yaml/test-encoder-env.yml') as be:
-        assert be.name == 'hello123'
-        assert be.batch_size == 256
+        assert be.metas.name == 'hello123'
 
 
 def test_encoder_name_dict_replace():
-    d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
+    d = {'BE_TEST_NAME': 'hello123'}
     with BaseExecutor.load_config('yaml/test-encoder-env.yml', context=d) as be:
-        assert be.name == 'hello123'
-        assert be.batch_size == 256
-        assert be.workspace == 'hello123-256'
+        assert be.metas.name == 'hello123'
+        assert be.metas.workspace == 'hello123'
 
 
 def test_encoder_inject_config_via_kwargs():
-    with BaseExecutor.load_config('yaml/test-encoder-env.yml', pea_id=345) as be:
-        assert be.pea_id == 345
+    with BaseExecutor.load_config('yaml/test-encoder-env.yml', metas={'pea_id': 345}) as be:
+        assert be.metas.pea_id == 345
 
 
 def test_load_from_dict():
@@ -168,12 +153,10 @@ def test_load_from_dict():
     #   workspace: ${{this.name}}-${{this.batch_size}}
 
     d1 = {
-        'jtype': 'BaseEncoder',
+        'jtype': 'BaseExecutor',
         'metas': {
             'name': '${{BE_TEST_NAME}}',
-            'batch_size': '${{BATCH_SIZE}}',
-            'pea_id': '${{pea_id}}',
-            'workspace': '${{this.name}} -${{this.batch_size}}',
+            'workspace': '${{this.name}}',
         },
     }
 
@@ -191,9 +174,8 @@ def test_load_from_dict():
     #       name: test2
     # metas:
     #   name: compound1
-    d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
+    d = {'BE_TEST_NAME': 'hello123'}
     b1 = BaseExecutor.load_config(d1, context=d)
     assert isinstance(b1, BaseExecutor)
 
-    assert b1.batch_size == 256
-    assert b1.name == 'hello123'
+    assert b1.metas.name == 'hello123'

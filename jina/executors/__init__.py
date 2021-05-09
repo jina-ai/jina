@@ -202,3 +202,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 self.metas.parent_workspace, self.metas.name, self.metas.replica_id
             )
         ))
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
