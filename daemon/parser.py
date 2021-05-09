@@ -19,13 +19,6 @@ def mixin_daemon_parser(parser):
         help='do not start fluentd, no log streaming',
     )
 
-    gp.add_argument(
-        '--workspace',
-        type=str,
-        default='/tmp/jinad',
-        help='the directory for storing all uploaded dependencies',
-    )
-
 
 def get_main_parser():
     parser = set_base_parser()
@@ -36,6 +29,7 @@ def get_main_parser():
 
     parser.set_defaults(
         port_expose=8000,
+        workspace='/tmp/jinad',
         log_config=os.getenv(
             'JINAD_LOG_CONFIG',
             resource_filename('jina', '/'.join(('resources', 'logging.daemon.yml'))),

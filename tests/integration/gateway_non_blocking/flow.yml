@@ -1,9 +1,0 @@
-!Flow
-version: '1'
-with:
-  restful: $RESTFUL
-pods:
-  - name: pod
-    uses: yaml/fast_slow.yml
-    read_only: true
-    parallel: $JINA_NON_BLOCKING_PARALLEL

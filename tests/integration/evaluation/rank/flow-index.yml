@@ -1,6 +1,0 @@
-!Flow
-version: '1'
-pods:
-  - name: doc_indexer
-    uses: yaml/index-doc.yml
-    needs: gateway

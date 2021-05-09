@@ -1,6 +1,0 @@
-!NumpyIndexer
-with:
-  index_filename: 'index.gz'
-metas:
-  workspace: $JINA_TEST_INDEXER_WITH_REF_INDEXER
-  name: wrapidx
