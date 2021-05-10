@@ -54,7 +54,7 @@ def test_train_offline(documents_to_train, doc_to_query):
         for match in req.docs[0].matches:
             pred.append(match.score.value)
         assert (
-            sorted(pred) == pred
+            sorted(pred, reverse=True) == pred
         )  # assure predictions are ordered since size increases
 
     # Before Ranker Trainer, the feature is completely rely on `price` tag, `size` can be seen as a bias.
@@ -66,8 +66,7 @@ def test_train_offline(documents_to_train, doc_to_query):
     X = [[1, 1], [2, 1], [4, 1], [8, 1], [16, 1]]
     y = [1, 2, 3, 4, 5]
     model.fit(X, y)
-    path = '/Users/bo/Documents/work/jina'
-    with open(str(path) + '/model.pickle', mode='wb') as model_file_name:
+    with open('model.pickle', mode='wb') as model_file_name:
         pickle.dump(model, model_file_name)
 
     with Flow.load_config(os.path.join(cur_dir, 'flow_offline_search.yml')) as f:

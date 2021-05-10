@@ -1,6 +1,6 @@
 !SGDRegressorRanker
 with:
-  model_path: "/Users/bo/Documents/work/jina"
+  model_path: .
 metas:
   py_modules: ranker.py
 requests:
