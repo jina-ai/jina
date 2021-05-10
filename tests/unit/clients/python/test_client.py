@@ -3,15 +3,15 @@ import time
 
 import pytest
 import requests
-from jina.types.generator.sugary_io import _input_files
 
-from jina import helper
+from jina import helper, Document
 from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.flow import Flow
 from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
+from jina import Executor, requests, DocumentArray
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -81,14 +81,21 @@ def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_mime_type(restful):
-    f = Flow(restful=restful).add(uses='- !URI2Buffer {}')
+    class MyExec(Executor):
+
+        @requests
+        def foo(self, docs: 'DocumentArray', **kwargs):
+            for d in docs:
+                d.convert_uri_to_buffer()
+
+    f = Flow(restful=restful).add(uses=MyExec)
 
     def validate_mime_type(req):
-        for d in req.index.docs:
+        for d in req.data.docs:
             assert d.mime_type == 'text/x-python'
 
     with f:
-        f.index(_input_files('*.py'), validate_mime_type)
+        f.index(Document.from_files('*.py'), validate_mime_type)
 
 
 @pytest.mark.parametrize('func_name', ['index', 'search'])
@@ -98,7 +105,7 @@ def test_client_ndjson(restful, mocker, func_name):
         os.path.join(cur_dir, 'docs.jsonlines')
     ) as fp:
         mock = mocker.Mock()
-        getattr(f, f'{func_name}_ndjson')(fp, on_done=mock)
+        getattr(f, f'{func_name}')(Document.from_ndjson(fp), on_done=mock)
         mock.assert_called_once()
 
 
@@ -109,5 +116,5 @@ def test_client_csv(restful, mocker, func_name):
         os.path.join(cur_dir, 'docs.csv')
     ) as fp:
         mock = mocker.Mock()
-        getattr(f, f'{func_name}_csv')(fp, on_done=mock)
+        getattr(f, f'{func_name}')(Document.from_csv(fp), on_done=mock)
         mock.assert_called_once()

@@ -1,10 +1,11 @@
 """Module wrapping AsyncIO ops for clients."""
-from typing import Union, List
+from functools import partialmethod
+from typing import Optional, Dict
 
-from .base import InputType, InputDeleteType, BaseClient, CallbackFnType
+from .base import InputType, BaseClient, CallbackFnType
 from .websocket import WebSocketClientMixin
+from .. import Response
 from ..enums import RequestType
-from ..helper import deprecated_alias
 
 
 class AsyncClient(BaseClient):
@@ -51,177 +52,46 @@ class AsyncClient(BaseClient):
     One can think of :class:`Client` as Jina-managed eventloop, whereas :class:`AsyncClient` is self-managed eventloop.
     """
 
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
-    async def train(
-        self,
-        inputs: InputType,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs
-    ) -> None:
-        """Issue 'train' request to the Flow.
+    async def post(
+            self,
+            on: str,
+            inputs: InputType,
+            on_done: CallbackFnType = None,
+            on_error: CallbackFnType = None,
+            on_always: CallbackFnType = None,
+            parameters: Optional[Dict] = None,
+            target_peapod: Optional[str] = None,
+            **kwargs,
+    ) -> Optional[Response]:
+        """Post a general data request to the Flow.
 
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
+        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
+        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
         :param on_done: the function to be called when the :class:`Request` object is resolved.
         :param on_error: the function to be called when the :class:`Request` object is rejected.
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
+        :param parameters: the kwargs that will be sent to the executor
+        :param target_peapod: a regex string represent the certain peas/pods request targeted
         :param kwargs: additional parameters
-        :yield: result
+        :return: None
         """
-        self.mode = RequestType.TRAIN
+        self.mode = RequestType.DATA
         async for r in self._get_results(
-            inputs, on_done, on_error, on_always, **kwargs
+                inputs=inputs,
+                on_done=on_done,
+                on_error=on_error,
+                on_always=on_always,
+                exec_endpoint=on,
+                target_peapod=target_peapod,
+                parameters=parameters,
+                **kwargs,
         ):
             yield r
 
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
-    async def search(
-        self,
-        inputs: InputType,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs
-    ) -> None:
-        """Issue 'search' request to the Flow.
-
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: additional parameters
-        :yield: result
-        """
-        self.mode = RequestType.SEARCH
-        self.add_default_kwargs(kwargs)
-        async for r in self._get_results(
-            inputs, on_done, on_error, on_always, **kwargs
-        ):
-            yield r
-
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
-    async def index(
-        self,
-        inputs: InputType,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs
-    ) -> None:
-        """Issue 'index' request to the Flow.
-
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: additional parameters
-        :yield: result
-        """
-        self.mode = RequestType.INDEX
-        async for r in self._get_results(
-            inputs, on_done, on_error, on_always, **kwargs
-        ):
-            yield r
-
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
-    async def delete(
-        self,
-        inputs: InputDeleteType,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs
-    ) -> None:
-        """Issue 'delete' request to the Flow.
-
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: additional parameters
-        :yield: result
-        """
-        self.mode = RequestType.DELETE
-        async for r in self._get_results(
-            inputs, on_done, on_error, on_always, **kwargs
-        ):
-            yield r
-
-    @deprecated_alias(
-        input_fn=('inputs', 0),
-        buffer=('inputs', 1),
-        callback=('on_done', 1),
-        output_fn=('on_done', 1),
-    )
-    async def update(
-        self,
-        inputs: InputType,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs
-    ) -> None:
-        """Issue 'update' request to the Flow.
-
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: additional parameters
-        :yield: result
-        """
-        self.mode = RequestType.UPDATE
-        async for r in self._get_results(
-            inputs, on_done, on_error, on_always, **kwargs
-        ):
-            yield r
-
-    async def reload(
-        self,
-        targets: Union[str, List[str]],
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        **kwargs
-    ):
-        """Send 'reload' request to the Flow.
-
-        :param targets: the regex string or list of regex strings to match the pea/pod names.
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param kwargs: additional parameters
-        :yield: result
-        """
-
-        if isinstance(targets, str):
-            targets = [targets]
-        kwargs['targets'] = targets
-
-        self.mode = RequestType.CONTROL
-        async for r in self._get_results([], on_done, on_error, on_always, **kwargs):
-            yield r
+    index = partialmethod(post, '/index')
+    search = partialmethod(post, '/search')
+    update = partialmethod(post, '/update')
+    delete = partialmethod(post, '/delete')
 
 
 class AsyncWebSocketClient(AsyncClient, WebSocketClientMixin):
