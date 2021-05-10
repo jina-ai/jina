@@ -1,6 +1,5 @@
-from typing import Iterable
-
 from ...rank import Matches2DocRankDriver
+from ....types.sets import DocumentSet
 
 
 class RankerTrainerDriver(Matches2DocRankDriver):
