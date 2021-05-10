@@ -14,7 +14,11 @@ class RankerTrainer(BaseExecutor):
 
     def train(self, *args, **kwargs):
         """Train ranker based on user feedback, updating ranker weights based on
-        the `loss` function."""
+        the `loss` function.
+
+        :param args: Additional arguments.
+        :param kwargs: Additional key value arguments.
+        """
         raise NotImplementedError
 
     def save(self):
