@@ -1,22 +1,9 @@
-from abc import abstractmethod
 from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator
 
 from .base import CallbackFnType, InputType
 from .. import Response
 from ..helper import run_async
-
-
-class CRUDMixin:
-
-    @abstractmethod
-    def post(self, **kwargs):
-        raise NotImplementedError
-
-    index = partialmethod(post, '/index')
-    search = partialmethod(post, '/search')
-    update = partialmethod(post, '/update')
-    delete = partialmethod(post, '/delete')
 
 
 class PostMixin:
@@ -67,6 +54,11 @@ class PostMixin:
             **kwargs,
         )
 
+    index = partialmethod(post, '/index')
+    search = partialmethod(post, '/search')
+    update = partialmethod(post, '/update')
+    delete = partialmethod(post, '/delete')
+
 
 class AsyncPostMixin:
 
@@ -104,3 +96,8 @@ class AsyncPostMixin:
                 **kwargs,
         ):
             yield r
+
+    index = partialmethod(post, '/index')
+    search = partialmethod(post, '/search')
+    update = partialmethod(post, '/update')
+    delete = partialmethod(post, '/delete')

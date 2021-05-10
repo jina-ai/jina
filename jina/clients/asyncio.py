@@ -1,11 +1,11 @@
 """Module wrapping AsyncIO ops for clients."""
 
 from .base import BaseClient
-from .mixin import CRUDMixin, AsyncPostMixin
+from .mixin import AsyncPostMixin
 from .websocket import WebSocketClientMixin
 
 
-class AsyncClient(AsyncPostMixin, CRUDMixin, BaseClient):
+class AsyncClient(AsyncPostMixin, BaseClient):
     """
     :class:`AsyncClient` is the asynchronous version of the :class:`Client`.
 

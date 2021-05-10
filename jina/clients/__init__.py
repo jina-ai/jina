@@ -2,12 +2,12 @@
 
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
 from .helper import callback_exec
-from .mixin import CRUDMixin, PostMixin
+from .mixin import PostMixin
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 
 
-class Client(PostMixin, CRUDMixin, BaseClient):
+class Client(PostMixin, BaseClient):
     """A simple Python client for connecting to the gRPC gateway.
 
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
