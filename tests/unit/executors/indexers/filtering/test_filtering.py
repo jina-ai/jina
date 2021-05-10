@@ -8,17 +8,17 @@ def test_boolean_expression():
     lookups = {'tags__id': 2, 'text__contains': 'hello'}
 
     boolean_expression = BooleanExpression(lookups=lookups)
-    assert str(boolean_expression) == 'tags__id:2-text__contains:hello-'
+    assert str(boolean_expression) == 'tags__id:2-text__contains:hello'
     assert hash(boolean_expression) is not None
     assert hash(boolean_expression) == hash(BooleanExpression(lookups=lookups))
 
     assert boolean_expression.k == 2
 
-    assert len(boolean_expression.conjunctions) == 2
+    assert len(boolean_expression.predicates) == 2
 
-    for conjunction in boolean_expression:
-        assert isinstance(conjunction, BooleanExpression)
-        assert conjunction.k == 1
+    for predicate in boolean_expression:
+        assert isinstance(predicate, BooleanExpression)
+        assert predicate.k == 1
 
 
 def test_be_inverted_index_simple():
@@ -44,8 +44,7 @@ def test_be_inverted_index_simple():
     assert len(indexer.inverted_indexes[2].keys()) == 4
     for key in indexer.inverted_indexes[2].keys():
         assert len(indexer.inverted_indexes[2][key]) == 2
-    print(f' A: {indexer.inverted_indexes[1]}')
-    print(f' B: {indexer.inverted_indexes[2]}')
+    assert indexer.max_k == 2
 
     assert len(indexer.query(lookups=lookups_1)) == 1
     assert len(indexer.query(lookups=lookups_2)) == 1
@@ -59,10 +58,32 @@ def test_be_inverted_index_simple():
     assert indexer.query(lookups=lookups_4)[0] == BooleanExpression(lookups=lookups_4)
     assert indexer.query(lookups=lookups_5)[0] == BooleanExpression(lookups=lookups_5)
 
-    ret = indexer.query(lookups={'tags__size': 'l'})
-    print(f' ret {ret}')
+    assert sorted(indexer.query(lookups={'tags__size': 'm'})) == sorted(
+        [
+            BooleanExpression(lookups=lookups_1),
+            BooleanExpression(lookups=lookups_2),
+        ]
+    )
+    assert sorted(indexer.query(lookups={'tags__size': 'l'})) == sorted(
+        [
+            BooleanExpression(lookups=lookups_3),
+            BooleanExpression(lookups=lookups_4),
+        ]
+    )
+    assert sorted(indexer.query(lookups={'tags__category': 'dress'})) == sorted(
+        [
+            BooleanExpression(lookups=lookups_1),
+            BooleanExpression(lookups=lookups_3),
+        ]
+    )
+    assert sorted(indexer.query(lookups={'tags__category': 'trousers'})) == sorted(
+        [
+            BooleanExpression(lookups=lookups_2),
+            BooleanExpression(lookups=lookups_4),
+        ]
+    )
+    assert sorted(indexer.query(lookups={'tags__size': 's'})) == sorted(
+        [BooleanExpression(lookups=lookups_5)]
+    )
 
-    assert indexer.query(lookups={'tags__size': 'm'}) == [
-        BooleanExpression(lookups=lookups_1),
-        BooleanExpression(lookups=lookups_2),
-    ]
+    assert indexer.query(lookups={'tags__size': 'r'}) == []
