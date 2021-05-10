@@ -4,13 +4,12 @@ import argparse
 import asyncio
 import inspect
 import os
-from typing import Callable, Union, Optional, Iterator, Iterable, Dict, AsyncIterator
+from typing import Callable, Union, Optional, Iterator, Iterable, AsyncIterator
 
 import grpc
 
 from .helper import callback_exec
 from .request import GeneratorSourceType
-from ..enums import RequestType
 from ..excepts import BadClient, BadClientInput, ValidationError
 from ..helper import typename
 from ..logging import default_logger, JinaLogger
@@ -44,30 +43,7 @@ class BaseClient:
             # affect users os-level envs.
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
-        self._mode = args.mode
         self._inputs = None
-
-    @property
-    def mode(self) -> str:
-        """
-        Get the mode for this client (index, query etc.).
-
-        :return: Mode of the client.
-        """
-        return self._mode
-
-    @mode.setter
-    def mode(self, value: RequestType) -> None:
-        """
-        Set the mode.
-
-        :param value: Request type. (e.g. INDEX, SEARCH, DELETE, UPDATE, CONTROL, TRAIN)
-        """
-        if isinstance(value, RequestType):
-            self._mode = value
-            self.args.mode = value
-        else:
-            raise ValueError(f'{value} must be one of {RequestType}')
 
     @staticmethod
     def check_input(inputs: Optional[InputType] = None, **kwargs) -> None:
@@ -101,7 +77,7 @@ class BaseClient:
             raise BadClientInput from ex
 
     def _get_requests(
-        self, **kwargs
+            self, **kwargs
     ) -> Union[Iterator['Request'], AsyncIterator['Request']]:
         """
         Get request in generator.
@@ -122,12 +98,6 @@ class BaseClient:
             from .request import request_generator
 
             return request_generator(**_kwargs)
-
-    def _get_task_name(self, kwargs: Dict) -> str:
-        tname = str(self.mode).lower()
-        if 'mode' in kwargs:
-            tname = str(kwargs['mode']).lower()
-        return tname
 
     @property
     def inputs(self) -> InputType:
@@ -156,29 +126,28 @@ class BaseClient:
             self._inputs = bytes_gen
 
     async def _get_results(
-        self,
-        inputs: InputType,
-        on_done: Callable,
-        on_error: Callable = None,
-        on_always: Callable = None,
-        **kwargs,
+            self,
+            inputs: InputType,
+            on_done: Callable,
+            on_error: Callable = None,
+            on_always: Callable = None,
+            **kwargs,
     ):
         try:
             self.inputs = inputs
-            tname = self._get_task_name(kwargs)
             req_iter = self._get_requests(**kwargs)
             async with grpc.aio.insecure_channel(
-                f'{self.args.host}:{self.args.port_expose}',
-                options=[
-                    ('grpc.max_send_message_length', -1),
-                    ('grpc.max_receive_message_length', -1),
-                ],
+                    f'{self.args.host}:{self.args.port_expose}',
+                    options=[
+                        ('grpc.max_send_message_length', -1),
+                        ('grpc.max_receive_message_length', -1),
+                    ],
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.success(
                     f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
                 )
-                with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
+                with ProgressBar() as p_bar, TimeContext(''):
                     async for resp in stub.Call(req_iter):
                         resp.as_typed_request(resp.request_type)
                         resp.as_response()
@@ -210,8 +179,8 @@ class BaseClient:
                 self.logger.error(f'{msg}\ninternal error on the server side')
                 raise rpc_ex
             elif (
-                my_code == grpc.StatusCode.UNKNOWN
-                and 'asyncio.exceptions.TimeoutError' in my_details
+                    my_code == grpc.StatusCode.UNKNOWN
+                    and 'asyncio.exceptions.TimeoutError' in my_details
             ):
                 raise BadClientInput(
                     f'{msg}\n'
@@ -220,15 +189,3 @@ class BaseClient:
                 ) from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
-
-    def index(self, **kwargs):
-        """Issue 'index' request to the Flow."""
-        raise NotImplementedError
-
-    def search(self, **kwargs):
-        """Issue 'search' request to the Flow."""
-        raise NotImplementedError
-
-    def train(self, **kwargs):
-        """Issue 'train' request to the Flow."""
-        raise NotImplementedError

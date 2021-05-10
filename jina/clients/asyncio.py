@@ -1,14 +1,11 @@
 """Module wrapping AsyncIO ops for clients."""
-from functools import partialmethod
-from typing import Optional, Dict
 
-from .base import InputType, BaseClient, CallbackFnType
+from .base import BaseClient
+from .mixin import CRUDMixin, AsyncPostMixin
 from .websocket import WebSocketClientMixin
-from .. import Response
-from ..enums import RequestType
 
 
-class AsyncClient(BaseClient):
+class AsyncClient(AsyncPostMixin, CRUDMixin, BaseClient):
     """
     :class:`AsyncClient` is the asynchronous version of the :class:`Client`.
 
@@ -51,47 +48,6 @@ class AsyncClient(BaseClient):
 
     One can think of :class:`Client` as Jina-managed eventloop, whereas :class:`AsyncClient` is self-managed eventloop.
     """
-
-    async def post(
-            self,
-            on: str,
-            inputs: InputType,
-            on_done: CallbackFnType = None,
-            on_error: CallbackFnType = None,
-            on_always: CallbackFnType = None,
-            parameters: Optional[Dict] = None,
-            target_peapod: Optional[str] = None,
-            **kwargs,
-    ) -> Optional[Response]:
-        """Post a general data request to the Flow.
-
-        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
-        :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
-        :param on_done: the function to be called when the :class:`Request` object is resolved.
-        :param on_error: the function to be called when the :class:`Request` object is rejected.
-        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-        :param parameters: the kwargs that will be sent to the executor
-        :param target_peapod: a regex string represent the certain peas/pods request targeted
-        :param kwargs: additional parameters
-        :return: None
-        """
-        self.mode = RequestType.DATA
-        async for r in self._get_results(
-                inputs=inputs,
-                on_done=on_done,
-                on_error=on_error,
-                on_always=on_always,
-                exec_endpoint=on,
-                target_peapod=target_peapod,
-                parameters=parameters,
-                **kwargs,
-        ):
-            yield r
-
-    index = partialmethod(post, '/index')
-    search = partialmethod(post, '/search')
-    update = partialmethod(post, '/update')
-    delete = partialmethod(post, '/delete')
 
 
 class AsyncWebSocketClient(AsyncClient, WebSocketClientMixin):

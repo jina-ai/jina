@@ -1,12 +1,9 @@
 from .base import BaseFlow
-from .mixin.control import ControlFlowMixin
-from .mixin.crud import CRUDFlowMixin
+from ..clients.mixin import CRUDMixin, PostMixin
 
 
-class Flow(CRUDFlowMixin, ControlFlowMixin, BaseFlow):
+class Flow(PostMixin, CRUDMixin, BaseFlow):
     """The synchronous version of :class:`AsyncFlow`.
 
     For proper usage see `this guide` <https://docs.jina.ai/chapters/flow/index.html>
     """
-
-    pass
