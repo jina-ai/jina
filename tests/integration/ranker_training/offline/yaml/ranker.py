@@ -45,4 +45,8 @@ class SGDRegressorRanker(Match2DocRanker):
                 sizes.append(m['tags__size'])
                 prices.append(m['tags__price'])
         X = np.column_stack((prices, sizes))
+        print("======")
+        print(X)
+        print(self.model.predict(X))
+        print("======")
         return self.model.predict(X)

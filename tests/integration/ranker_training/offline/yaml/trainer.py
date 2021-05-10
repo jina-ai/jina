@@ -20,9 +20,9 @@ class SGDRegressorRankerTrainer(RankerTrainer):
         self.query_required_keys = None
 
     def post_init(self):
-        from sklearn.linear_model import SGDRegressor
+        from sklearn.linear_model import LinearRegression
 
-        self.model = SGDRegressor(warm_start=True)
+        self.model = LinearRegression()
 
     def train(self, query_metas, matches_metas, *args, **kwargs):
         """
@@ -41,8 +41,10 @@ class SGDRegressorRankerTrainer(RankerTrainer):
                 prices.append(m['tags__price'])
                 relevance.append(m['tags__relevance'])
         X = np.column_stack((prices, sizes))
+        print(X)
         y = np.asarray(relevance)
-        self.model.partial_fit(X, y)
+        print(y)
+        self.model.fit(X, y)
 
     def save(self):
         """Save the updated the ranker model."""
