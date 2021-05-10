@@ -41,9 +41,7 @@ class SGDRegressorRankerTrainer(RankerTrainer):
                 prices.append(m['tags__price'])
                 relevance.append(m['tags__relevance'])
         X = np.column_stack((prices, sizes))
-        print(X)
         y = np.asarray(relevance)
-        print(y)
         self.model.fit(X, y)
 
     def save(self):

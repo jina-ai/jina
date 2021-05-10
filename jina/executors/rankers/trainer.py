@@ -5,7 +5,9 @@ from .. import BaseExecutor
 
 
 class RankerTrainer(BaseExecutor):
-    """Class :class:`RankerTrainer` is used to train a ranker for ranker fine-tunning purpose."""
+    """Class :class:`RankerTrainer` is used to train a ranker for ranker fine-tunning purpose.
+    such as offline-learning and online-learning.
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -16,5 +18,5 @@ class RankerTrainer(BaseExecutor):
         raise NotImplementedError
 
     def save(self):
-        """Dump the weights of the ranker model."""
+        """Save the of the ranker model."""
         raise NotImplementedError
