@@ -43,6 +43,18 @@ def doc_to_query():
 
 
 def test_train_offline(documents_to_train, doc_to_query):
+    '''
+    The objective of this test is to ensure ranker trainer works as expected.
+    Our data set consist of 2 features field, `price` and `size`. Label field is named as `relevance`.
+    Before using ranker trainer, we manually train a linear model based on `price` field, use a
+      Jina search flow to find documents and scores with the `doc_to_query`. Since the `price` of the `doc_to_query`
+      has been set to 1, so the pre-trained model will always return the same value and all the scores will be the same.
+      so we assert the length of prediction is 1 in `validate_ranking_by_price`.
+    Afterwords, we fire a ranker trainer, it will dump a new model. The trainiang set of the new model is based on `size`
+      feature, see `docs_to_train`, and the `price` is not going to have any impact on the predictions. When we search the result
+      with `doc_to_query`, we expect the relevance score keep increase since the `size` in `doc_to_query` keeps increase.
+      see `validate_ranking_by_size`.
+    '''
     def validate_ranking_by_price(req):
         pred = set()
         for match in req.docs[0].matches:
