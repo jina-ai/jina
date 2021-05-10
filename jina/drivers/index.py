@@ -4,10 +4,11 @@ __license__ = "Apache-2.0"
 from typing import Iterable, Optional
 
 from . import BaseExecutableDriver, FlatRecursiveMixin
+from .. import Document
 from ..enums import EmbeddingClsType
 
 if False:
-    from ..types.sets import DocumentSet
+    from ..types.arrays import DocumentArray
 
 
 class BaseIndexDriver(FlatRecursiveMixin, BaseExecutableDriver):
@@ -46,14 +47,14 @@ class VectorIndexDriver(BaseIndexDriver):
         """
         return EmbeddingClsType.from_string(self.exec.embedding_cls_type)
 
-    def _get_documents_embeddings(self, docs: 'DocumentSet'):
+    def _get_documents_embeddings(self, docs: 'DocumentArray'):
         embedding_cls_type = self.exec_embedding_cls_type
         if embedding_cls_type.is_dense:
             return docs.all_embeddings
         else:
             return docs.get_all_sparse_embeddings(embedding_cls_type=embedding_cls_type)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         embed_vecs, docs_pts = self._get_documents_embeddings(docs)
         if docs_pts:
             keys = [doc.id for doc in docs_pts]
@@ -64,7 +65,7 @@ class VectorIndexDriver(BaseIndexDriver):
 class KVIndexDriver(BaseIndexDriver):
     """Forwards pairs of serialized documents and ids to the executor."""
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         info = [(doc.id, doc.SerializeToString()) for doc in docs]
         if info:
             keys, values = zip(*info)
@@ -75,12 +76,12 @@ class KVIndexDriver(BaseIndexDriver):
 class DBMSIndexDriver(BaseIndexDriver):
     """Forwards ids, vectors, serialized Document to a BaseDBMSIndexer"""
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         info = [
             (
                 doc.id,
                 doc.embedding,
-                self._doc_without_embedding(doc).SerializeToString(),
+                DBMSIndexDriver._doc_without_embedding(doc).SerializeToString(),
             )
             for doc in docs
         ]

@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 from scipy import sparse
 
-from jina import Document, DocumentSet
+from jina import Document, DocumentArray
 from jina.drivers.encode import EncodeDriver, ScipySparseEncodeDriver
 from jina.executors.encoders import BaseEncoder
 from jina.executors.decorators import batching
@@ -21,7 +21,7 @@ def docs_to_encode(num_docs):
     for idx in range(1, num_docs + 1):
         doc = Document(content=np.array([idx]))
         docs.append(doc)
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
 def get_encoder(batch_size):

@@ -8,7 +8,7 @@ from jina.drivers.querylang.select import ExcludeQL
 from jina.flow import Flow
 from jina import Document
 from jina.types.querylang import QueryLang
-from jina.types.sets import QueryLangSet
+from jina.types.arrays import QueryLangArray
 
 from tests import validate_callback
 
@@ -126,7 +126,7 @@ class MockExcludeQL(ExcludeQL):
                 'priority': 3,
             }
         )
-        self.qset = QueryLangSet([ql.proto])
+        self.qset = QueryLangArray([ql.proto])
 
     @property
     def queryset(self):

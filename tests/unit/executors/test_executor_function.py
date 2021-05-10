@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from jina import DocumentSet, Document
+from jina import DocumentArray, Document
 from jina.drivers.encode import EncodeDriver
 from jina.executors.encoders import BaseEncoder
 from tests import random_docs
@@ -24,7 +24,7 @@ def test_extract_multi_fields(mocker):
     bd.attach(exec, runtime=None)
     docs = list(random_docs(10))
 
-    ds = DocumentSet(docs)
+    ds = DocumentArray(docs)
 
     bd._apply_all(ds)
     encode_mock.assert_called()
@@ -47,7 +47,7 @@ def test_extract_multi_fields_with_ndarray_type(mocker):
     bd.attach(exec, runtime=None)
     docs = list(random_docs(10))
 
-    ds = DocumentSet(docs)
+    ds = DocumentArray(docs)
 
     bd._apply_all(ds)
     encode_mock.assert_called()
@@ -66,7 +66,7 @@ def test_extract_bad_fields(mocker):
     bd.attach(exec, runtime=None)
     docs = list(random_docs(10))
 
-    ds = DocumentSet(docs)
+    ds = DocumentArray(docs)
 
     with pytest.raises(
         AttributeError, match='is now deprecated and not a valid argument'
@@ -112,7 +112,7 @@ def test_extract_bad_fields_no_strict_args(mocker):
     bd.attach(exec, runtime=None)
     docs = list(random_docs(10))
 
-    ds = DocumentSet(docs)
+    ds = DocumentArray(docs)
 
     bd._apply_all(ds)
     encode_mock.assert_not_called()
@@ -133,7 +133,7 @@ def test_exec_fn_arbitrary_name(mocker):
     bd.attach(exec, runtime=None)
     docs = list(random_docs(10))
 
-    ds = DocumentSet(docs)
+    ds = DocumentArray(docs)
 
     bd._apply_all(ds)
     encode_mock.assert_called()
@@ -153,7 +153,7 @@ def test_exec_fn_return_dict(mocker):
     bd.attach(exec, runtime=None)
     docs = list(random_docs(10))
 
-    ds = DocumentSet(docs)
+    ds = DocumentArray(docs)
 
     bd._apply_all(ds)
     encode_mock.assert_called()
@@ -176,7 +176,7 @@ def test_exec_fn_return_doc(mocker):
     bd.attach(exec, runtime=None)
     docs = list(random_docs(10))
 
-    ds = DocumentSet(docs)
+    ds = DocumentArray(docs)
 
     bd._apply_all(ds)
     encode_mock.assert_called()

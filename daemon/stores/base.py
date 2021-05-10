@@ -11,6 +11,8 @@ from .. import jinad_args
 
 
 class BaseStore(MutableMapping):
+    """The Base class for Jinad stores"""
+
     def __init__(self):
         self._items = {}  # type: Dict['uuid.UUID', Dict[str, Any]]
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
@@ -24,7 +26,17 @@ class BaseStore(MutableMapping):
         self._num_del = 0
 
     def add(self, *args, **kwargs) -> 'uuid.UUID':
-        """Add a new element to the store. This method needs to be overridden by the subclass"""
+        """Add a new element to the store. This method needs to be overridden by the subclass
+
+
+        .. #noqa: DAR101"""
+        raise NotImplementedError
+
+    def update(self, *args, **kwargs) -> 'uuid.UUID':
+        """Updates the element to the store. This method needs to be overridden by the subclass
+
+
+        .. #noqa: DAR101"""
         raise NotImplementedError
 
     def delete(
@@ -34,6 +46,13 @@ class BaseStore(MutableMapping):
         everything: bool = False,
         **kwargs,
     ):
+        """delete an object from the store
+
+        :param id: the id of the object
+        :param workspace: whether to delete the workdir of the object
+        :param everything: whether to delete everything
+        :param kwargs: not used
+        """
         if isinstance(id, str):
             id = uuid.UUID(id)
 
@@ -68,12 +87,19 @@ class BaseStore(MutableMapping):
         return self._items[key]
 
     def __delitem__(self, key: uuid.UUID):
-        """ Release a Pea/Pod/Flow object from the store """
+        """Release a Pea/Pod/Flow object from the store
+
+        :param key: the key of the object
+
+
+        .. #noqa: DAR201"""
         self._items.pop(key)
         self._time_updated = datetime.now()
         self._num_del += 1
 
     def clear(self) -> None:
+        """delete all the objects in the store"""
+
         keys = list(self._items.keys())
         for k in keys:
             self.delete(id=k, workspace=True)
@@ -92,7 +118,10 @@ class BaseStore(MutableMapping):
 
     @property
     def status(self) -> Dict:
-        """Return the status of this store as a dict"""
+        """Return the status of this store as a dict
+
+
+        .. #noqa: DAR201"""
         return {
             'size': len(self._items),
             'time_created': self._time_created,

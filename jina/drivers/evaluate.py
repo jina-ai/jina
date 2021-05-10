@@ -11,7 +11,7 @@ from .search import KVSearchDriver
 from ..types.document import Document
 from ..types.document.helper import DocGroundtruthPair
 from ..helper import deprecated_alias
-from ..types.sets.doc_groundtruth import DocumentGroundtruthSequence
+from ..types.arrays.doc_groundtruth import DocumentGroundtruthSequence
 
 
 class BaseEvaluateDriver(BaseExecutableDriver):
@@ -217,12 +217,13 @@ class LoadGroundTruthDriver(KVSearchDriver):
         miss_idx = (
             []
         )  #: missed hit results, some documents may not have groundtruth and thus will be removed
-        for idx, doc in enumerate(self.docs):
-            serialized_groundtruth = self.exec_fn(doc.id)
+        serialized_groundtruths = self.exec_fn([d.id for d in self.docs])
+        for idx, serialized_groundtruth in enumerate(serialized_groundtruths):
             if serialized_groundtruth:
                 self.req.groundtruths.append(Document(serialized_groundtruth))
             else:
                 miss_idx.append(idx)
+
         # delete non-existed matches in reverse
         for j in reversed(miss_idx):
             del self.docs[j]

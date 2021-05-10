@@ -7,7 +7,7 @@ from ...types.querylang.queryset.lookup import Q
 from .. import QuerySetReader, BaseRecursiveDriver, ContextAwareRecursiveMixin
 
 if False:
-    from ...types.sets import DocumentSet
+    from ...types.arrays import DocumentArray
 
 
 class FilterQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
@@ -38,7 +38,7 @@ class FilterQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
         self._lookups = lookups
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentArray'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             if self.lookups:

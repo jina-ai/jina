@@ -4,7 +4,11 @@ from typing import Tuple, Generator, BinaryIO, TextIO
 
 import numpy as np
 
+from jina.logging import JinaLogger
+
 BYTE_PADDING = 4
+
+logger = JinaLogger(__name__)
 
 
 def export_dump_streaming(
@@ -20,6 +24,7 @@ def export_dump_streaming(
     :param size: total amount of entries
     :param data: the generator of the data (ids, vectors, metadata)
     """
+    logger.info(f'Dumping {size} docs to {path} for {shards} shards')
     _handle_dump(data, path, shards, size)
 
 
@@ -29,17 +34,24 @@ def _handle_dump(
     shards: int,
     size: int,
 ):
-    if os.path.exists(path):
-        raise Exception(f'path for dump {path} already exists. Not dumping...')
-    size_per_shard = size // shards
-    extra = size % shards
-    shard_range = list(range(shards))
-    for shard_id in shard_range:
-        if shard_id == shard_range[-1]:
-            size_this_shard = size_per_shard + extra
-        else:
-            size_this_shard = size_per_shard
-        _write_shard_data(data, path, shard_id, size_this_shard)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    # directory must be empty to be safe
+    if not os.listdir(path):
+        size_per_shard = size // shards
+        extra = size % shards
+        shard_range = list(range(shards))
+        for shard_id in shard_range:
+            if shard_id == shard_range[-1]:
+                size_this_shard = size_per_shard + extra
+            else:
+                size_this_shard = size_per_shard
+            _write_shard_data(data, path, shard_id, size_this_shard)
+    else:
+        raise Exception(
+            f'path for dump {path} contains data. Please empty. Not dumping...'
+        )
 
 
 def _write_shard_data(
@@ -80,6 +92,7 @@ def import_vectors(path: str, pea_id: str):
     :param pea_id: the id of the pea (as part of the shards)
     :return: the generators for the ids and for the vectors
     """
+    logger.info(f'Importing ids and vectors from {path} for pea_id {pea_id}')
     path = os.path.join(path, pea_id)
     ids_gen = _ids_gen(path)
     vecs_gen = _vecs_gen(path)
@@ -93,6 +106,7 @@ def import_metas(path: str, pea_id: str):
     :param pea_id: the id of the pea (as part of the shards)
     :return: the generators for the ids and for the metadata
     """
+    logger.info(f'Importing ids and metadata from {path} for pea_id {pea_id}')
     path = os.path.join(path, pea_id)
     ids_gen = _ids_gen(path)
     metas_gen = _metas_gen(path)

@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from jina import DocumentSet
+from jina import DocumentArray
 from jina.drivers.cache import BaseCacheDriver
 from jina.drivers.delete import DeleteDriver
 from jina.executors import BaseExecutor
@@ -24,11 +24,11 @@ class MockCacheDriver(BaseCacheDriver):
 
     @property
     def docs(self):
-        return DocumentSet(list(random_docs(10)))
+        return DocumentArray(list(random_docs(10)))
 
 
 def test_cache_driver_twice(tmpdir, test_metas):
-    docs = DocumentSet(list(random_docs(10)))
+    docs = DocumentArray(list(random_docs(10)))
     driver = MockCacheDriver()
     with DocCache(tmpdir, metas=test_metas) as executor:
         assert not executor.handler_mutex
@@ -40,7 +40,7 @@ def test_cache_driver_twice(tmpdir, test_metas):
             driver._apply_all(docs)
 
         # new docs
-        docs = DocumentSet(list(random_docs(10, start_id=100)))
+        docs = DocumentArray(list(random_docs(10, start_id=100)))
         driver._apply_all(docs)
         filename = executor.save_abspath
 
@@ -49,7 +49,7 @@ def test_cache_driver_twice(tmpdir, test_metas):
 
 
 def test_cache_driver_tmpfile(tmpdir, test_metas):
-    docs = DocumentSet(list(random_docs(10, embedding=False)))
+    docs = DocumentArray(list(random_docs(10, embedding=False)))
     driver = MockCacheDriver()
     with DocCache(tmpdir, fields=(ID_KEY,), metas=test_metas) as executor:
         assert not executor.handler_mutex
@@ -62,7 +62,7 @@ def test_cache_driver_tmpfile(tmpdir, test_metas):
             driver._apply_all(docs)
 
         # new docs
-        docs = DocumentSet(list(random_docs(10, start_id=100, embedding=False)))
+        docs = DocumentArray(list(random_docs(10, start_id=100, embedding=False)))
         driver._apply_all(docs)
 
     assert os.path.exists(executor.index_abspath)
@@ -75,7 +75,7 @@ def test_cache_driver_from_file(tmpdir, test_metas):
     folder = os.path.join(folder, 'cache-0')
     os.makedirs(folder)
     bin_full_path = os.path.join(folder, filename)
-    docs = DocumentSet(list(random_docs(10, embedding=False)))
+    docs = DocumentArray(list(random_docs(10, embedding=False)))
     pickle.dump(
         {doc.id: BaseCacheDriver.hash_doc(doc, ['content_hash']) for doc in docs},
         open(f'{bin_full_path}.bin.ids', 'wb'),
@@ -95,7 +95,7 @@ def test_cache_driver_from_file(tmpdir, test_metas):
             driver._apply_all(docs)
 
         # new docs
-        docs = DocumentSet(list(random_docs(10, start_id=100)))
+        docs = DocumentArray(list(random_docs(10, start_id=100)))
         driver._apply_all(docs)
 
     # check persistence
@@ -121,12 +121,12 @@ def test_cache_content_driver_same_content(tmpdir, test_metas):
     doc1 = Document(id='1')
     doc1.text = 'blabla'
     doc1.update_content_hash()
-    docs1 = DocumentSet([doc1])
+    docs1 = DocumentArray([doc1])
 
     doc2 = Document(id='2')
     doc2.text = 'blabla'
     doc2.update_content_hash()
-    docs2 = DocumentSet([doc2])
+    docs2 = DocumentArray([doc2])
     assert doc1.content_hash == doc2.content_hash
 
     driver = MockBaseCacheDriver()
@@ -169,12 +169,12 @@ def test_cache_content_driver_same_id(tmp_path, test_metas):
     doc1 = Document(id=1)
     doc1.text = 'blabla'
     doc1.update_content_hash()
-    docs1 = DocumentSet([doc1])
+    docs1 = DocumentArray([doc1])
 
     doc2 = Document(id=1)
     doc2.text = 'blabla2'
     doc2.update_content_hash()
-    docs2 = DocumentSet([doc2])
+    docs2 = DocumentArray([doc2])
 
     driver = MockBaseCacheDriver()
 
@@ -293,17 +293,17 @@ def test_cache_legacy_field_type(tmp_path, test_metas):
     doc1 = Document(id=1)
     doc1.text = 'blabla'
     doc1.update_content_hash()
-    docs1 = DocumentSet([doc1])
+    docs1 = DocumentArray([doc1])
 
     doc2 = Document(id=1)
     doc2.text = 'blabla2'
     doc2.update_content_hash()
-    docs2 = DocumentSet([doc2])
+    docs2 = DocumentArray([doc2])
 
     doc3 = Document(id=12312)
     doc3.text = 'blabla'
     doc3.update_content_hash()
-    docs3 = DocumentSet([doc3])
+    docs3 = DocumentArray([doc3])
 
     driver = MockBaseCacheDriver()
 

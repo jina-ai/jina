@@ -7,7 +7,7 @@ from .. import QuerySetReader, FlatRecursiveMixin, BaseRecursiveDriver
 
 # noinspection PyUnreachableCode
 if False:
-    from ...types.sets import DocumentSet
+    from ...types.arrays import DocumentArray
 
 
 class ExcludeQL(QuerySetReader, FlatRecursiveMixin, BaseRecursiveDriver):
@@ -32,7 +32,7 @@ class ExcludeQL(QuerySetReader, FlatRecursiveMixin, BaseRecursiveDriver):
         fields: Union[Tuple, str],
         traversal_paths: Tuple[str] = ('r',),
         *args,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         if isinstance(fields, str):
@@ -40,7 +40,7 @@ class ExcludeQL(QuerySetReader, FlatRecursiveMixin, BaseRecursiveDriver):
         else:
             self._fields = [field for field in fields]
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs):
         for doc in docs:
             for k in self.fields:
                 doc.ClearField(k)
@@ -59,7 +59,7 @@ class SelectQL(ExcludeQL):
         SelectQL will ensure that the `outgoing` documents only contain the field `matches`
     """
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs):
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs):
         for doc in docs:
             for k in doc.DESCRIPTOR.fields_by_name.keys():
                 if k not in self.fields:

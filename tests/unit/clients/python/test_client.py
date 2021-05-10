@@ -4,12 +4,12 @@ import time
 import pytest
 import requests
 
-from jina.clients import Client
+from jina.clients import Client, WebSocketClient
 from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
-from jina import helper
-from jina.parsers import set_gateway_parser
+from jina import helper, Document
+from jina.parsers import set_gateway_parser, set_client_cli_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
 
@@ -111,3 +111,41 @@ def test_client_csv(restful, mocker, func_name):
         mock = mocker.Mock()
         getattr(f, f'{func_name}_csv')(fp, on_done=mock)
         mock.assert_called_once()
+
+
+# Timeout is necessary to fail in case of hanging client requests
+@pytest.mark.timeout(5)
+def test_client_websocket(mocker, flow_with_rest_api_enabled):
+    with flow_with_rest_api_enabled:
+        time.sleep(0.5)
+        client = WebSocketClient(
+            set_client_cli_parser().parse_args(
+                [
+                    '--host',
+                    'localhost',
+                    '--port-expose',
+                    str(flow_with_rest_api_enabled.port_expose),
+                ]
+            )
+        )
+        # Test that a regular index request triggers the correct callbacks
+        on_always_mock = mocker.Mock()
+        on_error_mock = mocker.Mock()
+        on_done_mock = mocker.Mock()
+        client.index(
+            iter([Document()]),
+            request_size=1,
+            on_always=on_always_mock,
+            on_error=on_error_mock,
+            on_done=on_done_mock,
+        )
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_called_once()
+        on_error_mock.assert_not_called()
+
+        # Test that an empty index request does not trigger any callback and does not time out
+        mock = mocker.Mock()
+        client.index(
+            iter([()]), request_size=1, on_always=mock, on_error=mock, on_done=mock
+        )
+        mock.assert_not_called()

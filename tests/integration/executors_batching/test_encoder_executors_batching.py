@@ -5,7 +5,7 @@ import numpy as np
 from jina.executors.encoders import BaseEncoder
 from jina.executors.decorators import batching, single, as_ndarray
 from jina import Document
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 
 EMBED_SIZE = 10
 
@@ -38,7 +38,7 @@ class DummyEncoderTextSingle(BaseEncoder):
     'encoder', [DummyEncoderTextSingle(), DummyEncoderTextBatching()]
 )
 def test_batching_encode_text(encoder):
-    docs = DocumentSet([Document(text=f'text-{i}') for i in range(15)])
+    docs = DocumentArray([Document(text=f'text-{i}') for i in range(15)])
     texts, _ = docs.all_contents
 
     embeds = encoder.encode(texts)
@@ -74,7 +74,7 @@ class DummyEncoderBlobSingle(BaseEncoder):
     'encoder', [DummyEncoderBlobSingle(), DummyEncoderBlobBatching()]
 )
 def test_batching_encode_blob(encoder):
-    docs = DocumentSet([Document(blob=np.random.random((10, 20))) for _ in range(15)])
+    docs = DocumentArray([Document(blob=np.random.random((10, 20))) for _ in range(15)])
     blob, _ = docs.all_contents
 
     embeds = encoder.encode(blob)

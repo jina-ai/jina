@@ -19,8 +19,8 @@ from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..querylang.queryset.dunderkey import dunder_get
 from ..score import NamedScore
-from ..sets.chunk import ChunkSet
-from ..sets.match import MatchSet
+from ..arrays.chunk import ChunkArray
+from ..arrays.match import MatchArray
 from ...excepts import BadDocType
 from ...helper import (
     is_url,
@@ -620,20 +620,20 @@ class Document(ProtoTypeMixin, Traversable):
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
-    def matches(self) -> 'MatchSet':
+    def matches(self) -> 'MatchArray':
         """Get all matches of the current document.
 
         :return: the set of matches attached to this document
         """
-        return MatchSet(self._pb_body.matches, reference_doc=self)
+        return MatchArray(self._pb_body.matches, reference_doc=self)
 
     @property
-    def chunks(self) -> 'ChunkSet':
+    def chunks(self) -> 'ChunkArray':
         """Get all chunks of the current document.
 
         :return: the set of chunks of this document
         """
-        return ChunkSet(self._pb_body.chunks, reference_doc=self)
+        return ChunkArray(self._pb_body.chunks, reference_doc=self)
 
     def __getattr__(self, item):
         if hasattr(self._pb_body, item):
@@ -1175,7 +1175,7 @@ class Document(ProtoTypeMixin, Traversable):
             """
     %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
     classDiagram
-    
+
             """
             + self.__mermaid_str__()
         )

@@ -9,12 +9,12 @@ from . import (
     FlatRecursiveMixin,
     ContextAwareRecursiveMixin,
 )
+from ..enums import EmbeddingClsType
 from ..types.document import Document
 from ..types.score import NamedScore
-from ..enums import EmbeddingClsType
 
 if False:
-    from ..types.sets import DocumentSet
+    from ..types.arrays import DocumentArray
 
 
 class BaseSearchDriver(BaseExecutableDriver):
@@ -69,14 +69,18 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
         self._is_update = is_update
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentArray'], *args, **kwargs
     ) -> None:
+
         for docs in doc_sequences:
             miss_idx = (
                 []
             )  #: missed hit results, some search may not end with results. especially in shards
-            for idx, retrieved_doc in enumerate(docs):
-                serialized_doc = self.exec_fn(retrieved_doc.id)
+            serialized_docs = self.exec_fn([d.id for d in docs])
+
+            for idx, (retrieved_doc, serialized_doc) in enumerate(
+                zip(docs, serialized_docs)
+            ):
                 if serialized_doc:
                     r = Document(serialized_doc)
                     if self._is_update:
@@ -85,6 +89,7 @@ class KVSearchDriver(ContextAwareRecursiveMixin, BaseSearchDriver):
                         retrieved_doc.CopyFrom(r)
                 else:
                     miss_idx.append(idx)
+
             # delete non-existed matches in reverse
             for j in reversed(miss_idx):
                 del docs[j]
@@ -102,7 +107,7 @@ class VectorFillDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
     ):
         super().__init__(executor, method, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         embeds = self.exec_fn([d.id for d in docs])
         for doc, embedding in zip(docs, embeds):
             doc.embedding = embedding
@@ -130,7 +135,7 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
         """
         return EmbeddingClsType.from_string(self.exec.embedding_cls_type)
 
-    def _get_documents_embeddings(self, docs: 'DocumentSet'):
+    def _get_documents_embeddings(self, docs: 'DocumentArray'):
         embedding_cls_type = self.exec_embedding_cls_type
         if embedding_cls_type.is_dense:
             return docs.all_embeddings
@@ -157,7 +162,7 @@ class VectorSearchDriver(FlatRecursiveMixin, QuerySetReader, BaseSearchDriver):
                 if vector is not None:
                     match.embedding = vector
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         embed_vecs, doc_pts = self._get_documents_embeddings(docs)
 
         if not doc_pts:

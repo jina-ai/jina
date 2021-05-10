@@ -2,6 +2,7 @@ import pickle
 from typing import List, Tuple, Generator
 import numpy as np
 
+from jina import Document
 from jina.executors.indexers.dump import export_dump_streaming
 from jina.executors.indexers.dbms import BaseDBMSIndexer
 from jina.executors.indexers.keyvalue import BinaryPbWriterMixin
@@ -14,8 +15,8 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         self, ids: List[str]
     ) -> Generator[Tuple[str, np.array, bytes], None, None]:
         for id_ in ids:
-            vecs_metas_bytes = super()._query(id_)
-            vec, meta = pickle.loads(vecs_metas_bytes)
+            vecs_metas_list_bytes = super()._query([id_])
+            vec, meta = pickle.loads(vecs_metas_list_bytes[0])
             yield id_, vec, meta
 
     def dump(self, path: str, shards: int) -> None:
@@ -32,7 +33,7 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         export_dump_streaming(
             path,
             shards=shards,
-            size=self.size,
+            size=len(ids),
             data=self._get_generator(ids),
         )
         self.query_handler.close()
@@ -54,7 +55,7 @@ class BinaryPbDBMSIndexer(BinaryPbWriterMixin, BaseDBMSIndexer):
         if not any(ids):
             return
 
-        vecs_metas = [pickle.dumps((vec, meta)) for vec, meta in zip(vecs, metas)]
+        vecs_metas = [pickle.dumps([vec, meta]) for vec, meta in zip(vecs, metas)]
         with self.write_handler as write_handler:
             self._add(ids, vecs_metas, write_handler)
 

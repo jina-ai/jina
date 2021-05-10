@@ -1,10 +1,11 @@
 import argparse
 import os
 from typing import Type
+import time
 
 from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__, __default_host__
-from ...enums import PeaRoleType, RuntimeBackendType
+from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -112,6 +113,9 @@ class BasePea(metaclass=PeaType):
         """Start the Pea.
 
         This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+
+
+        .. #noqa: DAR201
         """
 
         super().start()  #: required here to call process/thread method
@@ -151,6 +155,13 @@ class BasePea(metaclass=PeaType):
                 f'{typename(self)}:{self.name} can not be initialized after {_timeout * 1e3}ms'
             )
 
+    @property
+    def _dealer(self):
+        """Return true if this `Pea` must act as a Dealer responding to a Router
+        .. # noqa: DAR201
+        """
+        return self.args.socket_in == SocketType.DEALER_CONNECT
+
     def close(self) -> None:
         """Close the Pea
 
@@ -165,6 +176,11 @@ class BasePea(metaclass=PeaType):
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                if self._dealer:
+                    self.runtime.deactivate()
+                    # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
+                    # it does not block. Needs to be refactored
+                    time.sleep(0.1)
                 self.runtime.cancel()
                 self.is_shutdown.wait()
             except Exception as ex:
@@ -179,6 +195,10 @@ class BasePea(metaclass=PeaType):
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
                 self.join()
+        else:
+            # if it fails to start, the process will hang at `join`
+            if hasattr(self, 'terminate'):
+                self.terminate()
 
         self.logger.success(__stop_msg__)
         self.logger.close()
@@ -230,5 +250,16 @@ class BasePea(metaclass=PeaType):
 
     @property
     def role(self) -> 'PeaRoleType':
-        """Get the role of this pea in a pod"""
+        """Get the role of this pea in a pod
+
+
+        .. #noqa: DAR201"""
         return self.args.pea_role
+
+    @property
+    def inner(self) -> bool:
+        """Determine whether this is a inner pea or a head/tail
+
+
+        .. #noqa: DAR201"""
+        return self.role is PeaRoleType.SINGLETON or self.role is PeaRoleType.PARALLEL

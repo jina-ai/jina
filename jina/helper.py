@@ -52,6 +52,7 @@ __all__ = [
     'convert_tuple_to_list',
     'run_async',
     'deprecated_alias',
+    'deprecated_class',
 ]
 
 from jina.excepts import NotSupportedError
@@ -126,6 +127,55 @@ def deprecated_alias(**aliases):
         return wrapper
 
     return deco
+
+
+def deprecated_class(dep_class=None, new_class=None, custom_msg=None):
+    """
+    After applying `deprecated_class` the `dep_class` will only be an alias for the `new_class`.
+    Any code inside of `dep_class` will be completely overwritten.
+
+    For example:
+        .. highlight:: python
+        .. code-block:: python
+            @deprecated_class(new_class=NewClass)
+            @deprecated_class(new_class=NewClass, custom_msg="custom message")
+
+    :param dep_class: deprecated class
+    :param new_class: new class
+    :param custom_msg: a custom message to describe the new class
+    :return: wrapper
+    """
+
+    if not dep_class:
+        return functools.partial(
+            deprecated_class, new_class=new_class, custom_msg=custom_msg
+        )
+
+    new_init = new_class.__init__
+
+    @functools.wraps(dep_class)
+    def wrapper(*args, **kwargs):
+        """
+        Set wrapper function.
+
+        :param args: wrapper arguments
+        :param kwargs: wrapper key word arguments
+        :return: class instance of the new type.
+        """
+
+        warnings_msg = f'{dep_class.__name__} class is deprecated and will be removed in the next version. '
+        if new_class and not custom_msg:
+            warnings_msg += f'A new name of the class is {new_class.__name__}. '
+        if custom_msg:
+            warnings_msg += f'{custom_msg}'
+        warnings.warn(
+            warnings_msg,
+            DeprecationWarning,
+        )
+        return new_init(*args, **kwargs)
+
+    new_class.__init__ = wrapper
+    return new_class
 
 
 def get_readable_size(num_bytes: Union[int, float]) -> str:

@@ -3,7 +3,7 @@ from collections import Iterator
 import pytest
 import types
 
-from jina import Document, DocumentSet
+from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.executors.decorators import batching
 from tests import random_docs
@@ -33,7 +33,7 @@ def doc_req():
 def test_traverse_type(doc_req):
     ds = doc_req.docs.traverse(['r'])
     assert isinstance(ds, types.GeneratorType)
-    assert isinstance(list(ds)[0], DocumentSet)
+    assert isinstance(list(ds)[0], DocumentArray)
 
 
 def test_traverse_empty_type(doc_req):
@@ -194,11 +194,11 @@ def test_traverse_flattened_per_path_root_match_chunk(doc_req):
 
 
 def test_docuset_traverse_over_iterator_HACKY():
-    # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-documentset
-    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['r'])
+    # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-DocumentArray
+    ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(['r'])
     assert len(list(list(ds)[0])) == num_docs
 
-    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['c'])
+    ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(['c'])
     ds = list(ds)
     assert len(ds) == num_docs
     assert len(ds[0]) == num_chunks_per_doc
@@ -206,10 +206,10 @@ def test_docuset_traverse_over_iterator_HACKY():
 
 def test_docuset_traverse_over_iterator_CAVEAT():
     # HACKY USAGE's CAVEAT: but it can not iterate over an iterator twice
-    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['r', 'c'])
+    ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(['r', 'c'])
     # note that random_docs is a generator and can be only used once,
     # therefore whoever comes first wil get iterated, and then it becomes empty
     assert len(list(ds)) == 1 + num_docs
 
-    ds = DocumentSet(random_docs(num_docs, num_chunks_per_doc)).traverse(['c', 'r'])
+    ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(['c', 'r'])
     assert len(list(ds)) == num_docs + 1

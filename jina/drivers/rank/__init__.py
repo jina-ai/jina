@@ -1,11 +1,11 @@
 from typing import Tuple, Optional, Iterable
 
 from .. import BaseExecutableDriver, FlatRecursiveMixin
-from ...types.sets import MatchSet
+from ...types.arrays import MatchArray
 from ...types.score import NamedScore
 
 if False:
-    from ...types.sets import DocumentSet
+    from ...types.arrays import DocumentArray
 
 
 class BaseRankDriver(FlatRecursiveMixin, BaseExecutableDriver):
@@ -59,7 +59,7 @@ class Matches2DocRankDriver(BaseRankDriver):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
         self.reverse = reverse
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         """
 
         :param docs: the matches of the ``context_doc``, they are at granularity ``k``
@@ -110,7 +110,7 @@ class Matches2DocRankDriver(BaseRankDriver):
             self._sort_matches_in_place(matches, scores)
 
     def _sort_matches_in_place(
-        self, matches: 'MatchSet', match_scores: Iterable[float]
+        self, matches: 'MatchArray', match_scores: Iterable[float]
     ) -> None:
         op_name = self.exec.__class__.__name__
         ref_doc_id = matches._ref_doc.id

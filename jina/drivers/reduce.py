@@ -8,7 +8,7 @@ from collections import defaultdict
 import numpy as np
 
 from . import ContextAwareRecursiveMixin, BaseRecursiveDriver, FlatRecursiveMixin
-from ..types.sets import ChunkSet, MatchSet, DocumentSet
+from ..types.arrays import ChunkArray, MatchArray, DocumentArray
 
 
 class ReduceAllDriver(ContextAwareRecursiveMixin, BaseRecursiveDriver):
@@ -28,16 +28,16 @@ class ReduceAllDriver(ContextAwareRecursiveMixin, BaseRecursiveDriver):
         request.docs.extend(docs)
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentArray'], *args, **kwargs
     ) -> None:
         doc_pointers = {}
         for docs in doc_sequences:
-            if isinstance(docs, (ChunkSet, MatchSet)):
+            if isinstance(docs, (ChunkArray, MatchArray)):
                 context_id = docs.reference_doc.id
                 if context_id not in doc_pointers:
                     doc_pointers[context_id] = docs.reference_doc
                 else:
-                    if isinstance(docs, ChunkSet):
+                    if isinstance(docs, ChunkArray):
                         doc_pointers[context_id].chunks.extend(docs)
                     else:
                         doc_pointers[context_id].matches.extend(docs)
@@ -51,7 +51,7 @@ class CollectEvaluationDriver(FlatRecursiveMixin, BaseRecursiveDriver):
     def __init__(self, traversal_paths: Tuple[str] = ('r',), *args, **kwargs):
         super().__init__(traversal_paths=traversal_paths, *args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         doc_pointers = {}
         for doc in docs:
             if doc.id not in doc_pointers:
@@ -78,7 +78,7 @@ class ConcatEmbedDriver(BaseRecursiveDriver):
         last_request_documents = self.req.docs.traverse_flatten(self._traversal_paths)
         self._concat_apply(last_request_documents, doc_pointers)
 
-    def _collect_embeddings(self, docs: 'DocumentSet'):
+    def _collect_embeddings(self, docs: 'DocumentArray'):
         doc_pointers = defaultdict(list)
         for doc in docs:
             doc_pointers[doc.id].append(doc.embedding)

@@ -279,8 +279,8 @@ def test_simple_indexer_workspace_move_to_docker(test_workspace_move, tmpdir, pe
     with BaseExecutor.load_config(
         os.path.join(cur_dir, 'yaml/test-kvindexer-workspace.yml'), pea_id=pea_id
     ) as indexer:
-        assert indexer.query(keys[0]) == content[0]
-        assert indexer.query(keys[1]) == content[1]
+        assert indexer.query(keys[0]) == [content[0]]
+        assert indexer.query(keys[1]) == [content[1]]
         assert indexer.workspace == docker_tmpdir
 
 

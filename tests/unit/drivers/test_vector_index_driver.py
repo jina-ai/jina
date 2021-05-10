@@ -6,7 +6,7 @@ import torch
 import tensorflow as tf
 import pytest
 
-from jina import DocumentSet
+from jina import DocumentArray
 from jina.drivers.delete import DeleteDriver
 from jina.drivers.index import VectorIndexDriver
 from jina.executors.indexers import BaseVectorIndexer
@@ -115,7 +115,7 @@ def documents_factory():
                         dense_shape=[1, 10],
                     )
             docs.append(d)
-        return DocumentSet(docs)
+        return DocumentArray(docs)
 
     return documents
 
@@ -127,7 +127,7 @@ def deleted_documents():
         with Document() as d:
             d.id = f'{idx:0>16}'
             docs.append(d)
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
 @pytest.fixture(scope='function')
@@ -137,7 +137,7 @@ def empty_documents():
         with Document() as d:
             d.id = f'{idx:0>16}'
             docs.append(d)
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
 def assert_embedding(embedding_cls_type, obtained, expected):

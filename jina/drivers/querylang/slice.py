@@ -8,7 +8,7 @@ from typing import Iterable, Optional
 from .. import QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver
 
 if False:
-    from ...types.sets.document import DocumentSet
+    from ...types.arrays.document import DocumentArray
 
 
 class SliceQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
@@ -48,7 +48,7 @@ class SliceQL(QuerySetReader, ContextAwareRecursiveMixin, BaseRecursiveDriver):
             self._end = int(end)
 
     def _apply_all(
-        self, doc_sequences: Iterable['DocumentSet'], *args, **kwargs
+        self, doc_sequences: Iterable['DocumentArray'], *args, **kwargs
     ) -> None:
         for docs in doc_sequences:
             if self.start <= 0 and (self.end is None or self.end >= len(docs)):

@@ -7,7 +7,7 @@ from jina import Document
 from jina.drivers.segment import SegmentDriver
 from jina.executors.segmenters import BaseSegmenter
 from jina.executors.decorators import single
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 
 
 class MockSegmenter(BaseSegmenter):
@@ -75,7 +75,7 @@ def test_segment_driver(segment_driver, text_segmenter_executor):
     valid_doc.mime_type = 'image/png'
 
     segment_driver.attach(executor=text_segmenter_executor, runtime=None)
-    segment_driver._apply_all(DocumentSet([valid_doc]))
+    segment_driver._apply_all(DocumentArray([valid_doc]))
 
     assert valid_doc.chunks[0].tags['id'] == 3
     assert valid_doc.chunks[0].parent_id == valid_doc.id
@@ -105,9 +105,8 @@ def test_chunks_exist_already(segment_driver, text_segmenter_executor):
     for chunk in document.chunks:
         assert chunk.parent_id == document.id
         assert chunk.siblings == 2
-
     segment_driver.attach(executor=text_segmenter_executor, runtime=None)
-    segment_driver._apply_all(DocumentSet([document]))
+    segment_driver._apply_all(DocumentArray([document]))
 
     # after segmentation
     assert len(document.chunks) == 5
@@ -124,13 +123,13 @@ def test_broken_document(segment_driver, text_segmenter_executor):
     invalid_doc.text = 'invalid'
 
     with pytest.raises(AttributeError):
-        segment_driver._apply_all([DocumentSet([invalid_doc])])
+        segment_driver._apply_all([DocumentArray([invalid_doc])])
 
 
 def test_image_segmenter(segment_driver, image_segmenter_executor):
     blob1 = np.random.random((1, 32, 64))
     blob2 = np.random.random((1, 64, 32))
-    docs = DocumentSet([Document(blob=blob1), Document(blob=blob2)])
+    docs = DocumentArray([Document(blob=blob1), Document(blob=blob2)])
     segment_driver.attach(executor=image_segmenter_executor, runtime=None)
     segment_driver._apply_all(docs)
     for doc in docs:

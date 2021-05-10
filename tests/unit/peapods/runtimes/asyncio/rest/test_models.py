@@ -46,7 +46,7 @@ def test_enum_definitions():
     command_enum_definition = PROTO_TO_PYDANTIC_MODELS.RequestProto().schema()[
         'definitions'
     ]['Command']
-    assert command_enum_definition['enum'] == [0, 1, 3, 4, 5, 6]
+    assert command_enum_definition['enum'] == [0, 1, 3, 4, 5, 6, 7, 8, 9]
 
 
 def test_all_fields_in_document_proto():
@@ -202,8 +202,8 @@ def test_jina_document_to_pydantic_document():
         pydantic_doc = document_proto_model(**jina_doc)
 
         assert jina_doc['text'] == pydantic_doc.text
-        assert jina_doc['mimeType'] == pydantic_doc.mime_type
-        assert jina_doc['contentHash'] == pydantic_doc.content_hash
+        assert jina_doc['mime_type'] == pydantic_doc.mime_type
+        assert jina_doc['content_hash'] == pydantic_doc.content_hash
         assert (
             jina_doc['embedding']['dense']['shape']
             == pydantic_doc.embedding.dense.shape
@@ -219,10 +219,10 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['id'] == pydantic_doc_chunk.id
             assert jina_doc_chunk['tags'] == pydantic_doc_chunk.tags
             assert jina_doc_chunk['text'] == pydantic_doc_chunk.text
-            assert jina_doc_chunk['mimeType'] == pydantic_doc_chunk.mime_type
-            assert jina_doc_chunk['parentId'] == pydantic_doc_chunk.parent_id
+            assert jina_doc_chunk['mime_type'] == pydantic_doc_chunk.mime_type
+            assert jina_doc_chunk['parent_id'] == pydantic_doc_chunk.parent_id
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
-            assert jina_doc_chunk['contentHash'] == pydantic_doc_chunk.content_hash
+            assert jina_doc_chunk['content_hash'] == pydantic_doc_chunk.content_hash
 
 
 def test_pydatic_document_to_jina_document():

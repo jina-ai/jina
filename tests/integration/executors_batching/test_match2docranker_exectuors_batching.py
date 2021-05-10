@@ -4,7 +4,7 @@ from typing import List, Dict
 from jina.executors.rankers import Match2DocRanker
 from jina.executors.decorators import batching, single
 from jina import Document
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 from jina.types.score import NamedScore
 from jina.flow import Flow
 from tests import validate_callback
@@ -45,7 +45,7 @@ def test_match2docranker_batching(ranker):
     old_matches_scores = []
     queries_metas = []
     matches_metas = []
-    queries = DocumentSet([])
+    queries = DocumentArray([])
     for i in range(NUM_DOCS_QUERIES):
         old_match_scores = []
         match_metas = []
@@ -80,7 +80,7 @@ def test_match2docranker_batching(ranker):
 def test_match2docranker_batching_flow(ranker, mocker):
     NUM_DOCS_QUERIES = 15
     NUM_MATCHES = 10
-    queries = DocumentSet([])
+    queries = DocumentArray([])
     for i in range(NUM_DOCS_QUERIES):
         query = Document(id=f'query-{i}')
         for j in range(NUM_MATCHES):

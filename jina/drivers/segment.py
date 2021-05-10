@@ -1,7 +1,7 @@
 __copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
 __license__ = "Apache-2.0"
 
-from typing import Optional, Tuple, Any, Dict, List
+from typing import Optional, Tuple, Dict, List
 
 from . import BaseExecutableDriver, FlatRecursiveMixin, DocsExtractUpdateMixin
 from ..types.document import Document

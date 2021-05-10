@@ -7,7 +7,7 @@ from .index import BaseIndexDriver
 # noinspection PyUnreachableCode
 if False:
     from .. import Document
-    from ..types.sets import DocumentSet
+    from ..types.arrays import DocumentArray
 
 
 class BaseCacheDriver(BaseIndexDriver):
@@ -22,7 +22,7 @@ class BaseCacheDriver(BaseIndexDriver):
         self.with_serialization = with_serialization
         super().__init__(*args, **kwargs)
 
-    def _apply_all(self, docs: 'DocumentSet', *args, **kwargs) -> None:
+    def _apply_all(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         if self._method_name == 'update':
             values = [BaseCacheDriver.hash_doc(d, self.exec.fields) for d in docs]
             self.exec_fn([d.id for d in docs], values)

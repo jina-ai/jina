@@ -4,7 +4,7 @@ __license__ = "Apache-2.0"
 import mmap
 import os
 import random
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Union, List
 
 import numpy as np
 
@@ -203,12 +203,18 @@ class BinaryPbWriterMixin:
                 )
                 self._size -= 1
 
-    def _query(self, key):
-        pos_info = self.query_handler.header.get(key, None)
-        if pos_info is not None:
-            p, r, l = pos_info
-            with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
-                return m[r:]
+    def _query(self, keys: Iterable[str]) -> List[bytes]:
+        query_results = []
+        for key in keys:
+            pos_info = self.query_handler.header.get(key, None)
+            if pos_info is not None:
+                p, r, l = pos_info
+                with mmap.mmap(self.query_handler.body, offset=p, length=l) as m:
+                    query_results.append(m[r:])
+            else:
+                query_results.append(None)
+
+        return query_results
 
 
 class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
@@ -290,21 +296,21 @@ class BinaryPbIndexer(BinaryPbWriterMixin, BaseKVIndexer):
         :return: A random entry from the indexer.
         """
         k = random.sample(self.query_handler.header.keys(), k=1)[0]
-        return self[k]
+        return self.query([k])[0]
 
     def __iter__(self):
         for k in self.query_handler.header.keys():
             yield self[k]
 
-    def query(self, key: str, *args, **kwargs) -> Optional[bytes]:
+    def query(self, keys: Iterable[str], *args, **kwargs) -> Iterable[Optional[bytes]]:
         """Find the serialized document to the index via document id.
 
-        :param key: document id
+        :param keys: list of document ids
         :param args: extra arguments
         :param kwargs: keyword arguments
         :return: serialized documents
         """
-        return self._query(key)
+        return self._query(keys)
 
     def update(
         self, keys: Iterable[str], values: Iterable[bytes], *args, **kwargs

@@ -6,7 +6,7 @@ import numpy as np
 from scipy import sparse
 
 from jina import Flow, Document
-from jina.types.sets import DocumentSet
+from jina.types.arrays import DocumentArray
 from jina.executors.encoders import BaseEncoder
 from jina.executors.indexers import BaseVectorIndexer
 
@@ -26,7 +26,7 @@ def docs_to_index(num_docs):
     for idx in range(1, num_docs + 1):
         doc = Document(id=str(idx), content=np.array([idx * 5]))
         docs.append(doc)
-    return DocumentSet(docs)
+    return DocumentArray(docs)
 
 
 class DummySparseEncoder(BaseEncoder):
