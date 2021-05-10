@@ -7,9 +7,8 @@ from jina import Document, Flow
 from jina.types.sets import DocumentSet
 
 '''
-User -> Train request -> RankTrainer Train -> RankTrainer Dump Weights/Parameters -> To be loaded in Ranker
-price is random and size is related to relevance to see after training, relevance is sorted based on size
-2 flows one train and one rank
+User -> Train request -> RankTrainer Train -> RankTrainer Dump Weights/Parameters/Model ->
+Ranker Load Model -> Re-rank
 '''
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -70,8 +69,6 @@ def test_train_offline(documents_to_train, doc_to_query):
     path = '/Users/bo/Documents/work/jina'
     with open(str(path) + '/model.pickle', mode='wb') as model_file_name:
         pickle.dump(model, model_file_name)
-
-    pred = model.predict([[1, 1], [2, 1], [5, 1], [7, 1]]).tolist()
 
     with Flow.load_config(os.path.join(cur_dir, 'flow_offline_search.yml')) as f:
         f.search(inputs=[doc_to_query], on_done=validate_ranking_by_price)
