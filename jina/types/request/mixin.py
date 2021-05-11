@@ -27,7 +27,10 @@ class CommandMixin:
 
     @property
     def command(self) -> str:
-        """Get the command."""
+        """Get the command.
+
+
+        .. #noqa: DAR201"""
         self.is_used = True
         return jina_pb2.RequestProto.ControlRequestProto.Command.Name(
             self.proto.control.command

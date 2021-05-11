@@ -80,6 +80,7 @@ class ZEDRuntime(ZMQRuntime):
                     replica_id=getattr(self.args, 'replica_id', -1),
                     read_only=self.args.read_only,
                     parent_workspace=self.args.workspace,
+                    dump_path=getattr(self.args, 'dump_path', None),
                 ),
             )
         except BadConfigSource as ex:
@@ -268,7 +269,12 @@ class ZEDRuntime(ZMQRuntime):
             # this is the proper way to end when a terminate signal is sent
             self._zmqlet.send_message(msg)
             self._zmqlet.close()
-        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
+        except (KeyboardInterrupt) as kbex:
+            # save executor
+            self.logger.info(f'{kbex!r} causes the breaking from the event loop')
+            self._zmqlet.send_message(msg)
+            self._zmqlet.close(flush=False)
+        except (SystemError, zmq.error.ZMQError) as ex:
             # save executor
             self.logger.info(f'{ex!r} causes the breaking from the event loop')
             self._zmqlet.send_message(msg)

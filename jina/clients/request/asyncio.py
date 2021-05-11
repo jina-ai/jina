@@ -11,14 +11,14 @@ from ...logging import default_logger
 
 
 async def request_generator(
-        exec_endpoint: str,
-        data: GeneratorSourceType,
-        request_size: int = 0,
-        mime_type: Optional[str] = None,
-        data_type: DataInputType = DataInputType.AUTO,
-        target_peapod: Optional[str] = None,
-        parameters: Optional[Dict] = None,
-        **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
+    exec_endpoint: str,
+    data: GeneratorSourceType,
+    request_size: int = 0,
+    mime_type: Optional[str] = None,
+    data_type: DataInputType = DataInputType.AUTO,
+    target_peapod: Optional[str] = None,
+    parameters: Optional[Dict] = None,
+    **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> AsyncIterator['Request']:
     """An async :function:`request_generator`.
 

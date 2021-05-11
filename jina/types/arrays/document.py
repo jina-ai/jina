@@ -36,7 +36,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     """
 
     def __init__(
-            self, docs_proto: Union['RepeatedContainer', Iterable['Document'], None] = None
+        self, docs_proto: Union['RepeatedContainer', Iterable['Document'], None] = None
     ):
         super().__init__()
         if docs_proto is not None:
@@ -67,10 +67,15 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         elif isinstance(index, slice):
             del self._docs_proto[index]
         else:
-            raise IndexError(f'do not support this index type {typename(index)}: {index}')
+            raise IndexError(
+                f'do not support this index type {typename(index)}: {index}'
+            )
 
     def __eq__(self, other):
-        return type(self._docs_proto) is type(other._docs_proto) and self._docs_proto == other._docs_proto
+        return (
+            type(self._docs_proto) is type(other._docs_proto)
+            and self._docs_proto == other._docs_proto
+        )
 
     def __len__(self):
         return len(self._docs_proto)
@@ -165,8 +170,8 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         return self.get_attributes_with_docs(*fields)[0]
 
     def get_attributes_with_docs(
-            self,
-            *fields: str,
+        self,
+        *fields: str,
     ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
         """Return all nonempty values of the fields together with their nonempty docs
 
@@ -211,7 +216,11 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     def __str__(self):
         from ..document import Document
 
-        content = f'in total {len(self._docs_proto)} items\n' if len(self._docs_proto) > 3 else ''
+        content = (
+            f'in total {len(self._docs_proto)} items\n'
+            if len(self._docs_proto) > 3
+            else ''
+        )
         content += ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
 
         return content
@@ -252,6 +261,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             file_ctx = open(file)
 
         from jina import Document
+
         da = DocumentArray()
         with file_ctx as fp:
             for v in fp:

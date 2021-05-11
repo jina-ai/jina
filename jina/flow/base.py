@@ -70,10 +70,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
     def __init__(
-            self,
-            args: Optional['argparse.Namespace'] = None,
-            env: Optional[Dict] = None,
-            **kwargs,
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        env: Optional[Dict] = None,
+        **kwargs,
     ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
@@ -193,7 +193,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._pod_nodes[pod_name] = Pod(args, needs)
 
     def needs(
-            self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
+        self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
     ) -> 'BaseFlow':
         """
         Add a blocker to the Flow, wait until all peas defined in **needs** completed.
@@ -230,11 +230,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return self.needs(name=name, needs=needs, *args, **kwargs)
 
     def add(
-            self,
-            needs: Optional[Union[str, Tuple[str], List[str]]] = None,
-            copy_flow: bool = True,
-            pod_role: 'PodRoleType' = PodRoleType.POD,
-            **kwargs,
+        self,
+        needs: Optional[Union[str, Tuple[str], List[str]]] = None,
+        copy_flow: bool = True,
+        pod_role: 'PodRoleType' = PodRoleType.POD,
+        **kwargs,
     ) -> 'BaseFlow':
         """
         Add a Pod to the current Flow object and return the new modified Flow object.
@@ -289,9 +289,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if 'host' in kwargs:
             m = re.match(_regex_port, kwargs['host'])
             if (
-                    kwargs.get('host', __default_host__) != __default_host__
-                    and m
-                    and 'port_expose' not in kwargs
+                kwargs.get('host', __default_host__) != __default_host__
+                and m
+                and 'port_expose' not in kwargs
             ):
                 kwargs['port_expose'] = m.group(2)
                 kwargs['host'] = m.group(1)
@@ -363,11 +363,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return op_flow
 
     def gather_inspect(
-            self,
-            name: str = 'gather_inspect',
-            include_last_pod: bool = True,
-            *args,
-            **kwargs,
+        self,
+        name: str = 'gather_inspect',
+        include_last_pod: bool = True,
+        *args,
+        **kwargs,
     ) -> 'BaseFlow':
         """Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
         is returned.
@@ -705,12 +705,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         return '\n'.join(mermaid_graph)
 
     def plot(
-            self,
-            output: Optional[str] = None,
-            vertical_layout: bool = False,
-            inline_display: bool = False,
-            build: bool = True,
-            copy_flow: bool = False,
+        self,
+        output: Optional[str] = None,
+        vertical_layout: bool = False,
+        inline_display: bool = False,
+        build: bool = True,
+        copy_flow: bool = False,
     ) -> 'BaseFlow':
         """
         Visualize the Flow up to the current point
@@ -943,7 +943,19 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
-                for k, v in p.peas_args.items():
+                args = getattr(p, 'peas_args', None)
+                if args is None:
+                    args = getattr(p, 'replicas_args', None)
+                if args is None:
+                    raise ValueError(
+                        f'could not find "peas_args" or "replicas_args" on {p}'
+                    )
+                values = None
+                if isinstance(args, dict):
+                    values = args.values()
+                elif isinstance(args, list):
+                    values = args
+                for v in values:
                     if v and isinstance(v, argparse.Namespace):
                         v.workspace_id = value
                     if v and isinstance(v, List):
@@ -975,28 +987,28 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def dump(self, pod_name, path: str, shards: int, timeout=-1):
-        """Emit a Dump request to a specific Pod
-
-        :param shards: the nr of shards in the dump
-        :param path: the path to which to dump
-        :param pod_name: the name of the pod
-        :param timeout: time to wait (seconds)
+    def rolling_update(self, pod_name: str, dump_path: Optional[str] = None):
         """
-        pod = self._pod_nodes[pod_name]
-        pod.dump(path, shards, timeout)
+        Reload Pods sequentially - only used for compound pods.
 
-    def rolling_update(self, pod_name):
-        """
-        Update pods one after another - only used for compound pods.
-
+        :param dump_path: the path from which to read the dump data
         :param pod_name: pod to update
         """
 
         compound_pod = self._pod_nodes[pod_name]
         if isinstance(compound_pod, CompoundPod):
-            compound_pod.rolling_update()
+            compound_pod.rolling_update(dump_path)
         else:
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
             )
+
+    def dump(self, pod_name: str, dump_path: str, shards: int, timeout=-1):
+        """Emit a Dump request to a specific Pod
+        :param shards: the nr of shards in the dump
+        :param dump_path: the path to which to dump
+        :param pod_name: the name of the pod
+        :param timeout: time to wait (seconds)
+        """
+        pod: BasePod = self._pod_nodes[pod_name]
+        pod.dump(pod_name, dump_path, shards, timeout)

@@ -1,7 +1,7 @@
 from copy import deepcopy
 
-import numpy as np
 import pytest
+import numpy as np
 from scipy.sparse import coo_matrix
 
 from jina import Document
@@ -55,12 +55,6 @@ def test_length(docarray, docs):
 
 
 def test_append(docarray, document_factory):
-    doc = document_factory.create(4, 'test 4')
-    docarray.append(doc)
-    assert docarray[-1].id == doc.id
-
-
-def test_add(docarray, document_factory):
     doc = document_factory.create(4, 'test 4')
     docarray.append(doc)
     assert docarray[-1].id == doc.id
@@ -171,14 +165,16 @@ def test_match_chunk_array():
         d.content = 'hello world'
 
     m = Document()
-    m = d.matches.append(m)
+    d.matches.append(m)
     assert m.granularity == d.granularity
-    assert m.adjacency == d.adjacency + 1
+    assert m.adjacency == 0
+    assert d.matches[0].adjacency == d.adjacency + 1
     assert len(d.matches) == 1
 
     c = Document()
-    c = d.chunks.append(c)
-    assert c.granularity == d.granularity + 1
+    d.chunks.append(c)
+    assert c.granularity == 0
+    assert d.chunks[0].granularity == d.granularity + 1
     assert c.adjacency == d.adjacency
     assert len(d.chunks) == 1
 
@@ -197,171 +193,3 @@ def add_match(doc):
         match.adjacency = doc.adjacency + 1
         doc.matches.append(match)
         return match
-
-
-@pytest.fixture
-def documentarray():
-    """ Builds up a complete chunk-match structure, with a depth of 2 in both directions recursively. """
-    max_granularity = 2
-    max_adjacency = 2
-
-    def iterate_build(document, current_granularity, current_adjacency):
-        if current_granularity < max_granularity:
-            for i in range(DOCUMENTS_PER_LEVEL):
-                chunk = add_chunk(document)
-                iterate_build(chunk, chunk.granularity, chunk.adjacency)
-        if current_adjacency < max_adjacency:
-            for i in range(DOCUMENTS_PER_LEVEL):
-                match = add_match(document)
-                iterate_build(match, match.granularity, match.adjacency)
-
-    docs = []
-    for base_id in range(DOCUMENTS_PER_LEVEL):
-        with Document() as d:
-            d.granularity = 0
-            d.adjacency = 0
-            docs.append(d)
-            iterate_build(d, 0, 0)
-    return DocumentArray(docs)
-
-
-def callback_fn(docs, *args, **kwargs) -> None:
-    for doc in docs:
-        add_chunk(doc)
-        add_match(doc)
-        add_match(doc)
-
-
-@pytest.mark.parametrize('num_rows', [1, 2, 3])
-@pytest.mark.parametrize('field', ['content', 'blob', 'embedding'])
-def test_get_content(num_rows, field):
-    batch_size = 10
-    embed_size = 20
-
-    kwargs = {field: np.random.random((num_rows, embed_size))}
-
-    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
-    docs.append(Document())
-
-    contents = docs.get_attributes(field)
-    assert len(contents) == batch_size
-    for content in contents:
-        assert content.shape == (num_rows, embed_size)
-
-
-@pytest.mark.parametrize('field', ['id', 'text'])
-def test_get_content_text_fields(field):
-    batch_size = 10
-
-    kwargs = {field: 'text'}
-
-    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
-
-    contents = docs.get_attributes(field)
-    assert len(contents) == batch_size
-    for content in contents:
-        assert content == 'text'
-
-
-@pytest.mark.parametrize('bytes_input', [b'bytes', np.array([0, 0, 0]).tobytes()])
-@pytest.mark.parametrize('field', ['content', 'buffer'])
-def test_get_content_bytes_fields(bytes_input, field):
-    batch_size = 10
-
-    kwargs = {field: bytes_input}
-
-    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
-
-    contents = docs.get_attributes(field)
-
-    assert len(contents) == batch_size
-    assert isinstance(contents, list)
-    for content in contents:
-        assert isinstance(content, bytes)
-        assert content == bytes_input
-
-
-@pytest.mark.parametrize('fields', [['id', 'text'], ['content_hash', 'modality']])
-def test_get_content_multiple_fields_text(fields):
-    batch_size = 10
-
-    kwargs = {field: f'text-{field}' for field in fields}
-
-    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
-
-    contents = docs.get_attributes(*fields)
-
-    assert len(contents) == len(fields)
-    assert isinstance(contents, list)
-    for content in contents:
-        assert len(content) == batch_size
-
-
-@pytest.mark.parametrize('bytes_input', [b'bytes', np.array([0, 0, 0]).tobytes()])
-def test_get_content_multiple_fields_text_buffer(bytes_input):
-    batch_size = 10
-    fields = ['id', 'buffer']
-    kwargs = {'id': 'text', 'buffer': bytes_input}
-
-    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
-
-    contents = docs.get_attributes(*fields)
-
-    assert len(contents) == len(fields)
-    assert isinstance(contents, list)
-    assert len(contents[0]) == batch_size
-    assert isinstance(contents[1], list)
-    assert isinstance(contents[1][0], bytes)
-
-    for content in contents:
-        assert len(content) == batch_size
-
-
-@pytest.mark.parametrize('num_rows', [1, 2, 3])
-def test_get_content_multiple_fields_arrays(num_rows):
-    fields = ['blob', 'embedding']
-
-    batch_size = 10
-    embed_size = 20
-
-    kwargs = {field: np.random.random((num_rows, embed_size)) for field in fields}
-    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
-
-    contents = docs.get_attributes(*fields)
-
-    assert len(contents) == len(fields)
-    assert isinstance(contents, list)
-
-    for content in contents:
-        assert len(content) == batch_size
-        for c in content:
-            assert c.shape == (num_rows, embed_size)
-
-
-@pytest.mark.parametrize('num_rows', [1, 2, 3])
-def test_get_content_multiple_fields_merge(num_rows):
-    fields = ['embedding', 'text']
-
-    batch_size = 10
-    embed_size = 20
-
-    kwargs = {
-        field: np.random.random((num_rows, embed_size))
-        if field == 'embedding'
-        else 'text'
-        for field in fields
-    }
-    docs = DocumentArray([Document(**kwargs) for _ in range(batch_size)])
-
-    contents = docs.get_attributes(*fields)
-
-    assert len(contents) == len(fields)
-    assert isinstance(contents, list)
-
-    for content in contents:
-        assert len(content) == batch_size
-
-    assert len(contents[0]) == batch_size
-    assert len(contents[1]) == batch_size
-    for c in contents[0]:
-        assert c.shape == (num_rows, embed_size)

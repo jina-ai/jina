@@ -59,7 +59,6 @@ def test_request_type_set_get_fail(req):
         request.request_type = 'random'
 
 
-
 def test_command(req):
     request = Request(request=req, copy=False)
     request.request_type = 'control'

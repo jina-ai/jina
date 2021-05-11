@@ -1,7 +1,11 @@
 import os
 from pathlib import Path
 
+import docker
 import pytest
+from jina.logging import JinaLogger
+
+from jina.enums import BuildTestLevel
 
 from jina import __version__ as jina_version
 from jina.docker import hubapi
@@ -12,7 +16,12 @@ from jina.flow import Flow
 from jina.helper import expand_dict
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser
-from jina.parsers.hub import set_hub_build_parser, set_hub_list_parser
+from jina.parsers.hub import (
+    set_hub_build_parser,
+    set_hub_list_parser,
+    set_hub_pushpull_parser,
+    set_hub_new_parser,
+)
 from jina.peapods import Pod
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -85,6 +94,26 @@ def test_build_timeout_ready():
         timeout_ready=20000,
     ):
         pass
+
+
+@pytest.mark.timeout(360)
+def test_hub_pull():
+    args = set_hub_pushpull_parser().parse_args(['jinahub/pod.dummy_mwu_encoder:0.0.6'])
+    HubIO(args).pull()
+
+
+@pytest.mark.timeout(360)
+def test_hub_list():
+    args = set_hub_list_parser().parse_args(['--keywords', 'numeric'])
+    response = HubIO(args).list()
+    assert len(response) > 0
+
+
+@pytest.mark.timeout(360)
+def test_hub_list_non_existing_kind():
+    args = set_hub_list_parser().parse_args(['--kind', 'does-not-exist'])
+    response = HubIO(args).list()
+    assert not response
 
 
 @pytest.mark.skip('https://github.com/jina-ai/jina/issues/1641')
@@ -199,3 +228,74 @@ def test_hub_build_multistage(dockerfile_path):
     )
     result = HubIO(args).build()
     assert result['is_build_success']
+
+
+@pytest.mark.parametrize('new_type', ['pod', 'app', 'template'])
+def test_create_new(tmpdir, new_type):
+    args = set_hub_new_parser().parse_args(
+        ['--output-dir', str(tmpdir), '--type', new_type]
+    )
+    HubIO(args).new(no_input=True)
+    list_dir = os.listdir(str(tmpdir))
+    assert len(list_dir) == 1
+
+
+@pytest.fixture(scope='function')
+def test_workspace(tmpdir):
+    os.environ['JINA_TEST_JOINT'] = str(tmpdir)
+    workspace_path = os.environ['JINA_TEST_JOINT']
+    yield workspace_path
+    del os.environ['JINA_TEST_JOINT']
+
+
+@pytest.fixture(scope='function')
+def docker_image():
+    def _filter_repo_tag(image, image_name='jinahub/pod.dummy_mwu_encoder'):
+        tags = image.attrs['RepoTags'] if 'RepoTags' in image.attrs else None
+        if tags:
+            return tags[0].startswith(image_name)
+        else:
+            return False
+
+    img_name = 'jinahub/pod.dummy_mwu_encoder:0.0.6'
+    client = docker.from_env()
+    client.images.pull(img_name)
+    images = client.images.list()
+    image_name = list(filter(lambda image: _filter_repo_tag(image), images))[0]
+    return image_name
+
+
+def test_hub_build_level_pass(monkeypatch, test_workspace, docker_image):
+    args = set_hub_build_parser().parse_args(
+        ['path/hub-mwu', '--push', '--host-info', '--test-level', 'EXECUTOR']
+    )
+    expected_failed_levels = []
+
+    _, failed_levels = HubIO(args)._test_build(
+        docker_image,
+        BuildTestLevel.EXECUTOR,
+        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        60000,
+        True,
+        JinaLogger('unittest'),
+    )
+
+    assert expected_failed_levels == failed_levels
+
+
+def test_hub_build_level_fail(monkeypatch, test_workspace, docker_image):
+    args = set_hub_build_parser().parse_args(
+        ['path/hub-mwu', '--push', '--host-info', '--test-level', 'FLOW']
+    )
+    expected_failed_levels = [BuildTestLevel.POD_DOCKER, BuildTestLevel.FLOW]
+
+    _, failed_levels = HubIO(args)._test_build(
+        docker_image,
+        BuildTestLevel.FLOW,
+        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        60000,
+        True,
+        JinaLogger('unittest'),
+    )
+
+    assert expected_failed_levels == failed_levels

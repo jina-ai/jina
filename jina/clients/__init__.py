@@ -1,5 +1,4 @@
 """Module wrapping the Client of Jina."""
-
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
 from .helper import callback_exec
 from .mixin import PostMixin

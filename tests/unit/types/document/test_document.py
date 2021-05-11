@@ -485,6 +485,36 @@ def get_test_doc():
     return s, d
 
 
+@pytest.fixture
+def expected_doc_fields():
+    from jina.proto import jina_pb2
+
+    return sorted(set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)))
+
+
+@pytest.fixture
+def ignored_doc_fields():
+    return ['embedding', 'score', 'blob', 'buffer', 'text', 'tags']
+
+
+def test_document_to_json(expected_doc_fields, ignored_doc_fields):
+    doc = Document()
+    doc_dict = json.loads(doc.json())
+    present_keys = sorted(doc_dict.keys())
+    for field in expected_doc_fields:
+        if field not in ignored_doc_fields:
+            assert field in present_keys
+
+
+def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
+    doc = Document()
+    doc_dict = doc.dict()
+    present_keys = sorted(doc_dict.keys())
+    for field in expected_doc_fields:
+        if field not in ignored_doc_fields:
+            assert field in present_keys
+
+
 def test_update_include_field():
     s, d = get_test_doc()
 
@@ -692,10 +722,10 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
     ],
 )
 def test_document_sparse_embedding(
-        scipy_sparse_matrix,
-        return_sparse_ndarray_cls_type,
-        return_scipy_class_type,
-        return_expected_type,
+    scipy_sparse_matrix,
+    return_sparse_ndarray_cls_type,
+    return_scipy_class_type,
+    return_expected_type,
 ):
     d = Document()
     d.embedding = scipy_sparse_matrix
