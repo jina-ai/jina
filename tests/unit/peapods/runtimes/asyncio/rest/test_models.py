@@ -59,7 +59,6 @@ def test_all_fields_in_document_proto():
         'content_hash',
         'granularity',
         'adjacency',
-        'level_name',
         'parent_id',
         'chunks',
         'weight',
@@ -79,7 +78,7 @@ def test_all_fields_in_document_proto():
     document_proto_properties_alias = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['DocumentProto']['properties']
-    for i in ['contentHash', 'levelName', 'parentId', 'mimeType']:
+    for i in ['contentHash', 'parentId', 'mimeType']:
         assert i in document_proto_properties_alias
 
 
@@ -117,13 +116,13 @@ def test_oneof_validation_error():
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc', buffer=b'abc')
-    assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
+    assert "only one field among ['buffer', 'blob', 'text', 'uri']" in str(error.value)
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
             text='abc', buffer=b'abc', blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
         )
-    assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
+    assert "only one field among ['buffer', 'blob', 'text', 'uri']" in str(error.value)
 
 
 def test_tags_document():
@@ -239,20 +238,5 @@ def test_pydatic_document_to_jina_document():
 
 @pytest.mark.parametrize('top_k', [5, 10])
 def test_model_with_top_k(top_k):
-    m = JinaRequestModel(data=['abc'], top_k=top_k)
-    assert m.queryset[0].name == 'SliceQL'
-    assert m.queryset[0].parameters['end'] == top_k
-    assert m.queryset[1].name == 'VectorSearchDriver'
-    assert m.queryset[1].parameters['top_k'] == top_k
-
-
-def test_model_with_queryset():
-    m = JinaRequestModel(
-        data=['abc'],
-        queryset=[
-            {'name': 'CustomQuerySet', 'parameters': {'top_k': 10}, 'priority': 1}
-        ],
-    )
-    assert m.queryset[0].name == 'CustomQuerySet'
-    assert m.queryset[0].parameters['top_k'] == 10
-    assert m.queryset[0].priority == 1
+    m = JinaRequestModel(data=['abc'], parameters={'top_k': top_k})
+    assert m.parameters['top_k'] == top_k
