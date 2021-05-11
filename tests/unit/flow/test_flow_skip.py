@@ -1,17 +1,14 @@
 import pytest
 
+from jina import Flow, Executor, requests, Document
 from jina.enums import OnErrorStrategy
-from jina.executors.decorators import single
-from jina.executors.crafters import BaseCrafter
-from jina.flow import Flow
 from jina.proto import jina_pb2
 from tests import validate_callback
 
 
-class DummyCrafterSkip(BaseCrafter):
-    @single
-    def craft(self, text, *args, **kwargs):
-        self.logger.warning('crafting division by zero')
+class DummyCrafterSkip(Executor):
+    @requests
+    def craft(self, *args, **kwargs):
         return 1 / 0
 
 
@@ -40,7 +37,7 @@ def test_bad_flow_skip_handle(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
 
     validate_callback(on_error_mock, validate)
 
@@ -70,7 +67,7 @@ def test_bad_flow_skip_handle_join(mocker, restful):
 
     f = (
         Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
-        .add(name='r1', uses='!DummyCrafterSkip')
+            .add(name='r1', uses=DummyCrafterSkip)
         .add(name='r2')
         .add(name='r3', needs='r1')
         .needs(['r3', 'r2'])
@@ -80,7 +77,7 @@ def test_bad_flow_skip_handle_join(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
 
     validate_callback(on_error_mock, validate)
 
@@ -97,7 +94,7 @@ def test_bad_flow_skip_exec(mocker, restful):
 
     f = (
         Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
-        .add(name='r1', uses='!DummyCrafterSkip')
+            .add(name='r1', uses=DummyCrafterSkip)
         .add(name='r2')
         .add(name='r3')
     )
@@ -106,7 +103,7 @@ def test_bad_flow_skip_exec(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
 
     validate_callback(on_error_mock, validate)
 
@@ -125,7 +122,7 @@ def test_bad_flow_skip_exec_join(mocker, restful):
 
     f = (
         Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_EXECUTOR)
-        .add(name='r1', uses='!DummyCrafterSkip')
+            .add(name='r1', uses=DummyCrafterSkip)
         .add(name='r2')
         .add(name='r3', needs='r1')
         .needs(['r3', 'r2'])
@@ -135,6 +132,6 @@ def test_bad_flow_skip_exec_join(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
 
     validate_callback(on_error_mock, validate)

@@ -365,7 +365,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def gather_inspect(
             self,
             name: str = 'gather_inspect',
-            uses='_merge_eval',
             include_last_pod: bool = True,
             *args,
             **kwargs,
@@ -379,7 +378,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             in general you don't need to manually call :meth:`gather_inspect`.
 
         :param name: the name of the gather Pod
-        :param uses: the config of the executor, by default is ``_pass``
         :param include_last_pod: if to include the last modified Pod in the Flow
         :param args: args for .add()
         :param kwargs: kwargs for .add()
@@ -397,7 +395,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 needs.append(self.last_pod)
             return self.add(
                 name=name,
-                uses=uses,
                 needs=needs,
                 pod_role=PodRoleType.JOIN_INSPECT,
                 *args,
