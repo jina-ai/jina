@@ -118,7 +118,7 @@ def get_main_parser():
     from .helloworld import set_hw_parser, set_hello_parser
     from .helper import _chf, _SHOW_ALL_ARGS
 
-    # from .check import set_check_parser
+    from .check import set_check_parser
     from .export_api import set_export_api_parser
     from .flow import set_flow_parser
     from .ping import set_ping_parser
@@ -239,12 +239,12 @@ def get_main_parser():
         )
     )
 
-    # set_check_parser(
-    #     sp.add_parser(
-    #         'check',
-    #         **(dict(help='Check the import of all Executors and Drivers')) if _SHOW_ALL_ARGS else {},
-    #         description='Check the import status of all executors and drivers',
-    #         formatter_class=_chf,
-    #     )
-    # )
+    set_check_parser(
+        sp.add_parser(
+            'check',
+            **(dict(help='Check the import of all Executors and Drivers')) if _SHOW_ALL_ARGS else {},
+            description='Check the import status of all executors and drivers',
+            formatter_class=_chf,
+        )
+    )
     return parser
