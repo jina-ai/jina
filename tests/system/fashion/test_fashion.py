@@ -1,12 +1,12 @@
 import os
 
-import pytest
 import numpy as np
+import pytest
 from pkg_resources import resource_filename
 
 from jina import Document
 from jina.flow import Flow
-from jina.helloworld.fashion import hello_world
+from jina.helloworld.fashion.app import hello_world
 from jina.parsers.helloworld import set_hw_parser
 from tests import validate_callback
 
