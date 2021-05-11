@@ -513,7 +513,7 @@ def test_flow_needs_all(restful):
     assert f._pod_nodes['r2'].needs == {'p3', 'r1'}
 
     with f:
-        f.index_ndarray(np.random.random([10, 10]))
+        f.index(Document.from_ndarray(np.random.random([10, 10])))
 
     f = (
         Flow(restful=restful)
@@ -528,7 +528,7 @@ def test_flow_needs_all(restful):
     assert f._pod_nodes['p4'].needs == {'r2'}
 
     with f:
-        f.index_ndarray(np.random.random([10, 10]))
+        f.index(Document.from_ndarray(np.random.random([10, 10])))
 
 
 def test_flow_with_pod_envs():
@@ -564,7 +564,7 @@ def test_flow_with_pod_envs():
 @pytest.mark.parametrize('restful', [False, True])
 def test_return_results_sync_flow(return_results, restful):
     with Flow(restful=restful, return_results=return_results).add() as f:
-        r = f.index_ndarray(np.random.random([10, 2]))
+        r = f.index(Document.from_ndarray(np.random.random([10, 2])))
         if return_results:
             assert isinstance(r, list)
             assert isinstance(r[0], Response)

@@ -110,7 +110,6 @@ def parse_config_source(
     allow_yaml_file: bool = True,
     allow_builtin_resource: bool = True,
     allow_raw_yaml_content: bool = True,
-    allow_raw_driver_yaml_content: bool = True,
     allow_class_type: bool = True,
     allow_dict: bool = True,
     allow_json: bool = True,
@@ -166,27 +165,6 @@ def parse_config_source(
     elif allow_raw_yaml_content and path.lstrip().startswith(('!', 'jtype')):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
-        return io.StringIO(path), None
-    elif allow_raw_driver_yaml_content and path.lstrip().startswith(('- !', '- jtype')):
-        # possible driver YAML content, right now it is only used for debugging
-        with open(
-            resource_filename(
-                'jina',
-                '/'.join(
-                    (
-                        'resources',
-                        'executors.base.all.yml'
-                        if path.lstrip().startswith('- !!')
-                        else 'executors.base.yml',
-                    )
-                ),
-            )
-        ) as fp:
-            _defaults = fp.read()
-        path = path.replace('- !!', '- !').replace(
-            '|', '\n        with: '
-        )  # for indent, I know, its nasty
-        path = _defaults.replace('*', path)
         return io.StringIO(path), None
     elif allow_class_type and path.isidentifier():
         # possible class name
