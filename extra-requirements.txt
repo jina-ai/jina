@@ -34,7 +34,7 @@ onnx:                       framework, py37
 onnxruntime:                framework, py37
 Pillow:                     cv, cicd, multimodal
 annoy>=1.9.5:               index
-sklearn:                    numeric, test
+sklearn:                    numeric, cicd
 plyvel:                     index
 jieba:                      nlp
 lz4<3.1.2:                  devel, cicd, perf, network
