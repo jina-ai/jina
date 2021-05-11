@@ -2,8 +2,6 @@ import pytest
 
 from jina import Flow, Executor, requests, DocumentArray, Document
 
-from jina import Executor, requests, DocumentArray, Document
-
 import time
 
 
