@@ -105,6 +105,17 @@ class MyEvaluator(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.eval_at = 50
+        self.num_docs = 0
+        self.total_precision = 0
+        self.total_recall = 0
+
+    @property
+    def avg_precision(self):
+        return self.total_precision / self.num_docs
+
+    @property
+    def avg_recall(self):
+        return self.total_recall / self.num_docs
 
     def _precision(self, actual, desired):
         if self.eval_at == 0:
@@ -125,13 +136,16 @@ class MyEvaluator(Executor):
     def evaluate(self, docs: 'DocumentArray', groundtruth: 'DocumentArray', **kwargs):
         # reduce dimension to 50 by random orthogonal projection
         for doc, gt in zip(docs, groundtruth):
+            self.num_docs += 1
             actual = [match.id for match in doc.matches]
             desired = [match.id for match in gt.matches]
             precision_score = NamedScore()
-            precision_score.value = self._precision(actual, desired)
-            precision_score.op_name = f'Precision@{self.eval_at}'
+            self.total_precision += self._precision(actual, desired)
+            self.total_recall = self._recall(actual, desired)
+            precision_score.value = self.avg_precision
+            precision_score.op_name = f'Precision'
             doc.evaluations.append(precision_score)
             recall_score = NamedScore()
-            recall_score.value = self._recall(actual, desired)
-            recall_score.op_name = f'Recall@{self.eval_at}'
+            recall_score.value = self.avg_recall
+            recall_score.op_name = f'Recall'
             doc.evaluations.append(recall_score)

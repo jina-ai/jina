@@ -3,6 +3,7 @@ import os
 import random
 import urllib.request
 import webbrowser
+from collections import defaultdict
 
 import numpy as np
 
@@ -13,6 +14,8 @@ from jina.logging.profile import ProgressBar
 
 result_html = []
 top_k = 0
+num_docs_evaluated = 0
+evaluation_value = defaultdict(float)
 
 
 def index_generator(num_docs: int, target: dict):
@@ -51,6 +54,7 @@ def print_result(resp):
     :param resp: returned response with data
     """
     global top_k
+    global evaluation_value
     for d in resp.docs:
         vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
@@ -59,6 +63,11 @@ def print_result(resp):
             kmi = kk.uri
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
         result_html.append('</td></tr>\n')
+
+    # update evaluation values
+    # as evaluator set to return running avg, here we can simply replace the value
+    for evaluation in d.evaluations:
+        evaluation_value[evaluation.op_name] = evaluation.value
 
 
 def write_html(html_path):
@@ -73,6 +82,15 @@ def write_html(html_path):
     ) as fp, open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
+        t = t.replace(
+            '{% PRECISION_EVALUATION %}',
+            '{:.2f}%'.format(evaluation_value['Precision'] * 100.0),
+        )
+        t = t.replace(
+            '{% RECALL_EVALUATION %}',
+            '{:.2f}%'.format(evaluation_value['Recall'] * 100.0),
+        )
+        t = t.replace('{% TOP_K %}', str(top_k))
         fw.write(t)
 
     url_html_path = 'file://' + os.path.abspath(html_path)
