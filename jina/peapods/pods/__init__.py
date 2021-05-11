@@ -681,6 +681,8 @@ class Pod(BasePod):
         :param dump_path: the path to which to dump
         :param timeout: time to wait (seconds)
         """
+        from ..zmq import send_ctrl_message
+
         for pea in self.peas:
             if pea.inner:
                 send_ctrl_message(

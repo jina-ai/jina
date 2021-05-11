@@ -943,9 +943,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
-                args = getattr(p, 'peas_args', None)
-                if args is None:
-                    args = getattr(p, 'replicas_args', None)
+                args = getattr(p, 'peas_args', getattr(p, 'replicas_args', None))
                 if args is None:
                     raise ValueError(
                         f'could not find "peas_args" or "replicas_args" on {p}'
