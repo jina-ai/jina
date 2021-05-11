@@ -47,7 +47,6 @@ class WebSocketClientMixin(BaseClient, ABC):
 
         self.inputs = inputs
 
-        tname = self._get_task_name(kwargs)
         req_iter = self._get_requests(**kwargs)
         try:
             client_info = f'{self.args.host}:{self.args.port_expose}'
@@ -72,7 +71,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                     # On the client side, this :meth:`send` doesn't need to be awaited with a :meth:`recv`
                     await websocket.send(bytes(True))
 
-                with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
+                with ProgressBar() as p_bar, TimeContext(''):
                     # Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.
                     # Simply iterating through the `req_iter` makes the request-response sequential.
                     # To make client unblocking, :func:`send_requests` and `recv_responses` are separate tasks
