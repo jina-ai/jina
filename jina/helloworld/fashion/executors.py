@@ -3,6 +3,7 @@ from typing import Tuple, Dict
 import numpy as np
 
 from jina import Executor, DocumentArray, requests, Document
+from jina.types.score import NamedScore
 
 
 class MyIndexer(Executor):
@@ -97,3 +98,40 @@ def _norm(A):
 
 def _cosine(A_norm_ext, B_norm_ext):
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
+
+
+class MyEvaluator(Executor):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.eval_at = 50
+
+    def _precision(self, actual, desired):
+        if self.eval_at == 0:
+            return 0.0
+        actual_at_k = actual[: self.eval_at] if self.eval_at else actual
+        ret = len(set(actual_at_k).intersection(set(desired)))
+        sub = len(actual_at_k)
+        return ret / sub if sub != 0 else 0.0
+
+    def _recall(self, actual, desired):
+        if self.eval_at == 0:
+            return 0.0
+        actual_at_k = actual[: self.eval_at] if self.eval_at else actual
+        ret = len(set(actual_at_k).intersection(set(desired)))
+        return ret / len(desired)
+
+    @requests(on='/search')
+    def evaluate(self, docs: 'DocumentArray', groundtruth: 'DocumentArray', **kwargs):
+        # reduce dimension to 50 by random orthogonal projection
+        for doc, gt in zip(docs, groundtruth):
+            actual = [match.id for match in doc.matches]
+            desired = [match.id for match in gt.matches]
+            precision_score = NamedScore()
+            precision_score.value = self._precision(actual, desired)
+            precision_score.op_name = f'Precision@{self.eval_at}'
+            doc.evaluations.append(precision_score)
+            recall_score = NamedScore()
+            recall_score.value = self._recall(actual, desired)
+            recall_score.op_name = f'Recall@{self.eval_at}'
+            doc.evaluations.append(recall_score)
