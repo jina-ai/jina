@@ -689,7 +689,7 @@ class Pod(BasePod):
                     pea.runtime.ctrl_addr,
                     ControlMessage(
                         command='DUMP',
-                        pod_name=pod_name,
+                        target_pod_name=pod_name,
                         args={
                             'dump_path': dump_path,
                             'shards': shards,

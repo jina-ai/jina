@@ -1,3 +1,5 @@
+from typing import Optional
+
 from . import Message
 from ..request import Request
 from ...proto import jina_pb2
@@ -21,7 +23,13 @@ class ControlMessage(Message):
     """
 
     def __init__(
-        self, command: str, pod_name: str = 'ctl', identity: str = '', *args, **kwargs
+        self,
+        command: str,
+        pod_name: str = 'ctl',
+        identity: str = '',
+        target_pod_name: Optional[str] = None,
+        *args,
+        **kwargs,
     ):
         req = Request(jina_pb2.RequestProto())
         if command in _available_commands:
@@ -40,4 +48,4 @@ class ControlMessage(Message):
         if args:
             req.args = args
 
-        req.targets.extend([pod_name])
+        req.targets.extend([target_pod_name])
