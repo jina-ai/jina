@@ -1,3 +1,5 @@
+import os
+
 from typing import Any
 
 from jina import Executor, requests
@@ -21,3 +23,10 @@ class MWUUpdater(Executor):
     @requests
     def encode(self, **kwargs) -> Any:
         pass
+
+    def close(self) -> None:
+        import pickle
+
+        bin_path = os.path.join(self.workspace, f'{self.metas.name}.bin')
+        with open(bin_path, 'wb') as f:
+            pickle.dump(self._greetings, f)
