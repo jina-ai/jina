@@ -6,7 +6,7 @@ from jina import Document
 from jina.clients import Client
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
-from ..helpers import create_flow_2, assert_request
+from ..helpers import create_flow, assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -39,7 +39,7 @@ def test_flow(docker_compose, doc_to_index, client, mocker):
         assert resp.data.docs[1].text == 'test'
 
     mock = mocker.Mock()
-    flow_id = create_flow_2(flow_yaml=flow_yaml)
+    flow_id = create_flow(flow_yaml=flow_yaml, pod_dir=os.path.join(cur_dir, 'pods'))
 
     client.search(inputs=[doc_to_index], on_done=mock)
 
