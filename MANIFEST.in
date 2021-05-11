@@ -1,4 +1,5 @@
 recursive-include jina/resources *
+recursive-include jina/helloworld *
 include extra-requirements.txt
 prune tests/
 prune **/tests/

@@ -123,7 +123,7 @@ jobs:
           echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
       - run: |
           docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker run jinaai/jina:test-pip hello-world
+          docker run jinaai/jina:test-pip hello fashion
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
