@@ -1,8 +1,6 @@
-import os
-
 import pytest
 
-from jina.flow import Flow
+from jina import Flow
 from jina import Executor, requests, DocumentArray, Document
 
 import time
@@ -17,9 +15,6 @@ class FastSlowExecutor(Executor):
         assert len(docs) == 1
         if docs[0].text == 'slow':
             time.sleep(2)
-
-
-cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.mark.parametrize(
