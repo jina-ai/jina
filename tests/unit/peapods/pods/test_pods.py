@@ -137,19 +137,44 @@ def test_gateway_pod(runtime, restful, runtime_cls):
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_naming_with_parallel(runtime):
+def test_pod_naming_with_parallel_any(runtime):
     args = set_pod_parser().parse_args(
         ['--name', 'pod_name', '--parallel', '2', '--runtime-backend', runtime]
     )
     with Pod(args) as bp:
         assert bp.peas[0].name == 'pod_name/head'
-        assert bp.peas[1].name == 'pod_name/tail'
-        assert bp.peas[2].name == 'pod_name/pea-0'
-        assert bp.peas[3].name == 'pod_name/pea-1'
+        assert bp.peas[1].name == 'pod_name/pea-0'
+        assert bp.peas[2].name == 'pod_name/pea-1'
+        assert bp.peas[3].name == 'pod_name/tail'
         assert bp.peas[0].runtime.name == 'pod_name/head/ZEDRuntime'
-        assert bp.peas[1].runtime.name == 'pod_name/tail/ZEDRuntime'
-        assert bp.peas[2].runtime.name == 'pod_name/pea-0/ZEDRuntime'
-        assert bp.peas[3].runtime.name == 'pod_name/pea-1/ZEDRuntime'
+        assert bp.peas[1].runtime.name == 'pod_name/pea-0/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod_name/pea-1/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod_name/tail/ZEDRuntime'
+
+
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_naming_with_parallel_all(runtime):
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            'pod_name',
+            '--parallel',
+            '2',
+            '--runtime-backend',
+            runtime,
+            '--polling',
+            'ALL',
+        ]
+    )
+    with Pod(args) as bp:
+        assert bp.peas[0].name == 'pod_name/head'
+        assert bp.peas[1].name == 'pod_name/pea-0'
+        assert bp.peas[2].name == 'pod_name/pea-1'
+        assert bp.peas[3].name == 'pod_name/tail'
+        assert bp.peas[0].runtime.name == 'pod_name/head/ZEDRuntime'
+        assert bp.peas[1].runtime.name == 'pod_name/pea-0/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod_name/pea-1/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod_name/tail/ZEDRuntime'
 
 
 def test_pod_args_remove_uses_ba():
