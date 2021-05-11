@@ -54,6 +54,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -233,6 +234,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`1.1.10`)](#release-note-1110)
 - [Release Note (`1.2.0`)](#release-note-120)
 - [Release Note (`1.2.1`)](#release-note-121)
+- [Release Note (`1.2.2`)](#release-note-122)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -8569,4 +8571,38 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ab8fd235```](https://github.com/jina-ai/jina/commit/ab8fd235cb3ad7e44d2577b1c618972dac27fa16)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```b1a9d60b```](https://github.com/jina-ai/jina/commit/b1a9d60bc1c239a7c2cd1ac72dbd7b5ad8c0b6f0)] __-__ update release md (*Han Xiao*)
  - [[```6ccb37ef```](https://github.com/jina-ai/jina/commit/6ccb37efd3dd72316c907797d58ac55efc9f2c28)] __-__ __version__: the next version will be 1.2.1 (*Jina Dev Bot*)
+
+<a name=release-note-1-2-2></a>
+## Release Note (`1.2.2`)
+
+> Release time: 2021-05-09 23:03:39
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Joan Fontanals,  cristian,  Andreas Kanz,  Sebastian Lettner,  Alan Zhisheng Niu,  🙇
+
+
+### 🆕 New Features
+
+ - [[```e2089e56```](https://github.com/jina-ai/jina/commit/e2089e5693227e68fbd5fa99c4f346fd6a103a46)] __-__ change Pod context management (#2344) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```260cf14d```](https://github.com/jina-ai/jina/commit/260cf14d8311ee084d6f897f292055397f37ed61)] __-__ deactivate close handled by pea (#2385) (*Joan Fontanals*)
+ - [[```da53b737```](https://github.com/jina-ai/jina/commit/da53b7372ab84f1d746db7b3c060151add3c2f2e)] __-__ broken link to extra deps documentation (#2376) (*Andreas Kanz*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b8293380```](https://github.com/jina-ai/jina/commit/b8293380e924687f6a48bec08ffa4c618c8d430e)] __-__ add pytest-reraise to raise from thread (#2384) (*Joan Fontanals*)
+ - [[```5a58e498```](https://github.com/jina-ai/jina/commit/5a58e4988970c11f5408886e53b80e41deaa18b3)] __-__ replicas with dump-reload (#2331) (*cristian*)
+ - [[```0b2cc427```](https://github.com/jina-ai/jina/commit/0b2cc427722071965aac712beba9dadce9ab1f52)] __-__ move helloworld test to system (#2379) (*Joan Fontanals*)
+ - [[```0f70d99a```](https://github.com/jina-ai/jina/commit/0f70d99a6e2eb2cc7d2471b212d3363b5a054a2d)] __-__ __docker__: mocked unittests external calls  (#1958) (*Sebastian Lettner*)
+ - [[```89f58437```](https://github.com/jina-ai/jina/commit/89f58437d768970563c09c1b93ec1ee152939ff7)] __-__ __tag__: update the params for deploying cloud.jina.ai (#2372) (*Alan Zhisheng Niu*)
+
+### 🍹 Other Improvements
+
+ - [[```a33acd2b```](https://github.com/jina-ai/jina/commit/a33acd2ba0bc8bcc393946e9351c60895ce482ea)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```4140961c```](https://github.com/jina-ai/jina/commit/4140961c62359e3acd540a6d88931665c6313824)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```20e9cf9a```](https://github.com/jina-ai/jina/commit/20e9cf9a4211bbd1e9f6b540786db747e45ea7f4)] __-__ __version__: the next version will be 1.2.2 (*Jina Dev Bot*)
 

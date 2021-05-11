@@ -38,7 +38,6 @@ class CompoundPod(BasePod):
         self.head_args = BasePod._copy_to_head_args(args, PollingType.ANY)
         self.tail_args = BasePod._copy_to_tail_args(args, PollingType.ANY)
         cargs = copy.copy(args)
-        self._set_after_to_pass(cargs)
         self.replicas_args = self._set_replica_args(
             cargs, self.head_args, self.tail_args
         )
@@ -60,7 +59,6 @@ class CompoundPod(BasePod):
         return self.head_args.host
 
     def _parse_pod_args(self, args: Namespace) -> List[Namespace]:
-        self._set_after_to_pass(args)
         return self._set_replica_args(
             args,
             head_args=self.head_args,
@@ -97,15 +95,14 @@ class CompoundPod(BasePod):
             head_args.noblock_on_start = True
             self.head_pea = Pea(head_args)
             self._enter_pea(self.head_pea)
-            tail_args = self.tail_args
-            tail_args.noblock_on_start = True
-            self.tail_pea = Pea(tail_args)
-            self._enter_pea(self.tail_pea)
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
                 _args.polling = PollingType.ALL
                 self._enter_replica(Pod(_args))
-
+            tail_args = self.tail_args
+            tail_args.noblock_on_start = True
+            self.tail_pea = Pea(tail_args)
+            self._enter_pea(self.tail_pea)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
@@ -113,12 +110,12 @@ class CompoundPod(BasePod):
                 head_args = self.head_args
                 self.head_pea = Pea(head_args)
                 self._enter_pea(self.head_pea)
-                tail_args = self.tail_args
-                self.tail_pea = Pea(tail_args)
-                self._enter_pea(self.tail_pea)
                 for _args in self.replicas_args:
                     _args.polling = PollingType.ALL
                     self._enter_replica(Pod(_args))
+                tail_args = self.tail_args
+                self.tail_pea = Pea(tail_args)
+                self._enter_pea(self.tail_pea)
             except:
                 self.close()
                 raise
@@ -176,11 +173,6 @@ class CompoundPod(BasePod):
             + [p.is_ready for p in self.replicas]
         )
 
-    def _set_after_to_pass(self, args):
-        if PollingType.ANY.is_push:
-            # ONLY reset when it is push
-            args.uses_after = '_pass'
-
     @staticmethod
     def _set_replica_args(
         args: Namespace,
@@ -233,15 +225,23 @@ class CompoundPod(BasePod):
             result.append(_args)
         return result
 
-    def rolling_update(self):
+    def rolling_update(self, dump_path: Optional[str] = None):
+        """Reload all Pods of this Compound Pod.
+
+        :param dump_path: the dump from which to read the data
         """
-        Update all pods of this compound pod.
-        """
-        for i in range(len(self.replicas)):
-            replica = self.replicas[i]
-            replica.close()
-            _args = self.replicas_args[i]
-            _args.noblock_on_start = False
-            new_replica = Pod(_args)
-            self.enter_context(new_replica)
-            self.replicas[i] = new_replica
+        try:
+            for i in range(len(self.replicas)):
+                replica = self.replicas[i]
+                replica.close()
+                _args = self.replicas_args[i]
+                _args.noblock_on_start = False
+                # TODO better way to pass args to the new Pod
+                _args.dump_path = dump_path
+                new_replica = Pod(_args)
+                self.enter_context(new_replica)
+                self.replicas[i] = new_replica
+                # TODO might be required in order to allow time for the Replica to come online
+                # before taking down the next
+        except:
+            raise

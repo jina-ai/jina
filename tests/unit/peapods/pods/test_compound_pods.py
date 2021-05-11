@@ -150,44 +150,20 @@ def test_pod_naming_with_parallel(runtime):
         assert bp.head_pea.runtime.name == 'pod_name/head/ZEDRuntime'
         assert bp.tail_pea.runtime.name == 'pod_name/tail/ZEDRuntime'
 
-        assert (
-            bp.replicas[0].peas[0].runtime.name == 'pod_name/replica-0/head/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[0].peas[1].runtime.name == 'pod_name/replica-0/pea-0/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[0].peas[2].runtime.name == 'pod_name/replica-0/pea-1/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[0].peas[3].runtime.name == 'pod_name/replica-0/tail/ZEDRuntime'
-        )
+        assert bp.replicas[0].peas[0].runtime.name == 'pod_name/replica-0/head/ZEDRuntime'
+        assert bp.replicas[0].peas[1].runtime.name == 'pod_name/replica-0/pea-0/ZEDRuntime'
+        assert bp.replicas[0].peas[2].runtime.name == 'pod_name/replica-0/pea-1/ZEDRuntime'
+        assert bp.replicas[0].peas[3].runtime.name == 'pod_name/replica-0/tail/ZEDRuntime'
 
-        assert (
-            bp.replicas[1].peas[0].runtime.name == 'pod_name/replica-1/head/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[1].peas[1].runtime.name == 'pod_name/replica-1/pea-0/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[1].peas[2].runtime.name == 'pod_name/replica-1/pea-1/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[1].peas[3].runtime.name == 'pod_name/replica-1/tail/ZEDRuntime'
-        )
+        assert bp.replicas[1].peas[0].runtime.name == 'pod_name/replica-1/head/ZEDRuntime'
+        assert bp.replicas[1].peas[1].runtime.name == 'pod_name/replica-1/pea-0/ZEDRuntime'
+        assert bp.replicas[1].peas[2].runtime.name == 'pod_name/replica-1/pea-1/ZEDRuntime'
+        assert bp.replicas[1].peas[3].runtime.name == 'pod_name/replica-1/tail/ZEDRuntime'
 
-        assert (
-            bp.replicas[2].peas[0].runtime.name == 'pod_name/replica-2/head/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[2].peas[1].runtime.name == 'pod_name/replica-2/pea-0/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[2].peas[2].runtime.name == 'pod_name/replica-2/pea-1/ZEDRuntime'
-        )
-        assert (
-            bp.replicas[2].peas[3].runtime.name == 'pod_name/replica-2/tail/ZEDRuntime'
-        )
+        assert bp.replicas[2].peas[0].runtime.name == 'pod_name/replica-2/head/ZEDRuntime'
+        assert bp.replicas[2].peas[1].runtime.name == 'pod_name/replica-2/pea-0/ZEDRuntime'
+        assert bp.replicas[2].peas[2].runtime.name == 'pod_name/replica-2/pea-1/ZEDRuntime'
+        assert bp.replicas[2].peas[3].runtime.name == 'pod_name/replica-2/tail/ZEDRuntime'
 
 
 @pytest.mark.parametrize(

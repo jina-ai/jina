@@ -1,0 +1,9 @@
+!SGDRegressorRankerTrainer
+with:
+  model_path: .
+metas:
+  py_modules: trainer.py
+requests:
+  on:
+    TrainRequest:
+      - jtype: RankerTrainerDriver {}

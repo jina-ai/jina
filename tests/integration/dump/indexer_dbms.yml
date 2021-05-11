@@ -6,10 +6,6 @@ metas:
   name: keyvalue
 requests:
   on:
-    DumpRequest:
-      - jtype: DumpDriver
-        with:
-          executor: keyvalue
     [IndexRequest, UpdateRequest]:
       - jtype: DBMSIndexDriver
         with:

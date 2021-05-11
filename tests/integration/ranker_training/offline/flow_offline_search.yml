@@ -1,0 +1,5 @@
+jtype: Flow
+version: '1'
+pods:
+  - name: search
+    uses: yaml/search.yml

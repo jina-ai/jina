@@ -3,8 +3,8 @@ import asyncio
 from typing import Optional
 
 from .client import PeaDaemonClient
+from ...zmq import Zmqlet, send_ctrl_message
 from ..asyncio.base import AsyncZMQRuntime
-from ...zmq import Zmqlet
 from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored, is_yaml_filepath
 
@@ -14,6 +14,8 @@ class JinadRuntime(AsyncZMQRuntime):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
+        # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main` process.
+        self.remote_ctrl_addr = self.ctrl_addr
         self.ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
@@ -23,6 +25,24 @@ class JinadRuntime(AsyncZMQRuntime):
             port=self.port_expose,
             logger=self.logger,
             timeout=self.args.timeout_ready,
+        )
+
+    def cancel(self):
+        """Send terminate control message."""
+        # (Joan) I put it here, to show how hacky it is. it recycles the logic to send terminate signal to
+        # a remote Pea Runtime by capturing it locally in `_wait_async`. That's why we need to recycle the control addr
+        send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
+
+    def activate(self):
+        """Send activate control message."""
+        send_ctrl_message(
+            self.remote_ctrl_addr, 'ACTIVATE', timeout=self.args.timeout_ctrl
+        )
+
+    def deactivate(self):
+        """Send deactivate control message."""
+        send_ctrl_message(
+            self.remote_ctrl_addr, 'DEACTIVATE', timeout=self.args.timeout_ctrl
         )
 
     def setup(self):
