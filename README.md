@@ -1,7 +1,6 @@
 <p align="center">
 <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
 </p>
-
 <p align="center">
 <b>Cloud-Native Neural Search Framework for <i>Any</i> Kind of Data</b>
 </p>
