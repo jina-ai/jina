@@ -228,6 +228,10 @@ class ZEDRuntime(ZMQRuntime):
         elif self.request.command == 'CANCEL':
             if self.envelope.receiver_id in self._idle_dealer_ids:
                 self._idle_dealer_ids.remove(self.envelope.receiver_id)
+        elif self.request.command == 'ACTIVATE':
+            self._zmqlet._send_idle_to_router()
+        elif self.request.command == 'DEACTIVATE':
+            self._zmqlet._send_cancel_to_router()
         elif self.request.command == 'DUMP':
             # TODO: rewrite dump logic here, perhaps ``self._executor.save()``
             pass

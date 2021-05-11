@@ -40,4 +40,4 @@ class ControlMessage(Message):
         if args:
             req.args = args
 
-        req.targets.extend([pod_name])
+        req.header.target_peapod = pod_name

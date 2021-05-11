@@ -4,7 +4,6 @@ from typing import List, Optional, Dict
 
 import requests
 
-from jina import Client
 from jina.parsers import set_client_cli_parser
 
 
@@ -123,11 +122,3 @@ def create_flow(
         print(f'Checking if the flow creation is succeeded: {r.json()}')
         assert r.status_code == 201
         return r.json()
-
-
-def get_client(port):
-    args = set_client_cli_parser().parse_args(
-        ['--host', 'localhost', '--port-expose', str(port), '--return-results']
-    )
-
-    return Client(args)
