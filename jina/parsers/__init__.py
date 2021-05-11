@@ -117,10 +117,12 @@ def get_main_parser():
     from .base import set_base_parser
     from .helloworld import set_hw_parser, set_hello_parser
     from .helper import _chf, _SHOW_ALL_ARGS
-    # from .check import set_check_parser
+
+    from .check import set_check_parser
     from .export_api import set_export_api_parser
     from .flow import set_flow_parser
     from .ping import set_ping_parser
+
     # from .hub import set_hub_parser
     # from .optimizer import set_optimizer_parser
 
@@ -197,7 +199,7 @@ def get_main_parser():
                         'You should rarely use this directly unless you '
                         'are doing low-level orchestration',
             formatter_class=_chf,
-            **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {}
+            **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
         )
     )
 
@@ -206,7 +208,7 @@ def get_main_parser():
             'client',
             description='Start a Python client that connects to a remote Jina gateway',
             formatter_class=_chf,
-            **(dict(help='Start a Client')) if _SHOW_ALL_ARGS else {}
+            **(dict(help='Start a Client')) if _SHOW_ALL_ARGS else {},
         )
     )
 
@@ -215,7 +217,7 @@ def get_main_parser():
             'export-api',
             description='Export Jina API to JSON/YAML file for 3rd party applications',
             formatter_class=_chf,
-            **(dict(help='Export Jina API to file')) if _SHOW_ALL_ARGS else {}
+            **(dict(help='Export Jina API to file')) if _SHOW_ALL_ARGS else {},
         )
     )
 
@@ -237,12 +239,12 @@ def get_main_parser():
         )
     )
 
-    # set_check_parser(
-    #     sp.add_parser(
-    #         'check',
-    #         **(dict(help='Check the import of all Executors and Drivers')) if _SHOW_ALL_ARGS else {},
-    #         description='Check the import status of all executors and drivers',
-    #         formatter_class=_chf,
-    #     )
-    # )
+    set_check_parser(
+        sp.add_parser(
+            'check',
+            **(dict(help='Check the import of all Executors and Drivers')) if _SHOW_ALL_ARGS else {},
+            description='Check the import status of all executors and drivers',
+            formatter_class=_chf,
+        )
+    )
     return parser
