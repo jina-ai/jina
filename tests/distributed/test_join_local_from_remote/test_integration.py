@@ -2,10 +2,11 @@ import os
 
 import pytest
 
-from ..helpers import create_flow_2, assert_request
-from jina import Client, Document
+from jina import Document
+from jina.clients import Client
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
+from ..helpers import create_flow_2, assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')

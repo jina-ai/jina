@@ -19,11 +19,6 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_simple_use_abs_import_shall_fail():
-    with pytest.raises(ModuleNotFoundError):
-        from .dummyhub_abs import DummyHubExecutorAbs
-
-        DummyHubExecutorAbs()
-
     with pytest.raises(RuntimeFailToStart):
         with Flow().add(uses='DummyHubExecutorAbs'):
             pass
