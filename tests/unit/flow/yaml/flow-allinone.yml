@@ -3,20 +3,8 @@ version: '1'
 pods:
   - uses:
     jtype: CustomizedEncoder
-    requests:
-      on:
-        IndexRequest:
-          - jtype: FilterQL
-            with:
-              lookups: { modality__in: [ mode2 ] }
-              traversal_paths: [ 'c' ]
-          - jtype: EncodeDriver
-            with:
-              method: encode
-              traversal_paths: [ 'c' ]
-  - uses: _index
   - uses:
-    jtype: BaseEncoder
+    jtype: BaseExecutor
     metas:
       name: test_indexer
       workspace: ./indexed

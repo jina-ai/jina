@@ -5,7 +5,6 @@ metas:
   name: my-mwu-encoder
   py_modules:
     - mwu_encoder.py
-    - mwu_driver.py
   workspace: ./
 requests:
   on:

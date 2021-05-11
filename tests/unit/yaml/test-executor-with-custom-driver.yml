@@ -1,4 +1,0 @@
-!DummyEncoder
-metas:
-  py_modules:
-    - dummy_encode.py
