@@ -4,7 +4,6 @@ from contextlib import nullcontext
 from typing import Union, Iterable, Tuple, List, Iterator, TextIO
 
 from .traversable import TraversableSequence
-from ...enums import EmbeddingClsType
 from ...helper import typename, cached_property
 from ...logging import default_logger
 from ...proto.jina_pb2 import DocumentProto
@@ -24,37 +23,6 @@ __all__ = ['DocumentArray']
 
 if False:
     from ..document import Document
-    from scipy.sparse import coo_matrix
-    from scipy.sparse import coo_matrix
-
-    # fix type-hint complain for sphinx and flake
-    from typing import TypeVar
-    import numpy as np
-    import scipy
-    import tensorflow as tf
-    import torch
-
-    EmbeddingType = TypeVar(
-        'EncodingType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tf.SparseTensor,
-    )
-
-    SparseEmbeddingType = TypeVar(
-        'SparseEmbeddingType',
-        np.ndarray,
-        scipy.sparse.csr_matrix,
-        scipy.sparse.coo_matrix,
-        scipy.sparse.bsr_matrix,
-        scipy.sparse.csc_matrix,
-        torch.sparse_coo_tensor,
-        tf.SparseTensor,
-    )
 
 
 class DocumentArray(TraversableSequence, MutableSequence, Itr):
@@ -186,77 +154,6 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
         self._docs_proto.sort(*args, **kwargs)
-
-    def get_all_sparse_embeddings(
-            self, embedding_cls_type: EmbeddingClsType
-    ) -> Tuple['SparseEmbeddingType', 'DocumentArray']:
-        """Return all embeddings from every document in this array as a sparse array
-
-        :param embedding_cls_type: Type of sparse matrix backend, e.g. `scipy`, `torch` or `tf`.
-
-        :return: The corresponding documents in a :class:`DocumentArray`,
-            and the documents have no embedding in a :class:`DocumentArray`.
-        :rtype: A tuple of embedding and DocumentArray as sparse arrays
-        """
-
-        def stack_embeddings(embeddings):
-            if embedding_cls_type.is_scipy:
-                import scipy
-
-                return scipy.sparse.vstack(embeddings)
-            elif embedding_cls_type.is_torch:
-                import torch
-
-                return torch.vstack(embeddings)
-            elif embedding_cls_type.is_tf:
-                return embeddings
-            else:
-                raise ValueError(
-                    f'Trying to stack sparse embeddings with embedding_cls_type {embedding_cls_type} failed'
-                )
-
-        def get_sparse_ndarray_type_kwargs():
-            if embedding_cls_type.is_scipy:
-                from jina.types.ndarray.sparse.scipy import SparseNdArray
-
-                if not embedding_cls_type.is_scipy_stackable not in ['coo', 'csr']:
-                    default_logger.warning(
-                        f'found `{embedding_cls_type.name}` matrix, recommend to use `coo` or `csr` type.'
-                    )
-                return SparseNdArray, {'sp_format': embedding_cls_type.scipy_cls_type}
-            elif embedding_cls_type.is_torch:
-                from jina.types.ndarray.sparse.pytorch import SparseNdArray
-
-                return SparseNdArray, {}
-            elif embedding_cls_type.is_tf:
-                from jina.types.ndarray.sparse.tensorflow import SparseNdArray
-
-                return SparseNdArray, {}
-            else:
-                raise ValueError(
-                    f'Trying to get sparse embeddings with embedding_cls_type {embedding_cls_type} failed'
-                )
-
-        embeddings = []
-        docs_pts = []
-        bad_docs = []
-        sparse_ndarray_type, sparse_kwargs = get_sparse_ndarray_type_kwargs()
-        for doc in self:
-            embedding = doc.get_sparse_embedding(
-                sparse_ndarray_cls_type=sparse_ndarray_type, **sparse_kwargs
-            )
-            if embedding is None:
-                bad_docs.append(doc)
-                continue
-            embeddings.append(embedding)
-            docs_pts.append(doc)
-
-        if bad_docs:
-            default_logger.warning(
-                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing sparse_embedding'
-            )
-
-        return stack_embeddings(embeddings), docs_pts
 
     def get_attributes(self, *fields: str) -> Union[List, List[List]]:
         """Return all nonempty values of the fields from all docs this array contains
