@@ -1,5 +1,3 @@
-
-
 from jina.flow import Flow
 
 if __name__ == '__main__':

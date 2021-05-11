@@ -4,7 +4,6 @@ from typing import Any
 
 from google.protobuf.json_format import MessageToJson
 
-from .models import JinaRequestModel
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
 from ..... import __version__
@@ -41,6 +40,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             JinaUpdateRequestModel,
             JinaSearchRequestModel,
             JinaReloadRequestModel,
+            JinaRequestModel,
         )
 
     app = FastAPI(
@@ -105,7 +105,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         """
         Request mode service and return results in JSON, a deprecated interface.
 
-        :param mode: INDEX, SEARCH, DELETE, UPDATE, CONTROL, TRAIN.
         :param body: Request body.
         :return: Results in JSONresponse.
         """

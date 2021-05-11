@@ -11,4 +11,3 @@ class MWUEncoder(Executor):
     @requests
     def encode(self, **kwargs) -> Any:
         pass
-# rc1

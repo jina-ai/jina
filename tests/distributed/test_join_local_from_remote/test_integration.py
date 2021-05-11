@@ -34,9 +34,9 @@ def client():
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose, doc_to_index, client, mocker):
     def validate_resp(resp):
-        assert len(resp.search.docs) == 2
-        assert resp.search.docs[0].text == 'test'
-        assert resp.search.docs[1].text == 'test'
+        assert len(resp.data.docs) == 2
+        assert resp.data.docs[0].text == 'test'
+        assert resp.data.docs[1].text == 'test'
 
     mock = mocker.Mock()
     flow_id = create_flow_2(flow_yaml=flow_yaml)
