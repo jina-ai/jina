@@ -54,7 +54,7 @@ def test_fashion(helloworld_args, query_document, mocker, tmpdir):
             assert len(doc.matches) == 10
 
     hello_world(helloworld_args)
-    check_hello_world_results(os.path.join(str(tmpdir), 'hello-world.html'))
+    check_hello_world_results(os.path.join(str(tmpdir), 'demo.html'))
 
     flow_query_path = os.path.join(resource_filename('jina', 'resources'), 'fashion')
 

@@ -102,12 +102,12 @@ def test_recv_message_zmqlet(mocker):
     zmqlet2 = Zmqlet(args2, default_logger)
     req = Request()
     req.request_id = random_identity()
-    doc = req.index.docs.add()
+    doc = req.data.docs.add()
     doc.tags['id'] = 2
     msg = Message(None, req, 'tmp', '')
 
     def callback(msg_):
-        assert msg_.request.docs[0].tags['id'] == msg.request.index.docs[0].tags['id']
+        assert msg_.request.docs[0].tags['id'] == msg.request.data.docs[0].tags['id']
 
     mock = mocker.Mock()
     zmqlet1.send_message(msg)

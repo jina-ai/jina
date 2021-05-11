@@ -494,7 +494,7 @@ def expected_doc_fields():
 
 @pytest.fixture
 def ignored_doc_fields():
-    return ['embedding', 'score', 'blob', 'buffer', 'text', 'tags']
+    return ['embedding', 'score', 'blob', 'buffer', 'text', 'tags', 'uri']
 
 
 def test_document_to_json(expected_doc_fields, ignored_doc_fields):
