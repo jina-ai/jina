@@ -29,7 +29,7 @@ from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 __all__ = ['BaseFlow']
 
 from ..peapods import Pod
-from ..peapods.pods.compoundpod import CompoundPod
+from ..peapods.pods.compound import CompoundPod
 from ..peapods.pods.factory import PodFactory
 
 
