@@ -2,12 +2,9 @@ from copy import deepcopy
 
 import numpy as np
 import pytest
-import tensorflow as tf
-import torch
-from scipy.sparse import coo_matrix, csr_matrix
+from scipy.sparse import coo_matrix
 
 from jina import Document
-from jina.enums import EmbeddingClsType
 from jina.types.arrays import DocumentArray
 
 DOCUMENTS_PER_LEVEL = 1
@@ -368,43 +365,3 @@ def test_get_content_multiple_fields_merge(num_rows):
     assert len(contents[1]) == batch_size
     for c in contents[0]:
         assert c.shape == (num_rows, embed_size)
-
-
-@pytest.mark.parametrize(
-    'embedding_cls_type, return_expected_type',
-    [
-        (EmbeddingClsType.SCIPY_COO, coo_matrix),
-        (EmbeddingClsType.SCIPY_CSR, csr_matrix),
-        (EmbeddingClsType.TORCH, torch.Tensor),
-        (EmbeddingClsType.TF, tf.SparseTensor),
-    ],
-)
-def test_all_sparse_embeddings(
-    docarray_with_scipy_sparse_embedding,
-    embedding_cls_type,
-    return_expected_type,
-):
-    (
-        all_embeddings,
-        doc_pts,
-    ) = docarray_with_scipy_sparse_embedding.get_all_sparse_embeddings(
-        embedding_cls_type=embedding_cls_type,
-    )
-    assert all_embeddings is not None
-    assert doc_pts is not None
-    assert len(doc_pts) == 3
-
-    if embedding_cls_type.is_scipy:
-        assert isinstance(all_embeddings, return_expected_type)
-        assert all_embeddings.shape == (3, 10)
-    if embedding_cls_type.is_torch:
-        assert isinstance(all_embeddings, return_expected_type)
-        assert all_embeddings.is_sparse
-        assert all_embeddings.shape[0] == 3
-        assert all_embeddings.shape[1] == 10
-    if embedding_cls_type.is_tf:
-        assert isinstance(all_embeddings, list)
-        assert isinstance(all_embeddings[0], return_expected_type)
-        assert len(all_embeddings) == 3
-        assert all_embeddings[0].shape[0] == 1
-        assert all_embeddings[0].shape[1] == 10
