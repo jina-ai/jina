@@ -117,12 +117,12 @@ def get_main_parser():
     from .base import set_base_parser
     from .helloworld import set_hw_parser, set_hello_parser
     from .helper import _chf, _SHOW_ALL_ARGS
-    from .check import set_check_parser
+    # from .check import set_check_parser
     from .export_api import set_export_api_parser
     from .flow import set_flow_parser
-    from .hub import set_hub_parser
     from .ping import set_ping_parser
-    from .optimizer import set_optimizer_parser
+    # from .hub import set_hub_parser
+    # from .optimizer import set_optimizer_parser
 
     # create the top-level parser
     parser = set_base_parser()
@@ -145,9 +145,9 @@ def get_main_parser():
 
     set_pod_parser(
         sp.add_parser(
-            'pod',
-            help='Start a Pod',
-            description='Start a Jina Pod',
+            'exec',
+            help='Start an Executor',
+            description='Start a Jina Executor',
             formatter_class=_chf,
         )
     )
@@ -161,24 +161,6 @@ def get_main_parser():
         )
     )
 
-    set_optimizer_parser(
-        sp.add_parser(
-            'optimizer',
-            description='Start a FlowOptimizer from a YAML configuration file',
-            help='Start an FlowOptimizer from a YAML file',
-            formatter_class=_chf,
-        )
-    )
-
-    set_gateway_parser(
-        sp.add_parser(
-            'gateway',
-            description='Start a Gateway that receives client Requests via gRPC/REST interface',
-            help='Start a Gateway',
-            formatter_class=_chf,
-        )
-    )
-
     set_ping_parser(
         sp.add_parser(
             'ping',
@@ -188,23 +170,23 @@ def get_main_parser():
         )
     )
 
-    set_check_parser(
+    set_gateway_parser(
         sp.add_parser(
-            'check',
-            help='Check the import of all Executors and Drivers',
-            description='Check the import status of all executors and drivers',
+            'gateway',
+            description='Start a Gateway that receives client Requests via gRPC/REST interface',
+            **(dict(help='Start a Gateway')) if _SHOW_ALL_ARGS else {},
             formatter_class=_chf,
         )
     )
 
-    set_hub_parser(
-        sp.add_parser(
-            'hub',
-            help='Build, push, pull Jina Hub images',
-            description='Build, push, pull Jina Hub images',
-            formatter_class=_chf,
-        )
-    )
+    # set_hub_parser(
+    #     sp.add_parser(
+    #         'hub',
+    #         help='Build, push, pull Jina Hub images',
+    #         description='Build, push, pull Jina Hub images',
+    #         formatter_class=_chf,
+    #     )
+    # )
 
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 
@@ -215,7 +197,7 @@ def get_main_parser():
                         'You should rarely use this directly unless you '
                         'are doing low-level orchestration',
             formatter_class=_chf,
-            **(dict(help='start a pea')) if _SHOW_ALL_ARGS else {}
+            **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {}
         )
     )
 
@@ -224,7 +206,7 @@ def get_main_parser():
             'client',
             description='Start a Python client that connects to a remote Jina gateway',
             formatter_class=_chf,
-            **(dict(help='start a client')) if _SHOW_ALL_ARGS else {}
+            **(dict(help='Start a Client')) if _SHOW_ALL_ARGS else {}
         )
     )
 
@@ -233,8 +215,34 @@ def get_main_parser():
             'export-api',
             description='Export Jina API to JSON/YAML file for 3rd party applications',
             formatter_class=_chf,
-            **(dict(help='export Jina API to file')) if _SHOW_ALL_ARGS else {}
+            **(dict(help='Export Jina API to file')) if _SHOW_ALL_ARGS else {}
         )
     )
 
+    # set_optimizer_parser(
+    #     sp.add_parser(
+    #         'optimizer',
+    #         description='Start a FlowOptimizer from a YAML configuration file',
+    #         **(dict(help='Start an FlowOptimizer from a YAML file')) if _SHOW_ALL_ARGS else {},
+    #         formatter_class=_chf,
+    #     )
+    # )
+
+    set_pod_parser(
+        sp.add_parser(
+            'pod',
+            **(dict(help='Start a Jina Pod')) if _SHOW_ALL_ARGS else {},
+            description='Start a Jina Pod',
+            formatter_class=_chf,
+        )
+    )
+
+    # set_check_parser(
+    #     sp.add_parser(
+    #         'check',
+    #         **(dict(help='Check the import of all Executors and Drivers')) if _SHOW_ALL_ARGS else {},
+    #         description='Check the import status of all executors and drivers',
+    #         formatter_class=_chf,
+    #     )
+    # )
     return parser
