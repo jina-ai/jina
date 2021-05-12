@@ -692,10 +692,10 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
     ],
 )
 def test_document_sparse_embedding(
-        scipy_sparse_matrix,
-        return_sparse_ndarray_cls_type,
-        return_scipy_class_type,
-        return_expected_type,
+    scipy_sparse_matrix,
+    return_sparse_ndarray_cls_type,
+    return_scipy_class_type,
+    return_expected_type,
 ):
     d = Document()
     d.embedding = scipy_sparse_matrix
@@ -756,3 +756,12 @@ def test_siblings_needs_to_be_set_manually():
             document.chunks.append(chunk)
     for i in range(3):
         assert document.chunks[i].siblings == 3
+
+
+def test_evaluations():
+    document = Document()
+    score = document.evaluations.add()
+    score.op_name = 'operation'
+    score.value = 10.0
+    assert document.evaluations[0].value == 10.0
+    assert document.evaluations[0].op_name == 'operation'

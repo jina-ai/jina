@@ -2,11 +2,9 @@ import os
 
 import numpy as np
 import pytest
-from pkg_resources import resource_filename
 
 from jina import Document
-from jina.flow import Flow
-from jina.helloworld.fashion.app import hello_world
+from jina.helloworld.fashion.app import hello_world, search
 from jina.parsers.helloworld import set_hw_parser
 from tests import validate_callback
 
@@ -49,26 +47,16 @@ def test_fashion(helloworld_args, query_document, mocker, tmpdir):
     """Regression test for fashion example."""
 
     def validate_response(resp):
-        assert len(resp.search.docs) == 1
-        for doc in resp.search.docs:
+        assert len(resp.data.docs) == 1
+        for doc in resp.data.docs:
             assert len(doc.matches) == 10
 
     hello_world(helloworld_args)
     check_hello_world_results(os.path.join(str(tmpdir), 'demo.html'))
-    flow_query_path = os.path.join(resource_filename('jina', 'resources'), 'fashion')
 
     mock_on_done = mocker.Mock()
     mock_on_fail = mocker.Mock()
 
-    with Flow.load_config(
-            os.path.join(flow_query_path, 'helloworld.flow.query.yml')
-    ) as f:
-        f.search(
-            inputs=[query_document],
-            on_done=mock_on_done,
-            on_fail=mock_on_fail,
-            top_k=10,
-        )
-
+    search(query_document, mock_on_done, mock_on_fail, 10)
     mock_on_fail.assert_not_called()
     validate_callback(mock_on_done, validate_response)
