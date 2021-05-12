@@ -239,7 +239,7 @@ def test_host_list_matching(num_hosts, used_hosts):
             'any',
             2,
             SchedulerType.LOAD_BALANCE,
-            SocketType.DEALER_CONNECT,
+            SocketType.SUB_CONNECT,
             SocketType.PUSH_CONNECT,
         ),
     ),
@@ -259,22 +259,21 @@ def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_ou
         ]
     )
     with CompoundPod(args) as compound_pod:
-        replica_args = compound_pod.replicas_args
-        head = replica_args['head']
+        head = compound_pod.head_args
         assert head.socket_in == SocketType.PULL_BIND
         assert head.socket_out == SocketType.ROUTER_BIND
         assert head.scheduling == SchedulerType.LOAD_BALANCE
-        tail = replica_args['tail']
+        tail = compound_pod.tail_args
         assert tail.socket_in == SocketType.PULL_BIND
         assert tail.socket_out == SocketType.PUSH_BIND
         assert tail.scheduling == SchedulerType.LOAD_BALANCE
-        replicas = compound_pod.replica_list
+        replicas = compound_pod.replicas
         for replica in replicas:
             if parallel > 1:
-                assert replica.args.polling == polling_type
+                # assert replica.args.polling == polling_type
                 assert len(replica.peas_args['peas']) == parallel
                 for pea in replica.peas_args['peas']:
-                    assert pea.polling == polling_type
+                    assert pea.polling == PollingType.ALL
                     assert pea.socket_in == pea_socket_in
                     assert pea.socket_out == pea_socket_out
                     assert pea.scheduling == pea_scheduling
