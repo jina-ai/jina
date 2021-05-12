@@ -4,6 +4,8 @@ from typing import List, Optional, Dict
 
 import requests
 
+from jina.parsers import set_client_cli_parser
+
 
 def assert_request(
     method: str, url: str, payload: Optional[Dict] = None, expect_rcode: int = 200

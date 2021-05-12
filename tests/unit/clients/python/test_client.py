@@ -5,10 +5,10 @@ import pytest
 import requests
 
 from jina import helper, Document
-from jina.clients import Client
+from jina.clients import Client, WebSocketClient
 from jina.excepts import BadClientInput
 from jina.flow import Flow
-from jina.parsers import set_gateway_parser
+from jina.parsers import set_gateway_parser, set_client_cli_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
 from jina import Executor, DocumentArray, requests as req
@@ -82,7 +82,6 @@ def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
 @pytest.mark.parametrize('restful', [False, True])
 def test_mime_type(restful):
     class MyExec(Executor):
-
         @req
         def foo(self, docs: 'DocumentArray', **kwargs):
             for d in docs:
@@ -118,3 +117,41 @@ def test_client_csv(restful, mocker, func_name):
         mock = mocker.Mock()
         getattr(f, f'{func_name}')(Document.from_csv(fp), on_done=mock)
         mock.assert_called_once()
+
+
+# Timeout is necessary to fail in case of hanging client requests
+@pytest.mark.timeout(5)
+def test_client_websocket(mocker, flow_with_rest_api_enabled):
+    with flow_with_rest_api_enabled:
+        time.sleep(0.5)
+        client = WebSocketClient(
+            set_client_cli_parser().parse_args(
+                [
+                    '--host',
+                    'localhost',
+                    '--port-expose',
+                    str(flow_with_rest_api_enabled.port_expose),
+                ]
+            )
+        )
+        # Test that a regular index request triggers the correct callbacks
+        on_always_mock = mocker.Mock()
+        on_error_mock = mocker.Mock()
+        on_done_mock = mocker.Mock()
+        client.index(
+            iter([Document()]),
+            request_size=1,
+            on_always=on_always_mock,
+            on_error=on_error_mock,
+            on_done=on_done_mock,
+        )
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_called_once()
+        on_error_mock.assert_not_called()
+
+        # Test that an empty index request does not trigger any callback and does not time out
+        mock = mocker.Mock()
+        client.index(
+            iter([()]), request_size=1, on_always=mock, on_error=mock, on_done=mock
+        )
+        mock.assert_not_called()

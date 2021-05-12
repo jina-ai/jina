@@ -50,7 +50,7 @@ __all__ = [
     'convert_tuple_to_list',
     'run_async',
     'deprecated_alias',
-    'countdown'
+    'countdown',
 ]
 
 
@@ -166,11 +166,11 @@ def touch_dir(base_dir: str) -> None:
 
 
 def batch_iterator(
-        data: Iterable[Any],
-        batch_size: int,
-        axis: int = 0,
-        yield_slice: bool = False,
-        yield_dict: bool = False,
+    data: Iterable[Any],
+    batch_size: int,
+    axis: int = 0,
+    yield_slice: bool = False,
+    yield_dict: bool = False,
 ) -> Iterator[Any]:
     """
     Get an iterator of batches of data.
@@ -216,7 +216,7 @@ def batch_iterator(
             yield data
             return
         for _ in range(0, len(data), batch_size):
-            yield data[_: _ + batch_size]
+            yield data[_ : _ + batch_size]
     elif isinstance(data, Iterable):
         # as iterator, there is no way to know the length of it
         while True:
@@ -491,7 +491,7 @@ def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def expand_dict(
-        d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
+    d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
 ) -> Dict[str, Any]:
     """
     Expand variables from YAML file.
@@ -605,17 +605,17 @@ def build_url_regex_pattern():
 
     # Host patterns
     hostname_re = (
-            r'[a-z' + ul + r'0-9](?:[a-z' + ul + r'0-9-]{0,61}[a-z' + ul + r'0-9])?'
+        r'[a-z' + ul + r'0-9](?:[a-z' + ul + r'0-9-]{0,61}[a-z' + ul + r'0-9])?'
     )
     # Max length for domain name labels is 63 characters per RFC 1034 sec. 3.1
     domain_re = r'(?:\.(?!-)[a-z' + ul + r'0-9-]{1,63}(?<!-))*'
     tld_re = (
-            r'\.'  # dot
-            r'(?!-)'  # can't start with a dash
-            r'(?:[a-z' + ul + '-]{2,63}'  # domain label
-                              r'|xn--[a-z0-9]{1,59})'  # or punycode label
-                              r'(?<!-)'  # can't end with a dash
-                              r'\.?'  # may have a trailing dot
+        r'\.'  # dot
+        r'(?!-)'  # can't start with a dash
+        r'(?:[a-z' + ul + '-]{2,63}'  # domain label
+        r'|xn--[a-z0-9]{1,59})'  # or punycode label
+        r'(?<!-)'  # can't end with a dash
+        r'\.?'  # may have a trailing dot
     )
     host_re = '(' + hostname_re + domain_re + tld_re + '|localhost)'
 
@@ -623,9 +623,9 @@ def build_url_regex_pattern():
         r'^(?:[a-z0-9.+-]*)://'  # scheme is validated separately
         r'(?:[^\s:@/]+(?::[^\s:@/]*)?@)?'  # user:pass authentication
         r'(?:' + ipv4_re + '|' + ipv6_re + '|' + host_re + ')'
-                                                           r'(?::\d{2,5})?'  # port
-                                                           r'(?:[/?#][^\s]*)?'  # resource path
-                                                           r'\Z',
+        r'(?::\d{2,5})?'  # port
+        r'(?:[/?#][^\s]*)?'  # resource path
+        r'\Z',
         re.IGNORECASE,
     )
 
@@ -648,10 +648,10 @@ if os.name == 'nt':
 
 
 def colored(
-        text: str,
-        color: Optional[str] = None,
-        on_color: Optional[str] = None,
-        attrs: Optional[Union[str, list]] = None,
+    text: str,
+    color: Optional[str] = None,
+    on_color: Optional[str] = None,
+    attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color.
@@ -740,7 +740,7 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-            kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -761,7 +761,7 @@ class ArgNamespace:
 
     @staticmethod
     def get_parsed_args(
-            kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
+        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
     ) -> Tuple[List[str], Namespace, List[Any]]:
         """
         Get all parsed args info in a dict.
@@ -791,7 +791,7 @@ class ArgNamespace:
 
     @staticmethod
     def get_non_defaults_args(
-            args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
+        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
     ) -> Dict:
         """
         Get non-default args in a dict.
@@ -812,7 +812,7 @@ class ArgNamespace:
 
     @staticmethod
     def flatten_to_dict(
-            args: Union[Dict[str, 'Namespace'], 'Namespace']
+        args: Union[Dict[str, 'Namespace'], 'Namespace']
     ) -> Dict[str, Any]:
         """Convert argparse.Namespace to dict to be uploaded via REST.
 
@@ -910,9 +910,9 @@ def _use_uvloop():
     from .importer import ImportExtensions
 
     with ImportExtensions(
-            required=False,
-            help_text='Jina uses uvloop to manage events and sockets, '
-                      'it often yields better performance than builtin asyncio',
+        required=False,
+        help_text='Jina uses uvloop to manage events and sockets, '
+        'it often yields better performance than builtin asyncio',
     ):
         import uvloop
 
@@ -1295,7 +1295,7 @@ def find_request_binding(target):
 def _canonical_request_name(req_name: str):
     """Return the canonical name of a request
 
-    :param req_name: the orginal request name
+    :param req_name: the original request name
     :return: canonical form of the request
     """
     if req_name.startswith('/'):
@@ -1314,6 +1314,7 @@ def physical_size(directory: str) -> int:
     """
     root_directory = Path(directory)
     return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
+
 
 def dunder_get(_dict: Any, key: str) -> Any:
     """Returns value for a specified dunderkey

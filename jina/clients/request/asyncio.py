@@ -11,24 +11,26 @@ from ...logging import default_logger
 
 
 async def request_generator(
-        exec_endpoint: str,
-        data: GeneratorSourceType,
-        request_size: int = 0,
-        mime_type: Optional[str] = None,
-        data_type: DataInputType = DataInputType.AUTO,
-        target_peapod: Optional[str] = None,
-        parameters: Optional[Dict] = None,
-        **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
+    exec_endpoint: str,
+    data: GeneratorSourceType,
+    request_size: int = 0,
+    mime_type: Optional[str] = None,
+    data_type: DataInputType = DataInputType.AUTO,
+    target_peapod: Optional[str] = None,
+    parameters: Optional[Dict] = None,
+    **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> AsyncIterator['Request']:
     """An async :function:`request_generator`.
 
+    :param exec_endpoint: the endpoint string, by convention starts with `/`
     :param data: the data to use in the request
     :param request_size: the request size for the client
-    :param mode: the request mode (index, search etc.)
     :param mime_type: mime type
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
-    :param kwargs: additional key word arguments
+    :param parameters: the kwargs that will be sent to the executor
+    :param target_peapod: a regex string represent the certain peas/pods request targeted
+    :param kwargs: additional arguments
     :yield: request
     """
 

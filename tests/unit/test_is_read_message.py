@@ -1,10 +1,12 @@
+import time
 from jina.logging import default_logger
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet
-from jina.proto import jina_pb2
 from jina.types.message import Message
 from jina.helper import random_identity
+from jina.types.request import Request
+from tests import validate_callback
 
 
 class MockBasePeaNotRead(BasePea):
@@ -77,7 +79,7 @@ args3 = set_pea_parser().parse_args(
 
 def test_read_zmqlet():
     with MockBasePeaRead(args2), Zmqlet(args1, default_logger) as z:
-        req = jina_pb2.RequestProto()
+        req = Request()
         req.request_id = random_identity()
         d = req.data.docs.add()
         d.tags['id'] = 2
@@ -87,9 +89,28 @@ def test_read_zmqlet():
 
 def test_not_read_zmqlet():
     with MockBasePeaNotRead(args3), Zmqlet(args1, default_logger) as z:
-        req = jina_pb2.RequestProto()
+        req = Request()
         req.request_id = random_identity()
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
         z.send_message(msg)
+
+
+def test_recv_message_zmqlet(mocker):
+    zmqlet1 = Zmqlet(args1, default_logger)
+    zmqlet2 = Zmqlet(args2, default_logger)
+    req = Request()
+    req.request_id = random_identity()
+    doc = req.data.docs.add()
+    doc.tags['id'] = 2
+    msg = Message(None, req, 'tmp', '')
+
+    def callback(msg_):
+        assert msg_.request.docs[0].tags['id'] == msg.request.data.docs[0].tags['id']
+
+    mock = mocker.Mock()
+    zmqlet1.send_message(msg)
+    time.sleep(1)
+    zmqlet2.recv_message(mock)
+    validate_callback(mock, callback)

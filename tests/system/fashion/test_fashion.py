@@ -18,10 +18,10 @@ def check_hello_world_results(html_path: str):
     soup = BeautifulSoup(page)
     table = soup.find('table')
     rows = table.find_all('tr')
-    assert len(rows) == 129
+    assert len(rows) > 1
     for row in rows[1:]:
         cols = row.find_all('img')
-        assert len(cols) == 51  # query + results
+        assert len(cols) > 1  # query + results
 
     evaluation = soup.find_all('h3')[0].text
     assert 'Precision@50' in evaluation

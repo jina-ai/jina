@@ -87,7 +87,7 @@ _names_with_underscore = [
     '__uptime__',
     '__root_dir__',
     '__default_endpoint__',
-    '__num_args_executor_func__'
+    '__num_args_executor_func__',
 ]
 
 # Primitive data type,
