@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+from jina.types.score import NamedScore
 from jina import Flow, Executor, DocumentArray, requests
 from tests import random_docs, validate_callback
 
@@ -38,7 +39,6 @@ def validate(ids, expect):
         if expect:
             with open(fname) as fp:
                 assert fp.read() != ''
-        # rm_files([fname])
 
 
 @pytest.fixture
@@ -101,7 +101,6 @@ def test_flow3(inspect, restful, temp_folder):
 @pytest.mark.parametrize('inspect', params)
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow4(inspect, restful, temp_folder):
-
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
     f = (
@@ -119,3 +118,62 @@ def test_flow4(inspect, restful, temp_folder):
         f.index(docs)
 
     validate([1, 2, 3], expect=f.args.inspect.is_keep)
+
+
+class AddEvaluationExecutor(Executor):
+    @requests
+    def transform(self, docs, *args, **kwargs):
+        import time
+
+        time.sleep(0.5)
+        for doc in docs:
+            eval = doc.evaluations.add()
+            eval.value = 10.0
+
+
+@pytest.mark.repeat(5)
+@pytest.mark.parametrize('restful', [False, True])
+def test_flow_returned_collect(restful, mocker):
+    # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` pod
+    # use an specific executor.
+
+    def validate_func(resp):
+        for doc in resp.data.docs:
+            assert len(doc.evaluations) == 1
+
+    f = (
+        Flow(restful=restful, inspect='COLLECT')
+        .add()
+        .inspect(
+            uses=AddEvaluationExecutor,
+        )
+    )
+
+    mock = mocker.Mock()
+    with f:
+        f.index(inputs=docs, on_done=mock)
+
+    validate_callback(mock, validate_func)
+
+
+@pytest.mark.repeat(5)
+@pytest.mark.parametrize('inspect', ['HANG', 'REMOVE'])
+@pytest.mark.parametrize('restful', [False, True])
+def test_flow_not_returned(inspect, restful, mocker):
+    def validate_func(resp):
+        for doc in resp.data.docs:
+            assert len(doc.evaluations) == 0
+
+    f = (
+        Flow(restful=restful, inspect=inspect)
+        .add()
+        .inspect(
+            uses=AddEvaluationExecutor,
+        )
+    )
+
+    mock = mocker.Mock()
+    with f:
+        f.index(inputs=docs, on_done=mock)
+
+    validate_callback(mock, validate_func)
