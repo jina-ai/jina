@@ -10,7 +10,7 @@ from jina import Executor, __default_endpoint__
 from jina import Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
-from jina.executors.decorators import requests, batching
+from jina.executors.decorators import requests
 from jina.helper import (
     cached_property,
     convert_tuple_to_list,
@@ -18,7 +18,8 @@ from jina.helper import (
     is_yaml_filepath,
     touch_dir,
     random_port,
-    find_request_binding, dunder_get,
+    find_request_binding,
+    dunder_get,
 )
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
@@ -293,7 +294,6 @@ def test_random_port_max_failures_for_tests_only(config_few_ports):
 
 
 class MyDummyExecutor(Executor):
-    @batching
     @requests
     def foo(self, **kwargs):
         pass
@@ -306,7 +306,6 @@ class MyDummyExecutor(Executor):
     def bar2(self, **kwargs):
         pass
 
-    @batching
     def foo2(self):
         pass
 
