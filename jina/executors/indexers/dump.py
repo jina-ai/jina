@@ -7,6 +7,7 @@ import numpy as np
 from jina.logging import JinaLogger
 
 BYTE_PADDING = 4
+DUMP_DTYPE = np.float64
 
 logger = JinaLogger(__name__)
 
@@ -79,6 +80,8 @@ def _write_shard_files(
     vectors_fh: BinaryIO,
 ):
     id_, vec, meta = next(data)
+    # need to ensure compatibility to read time
+    vec = vec.astype(DUMP_DTYPE)
     vec_bytes = vec.tobytes()
     vectors_fh.write(len(vec_bytes).to_bytes(BYTE_PADDING, sys.byteorder) + vec_bytes)
     metas_fh.write(len(meta).to_bytes(BYTE_PADDING, sys.byteorder) + meta)
@@ -127,7 +130,7 @@ def _vecs_gen(path: str):
             if next_size:
                 vec = np.frombuffer(
                     vectors_fh.read(next_size),
-                    dtype=np.float64,
+                    dtype=DUMP_DTYPE,
                 )
                 yield vec
             else:
