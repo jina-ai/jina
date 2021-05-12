@@ -36,3 +36,8 @@ class ControlMessage(Message):
             None, req, pod_name=pod_name, identity=identity, *args, **kwargs
         )
         req.request_type = 'control'
+        args = kwargs.get('args', None)
+        if args:
+            req.args = args
+
+        req.targets.extend([pod_name])

@@ -9,9 +9,9 @@ from . import (
     FlatRecursiveMixin,
     ContextAwareRecursiveMixin,
 )
+from ..enums import EmbeddingClsType
 from ..types.document import Document
 from ..types.score import NamedScore
-from ..enums import EmbeddingClsType
 
 if False:
     from ..types.arrays import DocumentArray

@@ -1,0 +1,5 @@
+jtype: Flow
+version: '1'
+pods:
+  - name: trainer
+    uses: yaml/train.yml

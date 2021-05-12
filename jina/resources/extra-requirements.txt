@@ -34,7 +34,7 @@ onnx:                       framework, py37
 onnxruntime:                framework, py37
 Pillow:                     cv, cicd, multimodal
 annoy>=1.9.5:               index
-sklearn:                    numeric
+sklearn:                    numeric, cicd
 plyvel:                     index
 jieba:                      nlp
 lz4<3.1.2:                  devel, cicd, perf, network
@@ -60,6 +60,7 @@ pytest-cov:                 test
 pytest-repeat:              test
 pytest-asyncio:             test
 pytest-xprocess:            test
+pytest-reraise:             test
 flaky:                      test
 mock:                       test
 requests:                   http, devel, cicd, daemon

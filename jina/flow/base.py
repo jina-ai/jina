@@ -939,7 +939,19 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
-                for k, v in p.peas_args.items():
+                args = getattr(p, 'peas_args', None)
+                if args is None:
+                    args = getattr(p, 'replicas_args', None)
+                if args is None:
+                    raise ValueError(
+                        f'could not find "peas_args" or "replicas_args" on {p}'
+                    )
+                values = None
+                if isinstance(args, dict):
+                    values = args.values()
+                elif isinstance(args, list):
+                    values = args
+                for v in values:
                     if v and isinstance(v, argparse.Namespace):
                         v.workspace_id = value
                     if v and isinstance(v, List):
@@ -971,28 +983,28 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def dump(self, pod_name, path: str, shards: int, timeout=-1):
-        """Emit a Dump request to a specific Pod
-
-        :param shards: the nr of shards in the dump
-        :param path: the path to which to dump
-        :param pod_name: the name of the pod
-        :param timeout: time to wait (seconds)
+    def rolling_update(self, pod_name: str, dump_path: Optional[str] = None):
         """
-        pod = self._pod_nodes[pod_name]
-        pod.dump(path, shards, timeout)
+        Reload Pods sequentially - only used for compound pods.
 
-    def rolling_update(self, pod_name):
-        """
-        Update pods one after another - only used for compound pods.
-
+        :param dump_path: the path from which to read the dump data
         :param pod_name: pod to update
         """
 
         compound_pod = self._pod_nodes[pod_name]
         if isinstance(compound_pod, CompoundPod):
-            compound_pod.rolling_update()
+            compound_pod.rolling_update(dump_path)
         else:
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
             )
+
+    def dump(self, pod_name: str, dump_path: str, shards: int, timeout=-1):
+        """Emit a Dump request to a specific Pod
+        :param shards: the nr of shards in the dump
+        :param dump_path: the path to which to dump
+        :param pod_name: the name of the pod
+        :param timeout: time to wait (seconds)
+        """
+        pod: BasePod = self._pod_nodes[pod_name]
+        pod.dump(pod_name, dump_path, shards, timeout)

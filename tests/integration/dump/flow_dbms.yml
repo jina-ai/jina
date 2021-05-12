@@ -1,5 +1,7 @@
 jtype: Flow
 version: '1'
+with:
+  restful: False
 pods:
   - name: indexer_dbms
     uses: indexer_dbms.yml

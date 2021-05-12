@@ -25,4 +25,4 @@ requests:
         with:
           executor: kvidx
           is_update: True
-          traversal_paths: ['r']
+          traversal_paths: ['m']

@@ -86,23 +86,51 @@ class ControlReqDriver(BaseControlDriver):
         elif self.req.command == 'CANCEL':
             pass
         elif self.req.command == 'DUMP':
-            self.logger.warning(
-                'DUMP command cannot be processed by ControlReqDriver. Use DumpDriver'
-            )
+            self._dump()
         elif self.req.command == 'RELOAD':
-            if self.req.targets and self.runtime.__class__.__name__ == 'ZEDRuntime':
-                patterns = self.req.targets
-                if isinstance(patterns, str):
-                    patterns = [patterns]
-                for p in patterns:
-                    if re.match(p, self.runtime.name):
-                        self.logger.info(
-                            f'reloading the Executor `{self.runtime._executor.name}` in `{self.runtime.name}`'
-                        )
-                        self.runtime._load_executor()
-                        break
+            self._reload()
+        elif self.req.command == 'ACTIVATE':
+            # TODO (Joan): This is a hack, but I checked in devel-2.0 branch, this _handle_control_req will be moved into the `ZedRuntime` so this code
+            # aligns very well with that view
+            self.runtime._zmqlet._send_idle_to_router()
+        elif self.req.command == 'DEACTIVATE':
+            # TODO (Joan): This is a hack, but I checked in devel-2.0 branch, this _handle_control_req will be moved into the `ZedRuntime` so this code
+            # aligns very well with that view
+            self.runtime._zmqlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(f'don\'t know how to handle {self.req.command}')
+
+    def _reload(self):
+        # TODO should this be removed, since we now have proper rolling update?
+        if self.req.targets and self.runtime.__class__.__name__ == 'ZEDRuntime':
+            patterns = self.req.targets
+            if isinstance(patterns, str):
+                patterns = [patterns]
+            for p in patterns:
+                if re.match(p, self.runtime.name):
+                    self.logger.info(
+                        f'reloading the Executor `{self.runtime._executor.name}` in `{self.runtime.name}`'
+                    )
+                    self.runtime._load_executor()
+                    break
+
+    def _dump(self):
+        # TODO(Cristian): this is a smell, since we are accessing the private _executor
+        # to be reconsidered after the Executor API refactoring
+        if self.req.targets and self.runtime.__class__.__name__ == 'ZEDRuntime':
+            patterns = self.req.targets
+            if isinstance(patterns, str):
+                patterns = [patterns]
+            for p in patterns:
+                if re.match(p, self.runtime.name):
+                    self.logger.info(
+                        f'Dumping from Executor `{self.runtime._executor.name}` in `{self.runtime.name}`'
+                    )
+                    req_dict = dict(self.req.args)
+                    self.runtime._executor.dump(
+                        req_dict.get('dump_path'), int(req_dict.get('shards'))
+                    )
+                    break
 
 
 class RouteDriver(ControlReqDriver):
@@ -179,6 +207,9 @@ class RouteDriver(ControlReqDriver):
         elif self.req.command == 'CANCEL':
             if self.envelope.receiver_id in self.idle_dealer_ids:
                 self.idle_dealer_ids.remove(self.envelope.receiver_id)
+            self.logger.debug(
+                f'{self.envelope.receiver_id} is cancelled, now I know these idle peas {self.idle_dealer_ids}'
+            )
         else:
             super().__call__(*args, **kwargs)
 
