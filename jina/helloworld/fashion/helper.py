@@ -3,6 +3,7 @@ import os
 import random
 import urllib.request
 import webbrowser
+from collections import defaultdict
 
 import numpy as np
 
@@ -13,6 +14,33 @@ from jina.logging.profile import ProgressBar
 
 result_html = []
 top_k = 0
+num_docs_evaluated = 0
+evaluation_value = defaultdict(float)
+
+
+def _get_groundtruths(target, pseudo_match=True):
+    # group doc_ids by their labels
+    a = np.squeeze(target['index-labels']['data'])
+    a = np.stack([a, np.arange(len(a))], axis=1)
+    a = a[a[:, 0].argsort()]
+    lbl_group = np.split(a[:, 1], np.unique(a[:, 0], return_index=True)[1][1:])
+
+    # each label has one groundtruth, i.e. all docs that have the same label are considered as matches
+    groundtruths = {lbl: Document() for lbl in range(10)}
+    for lbl, doc_ids in enumerate(lbl_group):
+        if not pseudo_match:
+            # full-match, each doc has 6K matches
+            for doc_id in doc_ids:
+                match = Document()
+                match.tags['id'] = int(doc_id)
+                groundtruths[lbl].matches.append(match)
+        else:
+            # pseudo-match, each doc has only one match, but this match's id is a list of 6k elements
+            match = Document()
+            match.tags['id'] = doc_ids.tolist()
+            groundtruths[lbl].matches.append(match)
+
+    return groundtruths
 
 
 def index_generator(num_docs: int, target: dict):
@@ -38,10 +66,17 @@ def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
     :param with_groundtruth: True if want to include labels into query data
     :yields: query data
     """
+    gts = _get_groundtruths(target)
     for _ in range(num_docs):
         num_data = len(target['query-labels']['data'])
         idx = random.randint(0, num_data - 1)
-        yield Document(content=(target['query']['data'][idx]))
+        d = Document(content=(target['query']['data'][idx]))
+
+        if with_groundtruth:
+            gt = gts[target['query-labels']['data'][idx][0]]
+            yield d, gt
+        else:
+            yield d
 
 
 def print_result(resp):
@@ -51,6 +86,7 @@ def print_result(resp):
     :param resp: returned response with data
     """
     global top_k
+    global evaluation_value
     for d in resp.docs:
         vi = d.uri
         result_html.append(f'<tr><td><img src="{vi}"/></td><td>')
@@ -59,6 +95,11 @@ def print_result(resp):
             kmi = kk.uri
             result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
         result_html.append('</td></tr>\n')
+
+        # update evaluation values
+        # as evaluator set to return running avg, here we can simply replace the value
+        for evaluation in d.evaluations:
+            evaluation_value[evaluation.op_name] = evaluation.value
 
 
 def write_html(html_path):
@@ -69,10 +110,19 @@ def write_html(html_path):
     """
 
     with open(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'demo.html')
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'demo.html')
     ) as fp, open(html_path, 'w') as fw:
         t = fp.read()
         t = t.replace('{% RESULT %}', '\n'.join(result_html))
+        t = t.replace(
+            '{% PRECISION_EVALUATION %}',
+            '{:.2f}%'.format(evaluation_value['Precision'] * 100.0),
+        )
+        t = t.replace(
+            '{% RECALL_EVALUATION %}',
+            '{:.2f}%'.format(evaluation_value['Recall'] * 100.0),
+        )
+        t = t.replace('{% TOP_K %}', str(top_k))
         fw.write(t)
 
     url_html_path = 'file://' + os.path.abspath(html_path)

@@ -22,7 +22,7 @@ def _get_run_args(print_args: bool = True):
             }
 
             with open(
-                    resource_filename('jina', '/'.join(('resources', 'jina.logo')))
+                resource_filename('jina', '/'.join(('resources', 'jina.logo')))
             ) as fp:
                 logo_str = fp.read()
             param_str = []
@@ -75,7 +75,7 @@ def _is_latest_version(suppress_on_error=True):
             'https://api.jina.ai/latest', headers={'User-Agent': 'Mozilla/5.0'}
         )
         with urlopen(
-                req, timeout=1
+            req, timeout=1
         ) as resource:  # 'with' is important to close the resource after use
             latest_ver = json.load(resource)['version']
             latest_ver = parse_version(latest_ver)

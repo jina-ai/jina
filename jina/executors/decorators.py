@@ -90,9 +90,7 @@ def requests(
 
     :param func: the method to decorate
     :param on: the endpoint string, by convention starts with `/`
-    :return:
-
-    .. # noqa: DAR002
+    :return: decorated function
     """
     from .. import __default_endpoint__, __num_args_executor_func__
 

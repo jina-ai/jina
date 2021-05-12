@@ -4,6 +4,7 @@ repos:
   hooks:
   - id: darglint
     files: jina/
+    exclude: jina/helloworld/
     args:
     - --message-template={path}:{line} {msg_id} {msg}
     - -s=sphinx
@@ -14,6 +15,7 @@ repos:
   hooks:
   -   id: pydocstyle
       files: jina/
+      exclude: jina/helloworld/
       args:
       - --select=D101,D102,D103
 - repo: https://github.com/ambv/black

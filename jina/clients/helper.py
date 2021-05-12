@@ -16,7 +16,6 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
 
     :param resp: the :class:`Response` object
     :param stack_limit: traceback limit
-    :return:
     """
     from textwrap import fill
 

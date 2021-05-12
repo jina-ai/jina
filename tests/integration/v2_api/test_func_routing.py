@@ -143,3 +143,36 @@ def test_dealer_routing(mocker):
         )
 
     mock.assert_called()
+
+
+def test_target_peapod(mocker):
+    class Foo(Executor):
+        @requests(on='/hello')
+        def foo(self, **kwargs):
+            pass
+
+    class Bar(Executor):
+        @requests(on='/bye')
+        def bar(self, **kwargs):
+            pass
+
+    f = Flow().add(name='p0', uses=Foo).add(name='p1', uses=Bar)
+
+    with f:
+        success_mock = mocker.Mock()
+        fail_mock = mocker.Mock()
+        f.post(
+            '/hello',
+            target_peapod='p0',
+            inputs=Document(),
+            on_done=success_mock,
+            on_error=fail_mock,
+        )
+        success_mock.assert_called()
+        fail_mock.assert_not_called()
+
+        success_mock = mocker.Mock()
+        fail_mock = mocker.Mock()
+        f.post('/hello', inputs=Document(), on_done=success_mock, on_error=fail_mock)
+        success_mock.assert_not_called()
+        fail_mock.assert_called()

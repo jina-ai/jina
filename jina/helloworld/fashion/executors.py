@@ -8,7 +8,20 @@ from jina import Executor, DocumentArray, requests, Document
 class MyIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArray()
+        import os
+
+        if os.path.exists(self.save_path):
+            self._docs = DocumentArray.load(self.save_path)
+        else:
+            self._docs = DocumentArray()
+
+    @property
+    def save_path(self):
+        import os
+
+        if not os.path.exists(self.workspace):
+            os.makedirs(self.workspace)
+        return os.path.join(self.workspace, 'docs.json')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -16,6 +29,7 @@ class MyIndexer(Executor):
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
+
         a = np.stack(docs.get_attributes('embedding'))
         b = np.stack(self._docs.get_attributes('embedding'))
         q_emb = _ext_A(_norm(a))
@@ -28,9 +42,12 @@ class MyIndexer(Executor):
                 d.score.value = 1 - _dist
                 _q.matches.append(d)
 
+    def close(self) -> None:
+        self._docs.save(self.save_path)
+
     @staticmethod
     def _get_sorted_top_k(
-            dist: 'np.array', top_k: int
+        dist: 'np.array', top_k: int
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
@@ -72,8 +89,8 @@ def _get_ones(x, y):
 def _ext_A(A):
     nA, dim = A.shape
     A_ext = _get_ones(nA, dim * 3)
-    A_ext[:, dim: 2 * dim] = A
-    A_ext[:, 2 * dim:] = A ** 2
+    A_ext[:, dim : 2 * dim] = A
+    A_ext[:, 2 * dim :] = A ** 2
     return A_ext
 
 
@@ -81,7 +98,7 @@ def _ext_B(B):
     nB, dim = B.shape
     B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
-    B_ext[dim: 2 * dim] = -2.0 * B.T
+    B_ext[dim : 2 * dim] = -2.0 * B.T
     del B
     return B_ext
 
@@ -97,3 +114,58 @@ def _norm(A):
 
 def _cosine(A_norm_ext, B_norm_ext):
     return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
+
+
+class MyEvaluator(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.eval_at = 50
+        self.num_docs = 0
+        self.total_precision = 0
+        self.total_recall = 0
+
+    @property
+    def avg_precision(self):
+        return self.total_precision / self.num_docs
+
+    @property
+    def avg_recall(self):
+        return self.total_recall / self.num_docs
+
+    def _precision(self, actual, desired):
+        if self.eval_at == 0:
+            return 0.0
+        actual_at_k = actual[: self.eval_at] if self.eval_at else actual
+        ret = len(set(actual_at_k).intersection(set(desired)))
+        sub = len(actual_at_k)
+        return ret / sub if sub != 0 else 0.0
+
+    def _recall(self, actual, desired):
+        if self.eval_at == 0:
+            return 0.0
+        actual_at_k = actual[: self.eval_at] if self.eval_at else actual
+        ret = len(set(actual_at_k).intersection(set(desired)))
+        return ret / len(desired)
+
+    @requests
+    def _skip(self, **kwargs):
+        pass
+
+    @requests(on='/search')
+    def evaluate(self, docs: 'DocumentArray', groundtruths: 'DocumentArray', **kwargs):
+        # reduce dimension to 50 by random orthogonal projection
+        if groundtruths:
+            for doc, groundtruth in zip(docs, groundtruths):
+                self.num_docs += 1
+                actual = [match.tags['id'] for match in doc.matches]
+                desired = groundtruth.matches[0].tags['id']  # pseudo_match
+                precision_score = doc.evaluations.add()
+                self.total_precision += self._precision(actual, desired)
+                self.total_recall += self._recall(actual, desired)
+                precision_score.value = self.avg_precision
+                precision_score.op_name = f'Precision'
+                doc.evaluations.append(precision_score)
+                recall_score = doc.evaluations.add()
+                recall_score.value = self.avg_recall
+                recall_score.op_name = f'Recall'
+                doc.evaluations.append(recall_score)

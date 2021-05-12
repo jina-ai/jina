@@ -40,7 +40,7 @@ When not given, then the default naming strategy will apply.
         '--workspace',
         type=str,
         help='The working directory for any IO operations in this object. '
-             'If not set, then derive from its parent `workspace`.',
+        'If not set, then derive from its parent `workspace`.',
     )
 
     gp.add_argument(

@@ -77,7 +77,7 @@ class BaseClient:
             raise BadClientInput from ex
 
     def _get_requests(
-            self, **kwargs
+        self, **kwargs
     ) -> Union[Iterator['Request'], AsyncIterator['Request']]:
         """
         Get request in generator.
@@ -126,22 +126,22 @@ class BaseClient:
             self._inputs = bytes_gen
 
     async def _get_results(
-            self,
-            inputs: InputType,
-            on_done: Callable,
-            on_error: Callable = None,
-            on_always: Callable = None,
-            **kwargs,
+        self,
+        inputs: InputType,
+        on_done: Callable,
+        on_error: Callable = None,
+        on_always: Callable = None,
+        **kwargs,
     ):
         try:
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
             async with grpc.aio.insecure_channel(
-                    f'{self.args.host}:{self.args.port_expose}',
-                    options=[
-                        ('grpc.max_send_message_length', -1),
-                        ('grpc.max_receive_message_length', -1),
-                    ],
+                f'{self.args.host}:{self.args.port_expose}',
+                options=[
+                    ('grpc.max_send_message_length', -1),
+                    ('grpc.max_receive_message_length', -1),
+                ],
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.success(
@@ -179,8 +179,8 @@ class BaseClient:
                 self.logger.error(f'{msg}\ninternal error on the server side')
                 raise rpc_ex
             elif (
-                    my_code == grpc.StatusCode.UNKNOWN
-                    and 'asyncio.exceptions.TimeoutError' in my_details
+                my_code == grpc.StatusCode.UNKNOWN
+                and 'asyncio.exceptions.TimeoutError' in my_details
             ):
                 raise BadClientInput(
                     f'{msg}\n'

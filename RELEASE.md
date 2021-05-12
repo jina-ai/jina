@@ -5,24 +5,12 @@ Jina is shipped from two package management systems, PyPi and Docker Hub. This a
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [Release cycle and versioning](#release-cycle-and-versioning)
 - [PyPi package versioning](#pypi-package-versioning)
 - [Docker image versioning](#docker-image-versioning)
 - [Manual Release Entrypoint](#manual-release-entrypoint)
 - [Breaking changes](#breaking-changes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Release cycle and versioning
-Jina products are developed continuously by the community and core team. Updates are grouped and released at regular intervals to align with software development best practices.
-
-Jina Core, Box, and Dashboard all follow a staged release cycle. Jina Hub images are constantly released as Jina Core is updated.
-
-Jina Core, Box, and Dashboard all follow a form of numbered versioning. The version number of the product is a three-part value X.Y.Z where X, Y, and Z are the major, minor, and patch components respectively.
-
--   Patch release (X.Y.Z -> X.Y.(Z+1)): Contain bug fixes, new features and breaking changes. Released weekly on a Wednesday morning CET.
--   Minor release (X.Y.Z -> X.Y.(Z+1)): Contain bug fixes, new features and breaking changes. Released monthly on the first Wednesday of the month CET. This release is more QA tested and considered more stable than a patch release.
--   Major release (X.Y.Z -> (X+1).0.0): Are released based on the development cycle of the Jina company. There is no set scheduled for when these will occur.
 
 
 ## PyPi package versioning
@@ -53,6 +41,17 @@ pip install --pre jina
 ```
 
 ### Version epochs
+
+
+#### Release cycle and versioning
+Jina is developed continuously by the community and core team. Updates are grouped and released at regular intervals to align with software development best practices.
+
+Jina follows a form of numbered versioning. The version number of the product is a three-part value `x.y.z` where `x`, `y`, and `z` are the major, minor, and patch components respectively.
+
+-   Patch release (`x.y.z` -> `x.y.(z+1)`): Contain bug fixes, new features and breaking changes. Released weekly on a Wednesday morning CET.
+-   Minor release (`x.y.z -> x.(y+1).0`): Contain bug fixes, new features and breaking changes. Released monthly on the first Wednesday of the month CET. This release is more QA tested and considered more stable than a patch release.
+-   Major release (`x.y.z -> (x+1).0.0`): Are released based on the development cycle of the Jina company. There is no set scheduled for when these will occur.
+
 
 The following example shows how Jina is released from 0.9 to 0.9.2 according to the schema we defined above.
 

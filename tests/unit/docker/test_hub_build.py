@@ -91,6 +91,23 @@ def test_hub_build_uses():
     HubIO(args).build()
 
 
+@pytest.mark.timeout(360)
+def test_hub_build_uses():
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--raise-error']
+    )
+    assert HubIO(args).build()['is_build_success']
+    # build again it shall not fail
+    assert HubIO(args).build()['is_build_success']
+
+    args = set_hub_build_parser().parse_args(
+        [os.path.join(cur_dir, 'hub-mwu'), '--test-uses', '--daemon', '--raise-error']
+    )
+    assert HubIO(args).build()['is_build_success']
+    # build again it shall not fail
+    assert HubIO(args).build()['is_build_success']
+
+
 def test_hub_build_failures():
     for j in [
         'bad-dockerfile',
@@ -153,6 +170,15 @@ def test_jina_version_freeze_no_jina_dependency(requirements, tmpdir):
     with open(requirements_file, 'r') as fp:
         requirements = pkg_resources.parse_requirements(fp)
         assert len(list(filter(lambda x: 'jina' in str(x), requirements))) == 0
+
+
+@pytest.mark.parametrize(
+    'requirements', ['git+https://github.com/openai/CLIP.git'], indirect=True
+)
+def test_jina_version_freeze_no_jina_dependency_git_no_raise(requirements, tmpdir):
+    args = set_hub_build_parser().parse_args([str(tmpdir)])
+    hubio = HubIO(args)
+    hubio._freeze_jina_version()
 
 
 def test_labels():
