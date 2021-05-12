@@ -7,6 +7,8 @@ from ..helper import run_async
 
 
 class PostMixin:
+    """The Post Mixin class for Client and Flow """
+
     def post(
         self,
         on: str,
@@ -61,6 +63,8 @@ class PostMixin:
 
 
 class AsyncPostMixin:
+    """The Async Post Mixin class for AsyncClient and AsyncFlow """
+
     async def post(
         self,
         on: str,
@@ -82,7 +86,7 @@ class AsyncPostMixin:
         :param parameters: the kwargs that will be sent to the executor
         :param target_peapod: a regex string represent the certain peas/pods request targeted
         :param kwargs: additional parameters
-        :return: None
+        :yield: Response object
         """
         async for r in self.client._get_results(
             inputs=inputs,

@@ -12,7 +12,9 @@ for changed_file in $CHANGED_FILES; do
   case ${changed_file} in
     tests/* | \
     jina/proto/jina_pb2.py | \
-    jina/proto/jina_pb2_grpc.py)
+    jina/proto/jina_pb2_grpc.py | \
+    *.md
+    *.yml)
     ;;*)
       echo keeping ${changed_file}
       arrVar+=(${changed_file})
