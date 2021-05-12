@@ -148,7 +148,9 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
 
     @cached_property
     def _docs_map(self):
-        """Build a doc_id to doc mapping so one can later index a Document using doc_id as string key."""
+        """Returns a doc_id to doc mapping so one can later index a Document using doc_id as string key.
+
+        .. # noqa: DAR201"""
         return {d.id: d for d in self._docs_proto}
 
     def sort(self, *args, **kwargs):
@@ -253,6 +255,8 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         """Load array elements from a JSON file.
 
         :param file: File or filename to which the data is saved.
+
+        :return: a DocumentArray object
         """
 
         if hasattr(file, 'read'):

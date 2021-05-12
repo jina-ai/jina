@@ -1,5 +1,3 @@
-
-
 if False:
     from argparse import Namespace
 
@@ -17,6 +15,10 @@ def pod(args: 'Namespace'):
             p.join()
     except KeyboardInterrupt:
         pass
+
+
+# alias
+executor = pod
 
 
 def pea(args: 'Namespace'):
@@ -112,7 +114,6 @@ def export_api(args: 'Namespace'):
             with open(f_name, 'w', encoding='utf8') as fp:
                 json.dump(dump_api, fp, sort_keys=True)
             default_logger.info(f'API is exported to {f_name}')
-
 
 
 def hello(args: 'Namespace'):

@@ -7,7 +7,9 @@ class DocsPropertyMixin:
 
     @property
     def docs(self) -> 'DocumentArray':
-        """Get the :class: `DocumentArray` with sequence `body.docs` as content."""
+        """Get the :class: `DocumentArray` with sequence `body.docs` as content.
+
+        .. # noqa: DAR201"""
         self.is_used = True
         return DocumentArray(self.body.docs)
 
@@ -17,7 +19,9 @@ class GroundtruthPropertyMixin:
 
     @property
     def groundtruths(self) -> 'DocumentArray':
-        """Get the groundtruths in :class: `DocumentArray` type."""
+        """Get the groundtruths in :class: `DocumentArray` type.
+
+        .. # noqa: DAR201"""
         self.is_used = True
         return DocumentArray(self.body.groundtruths)
 
@@ -28,7 +32,6 @@ class CommandMixin:
     @property
     def command(self) -> str:
         """Get the command.
-
 
         .. #noqa: DAR201"""
         self.is_used = True
