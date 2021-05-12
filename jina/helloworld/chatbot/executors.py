@@ -60,7 +60,7 @@ class MyTransformer(Executor):
         return embeddings.cpu().numpy()
 
     @requests
-    def encode(self, docs: 'DocumentArray', *args, **kwargs) -> 'np.ndarray':
+    def encode(self, docs: 'DocumentArray', *args, **kwargs):
         """
         # noqa: DAR101
         # noqa: DAR102
