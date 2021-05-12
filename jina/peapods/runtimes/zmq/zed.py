@@ -236,9 +236,6 @@ class ZEDRuntime(ZMQRuntime):
             self._zmqlet._send_idle_to_router()
         elif self.request.command == 'DEACTIVATE':
             self._zmqlet._send_cancel_to_router()
-        elif self.request.command == 'DUMP':
-            # TODO: rewrite dump logic here, perhaps ``self._executor.save()``
-            pass
         elif self.request.command == 'RELOAD':
             if self.request.targets:
                 patterns = self.request.targets
