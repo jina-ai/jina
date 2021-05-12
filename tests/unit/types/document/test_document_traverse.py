@@ -5,7 +5,6 @@ import pytest
 
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
-from jina.executors.decorators import batching
 from tests import random_docs
 
 # some random prime number for sanity check
@@ -85,18 +84,6 @@ def test_traverse_root_match_chunk(doc_req):
     assert len(ds) == 1 + num_docs + num_docs + num_docs * num_chunks_per_doc
 
 
-def test_batching_traverse(doc_req):
-    @batching(batch_size=num_docs, slice_on=0)
-    def foo(docs):
-        print(f'batch_size:{len(docs)}')
-        assert len(docs) == num_docs
-
-    ds = list(doc_req.docs.traverse(['c', 'm', 'cm']))
-    # under this contruction, num_doc is the common denominator
-
-    foo(ds)
-
-
 def test_traverse_flatten_embedding(doc_req):
     flattened_results = doc_req.docs.traverse_flatten(['r', 'c'])
     ds = np.stack(flattened_results.get_attributes('embedding'))
@@ -137,17 +124,6 @@ def test_traverse_flatten_root_match_chunk(doc_req):
         + num_matches_per_doc * num_docs
         + num_docs * num_chunks_per_doc * num_matches_per_chunk
     )
-
-
-def test_batching_flatten_traverse(doc_req):
-    @batching(batch_size=num_docs, slice_on=0)
-    def foo(docs):
-        print(f'batch_size:{len(docs)}')
-        assert len(docs) == num_docs
-
-    ds = list(doc_req.docs.traverse_flatten(['r', 'c', 'm', 'cm']))
-    # under this contruction, num_doc is the common denominator
-    foo(ds)
 
 
 def test_traverse_flattened_per_path_embedding(doc_req):
