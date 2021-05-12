@@ -146,8 +146,8 @@ class MyEvaluator(Executor):
         ret = len(set(actual_at_k).intersection(set(desired)))
         return ret / len(desired)
 
-    @requests(on='/index')
-    def skip(self, **kwargs):
+    @requests
+    def _skip(self, **kwargs):
         pass
 
     @requests(on='/search')
