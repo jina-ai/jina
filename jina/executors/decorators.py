@@ -80,7 +80,7 @@ def requests(
         Optional[DocumentArray],
     ] = None,
     *,
-    on: Union[str, Sequence[str], None] = None,
+    on: Optional[Union[str, Sequence[str]]] = None,
 ):
     """
     `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
