@@ -395,7 +395,11 @@ class ZEDRuntime(ZMQRuntime):
             return result
 
     def _get_docs_matrix(self, field) -> List['DocumentArray']:
-        """ DocumentArray from (multiple) requests"""
+        """DocumentArray from (multiple) requests
+
+        :param field: either `docs` or `groundtruths`
+
+        .. # noqa: DAR201"""
         if self.expect_parts > 1:
             result = [getattr(r, field) for r in reversed(self.partial_requests)]
         else:
@@ -409,22 +413,30 @@ class ZEDRuntime(ZMQRuntime):
 
     @property
     def docs(self) -> 'DocumentArray':
-        """Return a DocumentArray by concatenate (multiple) ``requests.docs``"""
+        """Return a DocumentArray by concatenate (multiple) ``requests.docs``
+
+        .. # noqa: DAR201"""
         return self._get_docs('docs')
 
     @property
     def groundtruths(self) -> 'DocumentArray':
-        """Return a DocumentArray by concatenate (multiple) ``requests.groundtruths``"""
+        """Return a DocumentArray by concatenate (multiple) ``requests.groundtruths``
+
+        .. # noqa: DAR201"""
         return self._get_docs('groundtruths')
 
     @property
     def docs_matrix(self) -> List['DocumentArray']:
-        """Return a list of DocumentArray from multiple requests"""
+        """Return a list of DocumentArray from multiple requests
+
+        .. # noqa: DAR201"""
         return self._get_docs_matrix('docs')
 
     @property
     def groundtruths_matrix(self) -> List['DocumentArray']:
-        """A flattened DocumentArray from (multiple) requests"""
+        """A flattened DocumentArray from (multiple) requests
+
+        .. # noqa: DAR201"""
         return self._get_docs_matrix('groundtruths')
 
     @property

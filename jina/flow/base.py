@@ -609,7 +609,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def client(self, **kwargs) -> 'Client':
+    def client(self) -> 'Client':
+        """Return a :class:`Client` object attach to this Flow.
+
+        .. # noqa: DAR201"""
+        kwargs = {}
         kwargs.update(self._common_kwargs)
         if 'port_expose' not in kwargs:
             kwargs['port_expose'] = self.port_expose
@@ -920,7 +924,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     def workspace(self) -> str:
-        """Return the workspace path of the flow. """
+        """Return the workspace path of the flow.
+
+        .. # noqa: DAR201"""
         return os.path.abspath(self.args.workspace or './')
 
     @property
