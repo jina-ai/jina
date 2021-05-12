@@ -34,7 +34,7 @@ tips to help you write clean & beautiful code.
         ...
    ```
 
-1. Use `@requests` without specifying `on=` if your function mean to work on all requests.
+1. Use `@requests` without specifying `on=` if your function mean to work on all requests. You can use it for catching all requests that are not for this Executor.
 
    ✅ Do:
    ```python
@@ -60,7 +60,7 @@ tips to help you write clean & beautiful code.
         pass
    ```
 
-1. Fold unnecessary arguments into `**kwargs`.
+1. Fold unnecessary arguments into `**kwargs`, only get what you need.
 
    ✅ Do:
    ```python
