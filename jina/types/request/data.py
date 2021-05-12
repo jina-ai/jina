@@ -7,10 +7,16 @@ class DataRequest(Request, DocsPropertyMixin, GroundtruthPropertyMixin):
 
     @property
     def endpoint(self) -> str:
-        """Get the command."""
+        """Get the endpoint.
+
+        # noqa: DAR201"""
         return self.body.endpoint
 
     @endpoint.setter
     def endpoint(self, val: str):
-        """Get the command."""
+        """Set the endpoint.
+
+        # noqa: DAR201
+        # noqa: DAR101
+        """
         self.body.endpoint = val

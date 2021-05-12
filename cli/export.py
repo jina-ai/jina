@@ -4,6 +4,7 @@ from typing import List
 
 
 def api_to_dict():
+    """Convert Jina API to a dict """
     from jina import __version__
     from jina.parsers import get_main_parser
 

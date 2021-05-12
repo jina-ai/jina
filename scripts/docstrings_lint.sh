@@ -11,6 +11,7 @@ arrVar=()
 for changed_file in $CHANGED_FILES; do
   case ${changed_file} in
     tests/* | \
+    jina/helloworld | \
     jina/proto/jina_pb2.py | \
     jina/proto/jina_pb2_grpc.py)
     ;;*)

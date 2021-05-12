@@ -24,10 +24,6 @@ class MyTransformer(Executor):
         *args,
         **kwargs,
     ):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        """
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = (
@@ -61,11 +57,6 @@ class MyTransformer(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', *args, **kwargs):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR201
-        """
         import torch
 
         with torch.no_grad():
@@ -98,12 +89,7 @@ class MyTransformer(Executor):
 class MyIndexer(Executor):
     """Simple indexer class """
 
-    # noqa: DAR101, DAR102
     def __init__(self, **kwargs):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        """
         super().__init__(**kwargs)
         self._docs = DocumentArray()
         Path(self.workspace).mkdir(parents=True, exist_ok=True)
@@ -112,26 +98,14 @@ class MyIndexer(Executor):
             self._docs = DocumentArray.load(self.filename)
 
     def close(self) -> None:
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        """
         self._docs.save(self.filename)
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        """
         self._docs.extend(docs)
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', **kwargs):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        """
         a = np.stack(docs.get_attributes('embedding'))
         b = np.stack(self._docs.get_attributes('embedding'))
         q_emb = _ext_A(_norm(a))
