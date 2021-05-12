@@ -108,11 +108,15 @@ class LegacyParser(VersionedYAMLParser):
         """
         # note: we only save non-default property for the sake of clarity
         _defaults = get_default_metas()
-        p = {
-            k: getattr(data.metas, k)
-            for k, v in _defaults.items()
-            if getattr(data.metas, k) != v
-        } if hasattr(data, 'metas') else {}
+        p = (
+            {
+                k: getattr(data.metas, k)
+                for k, v in _defaults.items()
+                if getattr(data.metas, k) != v
+            }
+            if hasattr(data, 'metas')
+            else {}
+        )
         a = {k: v for k, v in data._init_kwargs_dict.items() if k not in _defaults}
         r = {}
         if a:

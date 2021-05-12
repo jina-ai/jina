@@ -17,11 +17,11 @@ class ExecutorType(type(JAMLCompatible), type):
     """The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""
 
     def __new__(cls, *args, **kwargs):
-        """Create a new instance of an `ExecutorType`
+        """
+        # noqa: DAR101
+        # noqa: DAR102
 
-        :param args: Additional arguments.
-        :param kwargs: Additional key word arguments.
-        :return: an instance of the class
+        :return: Executor class
         """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
@@ -180,11 +180,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         return tmp
 
     def __call__(self, req_endpoint: str, **kwargs):
-        """Main entrypoint for an `executor`
-
-        :param req_endpoint: The endpoint requested to be called
-        :param kwargs: Additional key word arguments.
-        :return: None
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
         """
         if getattr(self, 'requests', {}):
             if req_endpoint in self.requests:
@@ -207,7 +206,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-
         if self.metas.parent_workspace is not None:
             replica_id = getattr(self.metas, 'replica_id', None)
             pea_id = getattr(self.metas, 'pea_id', None)

@@ -27,6 +27,7 @@ class MWUUpdater(Executor):
     def close(self) -> None:
         import pickle
 
+        os.makedirs(self.workspace, exist_ok=True)
         bin_path = os.path.join(self.workspace, f'{self.metas.name}.bin')
         with open(bin_path, 'wb') as f:
             pickle.dump(self._greetings, f)

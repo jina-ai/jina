@@ -1,6 +1,6 @@
 def get_full_schema() -> dict:
-    """
-    Return the full schema for Jina core as a dict.
+    """Get full schema
+    :return: the full schema for Jina core as a dict.
     """
     from .. import __version__
     from ..importer import IMPORTED
