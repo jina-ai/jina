@@ -1,7 +1,8 @@
 import pytest
 
+from jina.enums import SchedulerType, SocketType, PollingType
 from jina.parsers import set_pod_parser
-from jina.peapods import CompoundPod
+from jina.peapods import CompoundPod, Pod
 
 
 @pytest.fixture(scope='function')
@@ -215,3 +216,69 @@ def test_host_list_matching(num_hosts, used_hosts):
     assert replica_args[0].peas_hosts == used_hosts[0]
     assert replica_args[1].peas_hosts == used_hosts[1]
     assert replica_args[2].peas_hosts == used_hosts[2]
+
+
+@pytest.mark.parametrize(
+    'polling, parallel, pea_scheduling, pea_socket_in, pea_socket_out',
+    (
+        (
+            'all',
+            1,
+            SchedulerType.LOAD_BALANCE,
+            SocketType.DEALER_CONNECT,
+            SocketType.PUSH_CONNECT,
+        ),
+        (
+            'all',
+            2,
+            SchedulerType.LOAD_BALANCE,
+            SocketType.SUB_CONNECT,
+            SocketType.PUSH_CONNECT,
+        ),
+        (
+            'any',
+            2,
+            SchedulerType.LOAD_BALANCE,
+            SocketType.SUB_CONNECT,
+            SocketType.PUSH_CONNECT,
+        ),
+    ),
+)
+def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_out):
+    polling_type = PollingType.ALL if polling == 'all' else PollingType.ANY
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            'pod',
+            '--parallel',
+            f'{parallel}',
+            '--polling',
+            f'{polling}',
+            '--replicas',
+            '3',
+        ]
+    )
+    with CompoundPod(args) as compound_pod:
+        head = compound_pod.head_args
+        assert head.socket_in == SocketType.PULL_BIND
+        assert head.socket_out == SocketType.ROUTER_BIND
+        assert head.scheduling == SchedulerType.LOAD_BALANCE
+        tail = compound_pod.tail_args
+        assert tail.socket_in == SocketType.PULL_BIND
+        assert tail.socket_out == SocketType.PUSH_BIND
+        assert tail.scheduling == SchedulerType.LOAD_BALANCE
+        replicas = compound_pod.replicas
+        for replica in replicas:
+            if parallel > 1:
+                assert len(replica.peas_args['peas']) == parallel
+                for pea in replica.peas_args['peas']:
+                    assert pea.polling == PollingType.ALL
+                    assert pea.socket_in == pea_socket_in
+                    assert pea.socket_out == pea_socket_out
+                    assert pea.scheduling == pea_scheduling
+            else:
+                assert len(replica.peas) == 1
+                assert replica.peas[0].args.polling == polling_type
+                assert replica.peas[0].args.socket_in == pea_socket_in
+                assert replica.peas[0].args.socket_out == pea_socket_out
+                assert replica.peas[0].args.scheduling == pea_scheduling
