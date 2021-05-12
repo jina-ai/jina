@@ -52,7 +52,7 @@
 
 </details>
 
-Jina is geared towards building search systems for any kind of data, including [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search), [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search) and [many more](https://github.com/jina-ai/examples). With the modular design & multi-layer abstraction, you can leverage the efficient patterns to build the system by parts, or chaining them into a [Flow](https://101.jina.ai/#Flow) for an end-to-end experience.
+Jina is geared towards building search systems for any kind of data, including text, image, audio, video, PDF etc. Powered by deep learning and cloud-native techniques, you can leverage Jina to build a multimedia search system in minutes.
 
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
@@ -61,21 +61,19 @@ Jina is geared towards building search systems for any kind of data, including [
 
 🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with fragmented, multi-vendor, generic legacy tools.
 
-🧠 **First-class AI models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
-
 🌩️ **Fast & cloud-ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 
 ## Installation
 
 ```sh
-pip install -U jina
+pip install --pre jina
 ```
 
 #### via Docker
 
 ```sh
-docker run jinaai/jina:latest
+docker run jinaai/jina:2.0.0rc
 ```
 
 <details>
@@ -136,10 +134,30 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 
 ## Get Started
 
+Document, Executor, Flow are three fundamental concepts in Jina.
 
-### Cookbook
+- **Document** is the basic data type in Jina;
+- **Executor** is how Jina processes Documents;
+- **Flow** is how Jina streamlines and distributes Executors.
 
-[Bits, pieces and examples of Jina code](./.github/pages/snippets.md)
+Copy-paste the minimum example below and run it:
+
+```python
+from jina import Executor, Flow, Document, requests
+
+
+class MyExecutor(Executor):
+
+  @requests
+  def foo(self, docs, **kwargs):
+    print(docs[0])
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+  f.post(on='/random_work', inputs=Document(), on_done=print)
+```
 
 ### Run Quick Demo
 
@@ -147,66 +165,13 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 - [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
 - [📰 Multimedia search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 
-### The Basics
-
-- [What is neural search, and how is it different to symbolic search?](https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html)
-- [Jina 101: Learn Jina's key components](https://docs.jina.ai/chapters/101/)
-- [Jina 102: Learn how Jina's components fit together](https://docs.jina.ai/chapters/102/)
-- [My First Jina App: Build your first simple app](https://docs.jina.ai/chapters/my_first_jina_app/)
-
-
-### Video Tutorials
-
-<table>
-  <tr>
-    <td width="33%">
-    <a href="https://youtu.be/zvXkQkqd2I8">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/basic-concept.png?raw=true"/>
-    </a>
-    </td>
-    <td width="33%">
-    <a href="https://youtu.be/qOD-6mihUzQ">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/speedup.png?raw=true"/>
-    </a>
-    </td>
-    <td width="33%">
-    <a href="https://youtu.be/B_nH8GCmBfc">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/multimodal-search.png?raw=true"/>
-    </a>
-    </td>
-  </tr>
-</table>
-
-
-### Examples ([View all](https://github.com/jina-ai/examples))
- 
-#### [📄 NLP Semantic Wikipedia Search with Transformers and DistilBERT](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences)
-&nbsp;&nbsp;&nbsp;&nbsp;Brand new to neural search? See a simple text-search example to understand how Jina works 
-
-#### [📄 Add Incremental Indexing to Wikipedia Search](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental)
-&nbsp;&nbsp;&nbsp;&nbsp;Index more effectively by adding incremental indexing to your Wikipedia search 
-
-#### [📄 Search Lyrics with Transformers and PyTorch](https://github.com/jina-ai/examples/tree/master/multires-lyrics-search)
-&nbsp;&nbsp;&nbsp;&nbsp;Get a better understanding of chunks by searching a lyrics database. Now with shiny front-end! 
-
-#### [🖼️ Google's Big Transfer Model in (Poké-)Production](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit)
-&nbsp;&nbsp;&nbsp;&nbsp;Use SOTA visual representation for searching Pokémon!
-
-#### [🎧 Search YouTube audio data with Vggish](https://github.com/jina-ai/examples/tree/master/audio-search)
-&nbsp;&nbsp;&nbsp;&nbsp;A demo of neural search for audio data based Vggish model. 
-
-#### [🎞️ Search Tumblr GIFs with KerasEncoder](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search)
-&nbsp;&nbsp;&nbsp;&nbsp;Use prefetching and sharding to improve the performance of your index and query Flow when searching animated GIFs.
-
-Check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
 
 ## Documentation & Support
 
-- Docs: https://docs.jina.ai
 - Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
 - Join our Engineering All Hands meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
-    - **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai)
+    - **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai))
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai).
 
 
