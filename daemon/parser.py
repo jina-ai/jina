@@ -27,9 +27,8 @@ def mixin_daemon_parser(parser):
 
 def get_main_parser():
     """
-    # noqa: DAR101
-    # noqa: DAR102
-    # noqa: DAR103
+    Return main parser
+    :return: main parser
     """
 
     parser = set_base_parser()
