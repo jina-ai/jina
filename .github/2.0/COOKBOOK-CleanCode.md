@@ -10,7 +10,7 @@ tips to help you write clean & beautiful code.
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-1. `from jina import Document, DocumentArray, Executor, Flow, requests` is all you need.
+1. `from jina import Document, DocumentArray, Executor, Flow, requests` is all you need. Copy-paste it as the first line of your code.
 
 1. No need to implement `__init__` if your `Executor` does not contain initial states.
    
