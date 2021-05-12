@@ -33,7 +33,6 @@ class CommandMixin:
     def command(self) -> str:
         """Get the command.
 
-
         .. #noqa: DAR201"""
         self.is_used = True
         return jina_pb2.RequestProto.ControlRequestProto.Command.Name(

@@ -13,7 +13,10 @@ class Client(PostMixin, BaseClient):
     """
 
     @property
-    def client(self):
+    def client(self) -> 'Client':
+        """Return the client object itself
+
+        .. # noqa: DAR201"""
         return self
 
 
