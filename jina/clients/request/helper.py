@@ -7,7 +7,7 @@ from ...excepts import BadDocType, BadRequestType
 
 
 def _new_data_request_from_batch(
-        _kwargs, batch, data_type, endpoint, target, parameters
+    _kwargs, batch, data_type, endpoint, target, parameters
 ):
     req = Request()
     req.request_type = 'data'
@@ -16,7 +16,7 @@ def _new_data_request_from_batch(
     if endpoint:
         req.header.exec_endpoint = endpoint
     if target:
-        req.header.peapod_target = target
+        req.header.target_peapod = target
 
     # add parameters field
     if parameters:

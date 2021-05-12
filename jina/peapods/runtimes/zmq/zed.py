@@ -170,6 +170,10 @@ class ZEDRuntime(ZMQRuntime):
             msg.envelope.status.code != jina_pb2.StatusProto.ERROR
             or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
+
+            if not re.match(self.request.header.target_peapod, self.name):
+                return self
+
             if self.request_type == 'DataRequest':
 
                 # migrated from the previously RouteDriver logic

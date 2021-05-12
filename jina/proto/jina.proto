@@ -165,9 +165,6 @@ message EnvelopeProto {
     // timeout in second until this message is dropped
     uint32 timeout = 4;
 
-    // the user defined header for request
-    HeaderProto header = 5;
-
     /**
      * Represents a the version information
      */
