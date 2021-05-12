@@ -270,7 +270,6 @@ def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_ou
         replicas = compound_pod.replicas
         for replica in replicas:
             if parallel > 1:
-                # assert replica.args.polling == polling_type
                 assert len(replica.peas_args['peas']) == parallel
                 for pea in replica.peas_args['peas']:
                     assert pea.polling == PollingType.ALL
