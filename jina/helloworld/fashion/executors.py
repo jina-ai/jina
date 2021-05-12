@@ -20,7 +20,7 @@ class MyIndexer(Executor):
         import os
 
         if not os.path.exists(self.workspace):
-            os.mkdir(self.workspace)
+            os.makedirs(self.workspace)
         return os.path.join(self.workspace, 'docs.json')
 
     @requests(on='/index')

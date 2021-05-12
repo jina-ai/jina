@@ -210,13 +210,16 @@ def test_container_volume(docker_image_built, tmpdir):
         name=random_name(),
         uses=f'docker://{img_name}',
         volumes=abc_path,
+        workspace='/abc',
         uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_upd.yml'),
     )
 
     with f:
         f.index(random_docs(10))
 
-    assert os.path.exists(os.path.join(abc_path, 'ext-mwu-encoder.bin'))
+    assert os.path.exists(
+        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
+    )
 
 
 def test_container_volume_arbitrary(docker_image_built, tmpdir):
@@ -228,12 +231,15 @@ def test_container_volume_arbitrary(docker_image_built, tmpdir):
         uses_internal=os.path.join(
             cur_dir, '../../../mwu-encoder/mwu_encoder_volume_change.yml'
         ),
+        workspace='/mapped/here/abc',
     )
 
     with f:
         f.index(random_docs(10))
 
-    assert os.path.exists(os.path.join(abc_path, 'ext-mwu-encoder.bin'))
+    assert os.path.exists(
+        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
+    )
 
 
 def test_container_ping(docker_image_built):
