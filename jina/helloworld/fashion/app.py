@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from jina import Flow
+from jina import Flow, Document
 from jina.helper import countdown
 from jina.parsers.helloworld import set_hw_parser
 
@@ -12,7 +12,7 @@ if __name__ == '__main__':
         download_data,
         index_generator,
         query_generator,
-        colored
+        colored,
     )
 else:
     from .helper import (
@@ -21,8 +21,20 @@ else:
         download_data,
         index_generator,
         query_generator,
-        colored
+        colored,
     )
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def search(query_document, on_done_callback, on_fail_callback, top_k):
+    with Flow.load_config('flow.yml') as f:
+        f.search(
+            inputs=[query_document],
+            on_done=on_done_callback,
+            on_fail=on_fail_callback,
+            parameters={'top_k': top_k},
+        )
 
 
 def hello_world(args):
@@ -68,6 +80,7 @@ def hello_world(args):
 
     # reduce the network load by using `fp16`, or even `uint8`
     os.environ['JINA_ARRAY_QUANT'] = 'fp16'
+    os.environ['HW_WORKDIR'] = args.workdir
 
     # now comes the real work
     # load index flow from a YAML file
