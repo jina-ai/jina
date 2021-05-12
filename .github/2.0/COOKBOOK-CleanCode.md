@@ -1,6 +1,6 @@
 # Temporary Cookbook on Clean Code
 
-Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be clean. Here are some
+Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
 tips to help you write clean & beautiful code.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -14,7 +14,7 @@ tips to help you write clean & beautiful code.
 
 1. No need to implement `__init__` if your `Executor` does not contain initial states.
    
-   Do:
+   ✅ Do:
    ```python
    from jina import Executor
    
@@ -22,7 +22,7 @@ tips to help you write clean & beautiful code.
       def foo(self, **kwargs):
         ...
    ```
-   Don't:
+   😔 Don't:
    ```python
    from jina import Executor
    
@@ -36,7 +36,7 @@ tips to help you write clean & beautiful code.
 
 1. Use `@requests` without specifying `on=` if your function mean to work on all requests.
 
-   Do:
+   ✅ Do:
    ```python
    from jina import Executor, requests
    
@@ -46,7 +46,7 @@ tips to help you write clean & beautiful code.
       def _skip_all(self, **kwargs):
         pass
    ```
-   Don't:
+   😔 Don't:
    ```python
    from jina import Executor
    
@@ -62,7 +62,7 @@ tips to help you write clean & beautiful code.
 
 1. Fold unnecessary arguments into `**kwargs`.
 
-   Do:
+   ✅ Do:
    ```python
    from jina import Executor, requests
    
@@ -72,7 +72,7 @@ tips to help you write clean & beautiful code.
       def foo_need_pars_only(self, parameters, **kwargs):
         print(parameters)
    ```
-   Don't:
+   😔 Don't:
    ```python
    from jina import Executor, requests
    
