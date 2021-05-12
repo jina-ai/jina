@@ -55,11 +55,11 @@ class PostMixin:
             **kwargs,
         )
 
+    # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')
     search = partialmethod(post, '/search')
     update = partialmethod(post, '/update')
     delete = partialmethod(post, '/delete')
-    dump = partialmethod(post, '/dump')
 
 
 class AsyncPostMixin:
@@ -100,6 +100,7 @@ class AsyncPostMixin:
         ):
             yield r
 
+    # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')
     search = partialmethod(post, '/search')
     update = partialmethod(post, '/update')

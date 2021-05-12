@@ -10,22 +10,28 @@ from jina import Executor, DocumentArray, requests, Document
 
 
 class MyTransformer(Executor):
+    """Transformer executor class """
+
     def __init__(
-            self,
-            pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
-            base_tokenizer_model: Optional[str] = None,
-            pooling_strategy: str = 'mean',
-            layer_index: int = -1,
-            max_length: Optional[int] = None,
-            acceleration: Optional[str] = None,
-            embedding_fn_name: str = '__call__',
-            *args,
-            **kwargs,
+        self,
+        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        base_tokenizer_model: Optional[str] = None,
+        pooling_strategy: str = 'mean',
+        layer_index: int = -1,
+        max_length: Optional[int] = None,
+        acceleration: Optional[str] = None,
+        embedding_fn_name: str = '__call__',
+        *args,
+        **kwargs,
     ):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = (
-                base_tokenizer_model or pretrained_model_name_or_path
+            base_tokenizer_model or pretrained_model_name_or_path
         )
         self.pooling_strategy = pooling_strategy
         self.layer_index = layer_index
@@ -56,11 +62,9 @@ class MyTransformer(Executor):
     @requests
     def encode(self, docs: 'DocumentArray', *args, **kwargs) -> 'np.ndarray':
         """
-        Encode an array of string in size `B` into an ndarray in size `B x D`,
-        where `B` is the batch size and `D` is the dimensionality of the encoding.
-
-        :param content: a 1d array of string type in size `B`
-        :return: an ndarray in size `B x D` with the embeddings
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
         """
         import torch
 
@@ -92,8 +96,14 @@ class MyTransformer(Executor):
 
 
 class MyIndexer(Executor):
+    """Simple indexer class """
 
+    # noqa: DAR101, DAR102
     def __init__(self, **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         super().__init__(**kwargs)
         self._docs = DocumentArray()
         Path(self.workspace).mkdir(parents=True, exist_ok=True)
@@ -102,14 +112,26 @@ class MyIndexer(Executor):
             self._docs = DocumentArray.load(self.filename)
 
     def close(self) -> None:
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         self._docs.save(self.filename)
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         self._docs.extend(docs)
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         a = np.stack(docs.get_attributes('embedding'))
         b = np.stack(self._docs.get_attributes('embedding'))
         q_emb = _ext_A(_norm(a))
@@ -124,7 +146,7 @@ class MyIndexer(Executor):
 
     @staticmethod
     def _get_sorted_top_k(
-            dist: 'np.array', top_k: int
+        dist: 'np.array', top_k: int
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
@@ -146,8 +168,8 @@ def _get_ones(x, y):
 def _ext_A(A):
     nA, dim = A.shape
     A_ext = _get_ones(nA, dim * 3)
-    A_ext[:, dim: 2 * dim] = A
-    A_ext[:, 2 * dim:] = A ** 2
+    A_ext[:, dim : 2 * dim] = A
+    A_ext[:, 2 * dim :] = A ** 2
     return A_ext
 
 
@@ -155,7 +177,7 @@ def _ext_B(B):
     nB, dim = B.shape
     B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
-    B_ext[dim: 2 * dim] = -2.0 * B.T
+    B_ext[dim : 2 * dim] = -2.0 * B.T
     del B
     return B_ext
 

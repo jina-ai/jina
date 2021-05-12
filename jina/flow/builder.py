@@ -47,9 +47,9 @@ def build_required(required_level: 'FlowBuildLevel'):
 
 
 def _traverse_graph(
-        op_flow: 'Flow',
-        outgoing_map: Dict[str, List[str]],
-        func: Callable[['Flow', str, str], None],
+    op_flow: 'Flow',
+    outgoing_map: Dict[str, List[str]],
+    func: Callable[['Flow', str, str], None],
 ) -> 'Flow':
     _outgoing_idx = dict.fromkeys(outgoing_map.keys(), 0)
     stack = deque()
@@ -100,9 +100,9 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
         elif end_node_name == 'gateway':
             first_socket_type = SocketType.PUSH_BIND
         elif (
-                start_node.host != __default_host__
-                and end_node.host == __default_host__
-                and end_node.args.pod_role != PodRoleType.JOIN
+            start_node.host != __default_host__
+            and end_node.host == __default_host__
+            and end_node.args.pod_role != PodRoleType.JOIN
         ):
             # first node is on remote, second is local. in this case, local node is often behind router/private
             # network, there is no way that first node can send data "actively" (CONNECT) to it
@@ -118,7 +118,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
 
 
 def _connect(
-        first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'
+    first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'
 ) -> None:
     """Connect two Pods
 
