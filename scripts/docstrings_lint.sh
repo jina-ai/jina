@@ -13,7 +13,7 @@ for changed_file in $CHANGED_FILES; do
     tests/* | \
     jina/proto/jina_pb2.py | \
     jina/proto/jina_pb2_grpc.py | \
-    *.md
+    *.md | \
     *.yml)
     ;;*)
       echo keeping ${changed_file}
