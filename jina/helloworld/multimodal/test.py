@@ -14,4 +14,7 @@ with f:
         inputs=inputs,
     )
 
+f = Flow.load_config('flow-search.yml')
+
+with f:
     f.post(on='/search', inputs=inputs, parameters={'top_k': 10})
