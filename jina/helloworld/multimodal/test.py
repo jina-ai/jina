@@ -14,7 +14,4 @@ with f:
         inputs=inputs,
     )
 
-    f.post(
-        on='/search',
-        inputs=inputs,
-    )
+    f.post(on='/search', inputs=inputs, parameters={'top_k': 10})
