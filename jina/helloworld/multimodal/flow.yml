@@ -10,13 +10,29 @@ pods:
         py_modules:
           - executors.py
     parallel: 2
-  - name: filter-encode-text
+  - name: filter-non-text-modality
+    uses:
+      - jtype: ModalityFilter
+        with:
+          mime_type_to_keep: text/plain
+        metas:
+          py_modules:
+            - executors.py
+  - name: encode-text
     uses:
       jtype: TextEncoder
       metas:
         py_modules:
           - executors.py
-  - name: filter-craft-image
+  - name: filter-non-visual-modality
+    uses:
+      - jtype: ModalityFilter
+        with:
+          mime_type_to_keep: image/jpeg
+        metas:
+          py_modules:
+            - executors.py
+  - name: craft-image
     uses:
       jtype: ImageCrafter
       metas:

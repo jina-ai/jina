@@ -25,6 +25,22 @@ class Segmenter(Executor):
             doc.chunks.extend([chunk_text, chunk_uri])
 
 
+class ModalityFilter(Executor):
+    def __init__(self, mime_type_to_keep: str, **kwargs):
+        super().__init__(**kwargs)
+        self.mime_type = mime_type_to_keep
+
+    @requests(on=['/index', '/search'])
+    def filter(self, docs: DocumentArray, **kwargs):
+        for chunks in docs.traverse(traversal_paths=['c']):
+            chunks_to_be_filtered = []
+            for idx, chunk in enumerate(chunks):
+                if chunk.mime_type != self.mime_type:
+                    chunks_to_be_filtered.append(idx)
+            for idx in reversed(chunks_to_be_filtered):
+                del chunks[idx]
+
+
 class TextEncoder(Executor):
     def __init__(
         self,
@@ -128,14 +144,6 @@ class TextEncoder(Executor):
         """
         import torch
 
-        for chunks in docs.traverse(traversal_paths=['c']):
-            chunks_to_be_filtered = []
-            for idx, chunk in enumerate(chunks):
-                if chunk.mime_type != 'text/plain':
-                    chunks_to_be_filtered.append(idx)
-            for idx in reversed(chunks_to_be_filtered):
-                del chunks[idx]
-
         for doc in docs.traverse_flatten(['c']):
             with torch.no_grad():
                 if not self.tokenizer.pad_token:
@@ -164,14 +172,6 @@ class TextEncoder(Executor):
 class ImageCrafter(Executor):
     @requests(on=['/index', '/search'])
     def craft(self, docs: DocumentArray, **kwargs):
-        for chunks in docs.traverse(traversal_paths=['c']):
-            chunks_to_be_filtered = []
-            for idx, chunk in enumerate(chunks):
-                if chunk.mime_type != 'image/jpeg':
-                    chunks_to_be_filtered.append(idx)
-            for idx in reversed(chunks_to_be_filtered):
-                del chunks[idx]
-
         for doc in docs.traverse_flatten(['c']):
             doc.convert_image_uri_to_blob()
 
@@ -344,22 +344,3 @@ class WeightedRanker(Executor):
     @requests(on='/search')
     def score(self, docs: DocumentArray, **kwargs):
         pass
-
-
-
-f = (
-    Flow()
-    .add(uses=Segmenter)
-    .add(uses=TextEncoder)
-    .add(uses=ImageCrafter)
-    .add(uses=ImageEncoder)
-    .add(uses=DocVectorIndexer)
-    .add(uses=KeyValueIndexer)
-)
-
-with f:
-    f.post(
-        on='/index',
-        on_done=print,
-        inputs=Document(tags={'caption': 'hello', 'image': 'image_1.jpg'}),
-    )
