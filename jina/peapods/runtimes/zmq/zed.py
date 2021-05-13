@@ -130,9 +130,12 @@ class ZEDRuntime(ZMQRuntime):
             self._partial_requests = [v.request for v in self._partial_messages]
             part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)'
 
-        self.logger.info(
-            f'recv {msg.envelope.request_type} {part_str} from {msg.colored_route}'
-        )
+        info_msg = f'recv {msg.envelope.request_type} '
+        if self.request_type == 'DataRequest':
+            info_msg += f'({self.request.header.exec_endpoint}) '
+        info_msg += f'{part_str} from {msg.colored_route}'
+
+        self.logger.info(info_msg)
         return self
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
