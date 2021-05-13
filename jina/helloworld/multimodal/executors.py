@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, List
 
 import numpy as np
 
@@ -92,7 +92,7 @@ class TextEncoder(Executor):
         else:
             return nullcontext()
 
-    def _compute_embedding(self, hidden_states: 'torch.Tensor', input_tokens: Dict):
+    def _compute_embedding(self, hidden_states, input_tokens):
         import torch
 
         n_layers = len(hidden_states)
