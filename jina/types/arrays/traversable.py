@@ -11,7 +11,7 @@ class TraversableSequence:
         raise NotImplementedError
 
     def traverse(
-            self, traversal_paths: Iterable[str]
+        self, traversal_paths: Iterable[str]
     ) -> Iterable['TraversableSequence']:
         """
         Return an Iterator of :class:``TraversableSequence`` of the leaves when applying the traversal_paths.
@@ -51,7 +51,7 @@ class TraversableSequence:
             yield docs
 
     def traverse_flattened_per_path(
-            self, traversal_paths: Iterable[str]
+        self, traversal_paths: Iterable[str]
     ) -> Iterable['TraversableSequence']:
         """
         Returns a flattened :class:``TraversableSequence`` per path in :param:``traversal_paths``

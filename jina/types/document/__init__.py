@@ -39,7 +39,8 @@ from ...helper import (
     is_url,
     typename,
     random_identity,
-    download_mermaid_url, dunder_get,
+    download_mermaid_url,
+    dunder_get,
 )
 from ...importer import ImportExtensions
 from ...logging import default_logger
@@ -149,11 +150,11 @@ class Document(ProtoTypeMixin):
     """
 
     def __init__(
-            self,
-            document: Optional[DocumentSourceType] = None,
-            field_resolver: Dict[str, str] = None,
-            copy: bool = False,
-            **kwargs,
+        self,
+        document: Optional[DocumentSourceType] = None,
+        field_resolver: Dict[str, str] = None,
+        copy: bool = False,
+        **kwargs,
     ):
         """
         :param document: the document to construct from. If ``bytes`` is given
@@ -335,12 +336,12 @@ class Document(ProtoTypeMixin):
 
     @staticmethod
     def _update(
-            source: 'Document',
-            destination: 'Document',
-            exclude_fields: Optional[Tuple[str]] = None,
-            include_fields: Optional[Tuple[str]] = None,
-            replace_message_field: bool = True,
-            replace_repeated_field: bool = True,
+        source: 'Document',
+        destination: 'Document',
+        exclude_fields: Optional[Tuple[str]] = None,
+        include_fields: Optional[Tuple[str]] = None,
+        replace_message_field: bool = True,
+        replace_repeated_field: bool = True,
     ) -> None:
         """Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
 
@@ -405,10 +406,10 @@ class Document(ProtoTypeMixin):
             destination.proto.MergeFrom(_dest)
 
     def update(
-            self,
-            source: 'Document',
-            exclude_fields: Optional[Tuple[str, ...]] = None,
-            include_fields: Optional[Tuple[str, ...]] = None,
+        self,
+        source: 'Document',
+        exclude_fields: Optional[Tuple[str, ...]] = None,
+        include_fields: Optional[Tuple[str, ...]] = None,
     ) -> None:
         """Updates fields specified in ``include_fields`` from the source to current Document.
 
@@ -421,7 +422,7 @@ class Document(ProtoTypeMixin):
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
         if (include_fields and not isinstance(include_fields, tuple)) or (
-                exclude_fields and not isinstance(exclude_fields, tuple)
+            exclude_fields and not isinstance(exclude_fields, tuple)
         ):
             raise TypeError('include_fields and exclude_fields must be tuple of str')
 
@@ -450,15 +451,15 @@ class Document(ProtoTypeMixin):
         )
 
     def update_content_hash(
-            self,
-            exclude_fields: Optional[Tuple[str]] = (
-                    'id',
-                    'chunks',
-                    'matches',
-                    'content_hash',
-                    'parent_id',
-            ),
-            include_fields: Optional[Tuple[str]] = None,
+        self,
+        exclude_fields: Optional[Tuple[str]] = (
+            'id',
+            'chunks',
+            'matches',
+            'content_hash',
+            'parent_id',
+        ),
+        include_fields: Optional[Tuple[str]] = None,
     ) -> None:
         """Update the document hash according to its content.
 
@@ -550,7 +551,7 @@ class Document(ProtoTypeMixin):
         return NdArray(self._pb_body.embedding).value
 
     def get_sparse_embedding(
-            self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
+        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
     ) -> 'SparseEmbeddingType':
         """Return ``embedding`` of the content of a Document as an sparse array.
 
@@ -669,7 +670,7 @@ class Document(ProtoTypeMixin):
     def matches(self, value: Iterable['Document']):
         """Get all chunks of the current document.
 
-        :return: the array of chunks of this document
+        :param value: value to set
         """
         self.pop('matches')
         self.matches.extend(value)
@@ -686,7 +687,7 @@ class Document(ProtoTypeMixin):
     def chunks(self, value: Iterable['Document']):
         """Get all chunks of the current document.
 
-        :return: the array of chunks of this document
+        :param value: the array of chunks of this document
         """
         self.pop('chunks')
         self.chunks.extend(value)
@@ -713,9 +714,9 @@ class Document(ProtoTypeMixin):
                 getattr(self._pb_body, k).update(v)
             else:
                 if (
-                        hasattr(Document, k)
-                        and isinstance(getattr(Document, k), property)
-                        and getattr(Document, k).fset
+                    hasattr(Document, k)
+                    and isinstance(getattr(Document, k), property)
+                    and getattr(Document, k).fset
                 ):
                     # if class property has a setter
                     setattr(self, k, v)
@@ -789,11 +790,11 @@ class Document(ProtoTypeMixin):
         self._pb_body.buffer = value
         if value and not self._pb_body.mime_type:
             with ImportExtensions(
-                    required=False,
-                    pkg_name='python-magic',
-                    help_text=f'can not sniff the MIME type '
-                              f'MIME sniffing requires brew install '
-                              f'libmagic (Mac)/ apt-get install libmagic1 (Linux)',
+                required=False,
+                pkg_name='python-magic',
+                help_text=f'can not sniff the MIME type '
+                f'MIME sniffing requires brew install '
+                f'libmagic (Mac)/ apt-get install libmagic1 (Linux)',
             ):
                 import magic
 
@@ -971,30 +972,27 @@ class Document(ProtoTypeMixin):
         """Convert an image buffer to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
     def convert_image_blob_to_uri(
-            self, width: int, height: int, resize_method: str = 'BILINEAR'
+        self, width: int, height: int, resize_method: str = 'BILINEAR'
     ):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
         :param width: the width of the blob
         :param height: the height of the blob
         :param resize_method: the resize method name
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
     def convert_image_uri_to_blob(
-            self, color_axis: int = -1, uri_prefix: Optional[str] = None
+        self, color_axis: int = -1, uri_prefix: Optional[str] = None
     ):
         """Convert uri to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         :param uri_prefix: the prefix of the uri
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob(
             (uri_prefix + self.uri) if uri_prefix else self.uri, color_axis
@@ -1004,7 +1002,6 @@ class Document(ProtoTypeMixin):
         """Convert data URI to image blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as fp:
@@ -1025,13 +1022,12 @@ class Document(ProtoTypeMixin):
         self.blob = np.frombuffer(self.buffer, dtype, count, offset)
 
     def convert_blob_to_buffer(self):
+        """Convert blob to buffer """
         self.buffer = self.blob.tobytes()
 
     def convert_uri_to_buffer(self):
         """Convert uri to buffer
         Internally it downloads from the URI and set :attr:`buffer`.
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
 
         """
         if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
@@ -1046,23 +1042,20 @@ class Document(ProtoTypeMixin):
         else:
             raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
 
-    def convert_uri_to_datauri(
-            self, charset: str = 'utf-8', base64: bool = False
-    ):
+    def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert uri to data uri.
         Internally it reads uri into buffer and convert it to data uri
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         if not _is_datauri(self.uri):
             self.convert_uri_to_buffer()
-            self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+            self.uri = to_datauri(
+                self.mime_type, self.buffer, charset, base64, binary=True
+            )
 
-    def convert_buffer_to_uri(
-            self, charset: str = 'utf-8', base64: bool = False
-    ):
+    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert buffer to data uri.
         Internally it first reads into buffer and then converts it to data URI.
 
@@ -1070,7 +1063,6 @@ class Document(ProtoTypeMixin):
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
             Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
             frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
         if not self.mime_type:
@@ -1080,33 +1072,24 @@ class Document(ProtoTypeMixin):
 
         self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
 
-    def convert_text_to_uri(
-            self, charset: str = 'utf-8', base64: bool = False
-    ):
+    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert text to data uri.
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
             Designed to be efficient for non-text 8 bit and binary data.
             Sometimes used for text data that frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
         self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
 
     def convert_uri_to_text(self):
-        """Assuming URI is text, convert it to text
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
-        """
+        """Assuming URI is text, convert it to text"""
         self.convert_uri_to_buffer()
         self.text = self.buffer.decode()
 
     def convert_content_to_uri(self):
-        """Convert content in URI with best effort
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
-        """
+        """Convert content in URI with best effort"""
         if self.text:
             self.convert_text_to_uri()
         elif self.buffer:
@@ -1115,14 +1098,14 @@ class Document(ProtoTypeMixin):
             raise NotImplementedError
 
     def MergeFrom(self, doc: 'Document'):
-        """Merge the content of target :param:doc into current document.
+        """Merge the content of target
 
         :param doc: the document to merge from
         """
         self._pb_body.MergeFrom(doc.proto)
 
     def CopyFrom(self, doc: 'Document'):
-        """Copy the content of target :param:doc into current document.
+        """Copy the content of target
 
         :param doc: the document to copy from
         """
@@ -1173,12 +1156,12 @@ class Document(ProtoTypeMixin):
             img_type = 'img'
 
         mermaid_str = (
-                """
+            """
                     %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
                     classDiagram
                 
                             """
-                + self.__mermaid_str__()
+            + self.__mermaid_str__()
         )
 
         encoded_str = base64.b64encode(bytes(mermaid_str.strip(), 'utf-8')).decode(
@@ -1232,12 +1215,15 @@ class Document(ProtoTypeMixin):
 
     @staticmethod
     def attributes(
-            include_proto_fields: bool = True,
-            include_proto_fields_camelcase: bool = False,
-            include_properties: bool = False,
+        include_proto_fields: bool = True,
+        include_proto_fields_camelcase: bool = False,
+        include_properties: bool = False,
     ) -> List[str]:
         """Return all attributes supported by the Document, which can be accessed by ``doc.attribute``
 
+        :param include_proto_fields: if set, then include all protobuf fields
+        :param include_proto_fields_camelcase: if set, then include all protobuf fields in CamelCase
+        :param include_properties: if set, then include all properties defined for Document class
         :return: a list of attributes in string.
         """
         import inspect
@@ -1262,15 +1248,15 @@ class Document(ProtoTypeMixin):
 
     @staticmethod
     def from_lines(
-            lines: Optional[Iterable[str]] = None,
-            filepath: Optional[str] = None,
-            read_mode: str = 'r',
-            line_format: str = 'json',
-            field_resolver: Optional[Dict[str, str]] = None,
-            size: Optional[int] = None,
-            sampling_rate: Optional[float] = None,
+        lines: Optional[Iterable[str]] = None,
+        filepath: Optional[str] = None,
+        read_mode: str = 'r',
+        line_format: str = 'json',
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
     ) -> Generator['Document', None, None]:
-        """Generator function for lines, json and sc. Yields documents or strings.
+        """Generator function for lines, json and csv. Yields documents or strings.
 
         :param lines: a list of strings, each is considered as a document
         :param filepath: a text file that each line contains a document
@@ -1282,10 +1268,8 @@ class Document(ProtoTypeMixin):
                 a JSON string or a Python dict.
         :param size: the maximum number of the documents
         :param sampling_rate: the sampling rate between [0, 1]
-        :yields: documents
+        :yield: documents
 
-        .. note::
-        This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
         """
         if filepath:
             file_type = os.path.splitext(filepath)[1]
@@ -1308,11 +1292,22 @@ class Document(ProtoTypeMixin):
 
     @staticmethod
     def from_ndjson(
-            fp: Iterable[str],
-            field_resolver: Optional[Dict[str, str]] = None,
-            size: Optional[int] = None,
-            sampling_rate: Optional[float] = None,
+        fp: Iterable[str],
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
     ) -> Generator['Document', None, None]:
+        """Generator function for line separated JSON. Yields documents.
+
+        :param fp: file paths
+        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
+                names defined in Protobuf. This is only used when the given ``document`` is
+                a JSON string or a Python dict.
+        :param size: the maximum number of the documents
+        :param sampling_rate: the sampling rate between [0, 1]
+        :yield: documents
+
+        """
         for line in _subsample(fp, size, sampling_rate):
             value = json.loads(line)
             if 'groundtruth' in value and 'document' in value:
@@ -1324,11 +1319,22 @@ class Document(ProtoTypeMixin):
 
     @staticmethod
     def from_csv(
-            fp: Iterable[str],
-            field_resolver: Optional[Dict[str, str]] = None,
-            size: Optional[int] = None,
-            sampling_rate: Optional[float] = None,
+        fp: Iterable[str],
+        field_resolver: Optional[Dict[str, str]] = None,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
     ) -> Generator['Document', None, None]:
+        """Generator function for CSV. Yields documents.
+
+        :param fp: file paths
+        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
+                names defined in Protobuf. This is only used when the given ``document`` is
+                a JSON string or a Python dict.
+        :param size: the maximum number of the documents
+        :param sampling_rate: the sampling rate between [0, 1]
+        :yield: documents
+
+        """
         lines = csv.DictReader(fp)
         for value in _subsample(lines, size, sampling_rate):
             if 'groundtruth' in value and 'document' in value:
@@ -1340,11 +1346,11 @@ class Document(ProtoTypeMixin):
 
     @staticmethod
     def from_files(
-            patterns: Union[str, List[str]],
-            recursive: bool = True,
-            size: Optional[int] = None,
-            sampling_rate: Optional[float] = None,
-            read_mode: Optional[str] = None,
+        patterns: Union[str, List[str]],
+        recursive: bool = True,
+        size: Optional[int] = None,
+        sampling_rate: Optional[float] = None,
+        read_mode: Optional[str] = None,
     ) -> Generator['Document', None, None]:
         """Creates an iterator over a list of file path or the content of the files.
 
@@ -1387,10 +1393,10 @@ class Document(ProtoTypeMixin):
 
     @staticmethod
     def from_ndarray(
-            array: 'np.ndarray',
-            axis: int = 0,
-            size: Optional[int] = None,
-            shuffle: bool = False,
+        array: 'np.ndarray',
+        axis: int = 0,
+        size: Optional[int] = None,
+        shuffle: bool = False,
     ) -> Generator['Document', None, None]:
         """Create a generator for a given dimension of a numpy array.
 
@@ -1421,6 +1427,7 @@ class Document(ProtoTypeMixin):
             value = dunder_get(self._pb_body, item)
         return value
 
+
 # https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
 _jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
 _csv_ext = {'.csv', '.tcsv'}
@@ -1433,7 +1440,7 @@ def _sample(iterable, sampling_rate: Optional[float] = None):
 
 
 def _subsample(
-        iterable, size: Optional[int] = None, sampling_rate: Optional[float] = None
+    iterable, size: Optional[int] = None, sampling_rate: Optional[float] = None
 ):
     yield from it.islice(_sample(iterable, sampling_rate), size)
 
@@ -1441,10 +1448,10 @@ def _subsample(
 def _is_uri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return (
-            (scheme in {'http', 'https'} and is_url(value))
-            or (scheme in {'data'})
-            or os.path.exists(value)
-            or os.access(os.path.dirname(value), os.W_OK)
+        (scheme in {'http', 'https'} and is_url(value))
+        or (scheme in {'data'})
+        or os.path.exists(value)
+        or os.access(os.path.dirname(value), os.W_OK)
     )
 
 

@@ -4,7 +4,7 @@ from jina.proto import jina_pb2
 from jina.types.message.common import ControlMessage
 
 
-@pytest.mark.parametrize('command', ['IDLE', 'CANCEL', 'TERMINATE', 'STATUS', 'RELOAD'])
+@pytest.mark.parametrize('command', ['IDLE', 'CANCEL', 'TERMINATE', 'STATUS'])
 def test_control_msg(command):
     msg = ControlMessage(command)
     assert msg.proto.envelope.request_type == 'ControlRequest'

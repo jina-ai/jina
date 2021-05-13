@@ -46,7 +46,7 @@ def test_enum_definitions():
     command_enum_definition = PROTO_TO_PYDANTIC_MODELS.RequestProto().schema()[
         'definitions'
     ]['Command']
-    assert command_enum_definition['enum'] == [0, 1, 3, 4, 5, 6]
+    assert command_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
 
 
 def test_all_fields_in_document_proto():
@@ -59,7 +59,6 @@ def test_all_fields_in_document_proto():
         'content_hash',
         'granularity',
         'adjacency',
-        'level_name',
         'parent_id',
         'chunks',
         'weight',
@@ -79,7 +78,7 @@ def test_all_fields_in_document_proto():
     document_proto_properties_alias = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['DocumentProto']['properties']
-    for i in ['contentHash', 'levelName', 'parentId', 'mimeType']:
+    for i in ['contentHash', 'parentId', 'mimeType']:
         assert i in document_proto_properties_alias
 
 
@@ -117,13 +116,13 @@ def test_oneof_validation_error():
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc', buffer=b'abc')
-    assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
+    assert "only one field among ['buffer', 'blob', 'text', 'uri']" in str(error.value)
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
             text='abc', buffer=b'abc', blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
         )
-    assert "only one field among ['buffer', 'blob', 'text']" in str(error.value)
+    assert "only one field among ['buffer', 'blob', 'text', 'uri']" in str(error.value)
 
 
 def test_tags_document():
@@ -202,8 +201,8 @@ def test_jina_document_to_pydantic_document():
         pydantic_doc = document_proto_model(**jina_doc)
 
         assert jina_doc['text'] == pydantic_doc.text
-        assert jina_doc['mimeType'] == pydantic_doc.mime_type
-        assert jina_doc['contentHash'] == pydantic_doc.content_hash
+        assert jina_doc['mime_type'] == pydantic_doc.mime_type
+        assert jina_doc['content_hash'] == pydantic_doc.content_hash
         assert (
             jina_doc['embedding']['dense']['shape']
             == pydantic_doc.embedding.dense.shape
@@ -219,10 +218,10 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['id'] == pydantic_doc_chunk.id
             assert jina_doc_chunk['tags'] == pydantic_doc_chunk.tags
             assert jina_doc_chunk['text'] == pydantic_doc_chunk.text
-            assert jina_doc_chunk['mimeType'] == pydantic_doc_chunk.mime_type
-            assert jina_doc_chunk['parentId'] == pydantic_doc_chunk.parent_id
+            assert jina_doc_chunk['mime_type'] == pydantic_doc_chunk.mime_type
+            assert jina_doc_chunk['parent_id'] == pydantic_doc_chunk.parent_id
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
-            assert jina_doc_chunk['contentHash'] == pydantic_doc_chunk.content_hash
+            assert jina_doc_chunk['content_hash'] == pydantic_doc_chunk.content_hash
 
 
 def test_pydatic_document_to_jina_document():
@@ -239,20 +238,5 @@ def test_pydatic_document_to_jina_document():
 
 @pytest.mark.parametrize('top_k', [5, 10])
 def test_model_with_top_k(top_k):
-    m = JinaRequestModel(data=['abc'], top_k=top_k)
-    assert m.queryset[0].name == 'SliceQL'
-    assert m.queryset[0].parameters['end'] == top_k
-    assert m.queryset[1].name == 'VectorSearchDriver'
-    assert m.queryset[1].parameters['top_k'] == top_k
-
-
-def test_model_with_queryset():
-    m = JinaRequestModel(
-        data=['abc'],
-        queryset=[
-            {'name': 'CustomQuerySet', 'parameters': {'top_k': 10}, 'priority': 1}
-        ],
-    )
-    assert m.queryset[0].name == 'CustomQuerySet'
-    assert m.queryset[0].parameters['top_k'] == 10
-    assert m.queryset[0].priority == 1
+    m = JinaRequestModel(data=['abc'], parameters={'top_k': top_k})
+    assert m.parameters['top_k'] == top_k

@@ -131,25 +131,29 @@ def get_main_parser():
 
     sp = parser.add_subparsers(
         dest='cli',
-        description='use `%(prog)-8s [sub-command] --help` '
-                    'to get detailed information about each sub-command',
+        description='''
+        Use `%(prog)-8s [sub-command] --help` to get detailed information about each sub-command. 
+        
+        To show all commands, run `JINA_FULL_CLI=1 jina --help`.
+        ''',
         required=True,
     )
 
     set_hello_parser(
         sp.add_parser(
             'hello',
-            help='👋 Hello World! Hello Jina!',
-            description='Start hello-world demos',
+            help='👋 Hello Jina!',
+            description='Start hello world demos.',
             formatter_class=_chf,
         )
     )
 
     set_pod_parser(
         sp.add_parser(
-            'exec',
+            'executor',
+            aliases=['pod'],
             help='Start an Executor',
-            description='Start a Jina Executor',
+            description='Start an Executor. Executor is how Jina processes Document.',
             formatter_class=_chf,
         )
     )
@@ -157,7 +161,7 @@ def get_main_parser():
     set_flow_parser(
         sp.add_parser(
             'flow',
-            description='Start a Flow that orchestrates multiple pods',
+            description='Start a Flow. Flow is how Jina streamlines and distributes Executors.',
             help='Start a Flow',
             formatter_class=_chf,
         )
@@ -166,8 +170,8 @@ def get_main_parser():
     set_ping_parser(
         sp.add_parser(
             'ping',
-            help='Ping a pod and check its connectivity',
-            description='Ping a remote pod and check the network connectivity',
+            help='Ping an Executor',
+            description='Ping a Pod and check its network connectivity.',
             formatter_class=_chf,
         )
     )
@@ -195,9 +199,9 @@ def get_main_parser():
     set_pea_parser(
         sp.add_parser(
             'pea',
-            description='Start a Jina pea. '
-                        'You should rarely use this directly unless you '
-                        'are doing low-level orchestration',
+            description='Start a Pea. '
+            'You should rarely use this directly unless you '
+            'are doing low-level orchestration',
             formatter_class=_chf,
             **(dict(help='Start a Pea')) if _SHOW_ALL_ARGS else {},
         )
@@ -230,20 +234,13 @@ def get_main_parser():
     #     )
     # )
 
-    set_pod_parser(
-        sp.add_parser(
-            'pod',
-            **(dict(help='Start a Jina Pod')) if _SHOW_ALL_ARGS else {},
-            description='Start a Jina Pod',
-            formatter_class=_chf,
-        )
-    )
-
     set_check_parser(
         sp.add_parser(
             'check',
-            **(dict(help='Check the import of all Executors and Drivers')) if _SHOW_ALL_ARGS else {},
-            description='Check the import status of all executors and drivers',
+            **(dict(help='Check the import of all Executors'))
+            if _SHOW_ALL_ARGS
+            else {},
+            description='Check the import status of all executors',
             formatter_class=_chf,
         )
     )

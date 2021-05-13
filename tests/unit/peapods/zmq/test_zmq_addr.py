@@ -6,6 +6,7 @@ from jina.parsers import set_pod_parser
 from jina.types.message import Message
 from jina.clients.request import request_generator
 from tests import random_docs
+from jina import __default_executor__
 
 
 @pytest.fixture
@@ -14,7 +15,7 @@ def zmq_args_argparse():
         '--name',
         'test2',
         '--uses-before',
-        '_pass',
+        __default_executor__,
         '--parallel',
         '1',
         '--host',
@@ -39,7 +40,9 @@ def runtime(zmq_args_argparse):
 
 @pytest.fixture
 def ctrl_messages():
-    return [Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))]
+    return [
+        Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))
+    ]
 
 
 @pytest.fixture(params=['zmq_args_dict', 'zmq_args_argparse'])

@@ -17,6 +17,12 @@ class ExecutorType(type(JAMLCompatible), type):
     """The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""
 
     def __new__(cls, *args, **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+
+        :return: Executor class
+        """
         _cls = super().__new__(cls, *args, **kwargs)
         return cls.register_class(_cls)
 
@@ -127,7 +133,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 if not hasattr(target, k):
                     if isinstance(v, str):
                         if not (
-                                subvar_regex.findall(v) or internal_var_regex.findall(v)
+                            subvar_regex.findall(v) or internal_var_regex.findall(v)
                         ):
                             setattr(target, k, v)
                         else:
@@ -151,10 +157,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @classmethod
     def _inject_config(
-            cls: Type[AnyExecutor],
-            raw_config: Dict,
-            *args,
-            **kwargs,
+        cls: Type[AnyExecutor],
+        raw_config: Dict,
+        *args,
+        **kwargs,
     ) -> Dict:
         """Inject config into the raw_config before loading into an object.
 
@@ -174,6 +180,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         return tmp
 
     def __call__(self, req_endpoint: str, **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
         if getattr(self, 'requests', {}):
             if req_endpoint in self.requests:
                 return self.requests[req_endpoint](
@@ -195,13 +206,23 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        return os.path.abspath(self.metas.workspace or (
-            os.path.join(self.metas.parent_workspace, self.metas.name)
-            if self.metas.replica_id == -1
-            else os.path.join(
-                self.metas.parent_workspace, self.metas.name, self.metas.replica_id
+        if getattr(self.metas, 'parent_workspace', None):
+            complete_workspace = os.path.join(
+                self.metas.parent_workspace, self.metas.name
             )
-        ))
+            replica_id = getattr(self.metas, 'replica_id', None)
+            pea_id = getattr(self.metas, 'pea_id', None)
+            if replica_id is not None and replica_id != -1:
+                complete_workspace = os.path.join(complete_workspace, str(replica_id))
+            if pea_id is not None and pea_id != -1:
+                complete_workspace = os.path.join(complete_workspace, str(pea_id))
+            return os.path.abspath(complete_workspace)
+        elif self.metas.workspace is not None:
+            return os.path.abspath(self.metas.workspace)
+        else:
+            raise Exception(
+                'no workspace or parent workspace found in the executor metas.'
+            )
 
     def __enter__(self):
         return self

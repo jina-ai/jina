@@ -13,7 +13,7 @@ IMPORTED.schema_executors = {}
 
 
 def import_classes(
-        namespace: str, show_import_table: bool = False, import_once: bool = False
+    namespace: str, show_import_table: bool = False, import_once: bool = False
 ):
     """
     Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML constructor beforehand. It can be also used to import third-part or external executors.
@@ -73,12 +73,12 @@ class ImportExtensions:
     """
 
     def __init__(
-            self,
-            required: bool,
-            logger=None,
-            help_text: Optional[str] = None,
-            pkg_name: Optional[str] = None,
-            verbose: bool = True,
+        self,
+        required: bool,
+        logger=None,
+        help_text: Optional[str] = None,
+        pkg_name: Optional[str] = None,
+        verbose: bool = True,
     ):
         self._required = required
         self._tags = []
@@ -96,16 +96,16 @@ class ImportExtensions:
             from pkg_resources import resource_filename
 
             with open(
-                    resource_filename(
-                        'jina', '/'.join(('resources', 'extra-requirements.txt'))
-                    )
+                resource_filename(
+                    'jina', '/'.join(('resources', 'extra-requirements.txt'))
+                )
             ) as fp:
                 for v in fp:
                     if (
-                            v.strip()
-                            and not v.startswith('#')
-                            and v.startswith(missing_module)
-                            and ':' in v
+                        v.strip()
+                        and not v.startswith('#')
+                        and v.startswith(missing_module)
+                        and ':' in v
                     ):
                         missing_module, install_tags = v.split(':')
                         self._tags.append(missing_module)
@@ -208,10 +208,10 @@ def _print_load_table(load_stat: Dict[str, List[Any]], logger=None):
     if load_table:
         load_table.sort()
         load_table = [
-                         '',
-                         '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
-                         '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10),
-                     ] + load_table
+            '',
+            '%-5s %-25s %-40s %-s' % ('Load', 'Class', 'Module', 'Dependency'),
+            '%-5s %-25s %-40s %-s' % ('-' * 5, '-' * 25, '-' * 40, '-' * 10),
+        ] + load_table
         pr = logger.info if logger else print
         pr('\n'.join(load_table))
 

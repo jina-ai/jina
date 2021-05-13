@@ -10,6 +10,11 @@ from jina.parsers.peapods.runtimes.remote import mixin_remote_parser
 
 
 def mixin_daemon_parser(parser):
+    """
+    # noqa: DAR101
+    # noqa: DAR102
+    # noqa: DAR103
+    """
     gp = add_arg_group(parser, title='Daemon')
 
     gp.add_argument(
@@ -21,6 +26,11 @@ def mixin_daemon_parser(parser):
 
 
 def get_main_parser():
+    """
+    Return main parser
+    :return: main parser
+    """
+
     parser = set_base_parser()
 
     mixin_remote_parser(parser)

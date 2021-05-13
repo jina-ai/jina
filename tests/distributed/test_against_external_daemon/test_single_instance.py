@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow
+from jina import Flow, Document
 from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -22,7 +22,10 @@ def test_r_l_simple(silent_log, parallels, mocker):
         .add(parallel=parallels)
     )
     with f:
-        f.index(('hello' for _ in range(NUM_DOCS)), on_done=response_mock)
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
 
     response_mock.assert_called()
 
@@ -38,7 +41,10 @@ def test_l_r_simple(silent_log, parallels, mocker):
         .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
     )
     with f:
-        f.index(('hello' for _ in range(NUM_DOCS)), on_done=response_mock)
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
     response_mock.assert_called()
 
 
@@ -54,7 +60,10 @@ def test_r_l_r_simple(silent_log, parallels, mocker):
         .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
     )
     with f:
-        f.index(('hello' for _ in range(NUM_DOCS)), on_done=response_mock)
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
     response_mock.assert_called()
 
 
@@ -70,7 +79,10 @@ def test_r_r_r_simple(silent_log, parallels, mocker):
         .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
     )
     with f:
-        f.index(('hello' for _ in range(NUM_DOCS)), on_done=response_mock)
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
     response_mock.assert_called()
 
 
@@ -86,7 +98,10 @@ def test_l_r_l_simple(silent_log, parallels, mocker):
         .add()
     )
     with f:
-        f.index(('hello' for _ in range(NUM_DOCS)), on_done=response_mock)
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
     response_mock.assert_called()
 
 
@@ -107,7 +122,10 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
         .add()
     )
     with f:
-        f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
+        f.index(
+            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
     response_mock.assert_called()
 
 
@@ -143,7 +161,10 @@ def test_l_r_l_with_upload_remote(silent_log, parallels, docker_image, mocker):
         .add()
     )
     with f:
-        f.index_ndarray(np.random.random([NUM_DOCS, 100]), on_done=response_mock)
+        f.index(
+            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
     response_mock.assert_called()
 
 
@@ -162,4 +183,4 @@ def test_create_pea_timeout(parallels):
         .add()
     )
     with f:
-        f.index(random_docs(10))
+        f.index(inputs=random_docs(10))

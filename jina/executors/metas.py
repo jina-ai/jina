@@ -1,30 +1,22 @@
 from typing import Dict, Union, List
 
-_defaults = None
-
 
 def get_default_metas() -> Dict:
     """
     Get a copy of default meta variables.
 
-    :return: default metas
+    NOTE: DO NOT ADD MORE ENTRIES HERE!
+
+    :return: a deep copy of the default metas in a new dict
     """
-    import copy
 
-    global _defaults
-
-    if _defaults is None:
-        from ..jaml import JAML
-        from pkg_resources import resource_stream
-
-        with resource_stream(
-            'jina', '/'.join(('resources', 'executors.metas.default.yml'))
-        ) as fp:
-            _defaults = JAML.load(
-                fp
-            )  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
-
-    return copy.deepcopy(_defaults)
+    # NOTE: DO NOT ADD MORE ENTRIES HERE!
+    return {
+        'name': '',  #: a string, the name of the executor
+        'description': '',  #: a string, the description of this executor. It will be used in automatics docs UI
+        'workspace': '',  #: a string, the workspace of the executor
+        'py_modules': '',
+    }  #: a list of strings, the python dependencies of the executor
 
 
 def fill_metas_with_defaults(d: Dict) -> Dict:

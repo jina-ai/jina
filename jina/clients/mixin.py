@@ -7,17 +7,18 @@ from ..helper import run_async
 
 
 class PostMixin:
+    """The Post Mixin class for Client and Flow """
 
     def post(
-            self,
-            on: str,
-            inputs: InputType,
-            on_done: CallbackFnType = None,
-            on_error: CallbackFnType = None,
-            on_always: CallbackFnType = None,
-            parameters: Optional[Dict] = None,
-            target_peapod: Optional[str] = None,
-            **kwargs,
+        self,
+        on: str,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        parameters: Optional[Dict] = None,
+        target_peapod: Optional[str] = None,
+        **kwargs,
     ) -> Optional[List[Response]]:
         """Post a general data request to the Flow.
 
@@ -54,6 +55,7 @@ class PostMixin:
             **kwargs,
         )
 
+    # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')
     search = partialmethod(post, '/search')
     update = partialmethod(post, '/update')
@@ -61,17 +63,18 @@ class PostMixin:
 
 
 class AsyncPostMixin:
+    """The Async Post Mixin class for AsyncClient and AsyncFlow """
 
     async def post(
-            self,
-            on: str,
-            inputs: InputType,
-            on_done: CallbackFnType = None,
-            on_error: CallbackFnType = None,
-            on_always: CallbackFnType = None,
-            parameters: Optional[Dict] = None,
-            target_peapod: Optional[str] = None,
-            **kwargs,
+        self,
+        on: str,
+        inputs: InputType,
+        on_done: CallbackFnType = None,
+        on_error: CallbackFnType = None,
+        on_always: CallbackFnType = None,
+        parameters: Optional[Dict] = None,
+        target_peapod: Optional[str] = None,
+        **kwargs,
     ) -> AsyncGenerator[None, Response]:
         """Post a general data request to the Flow.
 
@@ -83,20 +86,21 @@ class AsyncPostMixin:
         :param parameters: the kwargs that will be sent to the executor
         :param target_peapod: a regex string represent the certain peas/pods request targeted
         :param kwargs: additional parameters
-        :return: None
+        :yield: Response object
         """
         async for r in self.client._get_results(
-                inputs=inputs,
-                on_done=on_done,
-                on_error=on_error,
-                on_always=on_always,
-                exec_endpoint=on,
-                target_peapod=target_peapod,
-                parameters=parameters,
-                **kwargs,
+            inputs=inputs,
+            on_done=on_done,
+            on_error=on_error,
+            on_always=on_always,
+            exec_endpoint=on,
+            target_peapod=target_peapod,
+            parameters=parameters,
+            **kwargs,
         ):
             yield r
 
+    # ONLY CRUD, for other request please use `.post`
     index = partialmethod(post, '/index')
     search = partialmethod(post, '/search')
     update = partialmethod(post, '/update')

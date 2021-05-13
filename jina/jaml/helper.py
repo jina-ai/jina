@@ -125,7 +125,6 @@ def parse_config_source(
     :param allow_yaml_file: flag
     :param allow_builtin_resource: flag
     :param allow_raw_yaml_content: flag
-    :param allow_raw_driver_yaml_content: flag
     :param allow_class_type: flag
     :param allow_dict: flag
     :param allow_json: flag

@@ -17,3 +17,9 @@ pods:
       metas:
         py_modules:
           - executors.py
+  - name: evaluator
+    uses:
+      jtype: MyEvaluator
+      metas:
+        py_modules:
+          - executors.py

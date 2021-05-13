@@ -1,5 +1,3 @@
-
-
 import argparse
 import asyncio
 import os
@@ -64,8 +62,6 @@ class Zmqlet:
         self._register_pollin()
 
         self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
-        if self.in_sock_type == zmq.DEALER:
-            self._send_idle_to_router()
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
@@ -208,12 +204,14 @@ class Zmqlet:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def close(self):
+    def close(self, *args, **kwargs):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
 
         .. note::
             This method is idempotent.
 
+        :param args: Extra positional arguments
+        :param kwargs: Extra key-value arguments
         """
         if not self.is_closed:
             self.is_closed = True
@@ -369,11 +367,15 @@ class ZmqStreamlet(Zmqlet):
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
-    def close(self):
+    def close(self, flush: bool = True, *args, **kwargs):
         """Close all sockets and shutdown the ZMQ context associated to this `Zmqlet`.
 
         .. note::
             This method is idempotent.
+
+        :param flush: flag indicating if `sockets` need to be flushed before close is done
+        :param args: Extra positional arguments
+        :param kwargs: Extra key-value arguments
         """
         if not self.is_closed and self.in_sock_type == zmq.DEALER:
             try:
@@ -386,8 +388,9 @@ class ZmqStreamlet(Zmqlet):
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
-            for s in self.opened_socks:
-                s.flush()
+            if flush:
+                for s in self.opened_socks:
+                    s.flush()
             super().close()
             if hasattr(self, 'io_loop'):
                 try:

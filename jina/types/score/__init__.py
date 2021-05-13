@@ -183,4 +183,3 @@ class NamedScore(ProtoTypeMixin):
                     setattr(self._pb_body, k, v)
                 else:
                     raise AttributeError(f'{k} is not recognized')
-

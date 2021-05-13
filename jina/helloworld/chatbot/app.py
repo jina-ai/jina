@@ -19,9 +19,9 @@ def hello_world(args):
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
     with ImportExtensions(
-            required=True,
-            help_text='this demo requires Pytorch and Transformers to be installed, '
-                      'if you haven\'t, please do `pip install jina[torch,transformers]`',
+        required=True,
+        help_text='this demo requires Pytorch and Transformers to be installed, '
+        'if you haven\'t, please do `pip install jina[torch,transformers]`',
     ):
         import transformers, torch
 
@@ -43,8 +43,8 @@ def hello_world(args):
 
     f = (
         Flow()
-            .add(uses=MyTransformer, parallel=args.parallel)
-            .add(uses=MyIndexer, workspace=args.workdir)
+        .add(uses=MyTransformer, parallel=args.parallel)
+        .add(uses=MyIndexer, workspace=args.workdir)
     )
 
     # index it!
@@ -53,7 +53,8 @@ def hello_world(args):
 
     # switch to REST gateway
     url_html_path = 'file://' + os.path.abspath(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static/index.html'))
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static/index.html')
+    )
     f.use_rest_gateway(args.port_expose)
     with f:
         try:

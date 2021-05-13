@@ -1,5 +1,4 @@
 """Module wrapping the Client of Jina."""
-
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
 from .helper import callback_exec
 from .mixin import PostMixin
@@ -14,7 +13,10 @@ class Client(PostMixin, BaseClient):
     """
 
     @property
-    def client(self):
+    def client(self) -> 'Client':
+        """Return the client object itself
+
+        .. # noqa: DAR201"""
         return self
 
 

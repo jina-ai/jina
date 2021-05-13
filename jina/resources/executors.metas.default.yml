@@ -1,4 +1,0 @@
-name:  #: the name of the executor
-description:  #: the description of this executor. It will be used in automatics docs UI
-workspace:  #: the workspace of the executor
-py_modules:  #: the python dependencies of the executor

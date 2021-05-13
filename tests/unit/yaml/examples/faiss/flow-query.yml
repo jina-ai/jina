@@ -12,6 +12,5 @@ pods:
     timeout_ready: 10000
     volumes: './workspace'
   - name: ranker
-    uses: _pass
   - name: doc_indexer
     parallel: 1

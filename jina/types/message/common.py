@@ -14,14 +14,14 @@ class ControlMessage(Message):
     Class of the protobuf message.
 
     :param command: Command with string content. (e.g. 'IDLE', 'CANCEL', 'TERMINATE', 'STATUS')
-    :param pod_name: Name of the current pod.
+    :param pod_name: Name of the current pod, to represent routes only.
     :param identity: The identity of the current pod
     :param args: Additional positional arguments which are just used for the parent initialization
     :param kwargs: Additional keyword arguments which are just used for the parent initialization
     """
 
     def __init__(
-        self, command: str, pod_name: str = 'ctl', identity: str = '', *args, **kwargs
+        self, command: str, pod_name: str = '', identity: str = '', *args, **kwargs
     ):
         req = Request(jina_pb2.RequestProto())
         if command in _available_commands:
@@ -36,3 +36,6 @@ class ControlMessage(Message):
             None, req, pod_name=pod_name, identity=identity, *args, **kwargs
         )
         req.request_type = 'control'
+        args = kwargs.get('args', None)
+        if args:
+            req.args = args

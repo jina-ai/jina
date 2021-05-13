@@ -21,6 +21,5 @@ pods:
   - name: doc_indexer
     needs: loader
   - name: join_all
-    uses: _pass
     needs: [doc_indexer, chunk_indexer]
     read_only: true

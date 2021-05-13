@@ -90,7 +90,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         path='/status',
         summary='Get the status of Jina',
         response_model=JinaStatusModel,
-        tags=['jina'],
+        tags=['Management'],
     )
     async def _status():
         _info = get_full_version()
@@ -100,7 +100,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'used_memory': used_memory_readable(),
         }
 
-    @app.post(path='/post/', deprecated=True)
+    @app.post(
+        path='/post', summary='Post a general data request to Jina', tags=['General']
+    )
     async def post(body: JinaRequestModel):
         """
         Request mode service and return results in JSON, a deprecated interface.
@@ -170,25 +172,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
 
-    @app.post(
-        path='/reload', summary='Reload the executor of certain Peas/Pods in the Flow'
-    )
-    async def reload_api(body: JinaReloadRequestModel):
-        """
-        Reload the executor of certain peas/pods in the Flow
-
-        :param body: reload request.
-        :return: Response of the results.
-        """
-
-        bd = body.dict()
-        bd['mode'] = RequestType.CONTROL
-        bd['command'] = 'RELOAD'
-        return StreamingResponse(
-            result_in_stream(request_generator(data=[], **bd)),
-            media_type='application/json',
-        )
-
     async def result_in_stream(req_iter):
         """
         Streams results from AsyncPrefetchCall as json
@@ -197,7 +180,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :yield: result
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
-            yield MessageToJson(k)
+            yield MessageToJson(
+                k,
+                including_default_value_fields=True,
+                preserving_proto_field_name=True,
+                use_integers_for_enums=True,
+            )
 
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):

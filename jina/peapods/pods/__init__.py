@@ -1,4 +1,5 @@
 import copy
+import sys
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -7,24 +8,83 @@ from typing import Dict, Union, Set
 from typing import List, Optional
 
 from ..peas import BasePea
-from ... import __default_host__
+from ... import __default_host__, __default_executor__
 from ... import helper
-from ...enums import SchedulerType, PodRoleType
-from ...enums import SocketType, PeaRoleType, PollingType
+from ...enums import SchedulerType, PodRoleType, SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
-class BasePod(ExitStack):
+class ExitFIFO(ExitStack):
+    """
+    ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
+
+    .. note::
+    The `__exit__` method is copied literally from `ExitStack` and changed the call:
+    `is_sync, cb = self._exit_callbacks.pop()` to `is_sync, cb = self._exit_callbacks.popleft()`
+
+    """
+
+    def __exit__(self, *exc_details):
+        received_exc = exc_details[0] is not None
+
+        # We manipulate the exception state so it behaves as though
+        # we were actually nesting multiple with statements
+        frame_exc = sys.exc_info()[1]
+
+        def _fix_exception_context(new_exc, old_exc):
+            # Context may not be correct, so find the end of the chain
+            while 1:
+                exc_context = new_exc.__context__
+                if exc_context is old_exc:
+                    # Context is already set correctly (see issue 20317)
+                    return
+                if exc_context is None or exc_context is frame_exc:
+                    break
+                new_exc = exc_context
+            # Change the end of the chain to point to the exception
+            # we expect it to reference
+            new_exc.__context__ = old_exc
+
+        # Callbacks are invoked in LIFO order to match the behaviour of
+        # nested context managers
+        suppressed_exc = False
+        pending_raise = False
+        while self._exit_callbacks:
+            is_sync, cb = self._exit_callbacks.popleft()
+            assert is_sync
+            try:
+                if cb(*exc_details):
+                    suppressed_exc = True
+                    pending_raise = False
+                    exc_details = (None, None, None)
+            except:
+                new_exc_details = sys.exc_info()
+                # simulate the stack of exceptions by setting the context
+                _fix_exception_context(new_exc_details[1], exc_details[1])
+                pending_raise = True
+                exc_details = new_exc_details
+        if pending_raise:
+            try:
+                # bare "raise exc_details[1]" replaces our carefully
+                # set-up context
+                fixed_ctx = exc_details[1].__context__
+                raise exc_details[1]
+            except BaseException:
+                exc_details[1].__context__ = fixed_ctx
+                raise
+        return received_exc and suppressed_exc
+
+
+class BasePod(ExitFIFO):
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
     """
 
     def __init__(
-            self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
-        self.peas = []  # type: List['BasePea']
         self.args = args
         self._set_conditional_args(self.args)
         self.needs = (
@@ -46,7 +106,10 @@ class BasePod(ExitStack):
         raise NotImplemented()
 
     def close(self):
-        """Stop all :class:`BasePea` in this BasePod."""
+        """Stop all :class:`BasePea` in this BasePod.
+
+        .. # noqa: DAR201
+        """
         self.__exit__(None, None, None)
 
     @staticmethod
@@ -110,10 +173,6 @@ class BasePod(ExitStack):
         """
         return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
 
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
-
     def __enter__(self) -> 'BasePod':
         return self.start()
 
@@ -123,7 +182,7 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _copy_to_head_args(
-            args: Namespace, polling_type: PollingType, as_router: bool = True
+        args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the outgoing args of the head router
@@ -147,7 +206,7 @@ class BasePod(ExitStack):
         else:
             _head_args.socket_out = SocketType.PUB_BIND
         if as_router:
-            _head_args.uses = args.uses_before or '_pass'
+            _head_args.uses = args.uses_before or __default_executor__
 
         if as_router:
             _head_args.pea_role = PeaRoleType.HEAD
@@ -164,7 +223,7 @@ class BasePod(ExitStack):
 
     @staticmethod
     def _copy_to_tail_args(
-            args: Namespace, polling_type: PollingType, as_router: bool = True
+        args: Namespace, polling_type: PollingType, as_router: bool = True
     ) -> Namespace:
         """
         Set the incoming args of the tail router
@@ -182,7 +241,7 @@ class BasePod(ExitStack):
         _tail_args.uses = None
 
         if as_router:
-            _tail_args.uses = args.uses_after or '_pass'
+            _tail_args.uses = args.uses_after or __default_executor__
             if args.name:
                 _tail_args.name = f'{args.name}/tail'
             else:
@@ -218,7 +277,7 @@ class BasePod(ExitStack):
 
         # is BIND & CONNECT all on the same remote?
         bind_conn_same_remote = (
-                not bind_local and not conn_local and (bind_args.host == connect_args.host)
+            not bind_local and not conn_local and (bind_args.host == connect_args.host)
         )
 
         if platform in ('linux', 'linux2'):
@@ -258,6 +317,11 @@ class BasePod(ExitStack):
         """
         ...
 
+    @abstractmethod
+    def join(self):
+        """Wait until all pods and peas exit."""
+        ...
+
 
 class Pod(BasePod):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
@@ -267,14 +331,16 @@ class Pod(BasePod):
     """
 
     def __init__(
-            self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__(args, needs)
+        self.peas = []  # type: List['BasePea']
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
             self.peas_args = args
         else:
             self.peas_args = self._parse_args(args)
+        self._activated = False
 
     @property
     def is_singleton(self) -> bool:
@@ -314,7 +380,7 @@ class Pod(BasePod):
         return self.first_pea_args.host
 
     def _parse_args(
-            self, args: Namespace
+        self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_base_pod_args(args)
 
@@ -387,9 +453,22 @@ class Pod(BasePod):
         .. # noqa: DAR201
         """
         return (
-                ([self.peas_args['head']] if self.peas_args['head'] else [])
-                + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
-                + self.peas_args['peas']
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
+            + self.peas_args['peas']
+        )
+
+    @property
+    def _fifo_args(self) -> List[Namespace]:
+        """Get all arguments of all Peas in this BasePod.
+        .. # noqa: DAR201
+        """
+        # For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and
+        # some messages are not received by the inner peas. That's why ExitFIFO is needed
+        return (
+            ([self.peas_args['head']] if self.peas_args['head'] else [])
+            + self.peas_args['peas']
+            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
         )
 
     @property
@@ -403,6 +482,18 @@ class Pod(BasePod):
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
+    def _enter_pea(self, pea: 'BasePea') -> None:
+        self.peas.append(pea)
+        self.enter_context(pea)
+
+    def _activate(self):
+        # order is good. Activate from tail to head
+        for pea in reversed(self.peas):
+            if pea.args.socket_in == SocketType.DEALER_CONNECT:
+                pea.runtime.activate()
+
+        self._activated = True
+
     def start(self) -> 'BasePod':
         """
         Start to run all :class:`BasePea` in this BasePod.
@@ -414,15 +505,17 @@ class Pod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self.all_args:
+            for _args in self._fifo_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self.all_args:
+                for _args in self._fifo_args:
                     self._enter_pea(BasePea(_args))
+
+                self._activate()
             except:
                 self.close()
                 raise
@@ -442,6 +535,7 @@ class Pod(BasePod):
         try:
             for p in self.peas:
                 p.wait_start_success()
+            self._activate()
         except:
             self.close()
             raise
@@ -451,10 +545,12 @@ class Pod(BasePod):
         try:
             for p in self.peas:
                 p.join()
+                self._activated = False
         except KeyboardInterrupt:
             pass
         finally:
             self.peas.clear()
+            self._activated = False
 
     @property
     def is_ready(self) -> bool:
@@ -466,20 +562,20 @@ class Pod(BasePod):
 
         .. # noqa: DAR201
         """
-        return all(p.is_ready.is_set() for p in self.peas)
+        return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
     def _set_after_to_pass(self, args):
         # TODO: check if needed
         # remark 1: i think it's related to route driver.
         if hasattr(args, 'polling') and args.polling.is_push:
             # ONLY reset when it is push
-            args.uses_after = '_pass'
+            args.uses_after = __default_executor__
 
     @staticmethod
     def _set_peas_args(
-            args: Namespace,
-            head_args: Optional[Namespace] = None,
-            tail_args: Namespace = None,
+        args: Namespace,
+        head_args: Optional[Namespace] = None,
+        tail_args: Namespace = None,
     ) -> List[Namespace]:
         result = []
         _host_list = (
@@ -544,7 +640,6 @@ class Pod(BasePod):
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
             # can be deducted based on the previous and next pods
-            self._set_after_to_pass(args)
             self.is_head_router = True
             self.is_tail_router = True
             parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
@@ -554,8 +649,12 @@ class Pod(BasePod):
                 head_args=parsed_args['head'],
                 tail_args=parsed_args['tail'],
             )
-        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-                getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+        elif (
+            getattr(args, 'uses_before', None)
+            and args.uses_before != __default_executor__
+        ) or (
+            getattr(args, 'uses_after', None)
+            and args.uses_after != __default_executor__
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):

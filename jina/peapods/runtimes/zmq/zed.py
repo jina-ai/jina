@@ -80,6 +80,7 @@ class ZEDRuntime(ZMQRuntime):
                     replica_id=getattr(self.args, 'replica_id', -1),
                     read_only=self.args.read_only,
                     parent_workspace=self.args.workspace,
+                    dump_path=getattr(self.args, 'dump_path', None),
                 ),
             )
         except BadConfigSource as ex:
@@ -129,9 +130,14 @@ class ZEDRuntime(ZMQRuntime):
             self._partial_requests = [v.request for v in self._partial_messages]
             part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)'
 
-        self.logger.info(
-            f'recv {msg.envelope.request_type} {part_str} from {msg.colored_route}'
-        )
+        info_msg = f'recv {msg.envelope.request_type} '
+        if self.request_type == 'DataRequest':
+            info_msg += f'({self.request.header.exec_endpoint}) '
+        elif self.request_type == 'ControlRequest':
+            info_msg += f'({self.request.command}) '
+        info_msg += f'{part_str} from {msg.colored_route}'
+        self.logger.info(info_msg)
+
         return self
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
@@ -169,6 +175,10 @@ class ZEDRuntime(ZMQRuntime):
             msg.envelope.status.code != jina_pb2.StatusProto.ERROR
             or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
+
+            if not re.match(self.request.header.target_peapod, self.name):
+                return self
+
             if self.request_type == 'DataRequest':
 
                 # migrated from the previously RouteDriver logic
@@ -217,7 +227,7 @@ class ZEDRuntime(ZMQRuntime):
             raise RuntimeTerminated
         elif self.request.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
-            self.request.args = vars(self.args)
+            self.request.parameters = vars(self.args)
         elif self.request.command == 'IDLE':
             self._idle_dealer_ids.add(self.envelope.receiver_id)
             self._zmqlet.resume_pollin()
@@ -227,21 +237,10 @@ class ZEDRuntime(ZMQRuntime):
         elif self.request.command == 'CANCEL':
             if self.envelope.receiver_id in self._idle_dealer_ids:
                 self._idle_dealer_ids.remove(self.envelope.receiver_id)
-        elif self.request.command == 'DUMP':
-            # TODO: rewrite dump logic here, perhaps ``self._executor.save()``
-            pass
-        elif self.request.command == 'RELOAD':
-            if self.request.targets:
-                patterns = self.request.targets
-                if isinstance(patterns, str):
-                    patterns = [patterns]
-                for p in patterns:
-                    if re.match(p, self.name):
-                        self.logger.info(
-                            f'reloading the Executor `{self._executor.name}` in `{self.name}`'
-                        )
-                        self._load_executor()
-                        break
+        elif self.request.command == 'ACTIVATE':
+            self._zmqlet._send_idle_to_router()
+        elif self.request.command == 'DEACTIVATE':
+            self._zmqlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {self.request.command}'
@@ -268,7 +267,12 @@ class ZEDRuntime(ZMQRuntime):
             # this is the proper way to end when a terminate signal is sent
             self._zmqlet.send_message(msg)
             self._zmqlet.close()
-        except (SystemError, zmq.error.ZMQError, KeyboardInterrupt) as ex:
+        except (KeyboardInterrupt) as kbex:
+            # save executor
+            self.logger.info(f'{kbex!r} causes the breaking from the event loop')
+            self._zmqlet.send_message(msg)
+            self._zmqlet.close(flush=False)
+        except (SystemError, zmq.error.ZMQError) as ex:
             # save executor
             self.logger.info(f'{ex!r} causes the breaking from the event loop')
             self._zmqlet.send_message(msg)
@@ -385,7 +389,11 @@ class ZEDRuntime(ZMQRuntime):
             return result
 
     def _get_docs_matrix(self, field) -> List['DocumentArray']:
-        """ DocumentArray from (multiple) requests"""
+        """DocumentArray from (multiple) requests
+
+        :param field: either `docs` or `groundtruths`
+
+        .. # noqa: DAR201"""
         if self.expect_parts > 1:
             result = [getattr(r, field) for r in reversed(self.partial_requests)]
         else:
@@ -399,22 +407,30 @@ class ZEDRuntime(ZMQRuntime):
 
     @property
     def docs(self) -> 'DocumentArray':
-        """Return a DocumentArray by concatenate (multiple) ``requests.docs``"""
+        """Return a DocumentArray by concatenate (multiple) ``requests.docs``
+
+        .. # noqa: DAR201"""
         return self._get_docs('docs')
 
     @property
     def groundtruths(self) -> 'DocumentArray':
-        """Return a DocumentArray by concatenate (multiple) ``requests.groundtruths``"""
+        """Return a DocumentArray by concatenate (multiple) ``requests.groundtruths``
+
+        .. # noqa: DAR201"""
         return self._get_docs('groundtruths')
 
     @property
     def docs_matrix(self) -> List['DocumentArray']:
-        """Return a list of DocumentArray from multiple requests"""
+        """Return a list of DocumentArray from multiple requests
+
+        .. # noqa: DAR201"""
         return self._get_docs_matrix('docs')
 
     @property
     def groundtruths_matrix(self) -> List['DocumentArray']:
-        """A flattened DocumentArray from (multiple) requests"""
+        """A flattened DocumentArray from (multiple) requests
+
+        .. # noqa: DAR201"""
         return self._get_docs_matrix('groundtruths')
 
     @property

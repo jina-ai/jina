@@ -683,14 +683,17 @@ class HubIO:
             new_requirements = []
             update = False
             with open(requirements_path, 'r') as fp:
-                requirements = pkg_resources.parse_requirements(fp)
-                for req in requirements:
-                    if 'jina' in str(req):
-                        update = True
-                        self.logger.info(f'Freezing jina version to {jina_version}')
-                        new_requirements.append(f'jina=={jina_version}')
-                    else:
-                        new_requirements.append(str(req))
+                try:
+                    requirements = pkg_resources.parse_requirements(fp)
+                    for req in requirements:
+                        if 'jina' in str(req):
+                            update = True
+                            self.logger.info(f'Freezing jina version to {jina_version}')
+                            new_requirements.append(f'jina=={jina_version}')
+                        else:
+                            new_requirements.append(str(req))
+                except:
+                    pass
 
             if update:
                 with open(requirements_path, 'w') as fp:

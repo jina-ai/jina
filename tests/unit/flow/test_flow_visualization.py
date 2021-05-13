@@ -1,6 +1,7 @@
 import os
 
 from jina.flow import Flow
+from jina import Executor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -53,17 +54,18 @@ def test_visualization_plot_in_middle(tmpdir):
 
 
 def test_flow_before_after_plot(tmpdir):
-    Flow().add(uses_before='_pass', uses_after='_pass', name='p1').plot(
+
+    Flow().add(uses_before=Executor, uses_after=Executor, name='p1').plot(
         os.path.join(tmpdir, 'flow.svg')
     )
     assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))
 
 
 def test_flow_before_plot(tmpdir):
-    Flow().add(uses_before='_pass', name='p1').plot(os.path.join(tmpdir, 'flow.svg'))
+    Flow().add(uses_before=Executor, name='p1').plot(os.path.join(tmpdir, 'flow.svg'))
     assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))
 
 
 def test_flow_after_plot(tmpdir):
-    Flow().add(uses_after='_pass', name='p1').plot(os.path.join(tmpdir, 'flow.svg'))
+    Flow().add(uses_after=Executor, name='p1').plot(os.path.join(tmpdir, 'flow.svg'))
     assert os.path.exists(os.path.join(tmpdir, 'flow.svg'))

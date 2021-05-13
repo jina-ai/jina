@@ -1,5 +1,5 @@
+from helper import foo
 from jina import Executor
-from .helper import foo
 
 
 class DummyHubExecutorAbs(Executor):

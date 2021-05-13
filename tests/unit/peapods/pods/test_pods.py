@@ -6,6 +6,7 @@ from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
+from jina import __default_executor__
 
 
 @pytest.fixture(scope='function')
@@ -27,7 +28,7 @@ def pod_args_singleton():
         '--name',
         'test2',
         '--uses-before',
-        '_pass',
+        __default_executor__,
         '--parallel',
         '1',
         '--host',
@@ -137,19 +138,44 @@ def test_gateway_pod(runtime, restful, runtime_cls):
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
-def test_pod_naming_with_parallel(runtime):
+def test_pod_naming_with_parallel_any(runtime):
     args = set_pod_parser().parse_args(
         ['--name', 'pod', '--parallel', '2', '--runtime-backend', runtime]
     )
     with Pod(args) as bp:
         assert bp.peas[0].name == 'pod/head'
-        assert bp.peas[1].name == 'pod/tail'
-        assert bp.peas[2].name == 'pod/0'
-        assert bp.peas[3].name == 'pod/1'
+        assert bp.peas[1].name == 'pod/0'
+        assert bp.peas[2].name == 'pod/1'
+        assert bp.peas[3].name == 'pod/tail'
         assert bp.peas[0].runtime.name == 'pod/head/ZEDRuntime'
-        assert bp.peas[1].runtime.name == 'pod/tail/ZEDRuntime'
-        assert bp.peas[2].runtime.name == 'pod/0/ZEDRuntime'
-        assert bp.peas[3].runtime.name == 'pod/1/ZEDRuntime'
+        assert bp.peas[1].runtime.name == 'pod/0/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod/1/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod/tail/ZEDRuntime'
+
+
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
+def test_pod_naming_with_parallel_all(runtime):
+    args = set_pod_parser().parse_args(
+        [
+            '--name',
+            'pod',
+            '--parallel',
+            '2',
+            '--runtime-backend',
+            runtime,
+            '--polling',
+            'ALL',
+        ]
+    )
+    with Pod(args) as bp:
+        assert bp.peas[0].name == 'pod/head'
+        assert bp.peas[1].name == 'pod/0'
+        assert bp.peas[2].name == 'pod/1'
+        assert bp.peas[3].name == 'pod/tail'
+        assert bp.peas[0].runtime.name == 'pod/head/ZEDRuntime'
+        assert bp.peas[1].runtime.name == 'pod/0/ZEDRuntime'
+        assert bp.peas[2].runtime.name == 'pod/1/ZEDRuntime'
+        assert bp.peas[3].runtime.name == 'pod/tail/ZEDRuntime'
 
 
 def test_pod_args_remove_uses_ba():
@@ -158,13 +184,20 @@ def test_pod_args_remove_uses_ba():
         assert p.num_peas == 1
 
     args = set_pod_parser().parse_args(
-        ['--uses-before', '_pass', '--uses-after', '_pass']
+        ['--uses-before', __default_executor__, '--uses-after', __default_executor__]
     )
     with Pod(args) as p:
         assert p.num_peas == 1
 
     args = set_pod_parser().parse_args(
-        ['--uses-before', '_pass', '--uses-after', '_pass', '--parallel', '2']
+        [
+            '--uses-before',
+            __default_executor__,
+            '--uses-after',
+            __default_executor__,
+            '--parallel',
+            '2',
+        ]
     )
     with Pod(args) as p:
         assert p.num_peas == 4

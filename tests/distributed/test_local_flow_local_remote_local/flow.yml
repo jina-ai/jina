@@ -6,10 +6,8 @@ with:
 pods:
   - name: crafter
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
-    uses: _pass
     read_only: False
   - name: encoder
-    uses: _pass
     host: $JINA_ENCODER_HOST
     port_in: 45003
     port_ctrl: 45006
@@ -17,7 +15,6 @@ pods:
     needs: $JINA_ENCODER_NEEDS
   - name: indexer
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
-    uses: _pass
     read_only: False
     method: $JINA_INDEXER_METHOD
     needs: $JINA_INDEXER_NEEDS
