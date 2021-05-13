@@ -222,7 +222,7 @@ class ZEDRuntime(ZMQRuntime):
             raise RuntimeTerminated
         elif self.request.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
-            self.request.args = vars(self.args)
+            self.request.parameters = vars(self.args)
         elif self.request.command == 'IDLE':
             self._idle_dealer_ids.add(self.envelope.receiver_id)
             self._zmqlet.resume_pollin()
@@ -236,21 +236,6 @@ class ZEDRuntime(ZMQRuntime):
             self._zmqlet._send_idle_to_router()
         elif self.request.command == 'DEACTIVATE':
             self._zmqlet._send_cancel_to_router()
-        elif self.request.command == 'DUMP':
-            # TODO: rewrite dump logic here, perhaps ``self._executor.save()``
-            pass
-        elif self.request.command == 'RELOAD':
-            if self.request.targets:
-                patterns = self.request.targets
-                if isinstance(patterns, str):
-                    patterns = [patterns]
-                for p in patterns:
-                    if re.match(p, self.name):
-                        self.logger.info(
-                            f'reloading the Executor `{self._executor.name}` in `{self.name}`'
-                        )
-                        self._load_executor()
-                        break
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {self.request.command}'
