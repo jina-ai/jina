@@ -25,24 +25,25 @@ class CompoundQueryExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._dump_path = self.metas.dump_path
-        if os.path.exists(self._dump_path):
+        if self._dump_path is not None and os.path.exists(self._dump_path):
             self._docs = DocumentArray.load(self._dump_path)
         else:
             self._docs = DocumentArray()
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters, **kwargs):
-        a = np.stack(docs.get_attributes('embedding'))
-        b = np.stack(self._docs.get_attributes('embedding'))
-        q_emb = _ext_A(_norm(a))
-        d_emb = _ext_B(_norm(b))
-        dists = _cosine(q_emb, d_emb)
-        idx, dist = self._get_sorted_top_k(dists, int(parameters['top_k']))
-        for _q, _ids, _dists in zip(docs, idx, dist):
-            for _id, _dist in zip(_ids, _dists):
-                d = Document(self._docs[int(_id)], copy=True)
-                d.score.value = 1 - _dist
-                _q.matches.append(d)
+        if len(self._docs) > 0:
+            a = np.stack(docs.get_attributes('embedding'))
+            b = np.stack(self._docs.get_attributes('embedding'))
+            q_emb = _ext_A(_norm(a))
+            d_emb = _ext_B(_norm(b))
+            dists = _cosine(q_emb, d_emb)
+            idx, dist = self._get_sorted_top_k(dists, int(parameters['top_k']))
+            for _q, _ids, _dists in zip(docs, idx, dist):
+                for _id, _dist in zip(_ids, _dists):
+                    d = Document(self._docs[int(_id)], copy=True)
+                    d.score.value = 1 - _dist
+                    _q.matches.append(d)
 
 
 def _get_ones(x, y):

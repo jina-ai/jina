@@ -1,6 +1,4 @@
 jtype: KeyValueDBMSIndexer
-with:
-  index_filename: keyvalue.bin
 metas:
   workspace: workspace_dbms
   name: keyvalue

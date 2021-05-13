@@ -1,6 +1,5 @@
 import os
-from contextlib import ExitStack
-from typing import List
+from ..helpers import create_flow
 
 import numpy as np
 import pytest
@@ -38,20 +37,17 @@ def _path_size_remote(this_dump_path):
 
 def _create_flows():
     # create dbms flow
-    dbms_deps = [os.path.join(cur_dir, 'indexer_dbms.yml')]
-    dbms_flow_id = _create_flow(
-        dbms_flow_yml,
-        dbms_deps,
-        flow_url=f'http://localhost:{JINAD_PORT_DBMS}/flows',
-        ws_url=f'http://localhost:{JINAD_PORT_DBMS}/workspaces',
+    dbms_flow_id = create_flow(
+        flow_yaml=dbms_flow_yml,
+        pod_dir=os.path.join(cur_dir, 'pods'),
+        url=f'http://localhost:{JINAD_PORT_DBMS}',
     )
+
     # create query flow
-    query_deps = [os.path.join(cur_dir, 'indexer_query.yml')]
-    query_flow_id = _create_flow(
-        query_flow_yml,
-        query_deps,
-        flow_url=f'http://localhost:{JINAD_PORT_QUERY}/flows',
-        ws_url=f'http://localhost:{JINAD_PORT_QUERY}/workspaces',
+    query_flow_id = create_flow(
+        flow_yaml=query_flow_yml,
+        pod_dir=os.path.join(cur_dir, 'pods'),
+        url=f'http://localhost:{JINAD_PORT_QUERY}',
     )
     return dbms_flow_id, query_flow_id
 
@@ -103,37 +99,6 @@ def test_dump_dbms_remote(docker_compose):
     )
     for doc in r['search']['docs']:
         assert len(doc.get('matches')) == nr_docs
-
-
-def _create_flow(
-    flow_yaml: str,
-    deps: List[str],
-    flow_url: str,
-    ws_url: str,
-) -> str:
-    workspace_id = _create_workspace(deps, url=ws_url)
-    with open(flow_yaml, 'rb') as f:
-        r = requests.post(
-            flow_url, data={'workspace_id': workspace_id}, files={'flow': f}
-        )
-        logger.info(f'Checking if the flow creation has succeeded: {r.json()}')
-        assert r.status_code == 201
-        return r.json()
-
-
-def _create_workspace(filepaths: List[str], url: str) -> str:
-    with ExitStack() as file_stack:
-        files = [
-            ('files', file_stack.enter_context(open(filepath, 'rb')))
-            for filepath in filepaths
-        ]
-        logger.info(f'uploading {files}')
-        r = requests.post(url, files=files)
-        assert r.status_code == 201
-
-        workspace_id = r.json()
-        logger.info(f'Got workspace_id: {workspace_id}')
-        return workspace_id
 
 
 def _send_rest_request(port_expose, endpoint, method, data, timeout=13):
