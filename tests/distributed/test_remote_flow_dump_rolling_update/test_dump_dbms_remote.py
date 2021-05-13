@@ -95,20 +95,33 @@ def test_dump_dbms_remote(docker_compose):
 
     # data request goes to client
     r = _send_rest_request(
-        REST_PORT_QUERY, 'search', 'post', [doc.dict() for doc in docs[:nr_search]]
+        REST_PORT_QUERY,
+        'search',
+        'post',
+        [doc.dict() for doc in docs[:nr_search]],
+        params={'top_k': 100},
     )
-    for doc in r['search']['docs']:
+    for doc in r['data']['docs']:
         assert len(doc.get('matches')) == nr_docs
 
 
 def _send_rest_request(
-    port_expose, endpoint, method, data, params=None, target_peapod=None, timeout=13
+    port_expose,
+    endpoint,
+    method,
+    data,
+    exec_endpoint=None,
+    params=None,
+    target_peapod=None,
+    timeout=13,
 ):
     json = {'data': data}
     if params:
-        json['params'] = params
+        json['parameters'] = params
     if target_peapod:
         json['target_peapod'] = target_peapod
+    if exec_endpoint:
+        json['exec_endpoint'] = exec_endpoint
     url = f'http://0.0.0.0:{port_expose}/{endpoint}'
     r = getattr(requests, method)(url, json=json, timeout=timeout)
 
@@ -138,7 +151,7 @@ def _jinad_dump(pod_name, dump_path, shards, url):
     }
     # url params
     logger.info(f'sending dump request')
-    _send_rest_request(REST_PORT_DBMS, 'dump', 'post', [], params, pod_name)
+    _send_rest_request(REST_PORT_DBMS, 'post', 'post', [], '/dump', params, pod_name)
 
 
 def _jinad_rolling_update(pod_name, dump_path, url):

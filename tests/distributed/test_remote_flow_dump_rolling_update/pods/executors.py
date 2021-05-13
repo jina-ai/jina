@@ -33,6 +33,20 @@ class CompoundQueryExecutor(Executor):
         else:
             self._docs = DocumentArray()
 
+    @staticmethod
+    def _get_sorted_top_k(dist: 'np.array', top_k: int):
+        if top_k >= dist.shape[1]:
+            idx = dist.argsort(axis=1)[:, :top_k]
+            dist = np.take_along_axis(dist, idx, axis=1)
+        else:
+            idx_ps = dist.argpartition(kth=top_k, axis=1)[:, :top_k]
+            dist = np.take_along_axis(dist, idx_ps, axis=1)
+            idx_fs = dist.argsort(axis=1)
+            idx = np.take_along_axis(idx_ps, idx_fs, axis=1)
+            dist = np.take_along_axis(dist, idx_fs, axis=1)
+
+        return idx, dist
+
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters, **kwargs):
         if len(self._docs) > 0:
