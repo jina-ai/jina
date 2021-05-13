@@ -5,7 +5,7 @@ from typing import Dict, Optional, Tuple
 import numpy as np
 
 from jina import Executor, DocumentArray, requests, Document, Flow
-from .helper import _norm, _ext_A, _ext_B, _cosine
+from helper import _norm, _ext_A, _ext_B, _cosine
 
 
 class Segmenter(Executor):
@@ -75,10 +75,9 @@ class TextEncoder(Executor):
         self.model = AutoModel.from_pretrained(
             self.pretrained_model_name_or_path, output_hidden_states=True
         )
-        self.on_gpu = False
-        self.device = torch.device('cuda:0') if self.on_gpu else torch.device('cpu')
+        self.device = torch.device('cpu')
 
-        if self.acceleration == 'quant' and not self.on_gpu:
+        if self.acceleration == 'quant':
             self.model = torch.quantization.quantize_dynamic(
                 self.model, {torch.nn.Linear}, dtype=torch.qint8
             )
@@ -200,7 +199,6 @@ class ImageEncoder(Executor):
             self.pool_fn = getattr(np, self.pool_strategy)
         model = getattr(models, self.model_name)(pretrained=True)
         self.model = model.features.eval()
-        # self.to_device(self.model)
 
     def _get_features(self, content):
         return self.model(content)
@@ -223,11 +221,7 @@ class ImageEncoder(Executor):
                 content = doc.content
 
             _input = torch.from_numpy(content.astype('float32'))
-            if self.on_gpu:
-                _input = _input.cuda()
             _feature = self._get_features(_input).detach()
-            if self.on_gpu:
-                _feature = _feature.cpu()
             _feature = _feature.numpy()
             doc.embedding = self._get_pooling(_feature)
 
