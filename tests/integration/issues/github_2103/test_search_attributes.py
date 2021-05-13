@@ -31,7 +31,7 @@ def test_no_matches_grpc(mocker, docs):
             assert len(doc.matches) == 0
 
     mock_on_done = mocker.Mock()
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(inputs=docs, on_done=mock_on_done)
     validate_callback(mock_on_done, validate_response)
 

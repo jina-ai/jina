@@ -6,6 +6,7 @@ from jina.helper import get_internal_ip
 from jina.parsers import set_gateway_parser
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
+from jina import __default_executor__
 
 
 @pytest.fixture(scope='function')
@@ -27,7 +28,7 @@ def pod_args_singleton():
         '--name',
         'test2',
         '--uses-before',
-        '_pass',
+        __default_executor__,
         '--parallel',
         '1',
         '--host',
@@ -183,13 +184,20 @@ def test_pod_args_remove_uses_ba():
         assert p.num_peas == 1
 
     args = set_pod_parser().parse_args(
-        ['--uses-before', '_pass', '--uses-after', '_pass']
+        ['--uses-before', __default_executor__, '--uses-after', __default_executor__]
     )
     with Pod(args) as p:
         assert p.num_peas == 1
 
     args = set_pod_parser().parse_args(
-        ['--uses-before', '_pass', '--uses-after', '_pass', '--parallel', '2']
+        [
+            '--uses-before',
+            __default_executor__,
+            '--uses-after',
+            __default_executor__,
+            '--parallel',
+            '2',
+        ]
     )
     with Pod(args) as p:
         assert p.num_peas == 4

@@ -13,11 +13,12 @@ def mixin_zed_runtime_parser(parser):
     """
 
     gp = add_arg_group(parser, title='ZEDRuntime')
+    from jina import __default_executor__
 
     gp.add_argument(
         '--uses',
         type=str,
-        default='_pass',
+        default=__default_executor__,
         help='''
             The config of the executor, it could be one of the followings:
             * an Executor-level YAML file path (.yml, .yaml, .jaml)

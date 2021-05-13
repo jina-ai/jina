@@ -2,6 +2,7 @@ import pytest
 
 from jina.parsers import set_pod_parser
 from jina.peapods import CompoundPod
+from jina import __default_executor__
 
 
 @pytest.fixture(scope='function')
@@ -25,7 +26,7 @@ def pod_args_singleton():
         '--name',
         'test2',
         '--uses-before',
-        '_pass',
+        __default_executor__,
         '--parallel',
         '1',
         '--replicas',

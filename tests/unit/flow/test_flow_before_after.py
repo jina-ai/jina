@@ -2,6 +2,7 @@ import pytest
 
 from jina.flow import Flow
 from tests import random_docs
+from jina import __default_executor__
 
 
 @pytest.mark.parametrize('restful', [False, True])
@@ -19,7 +20,7 @@ def test_flow(restful):
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_before(restful):
     docs = random_docs(10)
-    f = Flow(restful=restful).add(uses_before='BaseExecutor', name='p1')
+    f = Flow(restful=restful).add(uses_before=__default_executor__, name='p1')
 
     with f:
         f.index(docs)
@@ -31,7 +32,7 @@ def test_flow_before(restful):
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_after(restful):
     docs = random_docs(10)
-    f = Flow(restful=restful).add(uses_after='BaseExecutor', name='p1')
+    f = Flow(restful=restful).add(uses_after=__default_executor__, name='p1')
 
     with f:
         f.index(docs)
@@ -44,7 +45,7 @@ def test_flow_after(restful):
 def test_flow_before_after(restful):
     docs = random_docs(10)
     f = Flow(restful=restful).add(
-        uses_before='BaseExecutor', uses_after='BaseExecutor', name='p1'
+        uses_before=__default_executor__, uses_after=__default_executor__, name='p1'
     )
 
     with f:
