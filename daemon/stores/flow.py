@@ -68,8 +68,6 @@ class FlowStore(BaseStore):
             if kind == UpdateOperationEnum.rolling_update:
                 flow_obj.rolling_update(pod_name=pod_name, dump_path=dump_path)
             elif kind == UpdateOperationEnum.dump:
-                flow_obj.post(
-                    on='/dump',
-                    target_peaopod=pod_name,
-                    parameters={'dump_path': dump_path, 'shards': shards},
+                raise NotImplementedError(
+                    f' sending post request does not work because asyncio loop is occupied'
                 )

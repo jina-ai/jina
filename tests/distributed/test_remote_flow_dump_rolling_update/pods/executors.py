@@ -2,12 +2,14 @@ import os
 
 import numpy as np
 from jina import Executor, requests, DocumentArray, Document
+from jina.logging import JinaLogger
 
 
 class KeyValueDBMSIndexer(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._docs = DocumentArray()
+        self.logger = JinaLogger('KeyValueDBMSIndexer')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', *args, **kwargs):
@@ -24,6 +26,7 @@ class KeyValueDBMSIndexer(Executor):
 class CompoundQueryExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.logger = JinaLogger('CompoundQueryExecutor')
         self._dump_path = self.metas.dump_path
         if self._dump_path is not None and os.path.exists(self._dump_path):
             self._docs = DocumentArray.load(self._dump_path)
@@ -81,6 +84,10 @@ def _cosine(A_norm_ext, B_norm_ext):
 
 
 class MergeMatchesExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.logger = JinaLogger('CompoundQueryExecutor')
+
     @requests
     def merge(self, *args, **kwargs):
         pass

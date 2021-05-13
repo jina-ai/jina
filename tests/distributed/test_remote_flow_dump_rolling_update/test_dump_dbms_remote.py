@@ -101,8 +101,14 @@ def test_dump_dbms_remote(docker_compose):
         assert len(doc.get('matches')) == nr_docs
 
 
-def _send_rest_request(port_expose, endpoint, method, data, timeout=13):
+def _send_rest_request(
+    port_expose, endpoint, method, data, params=None, target_peapod=None, timeout=13
+):
     json = {'data': data}
+    if params:
+        json['params'] = params
+    if target_peapod:
+        json['target_peapod'] = target_peapod
     url = f'http://0.0.0.0:{port_expose}/{endpoint}'
     r = getattr(requests, method)(url, json=json, timeout=timeout)
 
@@ -126,15 +132,13 @@ def _get_documents(nr=10, index_start=0, emb_size=7):
 
 def _jinad_dump(pod_name, dump_path, shards, url):
     params = {
-        'kind': 'dump',
         'pod_name': pod_name,
         'dump_path': dump_path,
         'shards': shards,
     }
     # url params
-    logger.info(f'sending PUT req to dump')
-    r = requests.put(url, params=params)
-    assert r.status_code == 200
+    logger.info(f'sending dump request')
+    _send_rest_request(REST_PORT_DBMS, 'dump', 'post', [], params, pod_name)
 
 
 def _jinad_rolling_update(pod_name, dump_path, url):
