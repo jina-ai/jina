@@ -282,7 +282,19 @@ class ImageEncoder(Executor):
 class DocVectorIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArray()
+        if os.path.exists(self.save_path):
+            self._docs = DocumentArray.load(self.save_path)
+        else:
+            self._docs = DocumentArray()
+
+    @property
+    def save_path(self):
+        if not os.path.exists(self.workspace):
+            os.makedirs(self.workspace)
+        return os.path.join(self.workspace, 'docs.json')
+
+    def close(self):
+        self._docs.save(self.save_path)
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
