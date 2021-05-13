@@ -11,9 +11,9 @@ pods:
           - executors.py
   - name: filterNonText
     uses:
-      - jtype: ModalityFilter
+        jtype: ModalityFilter
         with:
-          mime_type_to_keep: text/plain
+          mime_type_to_keep: "text/plain"
         metas:
           py_modules:
             - executors.py
@@ -31,7 +31,7 @@ pods:
           - executors.py
   - name: filterNonVisual
     uses:
-      - jtype: ModalityFilter
+        jtype: ModalityFilter
         with:
           mime_type_to_keep: image/jpeg
         metas:
