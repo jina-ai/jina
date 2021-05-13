@@ -1,0 +1,48 @@
+jtype: Flow
+version: '1.0'
+with:
+  workspace: $HW_WORKDIR
+pods:
+  - name: segment
+    uses:
+      jtype: Segmenter
+      metas:
+        py_modules:
+          - executors.py
+    parallel: 2
+  - name: filter-encode-text
+    uses:
+      jtype: TextEncoder
+      metas:
+        py_modules:
+          - executors.py
+  - name: filter-craft-image
+    uses:
+      jtype: ImageCrafter
+      metas:
+        py_modules:
+          - executors.py
+  - name: encode-image
+    uses:
+      jtype: ImageEncoder
+      metas:
+        py_modules:
+          - executors.py
+  - name: document-indexer
+    uses:
+      jtype: DocVectorIndexer
+      metas:
+        py_modules:
+          - executors.py
+  - name: keyvalue-indexer
+    uses:
+      jtype: KeyValueIndexer
+      metas:
+        py_modules:
+          - executors.py
+  - name: weighted-ranker
+    uses:
+      jtype: WeightedRanker
+      metas:
+        py_modules:
+          - executors.py
