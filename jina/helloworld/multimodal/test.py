@@ -13,3 +13,8 @@ with f:
         # on_done=print,
         inputs=inputs,
     )
+
+    f.post(
+        on='/search',
+        inputs=inputs,
+    )

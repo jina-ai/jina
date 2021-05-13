@@ -5,7 +5,7 @@ from typing import Dict, Optional, Tuple
 import numpy as np
 
 from jina import Executor, DocumentArray, requests, Document
-from helper import _norm, _ext_A, _ext_B, _cosine, batch
+from jina.helloworld.multimodal.helper import _norm, _ext_A, _ext_B, _cosine
 
 
 class Segmenter(Executor):
