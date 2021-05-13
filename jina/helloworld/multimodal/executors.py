@@ -8,7 +8,7 @@ from jina import Executor, DocumentArray, requests, Document, Flow
 
 
 class Segmenter(Executor):
-    @requests(on='/index')
+    @requests(on=['/index', '/search'])
     def segment(self, docs: DocumentArray, **kwargs):
         """
         Read the data and add tags.
@@ -117,7 +117,7 @@ class TextEncoder(Executor):
 
         return embeddings.cpu().numpy()
 
-    @requests(on='/index')
+    @requests(on=['/index', '/search'])
     def encode(self, docs: DocumentArray, **kwargs):
         """
         Read the data and add tags.
@@ -161,7 +161,7 @@ class TextEncoder(Executor):
 
 
 class ImageCrafter(Executor):
-    @requests
+    @requests(on=['/index', '/search'])
     def craft(self, docs: DocumentArray, **kwargs):
         for chunks in docs.traverse(traversal_paths=['c']):
             chunks_to_be_filtered = []
@@ -209,7 +209,7 @@ class ImageEncoder(Executor):
             return feature_map
         return self.pool_fn(feature_map, axis=(2, 3))
 
-    @requests
+    @requests(on=['/index', '/search'])
     def encode(self, docs: DocumentArray, **kwargs):
         import torch
 
@@ -281,7 +281,7 @@ class KeyValueIndexer(Executor):
         for doc in docs:
             self.map[doc.id] = doc
 
-    @requests(on='/query')
+    @requests(on='/search')
     def query(self, docs: DocumentArray, **kwargs):
         for doc in docs:
             for match in doc.matches:
