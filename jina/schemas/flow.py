@@ -13,7 +13,7 @@ schema_flow = {
         'properties': {
             'with': _schema_flow_with,
             'jtype': {
-                'description': 'The type of Jina object (Flow, Executor, Driver).\n'
+                'description': 'The type of Jina object (Flow, Executor).\n'
                 'A Flow is made up of several sub-tasks, and it manages the states and context of these sub-tasks.\n'
                 'The input and output data of Flows are Documents.',
                 'type': 'string',

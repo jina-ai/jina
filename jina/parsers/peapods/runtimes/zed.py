@@ -23,10 +23,8 @@ def mixin_zed_runtime_parser(parser):
             * an Executor-level YAML file path (.yml, .yaml, .jaml)
             * a name of a class inherited from `jina.Executor`
             * a docker image (must start with `docker://`)
-            * builtin executors, e.g. `_pass`, `_logforward`, `_merge`
             * the string literal of a YAML config (must start with `!`)
             * the string literal of a JSON config
-            * the string literal of a YAML driver config (must start with `- !!`)
             
             When use it under Python, one can use the following values additionally:
             - a Python dict that represents the config
@@ -89,21 +87,6 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
     )
 
     gp.add_argument(
-        '--load-interval',
-        type=int,
-        default=-1,
-        help='Reload the Executor in the Pod on every n seconds. '
-        '-1 or 0 means do not reload. ',
-    )
-
-    gp.add_argument(
-        '--dump-interval',
-        type=int,
-        default=240,
-        help='Serialize the Executor in the Pod every n seconds if model changes. '
-        '-1 means --read-only. ',
-    )
-    gp.add_argument(
         '--read-only',
         action='store_true',
         default=False,
@@ -127,9 +110,9 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
         help='''
 The skip strategy on exceptions.
 
-- IGNORE: Ignore it, keep running all Drivers & Executors logics in the sequel flow
-- SKIP_EXECUTOR: Skip all Executors in the sequel, but drivers are still called
-- SKIP_HANDLE: Skip all Drivers & Executors in the sequel, only `pre_hook` and `post_hook` are called
+- IGNORE: Ignore it, keep running all Executors in the sequel flow
+- SKIP_EXECUTOR: Skip all Executors in the sequel
+- SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
 - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
 
 Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something

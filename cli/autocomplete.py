@@ -10,21 +10,21 @@ def _update_autocomplete():
             elif v.choices:
                 _compl.extend(v.choices)
                 for kk, vv in v.choices.items():
-                    _result.update(_gaa(" ".join([key, kk]).strip(), vv))
+                    _result.update(_gaa(' '.join([key, kk]).strip(), vv))
         # filer out single dash, as they serve as abbrev
-        _compl = [k for k in _compl if (not k.startswith("-") or k.startswith("--"))]
+        _compl = [k for k in _compl if (not k.startswith('-') or k.startswith('--'))]
         _result.update({key: _compl})
         return _result
 
-    compl = _gaa("", get_main_parser())
-    cmd = compl.pop("")
-    compl = {"commands": cmd, "completions": compl}
+    compl = _gaa('', get_main_parser())
+    cmd = compl.pop('')
+    compl = {'commands': cmd, 'completions': compl}
 
-    with open(__file__, "a") as fp:
-        fp.write(f"\nac_table = {compl}\n")
+    with open(__file__, 'a') as fp:
+        fp.write(f'\nac_table = {compl}\n')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     _update_autocomplete()
 
 ac_table = {
@@ -100,8 +100,6 @@ ac_table = {
             '--host-out',
             '--socket-in',
             '--socket-out',
-            '--load-interval',
-            '--dump-interval',
             '--read-only',
             '--memory-hwm',
             '--on-error-strategy',
@@ -159,8 +157,6 @@ ac_table = {
             '--host-out',
             '--socket-in',
             '--socket-out',
-            '--load-interval',
-            '--dump-interval',
             '--read-only',
             '--memory-hwm',
             '--on-error-strategy',
@@ -231,8 +227,6 @@ ac_table = {
             '--host-out',
             '--socket-in',
             '--socket-out',
-            '--load-interval',
-            '--dump-interval',
             '--read-only',
             '--memory-hwm',
             '--on-error-strategy',
@@ -282,8 +276,6 @@ ac_table = {
             '--host-out',
             '--socket-in',
             '--socket-out',
-            '--load-interval',
-            '--dump-interval',
             '--read-only',
             '--memory-hwm',
             '--on-error-strategy',
@@ -330,6 +322,6 @@ ac_table = {
             '--port-expose',
         ],
         'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
-        'check': ['--help', '--summary-exec', '--summary-driver'],
+        'check': ['--help', '--summary-exec'],
     },
 }

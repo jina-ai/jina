@@ -105,7 +105,6 @@ JINA_GLOBAL.torch_installed = None
 
 import jina.importer as _ji
 
-# driver first, as executor may contain driver
 _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
 ## temporally disable the hub loading in 2.0rc
 # _ji.import_classes('jina.hub', show_import_table=False, import_once=True)

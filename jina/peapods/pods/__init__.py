@@ -672,28 +672,3 @@ class Pod(BasePod):
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args
-
-    def dump(self, pod_name, dump_path, shards, timeout):
-        """Emit a Dump request to its Peas
-
-        :param pod_name: the pod to target
-        :param shards: the nr of shards in the dump
-        :param dump_path: the path to which to dump
-        :param timeout: time to wait (seconds)
-        """
-        from ..zmq import send_ctrl_message
-
-        for pea in self.peas:
-            if pea.inner:
-                send_ctrl_message(
-                    pea.runtime.ctrl_addr,
-                    ControlMessage(
-                        command='DUMP',
-                        pod_name=pod_name,
-                        args={
-                            'dump_path': dump_path,
-                            'shards': shards,
-                        },
-                    ),
-                    timeout=timeout,
-                )
