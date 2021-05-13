@@ -9,8 +9,7 @@ pods:
       metas:
         py_modules:
           - executors.py
-    parallel: 2
-  - name: filter-non-text-modality
+  - name: filterNonText
     uses:
       - jtype: ModalityFilter
         with:
@@ -18,13 +17,19 @@ pods:
         metas:
           py_modules:
             - executors.py
-  - name: encode-text
+  - name: encodeText
     uses:
       jtype: TextEncoder
       metas:
         py_modules:
           - executors.py
-  - name: filter-non-visual-modality
+  - name: textChunkIndexer
+    uses:
+      jtype: DocVectorIndexer
+      metas:
+        py_modules:
+          - executors.py
+  - name: filterNonVisual
     uses:
       - jtype: ModalityFilter
         with:
@@ -32,33 +37,31 @@ pods:
         metas:
           py_modules:
             - executors.py
-  - name: craft-image
+    needs: segment
+  - name: craftImage
     uses:
       jtype: ImageCrafter
       metas:
         py_modules:
           - executors.py
-  - name: encode-image
+  - name: encodeImage
     uses:
       jtype: ImageEncoder
       metas:
         py_modules:
           - executors.py
-  - name: document-indexer
+  - name: imageChunkIndexer
     uses:
       jtype: DocVectorIndexer
       metas:
         py_modules:
           - executors.py
-  - name: keyvalue-indexer
+  - name: weightedRanker
+    needs: [textChunkIndexer, imageChunkIndexer]
+  - name: keyvalueIndexer
     uses:
       jtype: KeyValueIndexer
       metas:
         py_modules:
           - executors.py
-  - name: weighted-ranker
-    uses:
-      jtype: WeightedRanker
-      metas:
-        py_modules:
-          - executors.py
+    needs: weightedRanker
