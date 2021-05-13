@@ -21,6 +21,5 @@ pods:
     polling: all
     parallel: 1
   - name: ranker
-    uses: _pass
   - name: doc_indexer
     parallel: 1

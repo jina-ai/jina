@@ -65,12 +65,6 @@ def test_executor_workspace_simple(test_metas_workspace_simple):
     )
 
 
-def test_executor_workspace_error(test_bad_metas_workspace):
-    executor = Executor(metas=test_bad_metas_workspace)
-    with pytest.raises(Exception):
-        executor.workspace
-
-
 @pytest.mark.parametrize('replica_id', [0, 1, 2], indirect=True)
 @pytest.mark.parametrize('pea_id', [0, 1, 2], indirect=True)
 def test_executor_workspace(test_metas_workspace_replica_peas, replica_id, pea_id):

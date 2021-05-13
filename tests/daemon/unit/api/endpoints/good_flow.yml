@@ -1,5 +1,5 @@
 !Flow
 version: '1.0'
 pods:
-  - uses: _pass
-  - uses: _pass
+  - name: hello
+  - name: world
