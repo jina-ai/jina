@@ -4,7 +4,8 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 
-from jina import Executor, DocumentArray, requests, Document, Flow
+from jina import Executor, DocumentArray, requests, Document
+from jina.executors.decorators import batching
 from helper import _norm, _ext_A, _ext_B, _cosine
 
 
@@ -184,8 +185,8 @@ class ImageEncoder(Executor):
         *args,
         **kwargs,
     ):
+        import torch
         import torchvision.models as models
-
         super().__init__(*args, **kwargs)
         self.channel_axis = channel_axis
         # axis 0 is the batch
@@ -199,6 +200,7 @@ class ImageEncoder(Executor):
             self.pool_fn = getattr(np, self.pool_strategy)
         model = getattr(models, self.model_name)(pretrained=True)
         self.model = model.features.eval()
+        self.model.to(torch.device('cpu'))
 
     def _get_features(self, content):
         return self.model(content)
@@ -208,6 +210,7 @@ class ImageEncoder(Executor):
             return feature_map
         return self.pool_fn(feature_map, axis=(2, 3))
 
+    @batching
     @requests(on=['/index', '/search'])
     def encode(self, docs: DocumentArray, **kwargs):
         import torch
@@ -219,7 +222,6 @@ class ImageEncoder(Executor):
                 )
             else:
                 content = doc.content
-
             _input = torch.from_numpy(content.astype('float32'))
             _feature = self._get_features(_input).detach()
             _feature = _feature.numpy()
