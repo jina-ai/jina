@@ -3,6 +3,7 @@ import pytest
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
 from jina.jaml import JAML
+from jina import __default_executor__
 
 
 class MyExecutor(BaseExecutor):
@@ -11,7 +12,7 @@ class MyExecutor(BaseExecutor):
 
 def test_non_empty_reg_tags():
     assert JAML.registered_tags()
-    assert 'BaseExecutor' in JAML.registered_tags()
+    assert __default_executor__ in JAML.registered_tags()
 
 
 @pytest.mark.parametrize(

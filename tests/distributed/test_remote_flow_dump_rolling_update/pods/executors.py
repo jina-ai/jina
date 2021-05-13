@@ -100,7 +100,7 @@ def _cosine(A_norm_ext, B_norm_ext):
 class MergeMatchesExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = JinaLogger('CompoundQueryExecutor')
+        self.logger = JinaLogger('MergeMatchesExecutor')
 
     @requests
     def merge(self, *args, **kwargs):

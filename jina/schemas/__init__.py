@@ -22,7 +22,7 @@ def get_full_schema() -> dict:
     return {
         '$id': f'https://api.jina.ai/schemas/{__version__}.json',
         '$schema': 'http://json-schema.org/draft-07/schema#',
-        'description': 'The YAML schema of Jina objects (Flow, Executor, Drivers).',
+        'description': 'The YAML schema of Jina objects (Flow, Executor).',
         'type': 'object',
         'oneOf': [{'$ref': '#/definitions/Jina::Flow'}]
         + [{"$ref": f"#/definitions/{k}"} for k in IMPORTED.schema_executors.keys()],

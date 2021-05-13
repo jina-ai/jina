@@ -71,9 +71,10 @@ __jina_env__ = (
 )
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
+__default_executor__ = 'BaseExecutor'
+__default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
-__default_endpoint__ = '/default'
 __num_args_executor_func__ = 5
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 
@@ -105,7 +106,6 @@ JINA_GLOBAL.torch_installed = None
 
 import jina.importer as _ji
 
-# driver first, as executor may contain driver
 _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
 ## temporally disable the hub loading in 2.0rc
 # _ji.import_classes('jina.hub', show_import_table=False, import_once=True)

@@ -237,10 +237,10 @@ def get_main_parser():
     set_check_parser(
         sp.add_parser(
             'check',
-            **(dict(help='Check the import of all Executors and Drivers'))
+            **(dict(help='Check the import of all Executors'))
             if _SHOW_ALL_ARGS
             else {},
-            description='Check the import status of all executors and drivers',
+            description='Check the import status of all executors',
             formatter_class=_chf,
         )
     )

@@ -296,11 +296,3 @@ class JinaDeleteRequestModel(JinaRequestModel):
 
 class JinaControlRequestModel(JinaRequestModel):
     """Control request model."""
-
-    pass
-
-
-class JinaTrainRequestModel(JinaRequestModel):
-    """Train request model."""
-
-    exec_endpoint = '/train'

@@ -36,12 +36,6 @@ def _get_exec_parser():
     return [LegacyParser], LegacyParser
 
 
-def _get_driver_parser():
-    from .driver.legacy import LegacyParser
-
-    return [LegacyParser], LegacyParser
-
-
 def _get_default_parser():
     from .default.v1 import V1Parser
 

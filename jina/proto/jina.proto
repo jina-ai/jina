@@ -302,12 +302,11 @@ message RequestProto {
         enum Command {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
-            IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
-            CANCEL = 4; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
-            RELOAD = 5; // triggers a Pod/Pea to (re)load the executor
-            SCALE = 6; // scale up/down a Pod
-            ACTIVATE = 7; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
-            DEACTIVATE = 8; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
+            IDLE = 2; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
+            CANCEL = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
+            SCALE = 4; // scale up/down a Pod
+            ACTIVATE = 5; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
+            DEACTIVATE = 6; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
         }
         Command command = 1; // the control command
     }

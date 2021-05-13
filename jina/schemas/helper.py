@@ -150,7 +150,7 @@ def _jina_class_to_schema(cls):
             },
             'with': {
                 'type': 'object',
-                'description': 'The arguments of this Jina Executor/Driver',
+                'description': 'The arguments of this Jina Executor',
                 'properties': kwargs,
                 'additionalProperties': False,
             },

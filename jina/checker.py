@@ -35,12 +35,6 @@ class ImportChecker:
             with open(args.summary_exec, 'w') as fp:
                 _print_dep_tree_rst(fp, _r, 'Executor')
 
-        if args.summary_driver:
-            with open(args.summary_driver, 'w') as fp:
-                _print_dep_tree_rst(fp, _r, 'Driver')
-
-        # check available driver group
-
         default_logger.info('\nenvironment variables\n'.upper())
         default_logger.info(
             '\n'.join(

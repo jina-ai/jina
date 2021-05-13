@@ -130,9 +130,14 @@ class ZEDRuntime(ZMQRuntime):
             self._partial_requests = [v.request for v in self._partial_messages]
             part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)'
 
-        self.logger.info(
-            f'recv {msg.envelope.request_type} {part_str} from {msg.colored_route}'
-        )
+        info_msg = f'recv {msg.envelope.request_type} '
+        if self.request_type == 'DataRequest':
+            info_msg += f'({self.request.header.exec_endpoint}) '
+        elif self.request_type == 'ControlRequest':
+            info_msg += f'({self.request.command}) '
+        info_msg += f'{part_str} from {msg.colored_route}'
+        self.logger.info(info_msg)
+
         return self
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
@@ -222,7 +227,7 @@ class ZEDRuntime(ZMQRuntime):
             raise RuntimeTerminated
         elif self.request.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
-            self.request.args = vars(self.args)
+            self.request.parameters = vars(self.args)
         elif self.request.command == 'IDLE':
             self._idle_dealer_ids.add(self.envelope.receiver_id)
             self._zmqlet.resume_pollin()
@@ -236,18 +241,6 @@ class ZEDRuntime(ZMQRuntime):
             self._zmqlet._send_idle_to_router()
         elif self.request.command == 'DEACTIVATE':
             self._zmqlet._send_cancel_to_router()
-        elif self.request.command == 'RELOAD':
-            if self.request.targets:
-                patterns = self.request.targets
-                if isinstance(patterns, str):
-                    patterns = [patterns]
-                for p in patterns:
-                    if re.match(p, self.name):
-                        self.logger.info(
-                            f'reloading the Executor `{self._executor.name}` in `{self.name}`'
-                        )
-                        self._load_executor()
-                        break
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {self.request.command}'

@@ -1,7 +1,0 @@
-name:  #: the name of the executor
-description:  #: the description of this executor. It will be used in automatics docs UI
-workspace:  #: the workspace of the executor
-parent_workspace:  #: the parent workspace of the executor, to be used if wants to isolate the actual workspace according to `replica` and `pea` ids
-py_modules:  #: the python dependencies of the executor
-pea_id:  #: the id of the pea in which the executor is instantiated
-replica_id: #: the id of the replica in which the executor is instantiated

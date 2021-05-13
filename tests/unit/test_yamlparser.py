@@ -10,6 +10,7 @@ from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
 from jina.jaml import JAML
+from jina import __default_executor__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -103,11 +104,6 @@ def test_class_yaml():
     assert type(a) == DummyClass
 
 
-
-
-
-
-
 def test_load_external_fail():
     with pytest.raises(yaml.constructor.ConstructorError):
         BaseExecutor.load_config('yaml/dummy_ext_exec.yml')
@@ -140,7 +136,9 @@ def test_encoder_name_dict_replace():
 
 
 def test_encoder_inject_config_via_kwargs():
-    with BaseExecutor.load_config('yaml/test-encoder-env.yml', metas={'pea_id': 345}) as be:
+    with BaseExecutor.load_config(
+        'yaml/test-encoder-env.yml', metas={'pea_id': 345}
+    ) as be:
         assert be.metas.pea_id == 345
 
 
@@ -153,7 +151,7 @@ def test_load_from_dict():
     #   workspace: ${{this.name}}-${{this.batch_size}}
 
     d1 = {
-        'jtype': 'BaseExecutor',
+        'jtype': __default_executor__,
         'metas': {
             'name': '${{BE_TEST_NAME}}',
             'workspace': '${{this.name}}',

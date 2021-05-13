@@ -8,11 +8,10 @@ from typing import Dict, Union, Set
 from typing import List, Optional
 
 from ..peas import BasePea
-from ... import __default_host__
+from ... import __default_host__, __default_executor__
 from ... import helper
 from ...enums import SchedulerType, PodRoleType, SocketType, PeaRoleType, PollingType
 from ...helper import get_public_ip, get_internal_ip, random_identity
-from ...types.message.common import ControlMessage
 
 
 class ExitFIFO(ExitStack):
@@ -207,7 +206,7 @@ class BasePod(ExitFIFO):
         else:
             _head_args.socket_out = SocketType.PUB_BIND
         if as_router:
-            _head_args.uses = args.uses_before or '_pass'
+            _head_args.uses = args.uses_before or __default_executor__
 
         if as_router:
             _head_args.pea_role = PeaRoleType.HEAD
@@ -242,7 +241,7 @@ class BasePod(ExitFIFO):
         _tail_args.uses = None
 
         if as_router:
-            _tail_args.uses = args.uses_after or '_pass'
+            _tail_args.uses = args.uses_after or __default_executor__
             if args.name:
                 _tail_args.name = f'{args.name}/tail'
             else:
@@ -570,7 +569,7 @@ class Pod(BasePod):
         # remark 1: i think it's related to route driver.
         if hasattr(args, 'polling') and args.polling.is_push:
             # ONLY reset when it is push
-            args.uses_after = '_pass'
+            args.uses_after = __default_executor__
 
     @staticmethod
     def _set_peas_args(
@@ -650,8 +649,12 @@ class Pod(BasePod):
                 head_args=parsed_args['head'],
                 tail_args=parsed_args['tail'],
             )
-        elif (getattr(args, 'uses_before', None) and args.uses_before != '_pass') or (
-            getattr(args, 'uses_after', None) and args.uses_after != '_pass'
+        elif (
+            getattr(args, 'uses_before', None)
+            and args.uses_before != __default_executor__
+        ) or (
+            getattr(args, 'uses_after', None)
+            and args.uses_after != __default_executor__
         ):
             args.scheduling = SchedulerType.ROUND_ROBIN
             if getattr(args, 'uses_before', None):
@@ -672,28 +675,3 @@ class Pod(BasePod):
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args
-
-    def dump(self, pod_name, dump_path, shards, timeout):
-        """Emit a Dump request to its Peas
-
-        :param pod_name: the pod to target
-        :param shards: the nr of shards in the dump
-        :param dump_path: the path to which to dump
-        :param timeout: time to wait (seconds)
-        """
-        from ..zmq import send_ctrl_message
-
-        for pea in self.peas:
-            if pea.inner:
-                send_ctrl_message(
-                    pea.runtime.ctrl_addr,
-                    ControlMessage(
-                        command='DUMP',
-                        pod_name=pod_name,
-                        args={
-                            'dump_path': dump_path,
-                            'shards': shards,
-                        },
-                    ),
-                    timeout=timeout,
-                )

@@ -1,9 +1,9 @@
+import collections
 import os
 import threading
-import pytest
 
 import numpy as np
-import collections
+import pytest
 
 from jina import Document, Flow, Executor, requests
 

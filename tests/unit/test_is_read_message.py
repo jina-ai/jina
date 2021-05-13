@@ -1,10 +1,12 @@
 import time
+
+from jina import __default_executor__
+from jina.helper import random_identity
 from jina.logging import default_logger
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.types.message import Message
-from jina.helper import random_identity
 from jina.types.request import Request
 from tests import validate_callback
 
@@ -70,7 +72,7 @@ args3 = set_pea_parser().parse_args(
         '--socket-out',
         'PUSH_BIND',
         '--uses',
-        '_pass',  # will NOT trigger use
+        __default_executor__,  # will NOT trigger use
         '--timeout-ctrl',
         '-1',
     ]

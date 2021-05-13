@@ -2,10 +2,8 @@
 version: '1'
 pods:
   - name: pod0
-    uses: _pass
     needs: gateway
   - name: pod1
-    uses: _pass
     needs: gateway
   - name: pod2
     uses: _merge
