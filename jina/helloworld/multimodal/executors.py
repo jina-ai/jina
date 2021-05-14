@@ -1,4 +1,5 @@
 import os
+import pickle
 from collections import defaultdict, namedtuple
 from typing import Dict, Optional, Tuple, List, Union, Iterable
 
@@ -333,13 +334,28 @@ class DocVectorIndexer(Executor):
 
 
 class KeyValueIndexer(Executor):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.map = {}
+        if os.path.exists(self.save_path):
+            self._docs = DocumentArray.load(self.save_path)
+        else:
+            self._docs = DocumentArray()
+
+    @property
+    def save_path(self):
+        if not os.path.exists(self.workspace):
+            os.makedirs(self.workspace)
+        return os.path.join(self.workspace, 'kv.json')
+
+    def close(self):
+        self._docs.save(self.save_path)
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
         for doc in docs:
+            self._docs.append(doc)
             self.map[doc.id] = doc
 
     @requests(on='/search')
