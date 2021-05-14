@@ -44,40 +44,36 @@ def hello_world(args):
 
     # this envs are referred in index and query flow YAMLs
     os.environ['HW_WORKDIR'] = args.workdir
-    os.environ['PATH'] += os.pathsep + os.path.join(
-        resource_filename('jina', 'resources'), 'multimodal'
-    )
-
     # now comes the real work
     # load index flow from a YAML file
 
     # index it!
     with open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
         lines = list(csv.reader(fp))
+
     document_array = DocumentArray()
     for line in lines[1:]:
         _, img_name, caption = line
         document_array.append(Document(tags={'caption': caption, 'image': img_name}))
 
-    f = Flow.load_config('flow-index.yml')
-    with f, open(f'{args.workdir}/people-img/meta.csv') as fp:
-        f.post(on='/index', inputs=document_array, request_size=64)
+    with Flow.load_config('flow-index.yml') as f:
+        f.post(on='/index', inputs=document_array, on_done=print)
 
-    # # search it!
-    #
-    # f = Flow.load_config('flow-search.yml')
-    # # switch to REST gateway
-    # f.use_rest_gateway(args.port_expose)
-    #
-    # with f:
-    #     try:
-    #         webbrowser.open(args.demo_url, new=2)
-    #     except:
-    #         pass  # intentional pass, browser support isn't cross-platform
-    #     finally:
-    #         default_logger.success(
-    #             f'You should see a demo page opened in your browser, '
-    #             f'if not, you may open {args.demo_url} manually'
-    #         )
-    #     if not args.unblock_query_flow:
-    #         f.block()
+    # search it!
+
+    f = Flow.load_config('flow-search.yml')
+    # switch to REST gateway
+    f.use_rest_gateway(args.port_expose)
+
+    with f:
+        try:
+            webbrowser.open(args.demo_url, new=2)
+        except:
+            pass  # intentional pass, browser support isn't cross-platform
+        finally:
+            default_logger.success(
+                f'You should see a demo page opened in your browser, '
+                f'if not, you may open {args.demo_url} manually'
+            )
+        if not args.unblock_query_flow:
+            f.block()
