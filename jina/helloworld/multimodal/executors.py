@@ -310,7 +310,7 @@ class DocVectorIndexer(Executor):
         d_emb = _ext_B(_norm(b))
         dists = _cosine(q_emb, d_emb)
         idx, dist = self._get_sorted_top_k(dists, int(parameters['top_k']))
-        for _q, _ids, _dists in zip(docs, idx, dist):
+        for _q, _ids, _dists in zip(chunks, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
                 d.score.value = 1 - _dist
@@ -334,7 +334,6 @@ class DocVectorIndexer(Executor):
 
 
 class KeyValueIndexer(Executor):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.map = {}
@@ -349,25 +348,37 @@ class KeyValueIndexer(Executor):
             os.makedirs(self.workspace)
         return os.path.join(self.workspace, 'kv.json')
 
+    @property
+    def save_map_path(self):
+        return os.path.join(self.workspace, 'map.pickle')
+
     def close(self):
+        import pickle
+
         self._docs.save(self.save_path)
+        with open(self.save_map_path, 'wb') as f:
+            pickle.dump(self.map, f)
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
         for doc in docs:
+            print(f' indexing {doc.id}')
+            inner_id = len(self._docs)
             self._docs.append(doc)
-            self.map[doc.id] = doc
+            self.map[doc.id] = inner_id
 
     @requests(on='/search')
     def query(self, docs: DocumentArray, **kwargs):
+        print(f'\n\n LETS QUERY \n\n')
         for doc in docs:
             for match in doc.matches:
-                extracted_doc = self.map[doc.id]
+                print(f' querying {match.id}')
+                inner_id = self.map[match.id]
+                extracted_doc = self._docs[inner_id]
                 match.MergeFrom(extracted_doc)
 
 
 class WeightedRanker(Executor):
-
     COL_PARENT_ID = 'match_parent_id'
     COL_DOC_CHUNK_ID = 'match_doc_chunk_id'
     COL_QUERY_CHUNK_ID = 'match_query_chunk_id'
@@ -447,6 +458,7 @@ class WeightedRanker(Executor):
         :param args: not used (kept to maintain interface)
         :param kwargs: not used (kept to maintain interface)
         """
+        print(f' \n\nLETS RANK \n\n')
         for doc in docs:
             chunks = doc.chunks
             match_idx = []  # type: List[Tuple[str, str, str, float]]
@@ -479,11 +491,9 @@ class WeightedRanker(Executor):
                 )
 
                 docs_scores = self._score(match_idx)
-
+                print(f' \n\ndocs_scores {docs_scores} \n\n')
                 self._insert_query_matches(
                     query=doc,
-                    parent_id_chunk_id_map=parent_id_chunk_id_map,
-                    chunk_matches_by_id=matches_by_id,
                     docs_scores=docs_scores,
                 )
 
