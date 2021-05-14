@@ -63,7 +63,4 @@ def test_import_classes_failed_import_module(ns, mocker, recwarn):
     depend_tree = import_classes(namespace=ns)
     assert len(depend_tree) == 0
     assert len(recwarn) == 1
-    assert (
-        'You can use `jina check` to list all executors and drivers'
-        in recwarn[0].message.args[0]
-    )
+    assert 'You can use `jina check`' in recwarn[0].message.args[0]
