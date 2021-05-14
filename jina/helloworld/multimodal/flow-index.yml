@@ -66,6 +66,6 @@ pods:
       metas:
         py_modules:
           - executors.py
-    needs: gateway
+    needs: segment
   - name: joinAll
     needs: [textChunkIndexer, imageChunkIndexer, keyValueIndexer]

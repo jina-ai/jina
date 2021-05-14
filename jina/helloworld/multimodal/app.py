@@ -52,12 +52,12 @@ def hello_world(args):
         lines = list(csv.reader(fp))
 
     document_array = DocumentArray()
-    for line in lines[1:]:
+    for line in lines[1:200]:
         _, img_name, caption = line
         document_array.append(Document(tags={'caption': caption, 'image': img_name}))
 
     with Flow.load_config('flow-index.yml') as f:
-        f.post(on='/index', inputs=document_array, on_done=print)
+        f.post(on='/index', inputs=document_array, request_size=12)
 
     # search it!
     f = Flow.load_config('flow-search.yml')
