@@ -304,8 +304,6 @@ ac_table = {
         'client': [
             '--help',
             '--request-size',
-            '--mode',
-            '--top-k',
             '--mime-type',
             '--continue-on-error',
             '--return-results',

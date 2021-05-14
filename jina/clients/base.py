@@ -52,6 +52,11 @@ class BaseClient:
         :param inputs: the inputs
         :param kwargs: keyword arguments
         """
+
+        if inputs is None:
+            # empty inputs is considered as valid
+            return
+
         if hasattr(inputs, '__call__'):
             # it is a function
             inputs = inputs()
@@ -108,10 +113,7 @@ class BaseClient:
 
         :return: inputs
         """
-        if self._inputs is not None:
-            return self._inputs
-        else:
-            raise BadClient('inputs are not defined')
+        return self._inputs
 
     @inputs.setter
     def inputs(self, bytes_gen: InputType) -> None:

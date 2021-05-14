@@ -12,7 +12,7 @@ class PostMixin:
     def post(
         self,
         on: str,
-        inputs: InputType,
+        inputs: Optional[InputType] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -68,7 +68,7 @@ class AsyncPostMixin:
     async def post(
         self,
         on: str,
-        inputs: InputType,
+        inputs: Optional[InputType] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
