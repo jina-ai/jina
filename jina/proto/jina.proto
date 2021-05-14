@@ -253,9 +253,6 @@ message StatusProto {
         // the name of the executor bind to that peapod (if applicable)
         string executor = 4;
 
-        // the name of the driver bind to that peapod (if applicable)
-        string driver = 5;
-
 
     }
 
