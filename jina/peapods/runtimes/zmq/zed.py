@@ -112,6 +112,9 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: `ZEDRuntime`
         """
+
+        # do NOT access `msg.request.*` in the _pre_hook, as it will trigger the deserialization
+        # all meta information should be stored and accessed via `msg.envelope`
         msg.add_route(self.name, self._id)
         self._request = msg.request
         self._message = msg
@@ -141,6 +144,9 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: `ZEDRuntime`
         """
+        # do NOT access `msg.request.*` in the _pre_hook, as it will trigger the deserialization
+        # all meta information should be stored and accessed via `msg.envelope`
+
         self._last_active_time = time.perf_counter()
         self._zmqlet.print_stats()
         self._check_memory_watermark()
@@ -172,7 +178,10 @@ class ZEDRuntime(ZMQRuntime):
             if not re.match(self.envelope.header.target_peapod, self.name):
                 return self
             print(f'1: {self.request.is_used}')
-            if self.request_type == 'DataRequest':
+            if (
+                self.request_type == 'DataRequest'
+                and self.envelope.header.exec_endpoint in self._executor.requests
+            ):
 
                 # migrated from the previously RouteDriver logic
                 if self._idle_dealer_ids:
