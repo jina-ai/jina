@@ -67,7 +67,9 @@ def test_multimodal(helloworld_args, query_document, mocker):
     mock_on_done = mocker.Mock()
     mock_on_fail = mocker.Mock()
 
-    flow_query_path = os.path.join(resource_filename('jina', 'helloworld'), 'multimodal')
+    flow_query_path = os.path.join(
+        resource_filename('jina', 'helloworld'), 'multimodal'
+    )
     with Flow.load_config(os.path.join(flow_query_path, 'flow-search.yml')) as f:
         f.post(
             on='/search',
