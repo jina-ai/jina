@@ -1,22 +1,6 @@
-from jina import Flow, Document
+from jina.helloworld.multimodal.app import hello_world
+from jina.parsers.helloworld import set_hw_multimodal_parser
 
-f = Flow.load_config('flow-index.yml')
-
-inputs = [
-    Document(tags={'caption': 'hello', 'image': 'image_1.jpg'}),
-    Document(tags={'caption': 'world', 'image': 'image_2.jpg'}),
-]
-
-for input in inputs:
-    print(input.id)
-
-with f:
-    f.post(
-        on='/index',
-        inputs=inputs,
-    )
-
-f = Flow.load_config('flow-search.yml')
-
-with f:
-    f.post(on='/search', inputs=inputs, parameters={'top_k': 10})
+if __name__ == '__main__':
+    args = set_hw_multimodal_parser().parse_args()
+    hello_world(args)

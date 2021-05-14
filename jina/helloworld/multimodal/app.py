@@ -1,10 +1,11 @@
 import os
+import csv
 import webbrowser
 from pathlib import Path
 
 from pkg_resources import resource_filename
 
-from jina import Flow
+from jina import Flow, Document, DocumentArray
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.helloworld.multimodal.helper import download_data
@@ -51,25 +52,32 @@ def hello_world(args):
     # load index flow from a YAML file
 
     # index it!
+    with open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
+        lines = list(csv.reader(fp))
+    document_array = DocumentArray()
+    for line in lines[1:]:
+        _, img_name, caption = line
+        document_array.append(Document(tags={'caption': caption, 'image': img_name}))
+
     f = Flow.load_config('flow-index.yml')
     with f, open(f'{args.workdir}/people-img/meta.csv') as fp:
-        f.index_csv(fp, request_size=64)
+        f.post(on='/index', inputs=document_array, request_size=64)
 
-    # search it!
-
-    f = Flow.load_config('flow-query.yml')
-    # switch to REST gateway
-    f.use_rest_gateway(args.port_expose)
-
-    with f:
-        try:
-            webbrowser.open(args.demo_url, new=2)
-        except:
-            pass  # intentional pass, browser support isn't cross-platform
-        finally:
-            default_logger.success(
-                f'You should see a demo page opened in your browser, '
-                f'if not, you may open {args.demo_url} manually'
-            )
-        if not args.unblock_query_flow:
-            f.block()
+    # # search it!
+    #
+    # f = Flow.load_config('flow-search.yml')
+    # # switch to REST gateway
+    # f.use_rest_gateway(args.port_expose)
+    #
+    # with f:
+    #     try:
+    #         webbrowser.open(args.demo_url, new=2)
+    #     except:
+    #         pass  # intentional pass, browser support isn't cross-platform
+    #     finally:
+    #         default_logger.success(
+    #             f'You should see a demo page opened in your browser, '
+    #             f'if not, you may open {args.demo_url} manually'
+    #         )
+    #     if not args.unblock_query_flow:
+    #         f.block()
