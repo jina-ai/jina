@@ -61,6 +61,11 @@ pods:
         py_modules:
           - executors.py
   - name: weightedRanker
+    uses:
+      jtype: WeightedRanker
+      metas:
+        py_modules:
+          - executors.py
     needs: [textChunkIndexer, imageChunkIndexer]
   - name: keyvalueIndexer
     uses:
