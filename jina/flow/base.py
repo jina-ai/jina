@@ -5,6 +5,7 @@ import os
 import re
 import threading
 import uuid
+import warnings
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
@@ -998,6 +999,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param dump_path: the path from which to read the dump data
         :param pod_name: pod to update
         """
+        # TODO: By design after the Flow object started, Flow shouldn't have memory access to its sub-objects anymore.
+        #  All controlling should be issued via Network Request, not via memory access.
+        #  In the current master, we have Flow.rolling_update() & Flow.dump() method avoid the above design.
+        #  Avoiding this design make the whole system NOT cloud-native.
+        warnings.warn(
+            'This function is experimental and facing potential refactoring',
+            FutureWarning,
+        )
 
         compound_pod = self._pod_nodes[pod_name]
         if isinstance(compound_pod, CompoundPod):
@@ -1006,13 +1015,3 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
             )
-
-    def dump(self, pod_name: str, dump_path: str, shards: int, timeout=-1):
-        """Emit a Dump request to a specific Pod
-        :param shards: the nr of shards in the dump
-        :param dump_path: the path to which to dump
-        :param pod_name: the name of the pod
-        :param timeout: time to wait (seconds)
-        """
-        pod: BasePod = self._pod_nodes[pod_name]
-        pod.dump(pod_name, dump_path, shards, timeout)

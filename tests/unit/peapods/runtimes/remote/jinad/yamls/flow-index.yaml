@@ -1,7 +1,5 @@
 !Flow
 version: '1'
-with:
-  compress_hwm: 1024
 pods:
   - name: encode
     uses: yamls/encoder.yml

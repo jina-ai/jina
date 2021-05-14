@@ -3,7 +3,8 @@ from functools import reduce
 from typing import Dict, Type, Set
 
 from ..base import VersionedYAMLParser
-from ....executors import BaseExecutor, get_default_metas
+from ....executors import BaseExecutor
+from ....executors.metas import get_default_metas
 
 
 class LegacyParser(VersionedYAMLParser):
@@ -69,6 +70,7 @@ class LegacyParser(VersionedYAMLParser):
             **data.get('with', {}),
             metas=data.get('metas', {}),
             requests=data.get('requests', {}),
+            runtime_args=data.get('runtime_args', {}),
         )
         cls._init_from_yaml = False
 

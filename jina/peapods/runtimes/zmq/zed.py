@@ -75,13 +75,7 @@ class ZEDRuntime(ZMQRuntime):
         try:
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
-                metas=dict(
-                    pea_id=self.args.pea_id,
-                    replica_id=getattr(self.args, 'replica_id', -1),
-                    read_only=self.args.read_only,
-                    parent_workspace=self.args.workspace,
-                    dump_path=getattr(self.args, 'dump_path', None),
-                ),
+                runtime_args=vars(self.args),
             )
         except BadConfigSource as ex:
             self.logger.error(
@@ -175,7 +169,6 @@ class ZEDRuntime(ZMQRuntime):
             msg.envelope.status.code != jina_pb2.StatusProto.ERROR
             or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
-
             if not re.match(self.request.header.target_peapod, self.name):
                 return self
 

@@ -2,15 +2,13 @@ import os
 
 import pytest
 import yaml
-from pkg_resources import resource_filename
 
+from jina import __default_executor__
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
-from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
 from jina.jaml import JAML
-from jina import __default_executor__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -86,12 +84,6 @@ def test_attr_dict():
     assert a.sda == 1
     a.__dict__['components'] = list()
     assert isinstance(a.components, list)
-
-
-def test_yaml_fill():
-    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
-        a = JAML.load(fp)
-    print(fill_metas_with_defaults(a))
 
 
 def test_class_yaml():

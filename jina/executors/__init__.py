@@ -1,9 +1,9 @@
 import os
 from types import SimpleNamespace
-from typing import Dict, TypeVar, Type, Optional, Callable
+from typing import Dict, TypeVar, Optional, Callable
 
 from .decorators import store_init_kwargs, wrap_func
-from .metas import get_default_metas, fill_metas_with_defaults
+from .metas import get_default_metas
 from .. import __default_endpoint__
 from ..helper import typename
 from ..jaml import JAMLCompatible, JAML, subvar_regex, internal_var_regex
@@ -72,14 +72,27 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     """
 
-    def __init__(self, metas: Optional[Dict] = None, requests: Optional[Dict] = None):
+    def __init__(
+        self,
+        metas: Optional[Dict] = None,
+        requests: Optional[Dict] = None,
+        runtime_args: Optional[Dict] = None,
+    ):
         """`metas` and `requests` are always auto-filled with values from YAML config.
 
         :param metas: a dict of metas fields
         :param requests: a dict of endpoint-function mapping
+        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         """
         self._add_metas(metas)
         self._add_requests(requests)
+        self._add_runtime_args(runtime_args)
+
+    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
+        if _runtime_args:
+            self.runtime_args = SimpleNamespace(**_runtime_args)
+        else:
+            self.runtime_args = SimpleNamespace()
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not _requests:
@@ -106,13 +119,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.requests = request_mapping
 
     def _add_metas(self, _metas: Optional[Dict]):
-        if not _metas:
-            return
+
+        tmp = get_default_metas()
+
+        if _metas:
+            tmp.update(_metas)
 
         unresolved_attr = False
         target = SimpleNamespace()
         # set self values filtered by those non-exist, and non-expandable
-        for k, v in _metas.items():
+        for k, v in tmp.items():
             if not hasattr(target, k):
                 if isinstance(v, str):
                     if not subvar_regex.findall(v):
@@ -126,7 +142,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         if unresolved_attr:
             _tmp = vars(self)
-            _tmp['metas'] = _metas
+            _tmp['metas'] = tmp
             new_metas = JAML.expand_dict(_tmp)['metas']
 
             for k, v in new_metas.items():
@@ -151,33 +167,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def close(self) -> None:
         """
-        Release the resources as executor is destroyed, need to be overridden
+        Always invoked as executor is destroyed.
+
+        You can write destructor & saving logic here.
         """
         pass
-
-    @classmethod
-    def _inject_config(
-        cls: Type[AnyExecutor],
-        raw_config: Dict,
-        *args,
-        **kwargs,
-    ) -> Dict:
-        """Inject config into the raw_config before loading into an object.
-
-        :param raw_config: raw config to work on
-        :param args: Additional arguments.
-        :param kwargs: Additional key word arguments.
-
-        :return: an executor object
-        """
-        if 'metas' not in raw_config:
-            raw_config['metas'] = {}
-        tmp = fill_metas_with_defaults(raw_config)
-        if kwargs.get('metas'):
-            tmp['metas'].update(kwargs['metas'])
-            del kwargs['metas']
-        tmp.update(kwargs)
-        return tmp
 
     def __call__(self, req_endpoint: str, **kwargs):
         """
@@ -206,12 +200,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        if getattr(self.metas, 'parent_workspace', None):
+        if getattr(self.runtime_args, 'workspace', None):
             complete_workspace = os.path.join(
-                self.metas.parent_workspace, self.metas.name
+                self.runtime_args.workspace, self.metas.name
             )
-            replica_id = getattr(self.metas, 'replica_id', None)
-            pea_id = getattr(self.metas, 'pea_id', None)
+            replica_id = getattr(self.runtime_args, 'replica_id', None)
+            pea_id = getattr(self.runtime_args, 'pea_id', None)
             if replica_id is not None and replica_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))
             if pea_id is not None and pea_id != -1:
@@ -220,9 +214,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         elif self.metas.workspace is not None:
             return os.path.abspath(self.metas.workspace)
         else:
-            raise Exception(
-                'no workspace or parent workspace found in the executor metas.'
-            )
+            raise Exception('can not find metas.workspace or runtime_args.workspace')
 
     def __enter__(self):
         return self

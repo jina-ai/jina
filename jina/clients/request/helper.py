@@ -9,18 +9,7 @@ from ...excepts import BadDocType, BadRequestType
 def _new_data_request_from_batch(
     _kwargs, batch, data_type, endpoint, target, parameters
 ):
-    req = Request()
-    req.request_type = 'data'
-
-    # set up header
-    if endpoint:
-        req.header.exec_endpoint = endpoint
-    if target:
-        req.header.target_peapod = target
-
-    # add parameters field
-    if parameters:
-        req.parameters.update(parameters)
+    req = _new_data_request(endpoint, target, parameters)
 
     # add docs, groundtruths fields
     try:
@@ -30,6 +19,21 @@ def _new_data_request_from_batch(
             f'error when building {req.request_type} from {batch}'
         ) from ex
 
+    return req
+
+
+def _new_data_request(endpoint, target, parameters):
+    req = Request()
+    req.request_type = 'data'
+
+    # set up header
+    if endpoint:
+        req.header.exec_endpoint = endpoint
+    if target:
+        req.header.target_peapod = target
+    # add parameters field
+    if parameters:
+        req.parameters.update(parameters)
     return req
 
 

@@ -22,6 +22,7 @@ One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray`
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
 
+- [Minimum working example](#minimum-working-example)
 - [`Document` API](#document-api)
   - [`Document` Attributes](#document-attributes)
   - [Construct `Document`](#construct-document)
@@ -43,6 +44,14 @@ Table of Contents
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Minimum working example
+
+```python
+from jina import Document
+
+d = Document() 
+```
 
 ## `Document` API
 

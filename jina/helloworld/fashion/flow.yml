@@ -1,7 +1,6 @@
 jtype: Flow
-version: '1.0'
+version: '1'
 with:
-  compress_hwm: 1024
   workspace: $HW_WORKDIR
 pods:
   - name: encode

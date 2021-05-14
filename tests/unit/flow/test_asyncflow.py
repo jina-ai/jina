@@ -40,7 +40,9 @@ def documents(start_index, end_index):
 async def test_run_async_flow(restful, mocker):
     r_val = mocker.Mock()
     with AsyncFlow(restful=restful).add() as f:
-        async for r in f.index(Document.from_ndarray(np.random.random([num_docs, 4])), on_done=r_val):
+        async for r in f.index(
+            Document.from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
+        ):
             assert isinstance(r, Response)
     validate_callback(r_val, validate)
 
@@ -79,16 +81,16 @@ async def test_run_async_flow_async_input(restful, inputs, mocker):
 async def run_async_flow_5s(restful):
     # WaitDriver pause 5s makes total roundtrip ~5s
     from jina import Executor, requests
-    class Wait5s(Executor):
 
+    class Wait5s(Executor):
         @requests
         def foo(self, **kwargs):
             time.sleep(5)
 
     with AsyncFlow(restful=restful).add(uses=Wait5s) as f:
-        async for r in f.index(Document.from_ndarray(np.random.random([num_docs, 4]))
-                , on_done=validate
-                               ):
+        async for r in f.index(
+            Document.from_ndarray(np.random.random([num_docs, 4])), on_done=validate
+        ):
             assert isinstance(r, Response)
 
 
@@ -145,4 +147,19 @@ async def test_return_results_async_flow(return_results, restful):
 async def test_return_results_async_flow_crud(return_results, restful, flow_api):
     with AsyncFlow(restful=restful, return_results=return_results).add() as f:
         async for r in getattr(f, flow_api)(documents(0, 10)):
+            assert isinstance(r, Response)
+
+
+@pytest.mark.asyncio
+async def test_async_flow_empty_data():
+
+    from jina import Executor, requests
+
+    class MyExec(Executor):
+        @requests
+        def foo(self, parameters, **kwargs):
+            assert parameters['hello'] == 'world'
+
+    with AsyncFlow().add(uses=MyExec) as f:
+        async for r in f.post('/hello', parameters={'hello': 'world'}):
             assert isinstance(r, Response)
