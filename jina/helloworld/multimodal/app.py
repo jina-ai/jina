@@ -60,7 +60,6 @@ def hello_world(args):
         f.post(on='/index', inputs=document_array, on_done=print)
 
     # search it!
-
     f = Flow.load_config('flow-search.yml')
     # switch to REST gateway
     f.use_rest_gateway(args.port_expose)
