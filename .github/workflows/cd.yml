@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true
+#          submodules: true
           fetch-depth: 100
       - run: |
           truncate --size=24KB README.md > README-trunc.md
@@ -107,8 +107,8 @@ jobs:
         tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true  # this job build devel image, devel image includes hub submodule
+#        with:
+#          submodules: true  # this job build devel image, devel image includes hub submodule
       - name: Set envs and versions
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -159,8 +159,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
+#        with:
+#          submodules: true
       - run: |
           echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
       - name: Upload to Github Docker Registry
@@ -191,8 +191,8 @@ jobs:
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
+#        with:
+#          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
