@@ -33,8 +33,8 @@ class DummyMarkExecutor(Executor):
     @requests
     def foo(self, docs, *args, **kwargs):
         for doc in docs:
-            doc.tags['replica'] = self.metas.replica_id
-            doc.tags['shard'] = self.metas.pea_id
+            doc.tags['replica'] = self.runtime_args.replica_id
+            doc.tags['shard'] = self.runtime_args.pea_id
 
     def close(self) -> None:
         import os
