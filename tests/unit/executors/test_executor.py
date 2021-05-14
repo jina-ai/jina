@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 from jina import Executor
@@ -15,10 +16,10 @@ def workspace(self) -> str:
     return os.path.abspath(
         self.metas.workspace
         or (
-            os.path.join(self.metas.parent_workspace, self.metas.name)
+            os.path.join(self.runtime_args.workspace, self.metas.name)
             if self.metas.replica_id == -1
             else os.path.join(
-                self.metas.parent_workspace, self.metas.name, self.metas.replica_id
+                self.runtime_args.workspace, self.metas.name, self.metas.replica_id
             )
         )
     )
@@ -51,7 +52,7 @@ def test_bad_metas_workspace(tmpdir):
 @pytest.fixture
 def test_metas_workspace_replica_peas(tmpdir, replica_id, pea_id):
     metas = get_default_metas()
-    metas['parent_workspace'] = str(tmpdir)
+    metas['workspace'] = str(tmpdir)
     metas['name'] = 'test'
     metas['replica_id'] = replica_id
     metas['pea_id'] = pea_id
@@ -68,10 +69,13 @@ def test_executor_workspace_simple(test_metas_workspace_simple):
 @pytest.mark.parametrize('replica_id', [0, 1, 2], indirect=True)
 @pytest.mark.parametrize('pea_id', [0, 1, 2], indirect=True)
 def test_executor_workspace(test_metas_workspace_replica_peas, replica_id, pea_id):
-    executor = Executor(metas=test_metas_workspace_replica_peas)
+    executor = Executor(
+        metas={'name': test_metas_workspace_replica_peas['name']},
+        runtime_args=test_metas_workspace_replica_peas,
+    )
     assert executor.workspace == os.path.abspath(
         os.path.join(
-            test_metas_workspace_replica_peas['parent_workspace'],
+            test_metas_workspace_replica_peas['workspace'],
             test_metas_workspace_replica_peas['name'],
             str(replica_id),
             str(pea_id),
@@ -84,10 +88,13 @@ def test_executor_workspace(test_metas_workspace_replica_peas, replica_id, pea_i
 def test_executor_workspace_parent_replica_nopea(
     test_metas_workspace_replica_peas, replica_id, pea_id
 ):
-    executor = Executor(metas=test_metas_workspace_replica_peas)
+    executor = Executor(
+        metas={'name': test_metas_workspace_replica_peas['name']},
+        runtime_args=test_metas_workspace_replica_peas,
+    )
     assert executor.workspace == os.path.abspath(
         os.path.join(
-            test_metas_workspace_replica_peas['parent_workspace'],
+            test_metas_workspace_replica_peas['workspace'],
             test_metas_workspace_replica_peas['name'],
             str(replica_id),
         )
@@ -99,10 +106,13 @@ def test_executor_workspace_parent_replica_nopea(
 def test_executor_workspace_parent_noreplica_pea(
     test_metas_workspace_replica_peas, replica_id, pea_id
 ):
-    executor = Executor(metas=test_metas_workspace_replica_peas)
+    executor = Executor(
+        metas={'name': test_metas_workspace_replica_peas['name']},
+        runtime_args=test_metas_workspace_replica_peas,
+    )
     assert executor.workspace == os.path.abspath(
         os.path.join(
-            test_metas_workspace_replica_peas['parent_workspace'],
+            test_metas_workspace_replica_peas['workspace'],
             test_metas_workspace_replica_peas['name'],
             str(pea_id),
         )
@@ -114,10 +124,13 @@ def test_executor_workspace_parent_noreplica_pea(
 def test_executor_workspace_parent_noreplica_nopea(
     test_metas_workspace_replica_peas, replica_id, pea_id
 ):
-    executor = Executor(metas=test_metas_workspace_replica_peas)
+    executor = Executor(
+        metas={'name': test_metas_workspace_replica_peas['name']},
+        runtime_args=test_metas_workspace_replica_peas,
+    )
     assert executor.workspace == os.path.abspath(
         os.path.join(
-            test_metas_workspace_replica_peas['parent_workspace'],
+            test_metas_workspace_replica_peas['workspace'],
             test_metas_workspace_replica_peas['name'],
         )
     )
