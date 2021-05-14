@@ -126,7 +126,7 @@ class ZEDRuntime(ZMQRuntime):
 
         info_msg = f'recv {msg.envelope.request_type} '
         if self.request_type == 'DataRequest':
-            info_msg += f'({self.request.header.exec_endpoint}) '
+            info_msg += f'({self.envelope.header.exec_endpoint}) '
         elif self.request_type == 'ControlRequest':
             info_msg += f'({self.request.command}) '
         info_msg += f'{part_str} from {msg.colored_route}'
@@ -169,9 +169,9 @@ class ZEDRuntime(ZMQRuntime):
             msg.envelope.status.code != jina_pb2.StatusProto.ERROR
             or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
         ):
-            if not re.match(self.request.header.target_peapod, self.name):
+            if not re.match(self.envelope.header.target_peapod, self.name):
                 return self
-
+            print(f'1: {self.request.is_used}')
             if self.request_type == 'DataRequest':
 
                 # migrated from the previously RouteDriver logic
@@ -182,10 +182,10 @@ class ZEDRuntime(ZMQRuntime):
                     # when no available dealer, pause the pollin from upstream
                     if not self._idle_dealer_ids:
                         self._zmqlet.pause_pollin()
-
+                print(f'2: {self.request.is_used}')
                 # executor logic
                 r_docs = self._executor(
-                    req_endpoint=self.request.header.exec_endpoint,
+                    req_endpoint=self.envelope.header.exec_endpoint,
                     docs=self.docs,
                     parameters=MessageToDict(self.request.parameters),
                     docs_matrix=self.docs_matrix,
@@ -207,6 +207,7 @@ class ZEDRuntime(ZMQRuntime):
                         # this means the returned DocArray is a completely new one
                         self.request.docs.clear()
                         self.request.docs.extend(r_docs)
+                print(f'3: {self.request.is_used}')
             else:
                 self._handle_control_req()
         else:
