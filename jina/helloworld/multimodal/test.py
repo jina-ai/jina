@@ -7,10 +7,12 @@ inputs = [
     Document(tags={'caption': 'world', 'image': 'image_2.jpg'}),
 ]
 
+for input in inputs:
+    print(input.id)
+
 with f:
     f.post(
         on='/index',
-        # on_done=print,
         inputs=inputs,
     )
 

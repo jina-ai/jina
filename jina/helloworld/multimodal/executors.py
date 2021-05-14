@@ -339,6 +339,8 @@ class KeyValueIndexer(Executor):
         self.map = {}
         if os.path.exists(self.save_path):
             self._docs = DocumentArray.load(self.save_path)
+            with open(self.save_map_path, 'rb') as f:
+                self.map = pickle.load(f)
         else:
             self._docs = DocumentArray()
 
@@ -353,8 +355,6 @@ class KeyValueIndexer(Executor):
         return os.path.join(self.workspace, 'map.pickle')
 
     def close(self):
-        import pickle
-
         self._docs.save(self.save_path)
         with open(self.save_map_path, 'wb') as f:
             pickle.dump(self.map, f)
@@ -362,17 +362,14 @@ class KeyValueIndexer(Executor):
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
         for doc in docs:
-            print(f' indexing {doc.id}')
             inner_id = len(self._docs)
             self._docs.append(doc)
             self.map[doc.id] = inner_id
 
     @requests(on='/search')
     def query(self, docs: DocumentArray, **kwargs):
-        print(f'\n\n LETS QUERY \n\n')
         for doc in docs:
             for match in doc.matches:
-                print(f' querying {match.id}')
                 inner_id = self.map[match.id]
                 extracted_doc = self._docs[inner_id]
                 match.MergeFrom(extracted_doc)
@@ -387,27 +384,7 @@ class WeightedRanker(Executor):
         'QueryMatchInfo', 'match_parent_id match_id query_id score'
     )
 
-    def _score(
-        self, match_idx: 'np.ndarray', query_chunk_meta: Dict, match_chunk_meta: Dict
-    ) -> 'np.ndarray':
-        """
-        Translate the chunk-level top-k results into doc-level top-k results. Some score functions may leverage the
-        meta information of the query, hence the meta info of the query chunks and matched chunks are given
-        as arguments.
-        :param match_idx: A [N x 4] numpy ``ndarray``, column-wise:
-                - ``match_idx[:, 0]``: ``doc_id`` of the matched chunks, integer
-                - ``match_idx[:, 1]``: ``chunk_id`` of the matched chunks, integer
-                - ``match_idx[:, 2]``: ``chunk_id`` of the query chunks, integer
-                - ``match_idx[:, 3]``: distance/metric/score between the query and matched chunks, float
-        :type match_idx: np.ndarray.
-        :param query_chunk_meta: The meta information of the query chunks, where the key is query chunks' ``chunk_id``,
-            the value is extracted by the ``query_required_keys``.
-        :param match_chunk_meta: The meta information of the matched chunks, where the key is matched chunks'
-            ``chunk_id``, the value is extracted by the ``match_required_keys``.
-        :return: A [N x 2] numpy ``ndarray``, where the first column is the matched documents' ``doc_id`` (integer)
-                the second column is the score/distance/metric between the matched doc and the query doc (float).
-        :rtype: np.ndarray.
-        """
+    def _score(self, match_idx: 'np.ndarray', query_chunk_meta: Dict) -> 'np.ndarray':
         _groups = self._group_by(match_idx, self.COL_PARENT_ID)
         n_groups = len(_groups)
         res = np.empty(
@@ -421,7 +398,7 @@ class WeightedRanker(Executor):
         for i, _g in enumerate(_groups):
             res[i] = (
                 _g[self.COL_PARENT_ID][0],
-                self.score(_g, query_chunk_meta, match_chunk_meta),
+                self.score(_g, query_chunk_meta),
             )
 
         self._sort_doc_by_score(res)
@@ -435,6 +412,26 @@ class WeightedRanker(Executor):
         """
         r[::-1].sort(order=self.COL_SCORE)
 
+    def _group_by(self, match_idx, col_name):
+        """
+        Create an list of numpy arrays with the same ``col_name`` in each position of the list
+        :param match_idx: Numpy array of Tuples with document id and score
+        :param col_name:  Column name in the structured numpy array of Tuples
+        :return: List of numpy arrays with the same ``doc_id`` in each position of the list
+        :rtype: np.ndarray.
+        """
+        _sorted_m = np.sort(match_idx, order=col_name)
+        list_numpy_arrays = []
+        prev_val = _sorted_m[col_name][0]
+        prev_index = 0
+        for i, current_val in enumerate(_sorted_m[col_name]):
+            if current_val != prev_val:
+                list_numpy_arrays.append(_sorted_m[prev_index:i])
+                prev_index = i
+                prev_val = current_val
+        list_numpy_arrays.append(_sorted_m[prev_index:])
+        return list_numpy_arrays
+
     def _insert_query_matches(
         self,
         query: Document,
@@ -444,8 +441,7 @@ class WeightedRanker(Executor):
         :param query: the query Document where the resulting matches will be inserted
         :param docs_scores: An `np.ndarray` resulting from the ranker executor with the `scores` of the new matches
         """
-
-        op_name = self.exec.__class__.__name__
+        op_name = self.score.__class__.__name__
         for doc_id, score in docs_scores:
             m = Document(id=doc_id)
             m.score = NamedScore(op_name=op_name, value=score)
@@ -458,7 +454,6 @@ class WeightedRanker(Executor):
         :param args: not used (kept to maintain interface)
         :param kwargs: not used (kept to maintain interface)
         """
-        print(f' \n\nLETS RANK \n\n')
         for doc in docs:
             chunks = doc.chunks
             match_idx = []  # type: List[Tuple[str, str, str, float]]
@@ -467,7 +462,8 @@ class WeightedRanker(Executor):
             parent_id_chunk_id_map = defaultdict(list)
             matches_by_id = defaultdict(Document)
             for chunk in chunks:
-                query_meta[chunk.id] = chunk.get_attrs('weight')
+                query_meta[chunk.id] = {}
+                query_meta[chunk.id]['weight'] = chunk.weight
                 for match in chunk.matches:
                     match_info = self.QueryMatchInfo(
                         match_parent_id=match.parent_id,
@@ -490,8 +486,7 @@ class WeightedRanker(Executor):
                     ],
                 )
 
-                docs_scores = self._score(match_idx)
-                print(f' \n\ndocs_scores {docs_scores} \n\n')
+                docs_scores = self._score(match_idx, query_chunk_meta=query_meta)
                 self._insert_query_matches(
                     query=doc,
                     docs_scores=docs_scores,
