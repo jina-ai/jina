@@ -1,10 +1,12 @@
 import json
 import mock
+import pytest
 
 from jina.docker.hubio import HubIO
 from jina.parsers.hub import set_hub_list_parser
 
 
+@pytest.mark.skip('2.0.0rc disabled the hub submodule')
 def test_hub_list_local_with_submodule():
     args = set_hub_list_parser().parse_args(['--local-only'])
     response = HubIO(args).list()
