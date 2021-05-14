@@ -1006,13 +1006,3 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
             )
-
-    def dump(self, pod_name: str, dump_path: str, shards: int, timeout=-1):
-        """Emit a Dump request to a specific Pod
-        :param shards: the nr of shards in the dump
-        :param dump_path: the path to which to dump
-        :param pod_name: the name of the pod
-        :param timeout: time to wait (seconds)
-        """
-        pod: BasePod = self._pod_nodes[pod_name]
-        pod.dump(pod_name, dump_path, shards, timeout)

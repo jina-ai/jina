@@ -1,0 +1,14 @@
+version: "3.3"
+services:
+  jinad:
+    image: test_remote_flow_dump_reload
+    build:
+      context: .
+      dockerfile: Dockerfiles/debianx.Dockerfile
+    ports:
+      - "8001:8000"
+      - "9000:9000"
+      - "9001:9001"
+      - "45678:45678"
+    expose:
+      - 10000-60000
