@@ -151,7 +151,15 @@ def _jinad_dump(pod_name, dump_path, shards, url):
     }
     # url params
     logger.info(f'sending dump request')
-    _send_rest_request(REST_PORT_DBMS, 'post', 'post', [], '/dump', params, pod_name)
+    _send_rest_request(
+        REST_PORT_DBMS,
+        'post',
+        'post',
+        data=[],
+        exec_endpoint='/dump',
+        params=params,
+        target_peapod=pod_name,
+    )
 
 
 def _jinad_rolling_update(pod_name, dump_path, url):
