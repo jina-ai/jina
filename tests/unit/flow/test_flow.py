@@ -715,3 +715,21 @@ def test_flow_allinone_yaml():
     f = Flow.load_config(os.path.join(cur_dir, 'yaml/flow-allinone-oldstyle.yml'))
     with f:
         pass
+
+
+def test_flow_empty_data_request(mocker):
+    from jina import Executor, requests
+
+    class MyExec(Executor):
+        @requests
+        def foo(self, parameters, **kwargs):
+            assert parameters['hello'] == 'world'
+
+    f = Flow().add(uses=MyExec)
+
+    mock = mocker.Mock()
+
+    with f:
+        f.post('/hello', parameters={'hello': 'world'}, on_done=mock)
+
+    mock.assert_called()
