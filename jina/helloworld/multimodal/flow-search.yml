@@ -26,6 +26,8 @@ pods:
   - name: textChunkIndexer
     uses:
       jtype: DocVectorIndexer
+      with:
+        index_file_name: "text.json"
       metas:
         py_modules:
           - executors.py
@@ -33,7 +35,7 @@ pods:
     uses:
         jtype: ModalityFilter
         with:
-          mime_type_to_keep: image/jpeg
+          mime_type_to_keep: "image/jpeg"
         metas:
           py_modules:
             - executors.py
@@ -53,6 +55,8 @@ pods:
   - name: imageChunkIndexer
     uses:
       jtype: DocVectorIndexer
+      with:
+        index_file_name: "image.json"
       metas:
         py_modules:
           - executors.py
