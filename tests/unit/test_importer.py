@@ -53,7 +53,7 @@ def test_import_classes_failed_find_package(ns, mocker):
     assert len(depend_tree) == 0
 
 
-@pytest.mark.parametrize('ns', ['jina.executors', 'jina.hub'])
+@pytest.mark.parametrize('ns', ['jina.executors'])
 def test_import_classes_failed_import_module(ns, mocker, recwarn):
     import importlib
 
