@@ -44,6 +44,14 @@ Table of Contents
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Minimum working example
+
+```python
+from jina import Document
+
+d = Document() 
+```
+
 ## `Document` API
 
 ### `Document` Attributes

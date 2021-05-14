@@ -359,8 +359,19 @@ then second):
 
 ### Metas
 
-The meta attributes of an `Executor` object is now gathered in `self.metas`, instead of directly posing them to `self`,
+The meta attributes of an `Executor` object are now gathered in `self.metas`, instead of directly posing them to `self`,
 e.g. to access `name` use `self.metas.name`.
+
+
+
+### `.metas` & `.runtime_args`
+
+An `Executor` object by default contains two attributes `.metas` and `.runtime_args`. They are both in `SimpleNamespace` type and contains some key-value information. However, they are initiated and serve differently.
+
+- **`.metas` are statically initiated.** "Static" means, e.g. from hardcoded value in the code, from a YAML file. Currently, it only supports the following fields: `name`, `description`, `py_modules`, `workspace`.  
+- **`.runtime_args` are dynamically assigned during runtime.** Means that you don't know the value before running the `Executor`, e.g. `pea_id`, `replicas`, `replica_id`. 
+
+Note that, YAML API will ignore `.runtime_args` as they are not for statically stored.
 
 ---
 

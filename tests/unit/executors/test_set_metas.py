@@ -27,6 +27,20 @@ def test_default_args_from_load_config():
     assert b.metas.name
 
 
+def test_runtime_args_from_load_config():
+    y = '''
+!BaseExecutor
+metas:
+  name: my-mwu-encoder
+  workspace: ./
+    '''
+
+    b = BaseExecutor.load_config(y)
+
+    assert b.metas.workspace == './'
+    assert b.metas.name == 'my-mwu-encoder'
+
+
 def test_default_args_from_python():
     b = BaseExecutor()
 
