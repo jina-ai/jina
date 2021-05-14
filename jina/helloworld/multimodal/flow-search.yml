@@ -3,12 +3,6 @@ version: '1.0'
 with:
   workspace: $HW_WORKDIR
 pods:
-  - name: segment
-    uses:
-      jtype: Segmenter
-      metas:
-        py_modules:
-          - executors.py
   - name: filterNonText
     uses:
         jtype: ModalityFilter
@@ -39,7 +33,7 @@ pods:
         metas:
           py_modules:
             - executors.py
-    needs: segment
+    needs: gateway
   - name: craftImage
     uses:
       jtype: ImageCrafter

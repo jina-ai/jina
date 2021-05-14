@@ -210,10 +210,20 @@ class ImageCrafter(Executor):
         self.channel_axis = channel_axis
         self.target_channel_axis = target_channel_axis
 
-    @requests(on=['/index', '/search'])
-    def craft(self, docs: DocumentArray, **kwargs):
+    @requests(on='/index')
+    def craft_index(self, docs: DocumentArray, **kwargs):
         for doc in docs.traverse_flatten(['c']):
             doc.convert_image_uri_to_blob()
+            raw_img = _load_image(doc.blob, self.channel_axis)
+            _img = self._normalize(raw_img)
+            # move the channel_axis to target_channel_axis to better fit different models
+            img = _move_channel_axis(_img, -1, self.target_channel_axis)
+            doc.blob = img
+
+    @requests(on='/search')
+    def craft_search(self, docs: DocumentArray, **kwargs):
+        for doc in docs.traverse_flatten(['c']):
+            doc.convert_image_datauri_to_blob()
             raw_img = _load_image(doc.blob, self.channel_axis)
             _img = self._normalize(raw_img)
             # move the channel_axis to target_channel_axis to better fit different models
