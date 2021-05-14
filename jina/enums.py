@@ -298,9 +298,8 @@ class OnErrorStrategy(BetterEnum):
     IGNORE = (
         0  #: Ignore it, keep running all Drivers & Executors logics in the sequel flow
     )
-    SKIP_EXECUTOR = 1  #: Skip all Executors in the sequel, but drivers are still called
-    SKIP_HANDLE = 2  #: Skip all Drivers & Executors in the sequel, only `pre_hook` and `post_hook` are called
-    THROW_EARLY = 3  #: Immediately throw the exception, the sequel flow will not be running at all
+    SKIP_HANDLE = 1  #: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
+    THROW_EARLY = 2  #: Immediately throw the exception, the sequel flow will not be running at all
 
 
 class FlowInspectType(BetterEnum):

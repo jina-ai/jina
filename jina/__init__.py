@@ -31,7 +31,8 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
-__version__ = '2.0.0'
+# TODO: remove 'rc' on final release
+__version__ = '2.0.0rc'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -92,7 +93,6 @@ _names_with_underscore = [
 ]
 
 # Primitive data type,
-# note, they must be loaded BEFORE all executors/drivers/... to avoid cyclic imports
 from jina.types.request import Request, Response
 from jina.types.message import Message
 from jina.types.document import Document

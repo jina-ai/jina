@@ -112,7 +112,6 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
 The skip strategy on exceptions.
 
 - IGNORE: Ignore it, keep running all Executors in the sequel flow
-- SKIP_EXECUTOR: Skip all Executors in the sequel
 - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
 - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
 

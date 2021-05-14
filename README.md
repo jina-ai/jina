@@ -67,13 +67,16 @@ Jina is geared towards building search systems for any kind of data, including t
 ## Installation
 
 ```sh
-pip install --pre jina
+$ pip install --pre jina
+$ jina -v
+2.0.0rc
 ```
 
 #### via Docker
 
 ```sh
-docker run jinaai/jina:2.0.0rc
+$ docker run jinaai/jina:master -v
+2.0.0rc
 ```
 
 <details>
@@ -101,7 +104,7 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 Copy-paste the minimum example below and run it:
 
 ```python
-from jina import Executor, Flow, Document, requests
+from jina import Document, Executor, Flow, requests
 
 
 class MyExecutor(Executor):

@@ -1,13 +1,13 @@
 name: Release Cycle
 
-on:
-  schedule:
-    - cron: "00 23 * * 0"
-
 #on:
-#  push:
-#    branches-ignore:
-#      - '**'  # temporally disable this action
+#  schedule:
+#    - cron: "00 23 * * 0"
+
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally disable this action
 
 
 jobs:

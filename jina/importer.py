@@ -251,14 +251,14 @@ def _raise_bad_imports_warnings(bad_imports, namespace):
     if namespace != 'jina.hub':
         warnings.warn(
             f'theses modules or classes can not be imported {bad_imports}. '
-            f'You can use `jina check` to list all executors and drivers'
+            f'You can use `jina check` to list all executors'
         )
     else:
         warnings.warn(
             f'due to the missing dependencies or bad implementations, '
             f'{bad_imports} can not be imported '
-            f'if you are using these executors/drivers, they wont work. '
-            f'You can use `jina check` to list all executors and drivers'
+            f'if you are using these executors, they wont work. '
+            f'You can use `jina check` to list all executors'
         )
 
 
