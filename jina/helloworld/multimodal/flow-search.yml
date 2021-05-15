@@ -1,0 +1,70 @@
+jtype: Flow
+version: '1.0'
+with:
+  workspace: $HW_WORKDIR
+pods:
+  - name: filterNonText
+    uses:
+        jtype: ModalityFilter
+        with:
+          mime_type_to_keep: "text/plain"
+        metas:
+          py_modules:
+            - executors.py
+  - name: encodeText
+    uses:
+      jtype: TextEncoder
+      metas:
+        py_modules:
+          - executors.py
+  - name: textChunkIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "text.json"
+      metas:
+        py_modules:
+          - executors.py
+  - name: filterNonVisual
+    uses:
+        jtype: ModalityFilter
+        with:
+          mime_type_to_keep: "image/jpeg"
+        metas:
+          py_modules:
+            - executors.py
+    needs: gateway
+  - name: craftImage
+    uses:
+      jtype: ImageCrafter
+      metas:
+        py_modules:
+          - executors.py
+  - name: encodeImage
+    uses:
+      jtype: ImageEncoder
+      metas:
+        py_modules:
+          - executors.py
+  - name: imageChunkIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "image.json"
+      metas:
+        py_modules:
+          - executors.py
+  - name: weightedRanker
+    uses:
+      jtype: WeightedRanker
+      metas:
+        py_modules:
+          - executors.py
+    needs: [textChunkIndexer, imageChunkIndexer]
+  - name: keyvalueIndexer
+    uses:
+      jtype: KeyValueIndexer
+      metas:
+        py_modules:
+          - executors.py
+    needs: weightedRanker

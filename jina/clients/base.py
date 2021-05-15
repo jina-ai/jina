@@ -166,7 +166,7 @@ class BaseClient:
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
-            self.logger.warning(f'process error: {ex!r}, terminate signal send?')
+            self.logger.warning(f'process error: {ex!r}')
         except grpc.aio._call.AioRpcError as rpc_ex:
             # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
             my_code = rpc_ex.code()
