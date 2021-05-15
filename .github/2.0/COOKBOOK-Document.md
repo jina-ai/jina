@@ -41,6 +41,7 @@ Table of Contents
 - [`DocumentArray` API](#documentarray-api)
   - [Construct `DocumentArray`](#construct-documentarray)
   - [Persistence via `save()`/`load()`](#persistence-via-saveload)
+  - [Access Element](#access-element)
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
