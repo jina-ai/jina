@@ -7,8 +7,18 @@ class TraversableSequence:
     A mixin used for traversing a `Sequence[Traversable]`.
     """
 
-    def __iter__(self) -> Iterable:
-        raise NotImplementedError
+    def iter(self, traversal_paths: Iterable[str]) -> 'TraversableSequence':
+        """
+        Efficient multi-path iterator object to iterate over :class:`TraversableSequence`.
+
+        Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
+        via the :param:``traversal_paths``.
+
+        :param traversal_paths: a list of string that represents the traversal path
+        :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
+        """
+        leaves = self.traverse(traversal_paths)
+        return self.__class__(itertools.chain.from_iterable(leaves))
 
     def traverse(
         self, traversal_paths: Iterable[str]
@@ -47,10 +57,14 @@ class TraversableSequence:
             elif loc == 'c':
                 for d in docs:
                     yield from TraversableSequence._traverse(d.chunks, path[1:])
+            else:
+                raise ValueError(
+                    f'`path`:{loc} is invalid, must be one of `c`, `r`, `m`'
+                )
         else:
             yield docs
 
-    def traverse_flattened_per_path(
+    def traverse_flat_per_path(
         self, traversal_paths: Iterable[str]
     ) -> Iterable['TraversableSequence']:
         """
@@ -63,7 +77,7 @@ class TraversableSequence:
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p))
 
-    def traverse_flatten(self, traversal_paths: Iterable[str]) -> 'TraversableSequence':
+    def traverse_flat(self, traversal_paths: Iterable[str]) -> 'TraversableSequence':
         """
         Returns a single flattened :class:``TraversableSequence`` with all Documents, that are reached
         via the :param:``traversal_paths``.
