@@ -38,8 +38,8 @@ def test_func_simple_routing(mocker):
             on_error=fail_mock,
         )
 
-    fail_mock.assert_called_once()
-    done_mock.assert_not_called()
+    fail_mock.assert_not_called()
+    done_mock.assert_called_once()
 
 
 def test_func_default_routing():
@@ -174,5 +174,5 @@ def test_target_peapod(mocker):
         success_mock = mocker.Mock()
         fail_mock = mocker.Mock()
         f.post('/hello', inputs=Document(), on_done=success_mock, on_error=fail_mock)
-        success_mock.assert_not_called()
-        fail_mock.assert_called()
+        success_mock.assert_called()
+        fail_mock.assert_not_called()

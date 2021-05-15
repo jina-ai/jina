@@ -85,6 +85,7 @@ async def run_async_flow_5s(restful):
     class Wait5s(Executor):
         @requests
         def foo(self, **kwargs):
+            print('im called!')
             time.sleep(5)
 
     with AsyncFlow(restful=restful).add(uses=Wait5s) as f:

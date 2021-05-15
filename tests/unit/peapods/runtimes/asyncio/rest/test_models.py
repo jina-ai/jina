@@ -240,3 +240,6 @@ def test_pydatic_document_to_jina_document():
 def test_model_with_top_k(top_k):
     m = JinaRequestModel(data=['abc'], parameters={'top_k': top_k})
     assert m.parameters['top_k'] == top_k
+
+    m = JinaRequestModel(parameters={'top_k': top_k})
+    assert m.parameters['top_k'] == top_k

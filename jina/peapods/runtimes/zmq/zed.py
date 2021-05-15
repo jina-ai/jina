@@ -6,10 +6,9 @@ from typing import Dict, List
 import zmq
 from google.protobuf.json_format import MessageToDict
 
-from .... import __default_endpoint__
 from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
-from .... import Message
+from .... import Message, __default_endpoint__
 from .... import Request
 from ....enums import OnErrorStrategy
 from ....excepts import (
@@ -113,9 +112,6 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: `ZEDRuntime`
         """
-
-        # do NOT access `msg.request.*` in the _pre_hook, as it will trigger the deserialization
-        # all meta information should be stored and accessed via `msg.envelope`
         msg.add_route(self.name, self._id)
         self._request = msg.request
         self._message = msg
@@ -144,7 +140,6 @@ class ZEDRuntime(ZMQRuntime):
         if self.request_type == 'ControlRequest':
             self._handle_control_req()
 
-        # do not handle last error if specified
         if (
             msg.envelope.status.code == jina_pb2.StatusProto.ERROR
             and self.args.on_error_strategy >= OnErrorStrategy.SKIP_HANDLE
@@ -184,14 +179,8 @@ class ZEDRuntime(ZMQRuntime):
         """
 
         if (
-            self.request_type != 'DataRequest'  #: do not handle ControlRequest
-            or not re.match(
-                self.envelope.header.target_peapod, self.name
-            )  #: do not handle if envelope's target_peapod defined otherwise
-            or (
-                self.envelope.header.exec_endpoint not in self._executor.requests
-                and __default_endpoint__ in self._executor.requests
-            )  #: do not handle if envelope's exec_endpoint is not defined in the executor
+            not re.match(self.envelope.header.target_peapod, self.name)
+            or self.request_type != 'DataRequest'
         ):
             return self
 
@@ -203,6 +192,12 @@ class ZEDRuntime(ZMQRuntime):
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
                 self._zmqlet.pause_pollin()
+
+        if (
+            self.envelope.header.exec_endpoint not in self._executor.requests
+            and __default_endpoint__ not in self._executor.requests
+        ):
+            return self
 
         # executor logic
         r_docs = self._executor(
