@@ -61,7 +61,7 @@ def hello_world(args):
         lines = list(csv.reader(fp))
 
     document_array = DocumentArray()
-    for line in lines[1:200]:
+    for line in lines[1:]:
         _, img_name, caption = line
         document_array.append(Document(tags={'caption': caption, 'image': img_name}))
 
