@@ -66,7 +66,7 @@ Jina is geared towards building search systems for any kind of data, including t
 
 ## Installation
 
-```sh
+```console
 $ pip install --pre jina
 $ jina -v
 2.0.0rc
@@ -74,7 +74,7 @@ $ jina -v
 
 #### via Docker
 
-```sh
+```console
 $ docker run jinaai/jina:master -v
 2.0.0rc
 ```
@@ -124,7 +124,7 @@ with f:
 
 - [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
 - [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
-- [📰 Multimedia search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 
 
 ## Support
