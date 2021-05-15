@@ -3,12 +3,21 @@ import csv
 import webbrowser
 from pathlib import Path
 
-from pkg_resources import resource_filename
-
 from jina import Flow, Document, DocumentArray
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.helloworld.multimodal.helper import download_data
+
+
+def search(query_document, on_done_callback, on_fail_callback, top_k):
+    with Flow.load_config('flow-search.yml') as f:
+        f.post(
+            on='/search',
+            inputs=[query_document],
+            on_done=on_done_callback,
+            on_fail=on_fail_callback,
+            parameters={'top_k': top_k},
+        )
 
 
 def hello_world(args):
