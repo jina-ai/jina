@@ -154,7 +154,7 @@ class TextEncoder(Executor):
         """
         import torch
 
-        chunks = docs.traverse_flatten(['c'])
+        chunks = docs.traverse_flat(['c'])
         texts = chunks.get_attributes('text')
 
         with torch.no_grad():
@@ -212,7 +212,7 @@ class ImageCrafter(Executor):
 
     @requests(on='/index')
     def craft_index(self, docs: DocumentArray, **kwargs):
-        for doc in docs.traverse_flatten(['c']):
+        for doc in docs.traverse_flat(['c']):
             doc.convert_image_uri_to_blob()
             raw_img = _load_image(doc.blob, self.channel_axis)
             _img = self._normalize(raw_img)
@@ -222,7 +222,7 @@ class ImageCrafter(Executor):
 
     @requests(on='/search')
     def craft_search(self, docs: DocumentArray, **kwargs):
-        for doc in docs.traverse_flatten(['c']):
+        for doc in docs.traverse_flat(['c']):
             doc.convert_image_datauri_to_blob()
             raw_img = _load_image(doc.blob, self.channel_axis)
             _img = self._normalize(raw_img)
@@ -279,7 +279,7 @@ class ImageEncoder(Executor):
     def encode(self, docs: DocumentArray, **kwargs):
         import torch
 
-        chunks = docs.traverse_flatten(traversal_paths=['c'])
+        chunks = docs.traverse_flat(traversal_paths=['c'])
         content = np.stack(chunks.get_attributes('blob'))
         _input = torch.from_numpy(content.astype('float32'))
         _features = self._get_features(_input).detach()
@@ -309,11 +309,11 @@ class DocVectorIndexer(Executor):
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
-        self._docs.extend(docs.traverse_flatten(['c']))
+        self._docs.extend(docs.traverse_flat(['c']))
 
     @requests(on='/search')
     def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
-        chunks = docs.traverse_flatten(['c'])
+        chunks = docs.traverse_flat(['c'])
         a = np.stack(chunks.get_attributes('embedding'))
         b = np.stack(self._docs.get_attributes('embedding'))
         q_emb = _ext_A(_norm(a))
