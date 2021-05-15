@@ -200,6 +200,8 @@ message EnvelopeProto {
 
     StatusProto status = 11; // status info
 
+    HeaderProto header = 12; // header contains meta info defined by the user, copied from Request, for lazy serialization
+
 }
 
 /**

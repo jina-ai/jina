@@ -257,12 +257,14 @@ class JinaRequestModel(BaseModel):
 
     # To avoid an error while loading the request model schema on swagger, we've added an example.
     exec_endpoint: Optional[str] = None
-    data: Union[
-        List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
-        List[Dict[str, Any]],
-        List[str],
-        List[bytes],
-    ] = Field(..., example=[Document().dict()])
+    data: Optional[
+        Union[
+            List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
+            List[Dict[str, Any]],
+            List[str],
+            List[bytes],
+        ]
+    ] = Field(None, example=[Document().dict()])
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
     mime_type: Optional[str] = ''
     data_type: DataInputType = DataInputType.AUTO

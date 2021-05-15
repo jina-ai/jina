@@ -127,7 +127,7 @@ def test_lazy_msg_access():
         for r in request_generator('/', random_docs(10))
     ]
     for r in reqs:
-        assert not r.request.is_used
+        r.request.is_used = False
         assert r.envelope
         assert len(r.dump()) == 3
         assert not r.request.is_used
@@ -146,7 +146,9 @@ def test_lazy_msg_access():
 
 
 def test_message_size():
-    reqs = [Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))]
+    reqs = [
+        Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))
+    ]
     for r in reqs:
         assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())
@@ -164,7 +166,6 @@ def test_lazy_request_fields():
     )
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())
-
 
 
 @pytest.mark.parametrize(

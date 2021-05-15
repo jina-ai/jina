@@ -67,6 +67,8 @@ class Message:
             if isinstance(self.request, Request):
                 self.request._envelope = self.envelope
 
+            self.envelope.header.CopyFrom(self.request.header)
+
         if self.envelope.check_version:
             self._check_version()
 

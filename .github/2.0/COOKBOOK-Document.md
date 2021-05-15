@@ -480,6 +480,26 @@ da.save('data.json')
 da1 = DocumentArray.load('data.json')
 ```
 
+### Access Element
+
+You can access a `Document` in the `DocumentArray` via integer index, string `id` and `slice` indices.
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(id='hello'), Document(id='world'), Document(id='goodbye')])
+
+da[0]
+# <jina.types.document.Document id=hello content_hash= granularity=0 adjacency=0 parent_id= chunks=[] weight=0.0 siblings=0 matches=[] mime_type= location=[] offset=0 modality= evaluations=[] at 5732567632>
+
+da['world']
+# <jina.types.document.Document id=world content_hash= granularity=0 adjacency=0 parent_id= chunks=[] weight=0.0 siblings=0 matches=[] mime_type= location=[] offset=0 modality= evaluations=[] at 5732565712>
+
+da[1:2]  
+# <jina.types.arrays.document.DocumentArray length=1 at 5732566608>
+```
+
+
 ### Get Attributes in Bulk
 
 `DocumentArray` implements powerful getters that allows one to fetch multiple attributes from the documents it contains
