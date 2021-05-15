@@ -28,7 +28,7 @@ from ....types.arrays.document import DocumentArray
 
 
 class ZEDRuntime(ZMQRuntime):
-    """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor, Driver."""
+    """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""

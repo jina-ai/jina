@@ -1,13 +1,13 @@
 name: Release Cycle
 
-on:
-  schedule:
-    - cron: "00 23 * * 0"
-
 #on:
-#  push:
-#    branches-ignore:
-#      - '**'  # temporally disable this action
+#  schedule:
+#    - cron: "00 23 * * 0"
+
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally disable this action
 
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           fetch-depth: 100  # means max contribute history is limited to 100 lines
-          submodules: true
+#          submodules: true
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7

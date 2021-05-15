@@ -37,28 +37,7 @@ class AsyncFlow(AsyncPostMixin, BaseFlow):
         https://ipython.readthedocs.io/en/stable/interactive/autoawait.html
 
     Another example is when using Jina as an integration. Say you have another IO-bounded job ``heavylifting()``, you
-    can use this feature to schedule Jina ``index()`` and ``heavylifting()`` concurrently. For example,
-
-    .. highlight:: python
-    .. code-block:: python
-
-        async def run_async_flow_5s():
-            # WaitDriver pause 5s makes total roundtrip ~5s
-            with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-                await f.index_ndarray(np.random.random([5, 4]), on_done=validate)
-
-
-        async def heavylifting():
-            # total roundtrip takes ~5s
-            print('heavylifting other io-bound jobs, e.g. download, upload, file io')
-            await asyncio.sleep(5)
-            print('heavylifting done after 5s')
-
-
-        async def concurrent_main():
-            # about 5s; but some dispatch cost, can't be just 5s, usually at <7s
-            await asyncio.gather(run_async_flow_5s(), heavylifting())
-
+    can use this feature to schedule Jina ``index()`` and ``heavylifting()`` concurrently.
 
     One can think of :class:`Flow` as Jina-managed eventloop, whereas :class:`AsyncFlow` is self-managed eventloop.
     """
