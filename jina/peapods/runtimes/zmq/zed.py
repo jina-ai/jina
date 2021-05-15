@@ -6,6 +6,7 @@ from typing import Dict, List
 import zmq
 from google.protobuf.json_format import MessageToDict
 
+from .... import __default_endpoint__
 from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
 from .... import Message
@@ -135,6 +136,21 @@ class ZEDRuntime(ZMQRuntime):
         info_msg += f'{part_str} from {msg.colored_route}'
         self.logger.info(info_msg)
 
+        if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
+            # NOTE: reduce priority is higher than chain exception
+            # otherwise a reducer will lose its function when earlier pods raise exception
+            raise NoExplicitMessage
+
+        if self.request_type == 'ControlRequest':
+            self._handle_control_req()
+
+        # do not handle last error if specified
+        if (
+            msg.envelope.status.code == jina_pb2.StatusProto.ERROR
+            and self.args.on_error_strategy >= OnErrorStrategy.SKIP_HANDLE
+        ):
+            raise ChainedPodException
+
         return self
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
@@ -166,61 +182,53 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: the message received
         :return: ZEDRuntime procedure.
         """
-        if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
-            # NOTE: reduce priority is higher than chain exception
-            # otherwise a reducer will lose its function when eailier pods raise exception
-            raise NoExplicitMessage
 
         if (
-            msg.envelope.status.code != jina_pb2.StatusProto.ERROR
-            or self.args.on_error_strategy < OnErrorStrategy.SKIP_HANDLE
+            self.request_type != 'DataRequest'  #: do not handle ControlRequest
+            or not re.match(
+                self.envelope.header.target_peapod, self.name
+            )  #: do not handle if envelope's target_peapod defined otherwise
+            or (
+                self.envelope.header.exec_endpoint not in self._executor.requests
+                and __default_endpoint__ in self._executor.requests
+            )  #: do not handle if envelope's exec_endpoint is not defined in the executor
         ):
-            if not re.match(self.envelope.header.target_peapod, self.name):
-                return self
-            print(f'1: {self.request.is_used}')
-            if (
-                self.request_type == 'DataRequest'
-                and self.envelope.header.exec_endpoint in self._executor.requests
-            ):
+            return self
 
-                # migrated from the previously RouteDriver logic
-                if self._idle_dealer_ids:
-                    dealer_id = self._idle_dealer_ids.pop()
-                    self.envelope.receiver_id = dealer_id
+        # migrated from the previously RouteDriver logic
+        if self._idle_dealer_ids:
+            dealer_id = self._idle_dealer_ids.pop()
+            self.envelope.receiver_id = dealer_id
 
-                    # when no available dealer, pause the pollin from upstream
-                    if not self._idle_dealer_ids:
-                        self._zmqlet.pause_pollin()
-                print(f'2: {self.request.is_used}')
-                # executor logic
-                r_docs = self._executor(
-                    req_endpoint=self.envelope.header.exec_endpoint,
-                    docs=self.docs,
-                    parameters=MessageToDict(self.request.parameters),
-                    docs_matrix=self.docs_matrix,
-                    groundtruths=self.groundtruths,
-                    groundtruths_matrix=self.groundtruths_matrix,
+            # when no available dealer, pause the pollin from upstream
+            if not self._idle_dealer_ids:
+                self._zmqlet.pause_pollin()
+
+        # executor logic
+        r_docs = self._executor(
+            req_endpoint=self.envelope.header.exec_endpoint,
+            docs=self.docs,
+            parameters=MessageToDict(self.request.parameters),
+            docs_matrix=self.docs_matrix,
+            groundtruths=self.groundtruths,
+            groundtruths_matrix=self.groundtruths_matrix,
+        )
+
+        # assigning result back to request
+        # 1. Return none: do nothing
+        # 2. Return nonempty and non-DocumentArray: raise error
+        # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
+        # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
+        if r_docs is not None:
+            if not isinstance(r_docs, DocumentArray):
+                raise TypeError(
+                    f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                 )
+            elif r_docs != self.request.docs:
+                # this means the returned DocArray is a completely new one
+                self.request.docs.clear()
+                self.request.docs.extend(r_docs)
 
-                # assigning result back to request
-                # 1. Return none: do nothing
-                # 2. Return nonempty and non-DocumentArray: raise error
-                # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
-                # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
-                if r_docs is not None:
-                    if not isinstance(r_docs, DocumentArray):
-                        raise TypeError(
-                            f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
-                        )
-                    elif r_docs != self.request.docs:
-                        # this means the returned DocArray is a completely new one
-                        self.request.docs.clear()
-                        self.request.docs.extend(r_docs)
-                print(f'3: {self.request.is_used}')
-            else:
-                self._handle_control_req()
-        else:
-            raise ChainedPodException
         return self
 
     def _handle_control_req(self):

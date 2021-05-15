@@ -95,24 +95,24 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.runtime_args = SimpleNamespace()
 
     def _add_requests(self, _requests: Optional[Dict]):
-        if not _requests:
-            return
-
         request_mapping = {}  # type: Dict[str, Callable]
-        for endpoint, func in _requests.items():
-            # the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`
-            # this to ensure we always have `_func` as unbound method
-            _func = getattr(self.__class__, func)
-            if callable(_func):
-                # the target function is not decorated with `@requests` yet
-                request_mapping[endpoint] = _func
-            elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
-                # the target function is already decorated with `@requests`, need unwrap with `.fn`
-                request_mapping[endpoint] = _func.fn
-            else:
-                raise TypeError(
-                    f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
-                )
+
+        if _requests:
+            for endpoint, func in _requests.items():
+                # the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`
+                # this to ensure we always have `_func` as unbound method
+                _func = getattr(self.__class__, func)
+                if callable(_func):
+                    # the target function is not decorated with `@requests` yet
+                    request_mapping[endpoint] = _func
+                elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
+                    # the target function is already decorated with `@requests`, need unwrap with `.fn`
+                    request_mapping[endpoint] = _func.fn
+                else:
+                    raise TypeError(
+                        f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
+                    )
+
         if hasattr(self, 'requests'):
             self.requests.update(request_mapping)
         else:
@@ -179,19 +179,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         # noqa: DAR102
         # noqa: DAR201
         """
-        if getattr(self, 'requests', {}):
-            if req_endpoint in self.requests:
-                return self.requests[req_endpoint](
-                    self, **kwargs
-                )  # unbound method, self is required
-            elif __default_endpoint__ in self.requests:
-                return self.requests[__default_endpoint__](
-                    self, **kwargs
-                )  # unbound method, self is required
-            else:
-                raise ValueError(
-                    f'{req_endpoint} is not bind to any method of {self}. Check for "/".'
-                )
+        if req_endpoint in self.requests:
+            return self.requests[req_endpoint](
+                self, **kwargs
+            )  # unbound method, self is required
+        elif __default_endpoint__ in self.requests:
+            return self.requests[__default_endpoint__](
+                self, **kwargs
+            )  # unbound method, self is required
 
     @property
     def workspace(self) -> str:
