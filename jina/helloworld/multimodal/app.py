@@ -10,16 +10,6 @@ from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_multimodal_parser
 
 
-def search(query_document, on_done_callback, on_fail_callback, top_k):
-    with Flow.load_config('flow-search.yml') as f:
-        f.search(
-            inputs=query_document,
-            on_done=on_done_callback,
-            on_fail=on_fail_callback,
-            parameters={'top_k': top_k},
-        )
-
-
 def hello_world(args):
     """
     Execute the multimodal example.

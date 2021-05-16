@@ -1,7 +1,7 @@
 import pytest
 
-from jina import Document
-from jina.helloworld.multimodal.app import hello_world, search
+from jina import Document, Flow
+from jina.helloworld.multimodal.app import hello_world
 from jina.parsers.helloworld import set_hw_multimodal_parser
 from tests import validate_callback
 
@@ -48,6 +48,16 @@ def query_document(image_chunk, text_chunk):
     query_document.chunks.append(image_chunk)
     query_document.chunks.append(text_chunk)
     return query_document
+
+
+def search(query_document, on_done_callback, on_fail_callback, top_k):
+    with Flow.load_config('jina/helloworld/multimodal/flow-search.yml') as f:
+        f.search(
+            inputs=query_document,
+            on_done=on_done_callback,
+            on_fail=on_fail_callback,
+            parameters={'top_k': top_k},
+        )
 
 
 def test_multimodal(helloworld_args, query_document, mocker):
