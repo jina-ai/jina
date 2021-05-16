@@ -1,12 +1,13 @@
 import os
+import urllib.request
 import webbrowser
 from pathlib import Path
 
 from jina import Flow, Document
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
+from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_multimodal_parser
-from .helper import download_data
 
 
 def search(query_document, on_done_callback, on_fail_callback, top_k):
@@ -64,7 +65,7 @@ def hello_world(args):
     f = Flow.load_config('flow-index.yml')
 
     with f, open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
-        f.index(inputs=Document.from_csv(fp, size=10), request_size=10)
+        f.index(inputs=Document.from_csv(fp), request_size=10)
 
     # search it!
     f = Flow.load_config('flow-search.yml')
@@ -86,6 +87,30 @@ def hello_world(args):
             )
         if not args.unblock_query_flow:
             f.block()
+
+
+def download_data(targets, download_proxy=None, task_name='download fashion-mnist'):
+    """
+    Download data.
+
+    :param targets: target path for data.
+    :param download_proxy: download proxy (e.g. 'http', 'https')
+    :param task_name: name of the task
+    """
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    if download_proxy:
+        proxy = urllib.request.ProxyHandler(
+            {'http': download_proxy, 'https': download_proxy}
+        )
+        opener.add_handler(proxy)
+    urllib.request.install_opener(opener)
+    with ProgressBar(task_name=task_name, batch_unit='') as t:
+        for k, v in targets.items():
+            if not os.path.exists(v['filename']):
+                urllib.request.urlretrieve(
+                    v['url'], v['filename'], reporthook=lambda *x: t.update_tick(0.01)
+                )
 
 
 if __name__ == '__main__':
