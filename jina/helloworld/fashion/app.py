@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from jina import Flow, Document
+from jina import Flow
 from jina.helper import countdown
 from jina.parsers.helloworld import set_hw_parser
 

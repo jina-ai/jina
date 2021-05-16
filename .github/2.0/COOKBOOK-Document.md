@@ -500,6 +500,31 @@ da[1:2]
 # <jina.types.arrays.document.DocumentArray length=1 at 5732566608>
 ```
 
+### Sort Elements
+
+`DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in a `DocumentArray` object, e.g.
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray(
+  [
+    Document(tags={'id': 1}),
+    Document(tags={'id': 2}),
+    Document(tags={'id': 3})
+  ]
+)
+
+da.sort(key=lambda d: d.tags['id'], reverse=True)
+```
+
+this sorts elements using `tags[id]` value in a descending manner: 
+
+```text
+{'id': 'a7c08e74-b664-11eb-bd1e-1e008a366d49', 'tags': {'id': 3.0}, 'content_hash': '', 'granularity': 0, 'adjacency': 0, 'parent_id': '', 'chunks': [], 'weight': 0.0, 'siblings': 0, 'matches': [], 'mime_type': '', 'location': [], 'offset': 0, 'modality': '', 'evaluations': []},
+{'id': 'a7c08d70-b664-11eb-bd1e-1e008a366d49', 'tags': {'id': 2.0}, 'content_hash': '', 'granularity': 0, 'adjacency': 0, 'parent_id': '', 'chunks': [], 'weight': 0.0, 'siblings': 0, 'matches': [], 'mime_type': '', 'location': [], 'offset': 0, 'modality': '', 'evaluations': []},
+{'id': 'a7c086ea-b664-11eb-bd1e-1e008a366d49', 'tags': {'id': 1.0}, 'content_hash': '', 'granularity': 0, 'adjacency': 0, 'parent_id': '', 'chunks': [], 'weight': 0.0, 'siblings': 0, 'matches': [], 'mime_type': '', 'location': [], 'offset': 0, 'modality': '', 'evaluations': []}
+```
 
 ### Get Attributes in Bulk
 

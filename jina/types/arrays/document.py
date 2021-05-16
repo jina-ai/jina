@@ -86,6 +86,9 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         for d in self._docs_proto:
             yield Document(d)
 
+    def __contains__(self, item: str):
+        return item in self._docs_map
+
     def __getitem__(self, item: Union[int, str, slice]):
         from ..document import Document
 

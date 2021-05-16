@@ -1,16 +1,8 @@
 jtype: Flow
-version: '1.0'
+version: '1'
 with:
   workspace: $HW_WORKDIR
 pods:
-  - name: filterNonText
-    uses:
-        jtype: ModalityFilter
-        with:
-          mime_type_to_keep: "text/plain"
-        metas:
-          py_modules:
-            - executors.py
   - name: encodeText
     uses:
       jtype: TextEncoder
@@ -25,21 +17,13 @@ pods:
       metas:
         py_modules:
           - executors.py
-  - name: filterNonVisual
-    uses:
-        jtype: ModalityFilter
-        with:
-          mime_type_to_keep: "image/jpeg"
-        metas:
-          py_modules:
-            - executors.py
-    needs: gateway
   - name: craftImage
     uses:
       jtype: ImageCrafter
       metas:
         py_modules:
           - executors.py
+    needs: gateway
   - name: encodeImage
     uses:
       jtype: ImageEncoder
@@ -60,7 +44,7 @@ pods:
       metas:
         py_modules:
           - executors.py
-    needs: [textChunkIndexer, imageChunkIndexer]
+    needs: [ textChunkIndexer, imageChunkIndexer ]
   - name: keyvalueIndexer
     uses:
       jtype: KeyValueIndexer

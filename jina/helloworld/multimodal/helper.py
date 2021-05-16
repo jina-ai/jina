@@ -1,5 +1,4 @@
 import os
-import gzip
 import urllib.request
 from typing import Union, Tuple
 
@@ -154,9 +153,10 @@ def _resize_short(img, target_size, how: str = 'LANCZOS'):
     return img
 
 
-def download_data(targets, download_proxy=None, task_name='download people-image'):
+def download_data(targets, download_proxy=None, task_name='download fashion-mnist'):
     """
     Download data.
+
     :param targets: target path for data.
     :param download_proxy: download proxy (e.g. 'http', 'https')
     :param task_name: name of the task
@@ -175,30 +175,3 @@ def download_data(targets, download_proxy=None, task_name='download people-image
                 urllib.request.urlretrieve(
                     v['url'], v['filename'], reporthook=lambda *x: t.update_tick(0.01)
                 )
-            if k == 'index-labels' or k == 'query-labels':
-                v['data'] = load_labels(v['filename'])
-            if k == 'index' or k == 'query':
-                v['data'] = load_mnist(v['filename'])
-
-
-def load_mnist(path):
-    """
-    Load MNIST data
-
-    :param path: path of data
-    :return: MNIST data in np.array
-    """
-
-    with gzip.open(path, 'rb') as fp:
-        return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 784])
-
-
-def load_labels(path: str):
-    """
-    Load labels from path
-
-    :param path: path of labels
-    :return: labels in np.array
-    """
-    with gzip.open(path, 'rb') as fp:
-        return np.frombuffer(fp.read(), dtype=np.uint8, offset=8).reshape([-1, 1])
