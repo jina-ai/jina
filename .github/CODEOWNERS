@@ -10,3 +10,4 @@ extra-requirements.txt  @hanxiao
 jina/__init__.py  @hanxiao
 requirements.txt  @hanxiao
 MANIFEST.in  @hanxiao
+README.md  @hanxiao
