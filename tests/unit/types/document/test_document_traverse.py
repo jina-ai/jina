@@ -197,7 +197,7 @@ def test_doc_iter_method():
     for d in DocumentArray(ds):
         assert d.text == 'hello world'
 
-    for d in DocumentArray(ds).iter(['c', 'r']):
+    for d in DocumentArray(ds).traverse_flat(['c', 'r']):
         d.text = 'modified'
 
     for d in DocumentArray(ds):

@@ -552,6 +552,29 @@ for d in filter(lambda d: d.score.value > 2, da):
 <jina.types.document.Document id=c5e58958-b6b0-11eb-af83-1e008a366d49 score={'value': 4.0} at 5696705040>
 <jina.types.document.Document id=c5e589b2-b6b0-11eb-af83-1e008a366d49 score={'value': 5.0} at 5696708048>
 ```
+
+You can build a `DocumentArray` object from the filtered result:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(weight=j) for j in range(6)])
+da2 = DocumentArray(list(filter(lambda d: d.weight > 2, da)))
+
+print(da2)
+```
+
+```text
+DocumentArray has 3 items:
+{'id': '3bd0d298-b6da-11eb-b431-1e008a366d49', 'weight': 3.0},
+{'id': '3bd0d324-b6da-11eb-b431-1e008a366d49', 'weight': 4.0},
+{'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
+```
+
+### Using `itertools` on `DocumentArray`
+
+As `DocumenArray` is an `Iterable`, you can also use [Python built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables advanced "iterator algebra" on `DocumentArray`.
+
 ### Get Attributes in Bulk
 
 `DocumentArray` implements powerful getters that allows one to fetch multiple attributes from the documents it contains

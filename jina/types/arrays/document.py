@@ -221,11 +221,15 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     def __str__(self):
         from ..document import Document
 
-        content = (
-            f'in total {len(self._docs_proto)} items\n'
-            if len(self._docs_proto) > 3
-            else ''
-        )
+        if hasattr(self._docs_proto, '__len__'):
+            content = f'{self.__class__.__name__} has {len(self._docs_proto)} items'
+
+            if len(self._docs_proto) > 3:
+                content += ' (showing first three)'
+        else:
+            content = 'unknown length array'
+
+        content += ':\n'
         content += ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
 
         return content
