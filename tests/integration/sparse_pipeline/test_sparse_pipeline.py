@@ -5,10 +5,7 @@ import pytest
 import numpy as np
 from scipy import sparse
 
-from jina import Flow, Document, Executor, DocumentArray, requests
-
-# from jina.executors.encoders import BaseEncoder
-# from jina.executors.indexers import BaseVectorIndexer
+from jina import Flow, Document, DocumentArray, requests, Executor
 
 from tests import validate_callback
 
@@ -29,37 +26,33 @@ def docs_to_index(num_docs):
     return DocumentArray(docs)
 
 
-class DummySparseEncoder(Executor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
-        embed = sparse.csr_matrix(content)
-        return embed
-
-
-class DummyCSRSparseIndexer(Executor):
+class DummyCSRSparseIndexEncoder(Executor):
     embedding_cls_type = 'scipy_csr'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.keys = []
+        self.docs = []
         self.vectors = {}
 
-    def add(
-        self, keys: Iterable[str], vectors: 'scipy.sparse.csr_matrix', *args, **kwargs
-    ) -> None:
-        assert isinstance(vectors, sparse.csr_matrix)
-        self.keys.extend(keys)
-        for i, key in enumerate(keys):
-            self.vectors[key] = vectors.getrow(i)
+    @requests(on='index')
+    def encode(self, docs: 'DocumentArray', *args, **kwargs) -> Any:
+        for doc in docs:
+            doc.embedding = sparse.csr_matrix(doc.content)
+
+    @requests(on='index')
+    def add(self, docs: 'DocumentArray', *args, **kwargs) -> None:
+        self.docs.extend(docs)
+        for i, doc in enumerate(docs):
+            self.vectors[doc.id] = doc.embedding.getrow(i)  # vectors.getrow(i)
 
     @requests(on='search')
-    def query(self, vectors: 'scipy.sparse.csr_matrix', top_k: int, *args, **kwargs):
-        assert isinstance(vectors, sparse.csr_matrix)
-        distances = [item for item in range(0, min(top_k, len(self.keys)))]
-        return [self.keys[:top_k]], np.array([distances])
+    def query(self, parameters, *args, **kwargs):
+        top_k = parameters['top_k']
+        doc = parameters['doc']
+        distances = [item for item in range(0, min(top_k, len(self.docs)))]
+        return [self.docs[:top_k]], np.array([distances])
 
+    '''
     def query_by_key(self, keys: Iterable[str], *args, **kwargs):
         from scipy.sparse import vstack
 
@@ -68,11 +61,11 @@ class DummyCSRSparseIndexer(Executor):
             vectors.append(self.vectors[key])
 
         return vstack(vectors)
+    '''
 
-    @requests(on='index')
-    def save(self, docs: 'DocumentArray', **kwargs):
+    def save(self):
         # avoid creating dump, do not polute workspace
-        self.vectors = docs
+        pass
 
     def close(self):
         # avoid creating dump, do not polute workspace
@@ -101,8 +94,8 @@ def test_sparse_pipeline(mocker, docs_to_index):
                 assert isinstance(match.embedding, sparse.coo_matrix)
 
     f = (
-        Flow().add(uses=DummySparseEncoder)
-        # add(uses=os.path.join(cur_dir, 'indexer.yml'))
+        Flow().add(uses=DummyCSRSparseIndexEncoder)
+        # .add(uses=os.path.join(cur_dir, 'indexer.yml'))
     )
 
     mock = mocker.Mock()
@@ -110,7 +103,13 @@ def test_sparse_pipeline(mocker, docs_to_index):
 
     with f:
         f.post(on='index', inputs=docs_to_index)
-        f.post(on='search', inputs=docs_to_index[0], on_done=mock, on_error=error_mock)
+        f.post(
+            on='search',
+            inputs=docs_to_index[0],
+            parameters={'doc': docs_to_index[0], 'top_k': 1},
+            on_done=mock,
+            on_error=error_mock,
+        )
 
     mock.assert_called_once()
     validate_callback(mock, validate)
