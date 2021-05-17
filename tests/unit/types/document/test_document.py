@@ -501,18 +501,14 @@ def test_document_to_json(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = json.loads(doc.json())
     present_keys = sorted(doc_dict.keys())
-    for field in expected_doc_fields:
-        if field not in ignored_doc_fields:
-            assert field in present_keys
+    assert present_keys == ['id']
 
 
 def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = doc.dict()
     present_keys = sorted(doc_dict.keys())
-    for field in expected_doc_fields:
-        if field not in ignored_doc_fields:
-            assert field in present_keys
+    assert present_keys == ['id']
 
 
 def test_update_include_field():
