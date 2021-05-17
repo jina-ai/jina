@@ -15,18 +15,18 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 Table of Contents
 
 - [Minimum working example](#minimum-working-example)
-    - [Pure Python](#pure-python)
-    - [With YAML](#with-yaml)
+  - [Pure Python](#pure-python)
+  - [With YAML](#with-yaml)
 - [Flow API](#flow-api)
-    - [Construct a Flow](#construct-a-flow)
-    - [Feed Data](#feed-data)
-    - [Fetch Result](#fetch-result)
-    - [Add Logic](#add-logic)
-    - [Inter & Intra Parallelism](#inter--intra-parallelism)
-    - [Decentralized Flow](#decentralized-flow)
-    - [Asynchronous Flow](#asynchronous-flow)
-    - [REST Interface](#rest-interface)
-    - [`post` method](#post-method)
+  - [Create a Flow](#create-a-flow)
+  - [Add Executor to a Flow](#add-executor-to-a-flow)
+  - [Create Inter & Intra Parallelism via `needs`](#create-inter--intra-parallelism-via-needs)
+  - [Decentralized Flow](#decentralized-flow)
+- [Send Data to Flow](#send-data-to-flow)
+  - [`post` method](#post-method)
+  - [Fetch Result from Flow](#fetch-result-from-flow)
+  - [Asynchronous Flow](#asynchronous-flow)
+  - [REST Interface](#rest-interface)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
