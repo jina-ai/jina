@@ -31,7 +31,7 @@ Table of Contents
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
-    - [Construct from Generator](#construct-from-generator)
+    - [Construct from JSON, CSV, `ndarray` and Files](#construct-from-json-csv-ndarray-and-files)
   - [Serialize `Document`](#serialize-document)
   - [Add Recursion to `Document`](#add-recursion-to-document)
     - [Recursive Attributes](#recursive-attributes)
