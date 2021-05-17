@@ -384,6 +384,8 @@ In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 
 Note that, YAML API will ignore `.runtime_args` during save & load as they are not for statically stored.
 
+Also note that, for any other parametrization of the Executor, you can still access its constructor arguments (defined in the class `__init__`) and the request `parameters`.
+
 ---
 
 ## Flow/Client API
