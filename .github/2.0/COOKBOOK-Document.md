@@ -44,6 +44,7 @@ Table of Contents
   - [Access Element](#access-element)
   - [Sort Elements](#sort-elements)
   - [Filter Elements](#filter-elements)
+  - [Using `itertools` on `DocumentArray`](#using-itertools-on-documentarray)
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
