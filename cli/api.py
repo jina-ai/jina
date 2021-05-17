@@ -124,14 +124,22 @@ def hello(args: 'Namespace'):
     """
     if args.hello == 'fashion':
         from jina.helloworld.fashion.app import hello_world
+
+        hello_world(args)
     elif args.hello == 'chatbot':
         from jina.helloworld.chatbot.app import hello_world
+
+        hello_world(args)
     elif args.hello == 'multimodal':
         from jina.helloworld.multimodal.app import hello_world
-    else:
-        raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`]')
 
-    hello_world(args)
+        hello_world(args)
+    elif args.hello == 'fork':
+        from jina.helloworld.fork import fork_hello
+
+        fork_hello(args)
+    else:
+        raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`, `fork`]')
 
 
 def flow(args: 'Namespace'):

@@ -92,6 +92,15 @@ Remarks:
         )
     )
 
+    set_hw_fork_parser(
+        spp.add_parser(
+            'fork',
+            help='Fork a hello world project to a local directory, and start to build your own project on it.',
+            description='Fork a hello world project to a local directory.',
+            formatter_class=_chf,
+        )
+    )
+
 
 def set_hw_parser(parser=None):
     """Set the hello world parser
@@ -182,6 +191,31 @@ def set_hw_chatbot_parser(parser=None):
         default=False,
         help='Do not block the query flow' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
+    return parser
+
+
+def set_hw_fork_parser(parser=None):
+    """Set the parser for forking hello world demo
+
+    :param parser: the parser configure
+    :return: the new parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument(
+        'project',
+        type=str,
+        choices=['fashion', 'chatbot', 'multimodal'],
+        help='The hello world project to fork',
+    )
+
+    parser.add_argument(
+        'destination',
+        type=str,
+        help='The dest directory of the forked project. Note, it can not be an existing path.',
+    )
+
     return parser
 
 
