@@ -284,9 +284,9 @@ d.update(s, include_fields=('id',))
 d.update(s, exclude_fields=('id',))
 ```
 
-#### Construct from Generator
+#### Construct from JSON, CSV, `ndarray` and Files
 
-You can also construct `Document` from some generator:
+You can also construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original format:
 
 |     |     |
 | --- | --- |

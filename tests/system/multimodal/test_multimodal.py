@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+import jina
 from jina import Document, Flow
 from jina.helloworld.multimodal.app import hello_world
 from jina.parsers.helloworld import set_hw_multimodal_parser
@@ -52,11 +53,8 @@ def query_document(image_chunk, text_chunk):
     return query_document
 
 
-import jina
-
 root_dir = os.path.abspath(os.path.dirname(jina.__file__))
 os.environ['PATH'] += os.pathsep + os.path.join(root_dir, 'helloworld/multimodal/')
-print(os.environ['PATH'])
 
 
 def search(query_document, on_done_callback, on_fail_callback, top_k):

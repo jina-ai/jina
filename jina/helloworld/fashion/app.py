@@ -14,6 +14,7 @@ if __name__ == '__main__':
         query_generator,
         colored,
     )
+    from executors import MyEncoder, MyIndexer, MyEvaluator
 else:
     from .helper import (
         print_result,
@@ -23,6 +24,7 @@ else:
         query_generator,
         colored,
     )
+    from .executors import MyEncoder, MyIndexer, MyEvaluator
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -74,7 +76,7 @@ def hello_world(args):
 
     # now comes the real work
     # load index flow from a YAML file
-    f = Flow.load_config('flow.yml')
+    f = Flow().add(uses=MyEncoder, parallel=2).add(uses=MyIndexer).add(uses=MyEvaluator)
 
     # run it!
     with f:
@@ -102,9 +104,6 @@ def hello_world(args):
         #     request_size=args.request_size,
         #     parameters={'top_k': args.top_k},
         # )
-        #
-        # # write result to html
-        # write_html(os.path.join(args.workdir, 'demo.html'))
 
         f.post(
             '/eval',

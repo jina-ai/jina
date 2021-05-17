@@ -9,6 +9,11 @@ from jina.logging import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_chatbot_parser
 
+if __name__ == '__main__':
+    from executors import MyTransformer, MyIndexer
+else:
+    from .executors import MyTransformer, MyIndexer
+
 
 def hello_world(args):
     """
@@ -39,7 +44,6 @@ def hello_world(args):
 
     # now comes the real work
     # load index flow from a YAML file
-    from .executors import MyTransformer, MyIndexer
 
     f = (
         Flow()

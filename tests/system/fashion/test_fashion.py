@@ -1,12 +1,11 @@
 import os
 
-import numpy as np
 import pytest
 
-from jina import Document, Flow
+import jina
 from jina.helloworld.fashion.app import hello_world
+from jina.helloworld.fashion.executors import *
 from jina.parsers.helloworld import set_hw_parser
-from tests import validate_callback
 
 
 def check_hello_world_results(html_path: str):
@@ -43,30 +42,12 @@ def query_document():
     return Document(content=np.random.rand(28, 28))
 
 
-def search(query_document, on_done_callback, on_fail_callback, top_k):
-    with Flow.load_config('jina/helloworld/fashion/flow.yml') as f:
-        f.search(
-            inputs=query_document,
-            on_done=on_done_callback,
-            on_fail=on_fail_callback,
-            parameters={'top_k': top_k},
-        )
+root_dir = os.path.abspath(os.path.dirname(jina.__file__))
+os.environ['PATH'] += os.pathsep + os.path.join(root_dir, 'helloworld/fashion/')
 
 
-def test_fashion(helloworld_args, query_document, mocker, tmpdir):
+def test_fashion(helloworld_args, query_document, tmpdir):
     """Regression test for fashion example."""
-
-    def validate_response(resp):
-        assert len(resp.data.docs) == 1
-        for doc in resp.data.docs:
-            assert len(doc.matches) == 10
 
     hello_world(helloworld_args)
     check_hello_world_results(os.path.join(str(tmpdir), 'demo.html'))
-
-    mock_on_done = mocker.Mock()
-    mock_on_fail = mocker.Mock()
-
-    search(query_document, mock_on_done, mock_on_fail, 10)
-    mock_on_fail.assert_not_called()
-    validate_callback(mock_on_done, validate_response)
