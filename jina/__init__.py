@@ -31,6 +31,7 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
+
 # TODO: remove 'rc' on final release
 __version__ = '2.0.0rc'
 

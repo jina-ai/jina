@@ -236,6 +236,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`1.2.1`)](#release-note-121)
 - [Release Note (`1.2.2`)](#release-note-122)
 - [Release Note (`1.2.3`)](#release-note-123)
+- [Release Note (`1.2.4`)](#release-note-124)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -8606,4 +8607,55 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a33acd2b```](https://github.com/jina-ai/jina/commit/a33acd2ba0bc8bcc393946e9351c60895ce482ea)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```4140961c```](https://github.com/jina-ai/jina/commit/4140961c62359e3acd540a6d88931665c6313824)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```20e9cf9a```](https://github.com/jina-ai/jina/commit/20e9cf9a4211bbd1e9f6b540786db747e45ea7f4)] __-__ __version__: the next version will be 1.2.2 (*Jina Dev Bot*)
+
+
+## Release Note (`1.2.3`)
+
+> Release time: 2021-05-12 07:55:51
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ cristian,  Jina Dev Bot,  Wang Bo,  Kelton Zhang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```7512f13a```](https://github.com/jina-ai/jina/commit/7512f13ab6b96d8dcaa68ea7576e2034196529ec)] __-__ ranker trainer (#2366) (*Wang Bo*)
+
+### 🐞 Bug fixes
+
+ - [[```bf894c2c```](https://github.com/jina-ai/jina/commit/bf894c2ce7b6c4a8bae54a7ae687a948a34ff199)] __-__ ensure same precision in dump (#2399) (*cristian*)
+ - [[```199d54ba```](https://github.com/jina-ai/jina/commit/199d54ba2968c4c5d13cd9b3767a219c88b2805c)] __-__ change async client function&#39;s return type (#2386) (*Kelton Zhang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```ef042d38```](https://github.com/jina-ai/jina/commit/ef042d38d9b981630d47563e2e13d5530d0031e0)] __-__ add system path to get all test paths (#2388) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```ec9c9ab3```](https://github.com/jina-ai/jina/commit/ec9c9ab32cf10b323d53b707f082bffa2f3fcba0)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f2b773e2```](https://github.com/jina-ai/jina/commit/f2b773e25ef2ad153313a8ff94caed7b302fdede)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```70d1fe34```](https://github.com/jina-ai/jina/commit/70d1fe346386b403af19e713b5b7b8db6c718ed4)] __-__ __version__: the next version will be 1.2.3 (*Jina Dev Bot*)
+
+<a name=release-note-1-2-4></a>
+## Release Note (`1.2.4`)
+
+> Release time: 2021-05-16 23:03:44
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Florian Hönicke,  🙇
+
+
+### 🏁 Unit Test and CICD
+
+ - [[```7a73a8b7```](https://github.com/jina-ai/jina/commit/7a73a8b7fe7eafe2764c7e0822a9ba8f8be394b4)] __-__ compound pod sockets (#2347) (*Florian Hönicke*)
+
+### 🍹 Other Improvements
+
+ - [[```bf7824e2```](https://github.com/jina-ai/jina/commit/bf7824e2c5f3d7c28c1d3894002510a03daa8b5e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```2f5c9181```](https://github.com/jina-ai/jina/commit/2f5c918198d9a6df2c37b1cc21c74a0fccf117a7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0fcfcf28```](https://github.com/jina-ai/jina/commit/0fcfcf285db2766ed57ea65f4fe1d2b473e000d1)] __-__ __version__: the next version will be 1.2.4 (*Jina Dev Bot*)
 
