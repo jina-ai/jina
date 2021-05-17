@@ -291,11 +291,10 @@ class KeyValueIndexer(Executor):
 class WeightedRanker(Executor):
     @requests(on='/search')
     def rank(
-        self, docs_matrix: List['DocumentArray'], *args, **kwargs
+        self, docs_matrix: List['DocumentArray'], parameters: Dict, **kwargs
     ) -> 'DocumentArray':
         """
         :param docs: the doc which gets bubbled up matches
-        :param args: not used (kept to maintain interface)
         :param kwargs: not used (kept to maintain interface)
         """
 
@@ -319,7 +318,7 @@ class WeightedRanker(Executor):
 
             da = DocumentArray(list(final_matches.values()))
             da.sort(key=lambda ma: ma.score.value, reverse=True)
-            d = Document(matches=da)
+            d = Document(matches=da[: int(parameters['top_k'])])
             result_da.append(d)
         return result_da
 
