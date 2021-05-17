@@ -1,5 +1,0 @@
-jtype: DummyCSRSparseIndexer
-requests:
-  on:
-    SearchRequest: query
-    IndexRequest: save
