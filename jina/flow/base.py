@@ -104,19 +104,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             args, _flow_parser
         )  #: for yaml dump
 
-    @property
-    def yaml_spec(self):
-        """
-        get the YAML representation of the instance
-
-
-        .. # noqa: DAR401
-
-
-        .. # noqa: DAR201
-        """
-        return JAML.dump(self)
-
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
         # parsing needs
@@ -795,27 +782,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
 
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
-
-    @build_required(FlowBuildLevel.GRAPH)
-    def to_swarm_yaml(self, path: TextIO):
-        """
-        Generate the docker swarm YAML compose file
-
-        :param path: the output yaml path
-        """
-        swarm_yml = {'version': '3.4', 'services': {}}
-
-        for k, v in self._pod_nodes.items():
-            if v.role == PodRoleType.GATEWAY:
-                cmd = 'jina gateway'
-            else:
-                cmd = 'jina pod'
-            swarm_yml['services'][k] = {
-                'command': f'{cmd} {" ".join(ArgNamespace.kwargs2list(vars(v.args)))}',
-                'deploy': {'parallel': 1},
-            }
-
-        JAML.dump(swarm_yml, path)
 
     @property
     @build_required(FlowBuildLevel.GRAPH)

@@ -63,7 +63,7 @@ class V1Parser(VersionedYAMLParser):
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
         obj = cls(*tmp_a, env=envs, **tmp_p)
 
-        pp = data.get('pods', [])
+        pp = data.get('executors', data.get('pods', []))
         for pods in pp:
             p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pods.items()}
             # in v1 YAML, flow is an optional argument
@@ -90,7 +90,7 @@ class V1Parser(VersionedYAMLParser):
             r['with'] = data._kwargs
 
         if data._pod_nodes:
-            r['pods'] = []
+            r['executors'] = []
 
         last_name = 'gateway'
         for k, v in data._pod_nodes.items():
@@ -114,5 +114,5 @@ class V1Parser(VersionedYAMLParser):
                 if t in kwargs:
                     kwargs.pop(t)
             last_name = kwargs['name']
-            r['pods'].append(kwargs)
+            r['executors'].append(kwargs)
         return r

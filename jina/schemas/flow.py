@@ -25,7 +25,7 @@ schema_flow = {
                 'type': 'string',
                 'default': '\'1\'',
             },
-            'pods': {
+            'executors': {
                 'description': 'Define the steps in the Flow.\n'
                 'A Pod is a container and interface for one or multiple Peas that have the same properties.',
                 'type': 'array',

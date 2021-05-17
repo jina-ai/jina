@@ -1,14 +1,14 @@
 Document, Executor, Flow are three fundamental concepts in Jina.
 
-- [**Document**](COOKBOOK-Document.md) is the basic data type in Jina;
-- [**Executor**](COOKBOOK-Executor.md) is how Jina processes Documents;
-- **Flow** is how Jina streamlines and scales Executors.
+- [**Document**](Document.md) is the basic data type in Jina;
+- [**Executor**](Executor.md) is how Jina processes Documents;
+- [**Flow**](Flow.md) is how Jina streamlines and scales Executors.
 
 *Learn them all, nothing more, you are good to go.*
 
 ---
 
-# Temporary Cookbook on `Executor` 2.0 API
+# Cookbook on `Executor` 2.0 API
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -198,6 +198,11 @@ class MyExecutor(Executor):
 To bind a method with multiple endpoints, one can use `@requests(on=['/foo', '/bar'])`. This allows
 either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that function.
 
+#### No binding
+
+A class with no `@requests` binding plays no part in the Flow. The request will simply pass through without any processing. 
+
+
 ### Method Signature
 
 Class method decorated by `@request` follows the signature below:
@@ -358,7 +363,7 @@ subclassing `Executor` should be easy.
 Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
 then second):
 
-![](workspace-inherit.svg?raw=true)
+![](../workspace-inherit.svg?raw=true)
 
 ### Metas
 
@@ -386,47 +391,6 @@ Note that, YAML API will ignore `.runtime_args` during save & load as they are n
 
 Also note that, for any other parametrization of the Executor, you can still access its constructor arguments (defined in the class `__init__`) and the request `parameters`.
 
----
-
-## Flow/Client API
-
-### `post` method
-
-`post` is the core method. All 1.x methods, e.g. `index`, `search`, `update`, `delete` are just sugary syntax of `post`
-by specifying `on='/index'`, `on='/search'`, etc.
-
-```python
-def post(
-        self,
-        on: str,
-        inputs: InputType,
-        on_done: CallbackFnType = None,
-        on_error: CallbackFnType = None,
-        on_always: CallbackFnType = None,
-        parameters: Optional[dict] = None,
-        target_peapod: Optional[str] = None,
-        **kwargs,
-) -> None:
-    """Post a general data request to the Flow.
-  
-    :param on: the endpoint is used for identifying the user-defined ``request_type``, labeled by ``@requests(on='/abc')``
-    :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document id.
-    :param on_done: the function to be called when the :class:`Request` object is resolved.
-    :param on_error: the function to be called when the :class:`Request` object is rejected.
-    :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
-    :param target_peapod: a regex string represent the certain peas/pods request targeted
-    :param parameters: the kwargs that will be sent to the executor
-    :param kwargs: additional parameters
-    :return: None
-    """
-```
-
-Comparing to 1.x Client/Flow API, the three new arguments are:
-
-- `on`: endpoint, as explained above
-- `parameters`: the kwargs that will be sent to the executor, as explained above
-- `target_peapod`: a regex string represent the certain peas/pods request targeted
-
 --- 
 
 ## Migration in Practice
@@ -437,7 +401,7 @@ Comparing to 1.x Client/Flow API, the three new arguments are:
 
 Left is 1.x, right is 2.0.
 
-![img.png](migration-fashion.png?raw=true)
+![img.png](../migration-fashion.png?raw=true)
 
 Line number corresponds to the 1.x code:
 

@@ -127,8 +127,6 @@ with f:
 - [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 
 
-### Read Tutorials
-
 ### Fork and Start Your Own
 
 Fork one of the hello world examples to your own directory and start from there:
@@ -136,6 +134,9 @@ Fork one of the hello world examples to your own directory and start from there:
 ```console
 $ jina hello fork fashion ../my-proj/ 
 ```
+
+### Read Tutorials
+
 
 
 ## Support

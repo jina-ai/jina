@@ -1,14 +1,14 @@
 Document, Executor, Flow are three fundamental concepts in Jina.
 
-- [**Document**](COOKBOOK-Document.md) is the basic data type in Jina;
-- [**Executor**](COOKBOOK-Executor.md) is how Jina processes Documents;
-- **Flow** is how Jina streamlines and scales Executors.
+- [**Document**](Document.md) is the basic data type in Jina;
+- [**Executor**](Executor.md) is how Jina processes Documents;
+- [**Flow**](Flow.md) is how Jina streamlines and scales Executors.
 
 *Learn them all, nothing more, you are good to go.*
 
 ---
 
-# Temporary Cookbook on `Document`/`DocumentArray` 2.0 API
+# Cookbook on `Document`/`DocumentArray` 2.0 API
 
 `Document` is the basic data type that Jina operates with. Text, picture, video, audio, image, 3D mesh, they are
 all `Document` in Jina.
@@ -111,7 +111,7 @@ In Jupyter notebook or use `.plot()`, you can get the visualization of a `Docume
 
 #### Exclusivity of `doc.content`
 
-![](doc.content.svg?raw=true)
+![](../doc.content.svg?raw=true)
 
 Note that one `Document` can only contain one type of `content`: it is one of `text`, `buffer`, `blob`, `uri`.
 Setting `text` first and then set `uri` will clear the `text field.
@@ -572,9 +572,9 @@ DocumentArray has 3 items:
 {'id': '3bd0d392-b6da-11eb-b431-1e008a366d49', 'weight': 5.0}
 ```
 
-### Using `itertools` on `DocumentArray`
+### Use `itertools` on `DocumentArray`
 
-As `DocumenArray` is an `Iterable`, you can also use [Python built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables advanced "iterator algebra" on `DocumentArray`.
+As `DocumenArray` is an `Iterable`, you can also use [Python built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables advanced "iterator algebra" on the `DocumentArray`.
 
 ### Get Attributes in Bulk
 

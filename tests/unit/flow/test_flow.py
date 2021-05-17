@@ -678,20 +678,6 @@ def test_flow_get_item():
     assert isinstance(f1['pod0'], BasePod)
 
 
-def test_flow_yaml_dump():
-    import io
-
-    f = io.StringIO()
-    f1 = Flow().add()
-    with f1:
-        f1.to_swarm_yaml(path=f)
-        assert 'gateway' in f.getvalue()
-        assert 'services' in f.getvalue()
-        assert 'jina pod' in f.getvalue()
-
-    assert '!Flow' in f1.yaml_spec
-
-
 def test_flow_add_class():
     class CustomizedExecutor(BaseExecutor):
         pass
