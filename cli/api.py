@@ -127,7 +127,7 @@ def hello(args: 'Namespace'):
     elif args.hello == 'chatbot':
         from jina.helloworld.chatbot.app import hello_world
     elif args.hello == 'multimodal':
-        from jina.helloworld.multimodal import hello_world
+        from jina.helloworld.multimodal.app import hello_world
     else:
         raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`]')
 

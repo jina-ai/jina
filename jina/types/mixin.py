@@ -15,10 +15,7 @@ class ProtoTypeMixin:
         :return: JSON string of the object
         """
         return MessageToJson(
-            self._pb_body,
-            including_default_value_fields=True,
-            preserving_proto_field_name=True,
-            use_integers_for_enums=True,
+            self._pb_body, preserving_proto_field_name=True, sort_keys=True
         )
 
     def dict(self) -> Dict:
@@ -26,11 +23,12 @@ class ProtoTypeMixin:
 
         :return: dict representation of the object
         """
+
+        # NOTE: PLEASE DO NOT ADD `including_default_value_fields`,
+        # it makes the output very verbose!
         return MessageToDict(
             self._pb_body,
-            including_default_value_fields=True,
             preserving_proto_field_name=True,
-            use_integers_for_enums=True,
         )
 
     @property

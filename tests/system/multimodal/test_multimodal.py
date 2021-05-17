@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from jina import Document, Flow
@@ -48,6 +50,13 @@ def query_document(image_chunk, text_chunk):
     query_document.chunks.append(image_chunk)
     query_document.chunks.append(text_chunk)
     return query_document
+
+
+import jina
+
+root_dir = os.path.abspath(os.path.dirname(jina.__file__))
+os.environ['PATH'] += os.pathsep + os.path.join(root_dir, 'helloworld/multimodal/')
+print(os.environ['PATH'])
 
 
 def search(query_document, on_done_callback, on_fail_callback, top_k):

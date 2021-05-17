@@ -492,13 +492,13 @@ from jina import DocumentArray, Document
 da = DocumentArray([Document(id='hello'), Document(id='world'), Document(id='goodbye')])
 
 da[0]
-# <jina.types.document.Document id=hello content_hash= granularity=0 adjacency=0 parent_id= chunks=[] weight=0.0 siblings=0 matches=[] mime_type= location=[] offset=0 modality= evaluations=[] at 5732567632>
+# <jina.types.document.Document id=hello at 5699749904>
 
 da['world']
-# <jina.types.document.Document id=world content_hash= granularity=0 adjacency=0 parent_id= chunks=[] weight=0.0 siblings=0 matches=[] mime_type= location=[] offset=0 modality= evaluations=[] at 5732565712>
+# <jina.types.document.Document id=world at 5736614992>
 
 da[1:2]  
-# <jina.types.arrays.document.DocumentArray length=1 at 5732566608>
+# <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
 
 ### Sort Elements
@@ -517,16 +517,40 @@ da = DocumentArray(
 )
 
 da.sort(key=lambda d: d.tags['id'], reverse=True)
+print(da)
 ```
 
-this sorts elements using `tags[id]` value in a descending manner: 
+this sorts elements in `da` in-place, using `tags[id]` value in a descending manner: 
 
 ```text
-{'id': 'a7c08e74-b664-11eb-bd1e-1e008a366d49', 'tags': {'id': 3.0}, 'content_hash': '', 'granularity': 0, 'adjacency': 0, 'parent_id': '', 'chunks': [], 'weight': 0.0, 'siblings': 0, 'matches': [], 'mime_type': '', 'location': [], 'offset': 0, 'modality': '', 'evaluations': []},
-{'id': 'a7c08d70-b664-11eb-bd1e-1e008a366d49', 'tags': {'id': 2.0}, 'content_hash': '', 'granularity': 0, 'adjacency': 0, 'parent_id': '', 'chunks': [], 'weight': 0.0, 'siblings': 0, 'matches': [], 'mime_type': '', 'location': [], 'offset': 0, 'modality': '', 'evaluations': []},
-{'id': 'a7c086ea-b664-11eb-bd1e-1e008a366d49', 'tags': {'id': 1.0}, 'content_hash': '', 'granularity': 0, 'adjacency': 0, 'parent_id': '', 'chunks': [], 'weight': 0.0, 'siblings': 0, 'matches': [], 'mime_type': '', 'location': [], 'offset': 0, 'modality': '', 'evaluations': []}
+<jina.types.arrays.document.DocumentArray length=3 at 5701440528>
+
+{'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
+{'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
+{'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
 ```
 
+### Filter Elements
+
+You can use [built-in Python `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements in a `DocumentArray` object, e.g.
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document() for _ in range(6)])
+
+for j in range(6):
+    da[j].score.value = j
+
+for d in filter(lambda d: d.score.value > 2, da):
+    print(d)
+```
+
+```text
+<jina.types.document.Document id=c5e588f4-b6b0-11eb-af83-1e008a366d49 score={'value': 3.0} at 5696708048>
+<jina.types.document.Document id=c5e58958-b6b0-11eb-af83-1e008a366d49 score={'value': 4.0} at 5696705040>
+<jina.types.document.Document id=c5e589b2-b6b0-11eb-af83-1e008a366d49 score={'value': 5.0} at 5696708048>
+```
 ### Get Attributes in Bulk
 
 `DocumentArray` implements powerful getters that allows one to fetch multiple attributes from the documents it contains
