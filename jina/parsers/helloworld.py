@@ -116,13 +116,6 @@ def set_hw_parser(parser=None):
         default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz',
         help='The url of index labels data (should be in idx3-ubyte.gz format)',
     )
-    gp.add_argument(
-        '--index-request-size',
-        type=int,
-        default=1024,
-        help='The request size in indexing (the maximum number of documents that will be included in a '
-        'Request before sending it)',
-    )
 
     gp = add_arg_group(parser, title='Search')
     gp.add_argument(
@@ -137,13 +130,15 @@ def set_hw_parser(parser=None):
         default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz',
         help='The url of query labels data (should be in idx3-ubyte.gz format)',
     )
+
     gp.add_argument(
-        '--query-request-size',
+        '--request-size',
         type=int,
-        default=32,
-        help='The request size in searching (the maximum number of documents that will be included in a '
+        default=1024,
+        help='The request size in indexing (the maximum number of documents that will be included in a '
         'Request before sending it)',
     )
+
     gp.add_argument(
         '--num-query', type=int, default=128, help='The number of queries to visualize'
     )

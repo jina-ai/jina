@@ -27,16 +27,6 @@ else:
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def search(query_document, on_done_callback, on_fail_callback, top_k):
-    with Flow.load_config('flow.yml') as f:
-        f.search(
-            inputs=[query_document],
-            on_done=on_done_callback,
-            on_fail=on_fail_callback,
-            parameters={'top_k': top_k},
-        )
-
-
 def hello_world(args):
     """
     Runs Jina's Hello World.
@@ -90,7 +80,7 @@ def hello_world(args):
     with f:
         f.index(
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
-            request_size=args.index_request_size,
+            request_size=args.request_size,
         )
 
         # wait for couple of seconds
@@ -103,18 +93,32 @@ def hello_world(args):
             ),
         )
 
-        f.search(
+        # f.search(
+        #     query_generator(
+        #         num_docs=args.num_query, target=targets, with_groundtruth=True
+        #     ),
+        #     shuffle=True,
+        #     on_done=print_result,
+        #     request_size=args.request_size,
+        #     parameters={'top_k': args.top_k},
+        # )
+        #
+        # # write result to html
+        # write_html(os.path.join(args.workdir, 'demo.html'))
+
+        f.post(
+            '/eval',
             query_generator(
                 num_docs=args.num_query, target=targets, with_groundtruth=True
             ),
             shuffle=True,
             on_done=print_result,
-            request_size=args.query_request_size,
+            request_size=args.request_size,
             parameters={'top_k': args.top_k},
         )
 
-    # write result to html
-    write_html(os.path.join(args.workdir, 'demo.html'))
+        # write result to html
+        write_html(os.path.join(args.workdir, 'demo.html'))
 
 
 if __name__ == '__main__':

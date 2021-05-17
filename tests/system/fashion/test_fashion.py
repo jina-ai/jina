@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pytest
 
-from jina import Document
-from jina.helloworld.fashion.app import hello_world, search
+from jina import Document, Flow
+from jina.helloworld.fashion.app import hello_world
 from jina.parsers.helloworld import set_hw_parser
 from tests import validate_callback
 
@@ -41,6 +41,16 @@ def helloworld_args(tmpdir):
 @pytest.fixture
 def query_document():
     return Document(content=np.random.rand(28, 28))
+
+
+def search(query_document, on_done_callback, on_fail_callback, top_k):
+    with Flow.load_config('jina/helloworld/fashion/flow.yml') as f:
+        f.search(
+            inputs=query_document,
+            on_done=on_done_callback,
+            on_fail=on_fail_callback,
+            parameters={'top_k': top_k},
+        )
 
 
 def test_fashion(helloworld_args, query_document, mocker, tmpdir):

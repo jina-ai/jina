@@ -8,26 +8,13 @@ from jina import Executor, DocumentArray, requests, Document
 class MyIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        import os
-
-        if os.path.exists(self.save_path):
-            self._docs = DocumentArray.load(self.save_path)
-        else:
-            self._docs = DocumentArray()
-
-    @property
-    def save_path(self):
-        import os
-
-        if not os.path.exists(self.workspace):
-            os.makedirs(self.workspace)
-        return os.path.join(self.workspace, 'docs.json')
+        self._docs = DocumentArray()
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
         self._docs.extend(docs)
 
-    @requests(on='/search')
+    @requests(on=['/search', '/eval'])
     def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
 
         a = np.stack(docs.get_attributes('embedding'))
@@ -41,9 +28,6 @@ class MyIndexer(Executor):
                 d = Document(self._docs[int(_id)], copy=True)
                 d.score.value = 1 - _dist
                 _q.matches.append(d)
-
-    def close(self) -> None:
-        self._docs.save(self.save_path)
 
     @staticmethod
     def _get_sorted_top_k(
@@ -147,25 +131,19 @@ class MyEvaluator(Executor):
         ret = len(set(actual_at_k).intersection(set(desired)))
         return ret / len(desired)
 
-    @requests
-    def _skip(self, **kwargs):
-        pass
-
-    @requests(on='/search')
+    @requests(on='/eval')
     def evaluate(self, docs: 'DocumentArray', groundtruths: 'DocumentArray', **kwargs):
-        # reduce dimension to 50 by random orthogonal projection
-        if groundtruths:
-            for doc, groundtruth in zip(docs, groundtruths):
-                self.num_docs += 1
-                actual = [match.tags['id'] for match in doc.matches]
-                desired = groundtruth.matches[0].tags['id']  # pseudo_match
-                precision_score = doc.evaluations.add()
-                self.total_precision += self._precision(actual, desired)
-                self.total_recall += self._recall(actual, desired)
-                precision_score.value = self.avg_precision
-                precision_score.op_name = f'Precision'
-                doc.evaluations.append(precision_score)
-                recall_score = doc.evaluations.add()
-                recall_score.value = self.avg_recall
-                recall_score.op_name = f'Recall'
-                doc.evaluations.append(recall_score)
+        for doc, groundtruth in zip(docs, groundtruths):
+            self.num_docs += 1
+            actual = [match.tags['id'] for match in doc.matches]
+            desired = groundtruth.matches[0].tags['id']  # pseudo_match
+            precision_score = doc.evaluations.add()
+            self.total_precision += self._precision(actual, desired)
+            self.total_recall += self._recall(actual, desired)
+            precision_score.value = self.avg_precision
+            precision_score.op_name = f'Precision'
+            doc.evaluations.append(precision_score)
+            recall_score = doc.evaluations.add()
+            recall_score.value = self.avg_recall
+            recall_score.op_name = f'Recall'
+            doc.evaluations.append(recall_score)
