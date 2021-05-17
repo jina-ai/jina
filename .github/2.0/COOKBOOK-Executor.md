@@ -1,10 +1,10 @@
-Document, Executor, Flow are three fundamental concepts in Jina.
+Document, Executor, and Flow are the three fundamental concepts in Jina.
 
-- [**Document**](COOKBOOK-Document.md) is the basic data type in Jina;
-- [**Executor**](COOKBOOK-Executor.md) is how Jina processes Documents;
-- **Flow** is how Jina streamlines and scales Executors.
+- [**Document**](COOKBOOK-Document.md) is Jina's basic data type;
+- [**Executor**](COOKBOOK-Executor.md) processes Documents;
+- **Flow** streamlines and scales Executors.
 
-*Learn them all, nothing more, you are good to go.*
+*Learn them all, nothing more, and you are good to go.*
 
 ---
 
@@ -102,23 +102,23 @@ with f:
 
 ## Executor API
 
-- All `executor` come from `Executor` class directly.
-- An `executor` class can contain arbitrary number of functions with arbitrary names. It is a bag of functions with
+- All `executor`s come directly from the `Executor` class.
+- An `executor` classes can contain an arbitrary number of functions with arbitrary names. It is a bag of functions with
   shared state (via `self`).
 - Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
 
 ### Inheritance
 
-Every new executor should be inherited directly from `jina.Executor`.
+Every new Executor should be inherited directly from `jina.Executor`.
 
-The 1.x inheritance tree is removed,  `Executor` does not have polymorphism anymore.
+The 1.x inheritance tree is removed. `Executor` no longer has polymorphism.
 
-You can name your executor class freely.
+You can name your Executor class freely.
 
 ### `__init__` Constructor
 
-If your executor defines `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
-in the body, e.g.
+If your Executor defines `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
+in the body:
 
 ```python
 from jina import Executor
@@ -138,13 +138,13 @@ and `runtime_args` injected on startup. Note that you can access their values in
 
 ### Method naming
 
-`Executor`'s method can be named freely. Methods are not decorated with `@requests` are irrelevant to Jina.
+`Executor`'s method can be named freely. Methods which are not decorated with `@requests` are irrelevant to Jina.
 
 ### `@requests` decorator
 
 `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
 
-To call an Executor's function, uses `Flow.post(on=..., ...)`. For example, given
+To call an Executor's function, use `Flow.post(on=..., ...)`. For example, given
 
 ```python
 from jina import Executor, Flow, requests
@@ -171,12 +171,12 @@ Then:
 
 - `f.post(on='/index', ...)` will trigger `MyExecutor.foo`;
 - `f.post(on='/random_work', ...)` will trigger `MyExecutor.bar`;
-- `f.post(on='/blah', ...)` will throw an error, as no function bind with `/blah`;
+- `f.post(on='/blah', ...)` will throw an error, as no function is bound to `/blah`;
 
 #### Default binding: `@requests` without `on=`
 
-A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints. That means, it
-is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`
+A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints. That means it
+is the fall-back handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`
 
 ```python
 from jina import Executor, requests
@@ -193,14 +193,14 @@ class MyExecutor(Executor):
         print(kwargs)
 ```
 
-#### Multiple binding: `@requests(on=[...])`
+#### Multiple bindings: `@requests(on=[...])`
 
 To bind a method with multiple endpoints, one can use `@requests(on=['/foo', '/bar'])`. This allows
 either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that function.
 
 ### Method Signature
 
-Class method decorated by `@request` follows the signature below:
+Class methods decorated by `@request` follow the signature below:
 
 ```python
 def foo(docs: Optional[DocumentArray],
@@ -223,11 +223,11 @@ The Executor's method receive the following arguments in order:
 | `groundtruths`   | `Optional[DocumentArray]`  | `Request.groundtruths`. Same behavior as `docs`  |
 | `groundtruths_matrix`  | `List[DocumentArray]`  | Same behavior as `docs_matrix` but on `Request.groundtruths` |
 
-Note, executor's methods not decorated with `@request` do not enjoy these arguments.
+Note, Executor methods which are not decorated with `@request` do not enjoy these arguments.
 
-The arguments order is designed as common-usage-first. Not based on alphabetical order or semantic closeness.
+The argument order is designed as common-usage-first, not alphabetical order or semantic closeness.
 
-If you don't need some arguments, you can suppress it into `**kwargs`. For example:
+If you don't need some arguments, you can suppress them into `**kwargs`. For example:
 
 ```python
 @requests
@@ -248,14 +248,14 @@ def foo(**kwargs):
 
 ### Method Returns
 
-Method decorated with `@request` can return `Optional[DocumentSet]`. If not `None`, then the current `Request.docs` will
+Methods decorated with `@request` can return `Optional[DocumentSet]`. If not `None`, then the current `Request.docs` will
 be overridden by the return value.
 
-If return is just a shallow copy of `Request.docs`, then nothing happens.
+If the return is just a shallow copy of `Request.docs`, then nothing happens.
 
 ### YAML Interface
 
-Executor can be load from and stored to a YAML file. The YAML file has the following format:
+An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:
 
 ```yaml
 jtype: MyExecutor
@@ -269,17 +269,17 @@ requests:
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
 - `with` is a map. Defines kwargs of the class `__init__` method
-- `metas` is a map. Defines the meta information of that class, comparing to `1.x` it is reduced to the following
+- `metas` is a map. Defines the meta-information of that class. Compared to `1.x` it is reduced to the following
   fields:
-    - `name` is a string. Defines the name of the executor;
-    - `description` is a string. Defines the description of this executor. It will be used in automatics docs UI;
-    - `workspace` is a string. Defines the workspace of the executor
-    - `py_modules` is a list of string. Defines the python dependencies of the executor.
+    - `name` is a string. Defines the name of the Executor;
+    - `description` is a string. Defines the description of this Executor. It will be used in automatic docs UI;
+    - `workspace` is a string. Defines the workspace of the Executor
+    - `py_modules` is a list of string. Defines the python dependencies of the Executor.
 - `requests` is a map. Defines the mapping from endpoint to class method name.
 
 ### Load and Save Executor's YAML config
 
-You can use class method `Executor.load_config` and object method `exec.save_config` to load & save YAML config as
+You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config as
 follows:
 
 ```python
@@ -314,19 +314,19 @@ Executor.load_config('y.yml')
 
 ## Executor Built-in Features
 
-In 2.0 Executor class has few built-in features than in 1.x. The design principles are (`user` here means "Executor
+In 2.0 Executor class has fewer built-in features than in 1.x. The design principles are (`user` here means "Executor
 developer"):
 
-- **Do not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and less intrusive as
+- **Do not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and unintrusive as
   a `mixin` class:
     - do not customize the class constructor logic;
-    - do not change its builtin interface `__getstate__`, `__setstate__`;
+    - do not change its built-in interface `__getstate__`, `__setstate__`;
     - do not add new members to the `Executor` object unless we must.
 - **Do not overpromise to user**: do not promise features that we can hardly deliver. Trying to control the interface
-  while delivering just loosely implemented features is bad for scaling the core framework. For example, `save`, `load`
+  while delivering just loosely-implemented features is bad for scaling the core framework. For example, `save`, `load`
   , `on_gpu`, etc.
 
-We want to give back the programming freedom to user. If a user is a good Python programmer, he/she should pick
+We want to give back programming freedom to the user. If a user is a good Python programmer, they should pick
 up `Executor` in no time - not spending extra time on learning the implicit boilerplate as in 1.x. Plus,
 subclassing `Executor` should be easy.
 
@@ -341,7 +341,7 @@ subclassing `Executor` should be easy.
 | `.load_config()` | ✅ |
 | `.close()` |  ✅ |
 | `workspace` interface |  ✅ [Refactored](#workspace). |
-| `metas` config | Moved to `self.metas.xxx`. [Number of fields are greatly reduced](#yaml-interface). |
+| `metas` config | Moved to `self.metas.xxx`. [Number of fields greatly reduced](#yaml-interface). |
 | `._drivers` | Refactored and moved to `self.requests.xxx`. |
 | `.save()` | ❌ |
 | `.load()` | ❌ |
@@ -355,7 +355,7 @@ subclassing `Executor` should be easy.
 
 ### Workspace
 
-Executor's workspace is inherited according to the following rule (`OR` is a python `or`, i.e. first thing first, if NA
+An Executor's workspace is inherited according to the following rule (`OR` is a Python `or`, i.e. first thing first, if N/A
 then second):
 
 ![](workspace-inherit.svg?raw=true)
@@ -370,8 +370,8 @@ e.g. to access `name` use `self.metas.name`.
 An `Executor` object by default contains two collections of attributes `.metas` and `.runtime_args`. They are both
 in `SimpleNamespace` type and contain some key-value information. However, they are defined and serve differently.
 
-- **`.metas` are statically defined.** "Static" means, e.g. from hardcoded value in the code, from a YAML file.
-- **`.runtime_args` are dynamically determined during runtime.** Means that you don't know the value before running
+- **`.metas` are statically defined.** "Static" means, e.g. from hard-coded value in the code, from a YAML file.
+- **`.runtime_args` are dynamically determined during runtime.** This means you don't know the value before running
   the `Executor`, e.g. `pea_id`, `replicas`, `replica_id`. Those values are often related to the system/network
   environment around the `Executor`, and less about `Executor` itself.
 
@@ -382,7 +382,7 @@ In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 | `.metas` | `name`, `description`, `py_modules`, `workspace` |
 | `.runtime_args` | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `read_only`, `memory_hwm`, `on_error_strategy`, `num_part`, `uses_internal`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts` |
 
-Note that, YAML API will ignore `.runtime_args` during save & load as they are not for statically stored.
+Note that YAML API will ignore `.runtime_args` during save and load as they are not statically stored.
 
 ---
 
@@ -413,17 +413,17 @@ def post(
     :param on_error: the function to be called when the :class:`Request` object is rejected.
     :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
     :param target_peapod: a regex string represent the certain peas/pods request targeted
-    :param parameters: the kwargs that will be sent to the executor
+    :param parameters: the kwargs that will be sent to the Executor
     :param kwargs: additional parameters
     :return: None
     """
 ```
 
-Comparing to 1.x Client/Flow API, the three new arguments are:
+Compared to 1.x Client/Flow API, the three new arguments are:
 
 - `on`: endpoint, as explained above
-- `parameters`: the kwargs that will be sent to the executor, as explained above
-- `target_peapod`: a regex string represent the certain peas/pods request targeted
+- `parameters`: the kwargs that will be sent to the Executor, as explained above
+- `target_peapod`: a regex string representing the specific peas/pods request targeted
 
 --- 
 
@@ -440,12 +440,12 @@ Left is 1.x, right is 2.0.
 Line number corresponds to the 1.x code:
 
 - `L5`: change imports to top-level namespace `jina`;
-- `L8`: all executors now subclass from `Executor` class;
+- `L8`: all Executors now subclass from `Executor` class;
 - `L13-14`: there is no need to inherit from `__init__`, no signature is enforced;
 - `L20`: `.touch()` is removed; for this particular encoder as long as the seed is fixed there is no need to store;
 - `L22`: adding `@requests` to decorate the core method, changing signature to `docs, **kwargs`;
 - `L32`:
-    - the content extraction and embedding assignment are now done manually;
+    - content extraction and embedding assignment are now done manually;
     - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
@@ -454,8 +454,8 @@ Line number corresponds to the 1.x code:
 
 ### Joining/Merging
 
-Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding to Executor's function.
-Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
+Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding to the Executor's function.
+Hence, simple joining is just returning these `docs`. Complicated joining should be implemented in `Document`
 /`DocumentArray`
 
 ```python
@@ -496,7 +496,7 @@ with f:
            on_done=print)
 ```
 
-You can also modify the docs while merging, which is not feasible to do in 1.x, e.g.
+You can also modify the Documents while merging, which is not feasible to do in 1.x:
 
 ```python
 class C(Executor):

@@ -1,7 +1,7 @@
 # Temporary Cookbook on Clean Code
 
 Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
-tips to help you write clean & beautiful code.
+tips to help you write clean and beautiful code.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -34,7 +34,7 @@ tips to help you write clean & beautiful code.
         ...
    ```
 
-1. Use `@requests` without specifying `on=` if your function mean to work on all requests. You can use it for catching all requests that are not for this Executor.
+1. Use `@requests` without specifying `on=` if your function is meant to work on all requests. You can use it for catching all requests that are not for this Executor.
 
    ✅ Do:
    ```python

@@ -1,22 +1,22 @@
-Document, Executor, Flow are three fundamental concepts in Jina.
+Document, Executor, and Flow are the three fundamental concepts in Jina.
 
-- [**Document**](COOKBOOK-Document.md) is the basic data type in Jina;
-- [**Executor**](COOKBOOK-Executor.md) is how Jina processes Documents;
-- **Flow** is how Jina streamlines and scales Executors.
+- [**Document**](COOKBOOK-Document.md) is Jina's basic data type;
+- [**Executor**](COOKBOOK-Executor.md) processes Documents;
+- **Flow** streamlines and scales Executors.
 
-*Learn them all, nothing more, you are good to go.*
+*Learn them all, nothing more, and you are good to go.*
 
 ---
 
 # Temporary Cookbook on `Document`/`DocumentArray` 2.0 API
 
-`Document` is the basic data type that Jina operates with. Text, picture, video, audio, image, 3D mesh, they are
-all `Document` in Jina.
+`Document` is the basic data type that Jina operates with. Text, picture, video, audio, image, 3D mesh -- they are
+all `Document`s in Jina.
 
-`DocumentArray` is a sequence container of `Document`. It is the first-class citizen of `Executor`, serving as the input
-& output.
+`DocumentArray` is a sequence container of `Document`s. It is the first-class citizen of `Executor`, serving as input
+and output.
 
-One can say `Document` to Jina is like `np.float` to Numpy, then `DocumentArray` is like `np.ndarray`.
+You could say `Document` is to Jina what `np.float` is to Numpy, and `DocumentArray` is similar to `np.ndarray`.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -61,7 +61,7 @@ d = Document()
 
 ### `Document` Attributes
 
-A `Document` object has the following attributes, which can be put into the following categories:
+A `Document` object has the following attributes, which can be organized into the following categories:
 
 | | | 
 |---|---|
@@ -76,12 +76,12 @@ A `Document` object has the following attributes, which can be put into the foll
 
 |     |     |
 | --- | --- |
-| `doc.buffer` | The raw binary content of this document |
-| `doc.blob` | The `ndarray` of the image/audio/video document |
-| `doc.text` | The text info of the document |
-| `doc.uri` | A uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |
-| `doc.content` | One of the above non-empty field |
-| `doc.embedding` | The embedding `ndarray` of this Document |
+| `doc.buffer` | The raw binary content of the Document |
+| `doc.blob` | The `ndarray` of the image/audio/video Document |
+| `doc.text` | The text info of the Document |
+| `doc.uri` | A URI of the Document could be: a local file path, a remote URL starting with http or https or data URI scheme |
+| `doc.content` | One of the above non-empty fields |
+| `doc.embedding` | The embedding `ndarray` of the Document |
 
 You can assign `str`, `ndarray`, `buffer`, `uri` to a `Document`.
 
@@ -105,7 +105,7 @@ d4 = Document(content='https://static.jina.ai/logo/core/notext/light/logo.png')
 The content will be automatically assigned to one of `text`, `buffer`, `blob`, `uri` fields, `id` and `mime_type` are
 auto-generated when not given.
 
-In Jupyter notebook or use `.plot()`, you can get the visualization of a `Document` object.
+You can visualize a Document either in a Jupyter notebook or by using `.plot()`.
 
 <img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDY5fkRvY3VtZW50fnsKK2lkIGU4MDY0MjdlLWEKK21pbWVfdHlwZSB0ZXh0L3BsYWluCit0ZXh0IGhlbGxvCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDczfkRvY3VtZW50fnsKK2lkIGZmZTQzMmFjLWEKK2J1ZmZlciBEREU9CittaW1lX3R5cGUgdGV4dC9wbGFpbgp9"/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgZDJmfkRvY3VtZW50fnsKK2lkIDAzOWVmMzE0LWEKK2Jsb2IoPGNsYXNzICdudW1weS5uZGFycmF5Jz4pCn0="/><img src="https://mermaid.ink/svg/JSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3RoZW1lVmFyaWFibGVzJzogeyAncHJpbWFyeUNvbG9yJzogJyNGRkM2NjYnfX19JSUKICAgICAgICAgICAgICAgICAgICBjbGFzc0RpYWdyYW0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3MgMjRmfkRvY3VtZW50fnsKK2lkIDA2YTE2OGY4LWEKK3VyaSBodHRwczovL3N0CittaW1lX3R5cGUgaW1hZ2UvcG5nCn0="/>
 
@@ -113,8 +113,8 @@ In Jupyter notebook or use `.plot()`, you can get the visualization of a `Docume
 
 ![](doc.content.svg?raw=true)
 
-Note that one `Document` can only contain one type of `content`: it is one of `text`, `buffer`, `blob`, `uri`.
-Setting `text` first and then set `uri` will clear the `text field.
+Note that one `Document` can only contain one type of `content`: one of `text`, `buffer`, `blob`, `uri`.
+Setting `text` first and then setting `uri` will clear the `text field.
 
 ```python
 d = Document(text='hello world')
@@ -146,7 +146,7 @@ doc.convert_uri_to_text()
 You can convert a URI to data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch the
 resource and make it inline.
 
-In particular, when you work with the image `Document`, there are some extra helpers that enables more conversion.
+In particular, when you work with an image `Document`, there are some extra helpers that enable more conversions.
 
 ```python
 doc.convert_image_buffer_to_blob()
@@ -157,7 +157,7 @@ doc.convert_image_datauri_to_blob()
 
 ##### Set Embedding
 
-Embedding is the high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as its embedding.
+An embedding is the high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s embedding.
 
 ```python
 import numpy as np
@@ -173,13 +173,13 @@ d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 
 |     |     |
 | --- | --- |
-| `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
-| `doc.id` | A hexdigest that represents a unique document ID |
-| `doc.weight` | The weight of this document |
-| `doc.mime_type` | The mime type of this document |
-| `doc.location` | The position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |
-| `doc.offset` | The offset of this doc in the previous granularity document|
-| `doc.modality` | An identifier to the modality this document belongs to|
+| `doc.tags` | A structured data value, consisting of field which maps to dynamically typed values |
+| `doc.id` | A hexdigest representing a unique Document ID |
+| `doc.weight` | The weight of this Document |
+| `doc.mime_type` | The MIME type of this Document |
+| `doc.location` | The position of the Document. This could be start and end index of a string; x,y (top, left) coordinate of an image crop; or timestamp of an audio clip |
+| `doc.offset` | The offset of this Document in the previous granularity Document|
+| `doc.modality` | An identifier of the modality the Document belongs to|
 
 You can assign multiple attributes in the constructor via:
 
@@ -215,7 +215,7 @@ d2 = Document(d)
 
 ##### Parsing Unrecognized Fields
 
-Unrecognized fields in Dict/JSON string are automatically put into `.tags` field.
+Unrecognized fields in a dict/JSON string are automatically put into the `.tags` field.
 
 ```python
 from jina import Document
@@ -287,20 +287,20 @@ d.update(s, exclude_fields=('id',))
 
 #### Construct from JSON, CSV, `ndarray` and Files
 
-You can also construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original format:
+You can also construct a `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following functions will give a generator of `Document`s, where each `Document` object corresponds to a line/row in the original format:
 
 |     |     |
 | --- | --- |
-| `Document.from_ndjson()` | Yield `Document` from a line-based JSON file, each line is a `Document` object |
-| `Document.from_csv()` | Yield `Document` from a CSV file, each line is a `Document` object |
-| `Document.from_files()` | Yield `Document` from a glob files, each file is a `Document` object |
-| `Document.from_ndarray()` | Yield `Document` from a `ndarray`, each row (depending on `axis`) is a `Document` object |
+| `Document.from_ndjson()` | Yield `Document` from a line-based JSON file. Each line is a `Document` object |
+| `Document.from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
+| `Document.from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
+| `Document.from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
 
-Using generator is sometimes less memory demanding, as it does not load build all Document objects in one shot.
+Using a generator is sometimes less memory demanding, as it does not load build all Document objects in one shot.
 
 ### Serialize `Document`
 
-You can serialize a `Document` into JSON string or Python dict or binary string via
+You can serialize a `Document` into a JSON string, Python dict or binary string via:
 
 ```python
 from jina import Document
@@ -337,16 +337,16 @@ b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
 
 #### Recursive Attributes
 
-`Document` can be recurred in both horizontal & vertical way.
+A `Document` can be recurred both horizontally & vertically:
 
 |     |     |
 | --- | --- |
-| `doc.chunks` | The list of sub-documents of this document. They have `granularity + 1` but same `adjacency` |
-| `doc.matches` | The list of matched documents of this document. They have `adjacency + 1` but same `granularity` |
+| `doc.chunks` | The list of sub-Documents of this Document. They have `granularity + 1` but same `adjacency` |
+| `doc.matches` | The list of matched Documents of this Document. They have `adjacency + 1` but same `granularity` |
 |  `doc.granularity` | The recursion "depth" of the recursive chunks structure |
 |  `doc.adjacency` | The recursion "width" of the recursive match structure |
 
-You can add **chunks** (sub-document) and **matches** (neighbour-document) to a `Document` via the following ways:
+You can add **chunks** (sub-document) and **matches** (neighbour-document) to a `Document` via:
 
 - Add in constructor:
 
@@ -372,9 +372,9 @@ You can add **chunks** (sub-document) and **matches** (neighbour-document) to a 
 
 Note that both `doc.chunks` and `doc.matches` return `DocumentArray`, which we will introduce later.
 
-### Visualize `Document`
+### Visualize a `Document`
 
-To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
+To better see the Document's recursive structure, you can use the `.plot()` function. If you are using JupyterLab/Notebook,
 all `Document` objects will be auto-rendered.
 
 <table>
@@ -404,14 +404,14 @@ d0.plot()  # simply `d0` on JupyterLab
 </tr>
 </table>
 
-### Add Relevancy to `Document`
+### Add Relevancy to a `Document`
 
 #### Relevance Attributes
 
 |     |     |
 | --- | --- |
-| `doc.score` | The relevance information of this document |
-| `doc.evaluations` | The evaluation information of this document |
+| `doc.score` | The relevance information of this Document |
+| `doc.evaluations` | The evaluation information of this Document |
 
 You can add relevance score to a `Document` object via:
 
@@ -505,7 +505,7 @@ da[1:2]
 
 ### Sort Elements
 
-`DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in a `DocumentArray` object, e.g.
+`DocumentArray` is a subclass of `MutableSequence`. Therefore you can use Pytohn's built-in `sort` to sort elements in a `DocumentArray` object:
 
 ```python
 from jina import DocumentArray, Document
@@ -522,7 +522,7 @@ da.sort(key=lambda d: d.tags['id'], reverse=True)
 print(da)
 ```
 
-this sorts elements in `da` in-place, using `tags[id]` value in a descending manner: 
+This sorts elements in `da` in-place, using `tags[id]` value in a descending order: 
 
 ```text
 <jina.types.arrays.document.DocumentArray length=3 at 5701440528>
@@ -534,7 +534,7 @@ this sorts elements in `da` in-place, using `tags[id]` value in a descending man
 
 ### Filter Elements
 
-You can use [built-in Python `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements in a `DocumentArray` object, e.g.
+You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements in a `DocumentArray` object:
 
 ```python
 from jina import DocumentArray, Document
@@ -574,12 +574,12 @@ DocumentArray has 3 items:
 
 ### Using `itertools` on `DocumentArray`
 
-As `DocumenArray` is an `Iterable`, you can also use [Python built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables advanced "iterator algebra" on `DocumentArray`.
+As `DocumentArray` is an `Iterable`, so you can also use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables advanced "iterator algebra" on `DocumentArray`.
 
 ### Get Attributes in Bulk
 
-`DocumentArray` implements powerful getters that allows one to fetch multiple attributes from the documents it contains
-in one-shot.
+`DocumentArray` implements powerful getters that let you fetch multiple attributes from the Documents it contains
+in one shot.
 
 ```python
 import numpy as np
