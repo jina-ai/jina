@@ -28,30 +28,13 @@ class MyExecutor(Executor):
             for i in range(5):
                 match.matches.append(Document())
 
-        return self.doc
+        return None
 
 
 def test_high_order_matches(mocker):
     response_mock = mocker.Mock()
 
     f = Flow().add(uses=MyExecutor)
-
-    with f:
-        f.post(
-            on='index',
-            inputs=Document(matches=[Document() for i in range(5)]),
-            on_done=response_mock,
-        )
-
-    validate_callback(response_mock, validate)
-
-
-@pytest.mark.parametrize('restful', [False, True])
-def test_high_order_matches_integrated(mocker, restful):
-
-    response_mock = mocker.Mock()
-    # this is equivalent to the last test but with simplified YAML spec.
-    f = Flow(restful=restful).add(uses=MyExecutor)
 
     with f:
         f.post(
