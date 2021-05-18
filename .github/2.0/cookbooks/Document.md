@@ -176,7 +176,7 @@ d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 | `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
 | `doc.id` | A hexdigest that represents a unique document ID |
 | `doc.weight` | The weight of this document |
-| `doc.mime_type` | The mime type of this document |
+| `doc.mime_type` | The [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of this document |
 | `doc.location` | The position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |
 | `doc.offset` | The offset of this doc in the previous granularity document|
 | `doc.modality` | An identifier to the modality this document belongs to|
