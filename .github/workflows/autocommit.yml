@@ -53,8 +53,17 @@ jobs:
           COMMIT_NAME: Jina Dev Bot
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: ''
-          TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md,RELEASE.md,.github/2.0/cookbooks/*.md'
+          TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md,RELEASE.md'
           CHECK_ONLY_DEFAULT_BRANCH: true
+      - name: Generate TOC
+        uses: technote-space/toc-generator@v3
+        with:
+          MAX_HEADER_LEVEL: 4
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          COMMIT_NAME: Jina Dev Bot
+          COMMIT_EMAIL: dev-bot@jina.ai
+          TOC_TITLE: 'Table of Contents'
+          TARGET_PATHS: '.github/2.0/cookbooks/*.md'
       - uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}

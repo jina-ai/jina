@@ -196,9 +196,9 @@ f = (Flow()
 
 </table>
 
-## Send Data to Flow 
+### Send Data to Flow 
 
-### `post` method
+#### `post` method
 
 `post` is the core method. All 1.x methods, e.g. `index`, `search`, `update`, `delete` are just sugary syntax of `post`
 by specifying `on='/index'`, `on='/search'`, etc.

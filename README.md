@@ -16,42 +16,6 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
-<details>
-<summary>👋 Click here to see quick demo!</summary>
-
-<table>
-  <tr>
-    <td width="30%">
-      <a href="./.github/pages/hello-world.md#-fashion-image-search">
-        <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" />
-      </a>
-    </td>
-    <td width="30%">
-<a href="./.github/pages/hello-world.md#-covid-19-chatbot">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
-</a>
-    </td>
-    <td width="30%">
-<a href="https://youtu.be/B_nH8GCmBfc">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-multimodal.gif?raw=true" />
-</a>
-    </td>
-  </tr>
-  <tr>
-    <th>
-      <a href="./.github/pages/hello-world.md#-fashion-image-search">Image search</a>
-    </th>
-    <th>
-      <a href="./.github/pages/hello-world.md#-covid-19-chatbot">QA chatbot</a>
-    </th>
-    <th>
-      <a href="./.github/pages/hello-world.md#-multimodal-document-search">Multi-media search</a>
-    </th>
-  </tr>
-</table>
-
-</details>
-
 Jina is geared towards building search systems for any kind of data, including text, image, audio, video, PDF etc.
 Powered by deep learning and cloud-native techniques, you can leverage Jina to build a multimedia search system in
 minutes.
@@ -72,14 +36,14 @@ containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 ```console
 $ pip install --pre jina
 $ jina -v
-2.0.0rc
+2.0.0rcN
 ```
 
 #### via Docker
 
 ```console
 $ docker run jinaai/jina:master -v
-2.0.0rc
+2.0.0rcN
 ```
 
 <details>
@@ -89,7 +53,7 @@ $ docker run jinaai/jina:master -v
 | --- | --- | --- |
 | Standard | `pip install --pre jina` | `docker run jinaai/jina:2.0.0rc` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install --pre "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install -U "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
+| <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 | <sub>Dev/Pre-Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
@@ -102,9 +66,9 @@ to help us with [native Windows support](https://github.com/jina-ai/jina/issues/
 
 Document, Executor, Flow are three fundamental concepts in Jina.
 
-- **Document** is the basic data type in Jina;
-- **Executor** is how Jina processes Documents;
-- **Flow** is how Jina streamlines and distributes Executors.
+- 📄 **Document** is the basic data type in Jina;
+- ⚙️ **Executor** is how Jina processes Documents;
+- 🔀 **Flow** is how Jina streamlines and distributes Executors.
 
 Copy-paste the minimum example below and run it:
 
@@ -127,11 +91,22 @@ with f:
 
 ### Run Quick Demo
 
-- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
-- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
+- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search)
+  ```console
+  $ jina hello fashion
+  ```
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
+  ```console
+  $ pip install "jina[chatbot]"
+  $ jina hello chatbot
+  ```
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search)
+  ```console
+  $ pip install "jina[multimodal]"
+  $ jina hello multimodal
+  ```
 
-### Fork Demo & Build Your Own
+#### Fork Demo & Build Your Own
 
 Copy the source code of a hello world to your own directory and start from there:
 
@@ -140,6 +115,20 @@ $ jina hello fork fashion ../my-proj/
 ```
 
 ### Read Tutorials
+
+- 📄 `Document` & `DocumentArray`: the basic data type in Jina.
+    - [Minimum working example](.github/2.0/cookbooks/Document.md#minimum-working-example)
+    - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
+    - [`DocumentArray` API](.github/2.0/cookbooks/Document.md#documentarray-api)
+- ⚙️ `Executor`: how Jina processes Documents.
+    - [Minimum working example](.github/2.0/cookbooks/Executor.md#minimum-working-example)
+    - [Executor API](.github/2.0/cookbooks/Executor.md#executor-api)
+    - [Executor Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
+    - [Migration from 1.x to 2.0 in Practice](.github/2.0/cookbooks/Executor.md#migration-in-practice)
+- 🔀 `Flow`: how Jina streamlines and distributes Executors.
+    - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
+    - [Flow API](.github/2.0/cookbooks/Flow.md#flow-api)
+- 🧼 [Write clean code in Jina](./.github/2.0/cookbooks/CleanCode.md)  
 
 ## Support
 
