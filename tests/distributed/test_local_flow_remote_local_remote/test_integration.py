@@ -20,8 +20,8 @@ def test_flow(docker_compose, mocker, encoder_needs, indexer_needs):
     text = 'cats rules'
 
     def validate_output(resp):
-        assert len(resp.index.docs) == 1
-        assert resp.index.docs[0].text == text
+        assert len(resp.data.docs) == 1
+        assert resp.data.docs[0].text == text
 
     os.environ['JINA_CRAFTER_HOST'] = '172.28.1.1'
     os.environ['JINA_INDEXER_HOST'] = '172.28.1.2'

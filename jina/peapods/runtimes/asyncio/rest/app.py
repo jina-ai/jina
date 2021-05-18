@@ -1,15 +1,13 @@
 import argparse
 import asyncio
-import warnings
 from typing import Any
 
-from google.protobuf.json_format import MessageToDict, MessageToJson
+from google.protobuf.json_format import MessageToJson
 
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
-from .....enums import RequestType
 from .....helper import get_full_version, random_identity
 from .....importer import ImportExtensions
 from .....logging import JinaLogger, default_logger
@@ -27,7 +25,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     :return: fastapi app
     """
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, WebSocket, Body
+        from fastapi import FastAPI, WebSocket
         from fastapi.responses import JSONResponse
         from fastapi.middleware.cors import CORSMiddleware
         from starlette.endpoints import WebSocketEndpoint
@@ -40,7 +38,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             JinaDeleteRequestModel,
             JinaUpdateRequestModel,
             JinaSearchRequestModel,
-            JinaReloadRequestModel,
+            JinaRequestModel,
         )
 
     app = FastAPI(
@@ -90,7 +88,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         path='/status',
         summary='Get the status of Jina',
         response_model=JinaStatusModel,
-        tags=['jina'],
+        tags=['Management'],
     )
     async def _status():
         _info = get_full_version()
@@ -100,41 +98,21 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'used_memory': used_memory_readable(),
         }
 
-    @app.post(path='/api/{mode}', deprecated=True)
-    async def api(mode: str, body: Any = Body(...)):
+    @app.post(
+        path='/post', summary='Post a general data request to Jina', tags=['General']
+    )
+    async def post(body: JinaRequestModel):
         """
         Request mode service and return results in JSON, a deprecated interface.
 
-        :param mode: INDEX, SEARCH, DELETE, UPDATE, CONTROL, TRAIN.
         :param body: Request body.
         :return: Results in JSONresponse.
         """
-        warnings.warn('this interface will be retired soon', DeprecationWarning)
-        if mode.upper() not in RequestType.__members__:
-            return error(reason=f'unsupported mode {mode}', status_code=405)
 
-        if 'data' not in body:
-            return error('"data" field is empty', 406)
-
-        body['mode'] = RequestType.from_string(mode)
-        from .....clients import BaseClient
-
-        BaseClient.add_default_kwargs(body)
-        req_iter = request_generator(**body)
-        results = await get_result_in_json(req_iter=req_iter)
-        return JSONResponse(content=results[0], status_code=200)
-
-    async def get_result_in_json(req_iter):
-        """
-        Convert message to JSON data.
-
-        :param req_iter: Request iterator
-        :return: Results in JSON format
-        """
-        return [
-            MessageToDict(k)
-            async for k in servicer.Call(request_iterator=req_iter, context=None)
-        ]
+        bd = body.dict()
+        return StreamingResponse(
+            result_in_stream(request_generator(**bd)), media_type='application/json'
+        )
 
     @app.post(path='/index', summary='Index documents into Jina', tags=['CRUD'])
     async def index_api(body: JinaIndexRequestModel):
@@ -144,10 +122,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param body: index request.
         :return: Response of the results.
         """
-        from .....clients import BaseClient
 
         bd = body.dict()
-        bd['mode'] = RequestType.INDEX
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -160,10 +136,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param body: search request.
         :return: Response of the results.
         """
-        from .....clients import BaseClient
 
         bd = body.dict()
-        bd['mode'] = RequestType.SEARCH
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -176,10 +150,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param body: update request.
         :return: Response of the results.
         """
-        from .....clients import BaseClient
 
         bd = body.dict()
-        bd['mode'] = RequestType.UPDATE
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -192,32 +164,10 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param body: delete request.
         :return: Response of the results.
         """
-        from .....clients import BaseClient
 
         bd = body.dict()
-        bd['mode'] = RequestType.DELETE
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
-        )
-
-    @app.post(
-        path='/reload', summary='Reload the executor of certain Peas/Pods in the Flow'
-    )
-    async def reload_api(body: JinaReloadRequestModel):
-        """
-        Reload the executor of certain peas/pods in the Flow
-
-        :param body: reload request.
-        :return: Response of the results.
-        """
-        from .....clients import BaseClient
-
-        bd = body.dict()
-        bd['mode'] = RequestType.CONTROL
-        bd['command'] = 'RELOAD'
-        return StreamingResponse(
-            result_in_stream(request_generator(data=[], **bd)),
-            media_type='application/json',
         )
 
     async def result_in_stream(req_iter):

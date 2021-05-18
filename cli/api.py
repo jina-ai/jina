@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 if False:
     from argparse import Namespace
 
@@ -18,6 +15,10 @@ def pod(args: 'Namespace'):
             p.join()
     except KeyboardInterrupt:
         pass
+
+
+# alias
+executor = pod
 
 
 def pea(args: 'Namespace'):
@@ -115,17 +116,6 @@ def export_api(args: 'Namespace'):
             default_logger.info(f'API is exported to {f_name}')
 
 
-def hello_world(args: 'Namespace'):
-    """
-    Run the fashion hello world example
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.helloworld.fashion import hello_world
-
-    hello_world(args)
-
-
 def hello(args: 'Namespace'):
     """
     Run any of the hello world examples
@@ -133,15 +123,23 @@ def hello(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     if args.hello == 'fashion':
-        from jina.helloworld.fashion import hello_world
-    elif args.hello == 'chatbot':
-        from jina.helloworld.chatbot import hello_world
-    elif args.hello == 'multimodal':
-        from jina.helloworld.multimodal import hello_world
-    else:
-        raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`]')
+        from jina.helloworld.fashion.app import hello_world
 
-    hello_world(args)
+        hello_world(args)
+    elif args.hello == 'chatbot':
+        from jina.helloworld.chatbot.app import hello_world
+
+        hello_world(args)
+    elif args.hello == 'multimodal':
+        from jina.helloworld.multimodal.app import hello_world
+
+        hello_world(args)
+    elif args.hello == 'fork':
+        from jina.helloworld.fork import fork_hello
+
+        fork_hello(args)
+    else:
+        raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`, `fork`]')
 
 
 def flow(args: 'Namespace'):

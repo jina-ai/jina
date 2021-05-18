@@ -1,7 +1,0 @@
-!TextLengthEvaluator
-requests:
-  on:
-    SearchRequest:
-      - !TextEvaluateDriver
-        with:
-          traversal_paths: [ 'r' ]

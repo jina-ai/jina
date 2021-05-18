@@ -1,5 +1,5 @@
-from jina.executors.encoders import BaseEncoder
+from jina import Executor
 
 
-class DummyEncoder(BaseEncoder):
+class DummyEncoder(Executor):
     pass

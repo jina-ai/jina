@@ -9,7 +9,7 @@ from jina.flow import Flow
 from jina.proto import jina_pb2
 from jina import Document
 from jina import helper
-from jina.executors.encoders import BaseEncoder
+from jina import Executor, requests
 from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,11 +27,11 @@ def docs():
 
 def test_no_matches_grpc(mocker, docs):
     def validate_response(resp):
-        for doc in resp.search.docs:
+        for doc in resp.data.docs:
             assert len(doc.matches) == 0
 
     mock_on_done = mocker.Mock()
-    with Flow().add(uses='_pass') as f:
+    with Flow().add() as f:
         f.search(inputs=docs, on_done=mock_on_done)
     validate_callback(mock_on_done, validate_response)
 
@@ -41,25 +41,16 @@ def query_dict():
     return {'top_k': 3, 'mode': 'search', 'data': [f'text:query']}
 
 
-class MockExecutor(BaseEncoder):
-    def get_docs(self, req_type):
-        if req_type == 'ControlRequest':
-            return []
-        driver = self._drivers[req_type][0]
-        return driver.docs
-
-    def __call__(self, req_type, *args, **kwargs):
-        if req_type == 'ControlRequest':
-            for d in self._drivers[req_type]:
-                d()
-        else:
-            for doc in self.get_docs(req_type):
-                doc.tags['tag'] = 'test'
+class MockExecutor(Executor):
+    @requests
+    def foo(self, docs, *args, **kwargs):
+        for doc in docs:
+            doc.tags['tag'] = 'test'
 
 
 def test_no_matches_rest(query_dict):
     port = helper.random_port()
-    with Flow(rest_api=True, port_expose=port).add(uses='!MockExecutor'):
+    with Flow(rest_api=True, port_expose=port).add(uses=MockExecutor):
         # temporarily adding sleep
         time.sleep(0.5)
         query = json.dumps(query_dict).encode('utf-8')
@@ -69,8 +60,8 @@ def test_no_matches_rest(query_dict):
             headers={'content-type': 'application/json'},
         )
         resp = request.urlopen(req).read().decode('utf8')
-        doc = json.loads(resp)['search']['docs'][0]
+        doc = json.loads(resp)['data']['docs'][0]
         present_keys = sorted(doc.keys())
         for field in _document_fields:
-            if field not in IGNORED_FIELDS + ['buffer', 'content', 'blob']:
+            if field not in IGNORED_FIELDS + ['buffer', 'content', 'blob', 'uri']:
                 assert field in present_keys

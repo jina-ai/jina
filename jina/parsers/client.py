@@ -1,6 +1,5 @@
 """Module for argparse for Client"""
 from .helper import add_arg_group
-from ..enums import RequestType
 
 
 def mixin_client_cli_parser(parser):
@@ -17,27 +16,6 @@ def mixin_client_cli_parser(parser):
         help='The number of Documents in each Request.',
     )
 
-    gp.add_argument(
-        '--mode',
-        choices=list(RequestType),
-        type=RequestType.from_string,
-        # required=True,
-        help='''
-The Request mode. This applies to all Requests sent from this client.
-
-- INDEX: store new Documents into the system
-- SEARCH: query Documents from an indexed system
-- UPDATE: update existing Documents in an indexed system
-- DELETE: delete existing Documents from an indexed system
-- CONTROL: (advance) control Pea/Pod such as shutdown, status
-- TRAIN: (experimental) train the system
-                    ''',
-    )
-    gp.add_argument(
-        '--top-k',
-        type=int,
-        help='At maximum k results are returned.',
-    )
     gp.add_argument('--mime-type', type=str, help='MIME type of the input Documents.')
     gp.add_argument(
         '--continue-on-error',

@@ -2,28 +2,33 @@ import random
 
 import pytest
 
-from jina.executors.segmenters import BaseSegmenter
-from jina.executors.decorators import single
-from jina.flow import Flow
+from jina import Flow, Executor, requests, Document
 from tests import random_docs, validate_callback
 
 
-class DummySegment(BaseSegmenter):
+class DummySegment(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._label = random.random()
 
-    @single
-    def segment(self, id, *args, **kwargs):
-        return [
-            dict(buffer=f'aa{self._label}'.encode()),
-            dict(buffer=f'bb{self._label}'.encode()),
-        ]
+    @requests
+    def segment(self, docs, *args, **kwargs):
+        for d in docs:
+            d.chunks = [
+                Document(buffer=f'aa{self._label}'.encode()),
+                Document(buffer=f'bb{self._label}'.encode()),
+            ]
+
+
+class Merger(Executor):
+
+    @requests
+    def merge(self, docs, **kwargs):
+        return docs
 
 
 def validate(req):
-    chunk_ids = [c.id for d in req.index.docs for c in d.chunks]
-    assert len(chunk_ids) == len(set(chunk_ids))
+    chunk_ids = [c.id for d in req.docs for c in d.chunks]
     assert len(chunk_ids) == 80
 
 
@@ -35,13 +40,13 @@ def validate(req):
 def test_this_will_fail(mocker, restful):
     f = (
         Flow(restful=restful)
-        .add(name='a11', uses='DummySegment')
-        .add(name='a12', uses='DummySegment', needs='gateway')
-        .add(name='r1', uses='_merge_chunks', needs=['a11', 'a12'])
-        .add(name='a21', uses='DummySegment', needs='gateway')
-        .add(name='a22', uses='DummySegment', needs='gateway')
-        .add(name='r2', uses='_merge_chunks', needs=['a21', 'a22'])
-        .add(uses='_merge_chunks', needs=['r1', 'r2'])
+            .add(name='a11', uses='DummySegment')
+            .add(name='a12', uses='DummySegment', needs='gateway')
+            .add(name='r1', needs=['a11', 'a12'])
+            .add(name='a21', uses='DummySegment', needs='gateway')
+            .add(name='a22', uses='DummySegment', needs='gateway')
+            .add(name='r2', needs=['a21', 'a22'])
+            .add(needs=['r1', 'r2'])
     )
 
     response_mock = mocker.Mock()
@@ -58,15 +63,15 @@ def test_this_will_fail(mocker, restful):
 def test_this_should_work(mocker, restful):
     f = (
         Flow(restful=restful)
-        .add(name='a1')
-        .add(name='a11', uses='DummySegment', needs='a1')
-        .add(name='a12', uses='DummySegment', needs='a1')
-        .add(name='r1', uses='_merge_chunks', needs=['a11', 'a12'])
-        .add(name='a2', needs='gateway')
-        .add(name='a21', uses='DummySegment', needs='a2')
-        .add(name='a22', uses='DummySegment', needs='a2')
-        .add(name='r2', uses='_merge_chunks', needs=['a21', 'a22'])
-        .add(uses='_merge_chunks', needs=['r1', 'r2'])
+            .add(name='a1')
+            .add(name='a11', uses='DummySegment', needs='a1')
+            .add(name='a12', uses='DummySegment', needs='a1')
+            .add(name='r1', uses=Merger, needs=['a11', 'a12'])
+            .add(name='a2', needs='gateway')
+            .add(name='a21', uses='DummySegment', needs='a2')
+            .add(name='a22', uses='DummySegment', needs='a2')
+            .add(name='r2', uses=Merger, needs=['a21', 'a22'])
+            .add(uses=Merger, needs=['r1', 'r2'])
     )
 
     response_mock = mocker.Mock()

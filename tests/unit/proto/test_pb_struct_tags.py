@@ -26,3 +26,10 @@ def test_tags(document):
     # can be used as a dict
     for _, _ in d2.tags['nested'].items():
         continue
+
+
+def test_tags_assign():
+    d = DocumentProto()
+    d.tags.update({'int': 1, 'float': 0.1234})
+    with pytest.raises(AttributeError):
+        d.tags = {'int': 1, 'float': 0.1234}

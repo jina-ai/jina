@@ -9,73 +9,40 @@
 
 <p align=center>
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8 3.9" title="Jina supports Python 3.7 and above"></a>
-<a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://pepy.tech/project/jina"><img src="https://pepy.tech/badge/jina/month"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
-<details>
-<summary>👋 Click here to see quick demo!</summary>
+Jina is geared towards building search systems for any kind of data, including text, image, audio, video, PDF etc.
+Powered by deep learning and cloud-native techniques, you can leverage Jina to build a multimedia search system in
+minutes.
 
-<table>
-  <tr>
-    <td width="30%">
-      <a href="./.github/pages/hello-world.md#-fashion-image-search">
-        <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" />
-      </a>
-    </td>
-    <td width="30%">
-<a href="./.github/pages/hello-world.md#-covid-19-chatbot">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
-</a>
-    </td>
-    <td width="30%">
-<a href="https://youtu.be/B_nH8GCmBfc">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-multimodal.gif?raw=true" />
-</a>
-    </td>
-  </tr>
-  <tr>
-    <th>
-      <a href="./.github/pages/hello-world.md#-fashion-image-search">Image search</a>
-    </th>
-    <th>
-      <a href="./.github/pages/hello-world.md#-covid-19-chatbot">QA chatbot</a>
-    </th>
-    <th>
-      <a href="./.github/pages/hello-world.md#-multimodal-document-search">Multi-media search</a>
-    </th>
-  </tr>
-</table>
-
-</details>
-
-Jina is geared towards building search systems for any kind of data, including [text](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences), [images](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit), [audio](https://github.com/jina-ai/examples/tree/master/audio-search), [video](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search) and [many more](https://github.com/jina-ai/examples). With the modular design & multi-layer abstraction, you can leverage the efficient patterns to build the system by parts, or chaining them into a [Flow](https://101.jina.ai/#Flow) for an end-to-end experience.
-
-
-🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
+🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music,
+source code, etc.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
-🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with fragmented, multi-vendor, generic legacy tools.
+🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with
+fragmented, multi-vendor, generic legacy tools.
 
-🧠 **First-class AI models** - First-class support for [state-of-the-art AI models](https://docs.jina.ai/chapters/all_exec.html), easily usable and extendable with a Pythonic interface.
-
-🌩️ **Fast & cloud-ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
-
+🌩️ **Fast & cloud-ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy
+containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ## Installation
 
-```sh
-pip install -U jina
+```console
+$ pip install --pre jina
+$ jina -v
+2.0.0rcN
 ```
 
 #### via Docker
 
-```sh
-docker run jinaai/jina:latest
+```console
+$ docker run jinaai/jina:master -v
+2.0.0rcN
 ```
 
 <details>
@@ -83,144 +50,112 @@ docker run jinaai/jina:latest
 
 | <br><sub><sup>x86/64,arm/v6,v7,[v8 (Apple M1)](https://github.com/jina-ai/jina/issues/1781)</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
-| Standard | `pip install -U jina` | `docker run jinaai/jina:latest` |
-| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install -U "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install -U "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
+| Standard | `pip install --pre jina` | `docker run jinaai/jina:2.0.0rc` |
+| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install --pre "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
+| <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 | <sub>Dev/Pre-Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
 
-Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). To install Jina with extra dependencies [please refer to the docs](https://docs.jina.ai/chapters/install/os/via-pip/#cherry-pick-extra-dependencies). Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
+Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
+on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
+to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
-</details>
-
-<details>
-<summary>💡 YAML Completion in PyCharm & VSCode</summary>
-
-Developing Jina app often means writing YAML configs. We provide a [JSON Schema](https://json-schema.org/) for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a [video tutorial](https://youtu.be/qOD-6mihUzQ) to walk you through the setup.
-
-<table>
-  <tr>
-    <td>
-<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/pycharm-schema.gif?raw=true" /></a>
-    </td>
-    <td>
-
-**PyCharm**
-
-1. Click menu `Preferences` -> `JSON Schema mappings`;
-2. Add a new schema, in the `Schema File or URL` write `https://api.jina.ai/schemas/latest.json`; select `JSON Schema Version 7`;
-3. Add a file path pattern and link it to `*.jaml` and `*.jina.yml`.
-
-</td>
-</tr>
-<tr>
-    <td>
-<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/vscode-schema.gif?raw=true" /></a>
-    </td>
-    <td>
-
-**VSCode**
-
-1. Install the extension: `YAML Language Support by Red Hat`;
-2. In IDE-level `settings.json` add:
-
-```json
-"yaml.schemas": {
-    "https://api.jina.ai/schemas/latest.json": ["/*.jina.yml", "/*.jaml"],
-}
-```
-
-</td>
-</tr>
-</table>
 </details>
 
 ## Get Started
 
+Document, Executor, Flow are three fundamental concepts in Jina.
 
-### Cookbook
+- 📄 **Document** is the basic data type in Jina;
+- ⚙️ **Executor** is how Jina processes Documents;
+- 🔀 **Flow** is how Jina streamlines and distributes Executors.
 
-[Bits, pieces and examples of Jina code](./.github/pages/snippets.md)
+Copy-paste the minimum example below and run it:
+
+```python
+from jina import Document, Executor, Flow, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, docs, parameters, **kwargs):
+        print(f'{parameters["p1"]} - {docs[0]}')
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    f.post(on='/bar', inputs=Document(), parameters={'p1': 'hello'}, on_done=print)
+```
 
 ### Run Quick Demo
 
-- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
-- [📰 Multimedia search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
+- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search)
+  ```console
+  $ jina hello fashion
+  ```
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
+  ```console
+  $ pip install "jina[chatbot]"
+  $ jina hello chatbot
+  ```
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search)
+  ```console
+  $ pip install "jina[multimodal]"
+  $ jina hello multimodal
+  ```
 
-### The Basics
+#### Fork Demo & Build Your Own
 
-- [What is neural search, and how is it different to symbolic search?](https://jina.ai/2020/07/06/What-is-Neural-Search-and-Why-Should-I-Care.html)
-- [Jina 101: Learn Jina's key components](https://docs.jina.ai/chapters/101/)
-- [Jina 102: Learn how Jina's components fit together](https://docs.jina.ai/chapters/102/)
-- [My First Jina App: Build your first simple app](https://docs.jina.ai/chapters/my_first_jina_app/)
+Copy the source code of a hello world to your own directory and start from there:
 
+```console
+$ jina hello fork fashion ../my-proj/ 
+```
 
-### Video Tutorials
+### Read Tutorials
 
-<table>
-  <tr>
-    <td width="33%">
-    <a href="https://youtu.be/zvXkQkqd2I8">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/basic-concept.png?raw=true"/>
-    </a>
-    </td>
-    <td width="33%">
-    <a href="https://youtu.be/qOD-6mihUzQ">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/speedup.png?raw=true"/>
-    </a>
-    </td>
-    <td width="33%">
-    <a href="https://youtu.be/B_nH8GCmBfc">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/multimodal-search.png?raw=true"/>
-    </a>
-    </td>
-  </tr>
-</table>
+- 📄 `Document` & `DocumentArray`: the basic data type in Jina.
+    - [Minimum working example](.github/2.0/cookbooks/Document.md#minimum-working-example)
+    - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
+    - [`DocumentArray` API](.github/2.0/cookbooks/Document.md#documentarray-api)
+- ⚙️ `Executor`: how Jina processes Documents.
+    - [Minimum working example](.github/2.0/cookbooks/Executor.md#minimum-working-example)
+    - [Executor API](.github/2.0/cookbooks/Executor.md#executor-api)
+    - [Executor Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
+    - [Migration from 1.x to 2.0 in Practice](.github/2.0/cookbooks/Executor.md#migration-in-practice)
+- 🔀 `Flow`: how Jina streamlines and distributes Executors.
+    - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
+    - [Flow API](.github/2.0/cookbooks/Flow.md#flow-api)
+- 🧼 [Write clean code in Jina](./.github/2.0/cookbooks/CleanCode.md)  
 
+## Support
 
-### Examples ([View all](https://github.com/jina-ai/examples))
- 
-#### [📄 NLP Semantic Wikipedia Search with Transformers and DistilBERT](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences)
-&nbsp;&nbsp;&nbsp;&nbsp;Brand new to neural search? See a simple text-search example to understand how Jina works 
-
-#### [📄 Add Incremental Indexing to Wikipedia Search](https://github.com/jina-ai/examples/tree/master/wikipedia-sentences-incremental)
-&nbsp;&nbsp;&nbsp;&nbsp;Index more effectively by adding incremental indexing to your Wikipedia search 
-
-#### [📄 Search Lyrics with Transformers and PyTorch](https://github.com/jina-ai/examples/tree/master/multires-lyrics-search)
-&nbsp;&nbsp;&nbsp;&nbsp;Get a better understanding of chunks by searching a lyrics database. Now with shiny front-end! 
-
-#### [🖼️ Google's Big Transfer Model in (Poké-)Production](https://github.com/jina-ai/examples/tree/master/pokedex-with-bit)
-&nbsp;&nbsp;&nbsp;&nbsp;Use SOTA visual representation for searching Pokémon!
-
-#### [🎧 Search YouTube audio data with Vggish](https://github.com/jina-ai/examples/tree/master/audio-search)
-&nbsp;&nbsp;&nbsp;&nbsp;A demo of neural search for audio data based Vggish model. 
-
-#### [🎞️ Search Tumblr GIFs with KerasEncoder](https://github.com/jina-ai/examples/tree/master/tumblr-gif-search)
-&nbsp;&nbsp;&nbsp;&nbsp;Use prefetching and sharding to improve the performance of your index and query Flow when searching animated GIFs.
-
-Check our [examples repo](https://github.com/jina-ai/examples) for advanced and community-submitted examples.
-
-## Documentation & Support
-
-- Docs: https://docs.jina.ai
-- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
+- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
+  support queries.
 - Join our Engineering All Hands meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
-    - **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai)
+    - **Where?**
+      Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics))
+      and [live stream on YouTube](https://youtube.com/c/jina-ai))
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai).
 
+## Join Us
+
+Jina is backed by [Jina AI](https://jina.ai). [We are actively hiring](https://jobs.jina.ai) full-stack developers,
+solution engineers to build the next neural search ecosystem in open source.
 
 ## Contributing
 
-We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
+We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to
+your active involvement.
 
 - [Contributing guidelines](CONTRIBUTING.md)
-- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
+- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina
+  community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
 - [Upcoming features](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about.
-
-
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-147-orange.svg?style=flat-square)](#contributors-)
@@ -251,8 +186,3 @@ We welcome all kinds of contributions from the open-source community, individual
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
-
-## Join Us
-
-Jina is backed by [Jina AI](https://jina.ai). [We are hiring](https://jobs.jina.ai) full-stack developers, evangelists, and PMs to build the next neural search ecosystem in open source.

@@ -1,9 +1,0 @@
-jtype: TransformerTorchEncoder
-requests:
-  use_default: true
-  on:
-    [SearchRequest, IndexRequest]:
-      with:
-        traversal_paths: ['c']
-      drivers:
-        - jtype: EncodeDriver {}

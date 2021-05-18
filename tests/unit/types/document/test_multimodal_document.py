@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from jina import Document
 from jina.excepts import BadDocType
 from jina.types.document.multimodal import MultimodalDocument
@@ -82,8 +83,8 @@ def multimodal_document(chunk_1, chunk_2):
         md.tags['id'] = 1
         md.text = b'hello world'
         md.embedding = np.random.random([10 + np.random.randint(0, 1)])
-        md.chunks.add(chunk_1)  # attach a document with embedding and without content
-        md.chunks.add(chunk_2)  # attach a document with content and without embedding
+        md.chunks.append(chunk_1)  # attach a document with embedding and without content
+        md.chunks.append(chunk_2)  # attach a document with content and without embedding
         yield md
 
 
@@ -122,7 +123,7 @@ def test_multimodal_document_fail_bad_doctype(visual_embedding):
 
 def test_multimodal_document_fail_length_mismatch(multimodal_document, chunk_3):
     # the multimodal document has 3 chunks, while 2 types of modalities.
-    multimodal_document.chunks.add(chunk_3)
+    multimodal_document.chunks.append(chunk_3)
     assert not multimodal_document.is_valid
 
 

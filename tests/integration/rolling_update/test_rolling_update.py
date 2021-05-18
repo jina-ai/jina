@@ -1,13 +1,11 @@
+import collections
 import os
 import threading
-import pytest
 
 import numpy as np
-import collections
+import pytest
 
-from jina import Document
-from jina.executors.encoders import BaseEncoder
-from jina.flow import Flow
+from jina import Document, Flow, Executor, requests
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,21 +25,21 @@ def docs():
     ]
 
 
-class DummyMarkExecutor(BaseEncoder):
-    def get_docs(self, req_type):
-        if req_type == 'ControlRequest':
-            return []
-        driver = self._drivers[req_type][0]
-        return driver.docs
+class DummyMarkExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.metas.name = 'dummy'
 
-    def __call__(self, req_type, *args, **kwargs):
-        if req_type == 'ControlRequest':
-            for d in self._drivers[req_type]:
-                d()
-        else:
-            for doc in self.get_docs(req_type):
-                doc.tags['replica'] = self.replica_id
-                doc.tags['shard'] = self.pea_id
+    @requests
+    def foo(self, docs, *args, **kwargs):
+        for doc in docs:
+            doc.tags['replica'] = self.runtime_args.replica_id
+            doc.tags['shard'] = self.runtime_args.pea_id
+
+    def close(self) -> None:
+        import os
+
+        os.makedirs(self.workspace, exist_ok=True)
 
 
 def test_normal(docs):
@@ -50,12 +48,12 @@ def test_normal(docs):
     doc_id_path = collections.OrderedDict()
 
     def handle_search_result(resp):
-        for doc in resp.search.docs:
+        for doc in resp.data.docs:
             doc_id_path[int(doc.id)] = (doc.tags['replica'], doc.tags['shard'])
 
     flow = Flow().add(
         name='pod1',
-        uses='!DummyMarkExecutor',
+        uses=DummyMarkExecutor,
         replicas=NUM_REPLICAS,
         parallel=NUM_SHARDS,
     )
@@ -130,7 +128,7 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
     error_mock = mocker.Mock()
     with Flow().add(
         name='pod1',
-        uses='!DummyMarkExecutor',
+        uses=DummyMarkExecutor,
         replicas=2,
         parallel=3,
         timeout_ready=5000,
@@ -155,7 +153,8 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
 def test_workspace(config, tmpdir, docs):
     with Flow().add(
         name='pod1',
-        uses=os.path.join(cur_dir, 'yaml/simple_index_vector.yml'),
+        uses=DummyMarkExecutor,
+        workspace=str(tmpdir),
         replicas=2,
         parallel=3,
     ) as flow:
@@ -163,17 +162,15 @@ def test_workspace(config, tmpdir, docs):
         for i in range(10):
             flow.index(docs)
 
-        # validate created workspaces
-        dirs = set(os.listdir(tmpdir))
-        expected_dirs = {
-            'vecidx-0-0',
-            'vecidx-0-1',
-            'vecidx-0-2',
-            'vecidx-1-0',
-            'vecidx-1-1',
-            'vecidx-1-2',
+    # validate created workspaces
+    assert set(os.listdir(str(tmpdir))) == {'dummy'}
+    assert set(os.listdir(os.path.join(tmpdir, 'dummy'))) == {'0', '1'}
+    for replica_id in {'0', '1'}:
+        assert set(os.listdir(os.path.join(tmpdir, 'dummy', replica_id))) == {
+            '0',
+            '1',
+            '2',
         }
-        assert dirs == expected_dirs
 
 
 @pytest.mark.parametrize(

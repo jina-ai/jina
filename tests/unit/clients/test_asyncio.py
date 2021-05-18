@@ -1,11 +1,10 @@
-import pytest
 import asyncio
-
-from jina.clients.request.asyncio import request_generator
-from jina.enums import RequestType
 from math import ceil
 
+import pytest
+
 from jina import Document
+from jina.clients.request.asyncio import request_generator
 
 NUM_INPUT_DOCS = 30
 REQUEST_SIZE = 10
@@ -18,9 +17,9 @@ async def test_asyncio_req_generator():
         for doc in data:
             yield doc
 
-    generator = request_generator(
-        input_function(), request_size=REQUEST_SIZE, mode=RequestType.INDEX
-    )
+    generator = request_generator('/',
+                                  input_function(), request_size=REQUEST_SIZE
+                                  )
     i = 0
     async for req in generator:
         i += 1
@@ -32,4 +31,4 @@ async def test_asyncio_req_generator():
 def test_asyncio_bad_input_generator():
     # exception not handled
     data = ['text' for _ in range(20)]
-    request_generator(data, request_size=10, mode='not_index')
+    request_generator('/', data, request_size=10)

@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 import argparse
 import base64
 import copy
@@ -8,6 +5,7 @@ import os
 import re
 import threading
 import uuid
+import warnings
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
@@ -32,7 +30,7 @@ from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 __all__ = ['BaseFlow']
 
 from ..peapods import Pod
-from ..peapods.pods.compoundpod import CompoundPod
+from ..peapods.pods.compound import CompoundPod
 from ..peapods.pods.factory import PodFactory
 
 
@@ -105,19 +103,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser
         )  #: for yaml dump
-
-    @property
-    def yaml_spec(self):
-        """
-        get the YAML representation of the instance
-
-
-        .. # noqa: DAR401
-
-
-        .. # noqa: DAR201
-        """
-        return JAML.dump(self)
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
@@ -307,6 +292,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             parser = set_gateway_parser()
 
         args = ArgNamespace.kwargs2namespace(kwargs, parser)
+
+        # pod workspace if not set then derive from flow workspace
+        args.workspace = os.path.abspath(args.workspace or self.workspace)
+
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
         op_flow.last_pod = pod_name
 
@@ -364,7 +353,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def gather_inspect(
         self,
         name: str = 'gather_inspect',
-        uses='_merge_eval',
         include_last_pod: bool = True,
         *args,
         **kwargs,
@@ -378,7 +366,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             in general you don't need to manually call :meth:`gather_inspect`.
 
         :param name: the name of the gather Pod
-        :param uses: the config of the executor, by default is ``_pass``
         :param include_last_pod: if to include the last modified Pod in the Flow
         :param args: args for .add()
         :param kwargs: kwargs for .add()
@@ -396,7 +383,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 needs.append(self.last_pod)
             return self.add(
                 name=name,
-                uses=uses,
                 needs=needs,
                 pod_role=PodRoleType.JOIN_INSPECT,
                 *args,
@@ -609,8 +595,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return a._pod_nodes == b._pod_nodes
 
+    @property
     @build_required(FlowBuildLevel.GRAPH)
-    def _get_client(self, **kwargs) -> 'Client':
+    def client(self) -> 'Client':
+        """Return a :class:`Client` object attach to this Flow.
+
+        .. # noqa: DAR201"""
+        kwargs = {}
         kwargs.update(self._common_kwargs)
         if 'port_expose' not in kwargs:
             kwargs['port_expose'] = self.port_expose
@@ -792,27 +783,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
 
-    @build_required(FlowBuildLevel.GRAPH)
-    def to_swarm_yaml(self, path: TextIO):
-        """
-        Generate the docker swarm YAML compose file
-
-        :param path: the output yaml path
-        """
-        swarm_yml = {'version': '3.4', 'services': {}}
-
-        for k, v in self._pod_nodes.items():
-            if v.role == PodRoleType.GATEWAY:
-                cmd = 'jina gateway'
-            else:
-                cmd = 'jina pod'
-            swarm_yml['services'][k] = {
-                'command': f'{cmd} {" ".join(ArgNamespace.kwargs2list(vars(v.args)))}',
-                'deploy': {'parallel': 1},
-            }
-
-        JAML.dump(swarm_yml, path)
-
     @property
     @build_required(FlowBuildLevel.GRAPH)
     def port_expose(self) -> int:
@@ -920,6 +890,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self._cls_client = WebSocketClient
 
     @property
+    def workspace(self) -> str:
+        """Return the workspace path of the flow.
+
+        .. # noqa: DAR201"""
+        return os.path.abspath(self.args.workspace or './')
+
+    @property
     def workspace_id(self) -> Dict[str, str]:
         """Get all Pods' ``workspace_id`` values in a dict
 
@@ -939,9 +916,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         for k, p in self:
             if hasattr(p.args, 'workspace_id'):
                 p.args.workspace_id = value
-                args = getattr(p, 'peas_args', None)
-                if args is None:
-                    args = getattr(p, 'replicas_args', None)
+                args = getattr(p, 'peas_args', getattr(p, 'replicas_args', None))
                 if args is None:
                     raise ValueError(
                         f'could not find "peas_args" or "replicas_args" on {p}'
@@ -990,6 +965,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param dump_path: the path from which to read the dump data
         :param pod_name: pod to update
         """
+        # TODO: By design after the Flow object started, Flow shouldn't have memory access to its sub-objects anymore.
+        #  All controlling should be issued via Network Request, not via memory access.
+        #  In the current master, we have Flow.rolling_update() & Flow.dump() method avoid the above design.
+        #  Avoiding this design make the whole system NOT cloud-native.
+        warnings.warn(
+            'This function is experimental and facing potential refactoring',
+            FutureWarning,
+        )
 
         compound_pod = self._pod_nodes[pod_name]
         if isinstance(compound_pod, CompoundPod):
@@ -998,13 +981,3 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
             )
-
-    def dump(self, pod_name: str, dump_path: str, shards: int, timeout=-1):
-        """Emit a Dump request to a specific Pod
-        :param shards: the nr of shards in the dump
-        :param dump_path: the path to which to dump
-        :param pod_name: the name of the pod
-        :param timeout: time to wait (seconds)
-        """
-        pod: BasePod = self._pod_nodes[pod_name]
-        pod.dump(pod_name, dump_path, shards, timeout)

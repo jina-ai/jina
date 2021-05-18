@@ -2,26 +2,25 @@ import os
 
 import pytest
 
-from jina.executors.segmenters import BaseSegmenter
-from jina.executors.decorators import single
-from jina.flow import Flow
+from jina import Document, requests, Executor, Flow
 from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-class DummySegment(BaseSegmenter):
+class DummySegment(Executor):
     """dummySegment represents a basic segment of two values"""
 
-    @single
-    def segment(self, id, *args, **kwargs):
+    @requests
+    def segment(self, docs, *args, **kwargs):
         """create a dummy segment of two values."""
-        return [dict(buffer=b'aa'), dict(buffer=b'bb')]
+        for d in docs:
+            d.chunks = [Document(buffer=b'aa'), Document(buffer=b'bb')]
 
 
 def validate(req):
     """simple check for validating tests."""
-    chunk_ids = [c.id for d in req.index.docs for c in d.chunks]
+    chunk_ids = [c.id for d in req.docs for c in d.chunks]
     assert len(chunk_ids) == len(set(chunk_ids))
     assert len(chunk_ids) == 20
 

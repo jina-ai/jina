@@ -16,9 +16,11 @@ sleep 10
 
 RESPONSE=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' '0.0.0.0:45678/index')
 
-TEXT_RESPONSE=$(echo $RESPONSE | jq -e ".index.docs[] | .text")
-
 echo "Response is: ${RESPONSE}"
+
+TEXT_RESPONSE=$(echo $RESPONSE | jq -e ".data.docs[] | .text")
+
+echo "Text Response is: ${TEXT_RESPONSE}"
 
 # remove the new pods
 docker ps -a | awk '{ print $1,$2 }' | grep hubpod:test | awk '{print $1 }' | xargs -I {} docker rm -f {}

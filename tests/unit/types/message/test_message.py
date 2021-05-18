@@ -1,14 +1,13 @@
 import sys
-from typing import Sequence
 
 import pytest
 
-from jina import Request, QueryLang, Document
+from jina import Document
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto
 from jina.types.message import Message
-from jina.types.request import _trigger_fields
+from jina.types.request import _trigger_fields, Request
 from tests import random_docs
 
 
@@ -19,7 +18,7 @@ from tests import random_docs
 def test_lazy_access(field):
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -34,7 +33,7 @@ def test_lazy_access(field):
 def test_multiple_access():
     reqs = [
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     ]
     for r in reqs:
         assert not r.is_used
@@ -43,14 +42,14 @@ def test_multiple_access():
 
     for r in reqs:
         assert not r.is_used
-        assert r.index
+        assert r.data
         assert r.is_used
 
 
 def test_lazy_nest_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -58,13 +57,13 @@ def test_lazy_nest_access():
         r.docs[0].id = '1' * 16
         # now it is read
         assert r.is_used
-        assert r.index.docs[0].id == '1' * 16
+        assert r.data.docs[0].id == '1' * 16
 
 
 def test_lazy_change_message_type():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
@@ -72,17 +71,17 @@ def test_lazy_change_message_type():
         r.control.command = jina_pb2.RequestProto.ControlRequestProto.IDLE
         # now it is read
         assert r.is_used
-        assert len(r.index.docs) == 0
+        assert len(r.data.docs) == 0
 
 
 def test_lazy_append_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
-        r.request_type = 'index'
+        r.request_type = 'data'
         # write access r.train
         r.docs.append(Document())
         # now it is read
@@ -92,12 +91,12 @@ def test_lazy_append_access():
 def test_lazy_clear_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.ClearField('index')
+        r.ClearField('data')
         # now it is read
         assert r.is_used
 
@@ -105,12 +104,12 @@ def test_lazy_clear_access():
 def test_lazy_nested_clear_access():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert not r.is_used
         # write access r.train
-        r.index.ClearField('docs')
+        r.data.ClearField('docs')
         # now it is read
         assert r.is_used
 
@@ -123,12 +122,12 @@ def test_lazy_msg_access():
             'test',
             '123',
             request_id='123',
-            request_type='IndexRequest',
+            request_type='DataRequest',
         )
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     ]
     for r in reqs:
-        assert not r.request.is_used
+        r.request.is_used = False
         assert r.envelope
         assert len(r.dump()) == 3
         assert not r.request.is_used
@@ -141,13 +140,15 @@ def test_lazy_msg_access():
 
     for r in reqs:
         assert not r.request.is_used
-        assert r.request.index.docs
+        assert r.request.data.docs
         assert len(r.dump()) == 3
         assert r.request.is_used
 
 
 def test_message_size():
-    reqs = [Message(None, r, 'test', '123') for r in request_generator(random_docs(10))]
+    reqs = [
+        Message(None, r, 'test', '123') for r in request_generator('/', random_docs(10))
+    ]
     for r in reqs:
         assert r.size == 0
         assert sys.getsizeof(r.envelope.SerializeToString())
@@ -161,57 +162,16 @@ def test_message_size():
 def test_lazy_request_fields():
     reqs = (
         Request(r.SerializeToString(), EnvelopeProto())
-        for r in request_generator(random_docs(10))
+        for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
         assert list(r.DESCRIPTOR.fields_by_name.keys())
 
 
-def test_request_extend_queryset():
-    q1 = {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}}
-    q2 = QueryLang(
-        {'name': 'SliceQL', 'parameters': {'start': 3, 'end': 4}, 'priority': 1}
-    )
-    q3 = jina_pb2.QueryLangProto()
-    q3.name = 'SliceQL'
-    q3.parameters['start'] = 3
-    q3.parameters['end'] = 4
-    q3.priority = 2
-    r = Request()
-    r.queryset.extend([q1, q2, q3])
-    assert isinstance(r.queryset, Sequence)
-    assert len(r.queryset) == 3
-    for idx, q in enumerate(r.queryset):
-        assert q.priority == idx
-        assert q.parameters['start'] == 3
-        assert q.parameters['end'] == 4
-
-    # q1 and q2 refer to the same
-    assert len({id(q) for q in r.queryset}) == 2
-
-    r2 = Request()
-    r2.queryset.extend(r.queryset)
-    assert len({id(q) for q in r2.queryset}) == 2
-
-    r = Request()
-    r.queryset.append(q1)
-    r.queryset.append(q2)
-    r.queryset.append(q3)
-    for idx, q in enumerate(r.queryset):
-        assert q.priority == idx
-        assert q.parameters['start'] == 3
-        assert q.parameters['end'] == 4
-
-    with pytest.raises(TypeError):
-        r.queryset.extend(1)
-
-
 @pytest.mark.parametrize(
     'typ,pb_typ',
     [
-        ('train', jina_pb2.RequestProto.TrainRequestProto),
-        ('index', jina_pb2.RequestProto.IndexRequestProto),
-        ('search', jina_pb2.RequestProto.SearchRequestProto),
+        ('data', jina_pb2.RequestProto.DataRequestProto),
         ('control', jina_pb2.RequestProto.ControlRequestProto),
     ],
 )
@@ -229,8 +189,7 @@ def test_empty_request_type(typ, pb_typ):
 @pytest.mark.parametrize(
     'typ,pb_typ',
     [
-        ('index', jina_pb2.RequestProto.IndexRequestProto),
-        ('search', jina_pb2.RequestProto.SearchRequestProto),
+        ('data', jina_pb2.RequestProto.DataRequestProto),
     ],
 )
 def test_add_doc_to_type(typ, pb_typ):

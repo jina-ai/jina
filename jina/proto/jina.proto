@@ -83,10 +83,7 @@ message DocumentProto {
     // the width of the recursive match structure
     uint32 adjacency = 22;
 
-    // the name of the level
-    string level_name = 15;
-
-    // the parent id from the previous level
+    // the parent id from the previous granularity
     string parent_id = 16;
 
     oneof content {
@@ -98,25 +95,25 @@ message DocumentProto {
 
         // a text document
         string text = 13;
+
+        // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
+        string uri = 9;
     }
 
-    // list of the chunks of this document (recursive structure)
+    // list of the sub-documents of this document (recursive structure)
     repeated DocumentProto chunks = 4;
 
-    // the weight of this document
+    // The weight of this document
     float weight = 5;
 
     // total number of siblings of this document (docs that are in the same granularity and have the same parent_id)
     uint32 siblings = 25;
 
-    // the top-k matched Docs on the same level (recursive structure)
+    // the matched documents on the same level (recursive structure)
     repeated DocumentProto matches = 8;
 
     // mime type of this document, for buffer content, this is required; for other contents, this can be guessed
     string mime_type = 10;
-
-    // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
-    string uri = 9;
 
     // a structured data value, consisting of field which map to dynamically typed values.
     google.protobuf.Struct tags = 11;
@@ -124,10 +121,10 @@ message DocumentProto {
     // the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip
     repeated uint32 location = 17;
 
-    // the offset of this doc in the previous level document
+    // the offset of this doc in the previous granularity document
     uint32 offset = 18;
 
-    // the embedding array of this doc
+    // the embedding `ndarray` of this document
     NdArrayProto embedding = 19;
 
     // TODO: List of matching scores performed on the document, each element corresponds to a metric
@@ -168,8 +165,6 @@ message EnvelopeProto {
     // timeout in second until this message is dropped
     uint32 timeout = 4;
 
-    repeated RouteProto routes = 5; // a list of routes this message goes through
-
     /**
      * Represents a the version information
      */
@@ -181,11 +176,9 @@ message EnvelopeProto {
 
     VersionProto version = 6; // version info
 
-    StatusProto status = 7; // status info, when present, it is the first exception that routes carry
+    string request_type = 7; // type of the request: DataRequest, ControlRequest
 
-    string request_type = 9; // type of the request: TrainRequest, IndexRequest, SearchRequest, ControlRequest
-
-    bool check_version = 10; // check local Protobuf version on every Pod that this message flows to
+    bool check_version = 8; // check local Protobuf version on every Pod that this message flows to
 
     /**
      * Represents a config for the compression algorithm
@@ -200,12 +193,37 @@ message EnvelopeProto {
         google.protobuf.Struct parameters = 4; // other parameters that can be accepted by the algorithm
     }
 
-    CompressConfigProto compression = 11; // compress configuration used for request
+
+    CompressConfigProto compression = 9; // compress configuration used for request
+
+    repeated RouteProto routes = 10; // status info on every routes
+
+    StatusProto status = 11; // status info
+
+    HeaderProto header = 12; // header contains meta info defined by the user, copied from Request, for lazy serialization
+
+}
+
+/**
+ * Represents a Header.
+ * - The header's content will be defined by the user request.
+ * - It will be copied to the envelope.header
+ * - In-flow operations will modify the envelope.header
+ * - While returning, copy envelope.header back to request.header
+ */
+message HeaderProto {
+    string exec_endpoint = 1;  // the endpoint specified by `@requests(on='/abc')`
+
+    string target_peapod = 2; // if set, the request is targeted to certain peas/pods, regex strings
+
+    bool no_propagate = 3; // if set, then this request is not propagate over the Flow topology
 
 }
 
 
-
+/**
+ * Represents a Status
+ */
 message StatusProto {
 
     enum StatusCode {
@@ -237,9 +255,6 @@ message StatusProto {
         // the name of the executor bind to that peapod (if applicable)
         string executor = 4;
 
-        // the name of the driver bind to that peapod (if applicable)
-        string driver = 5;
-
 
     }
 
@@ -255,6 +270,10 @@ message MessageProto {
     RequestProto request = 2; // the request body
 }
 
+message DocumentArrayProto {
+    repeated DocumentProto docs = 1; // a list of Documents
+}
+
 /**
  * Represents a Request
  */
@@ -263,62 +282,16 @@ message RequestProto {
     string request_id = 1; // the unique ID of this request. Multiple requests with the same ID will be gathered
 
     oneof body {
-        TrainRequestProto train = 2; // a train request
-        IndexRequestProto index = 3; // an index request
-        SearchRequestProto search = 4; // a search request
-        ControlRequestProto control = 5; // a control request
-        DeleteRequestProto delete = 9; // a delete request
-        UpdateRequestProto update = 10; // an update request
-        DumpRequestProto dump = 11; // an dump request
+        ControlRequestProto control = 2; // a control request
+        DataRequestProto data = 3; // a data request
     }
 
     /**
-     * Represents a train request
+     * Represents a general data request
      */
-    message TrainRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to train
-
-        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
-    }
-
-    /**
-     * Represents an index request
-     */
-    message IndexRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to index
-
-        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
-    }
-
-     /**
-     * Represents an update request
-     */
-    message UpdateRequestProto {
-        repeated DocumentProto docs = 1; // a list of Documents to update
-    }
-
-     /**
-     * Represents a delete request
-     */
-    message DeleteRequestProto {
-        repeated string ids = 1; // a list of Document Ids to delete
-    }
-
-    /**
-     * Represents a search request
-     */
-    message SearchRequestProto {
+    message DataRequestProto {
         repeated DocumentProto docs = 1; // a list of Documents to query
-
-        repeated DocumentProto groundtruths = 2; // the groundtruth document you want to evaluate it with
-    }
-
-   /**
-     * Represents a dump request
-     */
-    message DumpRequestProto {
-        string path = 1; // path for the index
-        int32 shards = 2; // nr of shards in the dump
+        repeated DocumentProto groundtruths = 2; // a list of groundtruth Document you want to evaluate it with
     }
 
     /**
@@ -328,35 +301,24 @@ message RequestProto {
         enum Command {
             TERMINATE = 0; // shutdown the BasePod
             STATUS = 1; // check the status of the BasePod
-            IDLE = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
-            CANCEL = 4; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
-            RELOAD = 5; // triggers a Pod/Pea to (re)load the executor
-            SCALE = 6; // scale up/down a Pod
-            ACTIVATE = 7; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
-            DEACTIVATE = 8; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
-            DUMP = 9; // Dump the data to a path, for Rolling Update
+            IDLE = 2; // used in ROUTER-DEALER pattern, tells the router that the dealer is idle
+            CANCEL = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
+            SCALE = 4; // scale up/down a Pod
+            ACTIVATE = 5; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
+            DEACTIVATE = 6; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
         }
         Command command = 1; // the control command
-
-        google.protobuf.Struct args = 2; // the pea arguments, useful in STATUS
-
-        bool propagate = 3; // if set, then this request is propagate over the Flow topology just like a data request
-
-        repeated string targets = 4; // if set, the control request is targeted to certain peas/pods, regex strings
     }
 
-    StatusProto status = 6; // status info
+    HeaderProto header = 4; // header contains meta info defined by the user
 
-    repeated RouteProto routes = 8; // status info on every routes
+    google.protobuf.Struct parameters = 5; // extra kwargs that will be used in executor
 
-    repeated QueryLangProto queryset = 7; // the query set
-}
+    repeated RouteProto routes = 6; // status info on every routes
 
-message QueryLangProto {
-    string name = 1; // the name of the query lang, map to the corresponding driver
-    google.protobuf.Struct parameters = 2; // the parameter of the query lang
-    bool disabled = 3; // when set, then is query lang is disabled
-    int32 priority = 4; // when query lang is set on both driver and request levels, higher priority query lang is applied, lower priority is dropped
+    StatusProto status = 7; // status info
+
+
 }
 
 

@@ -1,5 +1,0 @@
-!CustomCrafter4
-metas:
-  py_modules:
-    - helper.py
-    - __init__.py

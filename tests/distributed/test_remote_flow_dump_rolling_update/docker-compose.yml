@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   jinad:
-    image: test_index_query
+    image: test_remote_flow_dump_reload
     build:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile

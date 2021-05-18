@@ -2,21 +2,9 @@ jtype: Flow
 version: '1'
 pods:
   - uses:
-    !CustomizedEncoder
-    requests:
-      on:
-        IndexRequest:
-          - !FilterQL
-            with:
-              lookups: { modality__in: [ mode2 ] }
-              traversal_paths: [ 'c' ]
-          - !EncodeDriver
-            with:
-              method: encode
-              traversal_paths: [ 'c' ]
-  - uses: _index
+    !CustomizedEncoder {}
   - uses:
-    !BaseEncoder
+    !BaseExecutor
     metas:
       name: test_indexer
       workspace: ./indexed

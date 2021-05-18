@@ -33,7 +33,7 @@ def test_simple_hub_pods(docker_compose):
         payload={'top_k': 10, 'data': ['text:anything will match the same']},
     )
     print(f'returned: {r}')
-    text_matched = r['search']['docs'][0]['matches'][0]['text']
+    text_matched = r['data']['docs'][0]['matches'][0]['text']
     assert expected_text == text_matched
 
     assert_request(method='get', url=f'http://0.0.0.0:8000/flow/{index_flow_id}')

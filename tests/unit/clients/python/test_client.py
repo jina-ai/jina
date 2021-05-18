@@ -4,14 +4,14 @@ import time
 import pytest
 import requests
 
+from jina import helper, Document
 from jina.clients import Client, WebSocketClient
-from jina.clients.sugary_io import _input_files
 from jina.excepts import BadClientInput
 from jina.flow import Flow
-from jina import helper, Document
 from jina.parsers import set_gateway_parser, set_client_cli_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
+from jina import Executor, DocumentArray, requests as req
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -53,7 +53,7 @@ def test_check_input_fail(inputs):
 
 @pytest.mark.parametrize(
     'port_expose, route, status_code',
-    [(helper.random_port(), '/status', 200), (helper.random_port(), '/api/ass', 405)],
+    [(helper.random_port(), '/status', 200), (helper.random_port(), '/api/ass', 404)],
 )
 def test_gateway_ready(port_expose, route, status_code):
     p = set_gateway_parser().parse_args(
@@ -74,21 +74,27 @@ def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
         )
         assert r.status_code == 200
         resp = r.json()
-        assert 'index' in resp
-        assert len(resp['index']['docs']) == 2
-        assert resp['index']['docs'][0]['uri'] == test_img_1
+        assert 'data' in resp
+        assert len(resp['data']['docs']) == 2
+        assert resp['data']['docs'][0]['uri'] == test_img_1
 
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_mime_type(restful):
-    f = Flow(restful=restful).add(uses='- !URI2Buffer {}')
+    class MyExec(Executor):
+        @req
+        def foo(self, docs: 'DocumentArray', **kwargs):
+            for d in docs:
+                d.convert_uri_to_buffer()
+
+    f = Flow(restful=restful).add(uses=MyExec)
 
     def validate_mime_type(req):
-        for d in req.index.docs:
+        for d in req.data.docs:
             assert d.mime_type == 'text/x-python'
 
     with f:
-        f.index(_input_files('*.py'), validate_mime_type)
+        f.index(Document.from_files('*.py'), validate_mime_type)
 
 
 @pytest.mark.parametrize('func_name', ['index', 'search'])
@@ -98,7 +104,7 @@ def test_client_ndjson(restful, mocker, func_name):
         os.path.join(cur_dir, 'docs.jsonlines')
     ) as fp:
         mock = mocker.Mock()
-        getattr(f, f'{func_name}_ndjson')(fp, on_done=mock)
+        getattr(f, f'{func_name}')(Document.from_ndjson(fp), on_done=mock)
         mock.assert_called_once()
 
 
@@ -109,7 +115,7 @@ def test_client_csv(restful, mocker, func_name):
         os.path.join(cur_dir, 'docs.csv')
     ) as fp:
         mock = mocker.Mock()
-        getattr(f, f'{func_name}_csv')(fp, on_done=mock)
+        getattr(f, f'{func_name}')(Document.from_csv(fp), on_done=mock)
         mock.assert_called_once()
 
 

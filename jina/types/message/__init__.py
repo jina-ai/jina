@@ -67,6 +67,8 @@ class Message:
             if isinstance(self.request, Request):
                 self.request._envelope = self.envelope
 
+            self.envelope.header.CopyFrom(self.request.header)
+
         if self.envelope.check_version:
             self._check_version()
 
@@ -126,9 +128,7 @@ class Message:
 
         :return: boolean which states if data is requested
         """
-        return (
-            self.envelope.request_type != 'ControlRequest' or self.request.propagate
-        ) and self.envelope.request_type != 'DumpRequest'
+        return self.envelope.request_type == 'DataRequest'
 
     def _add_envelope(
         self,

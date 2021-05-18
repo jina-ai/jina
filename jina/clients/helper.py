@@ -1,16 +1,14 @@
 """Helper functions for clients in Jina."""
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 
 from functools import wraps
 from typing import Callable
 
-from .. import Response
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..proto import jina_pb2
+from ..types.request import Response
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
@@ -18,7 +16,6 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
 
     :param resp: the :class:`Response` object
     :param stack_limit: traceback limit
-    :return:
     """
     from textwrap import fill
 
