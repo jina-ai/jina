@@ -110,12 +110,12 @@ $ jina hello fork fashion ../my-proj/
     - [`DocumentArray` API](.github/2.0/cookbooks/Document.md#documentarray-api)
 - ⚙️ `Executor`: how Jina processes Documents.
     - [Minimum working example](.github/2.0/cookbooks/Executor.md#minimum-working-example)
-    - [Executor API](.github/2.0/cookbooks/Executor.md#executor-api)
-    - [Executor Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
+    - [`Executor` API](.github/2.0/cookbooks/Executor.md#executor-api)
+    - [`Executor` Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
     - [Migration from 1.x to 2.0 in Practice](.github/2.0/cookbooks/Executor.md#migration-in-practice)
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
     - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
-    - [Flow API](.github/2.0/cookbooks/Flow.md#flow-api)
+    - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
 - 🧼 [Write clean code in Jina](./.github/2.0/cookbooks/CleanCode.md)  
 
 ## Support

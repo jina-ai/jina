@@ -394,9 +394,7 @@ Also note that, for any other parametrization of the Executor, you can still acc
 
 ## Migration in Practice
 
-### `jina hello fashion`
-
-#### Encoder
+### Encoder in `jina hello fashion`
 
 Left is 1.x, right is 2.0.
 
