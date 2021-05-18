@@ -8,10 +8,10 @@ import torch
 from google.protobuf.json_format import MessageToDict
 from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
 
-from jina import Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
 from jina.types.ndarray.generic import NdArray
+from jina.types.request import Request
 from jina.types.score import NamedScore
 from tests import random_docs
 

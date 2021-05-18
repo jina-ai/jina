@@ -1,14 +1,14 @@
 name: Release CD
 
-#on:
-#  push:
-#    tags:
-#      - "v*"  # push to version tags trigger the build
-
 on:
   push:
-    branches-ignore:
-      - '**'  # temporally disable this action
+    tags:
+      - "v*"  # push to version tags trigger the build
+
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally disable this action
 
 jobs:
   update-schema:

@@ -1,8 +1,8 @@
 import pytest
 
-from jina import Request
 from jina.types.arrays.chunk import ChunkArray
 from jina.types.document import Document
+from jina.types.request import Request
 
 
 @pytest.fixture(scope='function')

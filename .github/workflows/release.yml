@@ -27,7 +27,7 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           npm install git-release-notes
           pip install twine wheel
-          ./scripts/release.sh final "Sunday night weekly patch release" "${{github.actor}}"
+          ./scripts/release.sh rc "Sunday night weekly patch release" "${{github.actor}}"
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}

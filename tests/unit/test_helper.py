@@ -7,7 +7,6 @@ import pytest
 
 from cli import _is_latest_version
 from jina import Executor, __default_endpoint__
-from jina import Request
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
 from jina.executors.decorators import requests
@@ -26,6 +25,7 @@ from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray
+from jina.types.request import Request
 from tests import random_docs
 
 

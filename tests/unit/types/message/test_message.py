@@ -2,12 +2,12 @@ import sys
 
 import pytest
 
-from jina import Request, Document
+from jina import Document
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2
 from jina.proto.jina_pb2 import EnvelopeProto
 from jina.types.message import Message
-from jina.types.request import _trigger_fields
+from jina.types.request import _trigger_fields, Request
 from tests import random_docs
 
 

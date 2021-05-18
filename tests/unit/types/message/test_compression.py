@@ -1,9 +1,9 @@
 import pytest
 
-from jina import Message
 from jina.clients.request import request_generator
 from jina.enums import CompressAlgo
 from jina.logging.profile import TimeContext
+from jina.types.message import Message
 from tests import random_docs
 
 
