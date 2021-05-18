@@ -89,7 +89,7 @@ jobs:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
-       Tell docs repo jina is going to release
+#       Tell docs repo jina is going to release
       - name: send-repository-dispatch-event-to-docs
         uses: peter-evans/repository-dispatch@v1
         with:
