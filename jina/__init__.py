@@ -86,6 +86,7 @@ _names_with_underscore = [
     '__uptime__',
     '__root_dir__',
     '__default_endpoint__',
+    '__default_executor__',
     '__num_args_executor_func__',
 ]
 
@@ -96,10 +97,10 @@ JINA_GLOBAL.scipy_installed = None
 JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 
-import jina.importer as _ji
-
-_ji.import_classes('jina.executors', show_import_table=False, import_once=True)
-
+# import jina.importer as _ji
+#
+# _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
+#
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 
 
@@ -155,7 +156,7 @@ _set_nofile()
 
 # Document
 from jina.types.document import Document
-from jina.types.arrays import DocumentArray
+from jina.types.arrays.document import DocumentArray
 
 # Executor
 from jina.executors import BaseExecutor as Executor
@@ -167,4 +168,4 @@ from jina.flow.asyncio import AsyncFlow
 
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
-__all__.extend([_s for _s in _names_with_underscore])
+__all__.extend(_names_with_underscore)
