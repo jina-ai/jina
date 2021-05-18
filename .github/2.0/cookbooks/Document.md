@@ -66,7 +66,7 @@ A `Document` object has the following attributes, which can be put into the foll
 | | | 
 |---|---|
 | Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
-| Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality` |
+| Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality`, `siblings` |
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
