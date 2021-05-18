@@ -1,10 +1,11 @@
 import numpy as np
 import pytest
 
-from jina import Document, Request
+from jina import Document
 from jina.types.arrays.chunk import ChunkArray
 from jina.types.arrays.match import MatchArray
 from jina.types.ndarray.generic import NdArray
+from jina.types.request import Request
 from jina.types.score import NamedScore
 
 
