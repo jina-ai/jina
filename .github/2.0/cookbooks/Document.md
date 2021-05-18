@@ -114,7 +114,7 @@ In Jupyter notebook or use `.plot()`, you can get the visualization of a `Docume
 ![](../doc.content.svg?raw=true)
 
 Note that one `Document` can only contain one type of `content`: it is one of `text`, `buffer`, `blob`, `uri`.
-Setting `text` first and then set `uri` will clear the `text field.
+Setting `text` first and then set `uri` will clear the `text` field.
 
 ```python
 d = Document(text='hello world')
