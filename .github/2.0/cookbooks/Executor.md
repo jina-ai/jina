@@ -36,8 +36,7 @@ Table of Contents
   - [Metas](#metas)
   - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
-  - [`jina hello fashion`](#jina-hello-fashion)
-    - [Encoder](#encoder)
+  - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
 - [Remarks](#remarks)
   - [Joining/Merging](#joiningmerging)
 
