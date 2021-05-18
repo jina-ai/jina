@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
+<img src=".github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
 </p>
 
 <p align="center">
@@ -8,7 +8,7 @@
 
 
 <p align=center>
-<a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8 3.9" title="Jina supports Python 3.7 and above"></a>
+<a href="https://pypi.org/project/jina/"><img src=".github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8 3.9" title="Jina supports Python 3.7 and above"></a>
 <a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://pepy.tech/project/jina"><img src="https://pepy.tech/badge/jina/month"></a>
@@ -23,17 +23,17 @@
   <tr>
     <td width="30%">
       <a href="./.github/pages/hello-world.md#-fashion-image-search">
-        <img src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" />
+        <img src=".github/images/hello-world.gif?raw=true" />
       </a>
     </td>
     <td width="30%">
 <a href="./.github/pages/hello-world.md#-covid-19-chatbot">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
+<img src=".github/images/helloworld-chatbot.gif?raw=true" />
 </a>
     </td>
     <td width="30%">
 <a href="https://youtu.be/B_nH8GCmBfc">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-multimodal.gif?raw=true" />
+<img src=".github/images/helloworld-multimodal.gif?raw=true" />
 </a>
     </td>
   </tr>
@@ -88,7 +88,7 @@ docker run jinaai/jina:latest
 | <sub>With Extras</sub> | <sub>`pip install -U "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 | <sub>Dev/Pre-Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
 
-Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). To install Jina with extra dependencies [please refer to the docs](https://docs.jina.ai/chapters/install/os/via-pip/#cherry-pick-extra-dependencies). Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
+Version identifiers [are explained here](RELEASE.md). To install Jina with extra dependencies [please refer to the docs](https://docs.jina.ai/chapters/install/os/via-pip/#cherry-pick-extra-dependencies). Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 </details>
 
@@ -100,7 +100,7 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 <table>
   <tr>
     <td>
-<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/pycharm-schema.gif?raw=true" /></a>
+<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src=".github/images/pycharm-schema.gif?raw=true" /></a>
     </td>
     <td>
 
@@ -114,7 +114,7 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
 </tr>
 <tr>
     <td>
-<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/vscode-schema.gif?raw=true" /></a>
+<a href="https://www.youtube.com/watch?v=qOD-6mihUzQ&ab_channel=JinaAI"><img src=".github/images/vscode-schema.gif?raw=true" /></a>
     </td>
     <td>
 
@@ -161,17 +161,17 @@ Developing Jina app often means writing YAML configs. We provide a [JSON Schema]
   <tr>
     <td width="33%">
     <a href="https://youtu.be/zvXkQkqd2I8">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/basic-concept.png?raw=true"/>
+      <img src=".github/images/basic-concept.png?raw=true"/>
     </a>
     </td>
     <td width="33%">
     <a href="https://youtu.be/qOD-6mihUzQ">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/speedup.png?raw=true"/>
+      <img src=".github/images/speedup.png?raw=true"/>
     </a>
     </td>
     <td width="33%">
     <a href="https://youtu.be/B_nH8GCmBfc">
-      <img src="https://github.com/jina-ai/jina/blob/master/.github/images/multimodal-search.png?raw=true"/>
+      <img src=".github/images/multimodal-search.png?raw=true"/>
     </a>
     </td>
   </tr>
@@ -215,7 +215,7 @@ Check our [examples repo](https://github.com/jina-ai/examples) for advanced and 
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
 
 - [Contributing guidelines](CONTRIBUTING.md)
-- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
+- [Code of conduct](.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
 - [Upcoming features](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about.
