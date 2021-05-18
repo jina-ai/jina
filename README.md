@@ -52,17 +52,20 @@
 
 </details>
 
-Jina is geared towards building search systems for any kind of data, including text, image, audio, video, PDF etc. Powered by deep learning and cloud-native techniques, you can leverage Jina to build a multimedia search system in minutes.
+Jina is geared towards building search systems for any kind of data, including text, image, audio, video, PDF etc.
+Powered by deep learning and cloud-native techniques, you can leverage Jina to build a multimedia search system in
+minutes.
 
-
-🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music, source code, etc.
+🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music,
+source code, etc.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
-🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with fragmented, multi-vendor, generic legacy tools.
+🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with
+fragmented, multi-vendor, generic legacy tools.
 
-🌩️ **Fast & cloud-ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
-
+🌩️ **Fast & cloud-ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy
+containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ## Installation
 
@@ -89,7 +92,9 @@ $ docker run jinaai/jina:master -v
 | <sub>With Extras</sub> | <sub>`pip install -U "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 | <sub>Dev/Pre-Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
 
-Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
+Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
+on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
+to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 </details>
 
@@ -109,15 +114,15 @@ from jina import Document, Executor, Flow, requests
 
 class MyExecutor(Executor):
 
-  @requests
-  def foo(self, docs, **kwargs):
-    print(docs[0])
+    @requests
+    def foo(self, docs, parameters, **kwargs):
+        print(f'{parameters["p1"]} - {docs[0]}')
 
 
 f = Flow().add(uses=MyExecutor)
 
 with f:
-  f.post(on='/random_work', inputs=Document(), on_done=print)
+    f.post(on='/bar', inputs=Document(), parameters={'p1': 'hello'}, on_done=print)
 ```
 
 ### Run Quick Demo
@@ -126,10 +131,9 @@ with f:
 - [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
 - [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 
-
 ### Fork Demo & Build Your Own
 
-Fork one of the hello world demos to your own directory and start from there:
+Copy the source code of a hello world to your own directory and start from there:
 
 ```console
 $ jina hello fork fashion ../my-proj/ 
@@ -137,27 +141,30 @@ $ jina hello fork fashion ../my-proj/
 
 ### Read Tutorials
 
-
-
 ## Support
 
-- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
+- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
+  support queries.
 - Join our Engineering All Hands meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
-    - **Where?** Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics)) and [live stream on YouTube](https://youtube.com/c/jina-ai))
+    - **Where?**
+      Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics))
+      and [live stream on YouTube](https://youtube.com/c/jina-ai))
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai).
-
 
 ## Join Us
 
-Jina is backed by [Jina AI](https://jina.ai). [We are actively hiring](https://jobs.jina.ai) full-stack developers, solution engineers to build the next neural search ecosystem in open source.
+Jina is backed by [Jina AI](https://jina.ai). [We are actively hiring](https://jobs.jina.ai) full-stack developers,
+solution engineers to build the next neural search ecosystem in open source.
 
 ## Contributing
 
-We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
+We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to
+your active involvement.
 
 - [Contributing guidelines](CONTRIBUTING.md)
-- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina community
+- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina
+  community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
 - [Upcoming features](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about.

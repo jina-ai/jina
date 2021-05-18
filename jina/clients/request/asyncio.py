@@ -4,10 +4,10 @@ from typing import AsyncIterator, Optional, Dict
 
 from .helper import _new_data_request_from_batch, _new_data_request
 from .. import GeneratorSourceType
-from ... import Request
 from ...enums import DataInputType
 from ...importer import ImportExtensions
 from ...logging import default_logger
+from ...types.request import Request
 
 
 async def request_generator(

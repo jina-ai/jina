@@ -208,15 +208,6 @@ class SocketType(BetterEnum):
         }[self]
 
 
-class FlowOutputType(BetterEnum):
-    """The enum for representing flow output config."""
-
-    SHELL_PROC = 0  #: a shell-script, run each microservice as a process
-    SHELL_DOCKER = 1  #: a shell-script, run each microservice as a container
-    DOCKER_SWARM = 2  #: a docker-swarm YAML config
-    K8S = 3  #: a Kubernetes YAML config
-
-
 class FlowBuildLevel(BetterEnum):
     """
     The enum for representing a flow's build level.

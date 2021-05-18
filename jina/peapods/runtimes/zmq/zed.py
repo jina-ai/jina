@@ -8,8 +8,7 @@ from google.protobuf.json_format import MessageToDict
 
 from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
-from .... import Message, __default_endpoint__
-from .... import Request
+from .... import __default_endpoint__
 from ....enums import OnErrorStrategy
 from ....excepts import (
     NoExplicitMessage,
@@ -25,6 +24,8 @@ from ....helper import random_identity, typename
 from ....logging.profile import used_memory
 from ....proto import jina_pb2
 from ....types.arrays.document import DocumentArray
+from ....types.message import Message
+from ....types.request import Request
 
 
 class ZEDRuntime(ZMQRuntime):

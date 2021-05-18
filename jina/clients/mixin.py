@@ -2,8 +2,8 @@ from functools import partialmethod
 from typing import Optional, Dict, List, AsyncGenerator
 
 from .base import CallbackFnType, InputType
-from .. import Response
 from ..helper import run_async
+from ..types.request import Response
 
 
 class PostMixin:

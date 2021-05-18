@@ -8,7 +8,6 @@ from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
-from .....enums import RequestType
 from .....helper import get_full_version, random_identity
 from .....importer import ImportExtensions
 from .....logging import JinaLogger, default_logger
@@ -39,7 +38,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             JinaDeleteRequestModel,
             JinaUpdateRequestModel,
             JinaSearchRequestModel,
-            JinaReloadRequestModel,
             JinaRequestModel,
         )
 

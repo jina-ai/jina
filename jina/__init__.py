@@ -32,7 +32,7 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-# TODO: remove 'rc' on final release
+# TODO: remove 'rcN' on final release
 __version__ = '2.0.0rc1'
 
 # do not change this line manually
@@ -47,9 +47,6 @@ __uptime__ = _datetime.datetime.now().isoformat()
 # 3. copy all lines EXCEPT the first (which is the grep command in the last line)
 __jina_env__ = (
     'JINA_ARRAY_QUANT',
-    'JINA_BINARY_DELIMITER',
-    'JINA_CONTRIB_MODULE',
-    'JINA_CONTRIB_MODULE_IS_LOADING',
     'JINA_CONTROL_PORT',
     'JINA_DEFAULT_HOST',
     'JINA_DISABLE_UVLOOP',
@@ -61,15 +58,14 @@ __jina_env__ = (
     'JINA_LOG_LEVEL',
     'JINA_LOG_NO_COLOR',
     'JINA_LOG_WORKSPACE',
+    'JINA_OPTIMIZER_TRIAL_WORKSPACE',
     'JINA_POD_NAME',
-    'JINA_RAISE_ERROR_EARLY',
     'JINA_RANDOM_PORTS',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_SOCKET_HWM',
     'JINA_VCS_VERSION',
     'JINA_WARN_UNNAMED',
-    'JINA_WORKSPACE',
 )
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
@@ -93,11 +89,6 @@ _names_with_underscore = [
     '__num_args_executor_func__',
 ]
 
-# Primitive data type,
-from jina.types.request import Request, Response
-from jina.types.message import Message
-from jina.types.document import Document
-from jina.types.arrays import DocumentArray
 
 # ADD GLOBAL NAMESPACE VARIABLES
 JINA_GLOBAL = _types.SimpleNamespace()
@@ -108,8 +99,6 @@ JINA_GLOBAL.torch_installed = None
 import jina.importer as _ji
 
 _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
-## temporally disable the hub loading in 2.0rc
-# _ji.import_classes('jina.hub', show_import_table=False, import_once=True)
 
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 
@@ -162,13 +151,20 @@ def _set_nofile(nofile_atleast=4096):
 
 _set_nofile()
 
-# Flow
-from jina.flow import Flow
-from jina.flow.asyncio import AsyncFlow
+# ONLY FIRST CLASS CITIZENS ARE ALLOWED HERE, namely Document, Executor Flow
+
+# Document
+from jina.types.document import Document
+from jina.types.arrays import DocumentArray
 
 # Executor
 from jina.executors import BaseExecutor as Executor
 from jina.executors.decorators import requests
+
+# Flow
+from jina.flow import Flow
+from jina.flow.asyncio import AsyncFlow
+
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend([_s for _s in _names_with_underscore])

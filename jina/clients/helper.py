@@ -3,12 +3,12 @@
 from functools import wraps
 from typing import Callable
 
-from .. import Response
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions
 from ..logging import JinaLogger
 from ..proto import jina_pb2
+from ..types.request import Response
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
