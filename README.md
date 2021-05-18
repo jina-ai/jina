@@ -15,12 +15,10 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
-Jina is geared towards building search systems for any kind of data, including text, image, audio, video, PDF etc.
-Powered by deep learning and cloud-native techniques, you can leverage Jina to build a multimedia search system in
-minutes.
+Powered by deep learning and cloud-native techniques, Jina is geared towards building search systems for any kind of data in just minutes.
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music,
-source code, etc.
+source code, PDF, etc.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
@@ -31,6 +29,8 @@ fragmented, multi-vendor, generic legacy tools.
 containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ## Installation
+
+2.0 is still in pre-release, make sure to **add `--pre`**.
 
 ```console
 $ pip install --pre jina
@@ -65,9 +65,9 @@ to help us with [native Windows support](https://github.com/jina-ai/jina/issues/
 
 Document, Executor, Flow are three fundamental concepts in Jina.
 
-- 📄 **Document** is the basic data type in Jina;
-- ⚙️ **Executor** is how Jina processes Documents;
-- 🔀 **Flow** is how Jina streamlines and distributes Executors.
+- [📄 **Document**](.github/2.0/cookbooks/Document.md) is the basic data type in Jina;
+- [⚙️ **Executor**](.github/2.0/cookbooks/Executor.md) is how Jina processes Documents;
+- [🔀 **Flow**](.github/2.0/cookbooks/Flow.md) is how Jina streamlines and distributes Executors.
 
 Copy-paste the minimum example below and run it:
 
@@ -90,20 +90,9 @@ with f:
 
 ### Run Quick Demo
 
-- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search)
-  ```console
-  $ jina hello fashion
-  ```
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot)
-  ```console
-  $ pip install "jina[chatbot]"
-  $ jina hello chatbot
-  ```
-- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search)
-  ```console
-  $ pip install "jina[multimodal]"
-  $ jina hello multimodal
-  ```
+- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 
 #### Fork Demo & Build Your Own
 
