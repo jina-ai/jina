@@ -31,19 +31,15 @@ class DummyCSRSparseIndexEncoder(Executor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.docs = []
+        self.docs = DocumentArray()
         self.vectors = {}
 
     @requests(on='index')
     def encode(self, docs: 'DocumentArray', *args, **kwargs) -> Any:
-        for doc in docs:
-            doc.embedding = sparse.csr_matrix(doc.content)
-
-    @requests(on='index')
-    def add(self, docs: 'DocumentArray', *args, **kwargs) -> None:
         self.docs.extend(docs)
-        for i, doc in enumerate(docs):
-            self.vectors[doc.id] = doc.embedding.getrow(i)  # vectors.getrow(i)
+        for i, doc in enumerate(self.docs):
+            doc.embedding = sparse.csr_matrix(doc.content)
+            self.vectors[doc.id] = doc.embedding.getrow(i)
 
     @requests(on='search')
     def query(self, parameters, *args, **kwargs):
@@ -52,57 +48,21 @@ class DummyCSRSparseIndexEncoder(Executor):
         distances = [item for item in range(0, min(top_k, len(self.docs)))]
         return [self.docs[:top_k]], np.array([distances])
 
-    '''
-    def query_by_key(self, keys: Iterable[str], *args, **kwargs):
-        from scipy.sparse import vstack
-
-        vectors = []
-        for key in keys:
-            vectors.append(self.vectors[key])
-
-        return vstack(vectors)
-    '''
-
-    def save(self):
-        # avoid creating dump, do not polute workspace
-        pass
-
-    def close(self):
-        # avoid creating dump, do not polute workspace
-        pass
-
-    def get_create_handler(self):
-        pass
-
-    def get_write_handler(self):
-        pass
-
-    def get_add_handler(self):
-        pass
-
-    def get_query_handler(self):
-        pass
-
 
 def test_sparse_pipeline(mocker, docs_to_index):
     def validate(response):
-        assert len(response.docs) == 1
-        assert len(response.docs[0].matches) == 10
+        assert len(response.docs) == 10
         for doc in response.docs:
             for i, match in enumerate(doc.matches):
                 assert match.id == docs_to_index[i].id
                 assert isinstance(match.embedding, sparse.coo_matrix)
 
-    f = (
-        Flow().add(uses=DummyCSRSparseIndexEncoder)
-        # .add(uses=os.path.join(cur_dir, 'indexer.yml'))
-    )
+    f = Flow().add(uses=DummyCSRSparseIndexEncoder)
 
     mock = mocker.Mock()
     error_mock = mocker.Mock()
 
     with f:
-        f.post(on='index', inputs=docs_to_index)
         f.post(
             on='search',
             inputs=docs_to_index[0],
