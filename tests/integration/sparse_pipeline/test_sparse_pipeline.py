@@ -64,6 +64,11 @@ def test_sparse_pipeline(mocker, docs_to_index):
 
     with f:
         f.post(
+            on='index',
+            inputs=docs_to_index,
+            on_done=mock,
+        )
+        f.post(
             on='search',
             inputs=docs_to_index[0],
             parameters={'doc': docs_to_index[0], 'top_k': 1},
