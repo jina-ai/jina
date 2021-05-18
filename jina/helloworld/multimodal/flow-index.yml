@@ -2,54 +2,35 @@ jtype: Flow
 version: '1'
 with:
   workspace: $HW_WORKDIR
-pods:
+  py_modules:
+    - executors.py
+executors:
   - name: segment
     uses:
       jtype: Segmenter
-      metas:
-        py_modules:
-          - executors.py
   - name: encodeText
     uses:
       jtype: TextEncoder
-      metas:
-        py_modules:
-          - executors.py
   - name: textChunkIndexer
     uses:
       jtype: DocVectorIndexer
       with:
         index_file_name: "text.json"
-      metas:
-        py_modules:
-          - executors.py
   - name: craftImage
     uses:
       jtype: ImageCrafter
-      metas:
-        py_modules:
-          - executors.py
     needs: segment
   - name: encodeImage
     uses:
       jtype: ImageEncoder
-      metas:
-        py_modules:
-          - executors.py
   - name: imageChunkIndexer
     uses:
       jtype: DocVectorIndexer
       with:
         index_file_name: "image.json"
-      metas:
-        py_modules:
-          - executors.py
   - name: keyValueIndexer
     uses:
       jtype: KeyValueIndexer
-      metas:
-        py_modules:
-          - executors.py
     needs: segment
   - name: joinAll
     needs: [ textChunkIndexer, imageChunkIndexer, keyValueIndexer ]

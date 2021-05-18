@@ -163,6 +163,10 @@ class PathImporter:
         :param paths: Paths of the modules.
         :return: The target module.
         """
+        from .jaml.helper import complete_path
+
+        paths = [complete_path(m) for m in paths]
+
         for p in paths:
             if not os.path.exists(p):
                 raise FileNotFoundError(

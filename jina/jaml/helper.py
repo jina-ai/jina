@@ -254,5 +254,4 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[Tuple[str]] = None) ->
 
     _finditem(d)
     if mod:
-        mod = [complete_path(m, extra_search_paths) for m in mod]
         PathImporter.add_modules(*mod)
