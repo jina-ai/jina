@@ -274,7 +274,7 @@ def foo_using_no_arg(**kwargs):
 
 ### Method Returns
 
-Method decorated with `@request` can return `Optional[DocumentSet]`. If not `None`, then the current `Request.docs` will
+Method decorated with `@request` can return `Optional[DocumentArray]`. If not `None`, then the current `Request.docs` will
 be overridden by the return value.
 
 If return is just a shallow copy of `Request.docs`, then nothing happens.
