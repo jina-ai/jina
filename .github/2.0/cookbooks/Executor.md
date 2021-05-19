@@ -1,4 +1,4 @@
-Document, Executor, Flow are three fundamental concepts in Jina.
+Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 - [**Document**](Document.md) is the basic data type in Jina;
 - [**Executor**](Executor.md) is how Jina processes Documents;
@@ -120,8 +120,8 @@ with f:
 
 ## Executor API
 
-- All `executor` come from `Executor` class directly.
-- An `executor` class can contain arbitrary number of functions with arbitrary names. It is a bag of functions with
+- All `executor`s come directly from the `Executor` class.
+- An `executor` class can contain an arbitrary number of functions with arbitrary names. It is a bag of functions with
   shared state (via `self`).
 - Functions decorated by `@requests` will be invoked according to their `on=` endpoint.
 
@@ -129,14 +129,14 @@ with f:
 
 Every new executor should be inherited directly from `jina.Executor`.
 
-The 1.x inheritance tree is removed,  `Executor` does not have polymorphism anymore.
+The 1.x inheritance tree is removed. `Executor` no longer has polymorphism.
 
 You can name your executor class freely.
 
 ### `__init__` Constructor
 
 If your executor defines `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
-in the body, e.g.
+in the body:
 
 ```python
 from jina import Executor
@@ -150,19 +150,19 @@ class MyExecutor(Executor):
         self.foo = foo
 ```
 
-Here, `kwargs` contains `metas` and `requests` (representing the request-to-function mapping) values from YAML config,
+Here, `kwargs` contains `metas` and `requests` (representing the request-to-function mapping) values from the YAML config
 and `runtime_args` injected on startup. Note that you can access their values in `__init__` body via `self.metas`
 /`self.requests`/`self.runtime_args`, or modifying their values before sending to `super().__init__()`.
 
 ### Method naming
 
-`Executor`'s method can be named freely. Methods are not decorated with `@requests` are irrelevant to Jina.
+`Executor`'s methods can be named freely. Methods that are not decorated with `@requests` are irrelevant to Jina.
 
 ### `@requests` decorator
 
 `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
 
-To call an Executor's function, uses `Flow.post(on=..., ...)`. For example, given
+To call an Executor's function, uses `Flow.post(on=..., ...)`. For example, given:
 
 ```python
 from jina import Executor, Flow, Document, requests
@@ -191,11 +191,11 @@ Then:
 
 - `f.post(on='/index', ...)` will trigger `MyExecutor.foo`;
 - `f.post(on='/random_work', ...)` will trigger `MyExecutor.bar`;
-- `f.post(on='/blah', ...)` will not trigger any function, as no function bind with `/blah`;
+- `f.post(on='/blah', ...)` will not trigger any function, as no function is bound to `/blah`;
 
 #### Default binding: `@requests` without `on=`
 
-A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints. That means, it
+A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints. That means it
 is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`
 
 ```python
@@ -213,9 +213,9 @@ class MyExecutor(Executor):
         print(kwargs)
 ```
 
-#### Multiple binding: `@requests(on=[...])`
+#### Multiple bindings: `@requests(on=[...])`
 
-To bind a method with multiple endpoints, one can use `@requests(on=['/foo', '/bar'])`. This allows
+To bind a method with multiple endpoints, you can use `@requests(on=['/foo', '/bar'])`. This allows
 either `f.post(on='/foo', ...)` or `f.post(on='/bar', ...)` to invoke that function.
 
 #### No binding
@@ -250,9 +250,9 @@ The Executor's method receive the following arguments in order:
 
 Note, executor's methods not decorated with `@request` do not enjoy these arguments.
 
-The arguments order is designed as common-usage-first. Not based on alphabetical order or semantic closeness.
+The arguments order is designed as common-usage-first. Not alphabetical order or semantic closeness.
 
-If you don't need some arguments, you can suppress it into `**kwargs`. For example:
+If you don't need some arguments, you can suppress them into `**kwargs`. For example:
 
 ```python
 @requests
@@ -274,14 +274,14 @@ def foo_using_no_arg(**kwargs):
 
 ### Method Returns
 
-Method decorated with `@request` can return `Optional[DocumentArray]`. If not `None`, then the current `Request.docs` will
+Methods decorated with `@request` can return `Optional[DocumentArray]`. If not `None`, then the current `Request.docs` will
 be overridden by the return value.
 
-If return is just a shallow copy of `Request.docs`, then nothing happens.
+If the return is just a shallow copy of `Request.docs`, then nothing happens.
 
 ### YAML Interface
 
-Executor can be load from and stored to a YAML file. The YAML file has the following format:
+An Executor can be loaded from and stored to a YAML file. The YAML file has the following format:
 
 ```yaml
 jtype: MyExecutor
@@ -295,18 +295,17 @@ requests:
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
 - `with` is a map. Defines kwargs of the class `__init__` method
-- `metas` is a map. Defines the meta information of that class, comparing to `1.x` it is reduced to the following
+- `metas` is a map. Defines the meta information of that class. Compared to `1.x` it is reduced to the following
   fields:
     - `name` is a string. Defines the name of the executor;
-    - `description` is a string. Defines the description of this executor. It will be used in automatics docs UI;
-    - `workspace` is a string. Defines the workspace of the executor
-    - `py_modules` is a list of string. Defines the python dependencies of the executor.
-- `requests` is a map. Defines the mapping from endpoint to class method name.
+    - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
+    - `workspace` is a string. Defines the workspace of the executor;
+    - `py_modules` is a list of strings. Defines the Python dependencies of the executor;
+- `requests` is a map. Defines the mapping from endpoint to class method name;
 
 ### Load and Save Executor's YAML config
 
-You can use class method `Executor.load_config` and object method `exec.save_config` to load & save YAML config as
-follows:
+You can use class method `Executor.load_config` and object method `exec.save_config` to load and save YAML config:
 
 ```python
 from jina import Executor
@@ -340,20 +339,20 @@ Executor.load_config('y.yml')
 
 ## Executor Built-in Features
 
-In 2.0 Executor class has few built-in features than in 1.x. The design principles are (`user` here means "Executor
+In Jina 2.0 the Executor class has fewer built-in features compared to 1.x. The design principles are (`user` here means "Executor
 developer"):
 
-- **Do not surprise user**: keep `Executor` class as Pythonic as possible, it should be as light and less intrusive as
+- **Do not surprise the user**: keep `Executor` class as Pythonic as possible. It should be as light and unintrusive as
   a `mixin` class:
     - do not customize the class constructor logic;
-    - do not change its builtin interface `__getstate__`, `__setstate__`;
-    - do not add new members to the `Executor` object unless we must.
-- **Do not overpromise to user**: do not promise features that we can hardly deliver. Trying to control the interface
-  while delivering just loosely implemented features is bad for scaling the core framework. For example, `save`, `load`
+    - do not change its built-in interfaces `__getstate__`, `__setstate__`;
+    - do not add new members to the `Executor` object unless needed.
+- **Do not overpromise to the user**: do not promise features that we can hardly deliver. Trying to control the interface
+  while delivering just loosely-implemented features is bad for scaling the core framework. For example, `save`, `load`
   , `on_gpu`, etc.
 
-We want to give back the programming freedom to user. If a user is a good Python programmer, he/she should pick
-up `Executor` in no time - not spending extra time on learning the implicit boilerplate as in 1.x. Plus,
+We want to give programming freedom back to the user. If a user is a good Python programmer, they should pick
+up `Executor` in no time - not spend extra time learning the implicit boilerplate as in 1.x. Plus,
 subclassing `Executor` should be easy.
 
 ### 1.x vs 2.0
@@ -367,7 +366,7 @@ subclassing `Executor` should be easy.
 | `.load_config()` | ✅ |
 | `.close()` |  ✅ |
 | `workspace` interface |  ✅ [Refactored](#workspace). |
-| `metas` config | Moved to `self.metas.xxx`. [Number of fields are greatly reduced](#yaml-interface). |
+| `metas` config | Moved to `self.metas.xxx`. [Number of fields greatly reduced](#yaml-interface). |
 | `._drivers` | Refactored and moved to `self.requests.xxx`. |
 | `.save()` | ❌ |
 | `.load()` | ❌ |
@@ -388,29 +387,29 @@ then second):
 
 ### Metas
 
-The meta attributes of an `Executor` object are now gathered in `self.metas`, instead of directly posing them to `self`,
+The meta attributes of an `Executor` object are now gathered in `self.metas`, instead of directly posting them to `self`,
 e.g. to access `name` use `self.metas.name`.
 
 ### `.metas` & `.runtime_args`
 
-An `Executor` object by default contains two collections of attributes `.metas` and `.runtime_args`. They are both
-in `SimpleNamespace` type and contain some key-value information. However, they are defined and serve differently.
+By default, an `Executor` object contains two collections of attributes: `.metas` and `.runtime_args`. They are both
+in `SimpleNamespace` type and contain some key-value information. However, they are defined differently and serve different purposes.
 
-- **`.metas` are statically defined.** "Static" means, e.g. from hardcoded value in the code, from a YAML file.
+- **`.metas` are statically defined.** "Static" means, e.g. from hard-coded value in the code, from a YAML file.
 - **`.runtime_args` are dynamically determined during runtime.** Means that you don't know the value before running
   the `Executor`, e.g. `pea_id`, `replicas`, `replica_id`. Those values are often related to the system/network
-  environment around the `Executor`, and less about `Executor` itself.
+  environment around the `Executor`, and less about the `Executor` itself.
 
 In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 
 |||
 | --- | --- | 
-| `.metas` (static values from hardcode, YAML config) | `name`, `description`, `py_modules`, `workspace` |
+| `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace` |
 | `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `read_only`, `memory_hwm`, `on_error_strategy`, `num_part`, `uses_internal`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts` |
 
-Note that, YAML API will ignore `.runtime_args` during save & load as they are not for statically stored.
+Note that the YAML API will ignore `.runtime_args` during save and load as they are not statically stored.
 
-Also note that, for any other parametrization of the Executor, you can still access its constructor arguments (defined in the class `__init__`) and the request `parameters`.
+Also note that for any other parametrization of the Executor, you can still access its constructor arguments (defined in the class `__init__`) and the request `parameters`.
 
 --- 
 
@@ -418,7 +417,7 @@ Also note that, for any other parametrization of the Executor, you can still acc
 
 ### Encoder in `jina hello fashion`
 
-Left is 1.x, right is 2.0.
+Left is 1.x, right is 2.0:
 
 ![img.png](../migration-fashion.png?raw=true)
 
@@ -430,7 +429,7 @@ Line number corresponds to the 1.x code:
 - `L20`: `.touch()` is removed; for this particular encoder as long as the seed is fixed there is no need to store;
 - `L22`: adding `@requests` to decorate the core method, changing signature to `docs, **kwargs`;
 - `L32`:
-    - the content extraction and embedding assignment are now done manually;
+    - content extraction and embedding assignment are now done manually;
     - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
