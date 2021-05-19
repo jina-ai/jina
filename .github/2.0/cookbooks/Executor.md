@@ -65,6 +65,31 @@ with f:
 
 ### With YAML
 
+```text
+.
+├── __init__.py
+├── app.py
+├── my.yml
+└── foo.py
+
+```
+
+`foo.py`:
+
+```python
+from jina import Executor
+
+
+class MyExecutor(Executor):
+
+  def __init__(self, bar: int, **kwargs):
+    super().__init__(**kwargs)
+    self.bar = bar
+
+  def foo(self, **kwargs):
+    print(f'foo says: {self.bar} {self.metas} {kwargs}')
+```
+
 `my.yml`:
 
 ```yaml
@@ -72,24 +97,19 @@ jtype: MyExecutor
 with:
   bar: 123
 metas:
+  py_modules:
+    - foo.py
   name: awesomeness
   description: my first awesome executor
 requests:
   /random_work: foo
 ```
 
+
+`app.py`:
+
 ```python
-from jina import Executor, Flow, Document
-
-
-class MyExecutor(Executor):
-
-    def __init__(self, bar: int, **kwargs):
-        super().__init__(**kwargs)
-        self.bar = bar
-
-    def foo(self, **kwargs):
-        print(f'foo says: {self.bar} {self.metas} {kwargs}')
+from jina import Flow, Document
 
 
 f = Flow().add(uses='my.yml')
@@ -145,31 +165,33 @@ and `runtime_args` injected on startup. Note that you can access their values in
 To call an Executor's function, uses `Flow.post(on=..., ...)`. For example, given
 
 ```python
-from jina import Executor, Flow, requests
+from jina import Executor, Flow, Document, requests
 
 
 class MyExecutor(Executor):
 
     @requests(on='/index')
     def foo(self, **kwargs):
-        print(kwargs)
+        print(f'foo is called: {kwargs}')
 
     @requests(on='/random_work')
     def bar(self, **kwargs):
-        print(kwargs)
+        print(f'bar is called: {kwargs}')
 
 
 f = Flow().add(uses=MyExecutor)
 
 with f:
-    pass
+    f.post(on='/index', inputs=Document(text='index'))
+    f.post(on='/random_work', inputs=Document(text='random_work'))
+    f.post(on='/blah', inputs=Document(text='blah')) 
 ```
 
 Then:
 
 - `f.post(on='/index', ...)` will trigger `MyExecutor.foo`;
 - `f.post(on='/random_work', ...)` will trigger `MyExecutor.bar`;
-- `f.post(on='/blah', ...)` will throw an error, as no function bind with `/blah`;
+- `f.post(on='/blah', ...)` will not trigger any function, as no function bind with `/blah`;
 
 #### Default binding: `@requests` without `on=`
 
@@ -234,24 +256,25 @@ If you don't need some arguments, you can suppress it into `**kwargs`. For examp
 
 ```python
 @requests
-def foo(docs, **kwargs):
-    bar(docs)
+def foo_using_docs_arg(docs, **kwargs):
+    print(docs)
 
 
 @requests
-def foo(docs, parameters, **kwargs):
-    bar(docs)
-    bar(parameters)
+def foo_using_docs_parameters_arg(docs, parameters, **kwargs):
+    print(docs)
+    print(parameters)
 
 
 @requests
-def foo(**kwargs):
-    bar(kwargs['docs_matrix'])
+def foo_using_no_arg(**kwargs):
+    # the args are suppressed into kwargs
+    print(kwargs['docs_matrix'])
 ```
 
 ### Method Returns
 
-Method decorated with `@request` can return `Optional[DocumentSet]`. If not `None`, then the current `Request.docs` will
+Method decorated with `@request` can return `Optional[DocumentArray]`. If not `None`, then the current `Request.docs` will
 be overridden by the return value.
 
 If return is just a shallow copy of `Request.docs`, then nothing happens.
