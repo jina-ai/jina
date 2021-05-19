@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentArray
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from jina.types.request import Response
