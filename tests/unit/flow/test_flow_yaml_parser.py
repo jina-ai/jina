@@ -48,12 +48,12 @@ def test_add_needs_inspect(tmpdir):
         .needs(['pod0', 'pod1'])
     )
     with f1:
-        f1.index(Document.from_ndarray(np.random.random([5, 5])), on_done=print)
+        f1.index(DocumentArray.from_ndarray(np.random.random([5, 5])), on_done=print)
 
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
 
     with f2:
-        f2.index(Document.from_ndarray(np.random.random([5, 5])), on_done=print)
+        f2.index(DocumentArray.from_ndarray(np.random.random([5, 5])), on_done=print)
 
     assert f1 == f2
 

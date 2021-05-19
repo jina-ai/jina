@@ -24,16 +24,15 @@ def test_bad_flow(mocker, restful):
     from jina import Executor, requests
 
     class BadExecutor(Executor):
-
         @requests
         def foo(self, **kwargs):
             raise NotImplementedError
 
     f = (
         Flow(restful=restful)
-            .add(name='r1', uses=BadExecutor)
-            .add(name='r2')
-            .add(name='r3')
+        .add(name='r1', uses=BadExecutor)
+        .add(name='r2')
+        .add(name='r3')
     )
 
     on_error_mock = mocker.Mock()
@@ -58,9 +57,9 @@ def test_bad_flow_customized(mocker, restful):
 
     f = (
         Flow(restful=restful)
-            .add(name='r1')
-            .add(name='r2', uses='!DummyCrafterExcept')
-            .add(name='r3', uses='!BaseExecutor')
+        .add(name='r1')
+        .add(name='r2', uses='!DummyCrafterExcept')
+        .add(name='r3', uses='!BaseExecutor')
     )
 
     with f:
@@ -81,7 +80,6 @@ def test_except_with_parallel(mocker, restful):
     from jina import Executor, Flow, requests
 
     class MyExecutor(Executor):
-
         @requests
         def foo(self, **kwargs):
             raise NotImplementedError
@@ -99,9 +97,9 @@ def test_except_with_parallel(mocker, restful):
 
     f = (
         Flow(restful=restful)
-            .add(name='r1')
-            .add(name='r2', uses=DummyCrafterExcept, parallel=3)
-            .add(name='r3', uses=MyExecutor)
+        .add(name='r1')
+        .add(name='r2', uses=DummyCrafterExcept, parallel=3)
+        .add(name='r3', uses=MyExecutor)
     )
 
     with f:
@@ -123,7 +121,6 @@ def test_on_error_callback(mocker, restful):
         raise NotImplementedError
 
     class MyExecutor(Executor):
-
         @requests
         def foo(self, **kwargs):
             raise NotImplementedError
@@ -139,7 +136,11 @@ def test_on_error_callback(mocker, restful):
     on_error_mock = mocker.Mock()
 
     with f:
-        f.index([Document(text='abbcs'), Document(text='efgh')], on_done=validate1, on_error=on_error_mock)
+        f.index(
+            [Document(text='abbcs'), Document(text='efgh')],
+            on_done=validate1,
+            on_error=on_error_mock,
+        )
 
     validate_callback(on_error_mock, validate2)
 
@@ -158,7 +159,11 @@ def test_no_error_callback(mocker, restful):
     on_error_mock = mocker.Mock()
 
     with f:
-        f.index([Document(text='abbcs'), Document(text='efgh')], on_done=response_mock, on_error=on_error_mock)
+        f.index(
+            [Document(text='abbcs'), Document(text='efgh')],
+            on_done=response_mock,
+            on_error=on_error_mock,
+        )
 
     validate_callback(response_mock, validate1)
     on_error_mock.assert_not_called()
@@ -179,7 +184,12 @@ def test_flow_on_callback(restful):
         hit.append('always')
 
     with f:
-        f.index(Document.from_ndarray(np.random.random([10, 10])), on_done=f1, on_error=f2, on_always=f3)
+        f.index(
+            DocumentArray.from_ndarray(np.random.random([10, 10])),
+            on_done=f1,
+            on_error=f2,
+            on_always=f3,
+        )
 
     assert hit == ['done', 'always']
 
@@ -206,7 +216,12 @@ def test_flow_on_error_callback(restful):
         hit.append('always')
 
     with f:
-        f.index(Document.from_ndarray(np.random.random([10, 10])), on_done=f1, on_error=f2, on_always=f3)
+        f.index(
+            DocumentArray.from_ndarray(np.random.random([10, 10])),
+            on_done=f1,
+            on_error=f2,
+            on_always=f3,
+        )
 
     assert hit == ['error', 'always']
 

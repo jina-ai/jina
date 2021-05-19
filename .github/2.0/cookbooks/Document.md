@@ -291,10 +291,10 @@ You can also construct `Document` from common file types such as JSON, CSV, `nda
 
 |     |     |
 | --- | --- |
-| `Document.from_ndjson()` | Yield `Document` from a line-based JSON file, each line is a `Document` object |
-| `Document.from_csv()` | Yield `Document` from a CSV file, each line is a `Document` object |
-| `Document.from_files()` | Yield `Document` from a glob files, each file is a `Document` object |
-| `Document.from_ndarray()` | Yield `Document` from a `ndarray`, each row (depending on `axis`) is a `Document` object |
+| `DocumentArray.from_ndjson()` | Yield `Document` from a line-based JSON file, each line is a `Document` object |
+| `DocumentArray.from_csv()` | Yield `Document` from a CSV file, each line is a `Document` object |
+| `DocumentArray.from_files()` | Yield `Document` from a glob files, each file is a `Document` object |
+| `DocumentArray.from_ndarray()` | Yield `Document` from a `ndarray`, each row (depending on `axis`) is a `Document` object |
 
 Using generator is sometimes less memory demanding, as it does not load build all Document objects in one shot.
 

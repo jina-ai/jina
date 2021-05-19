@@ -29,13 +29,17 @@ def test_client_on_error(restful):
         t = 0
         try:
             f.index(
-                Document.from_ndarray(np.random.random([5, 4])), on_done=validate, continue_on_error=False
+                DocumentArray.from_ndarray(np.random.random([5, 4])),
+                on_done=validate,
+                continue_on_error=False,
             )
         except BadClientCallback:
             # bad client callback will break the `async for req in stub.Call(req_iter)`
             t = 1
         # now query the gateway again, make sure gateway's channel is still usable
         f.index(
-            Document.from_ndarray(np.random.random([5, 4])), on_done=validate, continue_on_error=True
+            DocumentArray.from_ndarray(np.random.random([5, 4])),
+            on_done=validate,
+            continue_on_error=True,
         )
         assert t == 1
