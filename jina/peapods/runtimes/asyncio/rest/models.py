@@ -5,12 +5,13 @@ from types import SimpleNamespace
 from typing import Callable, Dict, Any, Optional, List, Union
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
+from google.protobuf.json_format import MessageToDict
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
-from jina.enums import DataInputType
-from jina.parsers import set_client_cli_parser
-from jina.proto.jina_pb2 import (
+from .....enums import DataInputType
+from .....parsers import set_client_cli_parser
+from .....proto.jina_pb2 import (
     DenseNdArrayProto,
     NdArrayProto,
     SparseNdArrayProto,
@@ -22,7 +23,7 @@ from jina.proto.jina_pb2 import (
     MessageProto,
     RequestProto,
 )
-from jina.types.document import Document
+from .....types.document import Document
 
 DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
@@ -256,7 +257,6 @@ class JinaRequestModel(BaseModel):
     """
 
     # To avoid an error while loading the request model schema on swagger, we've added an example.
-    exec_endpoint: Optional[str] = None
     data: Optional[
         Union[
             List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
@@ -264,36 +264,45 @@ class JinaRequestModel(BaseModel):
             List[str],
             List[bytes],
         ]
-    ] = Field(None, example=[Document().dict()])
+    ] = Field(
+        None,
+        example=[
+            MessageToDict(
+                Document().proto,
+                including_default_value_fields=True,
+                preserving_proto_field_name=True,
+            )
+        ],
+    )
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
-    mime_type: Optional[str] = ''
+    mime_type: Optional[str] = None
     data_type: DataInputType = DataInputType.AUTO
-    target_peapod: Optional[str] = ''
+    target_peapod: Optional[str] = None
     parameters: Optional[Dict] = None
 
 
 class JinaIndexRequestModel(JinaRequestModel):
     """Index request model."""
 
-    exec_endpoint = '/index'
+    exec_endpoint: str = '/index'
 
 
 class JinaSearchRequestModel(JinaRequestModel):
     """Search request model."""
 
-    exec_endpoint = '/search'
+    exec_endpoint: str = '/search'
 
 
 class JinaUpdateRequestModel(JinaRequestModel):
     """Update request model."""
 
-    exec_endpoint = '/update'
+    exec_endpoint: str = '/update'
 
 
 class JinaDeleteRequestModel(JinaRequestModel):
     """Delete request model."""
 
-    exec_endpoint = '/delete'
+    exec_endpoint: str = '/delete'
 
 
 class JinaControlRequestModel(JinaRequestModel):

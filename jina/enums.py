@@ -217,6 +217,7 @@ class FlowBuildLevel(BetterEnum):
 
     EMPTY = 0  #: Nothing is built
     GRAPH = 1  #: The underlying graph is built, you may visualize the flow
+    RUNNING = 2  #: the graph is started and all pods are running
 
 
 class PeaRoleType(BetterEnum):

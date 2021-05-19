@@ -94,7 +94,7 @@ def test_mime_type(restful):
             assert d.mime_type == 'text/x-python'
 
     with f:
-        f.index(Document.from_files('*.py'), validate_mime_type)
+        f.index(DocumentArray.from_files('*.py'), validate_mime_type)
 
 
 @pytest.mark.parametrize('func_name', ['index', 'search'])
@@ -104,7 +104,7 @@ def test_client_ndjson(restful, mocker, func_name):
         os.path.join(cur_dir, 'docs.jsonlines')
     ) as fp:
         mock = mocker.Mock()
-        getattr(f, f'{func_name}')(Document.from_ndjson(fp), on_done=mock)
+        getattr(f, f'{func_name}')(DocumentArray.from_ndjson(fp), on_done=mock)
         mock.assert_called_once()
 
 
@@ -115,7 +115,7 @@ def test_client_csv(restful, mocker, func_name):
         os.path.join(cur_dir, 'docs.csv')
     ) as fp:
         mock = mocker.Mock()
-        getattr(f, f'{func_name}')(Document.from_csv(fp), on_done=mock)
+        getattr(f, f'{func_name}')(DocumentArray.from_csv(fp), on_done=mock)
         mock.assert_called_once()
 
 

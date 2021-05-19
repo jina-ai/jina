@@ -3,7 +3,7 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-from jina import Flow, Document
+from jina import Flow, Document, DocumentArray
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.logging.profile import ProgressBar
@@ -53,14 +53,16 @@ def hello_world(args):
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:
-        f.index(Document.from_csv(fp, field_resolver={'question': 'text'}))
+        f.index(DocumentArray.from_csv(fp, field_resolver={'question': 'text'}))
 
-    # switch to REST gateway
-    url_html_path = 'file://' + os.path.abspath(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static/index.html')
-    )
-    f.use_rest_gateway(args.port_expose)
-    with f:
+        # switch to REST gateway at runtime
+        f.use_rest_gateway(args.port_expose)
+
+        url_html_path = 'file://' + os.path.abspath(
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), 'static/index.html'
+            )
+        )
         try:
             webbrowser.open(url_html_path, new=2)
         except:
@@ -70,6 +72,7 @@ def hello_world(args):
                 f'You should see a demo page opened in your browser, '
                 f'if not, you may open {url_html_path} manually'
             )
+
         if not args.unblock_query_flow:
             f.block()
 

@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentArray
 from jina.clients import Client
 from jina.excepts import BadClientInput
 
@@ -19,14 +19,14 @@ def filepath(tmpdir):
 
 
 def test_input_lines_with_filepath(filepath):
-    result = list(Document.from_lines(filepath=filepath, size=2))
+    result = list(DocumentArray.from_lines(filepath=filepath, size=2))
     assert len(result) == 2
     assert isinstance(result[0], Document)
 
 
 def test_input_csv_from_file():
     with open(os.path.join(cur_dir, 'docs.csv')) as fp:
-        result = list(Document.from_csv(fp))
+        result = list(DocumentArray.from_csv(fp))
     assert len(result) == 2
     assert isinstance(result[0], Document)
     assert result[0].tags['source'] == 'testsrc'
@@ -34,7 +34,7 @@ def test_input_csv_from_file():
 
 def test_input_csv_from_lines():
     with open(os.path.join(cur_dir, 'docs.csv')) as fp:
-        result = list(Document.from_lines(fp, line_format='csv'))
+        result = list(DocumentArray.from_lines(fp, line_format='csv'))
     assert len(result) == 2
     assert isinstance(result[0], Document)
     assert result[0].tags['source'] == 'testsrc'
@@ -43,7 +43,7 @@ def test_input_csv_from_lines():
 def test_input_csv_from_lines_field_resolver():
     with open(os.path.join(cur_dir, 'docs.csv')) as fp:
         result = list(
-            Document.from_lines(
+            DocumentArray.from_lines(
                 fp, line_format='csv', field_resolver={'question': 'text'}
             )
         )
@@ -57,7 +57,7 @@ def test_input_csv_from_lines_field_resolver():
 def test_input_csv_from_strings():
     with open(os.path.join(cur_dir, 'docs.csv')) as fp:
         lines = fp.readlines()
-    result = list(Document.from_csv(lines))
+    result = list(DocumentArray.from_csv(lines))
     assert len(result) == 2
     assert isinstance(result[0], Document)
     assert result[0].tags['source'] == 'testsrc'
@@ -65,13 +65,15 @@ def test_input_csv_from_strings():
 
 def test_input_lines_with_empty_filepath_and_lines():
     with pytest.raises(ValueError):
-        lines = Document.from_lines(lines=None, filepath=None)
+        lines = DocumentArray.from_lines(lines=None, filepath=None)
         for _ in lines:
             pass
 
 
 def test_input_lines_with_jsonlines_docs():
-    result = list(Document.from_lines(filepath='tests/unit/clients/python/docs.jsonlines'))
+    result = list(
+        DocumentArray.from_lines(filepath='tests/unit/clients/python/docs.jsonlines')
+    )
     assert len(result) == 2
     assert result[0].text == "a"
     assert result[1].text == "b"
@@ -79,7 +81,9 @@ def test_input_lines_with_jsonlines_docs():
 
 def test_input_lines_with_jsonlines_docs_groundtruth():
     result = list(
-        Document.from_lines(filepath='tests/unit/clients/python/docs_groundtruth.jsonlines')
+        DocumentArray.from_lines(
+            filepath='tests/unit/clients/python/docs_groundtruth.jsonlines'
+        )
     )
     assert len(result) == 2
     assert result[0][0].text == "a"
@@ -100,7 +104,7 @@ def test_input_lines_with_jsonlines_docs_groundtruth():
 )
 def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
     Client.check_input(
-        Document.from_files(
+        DocumentArray.from_files(
             patterns=patterns,
             recursive=recursive,
             size=size,
@@ -112,11 +116,13 @@ def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
 
 def test_input_files_with_invalid_read_mode():
     with pytest.raises(BadClientInput):
-        Client.check_input(Document.from_files(patterns='*.*', read_mode='invalid'))
+        Client.check_input(
+            DocumentArray.from_files(patterns='*.*', read_mode='invalid')
+        )
 
 
 @pytest.mark.parametrize(
     'array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']]
 )
 def test_input_numpy(array):
-    Client.check_input(Document.from_ndarray(array))
+    Client.check_input(DocumentArray.from_ndarray(array))
