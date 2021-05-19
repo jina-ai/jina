@@ -66,7 +66,7 @@ A `Document` object has the following attributes, which can be put into the foll
 | | | 
 |---|---|
 | Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
-| Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality` |
+| Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality`, `siblings` |
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
@@ -114,7 +114,7 @@ In Jupyter notebook or use `.plot()`, you can get the visualization of a `Docume
 ![](../doc.content.svg?raw=true)
 
 Note that one `Document` can only contain one type of `content`: it is one of `text`, `buffer`, `blob`, `uri`.
-Setting `text` first and then set `uri` will clear the `text field.
+Setting `text` first and then set `uri` will clear the `text` field.
 
 ```python
 d = Document(text='hello world')
@@ -176,7 +176,7 @@ d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 | `doc.tags` | A structured data value, consisting of field which map to dynamically typed values |
 | `doc.id` | A hexdigest that represents a unique document ID |
 | `doc.weight` | The weight of this document |
-| `doc.mime_type` | The mime type of this document |
+| `doc.mime_type` | The [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of this document |
 | `doc.location` | The position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |
 | `doc.offset` | The offset of this doc in the previous granularity document|
 | `doc.modality` | An identifier to the modality this document belongs to|
@@ -291,10 +291,10 @@ You can also construct `Document` from common file types such as JSON, CSV, `nda
 
 |     |     |
 | --- | --- |
-| `Document.from_ndjson()` | Yield `Document` from a line-based JSON file, each line is a `Document` object |
-| `Document.from_csv()` | Yield `Document` from a CSV file, each line is a `Document` object |
-| `Document.from_files()` | Yield `Document` from a glob files, each file is a `Document` object |
-| `Document.from_ndarray()` | Yield `Document` from a `ndarray`, each row (depending on `axis`) is a `Document` object |
+| `DocumentArray.from_ndjson()` | Yield `Document` from a line-based JSON file, each line is a `Document` object |
+| `DocumentArray.from_csv()` | Yield `Document` from a CSV file, each line is a `Document` object |
+| `DocumentArray.from_files()` | Yield `Document` from a glob files, each file is a `Document` object |
+| `DocumentArray.from_ndarray()` | Yield `Document` from a `ndarray`, each row (depending on `axis`) is a `Document` object |
 
 Using generator is sometimes less memory demanding, as it does not load build all Document objects in one shot.
 

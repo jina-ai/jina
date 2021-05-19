@@ -3,7 +3,7 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-from jina import Flow, Document
+from jina import Flow, Document, DocumentArray
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.logging.profile import ProgressBar
@@ -53,7 +53,7 @@ def hello_world(args):
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:
-        f.index(Document.from_csv(fp, field_resolver={'question': 'text'}))
+        f.index(DocumentArray.from_csv(fp, field_resolver={'question': 'text'}))
 
         # switch to REST gateway at runtime
         f.use_rest_gateway(args.port_expose)
