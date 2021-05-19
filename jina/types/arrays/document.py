@@ -32,7 +32,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     a generator but ALSO modify it, count it, get item, or union two 'DocumentArray's using the '+' and '+=' operators.
 
     :param docs_proto: A list of :class:`Document`
-    :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
+    :type docs_proto: Optional[Union['RepeatedContainer', Iterable['Document']]]
     """
 
     def __init__(
