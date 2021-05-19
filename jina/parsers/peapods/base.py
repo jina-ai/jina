@@ -26,7 +26,7 @@ This will be used in the following places:
 - automatics docs UI
 - ...
 
-When not given, then the default naming strategy will apply. 
+When not given, then the default naming strategy will apply.
                     ''',
     )
 
@@ -75,4 +75,13 @@ When not given, then the default naming strategy will apply.
         help='A UUID string to represent the logger identity of this object'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--workspace-id',
+        type=str,
+        default=random_identity(),
+        help='the UUID for identifying the workspace. When not given a random id will be assigned.'
+        'Multiple Pea/Pod/Flow will work under the same workspace if they share the same '
+        '`workspace-id`.',
     )

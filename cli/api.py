@@ -152,6 +152,10 @@ def flow(args: 'Namespace'):
 
     if args.uses:
         f = Flow.load_config(args.uses)
+        if args.identity:
+            f.identity = str(args.identity)
+        if args.workspace_id:
+            f.workspace_id = str(args.workspace_id)
         with f:
             f.block()
     else:

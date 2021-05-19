@@ -42,7 +42,7 @@ def api_to_dict():
 def _export_parser_args(parser_fn, type_as_str: bool = False):
     from jina.enums import BetterEnum
     from argparse import _StoreAction, _StoreTrueAction
-    from jina.parsers.helper import KVAppendAction
+    from jina.parsers.helper import KVAppendAction, _SHOW_ALL_ARGS
 
     port_attr = ('help', 'choices', 'default', 'required', 'option_strings', 'dest')
     parser = parser_fn()
@@ -52,10 +52,9 @@ def _export_parser_args(parser_fn, type_as_str: bool = False):
         if a.default != b.default:
             random_dest.add(a.dest)
     for a in parser._actions:
-        if (
-            isinstance(a, (_StoreAction, _StoreTrueAction, KVAppendAction))
-            and a.help != argparse.SUPPRESS
-        ):
+        if isinstance(a, (_StoreAction, _StoreTrueAction, KVAppendAction)):
+            if not _SHOW_ALL_ARGS and a.help == argparse.SUPPRESS:
+                continue
             ddd = {p: getattr(a, p) for p in port_attr}
             if isinstance(a, _StoreTrueAction):
                 ddd['type'] = bool
