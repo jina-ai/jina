@@ -81,7 +81,7 @@ In Jina, Flow is how Jina streamlines and scales Executors. A `Flow` object has 
 |Run Flow| `with` context manager |
 |Visualize Flow| `.plot()` |
 |Send Request| `.post()`|
-|Control| `.block`, `.use_grpc_gateway()`, `.use_rest_gateway()` |
+|Control| `.block()`, `.use_grpc_gateway()`, `.use_rest_gateway()` |
 
 ### Create a Flow
 
