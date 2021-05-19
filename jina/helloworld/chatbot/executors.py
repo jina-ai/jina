@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 from typing import Optional, Dict, Tuple
 
 import numpy as np
@@ -92,13 +90,6 @@ class MyIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._docs = DocumentArray()
-        Path(self.workspace).mkdir(parents=True, exist_ok=True)
-        self.filename = os.path.join(self.workspace, 'chatbot.ndjson')
-        if os.path.exists(self.filename):
-            self._docs = DocumentArray.load(self.filename)
-
-    def close(self) -> None:
-        self._docs.save(self.filename)
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
