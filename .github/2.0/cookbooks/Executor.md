@@ -23,7 +23,7 @@ Table of Contents
   - [Method naming](#method-naming)
   - [`@requests` decorator](#requests-decorator)
     - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
-    - [Multiple binding: `@requests(on=[...])`](#multiple-binding-requestson)
+    - [Multiple bindings: `@requests(on=[...])`](#multiple-bindings-requestson)
     - [No binding](#no-binding)
   - [Method Signature](#method-signature)
   - [Method Arguments](#method-arguments)
@@ -37,8 +37,6 @@ Table of Contents
   - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
   - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
-- [Remarks](#remarks)
-  - [Joining/Merging](#joiningmerging)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
