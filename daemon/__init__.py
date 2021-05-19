@@ -1,23 +1,27 @@
-import json
 import subprocess
-import threading
-
 import pkg_resources
+from pathlib import Path
+from threading import Thread
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
-from daemon.excepts import Runtime400Exception, daemon_runtime_exception_handler
 from jina import __version__
 from jina.logging import JinaLogger
 from .parser import get_main_parser, _get_run_args
+from .excepts import Runtime400Exception, daemon_runtime_exception_handler
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
+__root_workspace__ = jinad_args.workspace
+__rootdir__ = str(Path(__file__).parent.parent.absolute())
+__dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
+
 
 def _get_app():
-    from .api.endpoints import router, flow, pod, pea, logs, workspace
+    from .api.endpoints import router, flows, pods, peas, logs, workspaces
 
     app = FastAPI(
         title='JinaD (Daemon)',
@@ -59,10 +63,10 @@ def _get_app():
     )
     app.include_router(router)
     app.include_router(logs.router)
-    app.include_router(pea.router)
-    app.include_router(pod.router)
-    app.include_router(flow.router)
-    app.include_router(workspace.router)
+    app.include_router(peas.router)
+    app.include_router(pods.router)
+    app.include_router(flows.router)
+    app.include_router(workspaces.router)
     app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
 
     return app
@@ -97,14 +101,15 @@ def _start_fluentd():
         for line in fluentd_proc.stdout:
             daemon_logger.debug(f'fluentd: {line.strip()}')
     except FileNotFoundError:
-        daemon_logger.warning('Fluentd not found locally, Jinad cannot stream logs!')
+        daemon_logger.warning('fluentd not found locally, jinad cannot stream logs!')
         jinad_args.no_fluentd = True
 
 
 def main():
-    """Entrypoint for JinaD"""
-    global jinad_args
+    """Entrypoint for jinad"""
+    global jinad_args, __root_workspace__
     jinad_args = _get_run_args()
+    __root_workspace__ = jinad_args.workspace
     if not jinad_args.no_fluentd:
-        threading.Thread(target=_start_fluentd, daemon=True).start()
+        Thread(target=_start_fluentd, daemon=True).start()
     _start_uvicorn(app=_get_app())

@@ -1,18 +1,15 @@
-import uuid
-
 from fastapi import APIRouter, HTTPException
 
-from jina.helper import ArgNamespace
-from jina.parsers import set_pea_parser
 from ... import Runtime400Exception
-from ...models import PeaModel
-from ...models.status import StoreStatus, StoreItemStatus
+from ...models import DaemonID, ContainerItem, ContainerStoreStatus, PeaModel
 from ...stores import pea_store as store
 
 router = APIRouter(prefix='/peas', tags=['peas'])
 
 
-@router.get(path='', summary='Get all alive Pea\' status', response_model=StoreStatus)
+@router.get(path='',
+            summary='Get all alive Pea\' status',
+            response_model=ContainerStoreStatus)
 async def _get_items():
     return store.status
 
@@ -30,12 +27,11 @@ async def _fetch_pea_params():
     summary='Create a Pea',
     description='Create a Pea and add it to the store',
     status_code=201,
-    response_model=uuid.UUID,
+    response_model=DaemonID,
 )
-async def _create(pea: 'PeaModel'):
+async def _create(workspace_id: DaemonID, pea: 'PeaModel'):
     try:
-        args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
-        return store.add(args)
+        return store.add(workspace_id=workspace_id, model=pea)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -55,7 +51,7 @@ async def _clear_all():
     summary='Terminate a running Pea',
     description='Terminate a running Pea and release its resources',
 )
-async def _delete(id: uuid.UUID, workspace: bool = False):
+async def _delete(id: DaemonID, workspace: bool = False):
     try:
         store.delete(id=id, workspace=workspace)
     except KeyError:
@@ -63,15 +59,17 @@ async def _delete(id: uuid.UUID, workspace: bool = False):
 
 
 @router.get(
-    path='/{id}', summary='Get status of a running Pea', response_model=StoreItemStatus
+    path='/{id}',
+    summary='Get status of a running Pea',
+    response_model=ContainerItem
 )
-async def _status(id: uuid.UUID):
+async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
 
-@router.on_event('shutdown')
-def _shutdown():
-    store.reset()
+# @router.on_event('shutdown')
+# def _shutdown():
+#     store.reset()

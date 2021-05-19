@@ -1,22 +1,21 @@
-import uuid
-from typing import Optional
-
 from fastapi import APIRouter, File, UploadFile, Body
 from fastapi.exceptions import HTTPException
+from pydantic.types import FilePath
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
 from ... import Runtime400Exception
-from ...models import FlowModel, UpdateOperationEnum
-from ...models.status import FlowStoreStatus, FlowItemStatus
+from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel, UpdateOperationEnum
 from ...stores import flow_store as store
 
 router = APIRouter(prefix='/flows', tags=['flows'])
 
 
 @router.get(
-    path='', summary='Get all alive Flows\' status', response_model=FlowStoreStatus
+    path='',
+    summary='Get all alive Flows\' status',
+    response_model=ContainerStoreStatus
 )
 async def _get_items():
     return store.status
@@ -31,13 +30,12 @@ async def _fetch_flow_params():
     path='',
     summary='Create a Flow from a YAML config',
     status_code=201,
-    response_model=uuid.UUID,
+    response_model=DaemonID,
 )
-async def _create(
-    flow: UploadFile = File(...), workspace_id: Optional[uuid.UUID] = Body(None)
-):
+async def _create(workspace_id: DaemonID, filename: str):
     try:
-        return store.add(flow.file, workspace_id)
+
+        return store.add(filename=filename, workspace_id=workspace_id)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -57,9 +55,9 @@ async def _clear_all():
     summary='Terminate a running Flow',
     description='Terminate a running Flow and release its resources',
 )
-async def _delete(id: uuid.UUID, workspace: bool = False):
+async def _delete(id: DaemonID):
     try:
-        store.delete(id=id, workspace=workspace)
+        store.delete(id=id)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
@@ -67,38 +65,15 @@ async def _delete(id: uuid.UUID, workspace: bool = False):
 @router.get(
     path='/{id}',
     summary='Get the status of a running Flow',
-    response_model=FlowItemStatus,
+    response_model=ContainerItem,
 )
-async def _status(
-    id: 'uuid.UUID',
-):
+async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
 
-@router.on_event('shutdown')
-def _shutdown():
-    store.reset()
-
-
-@router.put(
-    path='/{id}',
-    summary='Run an update operation on the Flow object',
-    description='Types supported: "rolling_update" and "dump"',
-)
-async def _update(
-    id: 'uuid.UUID',
-    kind: UpdateOperationEnum,
-    dump_path: str,
-    pod_name: str,
-    shards: int = None,
-):
-    try:
-        store.update(id, kind, dump_path, pod_name, shards)
-    except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f'{e!r}')
-    return Response(status_code=HTTP_200_OK)
+# @router.on_event('shutdown')
+# def _shutdown():
+#     store.reset()
