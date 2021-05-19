@@ -81,7 +81,7 @@ In Jina, Flow is how Jina streamlines and scales Executors. A `Flow` object has 
 |Run Flow| `with` context manager |
 |Visualize Flow| `.plot()` |
 |Send Request| `.post()`|
-|Control Gateway| `.use_grpc_gateway()`, `.use_rest_gateway()`
+|Control| `.block`, `.use_grpc_gateway()`, `.use_rest_gateway()` |
 
 ### Create a Flow
 
@@ -93,14 +93,28 @@ from jina import Flow
 f = Flow()
 ```
 
-To use `f`, always open it as a content manager. Just like you open a file. This is considered as the best practice in Jina:
+### Use a Flow
+
+To use `f`, always open it as a content manager. Just like you open a file. This is considered as the best practice in
+Jina:
 
 ```python
 with f:
     ...
 ```
 
-Note that, Flow follows a lazy construction pattern: it won't be actually running until you use `with` to open it.
+Note that,
+
+- Flow follows a lazy construction pattern: it won't be actually running until you use `with` to open it.
+- Once a Flow is open via `with`, you can send data request to it. However, you can not change its construction
+  via `.add()` anymore until it leaves the `with` context.
+- The context exits when its inner code is finished. A Flow's context without inner code will immediately exit. To
+  prevent that, use `.block()` to suspend the current process.
+
+  ```python
+  with f:
+      f.block()  # block the current process
+  ```
 
 ### Visualize a Flow
 
@@ -129,6 +143,18 @@ container.
 |Parallelization | `parallel`, `polling` |
 
 For a full list of arguments, please check `jina executor --help`.
+
+#### Chain `.add()`
+
+Chaining `.add()`s creates a sequential Flow.
+
+```python
+from jina import Flow
+
+f = Flow().add().add().add().add()
+```
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/chain-flow.svg?raw=true"/>
 
 #### Define What Executor to Use via `uses`
 
@@ -218,11 +244,21 @@ from jina import Flow
 f = Flow().add(
     uses={
         'jtype': 'MyExecutor',
-        'with': {'bar': 123}}
-)
+        'with': {'bar': 123}
+    })
 ```
 
-Chaining `.add()`s creates a sequential Flow.
+##### Add Executor via Docker Image
+
+To add an Executor from a Docker image tag `myexec:latest`, use:
+
+```python
+from jina import Flow
+
+f = Flow().add(uses='docker://myexec:latest')
+```
+
+Once built, it will start a Docker container.
 
 #### Intra Parallelism via `needs`
 
@@ -282,10 +318,12 @@ f = (Flow()
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/parallel-explain.svg?raw=true"/>
 
 Note, by default:
+
 - only one `p1` will receive a message.
 - `p2` will be called when *any one of* `p1` finished.
 
-To change that behavior, you can add `polling` argument to `.add()`, e.g. `.add(parallel=3, polling='ALL')`. Specifically,
+To change that behavior, you can add `polling` argument to `.add()`, e.g. `.add(parallel=3, polling='ALL')`.
+Specifically,
 
 | `polling` | Who will receive from upstream? | When will downstream be called? | 
 | --- | --- | --- |
@@ -350,12 +388,22 @@ f = (Flow()
 
 </table>
 
-### Send Data to Flow
+### Send Data Request via `post`
 
-#### `post` method
+`.post()` is the core method for sending data to a `Flow` object.
 
-`post` is the core method. All 1.x methods, e.g. `index`, `search`, `update`, `delete` are just sugary syntax of `post`
-by specifying `on='/index'`, `on='/search'`, etc.
+`.post()` must be called *inside* the `with` context:
+
+```python
+from jina import Flow
+
+f = Flow().add(...)
+
+with f:
+    f.post(...)
+```
+
+#### Function Signature
 
 ```python
 def post(
@@ -385,18 +433,75 @@ def post(
 
 Comparing to 1.x Client/Flow API, the three new arguments are:
 
-- `on`: endpoint, as explained above
-- `parameters`: the kwargs that will be sent to the executor, as explained above
-- `target_peapod`: a regex string represent the certain peas/pods request targeted
+- `on`: the endpoint used for identifying the user-defined `request_type`, labeled by `@requests(on='/foo')` in
+  the `Executor` class;
+- `parameters`: the kwargs that will be sent to the `Executor`;
+- `target_peapod`: a regex string represent the certain peas/pods request targeted.
 
-### Fetch Result from Flow
+Note, all 1.x CRUD methods (`index`, `search`, `update`, `delete`) are just sugary syntax of `post` with `on='/index'`
+, `on='/search'`, etc. Precisely, they are defined as:
 
-Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface: You can add
+```python
+index = partialmethod(post, '/index')
+search = partialmethod(post, '/search')
+update = partialmethod(post, '/update')
+delete = partialmethod(post, '/delete')
+```
+
+#### Define Data via `inputs`
+
+`inputs` can take single `Document` object, an iterator of `Document`, a generator of `Document`, a `DocumentArray`
+object, and None.
+
+For example:
+
+```python
+from jina import Flow, DocumentArray, Document
+
+d1 = Document(content='hello')
+d2 = Document(content='world')
+
+
+def doc_gen():
+    for j in range(10):
+        yield Document(content=f'hello {j}')
+
+
+with Flow() as f:
+    f.post('/', d1)  # Single document
+
+    f.post('/', [d1, d2])  # a list of Document
+
+    f.post('/', doc_gen)  # Document generator
+
+    f.post('/', DocumentArray([d1, d2]))  # DocumentArray
+
+    f.post('/')  # empty
+```
+
+`Document` class provides some static methods that allows you to build `Document` generator, e.g. `from_csv`
+, `from_files`, `from_ndarray`, `from_ndjson`. They can be used conjunct with `.post()`, e.g.
+
+```python
+from jina import Flow, Document
+
+f = Flow()
+
+with f, open('my.csv') as fp:
+    f.index(Document.from_csv(fp, field_resolver={'question': 'text'}))
+```
+
+#### Callback Functions
+
+Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
 callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes
 the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written
 to `output.txt`.
 
 ```python
+from jina import Document, Flow
+
+
 def beep(*args):
     # make a beep sound
     import os
@@ -404,13 +509,57 @@ def beep(*args):
 
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
-    f.index(numpy.random.random([4, 5, 2]),
-            on_done=print, on_error=beep, on_always=lambda x: fp.write(x.json()))
+    f.post('/',
+           Document(),
+           on_done=print,
+           on_error=beep,
+           on_always=lambda x: fp.write(x.json()))
+```
+
+#### Send Parameters
+
+To send parameters to the executor, use
+
+```python
+from jina import Document, Executor, Flow, requests
+
+
+class MyExecutor(Executor):
+
+    @requests
+    def foo(self, parameters, **kwargs):
+        print(parameters['hello'])
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    f.post('/', Document(), parameters={'hello': 'world'})
+```
+
+Note that you can send a parameters-only data request via:
+
+```python
+with f:
+    f.post('/', parameters={'hello': 'world'})
+```
+
+This is useful to control `Executor` object in the runtime.
+
+### REST Interface
+
+In practice, the query Flow and the client (i.e. data sender) are often physically separated. Moreover, the client may
+prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn
+on [REST support](https://api.jina.ai/rest/) with `restful=True`:
+
+```python
+f = Flow(port_expose=45678, restful=True)
+
+with f:
+    f.block()
 ```
 
 ### Asynchronous Flow
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
 
 While synchronous from outside, Jina runs asynchronously under the hood: it manages the eventloop(s) for scheduling the
 jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
@@ -458,18 +607,3 @@ if __name__ == '__main__':
 ```
 
 `AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. where it can run out-of-the-box.
-
-### REST Interface
-
-In practice, the query Flow and the client (i.e. data sender) are often physically separated. Moreover, the client may
-prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn
-on [REST support](https://api.jina.ai/rest/) with `restful=True`:
-
-```python
-f = Flow(port_expose=45678, restful=True)
-
-with f:
-    f.block()
-```
-
-
