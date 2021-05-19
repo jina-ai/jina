@@ -3,7 +3,7 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-from jina import Flow, Document
+from jina import Flow, Document, DocumentArray
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.logging.profile import ProgressBar
@@ -55,7 +55,7 @@ def hello_world(args):
     f = Flow.load_config('flow-index.yml')
 
     with f, open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
-        f.index(inputs=Document.from_csv(fp), request_size=10)
+        f.index(inputs=DocumentArray.from_csv(fp), request_size=10)
 
     # search it!
     f = Flow.load_config('flow-search.yml')
