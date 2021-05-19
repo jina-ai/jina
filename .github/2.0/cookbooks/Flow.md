@@ -81,7 +81,7 @@ from jina import Flow
 f = Flow()
 ```
 
-To use `f`, always open it as a content manager:
+To use `f`, always open it as a context manager:
 
 ```python
 with f:
