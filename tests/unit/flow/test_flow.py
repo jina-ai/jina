@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow, Document
+from jina import Flow, Document, DocumentArray
 from jina.enums import SocketType, FlowBuildLevel
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor

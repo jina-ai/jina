@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from jina import Flow, Executor, requests, Document
+from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.proto import jina_pb2
 from tests import validate_callback
 

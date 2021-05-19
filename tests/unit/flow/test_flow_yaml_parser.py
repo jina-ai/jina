@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from jina import Flow, AsyncFlow, Executor, Document
+from jina import Flow, AsyncFlow, Executor, DocumentArray
 from jina.excepts import BadFlowYAMLVersion
 from jina.flow import BaseFlow
 from jina.jaml import JAML
