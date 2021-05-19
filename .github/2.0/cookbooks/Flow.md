@@ -728,3 +728,63 @@ if __name__ == '__main__':
 ```
 
 `AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. where it can run out-of-the-box.
+
+
+## Remarks
+
+### Joining/Merging
+
+Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding to Executor's function.
+Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
+/`DocumentArray`
+
+```python
+from jina import Executor, requests, Flow, Document
+
+
+class C(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        # 6 docs
+        return docs
+
+
+class B(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        # 3 docs
+        for idx, d in enumerate(docs):
+            d.text = f'hello {idx}'
+
+
+class A(Executor):
+
+    @requests
+    def A(self, docs, **kwargs):
+        # 3 docs
+        for idx, d in enumerate(docs):
+            d.text = f'world {idx}'
+
+
+f = Flow().add(uses=A).add(uses=B, needs='gateway').add(uses=C, needs=['pod0', 'pod1'])
+
+with f:
+    f.post(on='/some_endpoint',
+           inputs=[Document() for _ in range(3)],
+           on_done=print)
+```
+
+You can also modify the docs while merging, which is not feasible to do in 1.x, e.g.
+
+```python
+class C(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        # 6 docs
+        for d in docs:
+            d.text += '!!!'
+        return docs
+```
