@@ -602,7 +602,7 @@ You will see console prints log as follows:
 
 You can navigate to the Swagger docs UI via `http://localhost:53895/docs`:
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui.png?raw=true"/>
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/swagger-ui.png?raw=true"/>
 
 Now you can send data request via `curl`/Postman,
 
