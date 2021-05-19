@@ -169,7 +169,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                 read_only=True,
-                runtime_cls='GRPCRuntime',
+                runtime_cls='GRPCRuntime'
+                if self._cls_client == Client
+                else 'RESTRuntime',
                 pod_role=PodRoleType.GATEWAY,
                 identity=self.args.identity,
             )
@@ -554,6 +556,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
         )
 
+        self._build_level = FlowBuildLevel.RUNNING
         self._show_success_message()
 
         return self
@@ -864,18 +867,47 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             pass
 
     def use_grpc_gateway(self, port: Optional[int] = None):
-        """Change to use gRPC gateway for IO
-        :param port: the port to change"""
-        self._common_kwargs['restful'] = False
+        """Change to use gRPC gateway for Flow IO.
+
+        You can change the gateway even in the runtime.
+
+        :param port: the new port number to expose
+
+        """
+        self._switch_gateway('GRPCRuntime', port)
+
+    def _switch_gateway(self, gateway: str, port: int):
+        restful = gateway == 'RESTRuntime'
+        client = WebSocketClient if gateway == 'RESTRuntime' else Client
+
+        # globally register this at Flow level
+        self._cls_client = client
+        self._common_kwargs['restful'] = restful
         if port:
             self._common_kwargs['port_expose'] = port
 
+        # Flow is build to graph already
+        if self._build_level >= FlowBuildLevel.GRAPH:
+            self['gateway'].args.restful = restful
+            self['gateway'].args.runtime_cls = gateway
+            if port:
+                self['gateway'].args.port_expose = port
+
+        # Flow is running already, then close the existing gateway
+        if self._build_level >= FlowBuildLevel.RUNNING:
+            self['gateway'].close()
+            self.enter_context(self['gateway'])
+            self['gateway'].wait_start_success()
+
     def use_rest_gateway(self, port: Optional[int] = None):
-        """Change to use REST gateway for IO
-        :param port: the port to change"""
-        self._common_kwargs['restful'] = True
-        if port:
-            self._common_kwargs['port_expose'] = port
+        """Change to use REST gateway for IO.
+
+        You can change the gateway even in the runtime.
+
+        :param port: the new port number to expose
+
+        """
+        self._switch_gateway('RESTRuntime', port)
 
     def __getitem__(self, item):
         if isinstance(item, str):

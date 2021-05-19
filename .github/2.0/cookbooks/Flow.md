@@ -15,18 +15,18 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 Table of Contents
 
 - [Minimum working example](#minimum-working-example)
-  - [Pure Python](#pure-python)
-  - [With YAML](#with-yaml)
+    - [Pure Python](#pure-python)
+    - [With YAML](#with-yaml)
 - [Flow API](#flow-api)
-  - [Create a Flow](#create-a-flow)
-  - [Add Executor to a Flow](#add-executor-to-a-flow)
-  - [Create Inter & Intra Parallelism via `needs`](#create-inter--intra-parallelism-via-needs)
-  - [Decentralized Flow](#decentralized-flow)
-  - [Send Data to Flow](#send-data-to-flow)
-    - [`post` method](#post-method)
-  - [Fetch Result from Flow](#fetch-result-from-flow)
-  - [Asynchronous Flow](#asynchronous-flow)
-  - [REST Interface](#rest-interface)
+    - [Create a Flow](#create-a-flow)
+    - [Add Executor to a Flow](#add-executor-to-a-flow)
+    - [Create Inter & Intra Parallelism via `needs`](#create-inter--intra-parallelism-via-needs)
+    - [Decentralized Flow](#decentralized-flow)
+    - [Send Data to Flow](#send-data-to-flow)
+        - [`post` method](#post-method)
+    - [Fetch Result from Flow](#fetch-result-from-flow)
+    - [Asynchronous Flow](#asynchronous-flow)
+    - [REST Interface](#rest-interface)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -35,9 +35,17 @@ Table of Contents
 ### Pure Python
 
 ```python
-from jina import Flow, Document
+from jina import Flow, Document, Executor, requests
 
-f = Flow().add(name='foo')
+
+class MyExecutor(Executor):
+
+    @requests('/bar')
+    def foo(self, docs):
+        print(docs)
+
+
+f = Flow().add(name='myexec1', uses=MyExecutor)
 
 with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
@@ -50,7 +58,8 @@ with f:
 ```yaml
 jtype: Flow
 executors:
-  - name: foo
+  - name: myexec1
+    uses: MyExecutor
 ```
 
 ```python
@@ -62,14 +71,17 @@ with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
 ```
 
-## Flow API
+## `Flow` API
 
-In Jina, Flow is how Jina streamlines and scales Executors. A `Flow` object has the following methods:
+In Jina, Flow is how Jina streamlines and scales Executors. A `Flow` object has the following common methods:
 
 | |  |
 |---|---|
-|Construct| `.add()`, `.needs()`, `.needs_all()` `.inspect()`, `.gather_inspect()`, `.use_grpc_gateway`, `.use_rest_gateway` |
-|Request| `.post()`, `.index()`, `.search()`, `.update()`, `.delete()`|
+|Construct Flow| `.add()`, `.needs()` |
+|Run Flow| `with` context manager |
+|Visualize Flow| `.plot()` |
+|Send Request| `.post()`|
+|Control Gateway| `.use_grpc_gateway()`, `.use_rest_gateway()`
 
 ### Create a Flow
 
@@ -81,26 +93,111 @@ from jina import Flow
 f = Flow()
 ```
 
-To use `f`, always open it as a content manager:
+To use `f`, always open it as a content manager. Just like you open a file. This is considered as the best practice in Jina:
 
 ```python
 with f:
     ...
 ```
 
-### Add Executor to a Flow
+Note that, Flow follows a lazy construction pattern: it won't be actually running until you use `with` to open it.
 
-`Flow.add()` is the method to add executor to the `Flow` object. It is often used with `uses` parameter to specify
-the [Executor](Executor.md).
+### Visualize a Flow
+
+```python
+from jina import Flow
+
+f = Flow().add().plot('f.svg')
+```
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/empty-flow.svg?raw=true"/>
+
+In Jupyter Lab/Notebook, `Flow` object is rendered automatically, there is no need to do call `plot()`.
+
+### Add `Executor` to a Flow
+
+`.add()` is the core method to add executor to a `Flow` object. Each `add` creates a new Executor, and these Executors
+can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker
+container.
+
+`.add()` accepts the following common arguments:
+
+| |  |
+|---|---|
+|Define Executor| `uses`|
+|Define Dependency | `needs` |
+|Parallelization | `parallel`, `polling` |
+
+For a full list of arguments, please check `jina executor --help`.
+
+#### Define What Executor to Use via `uses`
+
+`uses` parameter to specify the [Executor](Executor.md).
 
 `uses` accepts multiple value types including class name, Docker image, (inline) YAML.
+
+##### Add Executor via its Class Name
+
+```python
+from jina import Flow, Executor
+
+
+class MyExecutor(Executor):
+    ...
+
+
+f = Flow().add(uses=MyExecutor)
+
+with f:
+    ...
+```
+
+##### Add Executor via YAML file
+
+`myexec.py`:
+
+```python
+from jina import Executor
+
+
+class MyExecutor(Executor):
+
+    def __init__(self, bar):
+        super().__init__()
+        self.bar = bar
+
+    ...
+```
+
+`myexec.yml`
+
+```yaml
+jtype: MyExecutor
+with:
+  bar: 123
+metas:
+  name: awesomeness
+  description: my first awesome executor
+  py_modules: myexec.py
+requests:
+  /random_work: foo
+```
+
+```python
+from jina import Flow
+
+f = Flow().add(uses='myexec.yml')
+
+with f:
+    ...
+```
+
+Note that, YAML file can be also inline:
 
 ```python
 from jina import Flow
 
 f = (Flow()
-     .add(uses=MyExecutor)  # the class of a Jina Executor
-     .add(uses='myexecutor.yml')  # YAML serialization of a Jina Executor 
      .add(uses='''
 jtype: MyExecutor
 with:
@@ -110,18 +207,26 @@ metas:
   description: my first awesome executor
 requests:
   /random_work: foo    
-    ''')  #inline YAML
-     .add(uses={'jtype': 'MyBertEncoder', 'with': {'param': 1.23}}))  # dict config object with __cls keyword
+    '''))
 ```
 
-The power of Jina lies in its decentralized architecture: Each `add` creates a new Executor, and these Executors can be
-run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker container.
+##### Add Executor via `Dict`
 
-### Create Inter & Intra Parallelism via `needs`
+```python
+from jina import Flow
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/basic-inter-intra-parallelism.ipynb)
+f = Flow().add(
+    uses={
+        'jtype': 'MyExecutor',
+        'with': {'bar': 123}}
+)
+```
 
-Chaining `.add()`s creates a sequential Flow. For parallelism, use the `needs` parameter:
+Chaining `.add()`s creates a sequential Flow.
+
+#### Intra Parallelism via `needs`
+
+For parallelism, use the `needs` parameter:
 
 ```python
 from jina import Flow
@@ -130,32 +235,81 @@ f = (Flow()
      .add(name='p1', needs='gateway')
      .add(name='p2', needs='gateway')
      .add(name='p3', needs='gateway')
-     .needs(['p1', 'p2', 'p3'], name='r1').plot())
+     .needs(['p1', 'p2', 'p3'], name='r1'))
 ```
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot3.svg?raw=true"/>
 
 `p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Executors
-until they finish their work. Note: parallelism can also be performed inside a Executor using `parallel`:
+until they finish their work.
+
+`.needs()` is a syntax sugar and roughly equal to
 
 ```python
+.add(needs=['p1', 'p2', 'p3'])
+```
 
+`.needs_all()` is a syntax sugar and roughly equal to
+
+```python
+.add(needs=[all_orphan_executors_so_far])
+```
+
+"Orphan" executors have no connected executors to their outputs. The above code snippet can be also written as:
+
+```python
+from jina import Flow
+
+f = (Flow()
+     .add(name='p1', needs='gateway')
+     .add(name='p2', needs='gateway')
+     .add(name='p3', needs='gateway')
+     .needs_all())
+```
+
+#### Inter Parallelism via `parallel`
+
+Parallelism can also be performed inside an Executor using `parallel`. The example below starts three `p1`:
+
+```python
+from jina import Flow
+
+f = (Flow()
+     .add(name='p1', parallel=3)
+     .add(name='p2'))
+```
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/parallel-explain.svg?raw=true"/>
+
+Note, by default:
+- only one `p1` will receive a message.
+- `p2` will be called when *any one of* `p1` finished.
+
+To change that behavior, you can add `polling` argument to `.add()`, e.g. `.add(parallel=3, polling='ALL')`. Specifically,
+
+| `polling` | Who will receive from upstream? | When will downstream be called? | 
+| --- | --- | --- |
+| `ANY` | one of parallels | one of parallels is finished |
+| `ALL` | all parallels | all parallels are finished |
+| `ALL_ASYNC` | all parallels | one of parallels is finished |
+
+You can combine inter and inner parallelization via:
+
+```python
 from jina import Flow
 
 f = (Flow()
      .add(name='p1', needs='gateway')
      .add(name='p2', needs='gateway')
      .add(name='p3', parallel=3)
-     .needs(['p1', 'p3'], name='r1').plot())
+     .needs(['p1', 'p3'], name='r1'))
 ```
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
 
-### Decentralized Flow
+#### Add a Remote `Executor` via `host`
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/decentralized-flow.ipynb)
-
-A Flow does not have to be local-only: You can put any Executor to remote(s). In the example below, with the `host`
+A Flow does not have to be local-only. You can put any Executor to remote(s). In the example below, with the `host`
 keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
 dependencies that need to be uploaded are specified via the `upload_files` keyword.
 
@@ -196,7 +350,7 @@ f = (Flow()
 
 </table>
 
-### Send Data to Flow 
+### Send Data to Flow
 
 #### `post` method
 
