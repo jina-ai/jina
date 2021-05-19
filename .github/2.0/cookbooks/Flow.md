@@ -480,7 +480,8 @@ with Flow() as f:
 ```
 
 `Document` class provides some static methods that allows you to build `Document` generator, e.g. [`from_csv`
-, `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used conjunct with `.post()`, e.g.
+, `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used
+conjunct with `.post()`, e.g.
 
 ```python
 from jina import Flow, Document
@@ -561,7 +562,8 @@ with f:
     ...
 ```
 
-You can switch to REST interface also via `.use_rest_gateway()`. Switching back to gRPC can be done via `.use_grpc_gateway()`.
+You can switch to REST interface also via `.use_rest_gateway()`. Switching back to gRPC can be done
+via `.use_grpc_gateway()`.
 
 Note, unlike 1.x these two functions can be used **inside the `with` context after the Flow has started**:
 
@@ -572,7 +574,7 @@ f = Flow()
 
 with f:
     f.post('/index', Document())  # indexing data
-    
+
     f.use_rest_gateway()  # switch to REST to accept HTTP request
     f.block()
 ```
@@ -652,37 +654,55 @@ $ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type:
 
 When use `curl`, make sure to pass the `-N/--no-buffer` flag.
 
-
 ### Asynchronous Flow
 
-While synchronous from outside, Jina runs asynchronously under the hood: it manages the eventloop(s) for scheduling the
-jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
+`AsyncFlow` is an "async version" of `Flow` class.
 
-Unlike `Flow`, the CRUD of `AsyncFlow` accepts input and output functions
+The quote mark represents the explicit async when using `AsyncFlow`.
+
+While synchronous from outside, `Flow` also runs asynchronously under the hood: it manages the eventloop(s) for
+scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
+
+Unlike `Flow`, `AsyncFlow` accepts input and output functions
 as [async generators](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other
 asynchronous libraries (e.g. motor for MongoDB):
 
 ```python
-from jina import AsyncFlow
+import asyncio
+
+from jina import AsyncFlow, Document
 
 
-async def input_function():
+async def async_inputs():
     for _ in range(10):
         yield Document()
         await asyncio.sleep(0.1)
 
 
 with AsyncFlow().add() as f:
-    async for resp in f.index(input_function):
+    async for resp in f.post('/', async_inputs):
         print(resp)
 ```
 
 `AsyncFlow` is particularly useful when Jina and another heavy-lifting job are running concurrently:
 
 ```python
-async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
-    with AsyncFlow().add(uses='- !WaitDriver {}') as f:
-        async for resp in f.index_ndarray(numpy.random.random([5, 4])):
+import time
+import asyncio
+
+from jina import AsyncFlow, Document, Executor, requests
+
+
+class HeavyWork(Executor):
+
+    @requests
+    def foo(self, **kwargs):
+        time.sleep(5)
+
+
+async def run_async_flow_5s():
+    with AsyncFlow().add(uses=HeavyWork) as f:
+        async for resp in f.post('/'):
             print(resp)
 
 
