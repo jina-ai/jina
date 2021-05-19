@@ -479,8 +479,8 @@ with Flow() as f:
     f.post('/')  # empty
 ```
 
-`Document` class provides some static methods that allows you to build `Document` generator, e.g. `from_csv`
-, `from_files`, `from_ndarray`, `from_ndjson`. They can be used conjunct with `.post()`, e.g.
+`Document` class provides some static methods that allows you to build `Document` generator, e.g. [`from_csv`
+, `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used conjunct with `.post()`, e.g.
 
 ```python
 from jina import Flow, Document
@@ -546,18 +546,112 @@ with f:
 
 This is useful to control `Executor` object in the runtime.
 
-### REST Interface
+### Switch REST & gRPC Interface
 
-In practice, the query Flow and the client (i.e. data sender) are often physically separated. Moreover, the client may
-prefer to use a REST API rather than gRPC when querying. You can set `port_expose` to a public port and turn
-on [REST support](https://api.jina.ai/rest/) with `restful=True`:
+By default all `.post()` communications are via `gRPC` interface.
+
+To enable a Flow receiving from HTTP request, you can add `restful=True` in Flow constructor.
 
 ```python
-f = Flow(port_expose=45678, restful=True)
+from jina import Flow
+
+f = Flow(restful=True).add(...)
 
 with f:
+    ...
+```
+
+You can switch to REST interface also via `.use_rest_gateway()`. Switching back to gRPC can be done via `.use_grpc_gateway()`.
+
+Note, unlike 1.x these two functions can be used **inside the `with` context after the Flow has started**:
+
+```python
+from jina import Flow, Document
+
+f = Flow()
+
+with f:
+    f.post('/index', Document())  # indexing data
+    
+    f.use_rest_gateway()  # switch to REST to accept HTTP request
     f.block()
 ```
+
+You will see console prints log as follows:
+
+```console
+           JINA@4262[I]:input tcp://0.0.0.0:53894 (PULL_CONNECT) output tcp://0.0.0.0:53894 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp4e9u2pdn (PAIR_BIND)
+           JINA@4262[I]:
+    Jina REST interface
+    💬 Swagger UI:	http://localhost:53895/docs
+    📚 Redoc     :	http://localhost:53895/redoc
+        
+           JINA@4262[S]:ready and listening
+        gateway@4262[S]:RESTRuntime is listening at: 0.0.0.0:53895
+        gateway@4251[S]:ready and listening
+```
+
+You can navigate to the Swagger docs UI via `http://localhost:53895/docs`:
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui.png?raw=true"/>
+
+Now you can send data request via `curl`/Postman,
+
+```console
+$ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type: application/json' http://localhost:53895/post/index
+
+{
+  "request_id": "1f52dae0-93a5-47b5-9fa0-522a75301d99",
+  "data": {
+    "docs": [
+      {
+        "id": "28287a66-b86a-11eb-99c2-1e008a366d49",
+        "tags": {},
+        "text": "hello world",
+        "content_hash": "",
+        "granularity": 0,
+        "adjacency": 0,
+        "parent_id": "",
+        "chunks": [],
+        "weight": 0.0,
+        "siblings": 0,
+        "matches": [],
+        "mime_type": "",
+        "location": [],
+        "offset": 0,
+        "modality": "",
+        "evaluations": []
+      }
+    ],
+    "groundtruths": []
+  },
+  "header": {
+    "exec_endpoint": "index",
+    "target_peapod": "",
+    "no_propagate": false
+  },
+  "routes": [
+    {
+      "pod": "gateway",
+      "pod_id": "5e4211d0-3916-4f33-8b9e-eec54be8ed9a",
+      "start_time": "2021-05-19T06:19:24.472050Z",
+      "end_time": "2021-05-19T06:19:24.473895Z"
+    },
+    {
+      "pod": "gateway",
+      "pod_id": "83a7ad34-1042-4b5d-b065-3692e2fc691b",
+      "start_time": "2021-05-19T06:19:24.473831Z"
+    }
+  ],
+  "status": {
+    "code": "SUCCESS",
+    "description": ""
+  }
+}
+```
+
+When use `curl`, make sure to pass the `-N/--no-buffer` flag.
+
 
 ### Asynchronous Flow
 

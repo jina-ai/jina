@@ -99,22 +99,32 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         }
 
     @app.post(
-        path='/post', summary='Post a general data request to Jina', tags=['General']
+        path='/post/{endpoint}',
+        summary='Post a data request to some endpoint',
+        tags=['Data Request'],
+        response_model=JinaRequestModel,
     )
-    async def post(body: JinaRequestModel):
+    async def post(endpoint: str, body: JinaRequestModel):
         """
         Request mode service and return results in JSON, a deprecated interface.
 
-        :param body: Request body.
+        :param endpoint: the executor endpoint
+        :param body: the Request body.
         :return: Results in JSONresponse.
         """
 
         bd = body.dict()
+        bd['exec_endpoint'] = endpoint
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
 
-    @app.post(path='/index', summary='Index documents into Jina', tags=['CRUD'])
+    @app.post(
+        path='/index',
+        summary='Post a data request to `/index` endpoint',
+        tags=['Sugary CRUD'],
+        response_model=JinaIndexRequestModel,
+    )
     async def index_api(body: JinaIndexRequestModel):
         """
         Index API to index documents.
@@ -128,7 +138,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
 
-    @app.post(path='/search', summary='Search documents from Jina', tags=['CRUD'])
+    @app.post(
+        path='/search',
+        summary='Post a data request to `/search` endpoint',
+        tags=['Sugary CRUD'],
+        response_model=JinaSearchRequestModel,
+    )
     async def search_api(body: JinaSearchRequestModel):
         """
         Search API to search documents.
@@ -142,7 +157,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
 
-    @app.put(path='/update', summary='Update documents in Jina', tags=['CRUD'])
+    @app.put(
+        path='/update',
+        summary='Post a data request to `/update` endpoint',
+        tags=['Sugary CRUD'],
+        response_model=JinaUpdateRequestModel,
+    )
     async def update_api(body: JinaUpdateRequestModel):
         """
         Update API to update documents.
@@ -156,7 +176,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
 
-    @app.delete(path='/delete', summary='Delete documents in Jina', tags=['CRUD'])
+    @app.delete(
+        path='/delete',
+        summary='Post a data request to `/delete` endpoint',
+        tags=['Sugary CRUD'],
+        response_model=JinaDeleteRequestModel,
+    )
     async def delete_api(body: JinaDeleteRequestModel):
         """
         Delete API to delete documents.
@@ -179,10 +204,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
             yield MessageToJson(
-                k,
-                including_default_value_fields=True,
-                preserving_proto_field_name=True,
-                use_integers_for_enums=True,
+                k, including_default_value_fields=True, preserving_proto_field_name=True
             )
 
     @app.websocket_route(path='/stream')
