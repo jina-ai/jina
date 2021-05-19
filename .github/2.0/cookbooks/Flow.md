@@ -586,7 +586,35 @@ with AsyncFlow().add() as f:
 `AsyncFlow` is particularly useful when Jina and another heavy-lifting job are running concurrently:
 
 ```python
+from jina import AsyncFlow, Executor, requests
+import asyncio
+import time
 
+
+class Wait5sExecutor(Executor):
+    @requests
+    def wait_5s(self, **kwargs):
+        time.sleep(5)
+
+
+async def run_async_flow_5s():  # WaitDriver pause 5s makes total roundtrip ~5s
+    with AsyncFlow().add(uses=Wait5sExecutor) as f:
+        async for resp in f.post(on='/'):
+            print(resp)
+
+
+async def heavylifting():  # total roundtrip takes ~5s
+    print('heavylifting other io-bound jobs, e.g. download, upload, file io')
+    await asyncio.sleep(5)
+    print('heavylifting done after 5s')
+
+
+async def concurrent_main():  # about 5s; but some dispatch cost, can't be just 5s, usually at <7s
+    await asyncio.gather(run_async_flow_5s(), heavylifting())
+
+
+if __name__ == '__main__':
+    asyncio.run(concurrent_main())
 ```
 
 `AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. where it can run out-of-the-box.
