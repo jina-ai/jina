@@ -1,7 +1,7 @@
 import json
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
-from typing import Union, Iterable, Tuple, List, Iterator, TextIO
+from typing import Union, Iterable, Tuple, List, Iterator, TextIO, Optional, Generator
 
 from .traversable import TraversableSequence
 from ...helper import typename, cached_property
@@ -36,11 +36,15 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     """
 
     def __init__(
-        self, docs_proto: Union['RepeatedContainer', Iterable['Document'], None] = None
+        self,
+        docs_proto: Optional[Union['RepeatedContainer', Iterable['Document']]] = None,
     ):
         super().__init__()
         if docs_proto is not None:
-            self._docs_proto = docs_proto
+            if isinstance(docs_proto, Generator):
+                self._docs_proto = list(docs_proto)
+            else:
+                self._docs_proto = docs_proto
         else:
             self._docs_proto = []
 

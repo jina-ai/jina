@@ -193,3 +193,14 @@ def add_match(doc):
         match.adjacency = doc.adjacency + 1
         doc.matches.append(match)
         return match
+
+
+def test_doc_array_from_generator():
+    NUM_DOCS = 100
+
+    def generate():
+        for _ in range(NUM_DOCS):
+            yield Document()
+
+    doc_array = DocumentArray(generate())
+    assert len(doc_array) == NUM_DOCS
