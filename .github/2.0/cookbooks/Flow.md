@@ -34,6 +34,8 @@ Table of Contents
     - [Send Parameters](#send-parameters)
   - [Switch REST & gRPC Interface](#switch-rest--grpc-interface)
   - [Asynchronous Flow](#asynchronous-flow)
+- [Remarks](#remarks)
+  - [Joining/Merging](#joiningmerging)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

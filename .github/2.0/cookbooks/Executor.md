@@ -37,8 +37,6 @@ Table of Contents
   - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
   - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
-- [Remarks](#remarks)
-  - [Joining/Merging](#joiningmerging)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
