@@ -65,6 +65,31 @@ with f:
 
 ### With YAML
 
+```text
+.
+├── __init__.py
+├── app.py
+├── my.yml
+└── foo.py
+
+```
+
+`foo.py`:
+
+```python
+from jina import Executor
+
+
+class MyExecutor(Executor):
+
+  def __init__(self, bar: int, **kwargs):
+    super().__init__(**kwargs)
+    self.bar = bar
+
+  def foo(self, **kwargs):
+    print(f'foo says: {self.bar} {self.metas} {kwargs}')
+```
+
 `my.yml`:
 
 ```yaml
@@ -72,24 +97,19 @@ jtype: MyExecutor
 with:
   bar: 123
 metas:
+  py_modules:
+    - foo.py
   name: awesomeness
   description: my first awesome executor
 requests:
   /random_work: foo
 ```
 
+
+`app.py`:
+
 ```python
-from jina import Executor, Flow, Document
-
-
-class MyExecutor(Executor):
-
-    def __init__(self, bar: int, **kwargs):
-        super().__init__(**kwargs)
-        self.bar = bar
-
-    def foo(self, **kwargs):
-        print(f'foo says: {self.bar} {self.metas} {kwargs}')
+from jina import Flow, Document
 
 
 f = Flow().add(uses='my.yml')
