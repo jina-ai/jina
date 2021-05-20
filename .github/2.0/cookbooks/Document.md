@@ -186,8 +186,7 @@ You can assign multiple attributes in the constructor via:
 ```python
 from jina import Document
 
-d = Document(content='hello',
-             uri='https://jina.ai',
+d = Document(uri='https://jina.ai',
              mime_type='text/plain',
              granularity=1,
              adjacency=3,
@@ -195,8 +194,8 @@ d = Document(content='hello',
 ```
 
 ```text
-<jina.types.Document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} text=hello granularity=1 adjacency=3 at 6317309200>
-```
+<jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
+
 
 #### Construct from Dict or JSON String
 
