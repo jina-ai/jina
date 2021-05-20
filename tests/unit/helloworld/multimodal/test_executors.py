@@ -94,6 +94,3 @@ def test_image_crafter(encoder_doc_array, tmpdir):
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=ImageCrafter) as f:
         f.index(inputs=encoder_doc_array, on_done=validate)
-
-    with Flow().add(uses=ImageCrafter) as f:
-        f.index(inputs=encoder_doc_array, on_done=validate)
