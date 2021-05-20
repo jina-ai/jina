@@ -575,6 +575,23 @@ DocumentArray has 3 items:
 
 As `DocumenArray` is an `Iterable`, you can also use [Python built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables advanced "iterator algebra" on the `DocumentArray`.
 
+For instance, you can group a `DocumentArray` by `parent_id`:
+```python
+from jina import DocumentArray, Document
+from itertools import groupby
+
+da = DocumentArray([Document(parent_id=f'{i%2}') for i in range(6)])
+groups = groupby(sorted(da, key=lambda d: d.parent_id), lambda d: d.parent_id)
+for key, group in groups:
+    key, len(list(group))
+```
+
+```text
+('0', 3)
+('1', 3)
+```
+
+    
 ### Get Attributes in Bulk
 
 `DocumentArray` implements powerful getters that allows one to fetch multiple attributes from the documents it contains
