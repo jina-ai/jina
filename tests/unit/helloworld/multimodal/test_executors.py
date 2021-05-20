@@ -4,7 +4,7 @@ import pytest
 from PIL import Image
 
 from jina import Document, DocumentArray, Flow
-from jina.helloworld.multimodal.executors import Segmenter
+from jina.helloworld.multimodal.executors import Segmenter, TextEncoder
 
 
 @pytest.fixture(scope='function')
@@ -16,6 +16,17 @@ def segmenter_doc_array():
     return DocumentArray(inputs)
 
 
+@pytest.fixture(scope='function')
+def encoder_doc_array():
+    document = Document()
+    chunk_text = Document(text='hello', mime_type='text/plain')
+    chunk_uri = Document(
+        uri=f'{os.environ["HW_WORKDIR"]}/people-img/1.png', mime_type='image/jpeg'
+    )
+    document.chunks = [chunk_text, chunk_uri]
+    return DocumentArray([document])
+
+
 def create_test_img(path, file_name):
     img_path = path + '/people-img/'
     if not os.path.exists(img_path):
@@ -25,6 +36,12 @@ def create_test_img(path, file_name):
 
 
 def test_segmenter(segmenter_doc_array, tmpdir):
+    """In this test, the ``DocumentArray`` has 2 ``Document`` with tags.
+    Each ``Document`` will add 2 chunks based on tags, i.e. the text chunk
+    and image uri chunk. Finally, we convert the uri of each ``Document``
+    into datauri to show the image in front-end.
+    """
+
     def validate(resp):
         assert len(resp.data.docs) == 2
         for doc in resp.data.docs:
@@ -37,3 +54,22 @@ def test_segmenter(segmenter_doc_array, tmpdir):
     create_test_img(path=str(tmpdir), file_name='2.png')
     with Flow().add(uses=Segmenter) as f:
         f.index(inputs=segmenter_doc_array, on_done=validate)
+
+
+def test_text_encoder(encoder_doc_array, tmpdir):
+    """In this test, we input one ``DocumentArray`` with one ``Document``,
+    and the `encode` method in the ``TextEncoder`` returns chunks.
+    In the ``TextEncoder``, we filtered out all the modalities and only kept `text/plain`.
+    So the 2 chunks should left only 1 chunk with modality of `text/plain`.
+    And the embedding value of the ``Document`` is not empty once we finished encoding.
+    """
+
+    def validate(resp):
+        assert len(resp.data.docs) == 1
+        chunk = resp.data.docs[0]
+        assert chunk.mime_type == 'text/plain'
+        assert chunk.embedding
+
+    create_test_img(path=str(tmpdir), file_name='1.png')
+    with Flow().add(uses=TextEncoder) as f:
+        f.index(inputs=encoder_doc_array, on_done=validate)
