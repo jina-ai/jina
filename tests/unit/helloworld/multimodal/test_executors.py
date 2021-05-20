@@ -4,7 +4,7 @@ import pytest
 from PIL import Image
 
 from jina import Document, DocumentArray, Flow
-from jina.helloworld.multimodal.executors import Segmenter, TextEncoder
+from jina.helloworld.multimodal.executors import Segmenter, TextEncoder, ImageCrafter
 
 
 @pytest.fixture(scope='function')
@@ -72,4 +72,28 @@ def test_text_encoder(encoder_doc_array, tmpdir):
 
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=TextEncoder) as f:
+        f.index(inputs=encoder_doc_array, on_done=validate)
+
+
+def test_image_crafter(encoder_doc_array, tmpdir):
+    """In this test, we input one ``DocumentArray`` with one ``Document``,
+    and the `craft` method in the ``ImageCrafter`` returns chunks.
+    In the ``ImageCrafter``, we filtered out all the modalities and only kept `image/jpeg`.
+    So the 2 chunks should left only 1 chunk.
+    And the blob value of the ``Document`` is not empty once we finished crafting since
+    we converted image uri/datauri to blob.
+    """
+
+    def validate(resp):
+        assert len(resp.data.docs) == 1
+        chunk = resp.data.docs[0]
+        assert chunk.mime_type == 'image/jpeg'
+        assert chunk.blob
+        assert chunk.uri == ''
+
+    create_test_img(path=str(tmpdir), file_name='1.png')
+    with Flow().add(uses=ImageCrafter) as f:
+        f.index(inputs=encoder_doc_array, on_done=validate)
+
+    with Flow().add(uses=ImageCrafter) as f:
         f.index(inputs=encoder_doc_array, on_done=validate)
