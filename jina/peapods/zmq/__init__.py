@@ -495,11 +495,7 @@ def send_message(
     num_bytes = 0
     try:
         _prep_send_socket(sock, timeout)
-        if 'flags' in kwargs:
-            kwargs['flags'] |= zmq.NOBLOCK
-        else:
-            kwargs['flags'] = zmq.NOBLOCK
-        sock.send_multipart(msg.dump(), **kwargs)
+        sock.send_multipart(msg.dump(), flags=zmq.NOBLOCK)
         num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(
