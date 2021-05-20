@@ -17,7 +17,9 @@ class KeyValueDBMSIndexer(Executor):
     def index(self, docs: 'DocumentArray', *args, **kwargs):
         self._docs.extend(docs)
 
-    @requests(on='/dump')
+    # TODO endpoint in tests.distributed.test_remote_flow_dump_rolling_update.test_dump_dbms_remote.test_dump_dbms_remote
+    # ends up being http://0.0.0.0:9000/post/dump
+    @requests(on='dump')
     def dump(self, parameters, *args, **kwargs):
         dump_path = parameters['dump_path']
         shards = int(parameters['shards'])

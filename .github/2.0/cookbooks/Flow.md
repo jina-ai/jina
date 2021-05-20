@@ -368,7 +368,7 @@ dependencies that need to be uploaded are specified via the `upload_files` keywo
 ```bash
 # have docker installed
 docker run --name=jinad --network=host -v /var/run/docker.sock:/var/run/docker.sock jinaai/jina:latest-daemon --port-expose 8000
- to stop it
+# stop the docker container
 docker rm -f jinad
 ```
 

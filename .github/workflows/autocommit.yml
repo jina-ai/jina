@@ -66,6 +66,7 @@ jobs:
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: 'Table of Contents'
           TARGET_PATHS: '.github/2.0/cookbooks/*.md'
+          CHECK_ONLY_DEFAULT_BRANCH: true
       - uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}

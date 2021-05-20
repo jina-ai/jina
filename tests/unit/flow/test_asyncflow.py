@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentArray
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from jina.types.request import Response
@@ -41,7 +41,7 @@ async def test_run_async_flow(restful, mocker):
     r_val = mocker.Mock()
     with AsyncFlow(restful=restful).add() as f:
         async for r in f.index(
-            Document.from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
+            DocumentArray.from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
         ):
             assert isinstance(r, Response)
     validate_callback(r_val, validate)
@@ -90,7 +90,8 @@ async def run_async_flow_5s(restful):
 
     with AsyncFlow(restful=restful).add(uses=Wait5s) as f:
         async for r in f.index(
-            Document.from_ndarray(np.random.random([num_docs, 4])), on_done=validate
+            DocumentArray.from_ndarray(np.random.random([num_docs, 4])),
+            on_done=validate,
         ):
             assert isinstance(r, Response)
 
@@ -137,7 +138,7 @@ async def test_run_async_flow_other_task_concurrent(restful):
 @pytest.mark.parametrize('restful', [False])
 async def test_return_results_async_flow(return_results, restful):
     with AsyncFlow(restful=restful, return_results=return_results).add() as f:
-        async for r in f.index(Document.from_ndarray(np.random.random([10, 2]))):
+        async for r in f.index(DocumentArray.from_ndarray(np.random.random([10, 2]))):
             assert isinstance(r, Response)
 
 
