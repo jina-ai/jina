@@ -142,10 +142,10 @@ class ImageCrafter(Executor):
         for doc in chunks:
             getattr(doc, fn)()
             raw_img = _load_image(doc.blob, self.channel_axis)
-            _img = self._normalize(raw_img)
+            img = self._normalize(raw_img)
             # move the channel_axis to target_channel_axis to better fit different models
-            if self.channel_axis != self._default_channel_axis:
-                img = np.moveaxis(_img, self.channel_axis, self._default_channel_axis)
+            if self.channel_axis != self.target_channel_axis:
+                img = np.moveaxis(img, self.channel_axis, self.target_channel_axis)
             doc.blob = img
         return chunks
 
@@ -188,7 +188,6 @@ class ImageEncoder(Executor):
         self.model.to(torch.device('cpu'))
 
     def _get_features(self, content):
-        # content = content.permute(0, 3, 1, 2)
         return self.model(content)
 
     def _get_pooling(self, feature_map: 'np.ndarray') -> 'np.ndarray':
