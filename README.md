@@ -15,7 +15,8 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
-Powered by deep learning and cloud-native techniques, Jina is geared towards building search systems for any kind of data in just minutes.
+Powered by deep learning and cloud-native techniques, Jina is geared towards building search systems for any kind of
+data in just minutes.
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music,
 source code, PDF, etc.
@@ -77,15 +78,17 @@ from jina import Document, Executor, Flow, requests
 
 class MyExecutor(Executor):
 
-    @requests
+    @requests(on='/bar')
     def foo(self, docs, parameters, **kwargs):
-        print(f'{parameters["p1"]} - {docs[0]}')
+        for d in docs:
+            d.text = parameters['p1']
 
 
 f = Flow().add(uses=MyExecutor)
+d = Document(text='hello')
 
 with f:
-    f.post(on='/bar', inputs=Document(), parameters={'p1': 'hello'}, on_done=print)
+    f.post('/bar', d, parameters={'p1': 'world'}, on_done=print)
 ```
 
 ### Run Quick Demo
@@ -116,7 +119,7 @@ $ jina hello fork fashion ../my-proj/
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
     - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
-- 🧼 [Write clean code in Jina](./.github/2.0/cookbooks/CleanCode.md)  
+- 🧼 [Write clean code in Jina](./.github/2.0/cookbooks/CleanCode.md)
 
 ## Support
 
