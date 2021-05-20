@@ -4,7 +4,10 @@
 # review when someone opens a pull request.
 *    @jina-ai/engineering
 
-# Han Xiao owns CICD and README.md
-.github   @hanxiao
+.github/workflows   @hanxiao
 setup.py  @hanxiao
 extra-requirements.txt  @hanxiao
+jina/__init__.py  @hanxiao
+requirements.txt  @hanxiao
+MANIFEST.in  @hanxiao
+README.md  @hanxiao

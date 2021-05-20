@@ -1,13 +1,13 @@
 import asyncio
+import time
 
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, DocumentArray
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from jina.types.request import Response
-
 from tests import validate_callback
 
 num_docs = 5
@@ -31,7 +31,7 @@ def documents(start_index, end_index):
             with Document() as chunk:
                 chunk.text = 'text in chunk'
                 chunk.tags['id'] = 'id in chunk tags'
-            doc.chunks.add(chunk)
+            doc.chunks.append(chunk)
         yield doc
 
 
@@ -40,14 +40,16 @@ def documents(start_index, end_index):
 async def test_run_async_flow(restful, mocker):
     r_val = mocker.Mock()
     with AsyncFlow(restful=restful).add() as f:
-        async for r in f.index_ndarray(np.random.random([num_docs, 4]), on_done=r_val):
+        async for r in f.index(
+            DocumentArray.from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
+        ):
             assert isinstance(r, Response)
     validate_callback(r_val, validate)
 
 
 async def async_input_function():
     for _ in range(num_docs):
-        yield np.random.random([4])
+        yield Document(content=np.random.random([4]))
         await asyncio.sleep(0.1)
 
 
@@ -78,9 +80,18 @@ async def test_run_async_flow_async_input(restful, inputs, mocker):
 
 async def run_async_flow_5s(restful):
     # WaitDriver pause 5s makes total roundtrip ~5s
-    with AsyncFlow(restful=restful).add(uses='- !WaitDriver {}') as f:
-        async for r in f.index_ndarray(
-            np.random.random([num_docs, 4]), on_done=validate
+    from jina import Executor, requests
+
+    class Wait5s(Executor):
+        @requests
+        def foo(self, **kwargs):
+            print('im called!')
+            time.sleep(5)
+
+    with AsyncFlow(restful=restful).add(uses=Wait5s) as f:
+        async for r in f.index(
+            DocumentArray.from_ndarray(np.random.random([num_docs, 4])),
+            on_done=validate,
         ):
             assert isinstance(r, Response)
 
@@ -127,7 +138,7 @@ async def test_run_async_flow_other_task_concurrent(restful):
 @pytest.mark.parametrize('restful', [False])
 async def test_return_results_async_flow(return_results, restful):
     with AsyncFlow(restful=restful, return_results=return_results).add() as f:
-        async for r in f.index_ndarray(np.random.random([10, 2])):
+        async for r in f.index(DocumentArray.from_ndarray(np.random.random([10, 2]))):
             assert isinstance(r, Response)
 
 
@@ -138,4 +149,19 @@ async def test_return_results_async_flow(return_results, restful):
 async def test_return_results_async_flow_crud(return_results, restful, flow_api):
     with AsyncFlow(restful=restful, return_results=return_results).add() as f:
         async for r in getattr(f, flow_api)(documents(0, 10)):
+            assert isinstance(r, Response)
+
+
+@pytest.mark.asyncio
+async def test_async_flow_empty_data():
+
+    from jina import Executor, requests
+
+    class MyExec(Executor):
+        @requests
+        def foo(self, parameters, **kwargs):
+            assert parameters['hello'] == 'world'
+
+    with AsyncFlow().add(uses=MyExec) as f:
+        async for r in f.post('/hello', parameters={'hello': 'world'}):
             assert isinstance(r, Response)

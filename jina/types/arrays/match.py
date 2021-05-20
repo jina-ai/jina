@@ -9,15 +9,13 @@ class MatchArray(DocumentArray):
     :class:`MatchArray` inherits from :class:`DocumentArray`.
     It's a subset of Documents that represents the matches
 
-    :param docs_proto: List of matches of the `reference_doc`
-    :type docs_proto: :class:`Document`
+    :param docs_proto: Set of matches of the `reference_doc`
     :param reference_doc: Reference :class:`Document` for the sub-documents
-    :type reference_doc: :class:`Document`
     """
 
     def __init__(self, docs_proto, reference_doc: 'Document'):
-        super().__init__(docs_proto)
         self._ref_doc = reference_doc
+        super().__init__(docs_proto)
 
     def append(self, document: 'Document', **kwargs) -> 'Document':
         """Add a matched document to the current Document.
@@ -30,15 +28,14 @@ class MatchArray(DocumentArray):
         """
         from ..document import Document
 
-        m = self._docs_proto.add()
-        m.CopyFrom(document.proto)
-        match = Document(m)
+        match = Document(document, copy=True)
 
-        match.set_attrs(
+        match.set_attributes(
             granularity=self.granularity, adjacency=self.adjacency, **kwargs
         )
         match.score.ref_id = self._ref_doc.id
 
+        super().append(match)
         return match
 
     @property

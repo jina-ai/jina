@@ -35,11 +35,9 @@ class V1Parser(VersionedYAMLParser):
             pods:
               - name: pod0  # notice the change here, name is now an attribute
                 method: add  # by default method is always add, available: add, needs, inspect
-                uses: _pass
                 needs: gateway
               - name: pod1  # notice the change here, name is now an attribute
                 method: add  # by default method is always add, available: add, needs, inspect
-                uses: _pass
                 needs: gateway
               - method: inspect  # add an inspect node on pod1
               - method: needs  # let's try something new in Flow YAML v1: needs
@@ -65,7 +63,7 @@ class V1Parser(VersionedYAMLParser):
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
         obj = cls(*tmp_a, env=envs, **tmp_p)
 
-        pp = data.get('pods', [])
+        pp = data.get('executors', data.get('pods', []))
         for pods in pp:
             p_pod_attr = {kk: expand_env_var(vv) for kk, vv in pods.items()}
             # in v1 YAML, flow is an optional argument
@@ -92,7 +90,7 @@ class V1Parser(VersionedYAMLParser):
             r['with'] = data._kwargs
 
         if data._pod_nodes:
-            r['pods'] = []
+            r['executors'] = []
 
         last_name = 'gateway'
         for k, v in data._pod_nodes.items():
@@ -116,5 +114,5 @@ class V1Parser(VersionedYAMLParser):
                 if t in kwargs:
                     kwargs.pop(t)
             last_name = kwargs['name']
-            r['pods'].append(kwargs)
+            r['executors'].append(kwargs)
         return r

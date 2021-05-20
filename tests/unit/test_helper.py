@@ -6,11 +6,10 @@ import numpy as np
 import pytest
 
 from cli import _is_latest_version
-from jina import Executor
-from jina import NdArray, Request
+from jina import Executor, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError, NoAvailablePortError
-from jina.executors.decorators import requests, batching
+from jina.executors.decorators import requests
 from jina.helper import (
     cached_property,
     convert_tuple_to_list,
@@ -19,12 +18,14 @@ from jina.helper import (
     touch_dir,
     random_port,
     find_request_binding,
+    dunder_get,
 )
 from jina.jaml.helper import complete_path
 from jina.logging import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
-from jina.types.querylang.queryset.dunderkey import dunder_get
+from jina.types.ndarray.generic import NdArray
+from jina.types.request import Request
 from tests import random_docs
 
 
@@ -86,10 +87,10 @@ def test_check_update():
 
 
 def test_wrap_func():
-    from jina.executors.encoders import BaseEncoder
+    from jina import Executor
 
-    class DummyEncoder(BaseEncoder):
-        def encode(self):
+    class DummyEncoder(Executor):
+        def __init__(self):
             pass
 
     class MockEnc(DummyEncoder):
@@ -99,7 +100,7 @@ def test_wrap_func():
         pass
 
     class MockMockMockEnc(MockEnc):
-        def encode(self):
+        def __init__(self):
             pass
 
     def check_override(cls, method):
@@ -110,11 +111,10 @@ def test_wrap_func():
         is_override = not is_inherit and is_parent_method
         return is_override
 
-    assert not check_override(BaseEncoder, 'encode')
-    assert check_override(DummyEncoder, 'encode')
-    assert not check_override(MockEnc, 'encode')
-    assert not check_override(MockMockEnc, 'encode')
-    assert check_override(MockMockMockEnc, 'encode')
+    assert check_override(DummyEncoder, '__init__')
+    assert not check_override(MockEnc, '__init__')
+    assert not check_override(MockMockEnc, '__init__')
+    assert check_override(MockMockMockEnc, '__init__')
 
 
 def test_pprint_routes(capfd):
@@ -294,27 +294,25 @@ def test_random_port_max_failures_for_tests_only(config_few_ports):
 
 
 class MyDummyExecutor(Executor):
-    @batching
     @requests
-    def foo(self):
+    def foo(self, **kwargs):
         pass
 
     @requests(on='index')
-    def bar(self):
+    def bar(self, **kwargs):
         pass
 
     @requests(on='search')
-    def bar2(self):
+    def bar2(self, **kwargs):
         pass
 
-    @batching
     def foo2(self):
         pass
 
 
 def test_find_request_binding():
     r = find_request_binding(MyDummyExecutor)
-    assert r['default'] == 'foo'
+    assert r[__default_endpoint__] == 'foo'
     assert r['index'] == 'bar'
     assert r['search'] == 'bar2'
     assert 'foo2' not in r.values()

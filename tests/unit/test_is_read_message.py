@@ -1,10 +1,12 @@
 import time
+
+from jina import __default_executor__
+from jina.helper import random_identity
 from jina.logging import default_logger
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet
 from jina.types.message import Message
-from jina.helper import random_identity
 from jina.types.request import Request
 from tests import validate_callback
 
@@ -50,8 +52,6 @@ args2 = set_pea_parser().parse_args(
         'PULL_BIND',
         '--socket-out',
         'PUSH_BIND',
-        '--uses',
-        '_clear',  # will trigger use
         '--timeout-ctrl',
         '-1',
     ]
@@ -72,7 +72,7 @@ args3 = set_pea_parser().parse_args(
         '--socket-out',
         'PUSH_BIND',
         '--uses',
-        '_pass',  # will NOT trigger use
+        __default_executor__,  # will NOT trigger use
         '--timeout-ctrl',
         '-1',
     ]
@@ -83,7 +83,7 @@ def test_read_zmqlet():
     with MockBasePeaRead(args2), Zmqlet(args1, default_logger) as z:
         req = Request()
         req.request_id = random_identity()
-        d = req.index.docs.add()
+        d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
         z.send_message(msg)
@@ -93,7 +93,7 @@ def test_not_read_zmqlet():
     with MockBasePeaNotRead(args3), Zmqlet(args1, default_logger) as z:
         req = Request()
         req.request_id = random_identity()
-        d = req.index.docs.add()
+        d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
         z.send_message(msg)
@@ -104,12 +104,12 @@ def test_recv_message_zmqlet(mocker):
     zmqlet2 = Zmqlet(args2, default_logger)
     req = Request()
     req.request_id = random_identity()
-    doc = req.index.docs.add()
+    doc = req.data.docs.add()
     doc.tags['id'] = 2
     msg = Message(None, req, 'tmp', '')
 
     def callback(msg_):
-        assert msg_.request.docs[0].tags['id'] == msg.request.index.docs[0].tags['id']
+        assert msg_.request.docs[0].tags['id'] == msg.request.data.docs[0].tags['id']
 
     mock = mocker.Mock()
     zmqlet1.send_message(msg)

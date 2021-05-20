@@ -5,29 +5,6 @@ schema_metas = {
         'required': [],
         'additionalProperties': False,
         'properties': {
-            'is_updated': {
-                'description': 'Indicates if the executor is updated or changed since last save. '
-                'If not, then save() will do nothing. A forced save is possible to use `touch()` before `save()`',
-                'type': 'boolean',
-                'default': False,
-            },
-            'batch_size': {
-                'description': 'The size of each batch, methods decorated by `@batching` will respect this. '
-                'Useful when incoming data is too large to fit into (GPU) memory.',
-                'type': 'number',
-                'default': None,
-            },
-            'workspace': {
-                'description': '''
-The working directory, for persisting the artifacts of the executor. An artifact is a file or collection of files used during a workflow run.
-
-By default it is not set, if you expect your executor to be persisted or to persist any data, remember to set it to the desired value.
-
-When a BaseExecutor is a component of a `CompoundExecutor`, its workspace value will be overridden by the workspace coming from the `CompoundExecutor` unless a particular workspace value is set for the component BaseExecutor.                
-                ''',
-                'type': 'string',
-                'default': None,
-            },
             'name': {
                 'description': 'The name of the executor.',
                 'type': 'string',
@@ -37,17 +14,6 @@ When a BaseExecutor is a component of a `CompoundExecutor`, its workspace value 
                 'description': 'The description of this executor. It will be used in automatics docs UI',
                 'type': 'string',
                 'default': None,
-            },
-            'read_only': {
-                'description': 'Do not allow the Pod to modify the Executor, save calls will be ignored. '
-                'If set to true no serialization of the Executor',
-                'type': 'boolean',
-                'default': False,
-            },
-            'on_gpu': {
-                'description': 'If the executor is set to run on GPU.',
-                'type': 'boolean',
-                'default': False,
             },
             'py_modules': {
                 'type': 'array',

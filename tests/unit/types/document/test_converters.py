@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pytest
+
 from jina import Document
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -9,15 +10,15 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 def test_uri_to_blob():
     doc = Document(uri=os.path.join(cur_dir, 'test.png'))
-    doc.convert_uri_to_blob()
+    doc.convert_image_uri_to_blob()
     assert isinstance(doc.blob, np.ndarray)
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
 
 def test_datauri_to_blob():
     doc = Document(uri=os.path.join(cur_dir, 'test.png'))
-    doc.convert_uri_to_data_uri()
-    doc.convert_data_uri_to_blob()
+    doc.convert_uri_to_datauri()
+    doc.convert_image_datauri_to_blob()
     assert isinstance(doc.blob, np.ndarray)
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
@@ -25,7 +26,7 @@ def test_datauri_to_blob():
 def test_buffer_to_blob():
     doc = Document(uri=os.path.join(cur_dir, 'test.png'))
     doc.convert_uri_to_buffer()
-    doc.convert_buffer_image_to_blob()
+    doc.convert_image_buffer_to_blob()
     assert isinstance(doc.blob, np.ndarray)
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
@@ -51,7 +52,7 @@ def test_convert_blob_to_uri(arr_size, mode):
     doc = Document(content=np.random.randint(0, 255, arr_size))
     assert doc.blob.any()
     assert not doc.uri
-    doc.convert_blob_to_uri(32, 28)
+    doc.convert_image_blob_to_uri(32, 28)
     assert doc.uri.startswith('data:image/png;base64,')
 
 
@@ -132,13 +133,6 @@ def test_convert_content_to_uri():
 )
 def test_convert_uri_to_data_uri(uri, mimetype):
     doc = Document(uri=uri, mime_type=mimetype)
-    intialiazed_buffer = doc.buffer
-    intialiazed_uri = doc.uri
-    doc.convert_uri_to_data_uri()
-    converted_buffer = doc.buffer
-    converted_uri = doc.uri
-    print(doc.content_type)
+    doc.convert_uri_to_datauri()
     assert doc.uri.startswith(f'data:{mimetype}')
-    assert intialiazed_uri != converted_uri
-    assert converted_buffer != intialiazed_buffer
     assert doc.mime_type == mimetype

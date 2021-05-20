@@ -1,14 +1,12 @@
 import time
 
-from jina.executors.decorators import as_ndarray
-from jina.executors.encoders import BaseEncoder
+from jina.executors import BaseExecutor
 
 
-class DelayedExecutor(BaseEncoder):
+class DelayedExecutor(BaseExecutor):
     def post_init(self):
         self.logger.info('sleeping for 8 secs')
         time.sleep(8)
 
-    @as_ndarray
-    def encode(self, content: 'np.ndarray', *args, **kwargs):
-        return [[1, 2]] * len(content)
+    def encode(self, **kwargs):
+        pass

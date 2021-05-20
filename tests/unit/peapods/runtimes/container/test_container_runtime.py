@@ -5,6 +5,8 @@ from sys import platform
 import pytest
 
 from jina.checker import NetworkChecker
+from jina.executors import BaseExecutor
+from jina.executors.decorators import requests
 from jina.flow import Flow
 from jina.helper import random_name
 from jina.parsers import set_pea_parser
@@ -23,6 +25,16 @@ localhost = (
     if (platform == "linux" or platform == "linux2")
     else 'host.docker.internal'
 )
+
+
+@pytest.fixture
+def _logforward():
+    class _LogForward(BaseExecutor):
+        @requests
+        def foo(self, **kwargs):
+            pass
+
+    return _LogForward
 
 
 @pytest.fixture(scope='module')
@@ -96,25 +108,25 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
         f.index(inputs=random_docs(10))
 
 
-def test_flow_topo1(docker_image_built):
+def test_flow_topo1(docker_image_built, _logforward):
     f = (
         Flow()
         .add(
             name='d0',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal='_logforward',
+            uses_internal=_logforward,
             entrypoint='jina pod',
         )
         .add(
             name='d1',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal='_logforward',
+            uses_internal=_logforward,
             entrypoint='jina pod',
         )
         .add(
             name='d2',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal='_logforward',
+            uses_internal=_logforward,
             needs='d0',
             entrypoint='jina pod',
         )
@@ -125,20 +137,20 @@ def test_flow_topo1(docker_image_built):
         f.index(inputs=random_docs(10))
 
 
-def test_flow_topo_mixed(docker_image_built):
+def test_flow_topo_mixed(docker_image_built, _logforward):
     f = (
         Flow()
         .add(
             name='d4',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal='_logforward',
+            uses_internal=_logforward,
             entrypoint='jina pod',
         )
-        .add(name='d5', uses='_logforward')
+        .add(name='d5', uses=_logforward)
         .add(
             name='d6',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal='_logforward',
+            uses_internal=_logforward,
             needs='d4',
             entrypoint='jina pod',
         )
@@ -149,14 +161,14 @@ def test_flow_topo_mixed(docker_image_built):
         f.index(inputs=random_docs(10))
 
 
-def test_flow_topo_parallel(docker_image_built):
+def test_flow_topo_parallel(docker_image_built, _logforward):
     f = (
         Flow()
         .add(
             name='d7',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina pod',
-            uses_internal='_pass',
+            uses_internal=_logforward,
             parallel=3,
         )
         .add(name='d8', parallel=3)
@@ -164,7 +176,7 @@ def test_flow_topo_parallel(docker_image_built):
             name='d9',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina pod',
-            uses_internal='_pass',
+            uses_internal=_logforward,
             needs='d7',
         )
         .join(['d9', 'd8'])
@@ -174,7 +186,7 @@ def test_flow_topo_parallel(docker_image_built):
         f.index(inputs=random_docs(10))
 
 
-def test_flow_topo_ldl_parallel(docker_image_built):
+def test_flow_topo_ldl_parallel(docker_image_built, _logforward):
     f = (
         Flow()
         .add(name='d10')
@@ -182,7 +194,7 @@ def test_flow_topo_ldl_parallel(docker_image_built):
             name='d11',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina pod',
-            uses_internal='_pass',
+            uses_internal=_logforward,
             parallel=3,
         )
         .add(name='d12')
@@ -198,6 +210,7 @@ def test_container_volume(docker_image_built, tmpdir):
         name=random_name(),
         uses=f'docker://{img_name}',
         volumes=abc_path,
+        workspace='/abc',
         uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_upd.yml'),
     )
 
@@ -205,7 +218,7 @@ def test_container_volume(docker_image_built, tmpdir):
         f.index(random_docs(10))
 
     assert os.path.exists(
-        os.path.join(abc_path, 'ext-mwu-encoder-0', 'ext-mwu-encoder.bin')
+        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
 
 
@@ -218,13 +231,14 @@ def test_container_volume_arbitrary(docker_image_built, tmpdir):
         uses_internal=os.path.join(
             cur_dir, '../../../mwu-encoder/mwu_encoder_volume_change.yml'
         ),
+        workspace='/mapped/here/abc',
     )
 
     with f:
         f.index(random_docs(10))
 
     assert os.path.exists(
-        os.path.join(abc_path, 'ext-mwu-encoder-0', 'ext-mwu-encoder.bin')
+        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
     )
 
 
@@ -242,14 +256,14 @@ def test_container_ping(docker_image_built):
     assert cm.value.code == 0
 
 
-def test_tail_host_docker2local_parallel(docker_image_built):
+def test_tail_host_docker2local_parallel(docker_image_built, _logforward):
     f = (
         Flow()
         .add(
             name='d10',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina pod',
-            uses_internal='_pass',
+            uses_internal=_logforward,
             parallel=3,
         )
         .add(name='d11')
@@ -258,14 +272,14 @@ def test_tail_host_docker2local_parallel(docker_image_built):
         assert getattr(f._pod_nodes['d10'].peas_args['tail'], 'host_out') == defaulthost
 
 
-def test_tail_host_docker2local(docker_image_built):
+def test_tail_host_docker2local(docker_image_built, _logforward):
     f = (
         Flow()
         .add(
             name='d12',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina pod',
-            uses_internal='_pass',
+            uses_internal=_logforward,
         )
         .add(name='d13')
     )

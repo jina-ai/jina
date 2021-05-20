@@ -1,8 +1,0 @@
-!Flow
-version: '1'
-with:
-  restful: $RESTFUL
-pods:
-  - name: evaluate_from_file
-    uses: yaml/evaluate-from-file.yml
-    read_only: true

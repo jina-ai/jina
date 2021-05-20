@@ -1,8 +1,5 @@
 """This modules defines all kinds of exceptions raised in Jina."""
 
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 
 class NoExplicitMessage(Exception):
     """Waiting until all partial messages are received."""
@@ -32,28 +29,12 @@ class NoAvailablePortError(Exception):
     """When no available random port could be found"""
 
 
-class DriverError(Exception):
-    """Driver related exceptions."""
-
-
 class RuntimeTerminated(KeyboardInterrupt):
     """The event loop of BasePea ends."""
 
 
 class PodRunTimeError(Exception):
     """The error propagated by Pods when Executor throws an exception."""
-
-
-class DriverNotInstalled(DriverError):
-    """Driver is not installed in the BasePea."""
-
-
-class NoDriverForRequest(DriverError):
-    """No matched driver for this request."""
-
-
-class UnattachedDriver(DriverError):
-    """Driver is not attached to any BasePea or executor."""
 
 
 class UnknownControlCommand(RuntimeError):
@@ -161,10 +142,6 @@ class BadDocID(Exception):
 
 class BadDocType(TypeError):
     """Exception when can not construct a document from the given data."""
-
-
-class BadQueryLangType(TypeError):
-    """Exception when can not construct a query language from the given data."""
 
 
 class BadRequestType(TypeError):

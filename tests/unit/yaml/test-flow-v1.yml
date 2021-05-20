@@ -12,5 +12,4 @@ pods:
     parallel: 2
     needs: chunk_seg
   - name: joiner
-    uses: _pass
     needs: [wqncode1, encode2]

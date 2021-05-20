@@ -1,7 +1,7 @@
-from jina.peapods.pods.factory import PodFactory
-from jina.peapods.pods import Pod
-from jina.peapods.pods.compoundpod import CompoundPod
 from jina.parsers import set_pod_parser
+from jina.peapods.pods import Pod
+from jina.peapods.pods.compound import CompoundPod
+from jina.peapods.pods.factory import PodFactory
 
 
 def test_pod_factory_pod():

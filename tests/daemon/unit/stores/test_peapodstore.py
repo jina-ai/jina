@@ -1,7 +1,7 @@
 import pytest
 
 from daemon.stores import PeaStore, PodStore
-from jina import Crafter
+from jina import Executor
 from jina.parsers import set_pea_parser, set_pod_parser
 
 
@@ -36,7 +36,7 @@ def test_peastore_multi_add(parser, store):
     'parser, store', [(set_pea_parser, PeaStore), (set_pod_parser, PodStore)]
 )
 def test_peapod_store_add_bad(parser, store):
-    class BadCrafter(Crafter):
+    class BadCrafter(Executor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             raise NotImplementedError

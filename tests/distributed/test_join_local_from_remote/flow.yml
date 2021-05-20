@@ -6,11 +6,9 @@ with:
   rest_api: false
 pods:
   - name: pod1
-    uses: _pass
     host: $JINA_POD1_HOST
     port_expose: 8000
   - name: pod2
-    uses: _pass
     parallel: 2
     host: $JINA_POD2_HOST
     port_expose: 8000
@@ -20,7 +18,7 @@ pods:
     port_expose: 8000
     needs: [gateway]
   - name: join_all
-    uses: _merge
     method: needs
+    uses: merge.yml
     needs: [pod2, pod3]
     read_only: true

@@ -1,4 +1,3 @@
-import pprint
 from typing import Dict
 
 from google.protobuf.json_format import MessageToJson, MessageToDict
@@ -16,10 +15,7 @@ class ProtoTypeMixin:
         :return: JSON string of the object
         """
         return MessageToJson(
-            self._pb_body,
-            including_default_value_fields=True,
-            preserving_proto_field_name=True,
-            use_integers_for_enums=True,
+            self._pb_body, preserving_proto_field_name=True, sort_keys=True
         )
 
     def dict(self) -> Dict:
@@ -27,11 +23,12 @@ class ProtoTypeMixin:
 
         :return: dict representation of the object
         """
+
+        # NOTE: PLEASE DO NOT ADD `including_default_value_fields`,
+        # it makes the output very verbose!
         return MessageToDict(
             self._pb_body,
-            including_default_value_fields=True,
             preserving_proto_field_name=True,
-            use_integers_for_enums=True,
         )
 
     @property
@@ -42,13 +39,20 @@ class ProtoTypeMixin:
         """
         return self._pb_body
 
-    @property
     def binary_str(self) -> bytes:
         """Return the serialized the message to a string.
 
         :return: binary string representation of the object
         """
         return self._pb_body.SerializeToString()
+
+    @property
+    def nbytes(self) -> int:
+        """Return total bytes consumed by protobuf.
+
+        :return: number of bytes
+        """
+        return len(self.binary_str())
 
     def __getattr__(self, name: str):
         return getattr(self._pb_body, name)

@@ -1,16 +1,13 @@
 """Module for Jina Requests."""
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 
-from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional
+from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional, Dict
 
-from .helper import _new_request_from_batch
-from ... import Request
-from ...enums import RequestType, DataInputType
+from .helper import _new_data_request_from_batch, _new_data_request
+from ...enums import DataInputType
 from ...helper import batch_iterator
 from ...logging import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType, Document
-from ...types.arrays.querylang import AcceptQueryLangType
+from ...types.request import Request
 
 SingletonDataType = Union[
     DocumentContentType,
@@ -26,38 +23,47 @@ GeneratorSourceType = Union[
 
 
 def request_generator(
+    exec_endpoint: str,
     data: GeneratorSourceType,
     request_size: int = 0,
-    mode: RequestType = RequestType.INDEX,
-    mime_type: Optional[str] = None,
-    queryset: Optional[
-        Union[AcceptQueryLangType, Iterator[AcceptQueryLangType]]
-    ] = None,
     data_type: DataInputType = DataInputType.AUTO,
+    target_peapod: Optional[str] = None,
+    parameters: Optional[Dict] = None,
     **kwargs,  # do not remove this, add on purpose to suppress unknown kwargs
 ) -> Iterator['Request']:
     """Generate a request iterator.
 
+    :param exec_endpoint: the endpoint string, by convention starts with `/`
     :param data: the data to use in the request
     :param request_size: the request size for the client
-    :param mode: the request mode (index, search etc.)
-    :param mime_type: mime type
-    :param queryset: querylang set of queries
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
+    :param parameters: the kwargs that will be sent to the executor
+    :param target_peapod: a regex string represent the certain peas/pods request targeted
     :param kwargs: additional arguments
     :yield: request
     """
 
-    _kwargs = dict(mime_type=mime_type, weight=1.0, extra_kwargs=kwargs)
+    _kwargs = dict(extra_kwargs=kwargs)
 
     try:
-        if not isinstance(data, Iterable):
-            data = [data]
-        for batch in batch_iterator(data, request_size):
-            yield _new_request_from_batch(
-                _kwargs, batch, data_type, mode, queryset, **kwargs
+        if data is None:
+            # this allows empty inputs, i.e. a data request with only parameters
+            yield _new_data_request(
+                endpoint=exec_endpoint, target=target_peapod, parameters=parameters
             )
+        else:
+            if not isinstance(data, Iterable):
+                data = [data]
+            for batch in batch_iterator(data, request_size):
+                yield _new_data_request_from_batch(
+                    _kwargs=kwargs,
+                    batch=batch,
+                    data_type=data_type,
+                    endpoint=exec_endpoint,
+                    target=target_peapod,
+                    parameters=parameters,
+                )
 
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception

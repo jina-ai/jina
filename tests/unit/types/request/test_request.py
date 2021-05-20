@@ -1,20 +1,18 @@
 import pytest
 from google.protobuf.json_format import MessageToDict, MessageToJson
 
-from jina.enums import RequestType
 from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
-from jina.types.request import Request
 from jina.types.arrays.document import DocumentArray
-from jina.types.arrays.querylang import QueryLangArray
+from jina.types.request import Request
 
 
 @pytest.fixture(scope='function')
 def req():
     r = jina_pb2.RequestProto()
     r.request_id = random_identity()
-    r.index.docs.add()
+    r.data.docs.add()
     return r
 
 
@@ -31,23 +29,18 @@ def test_init_fail():
         Request(request=5)
 
 
-@pytest.mark.parametrize('req_type', ['index', 'search', 'train'])
-def test_docs(req, req_type):
+def test_docs(req):
     request = Request(request=req, copy=False)
-    request.request_type = req_type
+    request.request_type = 'data'
     docs = request.docs
     assert request.is_used
     assert isinstance(docs, DocumentArray)
-    if req_type == 'index':
-        assert len(docs) == 1
-    else:
-        assert len(docs) == 0
+    assert len(docs) == 1
 
 
-@pytest.mark.parametrize('req_type', ['index', 'search', 'train'])
-def test_groundtruth(req, req_type):
+def test_groundtruth(req):
     request = Request(request=req, copy=False)
-    request.request_type = req_type
+    request.request_type = 'data'
     groundtruths = request.groundtruths
     assert request.is_used
     assert isinstance(groundtruths, DocumentArray)
@@ -56,21 +49,14 @@ def test_groundtruth(req, req_type):
 
 def test_request_type_set_get(req):
     request = Request(request=req, copy=False)
-    request.request_type = 'search'
-    assert request.request_type == 'SearchRequestProto'
+    request.request_type = 'data'
+    assert request.request_type == 'DataRequestProto'
 
 
 def test_request_type_set_get_fail(req):
     request = Request(request=req, copy=False)
     with pytest.raises(ValueError):
         request.request_type = 'random'
-
-
-def test_queryset(req):
-    request = Request(request=req, copy=False)
-    queryset = request.queryset
-    assert request.is_used
-    assert isinstance(queryset, QueryLangArray)
 
 
 def test_command(req):
@@ -98,8 +84,8 @@ def test_as_json_str(req):
     assert isinstance(request.json(), str)
 
 
-def test_delete_request():
-    req = Request()
-    req.request_type = str(RequestType.DELETE)
-    req.ids.extend(['123', '456'])
-    assert req.dict()['delete']['ids'] == ['123', '456']
+def test_access_header(req):
+    request = Request(request=req)
+    assert not request.is_used
+    request.header
+    assert request.is_used

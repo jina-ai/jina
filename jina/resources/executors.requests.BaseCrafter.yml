@@ -1,7 +1,0 @@
-on:
-  ControlRequest:
-    - !ControlReqDriver {}
-  [SearchRequest, TrainRequest, IndexRequest]:
-    - !CraftDriver {}
-  [DeleteRequest, UpdateRequest]:
-    - !RouteDriver {}

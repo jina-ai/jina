@@ -123,7 +123,7 @@ jobs:
           echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
       - run: |
           docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker run jinaai/jina:test-pip hello-world
+          docker run jinaai/jina:test-pip hello fashion
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -137,8 +137,8 @@ jobs:
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
+#        with:
+#          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -177,7 +177,7 @@ jobs:
             echo "flag it as jina for codeoverage"
             echo "::set-output name=codecov_flag::jina"
           fi
-        timeout-minutes: 15
+        timeout-minutes: 20
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}

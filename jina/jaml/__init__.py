@@ -501,7 +501,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
                 # extra arguments are parsed to inject_config
-                no_tag_yml = cls.inject_config(no_tag_yml, **kwargs)
+                no_tag_yml.update(**kwargs)
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
@@ -529,17 +529,3 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
             # load into object, no more substitute
             return JAML.load(tag_yml, substitute=False)
-
-    @classmethod
-    def inject_config(cls, raw_config: Dict, *args, **kwargs) -> Dict:
-        """Inject/modify the config before loading it into an object.
-
-         .. note::
-            This function is most likely to be overridden by its subclass.
-
-        :param raw_config: raw config to work on
-        :param args: not used
-        :param kwargs: not used
-        :return: the config
-        """
-        return raw_config

@@ -1,4 +1,4 @@
-from .. import Request
+from ..types.request import Request
 
 
 class RequestProto:
@@ -10,8 +10,18 @@ class RequestProto:
 
     @staticmethod
     def SerializeToString(x: 'Request'):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
         return x.proto.SerializeToString()
 
     @staticmethod
     def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
         return Request(x)

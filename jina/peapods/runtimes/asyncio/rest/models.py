@@ -5,10 +5,13 @@ from types import SimpleNamespace
 from typing import Callable, Dict, Any, Optional, List, Union
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
+from google.protobuf.json_format import MessageToDict
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
-from jina.enums import DataInputType
-from jina.parsers import set_client_cli_parser
-from jina.proto.jina_pb2 import (
+from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
+
+from .....enums import DataInputType
+from .....parsers import set_client_cli_parser
+from .....proto.jina_pb2 import (
     DenseNdArrayProto,
     NdArrayProto,
     SparseNdArrayProto,
@@ -19,10 +22,8 @@ from jina.proto.jina_pb2 import (
     StatusProto,
     MessageProto,
     RequestProto,
-    QueryLangProto,
 )
-from jina.types.document import Document
-from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
+from .....types.document import Document
 
 DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
@@ -228,7 +229,6 @@ for proto in (
     StatusProto,
     MessageProto,
     RequestProto,
-    QueryLangProto,
 ):
     protobuf_to_pydantic_model(proto)
 
@@ -257,83 +257,53 @@ class JinaRequestModel(BaseModel):
     """
 
     # To avoid an error while loading the request model schema on swagger, we've added an example.
-    data: Union[
-        List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
-        List[Dict[str, Any]],
-        List[str],
-        List[bytes],
-    ] = Field(..., example=[Document().dict()])
+    data: Optional[
+        Union[
+            List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
+            List[Dict[str, Any]],
+            List[str],
+            List[bytes],
+        ]
+    ] = Field(
+        None,
+        example=[
+            MessageToDict(
+                Document().proto,
+                including_default_value_fields=True,
+                preserving_proto_field_name=True,
+            )
+        ],
+    )
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
-    mime_type: Optional[str] = ''
-    queryset: Optional[List[PROTO_TO_PYDANTIC_MODELS.QueryLangProto]] = None
+    mime_type: Optional[str] = None
     data_type: DataInputType = DataInputType.AUTO
-
-    @root_validator(pre=True, allow_reuse=True)
-    def add_default_kwargs(cls, kwargs: dict):
-        """
-        Replicates jina.clients.base.BaseClient.add_default_kwargs for Pydantic
-
-        :param kwargs: arguments passed to the Pydantic model
-        :type kwargs: dict
-        :return: kwargs
-        """
-        if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
-            # associate all VectorSearchDriver and SliceQL driver to use top_k
-            topk_ql = [
-                PROTO_TO_PYDANTIC_MODELS.QueryLangProto(
-                    **{
-                        'name': 'SliceQL',
-                        'priority': 1,
-                        'parameters': {'end': kwargs['top_k']},
-                    }
-                ),
-                PROTO_TO_PYDANTIC_MODELS.QueryLangProto(
-                    **{
-                        'name': 'VectorSearchDriver',
-                        'priority': 1,
-                        'parameters': {'top_k': kwargs['top_k']},
-                    }
-                ),
-            ]
-            if 'queryset' not in kwargs:
-                kwargs['queryset'] = topk_ql
-            else:
-                kwargs['queryset'].extend(topk_ql)
-
-        return kwargs
+    target_peapod: Optional[str] = None
+    parameters: Optional[Dict] = None
 
 
 class JinaIndexRequestModel(JinaRequestModel):
     """Index request model."""
 
-    pass
+    exec_endpoint: str = '/index'
 
 
 class JinaSearchRequestModel(JinaRequestModel):
     """Search request model."""
 
-    pass
+    exec_endpoint: str = '/search'
 
 
 class JinaUpdateRequestModel(JinaRequestModel):
     """Update request model."""
 
-    pass
+    exec_endpoint: str = '/update'
 
 
 class JinaDeleteRequestModel(JinaRequestModel):
     """Delete request model."""
 
-    data: List[str]
+    exec_endpoint: str = '/delete'
 
 
 class JinaControlRequestModel(JinaRequestModel):
     """Control request model."""
-
-    pass
-
-
-class JinaTrainRequestModel(JinaRequestModel):
-    """Train request model."""
-
-    pass

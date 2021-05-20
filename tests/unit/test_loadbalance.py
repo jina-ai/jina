@@ -1,28 +1,23 @@
 import os
 import time
 
+from jina import Flow, Executor, requests
 from jina.enums import SchedulerType
-from jina.executors.decorators import single
-from jina.executors.crafters import BaseCrafter
-from jina.flow import Flow
 from tests import random_docs
 
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 
-class SlowWorker(BaseCrafter):
+class SlowWorker(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # half of worker is slow
         self.is_slow = os.getpid() % 2 != 0
-        self.logger.warning('im a slow worker')
 
-    @single
-    def craft(self, id, *args, **kwargs):
+    @requests
+    def craft(self, **kwargs):
         if self.is_slow:
-            self.logger.warning('slowly doing')
             time.sleep(1)
-        return {'id': id}
 
 
 def test_lb():

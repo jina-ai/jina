@@ -3,6 +3,8 @@ name: Autocommit
 on:
   schedule:
     - cron: "0 23 * * *"
+  workflow_dispatch:
+
 
 jobs:
   autocommit:
@@ -22,25 +24,6 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Install and run black --check .
-        run: |
-          pip install black
-          black -S jina/drivers/__init__.py
-          git add -u &> /dev/null || true
-          export JINA_GIT_COMMIT_MSG_OLD=$(git log --format=%B -n1)
-          git commit -m "chore(style): reformatted by jina-dev-bot" &> /dev/null || true
-          git status
-      - name: Run copyright generator
-        uses: hanxiao/copyright-action@master
-        with:
-          CopyrightString: '__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."\n__license__ = "Apache-2.0"\n\n'
-          FileType: '.py'
-          Path: 'jina/'
-          IgnorePath: 'jina/drivers/querylang/queryset/'
-      - run: |
-          git add -u &> /dev/null || true
-          git commit -m "chore(copyright): update copyright header" &> /dev/null || true
-          git status
       - name: Checkout wall-of-honor
         uses: actions/checkout@v2
         with:
@@ -73,6 +56,16 @@ jobs:
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: ''
           TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md,RELEASE.md'
+          CHECK_ONLY_DEFAULT_BRANCH: true
+      - name: Generate TOC
+        uses: technote-space/toc-generator@v3
+        with:
+          MAX_HEADER_LEVEL: 4
+          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
+          COMMIT_NAME: Jina Dev Bot
+          COMMIT_EMAIL: dev-bot@jina.ai
+          TOC_TITLE: 'Table of Contents'
+          TARGET_PATHS: '.github/2.0/cookbooks/*.md'
           CHECK_ONLY_DEFAULT_BRANCH: true
       - uses: ad-m/github-push-action@v0.6.0
         with:

@@ -2,6 +2,7 @@ from argparse import Namespace
 
 from jina.enums import PollingType
 from jina.helper import ArgNamespace
+from jina import __default_executor__
 
 
 def test_namespace_to_dict():
@@ -14,7 +15,7 @@ def test_namespace_to_dict():
             polling=PollingType.ANY,
             port_ctrl=39011,
             port_expose=8000,
-            uses_after='_pass',
+            uses_after=__default_executor__,
             uses_before=None,
         ),
         'tail': Namespace(
@@ -25,7 +26,7 @@ def test_namespace_to_dict():
             polling=PollingType.ANY,
             port_ctrl=46937,
             port_expose=8000,
-            uses_after='_pass',
+            uses_after=__default_executor__,
             uses_before=None,
         ),
         'peas': [
@@ -38,7 +39,7 @@ def test_namespace_to_dict():
                 port_ctrl=44747,
                 port_expose=8000,
                 uses='helloworld.encoder.yml',
-                uses_after='_pass',
+                uses_after=__default_executor__,
                 uses_before=None,
             ),
             Namespace(
@@ -50,7 +51,7 @@ def test_namespace_to_dict():
                 port_ctrl=48957,
                 port_expose=8000,
                 uses='helloworld.encoder.yml',
-                uses_after='_pass',
+                uses_after=__default_executor__,
                 uses_before=None,
             ),
         ],
