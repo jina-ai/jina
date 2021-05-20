@@ -1,5 +1,6 @@
 import json
 import os
+from contextlib import contextmanager
 
 import numpy as np
 import pytest
@@ -791,3 +792,25 @@ def test_evaluations():
     score.value = 10.0
     assert document.evaluations[0].value == 10.0
     assert document.evaluations[0].op_name == 'operation'
+
+
+@contextmanager
+def does_not_raise():
+    yield
+
+
+@pytest.mark.parametrize(
+    'doccontent, expectation',
+    [
+        ({'content': 'hello', 'uri': 'https://jina.ai'}, pytest.raises(Exception)),
+        ({'content': 'hello', 'text': 'world'}, pytest.raises(Exception)),
+        ({'content': 'hello', 'blob': np.array([1, 2, 3])}, pytest.raises(Exception)),
+        ({'content': 'hello', 'buffer': b'hello'}, pytest.raises(Exception)),
+        ({'buffer': b'hello', 'text': 'world'}, pytest.raises(Exception)),
+        ({'content': 'hello', 'id': 1}, does_not_raise()),
+    ],
+)
+def test_conflicting_doccontent(doccontent, expectation):
+    with expectation:
+        document = Document(**doccontent)
+        assert document.content is not None
