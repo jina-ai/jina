@@ -30,7 +30,7 @@ containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ## Installation
 
-2.0 is still in pre-release, **add `--pre`** to install it. [Why 2.0?](.github/2.0/cookbooks/1vs2.md)
+2.0 is still in pre-release, **add `--pre`** to install it. [Why 2.0?](.github/2.0/1vs2.md)
 
 ```console
 $ pip install --pre jina
