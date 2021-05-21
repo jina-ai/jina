@@ -35,7 +35,7 @@ def add_match(doc):
 
 
 def build_docs():
-    """ Builds up a complete chunk-match structure, with a depth of 2 in both directions recursively. """
+    """Builds up a complete chunk-match structure, with a depth of 2 in both directions recursively."""
     max_granularity = 2
     max_adjacency = 2
 

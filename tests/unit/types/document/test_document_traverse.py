@@ -17,7 +17,7 @@ num_matches_per_chunk = 5
 
 @pytest.fixture
 def doc_req():
-    """Build a dummy request that has docs """
+    """Build a dummy request that has docs"""
     ds = list(random_docs(num_docs, num_chunks_per_doc))
     # add some random matches
     for d in ds:
