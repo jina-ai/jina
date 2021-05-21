@@ -1,0 +1,36 @@
+jtype: Flow
+version: '1'
+with:
+  workspace: $HW_WORKDIR
+  py_modules:
+    - executors.py
+executors:
+  - name: segment
+    uses:
+      jtype: Segmenter
+  - name: encodeText
+    uses:
+      jtype: TextEncoder
+  - name: textChunkIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "text.json"
+  - name: craftImage
+    uses:
+      jtype: ImageCrafter
+    needs: segment
+  - name: encodeImage
+    uses:
+      jtype: ImageEncoder
+  - name: imageChunkIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "image.json"
+  - name: keyValueIndexer
+    uses:
+      jtype: KeyValueIndexer
+    needs: segment
+  - name: joinAll
+    needs: [ textChunkIndexer, imageChunkIndexer, keyValueIndexer ]

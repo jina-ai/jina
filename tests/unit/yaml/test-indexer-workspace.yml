@@ -1,6 +1,0 @@
-!NumpyIndexer
-with:
-  index_filename: 'inner_indexer.gz'
-metas:
-  name: ref_indexer
-  workspace: $JINA_TEST_WORKSPACE

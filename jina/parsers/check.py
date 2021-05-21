@@ -16,9 +16,4 @@ def set_check_parser(parser=None):
         type=str,
         help='The markdown file path for all executors summary',
     )
-    parser.add_argument(
-        '--summary-driver',
-        type=str,
-        help='The markdown file path for all drivers summary',
-    )
     return parser

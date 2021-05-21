@@ -1,8 +1,0 @@
-!BaseExecutor
-with: {}
-metas:
-  name: concat
-requests:
-  on:
-    [SearchRequest, TrainRequest, IndexRequest, DeleteRequest, UpdateRequest]:
-      - !ConcatEmbedDriver {}

@@ -5,14 +5,18 @@ on:
     tags:
       - "v*"  # push to version tags trigger the build
 
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally disable this action
 
 jobs:
   update-schema:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
+#        with:
+#          submodules: true
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/api
@@ -95,8 +99,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
+#        with:
+#          submodules: true
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
@@ -122,8 +126,8 @@ jobs:
         tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true  # this job build devel image, devel image includes hub submodule
+#        with:
+#          submodules: true  # this job build devel image, devel image includes hub submodule
       - name: Set envs and versions
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV

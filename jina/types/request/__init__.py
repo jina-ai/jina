@@ -3,7 +3,6 @@ from typing import Union, Optional, TypeVar, Dict
 from google.protobuf import json_format
 
 from ..mixin import ProtoTypeMixin
-from ..arrays import QueryLangArray
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
@@ -13,10 +12,8 @@ _body_type = set(str(v).lower() for v in RequestType)
 _trigger_body_fields = set(
     kk
     for v in [
-        jina_pb2.RequestProto.IndexRequestProto,
-        jina_pb2.RequestProto.SearchRequestProto,
-        jina_pb2.RequestProto.TrainRequestProto,
         jina_pb2.RequestProto.ControlRequestProto,
+        jina_pb2.RequestProto.DataRequestProto,
     ]
     for kk in v.DESCRIPTOR.fields_by_name.keys()
 )
@@ -130,29 +127,14 @@ class Request(ProtoTypeMixin):
         :param request_type: string representation of the request type
         :return: self
         """
-        from .train import TrainRequest
-        from .search import SearchRequest
         from .control import ControlRequest
-        from .index import IndexRequest
-        from .delete import DeleteRequest
-        from .update import UpdateRequest
-        from .dump import DumpRequest
+        from .data import DataRequest
 
         rt = request_type.upper()
-        if rt.startswith(str(RequestType.TRAIN)):
-            self.__class__ = TrainRequest
-        elif rt.startswith(str(RequestType.DELETE)):
-            self.__class__ = DeleteRequest
-        elif rt.startswith(str(RequestType.INDEX)):
-            self.__class__ = IndexRequest
-        elif rt.startswith(str(RequestType.SEARCH)):
-            self.__class__ = SearchRequest
-        elif rt.startswith(str(RequestType.UPDATE)):
-            self.__class__ = UpdateRequest
+        if rt.startswith(str(RequestType.DATA)):
+            self.__class__ = DataRequest
         elif rt.startswith(str(RequestType.CONTROL)):
             self.__class__ = ControlRequest
-        elif rt.startswith(str(RequestType.DUMP)):
-            self.__class__ = DumpRequest
         else:
             raise TypeError(f'{request_type} is not recognized')
         return self
@@ -242,16 +224,6 @@ class Request(ProtoTypeMixin):
         else:
             # no touch, skip serialization, return original
             return self._buffer
-
-    @property
-    def queryset(self) -> 'QueryLangArray':
-        """
-        Get the queryset in :class:`QueryLangArray` type.
-
-        :return: query lang set
-        """
-        self.is_used = True
-        return QueryLangArray(self.proto.queryset)
 
     def as_response(self):
         """

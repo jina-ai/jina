@@ -1,25 +1,33 @@
+import os
+
 from typing import Any
 
-import numpy as np
-
-from jina.executors.encoders import BaseEncoder
+from jina import Executor, requests
 
 
-class MWUEncoder(BaseEncoder):
+class MWUEncoder(Executor):
     def __init__(self, greetings: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._greetings = greetings
 
-    def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
-        self.logger.info(f'{self._greetings} {content}')
-        return np.random.random([content.shape[0], 3])
+    @requests
+    def encode(self, **kwargs) -> Any:
+        pass
 
 
-class MWUUpdater(BaseEncoder):
+class MWUUpdater(Executor):
     def __init__(self, greetings: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._greetings = greetings
 
-    def encode(self, content: 'np.ndarray', *args, **kwargs) -> Any:
-        self.is_updated = True
-        return np.random.random([content.shape[0], 3])
+    @requests
+    def encode(self, **kwargs) -> Any:
+        pass
+
+    def close(self) -> None:
+        import pickle
+
+        os.makedirs(self.workspace, exist_ok=True)
+        bin_path = os.path.join(self.workspace, f'{self.metas.name}.bin')
+        with open(bin_path, 'wb') as f:
+            pickle.dump(self._greetings, f)

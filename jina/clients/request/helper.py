@@ -1,10 +1,41 @@
 """Module for helper functions for clients."""
-from typing import Tuple, Sequence
+from typing import Tuple
 
-from ... import Document, Request
-from ...enums import DataInputType, RequestType
+from ... import Document
+from ...enums import DataInputType
 from ...excepts import BadDocType, BadRequestType
-from ...excepts import RequestTypeError
+from ...types.request import Request
+
+
+def _new_data_request_from_batch(
+    _kwargs, batch, data_type, endpoint, target, parameters
+):
+    req = _new_data_request(endpoint, target, parameters)
+
+    # add docs, groundtruths fields
+    try:
+        _add_docs_groundtruths(req, batch, data_type, _kwargs)
+    except Exception as ex:
+        raise BadRequestType(
+            f'error when building {req.request_type} from {batch}'
+        ) from ex
+
+    return req
+
+
+def _new_data_request(endpoint, target, parameters):
+    req = Request()
+    req.request_type = 'data'
+
+    # set up header
+    if endpoint:
+        req.header.exec_endpoint = endpoint
+    if target:
+        req.header.target_peapod = target
+    # add parameters field
+    if parameters:
+        req.parameters.update(parameters)
+    return req
 
 
 def _new_doc_from_data(
@@ -32,42 +63,6 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _new_request_from_batch(_kwargs, batch, data_type, mode, queryset, **kwargs):
-    req = Request()
-    req.request_type = str(mode)
-
-    try:
-        # add type-specific fields
-        if (
-            mode == RequestType.INDEX
-            or mode == RequestType.SEARCH
-            or mode == RequestType.TRAIN
-            or mode == RequestType.UPDATE
-        ):
-            if 'extra_kwargs' in _kwargs:
-                _kwargs.pop('extra_kwargs')  #: data request do not need extra kwargs
-            _add_docs_groundtruths(req, batch, data_type, _kwargs)
-        elif mode == RequestType.DELETE:
-            _add_ids(req, batch)
-        elif mode == RequestType.CONTROL:
-            _add_control_propagate(req, _kwargs)
-        else:
-            raise RequestTypeError(
-                f'generating request from {mode} is not yet supported'
-            )
-    except Exception as ex:
-        raise BadRequestType(
-            f'error when building {req.request_type} from {batch}'
-        ) from ex
-
-    # add common fields
-    if isinstance(queryset, Sequence):
-        req.queryset.extend(queryset)
-    elif queryset is not None:
-        req.queryset.append(queryset)
-    return req
-
-
 def _add_docs_groundtruths(req, batch, data_type, _kwargs):
     for content in batch:
         if isinstance(content, tuple) and len(content) == 2:
@@ -81,11 +76,6 @@ def _add_docs_groundtruths(req, batch, data_type, _kwargs):
         else:
             d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
             req.docs.append(d)
-
-
-def _add_ids(req, batch):
-    string_ids = (str(doc_id) for doc_id in batch)
-    req.ids.extend(string_ids)
 
 
 def _add_control_propagate(req, kwargs):
@@ -113,5 +103,3 @@ def _add_control_propagate(req, kwargs):
         raise ValueError(
             f'command "{command}" is not supported, must be one of {_available_commands}'
         )
-    req.targets.extend(extra_kwargs.get('targets', []))
-    req.control.propagate = True

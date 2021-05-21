@@ -3,7 +3,6 @@ import argparse
 
 from ..helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 from ...enums import PeaRoleType, RuntimeBackendType
-from ...peapods.runtimes import list_all_runtimes
 
 
 def mixin_pea_parser(parser):
@@ -33,7 +32,6 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--runtime-cls',
         type=str,
-        choices=list_all_runtimes(),
         default='ZEDRuntime',
         help='The runtime class to run inside the Pea',
     )

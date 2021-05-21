@@ -1,9 +1,9 @@
-from typing import Union, Optional, Dict, Set
 from argparse import Namespace
+from typing import Union, Optional, Dict, Set
 
-from .. import Pod
+from .compound import CompoundPod
 from .. import BasePod
-from .compoundpod import CompoundPod
+from .. import Pod
 
 
 class PodFactory:

@@ -1,9 +1,9 @@
-from jina.executors.crafters import BaseCrafter
+from jina import Executor
 
 from .helper import foo
 
 
-class DummyHubExecutor(BaseCrafter):
+class DummyHubExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

@@ -1,11 +1,10 @@
-from collections import Iterator
-
-import pytest
 import types
+
+import numpy as np
+import pytest
 
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
-from jina.executors.decorators import batching
 from tests import random_docs
 
 # some random prime number for sanity check
@@ -22,11 +21,11 @@ def doc_req():
     # add some random matches
     for d in ds:
         for _ in range(num_matches_per_doc):
-            d.matches.add(Document(content='hello'))
+            d.matches.append(Document(content='hello'))
         for c in d.chunks:
             for _ in range(num_matches_per_chunk):
-                c.matches.add(Document(content='world'))
-    req = list(request_generator(ds))[0]
+                c.matches.append(Document(content='world'))
+    req = list(request_generator('/', ds))[0]
     yield req
 
 
@@ -85,51 +84,39 @@ def test_traverse_root_match_chunk(doc_req):
     assert len(ds) == 1 + num_docs + num_docs + num_docs * num_chunks_per_doc
 
 
-def test_batching_traverse(doc_req):
-    @batching(batch_size=num_docs, slice_on=0)
-    def foo(docs):
-        print(f'batch_size:{len(docs)}')
-        assert len(docs) == num_docs
-
-    ds = list(doc_req.docs.traverse(['c', 'm', 'cm']))
-    # under this contruction, num_doc is the common denominator
-
-    foo(ds)
-
-
 def test_traverse_flatten_embedding(doc_req):
-    flattened_results = doc_req.docs.traverse_flatten(['r', 'c'])
-    ds = flattened_results.all_embeddings
-    assert ds[0].shape == (num_docs + num_chunks_per_doc * num_docs, 10)
+    flattened_results = doc_req.docs.traverse_flat(['r', 'c'])
+    ds = np.stack(flattened_results.get_attributes('embedding'))
+    assert ds.shape == (num_docs + num_chunks_per_doc * num_docs, 10)
 
 
 def test_traverse_flatten_root(doc_req):
-    ds = list(doc_req.docs.traverse_flatten(['r']))
+    ds = list(doc_req.docs.traverse_flat(['r']))
     assert len(ds) == num_docs
 
 
 def test_traverse_flatten_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flatten(['c']))
+    ds = list(doc_req.docs.traverse_flat(['c']))
     assert len(ds) == num_docs * num_chunks_per_doc
 
 
 def test_traverse_flatten_root_plus_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flatten(['c', 'r']))
+    ds = list(doc_req.docs.traverse_flat(['c', 'r']))
     assert len(ds) == num_docs + num_docs * num_chunks_per_doc
 
 
 def test_traverse_flatten_match(doc_req):
-    ds = list(doc_req.docs.traverse_flatten(['m']))
+    ds = list(doc_req.docs.traverse_flat(['m']))
     assert len(ds) == num_docs * num_matches_per_doc
 
 
 def test_traverse_flatten_match_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flatten(['cm']))
+    ds = list(doc_req.docs.traverse_flat(['cm']))
     assert len(ds) == num_docs * num_chunks_per_doc * num_matches_per_chunk
 
 
 def test_traverse_flatten_root_match_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flatten(['r', 'c', 'm', 'cm']))
+    ds = list(doc_req.docs.traverse_flat(['r', 'c', 'm', 'cm']))
     assert (
         len(ds)
         == num_docs
@@ -139,54 +126,43 @@ def test_traverse_flatten_root_match_chunk(doc_req):
     )
 
 
-def test_batching_flatten_traverse(doc_req):
-    @batching(batch_size=num_docs, slice_on=0)
-    def foo(docs):
-        print(f'batch_size:{len(docs)}')
-        assert len(docs) == num_docs
-
-    ds = list(doc_req.docs.traverse_flatten(['r', 'c', 'm', 'cm']))
-    # under this contruction, num_doc is the common denominator
-    foo(ds)
-
-
 def test_traverse_flattened_per_path_embedding(doc_req):
-    flattened_results = list(doc_req.docs.traverse_flattened_per_path(['r', 'c']))
-    ds = flattened_results[0].all_embeddings
-    assert ds[0].shape == (num_docs, 10)
+    flattened_results = list(doc_req.docs.traverse_flat_per_path(['r', 'c']))
+    ds = np.stack(flattened_results[0].get_attributes('embedding'))
+    assert ds.shape == (num_docs, 10)
 
-    ds = flattened_results[1].all_embeddings
-    assert ds[0].shape == (num_docs * num_chunks_per_doc, 10)
+    ds = np.stack(flattened_results[1].get_attributes('embedding'))
+    assert ds.shape == (num_docs * num_chunks_per_doc, 10)
 
 
 def test_traverse_flattened_per_path_root(doc_req):
-    ds = list(doc_req.docs.traverse_flattened_per_path(['r']))
+    ds = list(doc_req.docs.traverse_flat_per_path(['r']))
     assert len(ds[0]) == num_docs
 
 
 def test_traverse_flattened_per_path_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flattened_per_path(['c']))
+    ds = list(doc_req.docs.traverse_flat_per_path(['c']))
     assert len(ds[0]) == num_docs * num_chunks_per_doc
 
 
 def test_traverse_flattened_per_path_root_plus_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flattened_per_path(['c', 'r']))
+    ds = list(doc_req.docs.traverse_flat_per_path(['c', 'r']))
     assert len(ds[0]) == num_docs * num_chunks_per_doc
     assert len(ds[1]) == num_docs
 
 
 def test_traverse_flattened_per_path_match(doc_req):
-    ds = list(doc_req.docs.traverse_flattened_per_path(['m']))
+    ds = list(doc_req.docs.traverse_flat_per_path(['m']))
     assert len(ds[0]) == num_docs * num_matches_per_doc
 
 
 def test_traverse_flattened_per_path_match_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flattened_per_path(['cm']))
+    ds = list(doc_req.docs.traverse_flat_per_path(['cm']))
     assert len(ds[0]) == num_docs * num_chunks_per_doc * num_matches_per_chunk
 
 
 def test_traverse_flattened_per_path_root_match_chunk(doc_req):
-    ds = list(doc_req.docs.traverse_flattened_per_path(['r', 'c', 'm', 'cm']))
+    ds = list(doc_req.docs.traverse_flat_per_path(['r', 'c', 'm', 'cm']))
     assert len(ds[0]) == num_docs
     assert len(ds[1]) == num_chunks_per_doc * num_docs
     assert len(ds[2]) == num_matches_per_doc * num_docs
@@ -194,7 +170,7 @@ def test_traverse_flattened_per_path_root_match_chunk(doc_req):
 
 
 def test_docuset_traverse_over_iterator_HACKY():
-    # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-DocumentArray
+    # HACKY USAGE DO NOT RECOMMEND: can also traverse over "runtime"-documentarray
     ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(['r'])
     assert len(list(list(ds)[0])) == num_docs
 
@@ -213,3 +189,16 @@ def test_docuset_traverse_over_iterator_CAVEAT():
 
     ds = DocumentArray(random_docs(num_docs, num_chunks_per_doc)).traverse(['c', 'r'])
     assert len(list(ds)) == num_docs + 1
+
+
+def test_doc_iter_method():
+    ds = list(random_docs(10))
+
+    for d in DocumentArray(ds):
+        assert d.text == 'hello world'
+
+    for d in DocumentArray(ds).traverse_flat(['c', 'r']):
+        d.text = 'modified'
+
+    for d in DocumentArray(ds):
+        assert d.text == 'modified'

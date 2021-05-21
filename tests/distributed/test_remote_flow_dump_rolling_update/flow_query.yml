@@ -10,5 +10,5 @@ pods:
     replicas: 2
     parallel: 3
     polling: all
-    uses_after: _merge_matches
+    uses_after: merge_matches.yml
     timeout_ready: '-1'

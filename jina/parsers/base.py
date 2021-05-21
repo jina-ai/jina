@@ -14,10 +14,7 @@ def set_base_parser():
 
     # create the top-level parser
     urls = {
-        'Jina 101': ('🐣', 'https://101.jina.ai'),
-        'Docs': ('📚', 'https://docs.jina.ai'),
-        'Examples': ('🚀‍', 'https://learn.jina.ai'),
-        'Code': ('🧑‍💻', 'https://opensource.jina.ai'),
+        'Code': ('🧑‍💻', 'https://github.com/jina-ai/jina'),
         'Hiring!': ('🙌', 'https://career.jina.ai'),
     }
     url_str = '\n'.join(
@@ -27,8 +24,7 @@ def set_base_parser():
 
     parser = argparse.ArgumentParser(
         epilog=f'''
-Jina (v{colored(__version__, "green")}) is the cloud-native neural search solution powered by AI & deep learning.
-It is a universal solution to large-scale index and query of unstructured & multimedia data.
+Jina (v{colored(__version__, "green")}) is the cloud-native neural search framework powered by deep learning.
 
 {url_str}
 

@@ -1,11 +1,10 @@
 import os
 
 import pytest
-from pkg_resources import resource_filename
 
-from jina import Document
-from jina.flow import Flow
-from jina.helloworld.multimodal import hello_world
+import jina
+from jina import Document, Flow
+from jina.helloworld.multimodal.app import hello_world
 from jina.parsers.helloworld import set_hw_multimodal_parser
 from tests import validate_callback
 
@@ -49,32 +48,39 @@ def text_chunk():
 @pytest.fixture
 def query_document(image_chunk, text_chunk):
     query_document = Document()
-    query_document.chunks.add(image_chunk)
-    query_document.chunks.add(text_chunk)
+    query_document.chunks.append(image_chunk)
+    query_document.chunks.append(text_chunk)
     return query_document
+
+
+root_dir = os.path.abspath(os.path.dirname(jina.__file__))
+os.environ['PATH'] += os.pathsep + os.path.join(root_dir, 'helloworld/multimodal/')
+
+
+def search(query_document, on_done_callback, on_fail_callback, top_k):
+    with Flow.load_config('jina/helloworld/multimodal/flow-search.yml') as f:
+        f.search(
+            inputs=query_document,
+            on_done=on_done_callback,
+            on_fail=on_fail_callback,
+            parameters={'top_k': top_k},
+        )
 
 
 def test_multimodal(helloworld_args, query_document, mocker):
     """Regression test for multimodal example."""
 
     def validate_response(resp):
-        assert len(resp.search.docs) == 1
-        for doc in resp.search.docs:
+        assert len(resp.data.docs) == 1
+        for doc in resp.data.docs:
             assert len(doc.matches) == 10
 
     hello_world(helloworld_args)
-    flow_query_path = os.path.join(resource_filename('jina', 'resources'), 'multimodal')
 
     mock_on_done = mocker.Mock()
     mock_on_fail = mocker.Mock()
 
-    with Flow.load_config(os.path.join(flow_query_path, 'flow-query.yml')) as f:
-        f.search(
-            inputs=[query_document],
-            on_done=mock_on_done,
-            on_fail=mock_on_fail,
-            top_k=10,
-        )
+    search(query_document, mock_on_done, mock_on_fail, 10)
 
     mock_on_fail.assert_not_called()
     validate_callback(mock_on_done, validate_response)

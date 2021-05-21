@@ -1,17 +1,15 @@
 import os
 import sys
 import warnings
+from collections import defaultdict
 from types import SimpleNamespace, ModuleType
 from typing import Optional, List, Any, Dict
-from collections import defaultdict
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
 IMPORTED.executors = False
-IMPORTED.drivers = False
 IMPORTED.hub = False
 IMPORTED.schema_executors = {}
-IMPORTED.schema_drivers = {}
 
 
 def import_classes(
@@ -25,15 +23,8 @@ def import_classes(
     :param import_once: import everything only once, to avoid repeated import
     :return: the dependency tree of the imported classes under the `namespace`
     """
-    _namespace2type = {
-        'jina.executors': 'ExecutorType',
-        'jina.drivers': 'DriverType',
-        'jina.hub': 'ExecutorType',
-    }
-    _import_type = _namespace2type.get(namespace)
-    if _import_type is None:
-        raise TypeError(f'namespace: {namespace} is unrecognized')
 
+    _import_type = 'ExecutorType'
     _imported_property = namespace.split('.')[-1]
     _is_imported = getattr(IMPORTED, _imported_property)
     if import_once and _is_imported:
@@ -172,6 +163,10 @@ class PathImporter:
         :param paths: Paths of the modules.
         :return: The target module.
         """
+        from .jaml.helper import complete_path
+
+        paths = [complete_path(m) for m in paths]
+
         for p in paths:
             if not os.path.exists(p):
                 raise FileNotFoundError(
@@ -260,14 +255,14 @@ def _raise_bad_imports_warnings(bad_imports, namespace):
     if namespace != 'jina.hub':
         warnings.warn(
             f'theses modules or classes can not be imported {bad_imports}. '
-            f'You can use `jina check` to list all executors and drivers'
+            f'You can use `jina check` to list all executors'
         )
     else:
         warnings.warn(
             f'due to the missing dependencies or bad implementations, '
             f'{bad_imports} can not be imported '
-            f'if you are using these executors/drivers, they wont work. '
-            f'You can use `jina check` to list all executors and drivers'
+            f'if you are using these executors, they wont work. '
+            f'You can use `jina check` to list all executors'
         )
 
 
@@ -316,17 +311,6 @@ def _filter_modules(modules):
     return {m for m in modules if not _ignored_module_pattern.findall(m)}
 
 
-def _load_default_exc_config(cls_obj):
-    from .executors.requests import get_default_reqs
-
-    try:
-        _request = get_default_reqs(type.mro(cls_obj))
-    except ValueError as ex:
-        warnings.warn(
-            f'Please ensure a config yml is given for {cls_obj.__name__}. {ex}'
-        )
-
-
 def _update_depend_tree(cls_obj, module_name, cur_tree):
     d = cur_tree
     for vvv in cls_obj.mro()[:-1][::-1]:
@@ -351,15 +335,10 @@ def _import_module(module_name, import_type, depend_tree, load_stat):
         try:
             _update_depend_tree(_cls_obj, module_name, depend_tree)
             if _cls_obj.__class__.__name__ == 'ExecutorType':
-                _load_default_exc_config(_cls_obj)
                 IMPORTED.schema_executors[
                     f'Jina::Executors::{_cls_obj.__name__}'
                 ] = _jina_class_to_schema(_cls_obj)
-            else:
-                IMPORTED.schema_drivers[
-                    f'Jina::Drivers::{_cls_obj.__name__}'
-                ] = _jina_class_to_schema(_cls_obj)
-            # TODO: _success_msg is never used
+
             _success_msg = colored('▸', 'green').join(
                 f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1]
             )

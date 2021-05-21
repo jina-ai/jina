@@ -2,17 +2,13 @@ import os
 
 import pytest
 import yaml
-from pkg_resources import resource_filename
 
+from jina import __default_executor__
 from jina.enums import SocketType
 from jina.executors import BaseExecutor
-from jina.executors.compound import CompoundExecutor
-from jina.executors.metas import fill_metas_with_defaults
 from jina.helper import expand_dict
 from jina.helper import expand_env_var
 from jina.jaml import JAML
-from jina.parsers import set_pea_parser
-from jina.peapods.peas import BasePea
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -90,12 +86,6 @@ def test_attr_dict():
     assert isinstance(a.components, list)
 
 
-def test_yaml_fill():
-    with open(os.path.join(cur_dir, 'yaml/test-expand2.yml')) as fp:
-        a = JAML.load(fp)
-    print(fill_metas_with_defaults(a))
-
-
 def test_class_yaml():
     class DummyClass:
         pass
@@ -104,33 +94,6 @@ def test_class_yaml():
 
     a = JAML.load('!DummyClass {}')
     assert type(a) == DummyClass
-
-
-def test_class_yaml2():
-    with open(
-        resource_filename(
-            'jina', '/'.join(('resources', 'executors.requests.BaseExecutor.yml'))
-        )
-    ) as fp:
-        JAML.load(fp)
-
-
-def test_class_yaml3():
-    args = set_pea_parser().parse_args([])
-
-    with BasePea(args):
-        pass
-
-    from jina.executors.requests import _defaults
-
-    assert _defaults is not None
-
-
-def test_joint_indexer(test_workspace):
-    b = BaseExecutor.load_config(os.path.join(cur_dir, 'yaml/test-joint.yml'))
-    b.attach(runtime=None)
-    assert b._drivers['SearchRequest'][0]._exec == b[0]
-    assert b._drivers['SearchRequest'][-1]._exec == b[1]
 
 
 def test_load_external_fail():
@@ -153,23 +116,22 @@ def test_enum_yaml():
 
 def test_encoder_name_env_replace():
     os.environ['BE_TEST_NAME'] = 'hello123'
-    os.environ['BATCH_SIZE'] = '256'
     with BaseExecutor.load_config('yaml/test-encoder-env.yml') as be:
-        assert be.name == 'hello123'
-        assert be.batch_size == 256
+        assert be.metas.name == 'hello123'
 
 
 def test_encoder_name_dict_replace():
-    d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
+    d = {'BE_TEST_NAME': 'hello123'}
     with BaseExecutor.load_config('yaml/test-encoder-env.yml', context=d) as be:
-        assert be.name == 'hello123'
-        assert be.batch_size == 256
-        assert be.workspace == 'hello123-256'
+        assert be.metas.name == 'hello123'
+        assert be.metas.workspace == 'hello123'
 
 
 def test_encoder_inject_config_via_kwargs():
-    with BaseExecutor.load_config('yaml/test-encoder-env.yml', pea_id=345) as be:
-        assert be.pea_id == 345
+    with BaseExecutor.load_config(
+        'yaml/test-encoder-env.yml', metas={'pea_id': 345}
+    ) as be:
+        assert be.metas.pea_id == 345
 
 
 def test_load_from_dict():
@@ -181,12 +143,10 @@ def test_load_from_dict():
     #   workspace: ${{this.name}}-${{this.batch_size}}
 
     d1 = {
-        'jtype': 'BaseEncoder',
+        'jtype': __default_executor__,
         'metas': {
             'name': '${{BE_TEST_NAME}}',
-            'batch_size': '${{BATCH_SIZE}}',
-            'pea_id': '${{pea_id}}',
-            'workspace': '${{this.name}} -${{this.batch_size}}',
+            'workspace': '${{this.name}}',
         },
     }
 
@@ -204,26 +164,8 @@ def test_load_from_dict():
     #       name: test2
     # metas:
     #   name: compound1
-
-    d2 = {
-        'jtype': 'CompoundExecutor',
-        'components': [
-            {
-                'jtype': 'BinaryPbIndexer',
-                'with': {'index_filename': 'tmp1'},
-                'metas': {'name': 'test1'},
-            },
-            {
-                'jtype': 'BinaryPbIndexer',
-                'with': {'index_filename': 'tmp2'},
-                'metas': {'name': 'test2'},
-            },
-        ],
-    }
-    d = {'BE_TEST_NAME': 'hello123', 'BATCH_SIZE': 256}
+    d = {'BE_TEST_NAME': 'hello123'}
     b1 = BaseExecutor.load_config(d1, context=d)
-    b2 = BaseExecutor.load_config(d2, context=d)
     assert isinstance(b1, BaseExecutor)
-    assert isinstance(b2, CompoundExecutor)
-    assert b1.batch_size == 256
-    assert b1.name == 'hello123'
+
+    assert b1.metas.name == 'hello123'

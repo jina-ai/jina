@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 
 import pytest
@@ -58,3 +59,14 @@ def test_ping():
             NetworkChecker(a3)
 
     assert cm.value.code == 1
+
+
+@pytest.mark.parametrize('project', ['fashion', 'chatbot', 'multimodal'])
+def test_fork(tmpdir, project):
+    subprocess.check_call(['jina', 'hello', 'fork', project, f'{tmpdir}/tmp'])
+
+    assert os.path.exists(f'{tmpdir}/tmp/app.py')
+    assert os.path.exists(f'{tmpdir}/tmp/executors.py')
+    if project == 'multimodal':
+        assert os.path.exists(f'{tmpdir}/tmp/flow-index.yml')
+        assert os.path.exists(f'{tmpdir}/tmp/flow-search.yml')

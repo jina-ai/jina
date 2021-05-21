@@ -1,32 +1,43 @@
 import base64
 import io
+import itertools as it
 import json
 import mimetypes
 import os
+import random
 import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
-from typing import Union, Dict, Optional, TypeVar, Any, Tuple, List, Type
+from typing import (
+    Iterable,
+    Union,
+    Dict,
+    Optional,
+    TypeVar,
+    Any,
+    Tuple,
+    List,
+    Type,
+)
 
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
-from .traversable import Traversable
-from ..mixin import ProtoTypeMixin
-from ..ndarray.generic import NdArray, BaseSparseNdArray
-from ..querylang.queryset.dunderkey import dunder_get
-from ..score import NamedScore
 from ..arrays.chunk import ChunkArray
 from ..arrays.match import MatchArray
+from ..mixin import ProtoTypeMixin
+from ..ndarray.generic import NdArray, BaseSparseNdArray
+from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import (
     is_url,
     typename,
     random_identity,
     download_mermaid_url,
+    dunder_get,
 )
 from ...importer import ImportExtensions
 from ...logging import default_logger
@@ -36,14 +47,12 @@ if False:
     from scipy.sparse import coo_matrix
 
     # fix type-hint complain for sphinx and flake
-    from typing import TypeVar
-    import numpy as np
     import scipy
     import tensorflow as tf
     import torch
 
     EmbeddingType = TypeVar(
-        'EncodingType',
+        'EmbeddingType',
         np.ndarray,
         scipy.sparse.csr_matrix,
         scipy.sparse.coo_matrix,
@@ -72,15 +81,10 @@ DocumentSourceType = TypeVar(
     'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
 )
 
-_document_fields = set(
-    list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name)
-    + list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
-)
-
 _all_mime_types = set(mimetypes.types_map.values())
 
 
-class Document(ProtoTypeMixin, Traversable):
+class Document(ProtoTypeMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -194,17 +198,37 @@ class Document(ProtoTypeMixin, Traversable):
                     }
 
                 user_fields = set(document.keys())
-                if _document_fields.issuperset(user_fields):
+                support_fields = set(
+                    self.attributes(
+                        include_proto_fields_camelcase=True, include_properties=False
+                    )
+                )
+
+                if support_fields.issuperset(user_fields):
                     json_format.ParseDict(document, self._pb_body)
                 else:
-                    _intersect = _document_fields.intersection(user_fields)
+                    _intersect = support_fields.intersection(user_fields)
                     _remainder = user_fields.difference(_intersect)
                     if _intersect:
                         json_format.ParseDict(
                             {k: document[k] for k in _intersect}, self._pb_body
                         )
                     if _remainder:
-                        self._pb_body.tags.update({k: document[k] for k in _remainder})
+                        support_prop = set(
+                            self.attributes(
+                                include_proto_fields=False, include_properties=True
+                            )
+                        )
+                        _intersect2 = support_prop.intersection(_remainder)
+                        _remainder2 = _remainder.difference(_intersect2)
+
+                        if _intersect2:
+                            self.set_attributes(**{p: document[p] for p in _intersect2})
+
+                        if _remainder2:
+                            self._pb_body.tags.update(
+                                {k: document[k] for k in _remainder}
+                            )
             elif isinstance(document, bytes):
                 # directly parsing from binary string gives large false-positive
                 # fortunately protobuf throws a warning when the parsing seems go wrong
@@ -238,8 +262,20 @@ class Document(ProtoTypeMixin, Traversable):
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
-        self.set_attrs(**kwargs)
+        self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
+
+    def pop(self, *fields) -> None:
+        """Remove the values from the given fields of this Document.
+
+        :param fields: field names
+        """
+        for k in fields:
+            self._pb_body.ClearField(k)
+
+    def clear(self) -> None:
+        """Remove all values from all fields of this Document. """
+        self._pb_body.Clear()
 
     @property
     def siblings(self) -> int:
@@ -623,26 +659,37 @@ class Document(ProtoTypeMixin, Traversable):
     def matches(self) -> 'MatchArray':
         """Get all matches of the current document.
 
-        :return: the set of matches attached to this document
+        :return: the array of matches attached to this document
         """
         return MatchArray(self._pb_body.matches, reference_doc=self)
+
+    @matches.setter
+    def matches(self, value: Iterable['Document']):
+        """Get all chunks of the current document.
+
+        :param value: value to set
+        """
+        self.pop('matches')
+        self.matches.extend(value)
 
     @property
     def chunks(self) -> 'ChunkArray':
         """Get all chunks of the current document.
 
-        :return: the set of chunks of this document
+        :return: the array of chunks of this document
         """
         return ChunkArray(self._pb_body.chunks, reference_doc=self)
 
-    def __getattr__(self, item):
-        if hasattr(self._pb_body, item):
-            value = getattr(self._pb_body, item)
-        else:
-            value = dunder_get(self._pb_body, item)
-        return value
+    @chunks.setter
+    def chunks(self, value: Iterable['Document']):
+        """Get all chunks of the current document.
 
-    def set_attrs(self, **kwargs):
+        :param value: the array of chunks of this document
+        """
+        self.pop('chunks')
+        self.chunks.extend(value)
+
+    def set_attributes(self, **kwargs):
         """Bulk update Document fields with key-value specified in kwargs
 
         .. seealso::
@@ -676,52 +723,7 @@ class Document(ProtoTypeMixin, Traversable):
                 else:
                     raise AttributeError(f'{k} is not recognized')
 
-    def get_attrs(self, *args) -> Dict[str, Any]:
-        """Bulk fetch Document fields and return a dict of the key-value pairs
-
-        .. seealso::
-            :meth:`update` for bulk set/update attributes
-
-        .. note::
-            Arguments will be extracted using `dunder_get`
-            .. highlight:: python
-            .. code-block:: python
-
-                d = Document({'id': '123', 'hello': 'world', 'tags': {'id': 'external_id', 'good': 'bye'}})
-
-                assert d.id == '123'  # true
-                assert d.tags['hello'] == 'world' # true
-                assert d.tags['good'] == 'bye' # true
-                assert d.tags['id'] == 'external_id' # true
-
-                res = d.get_attrs(*['id', 'tags__hello', 'tags__good', 'tags__id'])
-
-                assert res['id'] == '123' # true
-                assert res['tags__hello'] == 'world' # true
-                assert res['tags__good'] == 'bye' # true
-                assert res['tags__id'] == 'external_id' # true
-
-        :param args: the variable length values to extract from the document
-        :return: a dictionary mapping the fields in `:param:args` to the actual attributes of this document
-        """
-
-        ret = {}
-        for k in args:
-            try:
-                value = getattr(self, k)
-
-                if value is None:
-                    raise ValueError
-
-                ret[k] = value
-            except (AttributeError, ValueError):
-                default_logger.warning(
-                    f'Could not get attribute `{typename(self)}.{k}`, returning `None`'
-                )
-                ret[k] = None
-        return ret
-
-    def get_attrs_values(self, *args) -> List[Any]:
+    def get_attributes(self, *fields: str) -> Union[Any, List[Any]]:
         """Bulk fetch Document fields and return a list of the values of these fields
 
         .. note::
@@ -740,12 +742,12 @@ class Document(ProtoTypeMixin, Traversable):
 
                 assert res == ['123', 'world', 'bye', 'external_id']
 
-        :param args: the variable length values to extract from the document
+        :param fields: the variable length values to extract from the document
         :return: a list with the attributes of this document ordered as the args
         """
 
         ret = []
-        for k in args:
+        for k in fields:
             try:
                 value = getattr(self, k)
 
@@ -758,6 +760,10 @@ class Document(ProtoTypeMixin, Traversable):
                     f'Could not get attribute `{typename(self)}.{k}`, returning `None`'
                 )
                 ret.append(None)
+
+        # unboxing if args is single
+        if len(fields) == 1:
+            ret = ret[0]
 
         return ret
 
@@ -828,17 +834,8 @@ class Document(ProtoTypeMixin, Traversable):
 
         :param value: acceptable URI/URL, raise ``ValueError`` when it is not a valid URI
         """
-        scheme = urllib.parse.urlparse(value).scheme
-        if (
-            (scheme in {'http', 'https'} and is_url(value))
-            or (scheme in {'data'})
-            or os.path.exists(value)
-            or os.access(os.path.dirname(value), os.W_OK)
-        ):
-            self._pb_body.uri = value
-            self.mime_type = guess_mime(value)
-        else:
-            raise ValueError(f'{value} is not a valid URI')
+        self._pb_body.uri = value
+        self.mime_type = guess_mime(value)
 
     @property
     def mime_type(self) -> str:
@@ -905,13 +902,9 @@ class Document(ProtoTypeMixin, Traversable):
         if isinstance(value, bytes):
             self.buffer = value
         elif isinstance(value, str):
-            # TODO(Han): this implicit fallback is too much but that's
-            #  how the original _generate function implement. And a lot of
-            #  tests depend on this logic. Stay in this
-            #  way to keep all tests passing until I got time to refactor this part
-            try:
+            if _is_uri(value):
                 self.uri = value
-            except ValueError:
+            else:
                 self.text = value
         elif isinstance(value, np.ndarray):
             self.blob = value
@@ -972,66 +965,66 @@ class Document(ProtoTypeMixin, Traversable):
         else:
             raise TypeError(f'score is in unsupported type {typename(value)}')
 
-    def convert_buffer_to_blob(self, **kwargs):
-        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
-        set :attr:`blob` accordingly.
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
-
-        .. note::
-            One can only recover values not shape information from pure buffer.
-        """
-        self.blob = np.frombuffer(self.buffer)
-
-    def convert_buffer_image_to_blob(self, color_axis: int = -1, **kwargs):
+    def convert_image_buffer_to_blob(self, color_axis: int = -1):
         """Convert an image buffer to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob(io.BytesIO(self.buffer), color_axis)
 
-    def convert_blob_to_uri(
-        self, width: int, height: int, resize_method: str = 'BILINEAR', **kwargs
+    def convert_image_blob_to_uri(
+        self, width: int, height: int, resize_method: str = 'BILINEAR'
     ):
         """Assuming :attr:`blob` is a _valid_ image, set :attr:`uri` accordingly
         :param width: the width of the blob
         :param height: the height of the blob
         :param resize_method: the resize method name
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         png_bytes = png_to_buffer(self.blob, width, height, resize_method)
         self.uri = 'data:image/png;base64,' + base64.b64encode(png_bytes).decode()
 
-    def convert_uri_to_blob(
-        self, color_axis: int = -1, uri_prefix: Optional[str] = None, **kwargs
+    def convert_image_uri_to_blob(
+        self, color_axis: int = -1, uri_prefix: Optional[str] = None
     ):
         """Convert uri to blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
         :param uri_prefix: the prefix of the uri
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         self.blob = to_image_blob(
             (uri_prefix + self.uri) if uri_prefix else self.uri, color_axis
         )
 
-    def convert_data_uri_to_blob(self, color_axis: int = -1, **kwargs):
+    def convert_image_datauri_to_blob(self, color_axis: int = -1):
         """Convert data URI to image blob
 
         :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
         req = urllib.request.Request(self.uri, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as fp:
             buffer = fp.read()
         self.blob = to_image_blob(io.BytesIO(buffer), color_axis)
 
-    def convert_uri_to_buffer(self, **kwargs):
+    def convert_buffer_to_blob(self, dtype=None, count=-1, offset=0):
+        """Assuming the :attr:`buffer` is a _valid_ buffer of Numpy ndarray,
+        set :attr:`blob` accordingly.
+
+        :param dtype: Data-type of the returned array; default: float.
+        :param count: Number of items to read. ``-1`` means all data in the buffer.
+        :param offset: Start reading the buffer from this offset (in bytes); default: 0.
+
+        .. note::
+            One can only recover values not shape information from pure buffer.
+        """
+        self.blob = np.frombuffer(self.buffer, dtype, count, offset)
+
+    def convert_blob_to_buffer(self):
+        """Convert blob to buffer """
+        self.buffer = self.blob.tobytes()
+
+    def convert_uri_to_buffer(self):
         """Convert uri to buffer
         Internally it downloads from the URI and set :attr:`buffer`.
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
 
         """
         if urllib.parse.urlparse(self.uri).scheme in {'http', 'https', 'data'}:
@@ -1046,22 +1039,20 @@ class Document(ProtoTypeMixin, Traversable):
         else:
             raise FileNotFoundError(f'{self.uri} is not a URL or a valid local path')
 
-    def convert_uri_to_data_uri(
-        self, charset: str = 'utf-8', base64: bool = False, **kwargs
-    ):
+    def convert_uri_to_datauri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert uri to data uri.
         Internally it reads uri into buffer and convert it to data uri
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit. Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
-        self.convert_uri_to_buffer()
-        self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
+        if not _is_datauri(self.uri):
+            self.convert_uri_to_buffer()
+            self.uri = to_datauri(
+                self.mime_type, self.buffer, charset, base64, binary=True
+            )
 
-    def convert_buffer_to_uri(
-        self, charset: str = 'utf-8', base64: bool = False, **kwargs
-    ):
+    def convert_buffer_to_uri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert buffer to data uri.
         Internally it first reads into buffer and then converts it to data URI.
 
@@ -1069,7 +1060,6 @@ class Document(ProtoTypeMixin, Traversable):
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
             Designed to be efficient for non-text 8 bit and binary data. Sometimes used for text data that
             frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
         if not self.mime_type:
@@ -1079,33 +1069,24 @@ class Document(ProtoTypeMixin, Traversable):
 
         self.uri = to_datauri(self.mime_type, self.buffer, charset, base64, binary=True)
 
-    def convert_text_to_uri(
-        self, charset: str = 'utf-8', base64: bool = False, **kwargs
-    ):
+    def convert_text_to_uri(self, charset: str = 'utf-8', base64: bool = False):
         """Convert text to data uri.
 
         :param charset: charset may be any character set registered with IANA
         :param base64: used to encode arbitrary octet sequences into a form that satisfies the rules of 7bit.
             Designed to be efficient for non-text 8 bit and binary data.
             Sometimes used for text data that frequently uses non-US-ASCII characters.
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
         """
 
         self.uri = to_datauri(self.mime_type, self.text, charset, base64, binary=False)
 
-    def convert_uri_to_text(self, **kwargs):
-        """Assuming URI is text, convert it to text
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
-        """
+    def convert_uri_to_text(self):
+        """Assuming URI is text, convert it to text"""
         self.convert_uri_to_buffer()
         self.text = self.buffer.decode()
 
-    def convert_content_to_uri(self, **kwargs):
-        """Convert content in URI with best effort
-
-        :param kwargs: reserved for maximum compatibility when using with ConvertDriver
-        """
+    def convert_content_to_uri(self):
+        """Convert content in URI with best effort"""
         if self.text:
             self.convert_text_to_uri()
         elif self.buffer:
@@ -1114,14 +1095,14 @@ class Document(ProtoTypeMixin, Traversable):
             raise NotImplementedError
 
     def MergeFrom(self, doc: 'Document'):
-        """Merge the content of target :param:doc into current document.
+        """Merge the content of target
 
         :param doc: the document to merge from
         """
         self._pb_body.MergeFrom(doc.proto)
 
     def CopyFrom(self, doc: 'Document'):
-        """Copy the content of target :param:doc into current document.
+        """Copy the content of target
 
         :param doc: the document to copy from
         """
@@ -1173,10 +1154,10 @@ class Document(ProtoTypeMixin, Traversable):
 
         mermaid_str = (
             """
-    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-    classDiagram
-
-            """
+                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                    classDiagram
+                
+                            """
             + self.__mermaid_str__()
         )
 
@@ -1229,28 +1210,57 @@ class Document(ProtoTypeMixin, Traversable):
         """
         return tuple(field[0].name for field in self.ListFields())
 
-    @property
-    def raw(self) -> 'Document':
-        """Return self as a document object.
-
-        :return: this Document
-        """
-        return self
-
     @staticmethod
-    def get_all_attributes() -> List[str]:
+    def attributes(
+        include_proto_fields: bool = True,
+        include_proto_fields_camelcase: bool = False,
+        include_properties: bool = False,
+    ) -> List[str]:
         """Return all attributes supported by the Document, which can be accessed by ``doc.attribute``
 
+        :param include_proto_fields: if set, then include all protobuf fields
+        :param include_proto_fields_camelcase: if set, then include all protobuf fields in CamelCase
+        :param include_properties: if set, then include all properties defined for Document class
         :return: a list of attributes in string.
         """
         import inspect
 
-        support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+        support_keys = []
 
-        support_keys += [
-            name
-            for (name, value) in inspect.getmembers(
-                Document, lambda x: isinstance(x, property)
+        if include_proto_fields:
+            support_keys = list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+        if include_proto_fields_camelcase:
+            support_keys += list(
+                jina_pb2.DocumentProto().DESCRIPTOR.fields_by_camelcase_name
             )
-        ]
+
+        if include_properties:
+            support_keys += [
+                name
+                for (name, value) in inspect.getmembers(
+                    Document, lambda x: isinstance(x, property)
+                )
+            ]
         return list(set(support_keys))
+
+    def __getattr__(self, item):
+        if hasattr(self._pb_body, item):
+            value = getattr(self._pb_body, item)
+        else:
+            value = dunder_get(self._pb_body, item)
+        return value
+
+
+def _is_uri(value: str) -> bool:
+    scheme = urllib.parse.urlparse(value).scheme
+    return (
+        (scheme in {'http', 'https'} and is_url(value))
+        or (scheme in {'data'})
+        or os.path.exists(value)
+        or os.access(os.path.dirname(value), os.W_OK)
+    )
+
+
+def _is_datauri(value: str) -> bool:
+    scheme = urllib.parse.urlparse(value).scheme
+    return is_url(value) and scheme in {'data'}

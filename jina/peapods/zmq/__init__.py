@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 import argparse
 import asyncio
 import os
@@ -13,13 +10,14 @@ import zmq.asyncio
 from zmq.eventloop.zmqstream import ZMQStream
 from zmq.ssh import tunnel_connection
 
-from ... import __default_host__, Request
+from ... import __default_host__
 from ...enums import SocketType
 from ...helper import colored, random_identity, get_readable_size, get_or_reuse_loop
 from ...importer import ImportExtensions
 from ...logging import default_logger, profile_logger, JinaLogger
 from ...types.message import Message
 from ...types.message.common import ControlMessage
+from ...types.request import Request
 
 
 class Zmqlet:
@@ -59,6 +57,7 @@ class Zmqlet:
         self.msg_recv = 0
         self.msg_sent = 0
         self.is_closed = False
+        self.is_polling_paused = False
         self.opened_socks = []  # this must be here for `close()`
         self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self._init_sockets()
         self._register_pollin()
@@ -411,10 +410,13 @@ class ZmqStreamlet(Zmqlet):
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """
         self.in_sock.stop_on_recv()
+        self.is_polling_paused = True
 
     def resume_pollin(self):
         """Put :attr:`in_sock` back to the poller """
-        self.in_sock.on_recv(self._in_sock_callback)
+        if self.is_polling_paused:
+            self.in_sock.on_recv(self._in_sock_callback)
+            self.is_polling_paused = False
 
     def start(self, callback: Callable[['Message'], 'Message']):
         """

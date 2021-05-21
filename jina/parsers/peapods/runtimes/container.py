@@ -7,11 +7,12 @@ def mixin_container_runtime_parser(parser):
     :param parser: the parser instance to which we add arguments
     """
     gp = add_arg_group(parser, title='ContainerRuntime')
+    from jina import __default_executor__
 
     gp.add_argument(
         '--uses-internal',
         type=str,
-        default='BaseExecutor',
+        default=__default_executor__,
         help='''
 The config runs inside the Docker container. 
 

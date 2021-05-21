@@ -279,7 +279,7 @@ def test_hub_build_level_pass(monkeypatch, test_workspace, docker_image):
     _, failed_levels = HubIO(args)._test_build(
         docker_image,
         BuildTestLevel.EXECUTOR,
-        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        os.path.join(cur_dir, 'yaml/test-executor.yml'),
         60000,
         True,
         JinaLogger('unittest'),
@@ -297,7 +297,7 @@ def test_hub_build_level_fail(monkeypatch, test_workspace, docker_image):
     _, failed_levels = HubIO(args)._test_build(
         docker_image,
         BuildTestLevel.FLOW,
-        os.path.join(cur_dir, 'yaml/test-joint.yml'),
+        os.path.join(cur_dir, 'yaml/test-executor.yml'),
         60000,
         True,
         JinaLogger('unittest'),

@@ -20,6 +20,5 @@ pods:
   - name: text_indexer
     read_only: true
   - name: join_all
-    uses: _pass
     needs: [image_vector_indexer, image_kv_indexer, text_indexer]
     read_only: true

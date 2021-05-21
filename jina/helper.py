@@ -1,6 +1,3 @@
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
-
 import asyncio
 import functools
 import json
@@ -17,6 +14,7 @@ from argparse import ArgumentParser, Namespace
 from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
+from pathlib import Path
 from types import SimpleNamespace
 from typing import (
     Tuple,
@@ -52,10 +50,8 @@ __all__ = [
     'convert_tuple_to_list',
     'run_async',
     'deprecated_alias',
-    'deprecated_class',
+    'countdown',
 ]
-
-from jina.excepts import NotSupportedError
 
 
 def deprecated_alias(**aliases):
@@ -72,6 +68,7 @@ def deprecated_alias(**aliases):
     :param aliases: maps aliases to new arguments
     :return: wrapper
     """
+    from .excepts import NotSupportedError
 
     def _rename_kwargs(func_name: str, kwargs, aliases):
         """
@@ -127,55 +124,6 @@ def deprecated_alias(**aliases):
         return wrapper
 
     return deco
-
-
-def deprecated_class(dep_class=None, new_class=None, custom_msg=None):
-    """
-    After applying `deprecated_class` the `dep_class` will only be an alias for the `new_class`.
-    Any code inside of `dep_class` will be completely overwritten.
-
-    For example:
-        .. highlight:: python
-        .. code-block:: python
-            @deprecated_class(new_class=NewClass)
-            @deprecated_class(new_class=NewClass, custom_msg="custom message")
-
-    :param dep_class: deprecated class
-    :param new_class: new class
-    :param custom_msg: a custom message to describe the new class
-    :return: wrapper
-    """
-
-    if not dep_class:
-        return functools.partial(
-            deprecated_class, new_class=new_class, custom_msg=custom_msg
-        )
-
-    new_init = new_class.__init__
-
-    @functools.wraps(dep_class)
-    def wrapper(*args, **kwargs):
-        """
-        Set wrapper function.
-
-        :param args: wrapper arguments
-        :param kwargs: wrapper key word arguments
-        :return: class instance of the new type.
-        """
-
-        warnings_msg = f'{dep_class.__name__} class is deprecated and will be removed in the next version. '
-        if new_class and not custom_msg:
-            warnings_msg += f'A new name of the class is {new_class.__name__}. '
-        if custom_msg:
-            warnings_msg += f'{custom_msg}'
-        warnings.warn(
-            warnings_msg,
-            DeprecationWarning,
-        )
-        return new_init(*args, **kwargs)
-
-    new_class.__init__ = wrapper
-    return new_class
 
 
 def get_readable_size(num_bytes: Union[int, float]) -> str:
@@ -1099,7 +1047,7 @@ def get_public_ip():
     """
     import urllib.request
 
-    timeout = 0.5
+    timeout = 0.2
 
     results = []
 
@@ -1318,6 +1266,7 @@ def find_request_binding(target):
     :return: a dictionary with key as request type and value as method name
     """
     import ast, inspect
+    from . import __default_endpoint__
 
     res = {}
 
@@ -1328,9 +1277,8 @@ def find_request_binding(target):
             if isinstance(e, ast.Call) and e.func.id == 'requests':
                 req_name = e.keywords[0].value.s
             elif isinstance(e, ast.Name) and e.id == 'requests':
-                req_name = 'default'
+                req_name = __default_endpoint__
             if req_name:
-                req_name = _canonical_request_name(req_name)
                 if req_name in res:
                     raise ValueError(
                         f'you already bind `{res[req_name]}` with `{req_name}` request'
@@ -1350,4 +1298,58 @@ def _canonical_request_name(req_name: str):
     :param req_name: the original request name
     :return: canonical form of the request
     """
-    return req_name.lower().replace('request', '')
+    if req_name.startswith('/'):
+        # new data request
+        return f'data://{req_name}'
+    else:
+        # legacy request type
+        return req_name.lower().replace('request', '')
+
+
+def physical_size(directory: str) -> int:
+    """Return the size of the given directory in bytes
+
+    :param directory: directory as :str:
+    :return: byte size of the given directory
+    """
+    root_directory = Path(directory)
+    return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
+
+
+def dunder_get(_dict: Any, key: str) -> Any:
+    """Returns value for a specified dunderkey
+    A "dunderkey" is just a fieldname that may or may not contain
+    double underscores (dunderscores!) for referencing nested keys in
+    a dict. eg::
+         >>> data = {'a': {'b': 1}}
+         >>> dunder_get(data, 'a__b')
+         1
+    key 'b' can be referrenced as 'a__b'
+    :param _dict : (dict, list, struct or object) which we want to index into
+    :param key   : (str) that represents a first level or nested key in the dict
+    :return: (mixed) value corresponding to the key
+    """
+
+    try:
+        part1, part2 = key.split('__', 1)
+    except ValueError:
+        part1, part2 = key, ''
+
+    try:
+        part1 = int(part1)  # parse int parameter
+    except ValueError:
+        pass
+
+    from google.protobuf.struct_pb2 import Struct
+
+    if isinstance(part1, int):
+        result = _dict[part1]
+    elif isinstance(_dict, (dict, Struct)):
+        if part1 in _dict:
+            result = _dict[part1]
+        else:
+            result = None
+    else:
+        result = getattr(_dict, part1)
+
+    return dunder_get(result, part2) if part2 else result

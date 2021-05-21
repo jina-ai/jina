@@ -1,17 +1,15 @@
 """Module containing the Base Client for Jina."""
-__copyright__ = "Copyright (c) 2020 Jina AI Limited. All rights reserved."
-__license__ = "Apache-2.0"
 
 import argparse
-import os
-from typing import Callable, Union, Optional, Iterator, Iterable, Dict, AsyncIterator
 import asyncio
+import inspect
+import os
+from typing import Callable, Union, Optional, Iterator, Iterable, AsyncIterator
 
 import grpc
-import inspect
+
 from .helper import callback_exec
 from .request import GeneratorSourceType
-from ..enums import RequestType
 from ..excepts import BadClient, BadClientInput, ValidationError
 from ..helper import typename
 from ..logging import default_logger, JinaLogger
@@ -45,30 +43,7 @@ class BaseClient:
             # affect users os-level envs.
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
-        self._mode = args.mode
         self._inputs = None
-
-    @property
-    def mode(self) -> str:
-        """
-        Get the mode for this client (index, query etc.).
-
-        :return: Mode of the client.
-        """
-        return self._mode
-
-    @mode.setter
-    def mode(self, value: RequestType) -> None:
-        """
-        Set the mode.
-
-        :param value: Request type. (e.g. INDEX, SEARCH, DELETE, UPDATE, CONTROL, TRAIN)
-        """
-        if isinstance(value, RequestType):
-            self._mode = value
-            self.args.mode = value
-        else:
-            raise ValueError(f'{value} must be one of {RequestType}')
 
     @staticmethod
     def check_input(inputs: Optional[InputType] = None, **kwargs) -> None:
@@ -77,11 +52,17 @@ class BaseClient:
         :param inputs: the inputs
         :param kwargs: keyword arguments
         """
+
+        if inputs is None:
+            # empty inputs is considered as valid
+            return
+
         if hasattr(inputs, '__call__'):
             # it is a function
             inputs = inputs()
 
         kwargs['data'] = inputs
+        kwargs['exec_endpoint'] = '/'
 
         if inspect.isasyncgenfunction(inputs) or inspect.isasyncgen(inputs):
             raise ValidationError(
@@ -123,12 +104,6 @@ class BaseClient:
 
             return request_generator(**_kwargs)
 
-    def _get_task_name(self, kwargs: Dict) -> str:
-        tname = str(self.mode).lower()
-        if 'mode' in kwargs:
-            tname = str(kwargs['mode']).lower()
-        return tname
-
     @property
     def inputs(self) -> InputType:
         """
@@ -138,10 +113,7 @@ class BaseClient:
 
         :return: inputs
         """
-        if self._inputs is not None:
-            return self._inputs
-        else:
-            raise BadClient('inputs are not defined')
+        return self._inputs
 
     @inputs.setter
     def inputs(self, bytes_gen: InputType) -> None:
@@ -165,7 +137,6 @@ class BaseClient:
     ):
         try:
             self.inputs = inputs
-            tname = self._get_task_name(kwargs)
             req_iter = self._get_requests(**kwargs)
             async with grpc.aio.insecure_channel(
                 f'{self.args.host}:{self.args.port_expose}',
@@ -178,7 +149,7 @@ class BaseClient:
                 self.logger.success(
                     f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
                 )
-                with ProgressBar(task_name=tname) as p_bar, TimeContext(tname):
+                with ProgressBar() as p_bar, TimeContext(''):
                     async for resp in stub.Call(req_iter):
                         resp.as_typed_request(resp.request_type)
                         resp.as_response()
@@ -195,7 +166,7 @@ class BaseClient:
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
-            self.logger.warning(f'process error: {ex!r}, terminate signal send?')
+            self.logger.warning(f'process error: {ex!r}')
         except grpc.aio._call.AioRpcError as rpc_ex:
             # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
             my_code = rpc_ex.code()
@@ -220,48 +191,3 @@ class BaseClient:
                 ) from rpc_ex
             else:
                 raise BadClient(msg) from rpc_ex
-
-    def index(self):
-        """Issue 'index' request to the Flow."""
-        raise NotImplementedError
-
-    def search(self):
-        """Issue 'search' request to the Flow."""
-        raise NotImplementedError
-
-    def train(self):
-        """Issue 'train' request to the Flow."""
-        raise NotImplementedError
-
-    @staticmethod
-    def add_default_kwargs(kwargs: Dict):
-        """
-        Add the default kwargs to the instance.
-
-        :param kwargs: the kwargs to add
-        """
-        # TODO: refactor it into load from config file
-        if ('top_k' in kwargs) and (kwargs['top_k'] is not None):
-            # associate all VectorSearchDriver and SliceQL driver to use top_k
-            from jina import QueryLang
-
-            topk_ql = [
-                QueryLang(
-                    {
-                        'name': 'SliceQL',
-                        'priority': 1,
-                        'parameters': {'end': kwargs['top_k']},
-                    }
-                ),
-                QueryLang(
-                    {
-                        'name': 'VectorSearchDriver',
-                        'priority': 1,
-                        'parameters': {'top_k': kwargs['top_k']},
-                    }
-                ),
-            ]
-            if 'queryset' not in kwargs:
-                kwargs['queryset'] = topk_ql
-            else:
-                kwargs['queryset'].extend(topk_ql)

@@ -1,5 +1,4 @@
 import asyncio
-from typing import Iterable, Any
 
 from .....helper import random_identity, typename
 from .....logging import JinaLogger

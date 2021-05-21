@@ -1,18 +1,14 @@
+import numpy as np
 import pytest
 
-import numpy as np
-
-from jina.executors.decorators import single
-from jina.executors.crafters import BaseCrafter
-from jina.flow import Flow
+from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.proto import jina_pb2
-
 from tests import validate_callback
 
 
-class DummyCrafterExcept(BaseCrafter):
-    @single
-    def craft(self, text, *args, **kwargs):
+class DummyCrafterExcept(Executor):
+    @requests
+    def craft(self, *args, **kwargs):
         return 1 / 0
 
 
@@ -25,19 +21,26 @@ def test_bad_flow(mocker, restful):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         assert bad_routes[0].pod == 'r1/ZEDRuntime'
 
+    from jina import Executor, requests
+
+    class BadExecutor(Executor):
+        @requests
+        def foo(self, **kwargs):
+            raise NotImplementedError
+
     f = (
         Flow(restful=restful)
-        .add(name='r1', uses='!BaseCrafter')
-        .add(name='r2', uses='!BaseEncoder')
-        .add(name='r3', uses='!BaseEncoder')
+        .add(name='r1', uses=BadExecutor)
+        .add(name='r2')
+        .add(name='r3')
     )
 
     on_error_mock = mocker.Mock()
 
-    # always test two times, make sure the flow still works after it fails on the first
+    # always test two times, make sure the flow test_bad_flow_customizedstill works after it fails on the first
     with f:
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
 
     validate_callback(on_error_mock, validate)
 
@@ -56,7 +59,7 @@ def test_bad_flow_customized(mocker, restful):
         Flow(restful=restful)
         .add(name='r1')
         .add(name='r2', uses='!DummyCrafterExcept')
-        .add(name='r3', uses='!BaseEncoder')
+        .add(name='r3', uses='!BaseExecutor')
     )
 
     with f:
@@ -66,14 +69,21 @@ def test_bad_flow_customized(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
 
     validate_callback(on_error_mock, validate)
 
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_except_with_parallel(mocker, restful):
+    from jina import Executor, Flow, requests
+
+    class MyExecutor(Executor):
+        @requests
+        def foo(self, **kwargs):
+            raise NotImplementedError
+
     def validate(req):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         err_routes = [
@@ -81,15 +91,15 @@ def test_except_with_parallel(mocker, restful):
         ]
         assert len(err_routes) == 2
         assert err_routes[0].exception.executor == 'DummyCrafterExcept'
-        assert err_routes[1].exception.executor == 'BaseEncoder'
+        assert err_routes[1].exception.executor == 'MyExecutor'
         assert err_routes[0].exception.name == 'ZeroDivisionError'
         assert err_routes[1].exception.name == 'NotImplementedError'
 
     f = (
         Flow(restful=restful)
         .add(name='r1')
-        .add(name='r2', uses='!DummyCrafterExcept', parallel=3)
-        .add(name='r3', uses='!BaseEncoder')
+        .add(name='r2', uses=DummyCrafterExcept, parallel=3)
+        .add(name='r3', uses=MyExecutor)
     )
 
     with f:
@@ -99,8 +109,8 @@ def test_except_with_parallel(mocker, restful):
 
     # always test two times, make sure the flow still works after it fails on the first
     with f:
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
-        f.index(['abbcs', 'efgh'], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
+        f.index([Document(text='abbcs'), Document(text='efgh')], on_error=on_error_mock)
 
     validate_callback(on_error_mock, validate)
 
@@ -110,18 +120,27 @@ def test_on_error_callback(mocker, restful):
     def validate1():
         raise NotImplementedError
 
+    class MyExecutor(Executor):
+        @requests
+        def foo(self, **kwargs):
+            raise NotImplementedError
+
     def validate2(x, *args):
         x = x.routes
         assert len(x) == 4  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
         assert badones[0].pod == 'r3/ZEDRuntime'
 
-    f = Flow(restful=restful).add(name='r1').add(name='r3', uses='!BaseEncoder')
+    f = Flow(restful=restful).add(name='r1').add(name='r3', uses=MyExecutor)
 
     on_error_mock = mocker.Mock()
 
     with f:
-        f.index(['abbcs', 'efgh'], on_done=validate1, on_error=on_error_mock)
+        f.index(
+            [Document(text='abbcs'), Document(text='efgh')],
+            on_done=validate1,
+            on_error=on_error_mock,
+        )
 
     validate_callback(on_error_mock, validate2)
 
@@ -140,7 +159,11 @@ def test_no_error_callback(mocker, restful):
     on_error_mock = mocker.Mock()
 
     with f:
-        f.index(['abbcs', 'efgh'], on_done=response_mock, on_error=on_error_mock)
+        f.index(
+            [Document(text='abbcs'), Document(text='efgh')],
+            on_done=response_mock,
+            on_error=on_error_mock,
+        )
 
     validate_callback(response_mock, validate1)
     on_error_mock.assert_not_called()
@@ -161,7 +184,12 @@ def test_flow_on_callback(restful):
         hit.append('always')
 
     with f:
-        f.index(np.random.random([10, 10]), on_done=f1, on_error=f2, on_always=f3)
+        f.index(
+            DocumentArray.from_ndarray(np.random.random([10, 10])),
+            on_done=f1,
+            on_error=f2,
+            on_always=f3,
+        )
 
     assert hit == ['done', 'always']
 
@@ -170,9 +198,9 @@ def test_flow_on_callback(restful):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_on_error_callback(restful):
-    class DummyCrafterNotImplemented(BaseCrafter):
-        @single
-        def craft(self, blob, *args, **kwargs):
+    class DummyCrafterNotImplemented(Executor):
+        @requests
+        def craft(self, text, *args, **kwargs):
             raise NotImplementedError
 
     f = Flow(restful=restful).add(uses='!DummyCrafterNotImplemented')
@@ -188,7 +216,12 @@ def test_flow_on_error_callback(restful):
         hit.append('always')
 
     with f:
-        f.index(np.random.random([10, 10]), on_done=f1, on_error=f2, on_always=f3)
+        f.index(
+            DocumentArray.from_ndarray(np.random.random([10, 10])),
+            on_done=f1,
+            on_error=f2,
+            on_always=f3,
+        )
 
     assert hit == ['error', 'always']
 

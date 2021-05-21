@@ -2,13 +2,10 @@ from copy import deepcopy
 
 import pytest
 import numpy as np
-from scipy.sparse import coo_matrix, csr_matrix
-import torch
-import tensorflow as tf
+from scipy.sparse import coo_matrix
 
 from jina import Document
 from jina.types.arrays import DocumentArray
-from jina.enums import EmbeddingClsType
 
 DOCUMENTS_PER_LEVEL = 1
 
@@ -63,17 +60,11 @@ def test_append(docarray, document_factory):
     assert docarray[-1].id == doc.id
 
 
-def test_add(docarray, document_factory):
-    doc = document_factory.create(4, 'test 4')
-    docarray.add(doc)
-    assert docarray[-1].id == doc.id
-
-
 def test_union(docarray, document_factory):
     additional_docarray = DocumentArray([])
     for idx in range(4, 10):
         doc = document_factory.create(idx, f'test {idx}')
-        additional_docarray.add(doc)
+        additional_docarray.append(doc)
     union = docarray + additional_docarray
     for idx in range(0, 3):
         assert union[idx].id == docarray[idx].id
@@ -85,7 +76,7 @@ def test_union_inplace(docarray, document_factory):
     additional_docarray = DocumentArray([])
     for idx in range(4, 10):
         doc = document_factory.create(idx, f'test {idx}')
-        additional_docarray.add(doc)
+        additional_docarray.append(doc)
     union = deepcopy(docarray)
     union += additional_docarray
     for idx in range(0, 3):
@@ -115,12 +106,7 @@ def test_delete(docarray, document_factory):
     assert docarray == docarray
 
 
-def test_build(docarray):
-    docarray.build()
-
-
 def test_array_get_success(docarray, document_factory):
-    docarray.build()
     doc = document_factory.create(4, 'test 4')
     doc_id = 2
     docarray[doc_id] = doc
@@ -144,7 +130,6 @@ def test_array_get_from_slice_success(docs, document_factory):
 
 
 def test_array_get_fail(docarray, document_factory):
-    docarray.build()
     with pytest.raises(IndexError):
         docarray[0.1] = 1  # Set fail, not a supported type
     with pytest.raises(IndexError):
@@ -179,13 +164,17 @@ def test_match_chunk_array():
     with Document() as d:
         d.content = 'hello world'
 
-    m = d.matches.new()
+    m = Document()
+    d.matches.append(m)
     assert m.granularity == d.granularity
-    assert m.adjacency == d.adjacency + 1
+    assert m.adjacency == 0
+    assert d.matches[0].adjacency == d.adjacency + 1
     assert len(d.matches) == 1
 
-    c = d.chunks.new()
-    assert c.granularity == d.granularity + 1
+    c = Document()
+    d.chunks.append(c)
+    assert c.granularity == 0
+    assert d.chunks[0].granularity == d.granularity + 1
     assert c.adjacency == d.adjacency
     assert len(d.chunks) == 1
 
@@ -202,7 +191,7 @@ def add_match(doc):
     with Document() as match:
         match.granularity = doc.granularity
         match.adjacency = doc.adjacency + 1
-        doc.matches.add(match)
+        doc.matches.append(match)
         return match
 
 

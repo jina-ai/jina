@@ -27,5 +27,6 @@ The strategy on those inspect pods in the flow.
 If `REMOVE` is given then all inspect pods are removed when building the flow.
 ''',
     )
+    parser.set_defaults(workspace='./')
 
     return parser

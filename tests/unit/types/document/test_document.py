@@ -8,9 +8,10 @@ import torch
 from google.protobuf.json_format import MessageToDict
 from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
 
-from jina import NdArray, Request
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
+from jina.types.ndarray.generic import NdArray
+from jina.types.request import Request
 from jina.types.score import NamedScore
 from tests import random_docs
 
@@ -80,7 +81,7 @@ def test_doc_update_fields():
     d = [12, 34, 56]
     e = 'text-mod'
     w = 2.0
-    a.set_attrs(embedding=b, tags=c, location=d, modality=e, weight=w)
+    a.set_attributes(embedding=b, tags=c, location=d, modality=e, weight=w)
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e
@@ -99,9 +100,11 @@ def test_uri_get_set():
     a.uri = 'https://abc.com/a.jpg'
     assert a.uri == 'https://abc.com/a.jpg'
     assert a.mime_type == 'image/jpeg'
-
-    with pytest.raises(ValueError):
-        a.uri = 'abcdefg'
+    a.uri = 'abcdefg'
+    assert a.uri == 'abcdefg'
+    a.content = 'abcdefg'
+    assert a.text == 'abcdefg'
+    assert not a.uri
 
 
 def test_set_get_mime():
@@ -166,7 +169,7 @@ def test_doc_content():
 def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
     r = Request()
-    r.request_type = 'index'
+    r.request_type = 'data'
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -184,7 +187,7 @@ def test_request_docs_mutable_iterator():
     # pb-lize it should see the change
     rpb = r.proto
 
-    for idx, d in enumerate(rpb.index.docs):
+    for idx, d in enumerate(rpb.data.docs):
         assert isinstance(d, DocumentProto)
         assert d.text == f'look I changed it! {idx}'
 
@@ -193,7 +196,7 @@ def test_request_docs_mutable_iterator():
         d.text = 'now i change it back'
 
     # iterate it again should see the change
-    for idx, d in enumerate(rpb.index.docs):
+    for idx, d in enumerate(rpb.data.docs):
         assert isinstance(d, DocumentProto)
         assert d.text == 'now i change it back'
 
@@ -201,7 +204,7 @@ def test_request_docs_mutable_iterator():
 def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
     r = Request()
-    r.request_type = 'index'
+    r.request_type = 'data'
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -222,7 +225,7 @@ def test_request_docs_chunks_mutable_iterator():
     # pb-lize it should see the change
     rpb = r.proto
 
-    for d in rpb.index.docs:
+    for d in rpb.data.docs:
         assert isinstance(d, DocumentProto)
         for idx, c in enumerate(d.chunks):
             assert isinstance(c, DocumentProto)
@@ -233,7 +236,7 @@ def test_request_docs_chunks_mutable_iterator():
         d.text = 'now i change it back'
 
     # iterate it again should see the change
-    for d in rpb.index.docs:
+    for d in rpb.data.docs:
         assert isinstance(d, DocumentProto)
         for c in d.chunks:
             assert c.text == 'now i change it back'
@@ -491,25 +494,21 @@ def expected_doc_fields():
 
 @pytest.fixture
 def ignored_doc_fields():
-    return ['embedding', 'score', 'blob', 'buffer', 'text', 'tags']
+    return ['embedding', 'score', 'blob', 'buffer', 'text', 'tags', 'uri']
 
 
 def test_document_to_json(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = json.loads(doc.json())
     present_keys = sorted(doc_dict.keys())
-    for field in expected_doc_fields:
-        if field not in ignored_doc_fields:
-            assert field in present_keys
+    assert present_keys == ['id']
 
 
 def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = doc.dict()
     present_keys = sorted(doc_dict.keys())
-    for field in expected_doc_fields:
-        if field not in ignored_doc_fields:
-            assert field in present_keys
+    assert present_keys == ['id']
 
 
 def test_update_include_field():
@@ -620,57 +619,6 @@ def test_update_exclude_field():
     assert d.chunks[0].id == '🐢'
 
 
-def test_get_attr():
-    d = Document(
-        {
-            'id': '123',
-            'text': 'document',
-            'feature1': 121,
-            'name': 'name',
-            'tags': {'id': 'identity', 'a': 'b', 'c': 'd'},
-        }
-    )
-    d.score = NamedScore(value=42)
-
-    required_keys = [
-        'id',
-        'text',
-        'tags__name',
-        'tags__feature1',
-        'score__value',
-        'tags__c',
-        'tags__id',
-        'tags__inexistant',
-        'inexistant',
-    ]
-    res = d.get_attrs(*required_keys)
-
-    assert len(res.keys()) == len(required_keys)
-    assert res['id'] == '123'
-    assert res['tags__feature1'] == 121
-    assert res['tags__name'] == 'name'
-    assert res['text'] == 'document'
-    assert res['tags__c'] == 'd'
-    assert res['tags__id'] == 'identity'
-    assert res['score__value'] == 42
-    assert res['tags__inexistant'] is None
-    assert res['inexistant'] is None
-
-    res2 = d.get_attrs(*['tags', 'text'])
-    assert len(res2.keys()) == 2
-    assert res2['text'] == 'document'
-    assert res2['tags'] == d.tags
-
-    d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
-    res3 = d.get_attrs(*['tags__outterkey__innerkey'])
-    assert len(res3.keys()) == 1
-    assert res3['tags__outterkey__innerkey'] == 'real_value'
-
-    d = Document(content=np.array([1, 2, 3]))
-    res4 = d.get_attrs(*['blob'])
-    np.testing.assert_equal(res4['blob'], np.array([1, 2, 3]))
-
-
 def test_get_attr_values():
     d = Document(
         {
@@ -694,7 +642,7 @@ def test_get_attr_values():
         'tags__inexistant',
         'inexistant',
     ]
-    res = d.get_attrs_values(*required_keys)
+    res = d.get_attributes(*required_keys)
 
     assert len(res) == len(required_keys)
     assert res[required_keys.index('id')] == '123'
@@ -708,41 +656,19 @@ def test_get_attr_values():
     assert res[required_keys.index('inexistant')] is None
 
     required_keys_2 = ['tags', 'text']
-    res2 = d.get_attrs_values(*required_keys_2)
+    res2 = d.get_attributes(*required_keys_2)
     assert len(res2) == 2
     assert res2[required_keys_2.index('text')] == 'document'
     assert res2[required_keys_2.index('tags')] == d.tags
 
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
     required_keys_3 = ['tags__outterkey__innerkey']
-    res3 = d.get_attrs_values(*required_keys_3)
-    assert len(res3) == 1
-    assert res3[required_keys_3.index('tags__outterkey__innerkey')] == 'real_value'
+    res3 = d.get_attributes(*required_keys_3)
+    assert res3 == 'real_value'
 
     d = Document(content=np.array([1, 2, 3]))
-    res4 = d.get_attrs(*['blob'])
-    np.testing.assert_equal(res4['blob'], np.array([1, 2, 3]))
-
-
-def test_pb_obj2dict():
-    document = Document()
-    with document:
-        document.text = 'this is text'
-        document.tags['id'] = 'id in tags'
-        document.tags['inner_dict'] = {'id': 'id in inner_dict'}
-        with Document() as chunk:
-            chunk.text = 'text in chunk'
-            chunk.tags['id'] = 'id in chunk tags'
-        document.chunks.add(chunk)
-    res = document.get_attrs('text', 'tags', 'chunks')
-    assert res['text'] == 'this is text'
-    assert res['tags']['id'] == 'id in tags'
-    assert res['tags']['inner_dict']['id'] == 'id in inner_dict'
-    rcs = list(res['chunks'])
-    assert len(rcs) == 1
-    assert isinstance(rcs[0], Document)
-    assert rcs[0].text == 'text in chunk'
-    assert rcs[0].tags['id'] == 'id in chunk tags'
+    res4 = np.stack(d.get_attributes(*['blob']))
+    np.testing.assert_equal(res4, np.array([1, 2, 3]))
 
 
 def test_document_sparse_attributes_scipy(scipy_sparse_matrix):
@@ -856,3 +782,12 @@ def test_siblings_needs_to_be_set_manually():
             document.chunks.append(chunk)
     for i in range(3):
         assert document.chunks[i].siblings == 3
+
+
+def test_evaluations():
+    document = Document()
+    score = document.evaluations.add()
+    score.op_name = 'operation'
+    score.value = 10.0
+    assert document.evaluations[0].value == 10.0
+    assert document.evaluations[0].op_name == 'operation'

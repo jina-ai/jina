@@ -1,12 +1,12 @@
 from typing import Iterable
 
-from . import Document
-from .traversable import Traversable
-
 __all__ = ['DocGroundtruthPair']
 
+if False:
+    from . import Document
 
-class DocGroundtruthPair(Traversable):
+
+class DocGroundtruthPair:
     """
     Helper class to expose common interface to the traversal logic of the BaseExecutable Driver.
     It is important to note that it checks the matching structure of `docs` and `groundtruths`. It is important while
@@ -18,20 +18,30 @@ class DocGroundtruthPair(Traversable):
     """
 
     def __init__(self, doc: 'Document', groundtruth: 'Document'):
-        """Set constructor method."""
+        """Set constructor method.
+
+        :param doc: actual Document
+        :param groundtruth: groundtruth Document
+        """
         self.doc = doc
         self.groundtruth = groundtruth
 
     @property
     def matches(self) -> Iterable['DocGroundtruthPair']:
-        """Get the pairs between matches and Groundtruth."""
+        """Get the pairs between matches and Groundtruth.
+
+        :yields: DocGroundtruthPair object
+        """
         assert len(self.doc.matches) == len(self.groundtruth.matches)
         for doc, groundtruth in zip(self.doc.matches, self.groundtruth.matches):
             yield DocGroundtruthPair(doc, groundtruth)
 
     @property
     def chunks(self) -> Iterable['DocGroundtruthPair']:
-        """Get the pairs between chunks and Groundtruth."""
+        """Get the pairs between chunks and Groundtruth.
+
+        :yields: DocGroundtruthPair object
+        """
         assert len(self.doc.chunks) == len(self.groundtruth.chunks)
         for doc, groundtruth in zip(self.doc.chunks, self.groundtruth.chunks):
             yield DocGroundtruthPair(doc, groundtruth)

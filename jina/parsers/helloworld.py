@@ -27,7 +27,11 @@ def mixin_hw_base_parser(parser):
 
 
 def set_hello_parser(parser=None):
-    """Set the hello parser"""
+    """
+    Set the hello parser
+
+    :param parser: the parser configure
+    """
 
     if not parser:
         parser = set_base_parser()
@@ -53,11 +57,11 @@ def set_hello_parser(parser=None):
         spp.add_parser(
             'chatbot',
             help='''
-Start a simple Covid-19 chatbot. 
+Start a simple Covid-19 chatbot.
 
 Remarks:
 
-- Pytorch, transformers & FastAPI are required to run this demo. To install all dependencies, use 
+- Pytorch, transformers & FastAPI are required to run this demo. To install all dependencies, use
 
     pip install "jina[chatbot]"
 
@@ -72,7 +76,7 @@ Remarks:
         spp.add_parser(
             'multimodal',
             help='''
-Start a simple multimodal document search. 
+Start a simple multimodal document search.
 
 Remarks:
 
@@ -88,6 +92,15 @@ Remarks:
         )
     )
 
+    set_hw_fork_parser(
+        spp.add_parser(
+            'fork',
+            help='Fork a hello world project to a local directory, and start to build your own project on it.',
+            description='Fork a hello world project to a local directory.',
+            formatter_class=_chf,
+        )
+    )
+
 
 def set_hw_parser(parser=None):
     """Set the hello world parser
@@ -99,28 +112,7 @@ def set_hw_parser(parser=None):
         parser = set_base_parser()
 
     mixin_hw_base_parser(parser)
-    gp = add_arg_group(parser, title='Scalability')
-    gp.add_argument(
-        '--shards',
-        type=int,
-        default=2,
-        help='The number of shards when index and query',
-    )
-    gp.add_argument(
-        '--parallel',
-        type=int,
-        default=2,
-        help='The number of parallel when index and query',
-    )
     gp = add_arg_group(parser, title='Index')
-    gp.add_argument(
-        '--uses-index',
-        type=str,
-        default=resource_filename(
-            'jina', '/'.join(('resources', 'fashion', 'helloworld.flow.index.yml'))
-        ),
-        help='The yaml path of the index flow',
-    )
     gp.add_argument(
         '--index-data-url',
         type=str,
@@ -133,23 +125,8 @@ def set_hw_parser(parser=None):
         default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz',
         help='The url of index labels data (should be in idx3-ubyte.gz format)',
     )
-    gp.add_argument(
-        '--index-request-size',
-        type=int,
-        default=1024,
-        help='The request size in indexing (the maximum number of documents that will be included in a '
-        'Request before sending it)',
-    )
 
     gp = add_arg_group(parser, title='Search')
-    gp.add_argument(
-        '--uses-query',
-        type=str,
-        default=resource_filename(
-            'jina', '/'.join(('resources', 'fashion', 'helloworld.flow.query.yml'))
-        ),
-        help='The yaml path of the query flow',
-    )
     gp.add_argument(
         '--query-data-url',
         type=str,
@@ -162,13 +139,15 @@ def set_hw_parser(parser=None):
         default='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz',
         help='The url of query labels data (should be in idx3-ubyte.gz format)',
     )
+
     gp.add_argument(
-        '--query-request-size',
+        '--request-size',
         type=int,
-        default=32,
-        help='The request size in searching (the maximum number of documents that will be included in a '
+        default=1024,
+        help='The request size in indexing (the maximum number of documents that will be included in a '
         'Request before sending it)',
     )
+
     gp.add_argument(
         '--num-query', type=int, default=128, help='The number of queries to visualize'
     )
@@ -195,12 +174,6 @@ def set_hw_chatbot_parser(parser=None):
         help='The url of index csv data',
     )
     parser.add_argument(
-        '--demo-url',
-        type=str,
-        default='https://static.jina.ai/chatbot/',
-        help='The url of the demo page',
-    )
-    parser.add_argument(
         '--port-expose',
         type=int,
         default=8080,
@@ -218,6 +191,31 @@ def set_hw_chatbot_parser(parser=None):
         default=False,
         help='Do not block the query flow' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
+    return parser
+
+
+def set_hw_fork_parser(parser=None):
+    """Set the parser for forking hello world demo
+
+    :param parser: the parser configure
+    :return: the new parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    parser.add_argument(
+        'project',
+        type=str,
+        choices=['fashion', 'chatbot', 'multimodal'],
+        help='The hello world project to fork',
+    )
+
+    parser.add_argument(
+        'destination',
+        type=str,
+        help='The dest directory of the forked project. Note, it can not be an existing path.',
+    )
+
     return parser
 
 
@@ -244,12 +242,6 @@ def set_hw_multimodal_parser(parser=None):
         type=str,
         default='https://static.jina.ai/multimodal/people-img.zip',
         help='The url of index csv data',
-    )
-    parser.add_argument(
-        '--demo-url',
-        type=str,
-        default='https://static.jina.ai/multimodal/',
-        help='The url of the demo page',
     )
     parser.add_argument(
         '--port-expose',

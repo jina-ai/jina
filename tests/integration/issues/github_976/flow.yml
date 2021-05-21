@@ -1,6 +1,0 @@
-!Flow
-version: '1'
-pods:
-  - name: indexer
-    uses: yaml/index.yml
-    needs: gateway
