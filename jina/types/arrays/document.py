@@ -6,6 +6,7 @@ import os
 import random
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
+
 from typing import (
     Union,
     Iterable,
@@ -19,6 +20,7 @@ from typing import (
 )
 
 import numpy as np
+
 
 from .traversable import TraversableSequence
 from ...helper import typename, cached_property
@@ -65,15 +67,19 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     a generator but ALSO modify it, count it, get item, or union two 'DocumentArray's using the '+' and '+=' operators.
 
     :param docs_proto: A list of :class:`Document`
-    :type docs_proto: Union['RepeatedContainer', Sequence['Document']]
+    :type docs_proto: Optional[Union['RepeatedContainer', Iterable['Document']]]
     """
 
     def __init__(
-        self, docs_proto: Union['RepeatedContainer', Iterable['Document'], None] = None
+        self,
+        docs_proto: Optional[Union['RepeatedContainer', Iterable['Document']]] = None,
     ):
         super().__init__()
         if docs_proto is not None:
-            self._docs_proto = docs_proto
+            if isinstance(docs_proto, Generator):
+                self._docs_proto = list(docs_proto)
+            else:
+                self._docs_proto = docs_proto
         else:
             self._docs_proto = []
 
