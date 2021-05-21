@@ -1,12 +1,9 @@
-from fastapi import APIRouter, File, UploadFile, Body
+from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
-from pydantic.types import FilePath
-from starlette.requests import Request
-from starlette.responses import Response
-from starlette.status import HTTP_200_OK
 
+from ..dependencies import FlowDepends
 from ... import Runtime400Exception
-from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel, UpdateOperationEnum
+from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel
 from ...stores import flow_store as store
 
 router = APIRouter(prefix='/flows', tags=['flows'])
@@ -32,10 +29,11 @@ async def _fetch_flow_params():
     status_code=201,
     response_model=DaemonID,
 )
-async def _create(workspace_id: DaemonID, filename: str):
+async def _create(flow: FlowDepends = Depends(FlowDepends)):
     try:
-
-        return store.add(filename=filename, workspace_id=workspace_id)
+        return store.add(id=flow.id,
+                         workspace_id=flow.workspace_id,
+                         command=flow.command)
     except Exception as ex:
         raise Runtime400Exception from ex
 

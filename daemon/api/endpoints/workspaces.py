@@ -79,6 +79,6 @@ async def _list(id: DaemonID):
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
 
-@router.on_event('shutdown')
-def _shutdown():
-    store.reset()
+# @router.on_event('shutdown')
+# def _shutdown():
+#     store.reset()

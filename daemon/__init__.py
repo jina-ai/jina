@@ -10,7 +10,12 @@ from uvicorn import Config, Server
 from jina import __version__
 from jina.logging import JinaLogger
 from .parser import get_main_parser, _get_run_args
-from .excepts import Runtime400Exception, daemon_runtime_exception_handler
+from .excepts import (
+    RequestValidationError,
+    Runtime400Exception,
+    daemon_runtime_exception_handler,
+    validation_exception_handler,
+)
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
@@ -68,6 +73,7 @@ def _get_app():
     app.include_router(flows.router)
     app.include_router(workspaces.router)
     app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     return app
 

@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException
 
+from ..dependencies import PeaDepends
 from ... import Runtime400Exception
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, PeaModel
 from ...stores import pea_store as store
@@ -29,9 +30,11 @@ async def _fetch_pea_params():
     status_code=201,
     response_model=DaemonID,
 )
-async def _create(workspace_id: DaemonID, pea: 'PeaModel'):
+async def _create(pea: PeaDepends = Depends(PeaDepends)):
     try:
-        return store.add(workspace_id=workspace_id, model=pea)
+        return store.add(id=pea.id,
+                         workspace_id=pea.workspace_id,
+                         command=pea.command)
     except Exception as ex:
         raise Runtime400Exception from ex
 

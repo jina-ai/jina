@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException
 
-from jina.helper import ArgNamespace
-from jina.parsers import set_pod_parser
+from ..dependencies import PodDepends
 from ... import Runtime400Exception
 from ...models import DaemonID, ContainerItem, ContainerStoreStatus, PodModel
 from ...stores import pod_store as store
@@ -28,10 +27,11 @@ async def _fetch_pod_params():
     status_code=201,
     response_model=DaemonID,
 )
-async def _create(workspace_id: DaemonID, pod: 'PodModel'):
+async def _create(pod: PodDepends = Depends(PodDepends)):
     try:
-        args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
-        return store.add(workspace_id=workspace_id, model=pod)
+        return store.add(id=pod.id,
+                         workspace_id=pod.workspace_id,
+                         command=pod.command)
     except Exception as ex:
         raise Runtime400Exception from ex
 
