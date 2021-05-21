@@ -1,7 +1,7 @@
 # Cookbook on Clean Code
 
 Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
-tips to help you write clean & beautiful code.
+tips to help you write clean and beautiful code.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

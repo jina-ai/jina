@@ -83,6 +83,8 @@ DocumentSourceType = TypeVar(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
+_all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
+
 
 class Document(ProtoTypeMixin):
     """
@@ -262,6 +264,11 @@ class Document(ProtoTypeMixin):
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
+        # check if there are mutually exclusive content fields
+        if _contains_conflicting_content(**kwargs):
+            raise ValueError(
+                f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
+            )
         self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
 
@@ -1264,3 +1271,14 @@ def _is_uri(value: str) -> bool:
 def _is_datauri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return is_url(value) and scheme in {'data'}
+
+
+def _contains_conflicting_content(**kwargs):
+    content_keys = 0
+    for k in kwargs.keys():
+        if k in _all_doc_content_keys:
+            content_keys += 1
+            if content_keys > 1:
+                return True
+
+    return False
