@@ -1,4 +1,4 @@
-Document, Executor, Flow are three fundamental concepts in Jina.
+Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 - [**Document**](Document.md) is the basic data type in Jina;
 - [**Executor**](Executor.md) is how Jina processes Documents;
@@ -104,7 +104,7 @@ f = Flow()
 
 ### Use a Flow
 
-To use `f`, always open it as a content manager. Just like you open a file. This is considered as the best practice in
+To use `f`, always open it as a content manager, just like you open a file. This is considered the best practice in
 Jina:
 
 ```python
@@ -114,9 +114,9 @@ with f:
 
 Note that,
 
-- Flow follows a lazy construction pattern: it won't be actually running until you use `with` to open it.
-- Once a Flow is open via `with`, you can send data request to it. However, you can not change its construction
-  via `.add()` anymore until it leaves the `with` context.
+- Flow follows a lazy construction pattern: it won't actually run until you use `with` to open it.
+- Once a Flow is open via `with`, you can send data requests to it. However, you cannot change its construction
+  via `.add()` any more until it leaves the `with` context.
 - The context exits when its inner code is finished. A Flow's context without inner code will immediately exit. To
   prevent that, use `.block()` to suspend the current process.
 
@@ -135,11 +135,11 @@ f = Flow().add().plot('f.svg')
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/empty-flow.svg?raw=true"/>
 
-In Jupyter Lab/Notebook, `Flow` object is rendered automatically, there is no need to do call `plot()`.
+In Jupyter Lab/Notebook, the `Flow` object is rendered automatically without needing to call `plot()`.
 
 ### Add `Executor` to a Flow
 
-`.add()` is the core method to add executor to a `Flow` object. Each `add` creates a new Executor, and these Executors
+`.add()` is the core method to add an Executor to a `Flow` object. Each `add` creates a new Executor, and these Executors
 can be run as a local thread/process, a remote process, inside a Docker container, or even inside a remote Docker
 container.
 
@@ -148,7 +148,7 @@ container.
 | |  |
 |---|---|
 |Define Executor| `uses`|
-|Define Dependency | `needs` |
+|Define Dependencies | `needs` |
 |Parallelization | `parallel`, `polling` |
 
 For a full list of arguments, please check `jina executor --help`.
@@ -288,19 +288,19 @@ f = (Flow()
 `p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Executors
 until they finish their work.
 
-`.needs()` is a syntax sugar and roughly equal to
+`.needs()` is syntax sugar and roughly equal to:
 
 ```python
 .add(needs=['p1', 'p2', 'p3'])
 ```
 
-`.needs_all()` is a syntax sugar and roughly equal to
+`.needs_all()` is syntax sugar and roughly equal to:
 
 ```python
 .add(needs=[all_orphan_executors_so_far])
 ```
 
-"Orphan" executors have no connected executors to their outputs. The above code snippet can be also written as:
+"Orphan" Executors have no connected Executors to their outputs. The above code snippet can be also written as:
 
 ```python
 from jina import Flow
@@ -356,7 +356,7 @@ f = (Flow()
 
 #### Add a Remote `Executor` via `host`
 
-A Flow does not have to be local-only. You can put any Executor to remote(s). In the example below, with the `host`
+A Flow does not have to be local-only. You can put any Executor to remote(s). In the example below, the Executor with the `host`
 keyword `gpu-exec`, is put to a remote machine for parallelization, whereas other Executors stay local. Extra file
 dependencies that need to be uploaded are specified via the `upload_files` keyword.
 
@@ -440,7 +440,7 @@ def post(
     """
 ```
 
-Comparing to 1.x Client/Flow API, the three new arguments are:
+Compared to 1.x Client/Flow API, the three new arguments are:
 
 - `on`: the endpoint used for identifying the user-defined `request_type`, labeled by `@requests(on='/foo')` in
   the `Executor` class;
@@ -459,7 +459,7 @@ delete = partialmethod(post, '/delete')
 
 #### Define Data via `inputs`
 
-`inputs` can take single `Document` object, an iterator of `Document`, a generator of `Document`, a `DocumentArray`
+`inputs` can take a single `Document` object, an iterator of `Document`, a generator of `Document`, a `DocumentArray`
 object, and None.
 
 For example:
@@ -488,9 +488,9 @@ with Flow() as f:
     f.post('/')  # empty
 ```
 
-`Document` class provides some static methods that allows you to build `Document` generator, e.g. [`from_csv`
+`Document` class provides some static methods that lets you build `Document` generator, e.g. [`from_csv`
 , `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used
-conjunct with `.post()`, e.g.
+ in conjunction with `.post()`, e.g.
 
 ```python
 from jina import Flow, Document
@@ -503,7 +503,7 @@ with f, open('my.csv') as fp:
 
 #### Callback Functions
 
-Once a request is done, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
+Once a request is made, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
 callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes
 the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written
 to `output.txt`.
@@ -528,7 +528,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
 
 #### Send Parameters
 
-To send parameters to the executor, use
+To send parameters to the Executor, use
 
 ```python
 from jina import Document, Executor, Flow, requests
@@ -554,13 +554,13 @@ with f:
     f.post('/', parameters={'hello': 'world'})
 ```
 
-This is useful to control `Executor` object in the runtime.
+This is useful to control `Executor` objects in the runtime.
 
 ### Switch REST & gRPC Interface
 
 By default all `.post()` communications are via `gRPC` interface.
 
-To enable a Flow receiving from HTTP request, you can add `restful=True` in Flow constructor.
+To enable a Flow to receive from an HTTP request, you can add `restful=True` in the Flow constructor.
 
 ```python
 from jina import Flow
@@ -588,7 +588,7 @@ with f:
     f.block()
 ```
 
-You will see console prints log as follows:
+You will see console prints logs as follows:
 
 ```console
            JINA@4262[I]:input tcp://0.0.0.0:53894 (PULL_CONNECT) output tcp://0.0.0.0:53894 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp4e9u2pdn (PAIR_BIND)
@@ -606,7 +606,7 @@ You can navigate to the Swagger docs UI via `http://localhost:53895/docs`:
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/swagger-ui.png?raw=true"/>
 
-Now you can send data request via `curl`/Postman,
+Now you can send data request via `curl`/Postman:
 
 ```console
 $ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type: application/json' http://localhost:53895/post/index
@@ -665,7 +665,7 @@ When use `curl`, make sure to pass the `-N/--no-buffer` flag.
 
 ### Asynchronous Flow
 
-`AsyncFlow` is an "async version" of `Flow` class.
+`AsyncFlow` is an "async version" of the `Flow` class.
 
 The quote mark represents the explicit async when using `AsyncFlow`.
 
@@ -729,14 +729,14 @@ if __name__ == '__main__':
     asyncio.run(concurrent_main())
 ```
 
-`AsyncFlow` is very useful when using Jina inside a Jupyter Notebook. where it can run out-of-the-box.
+`AsyncFlow` is very useful when using Jina inside a Jupyter Notebook, where it can run out-of-the-box.
 
 
 ## Remarks
 
 ### Joining/Merging
 
-Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding to Executor's function.
+Combining `docs` from multiple requests is already done by the `ZEDRuntime` before feeding them to the Executor's function.
 Hence, simple joining is just returning this `docs`. Complicated joining should be implemented at `Document`
 /`DocumentArray`
 
@@ -778,7 +778,7 @@ with f:
            on_done=print)
 ```
 
-You can also modify the docs while merging, which is not feasible to do in 1.x, e.g.
+You can also modify the Documents while merging, which was not feasible to do in 1.x:
 
 ```python
 class C(Executor):
