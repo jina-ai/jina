@@ -96,10 +96,10 @@ d4 = Document(content='https://static.jina.ai/logo/core/notext/light/logo.png')
 ```
 
 ```text
-<jina.types.Document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
-<jina.types.Document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= mimeType=text/plain at 6247702160>
-<jina.types.Document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
-<jina.types.Document.Document id=4c008c40-af9f-11eb-bb84-1e008a366d49 uri=https://static.jina.ai/logo/core/notext/light/logo.png mimeType=image/png at 6252395600>
+<jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
+<jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= mimeType=text/plain at 6247702160>
+<jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
+<jina.types.document.Document id=4c008c40-af9f-11eb-bb84-1e008a366d49 uri=https://static.jina.ai/logo/core/notext/light/logo.png mimeType=image/png at 6252395600>
 ```
 
 The content will be automatically assigned to either the `text`, `buffer`, `blob`, or `uri` fields. `id` and `mime_type` are
@@ -223,7 +223,7 @@ d1 = Document({'id': 'hello123', 'foo': 'bar'})
 ```
 
 ```text
-<jina.types.Document.Document id=hello123 tags={'foo': 'bar'} at 6320791056>
+<jina.types.document.Document id=hello123 tags={'foo': 'bar'} at 6320791056>
 ```
 
 You can use `field_resolver` to map external field names to `Document` attributes:
@@ -235,7 +235,7 @@ d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'
 ```
 
 ```text
-<jina.types.Document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
+<jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
 ```
 
 #### Construct from Another `Document`
@@ -423,7 +423,7 @@ d.score.op_name = 'cosine()'
 ```
 
 ```text
-<jina.types.Document.Document id=0a986c50-aeff-11eb-84c1-1e008a366d48 score={'value': 0.96, 'opName': 'cosine()', 'description': 'cosine similarity'} at 6281686928>
+<jina.types.document.Document id=0a986c50-aeff-11eb-84c1-1e008a366d48 score={'value': 0.96, 'opName': 'cosine()', 'description': 'cosine similarity'} at 6281686928>
 ```
 
 Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
@@ -493,13 +493,13 @@ from jina import DocumentArray, Document
 da = DocumentArray([Document(id='hello'), Document(id='world'), Document(id='goodbye')])
 
 da[0]
-# <jina.types.Document.Document id=hello at 5699749904>
+# <jina.types.document.Document id=hello at 5699749904>
 
 da['world']
-# <jina.types.Document.Document id=world at 5736614992>
+# <jina.types.document.Document id=world at 5736614992>
 
 da[1:2]  
-# <jina.types.arrays.Document.DocumentArray length=1 at 5705863632>
+# <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
 
 ### Sort Elements
@@ -524,7 +524,7 @@ print(da)
 To sort elements in `da` in-place, using `tags[id]` value in a descending manner: 
 
 ```text
-<jina.types.arrays.Document.DocumentArray length=3 at 5701440528>
+<jina.types.arrays.document.DocumentArray length=3 at 5701440528>
 
 {'id': '6a79982a-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 3.0}},
 {'id': '6a799744-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 2.0}},
@@ -548,9 +548,9 @@ for d in filter(lambda d: d.score.value > 2, da):
 ```
 
 ```text
-<jina.types.Document.Document id=c5e588f4-b6b0-11eb-af83-1e008a366d49 score={'value': 3.0} at 5696708048>
-<jina.types.Document.Document id=c5e58958-b6b0-11eb-af83-1e008a366d49 score={'value': 4.0} at 5696705040>
-<jina.types.Document.Document id=c5e589b2-b6b0-11eb-af83-1e008a366d49 score={'value': 5.0} at 5696708048>
+<jina.types.document.Document id=c5e588f4-b6b0-11eb-af83-1e008a366d49 score={'value': 3.0} at 5696708048>
+<jina.types.document.Document id=c5e58958-b6b0-11eb-af83-1e008a366d49 score={'value': 4.0} at 5696705040>
+<jina.types.document.Document id=c5e589b2-b6b0-11eb-af83-1e008a366d49 score={'value': 5.0} at 5696708048>
 ```
 
 You can build a `DocumentArray` object from the filtered results:
