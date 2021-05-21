@@ -51,8 +51,8 @@ class DummyCSRSparseIndexEncoder(Executor):
 
 def test_sparse_pipeline(mocker, docs_to_index):
     def validate(response):
-        assert len(response.docs) == 10
-        for doc in response.docs:
+        assert len(response.data.docs) == 10
+        for doc in response.data.docs:
             for i, match in enumerate(doc.matches):
                 assert match.id == docs_to_index[i].id
                 assert isinstance(match.embedding, sparse.coo_matrix)
@@ -63,13 +63,11 @@ def test_sparse_pipeline(mocker, docs_to_index):
     error_mock = mocker.Mock()
 
     with f:
-        f.post(
-            on='index',
+        f.index(
             inputs=docs_to_index,
             on_done=mock,
         )
-        f.post(
-            on='search',
+        f.search(
             inputs=docs_to_index[0],
             parameters={'doc': docs_to_index[0], 'top_k': 1},
             on_done=mock,
