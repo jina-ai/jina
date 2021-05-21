@@ -70,6 +70,43 @@ A `Document` object has the following attributes, which can be put into the foll
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
+#### Set & Unset Attributes
+
+Set a attribute:
+
+```python
+from jina import Document
+
+d = Document()
+d.text = 'hello world'
+```
+
+```text
+<jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
+```
+
+Unset a attribute:
+```python
+d.pop('text')
+```
+
+```text
+<jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504>
+```
+
+Unset multiple attributes:
+
+```python
+d.pop('text', 'id', 'mime_type')
+```
+
+```text
+<jina.types.document.Document at 5668344144>
+```
+
+
+
+
 ### Construct `Document`
 
 ##### Content Attributes
@@ -296,6 +333,14 @@ You can also construct `Document` from common file types such as JSON, CSV, `nda
 | `DocumentArray.from_ndarray()` | Yield `Document` from a `ndarray`, each row (depending on `axis`) is a `Document` object |
 
 Using generator is sometimes less memory demanding, as it does not load build all Document objects in one shot.
+
+To convert the generator to `DocumentArray` use:
+
+```python
+from jina import DocumentArray
+
+DocumentArray(DocumentArray.from_files('/*.png'))
+```
 
 ### Serialize `Document`
 
