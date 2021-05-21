@@ -24,28 +24,28 @@ Table of Contents
 
 - [Minimum working example](#minimum-working-example)
 - [`Document` API](#document-api)
-  - [`Document` Attributes](#document-attributes)
-  - [Construct `Document`](#construct-document)
-    - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
-    - [Conversion between `doc.content`](#conversion-between-doccontent)
-    - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
-    - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
-    - [Construct from Another `Document`](#construct-from-another-document)
-    - [Construct from JSON, CSV, `ndarray` and Files](#construct-from-json-csv-ndarray-and-files)
-  - [Serialize `Document`](#serialize-document)
-  - [Add Recursion to `Document`](#add-recursion-to-document)
-    - [Recursive Attributes](#recursive-attributes)
-  - [Visualize `Document`](#visualize-document)
-  - [Add Relevancy to `Document`s](#add-relevancy-to-documents)
-    - [Relevance Attributes](#relevance-attributes)
+    - [`Document` Attributes](#document-attributes)
+    - [Construct `Document`](#construct-document)
+        - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
+        - [Conversion between `doc.content`](#conversion-between-doccontent)
+        - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
+        - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
+        - [Construct from Another `Document`](#construct-from-another-document)
+        - [Construct from JSON, CSV, `ndarray` and Files](#construct-from-json-csv-ndarray-and-files)
+    - [Serialize `Document`](#serialize-document)
+    - [Add Recursion to `Document`](#add-recursion-to-document)
+        - [Recursive Attributes](#recursive-attributes)
+    - [Visualize `Document`](#visualize-document)
+    - [Add Relevancy to `Document`](#add-relevancy-to-document)
+        - [Relevance Attributes](#relevance-attributes)
 - [`DocumentArray` API](#documentarray-api)
-  - [Construct `DocumentArray`](#construct-documentarray)
-  - [Persistence via `save()`/`load()`](#persistence-via-saveload)
-  - [Access Element](#access-element)
-  - [Sort Elements](#sort-elements)
-  - [Filter Elements](#filter-elements)
-  - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
-  - [Get Attributes in Bulk](#get-attributes-in-bulk)
+    - [Construct `DocumentArray`](#construct-documentarray)
+    - [Persistence via `save()`/`load()`](#persistence-via-saveload)
+    - [Access Element](#access-element)
+    - [Sort Elements](#sort-elements)
+    - [Filter Elements](#filter-elements)
+    - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
+    - [Get Attributes in Bulk](#get-attributes-in-bulk)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -69,6 +69,41 @@ A `Document` object has the following attributes, which can be put into the foll
 | Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality`, `siblings` |
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
+
+#### Set & Unset Attributes
+
+Set a attribute:
+
+```python
+from jina import Document
+
+d = Document()
+d.text = 'hello world'
+```
+
+```text
+<jina.types.document.Document id=9badabb6-b9e9-11eb-993c-1e008a366d49 mime_type=text/plain text=hello world at 4444621648>
+```
+
+Unset a attribute:
+
+```python
+d.pop('text')
+```
+
+```text
+<jina.types.document.Document id=cdf1dea8-b9e9-11eb-8fd8-1e008a366d49 mime_type=text/plain at 4490447504>
+```
+
+Unset multiple attributes:
+
+```python
+d.pop('text', 'id', 'mime_type')
+```
+
+```text
+<jina.types.document.Document at 5668344144>
+```
 
 ### Construct `Document`
 
@@ -265,16 +300,16 @@ You can partially update a `Document` according to another source `Document`:
 from jina import Document
 
 s = Document(
-  id='🐲',
-  content='hello-world',
-  tags={'a': 'b'},
-  chunks=[Document(id='🐢')],
+    id='🐲',
+    content='hello-world',
+    tags={'a': 'b'},
+    chunks=[Document(id='🐢')],
 )
 d = Document(
-  id='🐦',
-  content='goodbye-world',
-  tags={'c': 'd'},
-  chunks=[Document(id='🐯')],
+    id='🐦',
+    content='goodbye-world',
+    tags={'c': 'd'},
+    chunks=[Document(id='🐯')],
 )
 
 # only update `id` field
@@ -286,7 +321,9 @@ d.update(s, exclude_fields=('id',))
 
 #### Construct from JSON, CSV, `ndarray` and Files
 
-You can also construct `Document`s from common file types such as JSON, CSV, `ndarray` or text files. The following functions will create a generator of `Document`s, where each `Document` object corresponds to a line/row in the original format:
+You can also construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
+functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original
+format:
 
 |     |     |
 | --- | --- |
@@ -296,6 +333,14 @@ You can also construct `Document`s from common file types such as JSON, CSV, `nd
 | `Document.from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
 
 Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.
+
+To convert the generator to `DocumentArray` use:
+
+```python
+from jina import DocumentArray
+
+DocumentArray(DocumentArray.from_files('/*.png'))
+```
 
 ### Serialize `Document`
 
@@ -416,6 +461,7 @@ You can add a relevance score to a `Document` object via:
 
 ```python
 from jina import Document
+
 d = Document()
 d.score.value = 0.96
 d.score.description = 'cosine similarity'
@@ -498,23 +544,24 @@ da[0]
 da['world']
 # <jina.types.document.Document id=world at 5736614992>
 
-da[1:2]  
+da[1:2]
 # <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
 
 ### Sort Elements
 
-`DocumentArray` is a subclass of `MutableSequence`. Therefore you can use Python's built-in `sort` to sort elements in a `DocumentArray` object:
+`DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
+a `DocumentArray` object, e.g.
 
 ```python
 from jina import DocumentArray, Document
 
 da = DocumentArray(
-  [
-    Document(tags={'id': 1}),
-    Document(tags={'id': 2}),
-    Document(tags={'id': 3})
-  ]
+    [
+        Document(tags={'id': 1}),
+        Document(tags={'id': 2}),
+        Document(tags={'id': 3})
+    ]
 )
 
 da.sort(key=lambda d: d.tags['id'], reverse=True)
@@ -573,7 +620,26 @@ DocumentArray has 3 items:
 
 ### Use `itertools` on `DocumentArray`
 
-As `DocumentArray` is an `Iterable`. You can also use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables advanced "iterator algebra" on the `DocumentArray`.
+As `DocumentArray` is an `Iterable`, you can also
+use [Python's built-in `itertools` module](https://docs.python.org/3/library/itertools.html) on it. This enables
+advanced "iterator algebra" on the `DocumentArray`.
+
+For instance, you can group a `DocumentArray` by `parent_id`:
+
+```python
+from jina import DocumentArray, Document
+from itertools import groupby
+
+da = DocumentArray([Document(parent_id=f'{i % 2}') for i in range(6)])
+groups = groupby(sorted(da, key=lambda d: d.parent_id), lambda d: d.parent_id)
+for key, group in groups:
+    key, len(list(group))
+```
+
+```text
+('0', 3)
+('1', 3)
+```
 
 ### Get Attributes in Bulk
 
