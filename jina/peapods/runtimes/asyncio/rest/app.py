@@ -203,9 +203,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :yield: result
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
-            yield MessageToJson(
-                k, including_default_value_fields=True, preserving_proto_field_name=True
-            )
+            yield MessageToJson(k, preserving_proto_field_name=True)
 
     @app.websocket_route(path='/stream')
     class StreamingEndpoint(WebSocketEndpoint):
