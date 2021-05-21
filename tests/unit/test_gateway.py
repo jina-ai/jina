@@ -18,9 +18,9 @@ def test_compression(compress_algo, mocker):
 
     f = (
         Flow(compress=str(compress_algo))
-            .add()
-            .add(name='DummyEncoder', parallel=2)
-            .add()
+        .add()
+        .add(name='DummyEncoder', parallel=2)
+        .add()
     )
 
     with f:

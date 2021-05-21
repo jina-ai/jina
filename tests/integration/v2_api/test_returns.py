@@ -15,7 +15,6 @@ def test_different_responses(test_docs, mocker):
         assert response.data.docs[0].id == '1'
 
     class MyExecutor(Executor):
-
         @requests(on='/return_docs')
         def return_docs(self, docs, *args, **kwargs):
             return docs

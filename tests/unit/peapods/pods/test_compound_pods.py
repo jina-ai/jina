@@ -5,6 +5,7 @@ from jina.parsers import set_pod_parser
 from jina import __default_executor__
 from jina.peapods import CompoundPod, Pod
 
+
 @pytest.fixture(scope='function')
 def pod_args():
     args = [
