@@ -39,3 +39,11 @@ def jina_workspace(workspace_id: DaemonID):
             os.environ['JINA_LOG_WORKSPACE'] = old_var
         else:
             os.environ.pop('JINA_LOG_WORKSPACE')
+
+
+# from pydantic import FilePath
+# from pathlib import Path
+# try:
+#     FilePath.validate(Path(''))
+# except Exception as e:
+#     print(repr(e))

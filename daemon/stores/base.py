@@ -4,13 +4,10 @@ import pickle
 from pathlib import Path
 from datetime import datetime
 from collections.abc import MutableMapping
-from typing import Dict, Any, TYPE_CHECKING, Union, Optional
+from typing import Callable, Dict, Any, TYPE_CHECKING, Union, Optional
 
-
-from jina.helper import colored
 from jina.logging import JinaLogger
 from ..models import DaemonID
-from ..dockerize import Dockerizer
 from .. import jinad_args, __root_workspace__
 
 
@@ -45,42 +42,12 @@ class BaseStore(MutableMapping):
         .. #noqa: DAR101"""
         raise NotImplementedError
 
-    def delete(
-        self,
-        id: DaemonID,
-        workspace: bool = False,
-        everything: bool = False,
-        **kwargs,
-    ):
-        """delete an object from the store
+    def delete(self, *args, **kwargs) -> DaemonID:
+        """Deletes an element from the store. This method needs to be overridden by the subclass
 
-        :param id: the id of the object
-        :param workspace: whether to delete the workdir of the object
-        :param everything: whether to delete everything
-        :param kwargs: not used
-        """
-        # if isinstance(id, str):
-        #     id = DaemonID(id)
 
-        if id in self._items:
-            # v = self._items[id]
-            # if 'object' in v and hasattr(v['object'], 'close'):
-            #     v['object'].close()
-            # if workspace and v.get('workdir', None):
-            #     for path in Path(v['workdir']).rglob('[!logging.log]*'):
-            #         if path.is_file():
-            #             self._logger.debug(f'file to be deleted: {path}')
-            #             path.unlink()
-            # if everything and v.get('workdir', None):
-            #     self._logger.debug(f'directory to be deleted: {v["workdir"]}')
-            #     shutil.rmtree(v['workdir'])
-            del self[id]
-            self._logger.success(
-                f'{colored(str(id), "cyan")} is released from the store.'
-            )
-            self.dump()
-        else:
-            raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
+        .. #noqa: DAR101"""
+        raise NotImplementedError
 
     def __iter__(self):
         return iter(self._items)
@@ -92,8 +59,6 @@ class BaseStore(MutableMapping):
         return str(self.status)
 
     def __getitem__(self, key: DaemonID):
-        # if key in self.__dict__:
-        #     return self.__dict__[key]
         return self._items[key]
 
     def __setitem__(self, key: DaemonID, value: Dict) -> None:
@@ -114,7 +79,7 @@ class BaseStore(MutableMapping):
         self._time_updated = datetime.now()
         self._num_del += 1
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: Dict):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
         self._init_stats()
         now = datetime.now()
@@ -127,14 +92,17 @@ class BaseStore(MutableMapping):
     def __getstate__(self):
         return self.status
 
-    def dump(self) -> None:
-        # TODO: make this a decorator
-        filepath = os.path.join(__root_workspace__, f'{self._kind}.store')
-        # Let's keep a backup for no reason?
-        if Path(filepath).is_file():
-            shutil.copyfile(filepath, f'{filepath}.backup')
-        with open(filepath, 'wb') as f:
-            pickle.dump(self, f)
+    @classmethod
+    def dump(cls, func) -> Callable:
+        def wrapper(self, *args, **kwargs):
+            r = func(self, *args, **kwargs)
+            filepath = os.path.join(__root_workspace__, f'{self._kind}.store')
+            if Path(filepath).is_file():
+                shutil.copyfile(filepath, f'{filepath}.backup')
+            with open(filepath, 'wb') as f:
+                pickle.dump(self, f)
+            return r
+        return wrapper
 
     @classmethod
     def load(cls) -> Union[Dict, 'BaseStore']:

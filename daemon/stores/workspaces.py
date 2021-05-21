@@ -5,10 +5,11 @@ from typing import List
 from fastapi import UploadFile
 
 from jina.helper import colored
-from .base import BaseStore, Dockerizer
+from .base import BaseStore
 from ..models import DaemonID
-from .. import __rootdir__, __dockerfiles__
+from ..dockerize import Dockerizer
 from .helper import get_workspace_path
+from .. import __rootdir__, __dockerfiles__
 
 
 class WorkspaceStore(BaseStore):
@@ -31,6 +32,7 @@ class WorkspaceStore(BaseStore):
                 fp.write(content)
             self._logger.info(f'saved uploads to {dest}')
 
+    @BaseStore.dump
     def add(self, files: List[UploadFile], **kwargs):
         try:
             workspace_id = DaemonID('jworkspace')
@@ -59,6 +61,7 @@ class WorkspaceStore(BaseStore):
             self.dump()
             return workspace_id
 
+    @BaseStore.dump
     def update(self, workspace_id: DaemonID, files: List[UploadFile], **kwargs) -> DaemonID:
         try:
             self._handle_files(workspace_id=workspace_id, files=files)
@@ -68,14 +71,17 @@ class WorkspaceStore(BaseStore):
             raise
         else:
             self[workspace_id]['arguments'].extend([f.filename for f in files])
-            self[workspace_id]['metadata']['image-id'] = _image_id
-            self.dump()
+            self[workspace_id]['metadata']['image_id'] = _image_id
             return workspace_id
 
+    @BaseStore.dump
     def delete(self, id: DaemonID, **kwargs):
         if id in self._items:
             Dockerizer.rm_image(id=self[id]['metadata']['image_id'])
             Dockerizer.rm_network(id=self[id]['metadata']['network'])
-            super().delete(id=id)
+            del self[id]
+            self._logger.success(
+                f'{colored(str(id), "cyan")} is released from the store.'
+            )
         else:
             raise KeyError(f'{colored(str(id), "cyan")} not found in store.')

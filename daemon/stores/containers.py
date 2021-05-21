@@ -1,13 +1,11 @@
-from daemon.models.containers import ContainerArguments, ContainerItem, ContainerMetadata
-from typing import Union
-from pydantic import FilePath
-
 from jina.helper import colored
-from .base import BaseStore, Dockerizer
-from ..dockerize.helper import id_cleaner
-from .. import __root_workspace__
-from ..excepts import Runtime400Exception
+
+from .base import BaseStore
 from ..models import DaemonID
+from .. import __root_workspace__
+from ..dockerize import Dockerizer
+from ..dockerize.helper import id_cleaner
+from ..excepts import Runtime400Exception
 
 
 class ContainerStore(BaseStore):
@@ -15,13 +13,11 @@ class ContainerStore(BaseStore):
 
     _kind = 'container'
 
-    @property
-    def command(self) -> str:
-        raise NotImplementedError
-
+    @BaseStore.dump
     def add(self,
             id: DaemonID,
             workspace_id: DaemonID,
+            command: str,
             **kwargs):
         try:
             from . import workspace_store
@@ -31,7 +27,7 @@ class ContainerStore(BaseStore):
 
             _container, _network, _success = Dockerizer.run(workspace_id=workspace_id,
                                                             container_id=id,
-                                                            command=self.command)
+                                                            command=command)
             if not _success:
                 raise Runtime400Exception(f'{id.type} creation failed')
 
@@ -49,18 +45,33 @@ class ContainerStore(BaseStore):
                 },
                 'workspace_id': workspace_id,
                 'arguments': {
-                    'command': self.command
+                    'command': command
                 }
             }
-            self.dump()
             self._logger.success(
                 f'{colored(str(id), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}'
             )
             return id
 
+    @BaseStore.dump
     def delete(self, id: DaemonID, **kwargs):
         if id in self._items:
             Dockerizer.rm_container(id=self[id]['metadata']['container_id'])
-            super().delete(id=id)
+            del self[id]
+            self._logger.success(
+                f'{colored(str(id), "cyan")} is released from the store.'
+            )
         else:
             raise KeyError(f'{colored(id, "cyan")} not found in store.')
+
+
+class PeaStore(ContainerStore):
+    _kind = 'pea'
+
+
+class PodStore(ContainerStore):
+    _kind = 'pod'
+
+
+class FlowStore(ContainerStore):
+    _kind = 'flow'
