@@ -1,13 +1,12 @@
 import base64
 import io
-import itertools as it
 import json
 import mimetypes
 import os
-import random
 import urllib.parse
 import urllib.request
 import warnings
+from copy import deepcopy
 from hashlib import blake2b
 from typing import (
     Iterable,
@@ -19,7 +18,6 @@ from typing import (
     Tuple,
     List,
     Type,
-    Set,
 )
 
 import numpy as np
@@ -377,10 +375,16 @@ class Document(ProtoTypeMixin):
                 pass  # pass on purpose, HasField() only works for message fields.
         if fields:
             # TODO: only update ``fields``
-            destination.MergeFrom(source)
+            for field in fields:
+                destination._pb_body.ClearField(field)
+                setattr(destination, field, getattr(source, field))
         else:
             # TODO: merge fields completely while keeping the preserved fields.
+            _dest = deepcopy(destination)
             destination.CopyFrom(source)
+            if fields_to_preserve:
+                for field in fields_to_preserve:
+                    setattr(destination, field, getattr(_dest, field))
 
     def update(
         self,
