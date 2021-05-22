@@ -19,6 +19,7 @@ from typing import (
     Tuple,
     List,
     Type,
+    Set,
 )
 
 import numpy as np
@@ -338,11 +339,11 @@ class Document(ProtoTypeMixin):
         """
         return self._pb_body.content_hash
 
-    @staticmethod
     def _update(
+        self,
         source: 'Document',
         destination: 'Document',
-        fields: Optional[Tuple[str]] = None,
+        fields: Optional[List[str]] = None,
         replace_message_field: bool = True,
         replace_repeated_field: bool = True,
     ) -> None:
@@ -350,7 +351,7 @@ class Document(ProtoTypeMixin):
 
         :param source: source :class:`Document` object.
         :param destination: the destination :class:`Document` object to be merged into.
-        :param fields: a tuple of field names that included from destination document
+        :param fields: a list of field names that included from destination document
         :param replace_message_field: Replace message field if True. Merge message
                   field if False.
         :param replace_repeated_field: Replace repeated field if True. Append
@@ -358,30 +359,45 @@ class Document(ProtoTypeMixin):
 
         .. note::
             *. if ``fields`` is empty, then destination is overridden by the source completely.
-            *. ``destination`` will be modified in place, ``source`` will be unchanged
+            *. ``destination`` will be modified in place, ``source`` will be unchanged.
+            *. the ``fields`` has value in destination while empty in source will be preserved.
         """
+        # CopyFrom will clear everything in current proto and call MergeFrom
+        # If some fields exist in destination, not exist in source, after calling update will lose.
+        # Need to preserve these fields.
+        fields_to_preserve = []
+        for field_name in self._pb_body.DESCRIPTOR.fields_by_name.keys():
+            try:
+                # ``HasField`` Checks if a certain field is set for the message.
+                if destination._pb_body.HasField(
+                    field_name
+                ) and not source._pb_body.HasField(field_name):
+                    fields_to_preserve.append(field_name)
+            except ValueError:
+                pass  # pass on purpose, HasField() only works for message fields.
         if fields:
-            pass  # only include specified fields.
+            # TODO: only update ``fields``
+            destination.MergeFrom(source)
         else:
-            destination.CopyFrom(source)  # merge fields completely
+            # TODO: merge fields completely while keeping the preserved fields.
+            destination.CopyFrom(source)
 
     def update(
         self,
         source: 'Document',
-        fields: Optional[Tuple[str, ...]] = None,
+        fields: Optional[List[str]] = None,
     ) -> None:
         """Updates fields specified in ``include_fields`` from the source to current Document.
 
         :param source: source :class:`Document` object.
-        :param fields: a tuple of field names that included from the current document,
+        :param fields: a list of field names that included from the current document,
                 if not specified, merge all fields.
 
         .. note::
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
-        if fields and not isinstance(fields, tuple):
-            raise TypeError('Parameter `fields` must be tuple of str')
-
+        if fields and not isinstance(fields, list):
+            raise TypeError('Parameter `fields` must be list of str')
         self._update(
             source,
             self,
