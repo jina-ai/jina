@@ -73,22 +73,52 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 Copy-paste the minimum example below and run it:
 
 ```python
-from jina import Document, Executor, Flow, requests
+import numpy as np
+from jina import Document, DocumentArray, Executor, Flow, requests
 
+class CharEmbed(Executor):  # a simple char embedding model
+    offset = 32  # letter `a`
+    dim = 127 - offset + 1  # last pos reserved for `UNK`
+    char_embd = np.eye(dim) * 1  # one-hot embedding for each char
 
-class MyExecutor(Executor):
-
-    @requests(on='/bar')
-    def foo(self, docs, parameters, **kwargs):
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
         for d in docs:
-            d.text = parameters['p1']
+            r_emb = [ord(c) - self.offset if self.offset <= ord(c) <= 127 else (self.dim - 1) for c in d.text]
+            d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # one-hot embedding
 
+class Indexer(Executor):
+    _docs = DocumentArray()  # for store all document in memory
 
-f = Flow().add(uses=MyExecutor)
-d = Document(text='hello')
+    @requests(on='/index')
+    def foo(self, docs: DocumentArray, **kwargs):
+        self._docs.extend(docs)  # extend to `docs` for "storing"
 
+    @requests(on='/search')
+    def bar(self, docs: DocumentArray, **kwargs):
+        q = np.stack(docs.get_attributes('embedding'))  # get all embedding from query docs
+        d = np.stack(self._docs.get_attributes('embedding'))  # get all embedding from stored docs
+        euclidean_dist = np.linalg.norm(q[:, None, :] - d[None, :, :], axis=-1)  # pairwise euclidean distance
+        for dist, query in zip(euclidean_dist, docs):  # add & sort match
+            query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]
+            query.matches.sort(key=lambda m: m.score.value)  # sort matches by its value
+
+def print_matches(req):
+    for idx, d in enumerate(req.docs[0].matches[:3]):
+        print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
+
+f = Flow().add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
-    f.post('/bar', d, parameters={'p1': 'world'}, on_done=print)
+    f.post('/index', (Document(text=t.strip()) for t in open(__file__)))
+    f.post('/search', Document(text='request(on=something)'), on_done=print_matches)
+```
+
+It should print the following:
+
+```text
+[0]0.125791: "f.post('/search', Document(text='request(on=something)'), on_done=print_matches)"
+[1]0.168526: "@requests(on='/index')"
+[2]0.181676: "@requests(on='/search')"
 ```
 
 ### Run Quick Demo
