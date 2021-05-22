@@ -76,23 +76,23 @@ Copy-paste the minimum example below and run it:
 import numpy as np
 from jina import Document, DocumentArray, Executor, Flow, requests
 
-class CharEmbed(Executor):  # a simple char embedding model
+class CharEmbed(Executor):  # a simple character embedding with mean-pooling
     offset = 32  # letter `a`
     dim = 127 - offset + 1  # last pos reserved for `UNK`
-    char_embd = np.eye(dim) * 1  # one-hot embedding for each char
+    char_embd = np.eye(dim) * 1  # one-hot embedding for all chars
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
         for d in docs:
             r_emb = [ord(c) - self.offset if self.offset <= ord(c) <= 127 else (self.dim - 1) for c in d.text]
-            d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # one-hot embedding
+            d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # mean-pooling
 
 class Indexer(Executor):
-    _docs = DocumentArray()  # for store all document in memory
+    _docs = DocumentArray()  # for storing all document in memory
 
     @requests(on='/index')
     def foo(self, docs: DocumentArray, **kwargs):
-        self._docs.extend(docs)  # extend to `docs` for "storing"
+        self._docs.extend(docs)  # extend stored `docs` 
 
     @requests(on='/search')
     def bar(self, docs: DocumentArray, **kwargs):
@@ -104,7 +104,7 @@ class Indexer(Executor):
             query.matches.sort(key=lambda m: m.score.value)  # sort matches by its value
 
 def print_matches(req):  # the callback function invoked when task is done
-    for idx, d in enumerate(req.docs[0].matches[:3]):
+    for idx, d in enumerate(req.docs[0].matches[:3]):  # print top-3 matches
         print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
 
 f = Flow().add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a flow, with 2 parallel CharEmbed, tho unnecessary
