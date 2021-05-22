@@ -113,7 +113,7 @@ with f:
     f.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
-It should print the following:
+It finds most similar lines to `request(on=something)` from the above code snippet and prints the following:  
 
 ```text
 [0]0.125791: "f.post('/search', Document(text='request(on=something)'), on_done=print_matches)"
