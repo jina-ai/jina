@@ -285,6 +285,8 @@ The return is optional. **All changes happen in-place.**
   returned `DocumentArray`, which will be forwarded to the next Executor in the Flow.
 - If the return is just a shallow copy of `Request.docs`, then nothing happens. This is because the changes are already made in-place, there is no point to assign the value.
 
+So do I need a return? No, unless you must create a new `DocumentArray`. Let's see some examples.
+
 #### Example 1: Embed Documents `blob`
 
 In this example, `encode()` uses some neural network to get the embedding for each `Document.blob`, then assign it to `Document.embedding`. The whole procedure is in-place and there is no need to return anything.

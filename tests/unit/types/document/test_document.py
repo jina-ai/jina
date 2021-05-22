@@ -814,3 +814,17 @@ def test_conflicting_doccontent(doccontent, expectation):
     with expectation:
         document = Document(**doccontent)
         assert document.content is not None
+
+
+@pytest.mark.parametrize('val', [1, 1.0, np.float64(1.0)])
+def test_doc_different_score_value_type(val):
+    d = Document()
+    d.score = val
+    assert int(d.score.value) == 1
+
+
+def test_doc_match_score_assign():
+    d = Document(id='hello')
+    d1 = Document(d, copy=True, score=123)
+    d.matches = [d1]
+    assert d.matches[0].score.value == 123
