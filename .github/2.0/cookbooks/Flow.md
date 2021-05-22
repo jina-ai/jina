@@ -32,8 +32,12 @@ Table of Contents
     - [Define Data via `inputs`](#define-data-via-inputs)
     - [Callback Functions](#callback-functions)
     - [Send Parameters](#send-parameters)
-  - [Switch REST & gRPC Interface](#switch-rest--grpc-interface)
   - [Asynchronous Flow](#asynchronous-flow)
+- [Flow as a Service](#flow-as-a-service)
+  - [Python Client with gRPC Request](#python-client-with-grpc-request)
+  - [Switch REST & gRPC Request](#switch-rest--grpc-request)
+  - [`curl` with HTTP Request](#curl-with-http-request)
+  - [Python Client with REST Request](#python-client-with-rest-request)
 - [Remarks](#remarks)
   - [Joining/Merging](#joiningmerging)
 
