@@ -1,7 +1,7 @@
-# Temporary Cookbook on Clean Code
+# Cookbook on Clean Code
 
 Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
-tips to help you write clean & beautiful code.
+tips to help you write clean and beautiful code.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -44,7 +44,7 @@ tips to help you write clean & beautiful code.
       
       @requests
       def _skip_all(self, **kwargs):
-        pass
+        print('default do sth')
    ```
    😔 Don't:
    ```python
@@ -81,4 +81,37 @@ tips to help you write clean & beautiful code.
       @requests
       def foo_need_pars_only(self, docs, parameters, docs_matrix, groundtruths_matrix, **kwargs):
         print(parameters)
+   ```
+
+1. Send `parameters` only request to a Flow if you don't need `docs`.
+
+   ✅ Do:
+   ```python
+   from jina import Executor, Flow, requests
+   
+   class MyExecutor(Executor):
+      
+      @requests
+      def foo_need_pars_only(self, parameters, **kwargs):
+        print(parameters)
+   
+   f = Flow().add(uses=MyExecutor)
+   
+   with f:
+      f.post('/foo', parameters={'hello': 'world'})
+   ```
+   😔 Don't:
+   ```python
+   from jina import Executor, Flow, Document, requests
+   
+   class MyExecutor(Executor):
+      
+      @requests
+      def foo_need_pars_only(self, parameters, **kwargs):
+        print(parameters)
+   
+   f = Flow().add(uses=MyExecutor)
+   
+   with f:
+      f.post('/foo', inputs=Document(), parameters={'hello': 'world'})
    ```

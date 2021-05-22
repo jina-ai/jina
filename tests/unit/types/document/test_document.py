@@ -1,5 +1,6 @@
 import json
 import os
+from contextlib import contextmanager
 
 import numpy as np
 import pytest
@@ -791,3 +792,39 @@ def test_evaluations():
     score.value = 10.0
     assert document.evaluations[0].value == 10.0
     assert document.evaluations[0].op_name == 'operation'
+
+
+@contextmanager
+def does_not_raise():
+    yield
+
+
+@pytest.mark.parametrize(
+    'doccontent, expectation',
+    [
+        ({'content': 'hello', 'uri': 'https://jina.ai'}, pytest.raises(ValueError)),
+        ({'content': 'hello', 'text': 'world'}, pytest.raises(ValueError)),
+        ({'content': 'hello', 'blob': np.array([1, 2, 3])}, pytest.raises(ValueError)),
+        ({'content': 'hello', 'buffer': b'hello'}, pytest.raises(ValueError)),
+        ({'buffer': b'hello', 'text': 'world'}, pytest.raises(ValueError)),
+        ({'content': 'hello', 'id': 1}, does_not_raise()),
+    ],
+)
+def test_conflicting_doccontent(doccontent, expectation):
+    with expectation:
+        document = Document(**doccontent)
+        assert document.content is not None
+
+
+@pytest.mark.parametrize('val', [1, 1.0, np.float64(1.0)])
+def test_doc_different_score_value_type(val):
+    d = Document()
+    d.score = val
+    assert int(d.score.value) == 1
+
+
+def test_doc_match_score_assign():
+    d = Document(id='hello')
+    d1 = Document(d, copy=True, score=123)
+    d.matches = [d1]
+    assert d.matches[0].score.value == 123

@@ -61,9 +61,6 @@ class ChunkArray(DocumentArray):
         """
         for doc in iterable:
             self.append(doc)
-        num_siblings = len(self)
-        for doc in self:
-            doc.siblings = num_siblings
 
     @property
     def reference_doc(self) -> 'Document':
