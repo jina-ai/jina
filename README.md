@@ -103,7 +103,7 @@ class Indexer(Executor):
             query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]
             query.matches.sort(key=lambda m: m.score.value)  # sort matches by its value
 
-def print_matches(req):
+def print_matches(req):  # the callback function invoked when task is done
     for idx, d in enumerate(req.docs[0].matches[:3]):
         print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
 
