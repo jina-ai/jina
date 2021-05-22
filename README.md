@@ -15,7 +15,7 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-500%2B-blueviolet"></a>
 </p>
 
-Powered by deep learning and cloud-native techniques, Jina is geared towards building search systems for any kind of
+Jina is geared towards building search-as-a-service systems for any kind of
 data in just minutes.
 
 🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music,
@@ -26,7 +26,7 @@ source code, PDF, etc.
 🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with
 fragmented, multi-vendor, generic legacy tools.
 
-🌩️ **Fast & cloud-ready** - Decentralized architecture from day one. Scalable & cloud-native by design: enjoy
+🌩️ **Fast & cloud-native** - Distributed architecture from day one. Scalable & cloud-native by design: enjoy
 containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ## Installation
@@ -149,7 +149,8 @@ $ jina hello fork fashion ../my-proj/
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
     - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
-- 🧼 [Write clean code in Jina](./.github/2.0/cookbooks/CleanCode.md)
+- 🧼 [Write clean code in Jina](.github/2.0/cookbooks/CleanCode.md)
+- 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)
 
 ## Support
 
