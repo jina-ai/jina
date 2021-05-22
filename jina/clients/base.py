@@ -11,9 +11,10 @@ import grpc
 from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..excepts import BadClient, BadClientInput, ValidationError
-from ..helper import typename
+from ..helper import typename, ArgNamespace
 from ..logging import default_logger, JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
+from ..parsers import set_client_cli_parser
 from ..proto import jina_pb2_grpc
 from ..types.request import Request
 
@@ -25,18 +26,18 @@ CallbackFnType = Optional[Callable[..., None]]
 class BaseClient:
     """A base client for connecting to the Flow Gateway.
 
-    .. note::
-        :class:`BaseClient` does not provide `train`, `index`, `search` interfaces.
-        Please use :class:`Client` or :class:`AsyncClient`.
-
     :param args: the Namespace from argparse
+    :param kwargs: additional parameters that can be accepted by client parser
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
-        self.args = args
-        self.logger = JinaLogger(self.__class__.__name__, **vars(args))
+    def __init__(self, args: Optional['argparse.Namespace'] = None, **kwargs):
+        if args and isinstance(args, argparse.Namespace):
+            self.args = args
+        else:
+            self.args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
-        if not args.proxy and os.name != 'nt':
+        if not self.args.proxy and os.name != 'nt':
             # (Han 2020 12.12): gRPC channel is over HTTP2 and it does not work when we have proxy
             # as many enterprise users are behind proxy, a quick way to
             # surpass it is by temporally unset proxy. Please do NOT panic as it will NOT
