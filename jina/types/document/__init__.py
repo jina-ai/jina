@@ -960,8 +960,12 @@ class Document(ProtoTypeMixin):
         return NamedScore(self._pb_body.score)
 
     @score.setter
-    def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
+    def score(
+        self, value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic]
+    ):
         """Set the score of the document.
+
+        You can assign a scala variable directly.
 
         :param value: the value to set the score of the Document from
         """
@@ -969,6 +973,10 @@ class Document(ProtoTypeMixin):
             self._pb_body.score.CopyFrom(value)
         elif isinstance(value, NamedScore):
             self._pb_body.score.CopyFrom(value._pb_body)
+        elif isinstance(value, (float, int)):
+            self._pb_body.score.value = value
+        elif isinstance(value, np.generic):
+            self._pb_body.score.value = value.item()
         else:
             raise TypeError(f'score is in unsupported type {typename(value)}')
 
