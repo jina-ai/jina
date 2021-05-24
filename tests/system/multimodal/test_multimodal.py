@@ -12,7 +12,13 @@ from tests import validate_callback
 @pytest.fixture
 def helloworld_args(tmpdir):
     return set_hw_multimodal_parser().parse_args(
-        ['--workdir', str(tmpdir), '--unblock-query-flow']
+        [
+            '--workdir',
+            str(tmpdir),
+            '--unblock-query-flow',
+            '--index-data-url',
+            'https://static.jina.ai/multimodal/people-img-cicd.zip',
+        ]
     )
 
 
