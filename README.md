@@ -72,6 +72,8 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 
 Copy-paste the minimum example below and run it:
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/2.0-readme-38l.ipynb)
+
 ```python
 import numpy as np
 from jina import Document, DocumentArray, Executor, Flow, requests
