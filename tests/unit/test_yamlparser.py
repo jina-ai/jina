@@ -75,6 +75,20 @@ def test_yaml_expand4():
     assert b['components'][1]['metas']['config_str'] == 'hello-world'
 
 
+def test_yaml_expand_with_context_overwriting():
+    env_text = 'environment_text'
+    context_text = 'context_text'
+    os.environ['VAR_A'] = env_text
+    with open(os.path.join(cur_dir, 'yaml/test-expand5.yml')) as fp:
+        a = JAML.load(fp)
+    b = expand_dict(a)
+    assert b['metas']['name'] == env_text
+    # replace the environment variable with context variable
+    with open(os.path.join(cur_dir, 'yaml/test-expand5.yml')) as fp:
+        c = JAML.load(fp, substitute=True, context={'VAR_A': context_text})
+    assert c['metas']['name'] == context_text
+
+
 def test_attr_dict():
     class AttrDict:
         pass

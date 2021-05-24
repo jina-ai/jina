@@ -230,20 +230,7 @@ class JAML:
             # 0. replace ${{var}} to {var} to use .format
             v = re.sub(subvar_regex, '{\\1}', v)
 
-            # 1. substitute the envs (new syntax: ${{ENV.VAR_NAME}})
-            try:
-                v = v.format(ENV=env_map)
-            except KeyError:
-                pass
-
-            # 2. substitute the envs (old syntax: $VAR_NAME)
-            if os.environ:
-                try:
-                    v = v.format_map(dict(os.environ))
-                except KeyError:
-                    pass
-
-            # 3. substitute the context dict
+            # 1. substitute the context dict
             if context:
                 try:
                     if isinstance(context, dict):
@@ -251,6 +238,19 @@ class JAML:
                     elif isinstance(context, SimpleNamespace):
                         v = v.format(root=context, this=context)
                 except (KeyError, AttributeError):
+                    pass
+
+            # 2. substitute the envs (new syntax: ${{ENV.VAR_NAME}})
+            try:
+                v = v.format(ENV=env_map)
+            except KeyError:
+                pass
+
+            # 3. substitute the envs (old syntax: $VAR_NAME)
+            if os.environ:
+                try:
+                    v = v.format_map(dict(os.environ))
+                except KeyError:
                     pass
 
             # 4. make string to float/int/list/bool with best effort
@@ -463,7 +463,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         .. highlight:: yaml
         .. code-block:: yaml
 
-            !BaseEncoder
+            !BaseExecutor
             metas:
                 name: ${{VAR_A}}  # env or context variables
                 workspace: my-${{this.name}}  # internal reference
@@ -472,16 +472,17 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         .. code-block:: python
 
             # load Executor from yaml file
+            # echo VAR_A=hello-jina
             BaseExecutor.load_config('a.yml')
 
             # load Executor from yaml file and substitute environment variables
             os.environ['VAR_A'] = 'hello-world'
             b = BaseExecutor.load_config('a.yml')
-            assert b.name == hello-world
+            assert b.metas.name == hello-world
 
             # load Executor from yaml file and substitute variables from a dict
             b = BaseExecutor.load_config('a.yml', context={'VAR_A': 'hello-world'})
-            assert b.name == hello-world
+            assert b.metas.name == hello-world
 
             # disable substitute
             b = BaseExecutor.load_config('a.yml', substitute=False)
