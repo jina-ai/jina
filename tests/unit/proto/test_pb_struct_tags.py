@@ -1,5 +1,6 @@
 import pytest
 from google.protobuf.json_format import MessageToJson, Parse
+from jina import Document
 
 from jina.proto.jina_pb2 import DocumentProto
 
@@ -26,6 +27,63 @@ def test_tags(document):
     # can be used as a dict
     for _, _ in d2.tags['nested'].items():
         continue
+
+
+def test_tags_property():
+    d = Document()
+    assert not d.tags
+    assert not d.proto.tags
+
+    # set item
+    d.tags['hello'] = 'world'
+    assert isinstance(d.tags, dict)
+    assert d.tags == {'hello': 'world'}
+    assert d.proto.tags['hello'] == 'world'
+
+    # set composite item
+    d.tags = {'world': ['hello', 'world']}
+    assert isinstance(d.tags, dict)
+    assert d.tags == {'world': ['hello', 'world']}
+    assert d.proto.tags['world'][0] == 'hello'
+    assert d.proto.tags['world'][1] == 'world'
+
+    # set scalar item
+    d.tags['world'] = 123
+    assert isinstance(d.tags, dict)
+    assert d.tags['world'] == 123
+    assert d.proto.tags['world'] == 123
+
+    # clear
+    d.clear()
+    assert not d.tags
+    assert not d.proto.tags
+
+    # update
+    d.tags.update({'hello': 'world'})
+    assert d.tags['hello'] == 'world'
+    assert d.proto.tags['hello'] == 'world'
+
+    # delete
+    del d.tags['hello']
+    assert not d.tags
+    assert not d.proto.tags
+
+    # init from the Doc
+    d = Document(tags={'123': 456})
+    assert d.tags['123'] == 456
+    assert d.proto.tags['123'] == 456
+
+    # copy from other doc
+    d1 = Document(d, copy=True)
+    assert d1.tags['123'] == 456
+    assert d1.proto.tags['123'] == 456
+
+    # copy is a deep copy
+    d1.tags.clear()
+    assert not d1.tags
+    assert not d1.proto.tags
+    assert d.tags['123'] == 456
+    assert d.proto.tags['123'] == 456
 
 
 def test_tags_assign():

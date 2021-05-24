@@ -34,7 +34,7 @@ def _new_data_request(endpoint, target, parameters):
         req.header.target_peapod = target
     # add parameters field
     if parameters:
-        req.parameters.update(parameters)
+        req.parameters = parameters
     return req
 
 

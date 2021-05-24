@@ -86,7 +86,7 @@ def test_doc_update_fields():
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e
-    assert MessageToDict(a.tags) == c
+    assert a.tags == c
     assert a.weight == w
 
 
