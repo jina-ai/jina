@@ -43,7 +43,7 @@ def mixin_rest_server_parser(parser=None):
     gp = add_arg_group(parser, title='REST JSON')
 
     gp.add_argument(
-        '--including_default_value_fields',
+        '--including-default-value-fields',
         action='store_true',
         default=False,
         help='''
@@ -62,14 +62,14 @@ def mixin_rest_server_parser(parser=None):
     )
 
     gp.add_argument(
-        '--use_integers_for_enums',
+        '--use-integers-for-enums',
         action='store_true',
         default=False,
         help='If true, print integers instead of enum names.',
     )
 
     gp.add_argument(
-        '--float_precision',
+        '--float-precision',
         type=int,
         help='If set, use this to specify float field valid digits.',
     )
