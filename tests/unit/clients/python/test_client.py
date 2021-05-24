@@ -4,6 +4,7 @@ import time
 import pytest
 import requests
 
+from jina import Executor, DocumentArray, requests as req
 from jina import helper, Document
 from jina.clients import Client, WebSocketClient
 from jina.excepts import BadClientInput
@@ -11,7 +12,6 @@ from jina.flow import Flow
 from jina.parsers import set_gateway_parser, set_client_cli_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
-from jina import Executor, DocumentArray, requests as req
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -155,3 +155,18 @@ def test_client_websocket(mocker, flow_with_rest_api_enabled):
             iter([()]), request_size=1, on_always=mock, on_error=mock, on_done=mock
         )
         mock.assert_not_called()
+
+
+@pytest.mark.parametrize('client_cls', [Client, WebSocketClient])
+def test_client_from_kwargs(client_cls):
+    client_cls(port_expose=12345, host='0.0.0.1')
+
+
+def test_independent_client():
+    with Flow() as f:
+        c = Client(port_expose=f.port_expose)
+        c.post('/')
+
+    with Flow(restful=True) as f:
+        c = WebSocketClient(port_expose=f.port_expose)
+        c.post('/')

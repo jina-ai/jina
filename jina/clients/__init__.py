@@ -5,6 +5,8 @@ from .mixin import PostMixin
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 
+__all__ = ['Client', 'WebSocketClient']
+
 
 class Client(PostMixin, BaseClient):
     """A simple Python client for connecting to the gRPC gateway.

@@ -99,7 +99,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         }
 
     @app.post(
-        path='/post/{endpoint}',
+        path='/post/{endpoint:path}',
         summary='Post a data request to some endpoint',
         tags=['Data Request'],
         response_model=JinaRequestModel,

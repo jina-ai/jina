@@ -32,8 +32,12 @@ Table of Contents
     - [Define Data via `inputs`](#define-data-via-inputs)
     - [Callback Functions](#callback-functions)
     - [Send Parameters](#send-parameters)
-  - [Switch REST & gRPC Interface](#switch-rest--grpc-interface)
   - [Asynchronous Flow](#asynchronous-flow)
+- [Flow as a Service](#flow-as-a-service)
+  - [Python Client with gRPC Request](#python-client-with-grpc-request)
+  - [Switch REST & gRPC Request](#switch-rest--grpc-request)
+  - [`curl` with HTTP Request](#curl-with-http-request)
+  - [Python Client with REST Request](#python-client-with-rest-request)
 - [Remarks](#remarks)
   - [Joining/Merging](#joiningmerging)
 
@@ -556,113 +560,6 @@ with f:
 
 This is useful to control `Executor` objects in the runtime.
 
-### Switch REST & gRPC Interface
-
-By default all `.post()` communications are via `gRPC` interface.
-
-To enable a Flow to receive from an HTTP request, you can add `restful=True` in the Flow constructor.
-
-```python
-from jina import Flow
-
-f = Flow(restful=True).add(...)
-
-with f:
-    ...
-```
-
-You can switch to REST interface also via `.use_rest_gateway()`. Switching back to gRPC can be done
-via `.use_grpc_gateway()`.
-
-Note, unlike 1.x these two functions can be used **inside the `with` context after the Flow has started**:
-
-```python
-from jina import Flow, Document
-
-f = Flow()
-
-with f:
-    f.post('/index', Document())  # indexing data
-
-    f.use_rest_gateway()  # switch to REST to accept HTTP request
-    f.block()
-```
-
-You will see console prints logs as follows:
-
-```console
-           JINA@4262[I]:input tcp://0.0.0.0:53894 (PULL_CONNECT) output tcp://0.0.0.0:53894 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp4e9u2pdn (PAIR_BIND)
-           JINA@4262[I]:
-    Jina REST interface
-    💬 Swagger UI:	http://localhost:53895/docs
-    📚 Redoc     :	http://localhost:53895/redoc
-        
-           JINA@4262[S]:ready and listening
-        gateway@4262[S]:RESTRuntime is listening at: 0.0.0.0:53895
-        gateway@4251[S]:ready and listening
-```
-
-You can navigate to the Swagger docs UI via `http://localhost:53895/docs`:
-
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/swagger-ui.png?raw=true"/>
-
-Now you can send data request via `curl`/Postman:
-
-```console
-$ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type: application/json' http://localhost:53895/post/index
-
-{
-  "request_id": "1f52dae0-93a5-47b5-9fa0-522a75301d99",
-  "data": {
-    "docs": [
-      {
-        "id": "28287a66-b86a-11eb-99c2-1e008a366d49",
-        "tags": {},
-        "text": "hello world",
-        "content_hash": "",
-        "granularity": 0,
-        "adjacency": 0,
-        "parent_id": "",
-        "chunks": [],
-        "weight": 0.0,
-        "siblings": 0,
-        "matches": [],
-        "mime_type": "",
-        "location": [],
-        "offset": 0,
-        "modality": "",
-        "evaluations": []
-      }
-    ],
-    "groundtruths": []
-  },
-  "header": {
-    "exec_endpoint": "index",
-    "target_peapod": "",
-    "no_propagate": false
-  },
-  "routes": [
-    {
-      "pod": "gateway",
-      "pod_id": "5e4211d0-3916-4f33-8b9e-eec54be8ed9a",
-      "start_time": "2021-05-19T06:19:24.472050Z",
-      "end_time": "2021-05-19T06:19:24.473895Z"
-    },
-    {
-      "pod": "gateway",
-      "pod_id": "83a7ad34-1042-4b5d-b065-3692e2fc691b",
-      "start_time": "2021-05-19T06:19:24.473831Z"
-    }
-  ],
-  "status": {
-    "code": "SUCCESS",
-    "description": ""
-  }
-}
-```
-
-When use `curl`, make sure to pass the `-N/--no-buffer` flag.
-
 ### Asynchronous Flow
 
 `AsyncFlow` is an "async version" of the `Flow` class.
@@ -730,6 +627,180 @@ if __name__ == '__main__':
 ```
 
 `AsyncFlow` is very useful when using Jina inside a Jupyter Notebook, where it can run out-of-the-box.
+
+
+
+## Flow as a Service
+
+A Flow can be used as a service, allows the access from multiple Python/HTTP clients from the public/private network.
+
+### Python Client with gRPC Request
+
+On the server-side, create an empty Flow and use `.block` to prevent the process exiting.
+
+```python
+from jina import Flow
+
+with Flow(port_expose=12345) as f:
+  f.block()
+```
+
+```text
+        gateway@27251[I]:starting jina.peapods.runtimes.asyncio.grpc.GRPCRuntime...
+        gateway@27251[I]:input tcp://0.0.0.0:58106 (PULL_CONNECT) output tcp://0.0.0.0:58106 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp0ygqijgx (PAIR_BIND)
+        gateway@27251[S]:GRPCRuntime is listening at: 0.0.0.0:12345
+        gateway@27247[S]:ready and listening
+           Flow@27247[I]:1 Pods (i.e. 1 Peas) are running in this Flow
+           Flow@27247[S]:🎉 Flow is ready to use, accepting gRPC request
+           Flow@27247[I]:
+	🖥️ Local access:	tcp://0.0.0.0:12345
+	🔒 Private network:	tcp://192.168.1.14:12345
+```
+
+Note that the host address is `192.168.1.14` and `port_expose` is `12345`.
+
+While keep this server open, let's create a client on a different machine:
+
+```python
+from jina.clients import Client
+
+c = Client(host='192.168.1.14', port_expose=12345)
+
+c.post('/')
+```
+
+```text
+         Client@27219[S]:connected to the gateway at 192.168.1.14:12345!
+  |█                   | 📃    100 ⏱️ 0.0s 🐎 26690.1/s      1   requests takes 0 seconds (0.00s)
+	✅ done in ⏱ 0 seconds 🐎 24854.8/s
+```
+
+
+### Switch REST & gRPC Request
+
+By default all `.post()` communications are via `gRPC` interface.
+
+To enable a Flow to receive from an HTTP request, you can add `restful=True` in the Flow constructor.
+
+```python
+from jina import Flow
+
+f = Flow(restful=True).add(...)
+
+with f:
+    f.block()
+```
+
+You can switch to REST interface also via `.use_rest_gateway()`. Switching back to gRPC can be done
+via `.use_grpc_gateway()`.
+
+Note, unlike 1.x these two functions can be used **inside the `with` context after the Flow has started**:
+
+```python
+from jina import Flow, Document
+
+f = Flow()
+
+with f:
+    f.post('/index', Document())  # indexing data
+
+    f.use_rest_gateway()  # switch to REST to accept HTTP request
+    f.block()
+```
+
+You will see console prints logs as follows:
+
+```console
+           JINA@4262[I]:input tcp://0.0.0.0:53894 (PULL_CONNECT) output tcp://0.0.0.0:53894 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp4e9u2pdn (PAIR_BIND)
+           JINA@4262[I]:
+    Jina REST interface
+    💬 Swagger UI:	http://localhost:53895/docs
+    📚 Redoc     :	http://localhost:53895/redoc
+        
+           JINA@4262[S]:ready and listening
+        gateway@4262[S]:RESTRuntime is listening at: 0.0.0.0:53895
+        gateway@4251[S]:ready and listening
+```
+
+You can navigate to the Swagger docs UI via `http://localhost:53895/docs`:
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/swagger-ui.png?raw=true"/>
+
+### `curl` with HTTP Request
+
+Now you can send data request via `curl`/Postman:
+
+```console
+$ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type: application/json' http://localhost:53895/post/index
+
+{
+  "request_id": "1f52dae0-93a5-47b5-9fa0-522a75301d99",
+  "data": {
+    "docs": [
+      {
+        "id": "28287a66-b86a-11eb-99c2-1e008a366d49",
+        "tags": {},
+        "text": "hello world",
+        "content_hash": "",
+        "granularity": 0,
+        "adjacency": 0,
+        "parent_id": "",
+        "chunks": [],
+        "weight": 0.0,
+        "siblings": 0,
+        "matches": [],
+        "mime_type": "",
+        "location": [],
+        "offset": 0,
+        "modality": "",
+        "evaluations": []
+      }
+    ],
+    "groundtruths": []
+  },
+  "header": {
+    "exec_endpoint": "index",
+    "target_peapod": "",
+    "no_propagate": false
+  },
+  "routes": [
+    {
+      "pod": "gateway",
+      "pod_id": "5e4211d0-3916-4f33-8b9e-eec54be8ed9a",
+      "start_time": "2021-05-19T06:19:24.472050Z",
+      "end_time": "2021-05-19T06:19:24.473895Z"
+    },
+    {
+      "pod": "gateway",
+      "pod_id": "83a7ad34-1042-4b5d-b065-3692e2fc691b",
+      "start_time": "2021-05-19T06:19:24.473831Z"
+    }
+  ],
+  "status": {
+    "code": "SUCCESS",
+    "description": ""
+  }
+}
+```
+
+When use `curl`, make sure to pass the `-N/--no-buffer` flag.
+
+### Python Client with REST Request
+
+In some case when `restful=True`, you may still need a Python client to query the server for debugging. You can use `WebsocketClient` in this case.
+
+```python
+from jina.clients import WebSocketClient
+
+c = WebSocketClient(host='192.168.1.14', port_expose=12345)
+c.post('/')
+```
+
+```text
+WebSocketClient@27622[S]:Connected to the gateway at 192.168.1.14:12345
+  |█                   | 📃    100 ⏱️ 0.0s 🐎 19476.6/s      1   requests takes 0 seconds (0.00s)
+	✅ done in ⏱ 0 seconds 🐎 18578.9/s
+```
 
 
 ## Remarks
