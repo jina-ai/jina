@@ -71,7 +71,7 @@ The content source to be shipped into a Docker image. It can one of the followin
     gp.add_argument(
         '--timeout-ready',
         type=int,
-        default=60000,
+        default=600000,
         help='The timeout in millisecond to give for the Pod to start before considering a test failed',
     )
     gp.add_argument(

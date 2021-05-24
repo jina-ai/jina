@@ -9,8 +9,9 @@ def _update_autocomplete():
                 _compl.extend(v.option_strings)
             elif v.choices:
                 _compl.extend(v.choices)
-                for kk, vv in v.choices.items():
-                    _result.update(_gaa(' '.join([key, kk]).strip(), vv))
+                if isinstance(v.choices, dict):
+                    for kk, vv in v.choices.items():
+                        _result.update(_gaa(' '.join([key, kk]).strip(), vv))
         # filer out single dash, as they serve as abbrev
         _compl = [k for k in _compl if (not k.startswith('-') or k.startswith('--'))]
         _result.update({key: _compl})
@@ -74,7 +75,8 @@ ac_table = {
             '--port-expose',
             '--unblock-query-flow',
         ],
-        'hello': ['--help', 'fashion', 'chatbot', 'multimodal'],
+        'hello fork': ['--help', 'fashion', 'chatbot', 'multimodal'],
+        'hello': ['--help', 'fashion', 'chatbot', 'multimodal', 'fork'],
         'executor': [
             '--help',
             '--name',

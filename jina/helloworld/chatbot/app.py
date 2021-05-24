@@ -47,7 +47,7 @@ def hello_world(args):
 
     f = (
         Flow()
-        .add(uses=MyTransformer, parallel=args.parallel, timeout_ready=600000)
+        .add(uses=MyTransformer, parallel=args.parallel)
         .add(uses=MyIndexer, workspace=args.workdir)
     )
 

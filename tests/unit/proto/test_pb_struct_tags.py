@@ -85,6 +85,18 @@ def test_tags_property():
     assert d.tags['123'] == 456
     assert d.proto.tags['123'] == 456
 
+    # init from another doc.tags
+    d2 = Document(tags=d.tags)
+    assert d2.tags['123'] == 456
+    assert d2.proto.tags['123'] == 456
+
+    # copy is a deep copy
+    d.tags.clear()
+    assert not d.tags
+    assert not d.proto.tags
+    assert d2.tags['123'] == 456
+    assert d2.proto.tags['123'] == 456
+
 
 def test_tags_assign():
     d = DocumentProto()
