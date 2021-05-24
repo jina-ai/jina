@@ -342,18 +342,12 @@ class Document(ProtoTypeMixin):
         source: 'Document',
         destination: 'Document',
         fields: Optional[List[str]] = None,
-        replace_message_field: bool = True,
-        replace_repeated_field: bool = True,
     ) -> None:
         """Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
 
         :param source: source :class:`Document` object.
         :param destination: the destination :class:`Document` object to be merged into.
         :param fields: a list of field names that included from destination document
-        :param replace_message_field: Replace message field if True. Merge message
-                  field if False.
-        :param replace_repeated_field: Replace repeated field if True. Append
-                  elements of repeated field if False.
 
         .. note::
             *. if ``fields`` is empty, then destination is overridden by the source completely.
@@ -372,19 +366,19 @@ class Document(ProtoTypeMixin):
                 ) and not source._pb_body.HasField(field_name):
                     fields_to_preserve.append(field_name)
             except ValueError:
-                pass  # pass on purpose, HasField() only works for message fields.
+                continue  # pass on purpose, HasField() only works for message fields.
         if fields:
-            # TODO: only update ``fields``
+            # Only update specified ``fields``
             for field in fields:
                 destination._pb_body.ClearField(field)
                 setattr(destination, field, getattr(source, field))
         else:
-            # TODO: merge fields completely while keeping the preserved fields.
-            _dest = deepcopy(destination)
+            # Merge fields completely while keeping the preserved fields.
+            dest = deepcopy(destination)
             destination.CopyFrom(source)
             if fields_to_preserve:
                 for field in fields_to_preserve:
-                    setattr(destination, field, getattr(_dest, field))
+                    setattr(destination, field, getattr(dest, field))
 
     def update(
         self,
@@ -406,8 +400,6 @@ class Document(ProtoTypeMixin):
             source,
             self,
             fields=fields,
-            replace_message_field=True,
-            replace_repeated_field=True,
         )
 
     def update_content_hash(

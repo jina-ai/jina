@@ -468,7 +468,8 @@ def test_doc_plot(tmpdir):
     docs[0].plot()
 
 
-def get_test_doc():
+@pytest.fixture
+def test_docs():
     s = Document(
         id='🐲',
         content='hello-world',
@@ -483,7 +484,7 @@ def get_test_doc():
         embedding=np.array([4, 5, 6]),
         chunks=[Document(id='🐯')],
     )
-    return s, d
+    return (s, d)
 
 
 @pytest.fixture
@@ -512,75 +513,6 @@ def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
     assert present_keys == ['id']
 
 
-def test_update_include_field():
-    s, d = get_test_doc()
-
-    d.update(s, include_fields=('id',))
-    assert d.content == 'goodbye-world'
-    assert d.id == '🐲'
-    assert d.tags['c'] == 'd'
-    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
-
-    # check if s stays the same
-    assert s.content == 'hello-world'
-    assert s.id == '🐲'
-    assert s.tags['a'] == 'b'
-    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
-
-    # check if d is changed when merge_repeat_field turn on
-    d.update(s, include_fields=('tags',))
-    assert d.content == 'goodbye-world'
-    assert d.id == '🐲'
-    assert d.tags['a'] == 'b'
-    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
-
-    # check if d is changed when merge_repeat_field turn on
-    d.update(s, include_fields=('tags',))
-    assert d.content == 'goodbye-world'
-    assert d.id == '🐲'
-    assert d.tags['a'] == 'b'
-    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
-
-    # check copy behavior
-    d.update(s, exclude_fields=None, include_fields=('embedding',))
-    assert d.content == 'goodbye-world'
-    assert d.id == '🐲'
-    assert d.tags['a'] == 'b'
-    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
-
-
-def test_update_on_no_empty_doc():
-    s, d = get_test_doc()
-    d0 = d.dict()
-    # this will not update anything as d and s are in the same structure
-    d.update(s)
-    assert d.dict() == d0
-
-
-def test_update_on_no_empty_doc_with_exclude():
-    s, d = get_test_doc()
-    d0 = s.dict()
-    d0.pop('id')
-    # this will not update anything as d and s are in the same structure
-    d.update(s, exclude_fields=('id',))
-    d1 = d.dict()
-    d1.pop('id')
-    assert d1 == d0
-
-
-def test_update_chunks():
-    s, d = get_test_doc()
-    d.update(s, include_fields=('chunks',), exclude_fields=None)
-    assert len(d.chunks) == 1
-    assert d.chunks[0].id == '🐢'
-
-
-def test_update_embedding():
-    s, d = get_test_doc()
-    d.update(s, include_fields=('embedding',), exclude_fields=tuple())
-    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
-
-
 def test_non_empty_fields():
     d_score = Document(score=NamedScore(value=42))
     assert d_score.non_empty_fields == ('id', 'score')
@@ -590,34 +522,6 @@ def test_non_empty_fields():
 
     d = Document(id='')
     assert not d.non_empty_fields
-
-
-def test_update_score_embedding():
-    d = Document()
-    d_score = Document(score=NamedScore(value=42))
-
-    d.update(d_score)
-    assert d.score.value == 42
-
-
-def test_update_exclude_field():
-    s, d = get_test_doc()
-
-    d.update(s, exclude_fields=('id', 'embedding', 'chunks'))
-    assert d.content == 'hello-world'
-    assert d.id == '🐦'
-    assert d.tags['a'] == 'b'
-    np.testing.assert_array_equal(d.embedding, np.array([4, 5, 6]))
-    assert d.chunks[0].id == '🐯'
-
-    d.update(s, exclude_fields=('chunks',))
-    # check if merging on embedding is correct
-    np.testing.assert_array_equal(d.embedding, np.array([1, 2, 3]))
-
-    d.update(s, exclude_fields=('embedding',))
-    # check if merging on embedding is correct
-    assert len(d.chunks) == 1
-    assert d.chunks[0].id == '🐢'
 
 
 def test_get_attr_values():
@@ -828,3 +732,94 @@ def test_doc_match_score_assign():
     d1 = Document(d, copy=True, score=123)
     d.matches = [d1]
     assert d.matches[0].score.value == 123
+
+
+def test_doc_update_given_empty_fields_and_attributes_identical(test_docs):
+    # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
+    doc1, doc2 = test_docs
+    doc1.update(source=doc2)
+    assert doc1.id == doc2.id
+    assert doc1.content == doc2.content
+    assert doc1.tags == doc2.tags
+    assert (doc1.embedding == doc2.embedding).all()
+    assert doc1.chunks == doc2.chunks
+
+
+def test_doc_update_given_empty_fields_and_destination_has_more_attributes(test_docs):
+    # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
+    doc1, doc2 = test_docs
+    # remove doc2 content field
+    doc2._pb_body.ClearField(
+        'content'
+    )  # content of source "goodbye-world" was removed, not update this field.
+    assert doc2.content is None
+    doc1.update(source=doc2)
+    assert doc1.id == doc2.id
+    assert doc1.content == 'hello-world'
+    assert doc1.tags == doc2.tags
+    assert (doc1.embedding == doc2.embedding).all()
+    assert doc1.chunks == doc2.chunks
+
+
+def test_doc_update_given_empty_fields_and_source_has_more_attributes(test_docs):
+    # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
+    doc1, doc2 = test_docs
+    # remove doc2 content field
+    doc1._pb_body.ClearField(
+        'content'
+    )  # content of source "goodbye-world" was removed, not update this field.
+    assert doc1.content is None
+    doc1.update(source=doc2)
+    assert doc1.id == doc2.id
+    assert doc1.content == doc2.content  # None was updated by source's content
+    assert doc1.tags == doc2.tags
+    assert (doc1.embedding == doc2.embedding).all()
+    assert doc1.chunks == doc2.chunks
+
+
+def test_doc_update_given_singular_fields_and_attributes_identical(test_docs):
+    # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
+    doc1, doc2 = test_docs
+    # only update
+    doc1.update(source=doc2, fields=['id', 'content'])
+    assert doc1.id == doc2.id
+    assert doc1.content == doc2.content  # None was updated by source's content
+    assert doc1.tags != doc2.tags
+    assert (doc1.embedding != doc2.embedding).all()
+    assert doc1.chunks != doc2.chunks
+
+
+def test_doc_update_given_nested_fields_and_attributes_identical(test_docs):
+    # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
+    doc1, doc2 = test_docs
+    # only update
+    doc1.update(source=doc2, fields=['tags', 'embedding'])
+    assert doc1.id != doc2.id
+    assert doc1.content != doc2.content  # None was updated by source's content
+    assert doc1.tags == doc2.tags
+    assert (doc1.embedding == doc2.embedding).all()
+
+
+def test_doc_update_given_fields_and_destination_has_more_attributes(test_docs):
+    # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
+    # After update, the specified fields will be cleared.
+    doc1, doc2 = test_docs
+    # remove doc2 text field
+    doc2._pb_body.ClearField('text')
+    assert doc2.text == ''
+    assert doc2.content is None
+    doc1.update(source=doc2, fields=['text'])
+    assert doc1.text == ''
+
+
+def test_doc_update_given_fields_and_source_has_more_attributes(test_docs):
+    # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
+    # After update, the specified fields will be replaced by source attribuet value.
+    doc1, doc2 = test_docs
+    # remove doc2 content field
+    doc1._pb_body.ClearField('text')
+    assert doc1.text == ''
+    assert doc1.content is None
+    doc1.update(source=doc2, fields=['text'])
+    assert doc1.id != doc2.id
+    assert doc1.content == doc2.content  # None was updated by source's content
