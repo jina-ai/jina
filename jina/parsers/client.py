@@ -16,7 +16,6 @@ def mixin_client_cli_parser(parser):
         help='The number of Documents in each Request.',
     )
 
-    gp.add_argument('--mime-type', type=str, help='MIME type of the input Documents.')
     gp.add_argument(
         '--continue-on-error',
         action='store_true',
