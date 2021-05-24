@@ -166,7 +166,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
                         % (
                             'enabled'
                             if action.default
-                            else f'disabled, use "--{action.dest}" to enable it'
+                            else f'disabled, use "{action.option_strings[0]}" to enable it'
                         ),
                         attrs=['dark'],
                     )
