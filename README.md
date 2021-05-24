@@ -94,7 +94,7 @@ class Indexer(Executor):
 
     @requests(on='/index')
     def foo(self, docs: DocumentArray, **kwargs):
-        self._docs.extend(docs)  # extend stored `docs` 
+        self._docs.extend(docs)  # extend stored `docs`
 
     @requests(on='/search')
     def bar(self, docs: DocumentArray, **kwargs):
@@ -105,13 +105,13 @@ class Indexer(Executor):
             query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]
             query.matches.sort(key=lambda m: m.score.value)  # sort matches by its value
 
-def print_matches(req):  # the callback function invoked when task is done
-    for idx, d in enumerate(req.docs[0].matches[:3]):  # print top-3 matches
-        print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
-
 f = Flow().add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
-    f.post('/index', (Document(text=t.strip()) for t in open(__file__)))
+    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))
+
+    def print_matches(req):  # the callback function invoked when task is done
+        for idx, d in enumerate(req.docs[0].matches[:3]):  # print top-3 matches
+            print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
     f.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
