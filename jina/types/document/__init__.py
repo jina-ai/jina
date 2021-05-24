@@ -338,7 +338,6 @@ class Document(ProtoTypeMixin):
         """
         return self._pb_body.content_hash
 
-
     @property
     def tags(self) -> Dict:
         """Return the `tags` field of this Document as a Python dict
@@ -355,7 +354,6 @@ class Document(ProtoTypeMixin):
         """
         self._pb_body.tags.Clear()
         self._pb_body.tags.update(value)
-
 
     def _update(
         self,
