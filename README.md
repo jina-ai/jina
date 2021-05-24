@@ -106,8 +106,8 @@ class Indexer(Executor):
 
 f = Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
-    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))
-    f.block()
+    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of this file
+    f.block()  # block for listening request
 ```
 
 Keep the above running and start a simple client:
