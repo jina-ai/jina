@@ -166,6 +166,8 @@ from jina.executors.decorators import requests
 from jina.flow import Flow
 from jina.flow.asyncio import AsyncFlow
 
+# Client
+from jina.clients import Client
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)

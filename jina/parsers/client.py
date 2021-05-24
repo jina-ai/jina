@@ -23,6 +23,14 @@ def mixin_client_cli_parser(parser):
         help='If set, a Request that causes error will be logged only without blocking the further '
         'requests.',
     )
+
+    gp.add_argument(
+        '--show-progress',
+        action='store_true',
+        default=False,
+        help='If set, client will show a progress bar on receiving every request.',
+    )
+
     gp.add_argument(
         '--return-results',
         action='store_true',

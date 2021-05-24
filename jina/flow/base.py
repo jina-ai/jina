@@ -612,6 +612,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             kwargs['host'] = self.host
 
         args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
+
+        # show progress when client is used inside the flow, for better log readability
+        if 'show_progress' not in kwargs:
+            args.show_progress = True
+
         return self._cls_client(args)
 
     @property
