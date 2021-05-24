@@ -12,7 +12,7 @@ router = APIRouter(prefix='/workspaces', tags=['workspaces'])
 @router.get(
     path='',
     summary='Get all existing Workspaces\' status',
-    response_model=WorkspaceStoreStatus
+    response_model=WorkspaceStoreStatus,
 )
 async def _get_items():
     return store.status
@@ -58,9 +58,7 @@ async def _create(files: List[UploadFile] = File(...)):
     response_model=DaemonID,
     status_code=200,
 )
-async def _update(
-    id: DaemonID, files: List[UploadFile] = File(...)
-):
+async def _update(id: DaemonID, files: List[UploadFile] = File(...)):
     try:
         return store.update(workspace_id=id, files=files)
     except Exception as ex:

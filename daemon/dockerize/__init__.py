@@ -1,17 +1,18 @@
-from daemon.models.id import IDLiterals
-import docker
-from typing import List, Tuple, Union, TYPE_CHECKING
+from typing import Dict, List, Tuple, Union, TYPE_CHECKING
 
+import docker
 from jina import __ready_msg__
 from jina.logging import JinaLogger
 from ..models import DaemonID
-from .helper import id_cleaner
+from ..models.enums import IDLiterals
+from ..helper import id_cleaner, classproperty
 from .. import __rootdir__, __dockerfiles__, __root_workspace__, jinad_args
 
 __flow_ready__ = 'Flow is ready to use'
 
 
 if TYPE_CHECKING:
+    from ..stores.workspaces import DaemonFile
     from docker.client import APIClient, DockerClient
     from docker.models.networks import Network
     from docker.models.containers import Container
@@ -37,18 +38,15 @@ class Dockerizer:
             except TypeError:
                 continue
 
-    @property
-    @classmethod
+    @classproperty
     def networks(cls) -> List[DaemonID]:
         return list(cls.daemonize(cls.client.networks.list(), 'name'))
 
-    @property
-    @classmethod
+    @classproperty
     def images(cls) -> List[DaemonID]:
         return list(cls.daemonize(cls.client.images.list(), 'tags'))
 
-    @property
-    @classmethod
+    @classproperty
     def containers(cls) -> List[DaemonID]:
         return list(cls.daemonize(cls.client.containers.list(), 'name'))
 
@@ -60,10 +58,10 @@ class Dockerizer:
         return network.name
 
     @classmethod
-    def build(cls, workspace_id: DaemonID) -> str:
+    def build(cls, workspace_id: 'DaemonID', daemon_file: 'DaemonFile') -> str:
         for build_logs in cls.raw_client.build(
-            path=__rootdir__,
-            dockerfile=f'{__dockerfiles__}/devel.Dockerfile',
+            path=daemon_file.dockercontext,
+            dockerfile=daemon_file.dockerfile,
             tag=workspace_id.tag,
             rm=True,
             pull=True,
@@ -77,14 +75,20 @@ class Dockerizer:
         return id_cleaner(image.id)
 
     @classmethod
-    def run(
-        cls, workspace_id: DaemonID, container_id: DaemonID, command: str
-    ) -> Tuple['Container', str, bool]:
+    def run(cls,
+            workspace_id: DaemonID,
+            container_id: DaemonID,
+            command: str,
+            ports: Dict,
+            additional_ports: Tuple[int, int]) -> Tuple['Container', str, Dict, bool]:
         from ..stores import workspace_store
-
         metadata = workspace_store[workspace_id]['metadata']
         _image = cls.client.images.get(name=metadata['image_id'])
         _network = metadata['network']
+        _min_port, _max_port = additional_ports
+        ports.update(
+            {f'{port}/tcp': port for port in range(_min_port, _max_port+1)}
+        )
         cls.logger.info(
             f'Creating a container using image {_image} in network {_network}'
         )
@@ -92,21 +96,17 @@ class Dockerizer:
         container: 'Container' = cls.client.containers.run(
             image=_image,
             name=container_id,
-            volumes={
-                f'{__root_workspace__}/{workspace_id}': {
-                    'bind': '/workspace',
-                    'mode': 'rw',
-                }
-            },
-            environment={'JINA_LOG_WORKSPACE': '/workspace/logs'},
+            volumes=cls.volume(workspace_id),
+            environment=cls.environment(workspace_id, _min_port, _max_port),
             network=_network,
+            ports=ports,
             detach=True,
             command=command,
         )
 
         _msg_to_check = __flow_ready__ if container_id.type == 'flow' else __ready_msg__
 
-        # TODO: Check status of new container properly
+        # TODO: Super ugly way of knowing if the "start" was successful
         _success = False
         for run_logs in container.logs(stream=True, follow=True):
             _log_line = run_logs.splitlines()[0].decode()
@@ -117,7 +117,25 @@ class Dockerizer:
                 )
                 _success = True
                 break
-        return container, _network, _success
+        return container, _network, ports, _success
+
+    @classmethod
+    def volume(cls, workspace_id: DaemonID) -> Dict[str, Dict]:
+        return {
+            f'{__root_workspace__}/{workspace_id}': {
+                'bind': '/workspace',
+                'mode': 'rw',
+            }
+        }
+
+    @classmethod
+    def environment(cls, workspace_id: DaemonID, min_port: int, max_port: int) -> Dict[str, str]:
+        return {
+            'JINA_LOG_WORKSPACE': '/workspace/logs',
+            'JINA_RANDOM_PORTS': 'True',
+            'JINA_RANDOM_PORT_MIN': str(min_port),
+            'JINA_RANDOM_PORT_MAX': str(max_port)
+        }
 
     def remove(cls, id: DaemonID):
         if id.jtype == IDLiterals.JNETWORK:

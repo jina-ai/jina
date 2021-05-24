@@ -7,7 +7,7 @@ from .base import StoreItem, StoreStatus
 
 class WorkspaceArguments(BaseModel):
     files: List[str]
-    jinad: str
+    jinad: Dict[str, str]
     requirements: List
 
 
@@ -15,6 +15,7 @@ class WorkspaceMetadata(BaseModel):
     image_id: str
     image_name: str
     network: str
+    ports: Dict[str, str]
     workdir: str
 
 

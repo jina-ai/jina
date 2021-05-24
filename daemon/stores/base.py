@@ -4,7 +4,7 @@ import pickle
 from pathlib import Path
 from datetime import datetime
 from collections.abc import MutableMapping
-from typing import Callable, Dict, Any, TYPE_CHECKING, Union, Optional
+from typing import Callable, Dict, Any, Union, Type
 
 from jina.logging import JinaLogger
 from ..models import DaemonID
@@ -102,6 +102,7 @@ class BaseStore(MutableMapping):
             with open(filepath, 'wb') as f:
                 pickle.dump(self, f)
             return r
+
         return wrapper
 
     @classmethod

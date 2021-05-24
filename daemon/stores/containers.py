@@ -1,11 +1,12 @@
+from typing import Dict
 from jina.helper import colored
 
 from .base import BaseStore
 from ..models import DaemonID
 from .. import __root_workspace__
 from ..dockerize import Dockerizer
-from ..dockerize.helper import id_cleaner
 from ..excepts import Runtime400Exception
+from ..helper import id_cleaner, random_port_range
 
 
 class ContainerStore(BaseStore):
@@ -18,16 +19,19 @@ class ContainerStore(BaseStore):
             id: DaemonID,
             workspace_id: DaemonID,
             command: str,
+            ports: Dict,
             **kwargs):
         try:
             from . import workspace_store
-            self._logger.info(workspace_store._items)
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
 
-            _container, _network, _success = Dockerizer.run(workspace_id=workspace_id,
-                                                            container_id=id,
-                                                            command=command)
+            _container, _network, _ports, _success = \
+                Dockerizer.run(workspace_id=workspace_id,
+                               container_id=id,
+                               command=command,
+                               ports=ports,
+                               additional_ports=random_port_range(count=30))
             if not _success:
                 raise Runtime400Exception(f'{id.type} creation failed')
 
@@ -37,19 +41,18 @@ class ContainerStore(BaseStore):
         else:
             self[id] = {
                 'metadata': {
-                    'container_id': _container.id,
+                    'container_id': id_cleaner(_container.id),
                     'container_name': _container.name,
                     'image_id': id_cleaner(_container.image.id),
                     'network': _network,
-                    'ports': _container.ports
+                    'ports': _ports
                 },
                 'workspace_id': workspace_id,
-                'arguments': {
-                    'command': command
-                }
+                'arguments': {'command': command},
             }
             self._logger.success(
-                f'{colored(str(id), "cyan")} is added to workspace {colored(str(workspace_id), "cyan")}'
+                f'{colored(str(id), "cyan")} is added to workspace '
+                f'{colored(str(workspace_id), "cyan")}'
             )
             return id
 

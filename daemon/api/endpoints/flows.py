@@ -10,9 +10,7 @@ router = APIRouter(prefix='/flows', tags=['flows'])
 
 
 @router.get(
-    path='',
-    summary='Get all alive Flows\' status',
-    response_model=ContainerStoreStatus
+    path='', summary='Get all alive Flows\' status', response_model=ContainerStoreStatus
 )
 async def _get_items():
     return store.status
@@ -33,7 +31,8 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
     try:
         return store.add(id=flow.id,
                          workspace_id=flow.workspace_id,
-                         command=flow.command)
+                         command=flow.command,
+                         ports=flow.ports)
     except Exception as ex:
         raise Runtime400Exception from ex
 

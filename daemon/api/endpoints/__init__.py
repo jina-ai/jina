@@ -40,9 +40,7 @@ async def _home():
 
 
 @router.get(
-    path='/status',
-    summary='Get the status of the daemon',
-    response_model=DaemonStatus
+    path='/status', summary='Get the status of the daemon', response_model=DaemonStatus
 )
 async def _status():
     _jina, _envs = get_full_version()
@@ -53,5 +51,5 @@ async def _status():
         'peas': pea_store.status,
         'pods': pod_store.status,
         'flows': flow_store.status,
-        'used_memory': used_memory_readable()
+        'used_memory': used_memory_readable(),
     }

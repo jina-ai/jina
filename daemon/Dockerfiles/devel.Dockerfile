@@ -31,5 +31,5 @@ RUN pip install .[devel]
 
 STOPSIGNAL SIGINT
 
-WORKDIR /codebase/daemon/Dockerfiles
-ENTRYPOINT [ "bash", "entrypoint.sh" ]
+WORKDIR /workspace
+ENTRYPOINT [ "bash", "/codebase/daemon/Dockerfiles/entrypoint.sh" ]

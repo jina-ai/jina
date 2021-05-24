@@ -13,7 +13,7 @@ from websockets import ConnectionClosedOK
 from websockets.exceptions import ConnectionClosedError
 
 from ... import daemon_logger, jinad_args
-from ...stores.helper import get_workspace_path
+from ...helper import get_workspace_path
 
 router = APIRouter(tags=['logs'])
 

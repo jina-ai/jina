@@ -8,9 +8,9 @@ from ...stores import pod_store as store
 router = APIRouter(prefix='/pods', tags=['pods'])
 
 
-@router.get(path='',
-            summary='Get all alive Pods\' status',
-            response_model=ContainerStoreStatus)
+@router.get(
+    path='', summary='Get all alive Pods\' status', response_model=ContainerStoreStatus
+)
 async def _get_items():
     return store.status
 
@@ -31,7 +31,8 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
     try:
         return store.add(id=pod.id,
                          workspace_id=pod.workspace_id,
-                         command=pod.command)
+                         command=pod.command,
+                         ports=pod.ports)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -57,9 +58,7 @@ async def _delete(id: DaemonID, workspace: bool = False):
 
 
 @router.get(
-    path='/{id}',
-    summary='Get status of a running Pod',
-    response_model=ContainerItem
+    path='/{id}', summary='Get status of a running Pod', response_model=ContainerItem
 )
 async def _status(id: DaemonID):
     try:

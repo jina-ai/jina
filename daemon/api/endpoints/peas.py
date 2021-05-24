@@ -8,9 +8,9 @@ from ...stores import pea_store as store
 router = APIRouter(prefix='/peas', tags=['peas'])
 
 
-@router.get(path='',
-            summary='Get all alive Pea\' status',
-            response_model=ContainerStoreStatus)
+@router.get(
+    path='', summary='Get all alive Pea\' status', response_model=ContainerStoreStatus
+)
 async def _get_items():
     return store.status
 
@@ -34,7 +34,8 @@ async def _create(pea: PeaDepends = Depends(PeaDepends)):
     try:
         return store.add(id=pea.id,
                          workspace_id=pea.workspace_id,
-                         command=pea.command)
+                         command=pea.command,
+                         ports=pea.ports)
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -62,9 +63,7 @@ async def _delete(id: DaemonID, workspace: bool = False):
 
 
 @router.get(
-    path='/{id}',
-    summary='Get status of a running Pea',
-    response_model=ContainerItem
+    path='/{id}', summary='Get status of a running Pea', response_model=ContainerItem
 )
 async def _status(id: DaemonID):
     try:
