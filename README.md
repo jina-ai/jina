@@ -104,22 +104,32 @@ class Indexer(Executor):
             query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]
             query.matches.sort(key=lambda m: m.score.value)  # sort matches by its value
 
-f = Flow().add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a flow, with 2 parallel CharEmbed, tho unnecessary
+f = Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))
-
-    def print_matches(req):  # the callback function invoked when task is done
-        for idx, d in enumerate(req.docs[0].matches[:3]):  # print top-3 matches
-            print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
-    f.post('/search', Document(text='request(on=something)'), on_done=print_matches)
+    f.block()
 ```
 
-It finds most similar lines to "`request(on=something)`" from the above code snippet and prints the following:  
+Keep the above running and start a simple client:
+
+```python
+from jina import Client, Document
+
+def print_matches(req):  # the callback function invoked when task is done
+    for idx, d in enumerate(req.docs[0].matches[:3]):  # print top-3 matches
+        print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
+        
+c = Client(host='localhost', port_expose=12345)  # connect to localhost:12345
+c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
+```
+
+It finds most similar lines to "`request(on=something)`" from the server code snippet and prints the following:  
 
 ```text
-[0]0.125791: "f.post('/search', Document(text='request(on=something)'), on_done=print_matches)"
-[1]0.168526: "@requests(on='/index')"
-[2]0.181676: "@requests(on='/search')"
+         Client@1608[S]:connected to the gateway at localhost:12345!
+[0]0.168526: "@requests(on='/index')"
+[1]0.181676: "@requests(on='/search')"
+[2]0.192049: "query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]"
 ```
 
 ### Run Quick Demo
