@@ -70,9 +70,9 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 - [⚙️ **Executor**](.github/2.0/cookbooks/Executor.md) is how Jina processes Documents;
 - [🔀 **Flow**](.github/2.0/cookbooks/Flow.md) is how Jina streamlines and distributes Executors.
 
-Copy-paste the minimum example below and run it:
+<a href="https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/2.0-readme-38l.ipynb"><img align="right" src="https://colab.research.google.com/assets/colab-badge.svg?raw=true"/></a>
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/2.0-readme-38l.ipynb)
+Copy-paste the minimum example below and run it:
 
 ```python
 import numpy as np
