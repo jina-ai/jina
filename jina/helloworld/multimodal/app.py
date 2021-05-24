@@ -1,4 +1,5 @@
 import os
+import zipfile
 import urllib.request
 import webbrowser
 from pathlib import Path
@@ -40,8 +41,8 @@ def hello_world(args):
     }
 
     # download the data
-    download_data(targets, args.download_proxy, task_name='download zip data')
-    import zipfile
+    if not os.path.exists(targets['people-img']['filename']):
+        download_data(targets, args.download_proxy, task_name='download zip data')
 
     with zipfile.ZipFile(targets['people-img']['filename'], 'r') as fp:
         fp.extractall(args.workdir)

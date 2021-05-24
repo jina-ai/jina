@@ -1,6 +1,7 @@
 from typing import Union, Optional, TypeVar, Dict
 
 from google.protobuf import json_format
+from jina.types.struct import StructView
 
 from ..mixin import ProtoTypeMixin
 from ...enums import CompressAlgo, RequestType
@@ -233,6 +234,23 @@ class Request(ProtoTypeMixin):
         base_cls = self.__class__
         base_cls_name = self.__class__.__name__
         self.__class__ = type(base_cls_name, (base_cls, Response), {})
+
+    @property
+    def parameters(self) -> Dict:
+        """Return the `tags` field of this Document as a Python dict
+
+        :return: a Python dict view of the tags.
+        """
+        return StructView(self._pb_body.parameters)
+
+    @parameters.setter
+    def parameters(self, value: Dict):
+        """Set the `tags` field of this Document to a Python dict
+
+        :param value: a Python dict
+        """
+        self._pb_body.parameters.Clear()
+        self._pb_body.parameters.update(value)
 
 
 class Response:

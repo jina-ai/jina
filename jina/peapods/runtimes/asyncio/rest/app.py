@@ -204,7 +204,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
             yield MessageToJson(
-                k, including_default_value_fields=True, preserving_proto_field_name=True
+                k,
+                including_default_value_fields=args.including_default_value_fields,
+                preserving_proto_field_name=True,
+                sort_keys=args.sort_keys,
+                use_integers_for_enums=args.use_integers_for_enums,
+                float_precision=args.float_precision,
             )
 
     @app.websocket_route(path='/stream')

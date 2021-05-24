@@ -23,6 +23,7 @@ from typing import (
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
+from jina.types.struct import StructView
 
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..arrays.chunk import ChunkArray
@@ -336,6 +337,25 @@ class Document(ProtoTypeMixin):
         :return: the content_hash from the proto
         """
         return self._pb_body.content_hash
+
+
+    @property
+    def tags(self) -> Dict:
+        """Return the `tags` field of this Document as a Python dict
+
+        :return: a Python dict view of the tags.
+        """
+        return StructView(self._pb_body.tags)
+
+    @tags.setter
+    def tags(self, value: Dict):
+        """Set the `tags` field of this Document to a Python dict
+
+        :param value: a Python dict
+        """
+        self._pb_body.tags.Clear()
+        self._pb_body.tags.update(value)
+
 
     def _update(
         self,
@@ -1117,10 +1137,10 @@ class Document(ProtoTypeMixin):
 
         mermaid_str = (
             """
-                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                    classDiagram
-                
-                            """
+                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                        classDiagram
+                    
+                                """
             + self.__mermaid_str__()
         )
 
