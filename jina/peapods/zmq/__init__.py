@@ -495,7 +495,7 @@ def send_message(
     num_bytes = 0
     try:
         _prep_send_socket(sock, timeout)
-        sock.send_multipart(msg.dump())
+        sock.send_multipart(msg.dump(), flags=zmq.NOBLOCK)
         num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(
