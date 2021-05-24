@@ -51,10 +51,9 @@ $ docker run jinaai/jina:master -v
 
 | <br><sub><sup>x86/64,arm/v6,v7,[v8 (Apple M1)](https://github.com/jina-ai/jina/issues/1781)</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
-| Standard | `pip install --pre jina` | `docker run jinaai/jina:2.0.0rc` |
-| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install --pre "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
-| <sub>Dev/Pre-Release</sub> | <sub>`pip install --pre jina`</sub> | <sub>`docker run jinaai/jina:master`</sub> |
+| Standard | `pip install --pre jina` | `docker run jinaai/jina:master` |
+| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install --pre "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:master-daemon`</sub> |
+| <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:master-devel`</sub> |
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
