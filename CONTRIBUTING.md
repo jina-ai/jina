@@ -19,7 +19,6 @@ In this guide, we're going to go through the steps for each kind of contribution
 - [☑️ Naming Conventions](#-naming-conventions)
 - [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
 - [📖 Contributing Documentation](#-contributing-documentation)
-- [💬 Getting Support](#-getting-support)
 - [🙏 Thank You](#-thank-you)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
