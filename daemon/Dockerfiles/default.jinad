@@ -1,7 +1,0 @@
-jina: latest
-python: 3.7
-build: default
-run: ''
-commands:
-  - ''
-  - ''
