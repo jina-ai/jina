@@ -15,7 +15,8 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 Table of Contents
 
 - [Minimum working example](#minimum-working-example)
-  - [Pure Python](#pure-python)
+  - [Pure Python: All-in-one Style](#pure-python-all-in-one-style)
+  - [Pure Python: Flow-as-a-Service Style](#pure-python-flow-as-a-service-style)
   - [With YAML](#with-yaml)
 - [`Flow` API](#flow-api)
   - [Create a Flow](#create-a-flow)
