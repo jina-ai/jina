@@ -544,6 +544,3 @@ class MindsporeMwuExecutor(Executor):
             )  # multiply the input with the encoding matrix.
             doc.embedding = output_tensor.asnumpy() # assign the encoding results to ``embedding``
 ```
-
-
-
