@@ -28,6 +28,8 @@ jobs:
             pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
           make dirhtml
           cp -r ./_build/dirhtml/ ./
+          rm -rf ./_build/dirhtml/
+          ls -la
           touch .nojekyll
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
