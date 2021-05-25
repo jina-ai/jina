@@ -162,6 +162,7 @@ $ jina hello fork fashion ../my-proj/
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Flow.md#flow-as-a-service)
 - 🧼 [Write clean code in Jina](.github/2.0/cookbooks/CleanCode.md)
 - 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)
+- 📓 [Developer References](https://docs.jina.ai)
 
 ## Support
 
